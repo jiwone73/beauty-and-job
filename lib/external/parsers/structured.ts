@@ -145,7 +145,13 @@ function parseHairinjob(html: string): StructuredResult | null {
   if (/기숙사|숙소/.test(benefits)) benefit_tags.push("기숙사 제공");
   if (/교육비|교육\s*지원/.test(benefits)) benefit_tags.push("교육비 지원");
 
-  const contact_name = (liValue("채용담당자").split(" ")[0] || "").trim();
+  const contactRaw = liValue("채용담당자");
+  const contact_name = (contactRaw.split(" ")[0] || "").trim();
+  // 채용담당자 li 안의 전화번호도 함께 뽑는다. 라우트의 전화번호 후보(phones)는
+  // 렌더된 페이지 텍스트에서만 찾는데, 이 li가 거기 안 실리는 경우가 있어
+  // "전화번호 안불러옴" 이슈가 반복됐다.
+  const contact_phone = ((contactRaw.match(/(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/) || [])[0] || "")
+    .replace(/[.\s]/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, "");
   const always_open = /채용시까지|상시|수시|충원/.test(ogD) || /채용시까지|상시|수시/.test(title);
 
   const sug = suggestCats(`${job} ${title}`);
@@ -174,6 +180,11 @@ function parseHairinjob(html: string): StructuredResult | null {
       .replace(/<\s*br\s*\/?>/gi, "\n")
       .replace(/<\/(p|div|li|tr|h[1-6])>/gi, "\n")
       .replace(/<[^>]+>/g, "")
+      // 숫자형 엔티티(이모지, &#128153; 등)를 먼저 실제 글자로 풀어야 한다.
+      // 아래 이름 미상 엔티티 제거 규칙이 먼저 돌면 숫자형까지 빈칸으로 지워버려
+      // "상세요강에 이모티콘 인식 못함" 처럼 이모지가 통째로 사라졌다.
+      .replace(/&#(\d{1,7});/g, (m, n) => { try { return String.fromCodePoint(Number(n)); } catch { return m; } })
+      .replace(/&#x([0-9a-f]{1,6});/gi, (m, n) => { try { return String.fromCodePoint(parseInt(n, 16)); } catch { return m; } })
       .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ")
       .replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
   let descText = "";
@@ -267,6 +278,8 @@ function parseHairinjob(html: string): StructuredResult | null {
     main_duties: job ? `모집분야: ${job}` : "",
     description: descText,
     _confident: !!(title && (company || region || job_categories.length)),
+    // 빈 값이면 라우트가 이미 찾은 전화번호(phones[0])를 지우게 되므로 있을 때만 넣는다.
+    ...(contact_phone ? { contact_phone } : {}),
   };
   if (bannerRaw.length || detailRaw.length) {
     out.images = bannerRaw;                       // 매장 사진 → 상단 배너

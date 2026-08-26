@@ -6,7 +6,6 @@ import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag } from "lucide-react";
-import { hideContacts } from "@/lib/hideContacts";
 
   // 매장 공고는 적힌 값이 그대로 지켜지는 일이 드물다. 근무시간·급여는 면접에서
 // 다시 정하고, 복리후생은 매장마다 달라 표에 다 담기지 않는다. 그래서 구직자가
@@ -20,19 +19,6 @@ const withSeeDetail = (v: string) => {
   const t = String(v || "").trim();
   return /상세요강\s*참조/.test(t) ? t : (t ? `${t} · 상세요강 참조` : "상세요강 참조");
 };
-
-// 상세요강 본문에 적힌 매장 연락처는 구직자에게 가린다.
-  //
-  // 카페·인스타 공고에는 "문자 주세요 010-…" 이 본문에 그대로 적혀 있다. 그대로 두면
-  // 구직자가 매장에 바로 연락해 버려, 뷰티워크를 거칠 이유가 없어진다. 지원은 우리
-  // 지원 버튼으로 받아야 매장에도 이력이 남고 우리도 성과를 안다.
-  //
-  // 원문은 DB에 그대로 둔다. 관리자는 등록 화면에서 값을 대조해야 하고, 매장에
-  // 연락할 일도 있기 때문이다. 여기서는 보여줄 때만 가린다.
-  // 규칙은 lib/hideContacts.ts 한곳에만 둔다. 예전엔 여기에 같은 규칙을 한 벌 더
-  // 두었는데, 서버 쪽만 고치는 사이 이 사본이 뒤처져 미리보기에서만 연락처가 샜다.
-  // 등록 폼은 원문을 그대로 보여준다 — 관리자는 값을 대조해야 하기 때문이다.
-  // 가리는 것은 구직자가 보는 화면(이 컴포넌트)과 공개 API 두 곳이다.
 
 // 공고 상단 이미지 갤러리. 표시 규칙(한 칸 4:3 · 한 화면에 두 장)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
@@ -339,9 +325,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
   // 담당자: 전화·이메일 중 하나라도 있어야 표기. 이름 없으면 '인사담당'으로.
-  // 비회원(관리자 대행) 공고는 뷰티워크 온라인지원만 받고, 기업 담당자 연락처를 구직자에게 노출하지 않는다.
-  const hasContact = !job.isExternal && !!(job.contactPhone || job.contactEmail);
-  const hasMethods = !!job.isExternal || !!(job.contactMethods?.length);
+  const hasContact = !!(job.contactPhone || job.contactEmail);
+  const hasMethods = !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0);
   // 지원 안내: 담당자 · 지원방법 · 채용 절차 (라벨 + 값 한 줄)
   const contactInner = hasContact ? (
@@ -354,7 +339,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const methodsInner = hasMethods ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">지원방법</span>
-      <span>{job.isExternal ? "뷰티워크 온라인지원" : job.contactMethods.join("   ·   ")}</span>
+      <span>{job.contactMethods.join("   ·   ")}</span>
     </div>
   ) : null;
 
@@ -502,10 +487,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   ))}
                 </div>
                 {job.description?.trim() && (
-                  <p className="job-detail-desc" style={{ padding: "18px 24px 0", margin: 0 }}>{hideContacts(job.description.trim())}</p>
+                  <p className="job-detail-desc" style={{ padding: "18px 24px 0", margin: 0 }}>{job.description.trim()}</p>
                 )}
                 {job.notes?.trim() && (
-                  <p className="job-detail-desc" style={{ padding: "14px 24px 24px", margin: 0 }}>{hideContacts(job.notes.trim())}</p>
+                  <p className="job-detail-desc" style={{ padding: "14px 24px 24px", margin: 0 }}>{job.notes.trim()}</p>
                 )}
               </section>
             );
@@ -515,11 +500,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {job.description?.trim() && (
             <section className="job-detail-section">
               <h2 className="job-detail-section-title">상세요강</h2>
-              <p className="job-detail-desc">{hideContacts(job.description.trim())}</p>
+              <p className="job-detail-desc">{job.description.trim()}</p>
               {/* 비고는 원래 같은 글에서 갈라져 나온 내용이라 상세요강 안에 이어 붙인다.
                   따로 떼어 두면 근무조건이 두 군데로 흩어져 읽기 어렵다. */}
               {job.notes?.trim() && (
-                <p className="job-detail-desc" style={{ marginTop: 14 }}>{hideContacts(job.notes.trim())}</p>
+                <p className="job-detail-desc" style={{ marginTop: 14 }}>{job.notes.trim()}</p>
               )}
             </section>
           )}
@@ -532,7 +517,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {job.requirements.map((raw: string, i: number) => (
                   <li key={i} className="job-detail-list-item">
                     <CheckCircle2 size={16} className="job-detail-list-icon" />
-                    <span>{hideContacts(raw)}</span>
+                    <span>{raw}</span>
                   </li>
                 ))}
               </ul>
@@ -547,7 +532,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {job.preferreds.map((raw: string, i: number) => (
                   <li key={i} className="job-detail-list-item">
                     <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
-                    <span>{hideContacts(raw)}</span>
+                    <span>{raw}</span>
                   </li>
                 ))}
               </ul>
@@ -562,7 +547,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {job.responsibilities.map((item: string, i: number) => (
                   <li key={i} className="job-detail-list-item">
                     <CheckCircle2 size={16} className="job-detail-list-icon" />
-                    <span>{hideContacts(item)}</span>
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -575,7 +560,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <section className="job-detail-section">
             <h2 className="job-detail-section-title">{companySectionTitle}</h2>
             {job.brandDesc?.trim() && (
-              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{hideContacts(job.brandDesc)}</p>
+              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
             )}
             {companyRows.length > 0 && (
               <div className="job-detail-company-info">

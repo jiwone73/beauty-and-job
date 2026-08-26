@@ -1033,13 +1033,17 @@ export async function POST(req: NextRequest) {
     }
   }
   // 고용형태: 폼에 없는 값은 버린다. 글이 프리랜서라고 분명히 말하면 그대로 따른다.
+  //   단, 구조화 파서(헤어인잡 등)가 '근무형태' 항목에서 이미 값을 읽었다면 그걸 신뢰한다.
+  //   본문 아무 데나 있는 "3.3%"(인센티브 세금 공제처럼 정규직 글에도 흔히 나온다)에
+  //   낚여 정규직을 프리랜서로 덮어써 버리는 사고가 반복됐다("정규직인데 프리랜서로 불러옴").
   {
     const src = [bodyText, pageText, out.description, out.benefits, out.extra_notes]
       .map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ");
     if (typeof out.employment_type !== "string" || !EMPLOYMENT_TYPES.includes(out.employment_type as any)) {
       out.employment_type = out.employment_type === "파트타임" ? "아르바이트" : "";
     }
-    if (/3\.3\s*%|3\.3\s*프리|사업\s*소득|프리랜서/.test(src)) out.employment_type = "프리랜서";
+    const structuredHasType = out.parsed_by === "structured" && !!out.employment_type;
+    if (!structuredHasType && /3\.3\s*%|3\.3\s*프리|사업\s*소득|프리랜서/.test(src)) out.employment_type = "프리랜서";
   }
   // "주 5일"이라 적힌 공고에 요일을 그보다 많이 넣으면 사실과 어긋난다.
   // 무슨 요일인지는 글에 없으니 지어내지 말고 비워, 관리자가 고르게 둔다.

@@ -2267,7 +2267,10 @@ export default function JobPostForm({
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
     logo_url: isNm ? null : cp?.logo_url,
-    cover_images: isNm ? bannerImages.map((b) => ({ url: b.url })) : (cp?.cover_images || []),
+    // 실제 저장값(payload.cover_images)과 똑같이 이 폼의 bannerImages를 그대로 쓴다.
+    // 예전엔 기업회원 모드에서 companyProfile의 커버를 썼는데, 이 공고만 배너를
+    // 지우거나 새로 올리면 미리보기가 그걸 반영하지 못하고 매장정보 배너를 계속 보여줬다.
+    cover_images: bannerImages.map((b) => ({ url: b.url })),
     detailImages: detailImages,
     companyInfo: {
       name: previewCompanyName,
@@ -2288,13 +2291,13 @@ export default function JobPostForm({
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
-    // 비회원(관리자) 공고는 담당자 연락처를 구직자에게 노출하지 않음 → 미리보기도 동일하게 숨기고 '뷰티워크 온라인지원'만.
-    //   기업회원 공고는 실제 상세화면과 같게, 고른 지원방법이 부르는 칸만 보여준다.
+    // 담당자 연락처·지원방법은 회원·비회원 구분 없이 실제 입력값 그대로 미리보기에 낸다
+    // ("전화번호나 지원방법 정보가 빠져서 문맥이 맞지 않는다" — 등록 폼과 미리보기가 같아야 한다).
     isExternal: isNm,
-    contactName: isNm ? "" : 낼담당.이름,
-    contactPhone: isNm ? "" : 낼담당.전화,
-    contactEmail: isNm ? "" : 낼담당.메일,
-    contactMethods: isNm ? ["뷰티워크 온라인지원"] : contactMethods,
+    contactName: 낼담당.이름,
+    contactPhone: 낼담당.전화,
+    contactEmail: 낼담당.메일,
+    contactMethods: contactMethods,
   };
 
   // 본문 콘텐츠 가로 정렬. 사이드가 생긴 뒤로는 기업 폼도 왼쪽으로 붙인다 —
