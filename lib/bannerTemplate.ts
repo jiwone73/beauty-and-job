@@ -11,6 +11,10 @@ export const BANNER_PRESETS: { key: string; label: string; bg: string; text: str
   { key: "silk", label: "실크 화이트", bg: "#eee9e1", text: "#3a342a", img: "/banner/silk.jpg" },
   { key: "lavender", label: "라벤더 헤어", bg: "#cfc1d4", text: "#3b2b45", img: "/banner/lavender.jpg" },
   { key: "aura", label: "오라 베이지", bg: "#f7f5f2", text: "#1f1b17", img: "/banner-default.jpg" },
+  { key: "botanical", label: "보태니컬 크림", bg: "#f2e9dc", text: "#3a2f26", img: "/banner/botanical.jpg" },
+  { key: "petal", label: "로즈 페탈", bg: "#f6d9d3", text: "#4a2b30", img: "/banner/petal.jpg" },
+  { key: "aqua", label: "아쿠아 스킨케어", bg: "#dcebf2", text: "#22343d", img: "/banner/aqua.jpg" },
+  { key: "violet", label: "바이올렛 살롱", bg: "#e2d9ee", text: "#2f2440", img: "/banner/violet.jpg" },
 ];
 // 폭 초과 시 자동 줄바꿈(명시적 개행 우선)
 function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, maxLines = 3): string[] {
