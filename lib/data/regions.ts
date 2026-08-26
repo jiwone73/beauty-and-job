@@ -83,6 +83,9 @@ export const REGIONS: RegionData[] = [
 export const SIDO_LIST: string[] = REGIONS.map((r) => r.sido);
 
 // 특정 시/도의 시/군/구 목록 (드롭다운 2단계)
+// 원본 데이터(REGIONS)는 행정표준코드 순서라 "종로구·중구·용산구…"처럼 가나다순이 아니다.
+// 드롭다운은 찾기 쉬워야 하므로 여기서 가나다순으로 정렬해 낸다.
 export function getSigunguList(sido: string): string[] {
-  return REGIONS.find((r) => r.sido === sido)?.sigungu ?? [];
+  const list = REGIONS.find((r) => r.sido === sido)?.sigungu ?? [];
+  return [...list].sort((a, b) => a.localeCompare(b, "ko"));
 }
