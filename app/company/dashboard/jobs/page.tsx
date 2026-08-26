@@ -517,10 +517,13 @@ function CompanyJobsContent() {
                   <td className="company-td-sub">{job.view_count}</td>
                   <td>
                     {(() => {
-                      const closed = isJobClosed(job);
-                      const dl = daysLeft(job.deadline);
-                      const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
-                      return <span style={{ color, fontWeight: 500, fontSize: 14, whiteSpace: "nowrap" }}>{closed ? "마감" : formatDeadline(job.deadline)}</span>;
+                      // 마감일 칸과 그대로 겹쳐 보였다("상태가 필요할까? 마감일하고
+                      // 같은데") — 마감 처리해도 deadline 값 자체는 안 바뀌어(closed_at만
+                      // 기록) 사실은 다른 정보인데 우연히 같아 보인 것뿐이었다. 여기는
+                      // "지금 상태가 뭔지"만 짧게 말한다.
+                      const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지" : isJobClosed(job) ? "마감" : "진행중";
+                      const color = job.status === "DRAFT" ? "#999" : job.status === "PAUSED" ? "#f59e0b" : isJobClosed(job) ? "#888" : "#10b981";
+                      return <span style={{ color, fontWeight: 500, fontSize: 14, whiteSpace: "nowrap" }}>{label}</span>;
                     })()}
                   </td>
                 </tr>
