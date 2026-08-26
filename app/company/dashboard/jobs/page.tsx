@@ -19,6 +19,11 @@ const STATUS_LABEL: Record<JobStatus, string> = {
   PAUSED: "일시중지",
 };
 
+const md = (d: string) => { const x = new Date(d); return `${String(x.getMonth() + 1).padStart(2, "0")}.${String(x.getDate()).padStart(2, "0")}`; };
+
+// D-day만 있으면 오늘이 며칠인지 알아야 계산이 되는데, 날짜는 바로 읽힌다(사람인도
+// 이 방식 — 마감 임박한 것만 D-N, 나머진 실제 날짜). 그래서 평소엔 날짜로 보여주고,
+// 진짜 급한 D-3 이내일 때만 눈에 띄게 D-N으로 바꾼다.
 function formatDeadline(deadline: string | null): string {
   if (!deadline) return "상시";
   const today = new Date();
@@ -26,7 +31,8 @@ function formatDeadline(deadline: string | null): string {
   const dDay = Math.ceil((dl.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   if (dDay < 0) return "마감";
   if (dDay === 0) return "오늘";
-  return `D-${dDay}`;
+  if (dDay <= 3) return `D-${dDay}`;
+  return md(deadline);
 }
 
 // 마감까지 남은 일수 (상시=마감일 없음 → null)
@@ -435,10 +441,7 @@ function CompanyJobsContent() {
                   </div>
                   <div className="co-li-r2">
                     {/* 등록일 하나만 보여주면 기간 감이 안 온다. 같은 자리에 게시 기간으로 적는다(상시는 마감일 없음). */}
-                    <span>{(() => {
-                      const md = (d: string) => { const x = new Date(d); return `${String(x.getMonth() + 1).padStart(2, "0")}.${String(x.getDate()).padStart(2, "0")}`; };
-                      return job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
-                    })()}</span>
+                    <span>{job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`}</span>
                     {job.application_count > 0 ? (
                       <span style={{ color: "#582681" }}
                         onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>
