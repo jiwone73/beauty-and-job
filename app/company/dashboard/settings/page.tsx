@@ -47,7 +47,7 @@ export default function CompanySettingsPage() {
       "SNS": LinkIcon, "웹사이트": Globe, "브랜드명": BadgeCheck,
       "직원수": Users, "사원수": Users, "설립연도": Calendar,
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
-      "주소": Home,
+      "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
       "회사 로고": ImageIcon, "공고 배너 이미지": ImageIcon,
     };
@@ -520,6 +520,13 @@ export default function CompanySettingsPage() {
                 </p>
               </div>
 
+              {/* 계정 통제(로그인) 정보가 아니라 이 사업자가 법적으로 누구인지에 대한
+                  사실이라 프로필로 옮겼다("사업자등록번호는 계정설정보다 프로필이 맞다").
+                  가입 때 검증한 값이라 여기서도 수정은 못 한다. */}
+              <div className="admin-form-row">
+                <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
+                <span style={{ fontSize: 15, color: info?.business_number ? "#333" : "#bbb" }}>{info?.business_number || "미등록"}</span>
+              </div>
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">{칸그림(L.name)}{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
@@ -562,6 +569,14 @@ export default function CompanySettingsPage() {
                       {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                     </select>
                   </div>
+                </div>
+                {/* 담당자 휴대폰(계정 설정, 내부용)과는 별개로 예약 문의 등에 쓸 매장 공개
+                    번호 — 필수는 아니다("매장전화번호 추가해줘. 필수는 아닌듯"). */}
+                <div className="admin-form-row">
+                  <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
+                  <input className="admin-form-input" placeholder="02-XXX-XXXX" inputMode="numeric" maxLength={13}
+                    value={formatPhone(form.company_phone)}
+                    onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                 </div>
                 </>
               ) : (
@@ -636,7 +651,6 @@ export default function CompanySettingsPage() {
               </div>
 
               <div className="admin-form-row">
-                <div>
                 <label className="admin-form-label">{칸그림(L.intro)}{L.intro}</label>
                 <textarea className="admin-form-textarea" rows={5}
                   placeholder={isStore
@@ -644,7 +658,6 @@ export default function CompanySettingsPage() {
                     : "어떤 회사인지 적어 주세요 — 무엇을 만드는지, 브랜드, 팀 구성, 일하는 방식, 복지처럼"}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                </div>
               </div>
             </div>
           </div>

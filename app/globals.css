@@ -5755,15 +5755,15 @@ div:has(> table.admin-table),
 .settings-compact > .admin-form-row:last-child,
 .settings-compact > .admin-form-row-2col:last-child > .admin-form-row { border-bottom: none; }
 .settings-compact .admin-form-row:has(> .admin-form-label) {
+  /* 제목 밑에 내용 — 라벨 옆으로 나란히 두던 것을 위아래로 쌓는다
+     ("매장정보도 제목 밑에 내용으로 통일되게, 내용은 제목 첫글자에 맞쳐줘"). */
   display: grid;
-  /* 라벨 칸을 96px 로 묶어 두니 'SNS' 처럼 짧은 이름 뒤가 넓게 비었다.
-     글자 폭만 쓰게 두면 값이 바로 뒤에 붙는다. */
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 12px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  row-gap: 6px;
+  align-items: start;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) > .admin-form-label {
-  grid-column: 1; margin: 0; white-space: nowrap;
+  grid-column: 1; grid-row: 1; margin: 0; white-space: nowrap;
 }
 /* 공고등록의 기업정보 블록과 같은 규칙: 항목명은 연한 회색, 빈 칸만 56px 연보라 블록,
    값이 들어오면 배경 없이 글자만 보인다. */
@@ -5783,11 +5783,13 @@ div:has(> table.admin-table),
 /* 기업 소개(textarea)는 여러 줄이라 블록 대신 옅은 배경만 */
 .settings-compact .admin-form-textarea { background: #f7f7f8; border: none; border-radius: 8px; }
 .settings-compact .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
-  grid-column: 2; min-width: 0;
-  /* 값은 라벨 바로 옆에 붙인다. 오른쪽 끝으로 밀어 두니 라벨과 값 사이가 비어
-     어느 라벨의 값인지 눈이 한 번 더 건너뛰어야 했다(공고 등록 폼과 같은 규칙). */
+  grid-column: 1; grid-row: 2; min-width: 0;
   justify-self: start;
   text-align: left;
+  /* 아이콘(15px) + 라벨과의 간격(6px)만큼 들여써 값의 첫 글자를 라벨 첫 글자에 맞춘다. */
+  padding-left: 21px;
+  box-sizing: border-box;
+  width: 100%;
 }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input,
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select {
@@ -5808,10 +5810,6 @@ div:has(> table.admin-table),
 }
 @media (max-width: 767px) {
   .settings-compact .admin-form-row { padding: 12px 0; }
-  .settings-compact .admin-form-row:has(> .admin-form-label) {
-    grid-template-columns: 96px 1fr;
-    column-gap: 10px;
-  }
 }
 
 /* 박스 제거 → 프로필처럼 값은 테두리 없이 우측 정렬 텍스트 */

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { UserRound, Smartphone, FileText, Mail, KeyRound, UserX } from "lucide-react";
+import { UserRound, Smartphone, Mail, KeyRound, UserX } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { InlineText } from "@/components/profile/inline/InlineField";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
@@ -16,7 +16,6 @@ export default function CompanyAccountPage() {
   const [loading, setLoading] = useState(true);
   const [managerName, setManagerName] = useState("");
   const [phone, setPhone] = useState("");
-  const [businessNumber, setBusinessNumber] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -24,7 +23,6 @@ export default function CompanyAccountPage() {
       if (res.success && res.data) {
         setManagerName((res.data as any).manager_name || "");
         setPhone((res.data as any).phone || "");
-        setBusinessNumber(res.data.business_number || "");
         setEmail(res.data.email || "");
       }
     }).finally(() => setLoading(false));
@@ -154,8 +152,11 @@ export default function CompanyAccountPage() {
     finally { setPwSaving(false); }
   };
 
-  const row = { display: "flex" as const, flexDirection: "row" as const, alignItems: "center" as const, justifyContent: "space-between" as const, gap: 12, padding: "15px 0", borderBottom: "1px solid #f0f0f0" };
-  const label = { margin: 0, flexShrink: 0 };
+  // 제목 밑에 내용, 내용은 제목 첫 글자(아이콘+간격만큼 들여쓴 자리)에 맞춘다
+  // ("제목 밑에 내용으로 통일되게, 내용은 제목 첫글자에 맞쳐줘").
+  const row = { display: "flex" as const, flexDirection: "column" as const, gap: 6, padding: "15px 0", borderBottom: "1px solid #f0f0f0" };
+  const label = { margin: 0, display: "flex" as const, alignItems: "center" as const, gap: 6 };
+  const content = { paddingLeft: 21 }; // 아이콘 15px + gap 6px
 
   return (
     <CompanyLayout activePage="account">
@@ -165,27 +166,22 @@ export default function CompanyAccountPage() {
             <div className="admin-form-body settings-compact" style={{ gap: 0, paddingTop: 0, paddingBottom: 0 }}>
               <div className="admin-form-row" style={row}>
                 <label className="admin-form-label" style={label}><UserRound size={15} className="admin-form-icon" />담당자</label>
-                <InlineText value={managerName} placeholder="담당자명" onSave={saveManagerName} />
+                <div style={content}><InlineText value={managerName} placeholder="담당자명" onSave={saveManagerName} /></div>
               </div>
 
               <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, cursor: "pointer" }}>
                 <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰</label>
-                <span style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                   <span style={{ fontSize: 14, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
                   <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
                 </span>
-              </div>
-
-              <div className="admin-form-row" style={row}>
-                <label className="admin-form-label" style={label}><FileText size={15} className="admin-form-icon" />사업자등록번호</label>
-                <span style={{ fontSize: 14, color: businessNumber ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{businessNumber || "미등록"}</span>
               </div>
 
               <div className="admin-form-row"
                 onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
                 style={{ ...row, cursor: "pointer" }}>
                 <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
-                <span style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                   <span style={{ fontSize: 14, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
                   <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
                 </span>
@@ -193,7 +189,7 @@ export default function CompanyAccountPage() {
 
               <div className="admin-form-row" onClick={() => setShowPwModal(true)} style={{ ...row, cursor: "pointer" }}>
                 <label className="admin-form-label" style={label}><KeyRound size={15} className="admin-form-icon" />비밀번호</label>
-                <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
+                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
                   변경하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
                 </span>
               </div>
@@ -201,7 +197,7 @@ export default function CompanyAccountPage() {
               <div className="admin-form-row" onClick={() => router.push("/company/dashboard/account/withdraw")}
                 style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                 <label className="admin-form-label" style={label}><UserX size={15} className="admin-form-icon" />회원 탈퇴</label>
-                <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
+                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
                   탈퇴하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
                 </span>
               </div>
