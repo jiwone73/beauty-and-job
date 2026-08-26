@@ -30,10 +30,14 @@ export function BannerImg({ src, alt, ratio = false, fill = false }: { src: stri
   // 받는다. 채용공고 그리드가 이 모드를 쓰는데, 카드가 90장을 넘으면
   // 사진 하나하나가 두 번씩 내려받혀 탭을 바꿀 때마다 눈에 띄게 느려졌다.
   // fill 에서는 애초에 안 보일 값이니 재는 일 자체를 건너뛴다.
+  // draggable={false}: <img>는 브라우저 기본값이 드래그 가능이라, 스크롤하려고
+  // 누른 채 마우스를 움직이면 페이지 스크롤 대신 사진이 통째로 딸려 나온다
+  // ("스크롤하면 사진이 드래그 되서 움직이네"). 끌어서 순서 바꾸기는 이 img를 감싼
+  // BannerStrip의 바깥 div가 따로 담당하므로 여기서 꺼도 그 기능엔 영향이 없다.
   if (fill) {
     return (
       <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
-        <img src={src} alt={alt} loading="lazy" decoding="async"
+        <img src={src} alt={alt} loading="lazy" decoding="async" draggable={false}
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       </div>
     );
@@ -43,6 +47,7 @@ export function BannerImg({ src, alt, ratio = false, fill = false }: { src: stri
       <img
         src={src}
         alt={alt}
+        draggable={false}
         {...(noCors ? {} : { crossOrigin: "anonymous" as const })}
         onLoad={(e) => sample(e.currentTarget)}
         onError={() => setNoCors(true)}
