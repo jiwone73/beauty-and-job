@@ -129,7 +129,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
     return (
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        minHeight: "100vh", background: "#f7f7f8",
+        minHeight: "100vh", background: "#fff",
         fontSize: "14px", color: "#582681", fontWeight: 600,
       }}>
         로딩 중...
