@@ -38,8 +38,14 @@ export default function CompanyAccountPage() {
   const saveManagerName = async (v: string) => {
     const prev = managerName;
     setManagerName(v);
-    const res = await companyMeApi.update({ manager_name: v } as any);
-    if (!res.success) { setManagerName(prev); alert((res as any).error?.message || "저장에 실패했습니다."); }
+    try {
+      await companyMeApi.update({ manager_name: v } as any);
+    } catch (e: any) {
+      // api-client 는 실패를 {success:false} 가 아니라 던진다 — 여기서 못 잡으면
+      // 낙관적으로 바꾼 화면 값이 실패해도 그대로 남는다.
+      setManagerName(prev);
+      alert(e?.message || "저장에 실패했습니다.");
+    }
   };
 
   // 담당자 휴대폰
@@ -76,11 +82,10 @@ export default function CompanyAccountPage() {
       const res = await fetch("/api/auth/phone/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: clean, code: phoneCode, purpose: "signup" }) });
       const data = await res.json();
       if (!data.success) { setPhoneMsg(data.error?.message || "인증번호가 올바르지 않습니다."); return; }
-      const saveRes = await companyMeApi.update({ phone: clean } as any);
-      if (!saveRes.success) { setPhoneMsg((saveRes as any).error?.message || "저장에 실패했습니다."); return; }
+      await companyMeApi.update({ phone: clean } as any);
       setPhone(clean);
       setShowPhoneModal(false);
-    } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); } finally { setPhoneVerifying(false); }
+    } catch (e: any) { setPhoneMsg(e?.message || "네트워크 오류가 발생했습니다."); } finally { setPhoneVerifying(false); }
   };
 
   // 이메일 변경
@@ -95,15 +100,11 @@ export default function CompanyAccountPage() {
     setEmailBusy(true); setEmailMsg("");
     try {
       const res = await companyMeApi.requestEmailChange({ new_email: newEmail.trim() });
-      if (res.success) {
-        setEmailStep(2);
-        if (res.data?.dev_code) setEmailMsg(`인증코드를 발송했어요. (테스트: ${res.data.dev_code})`);
-        else if (res.data?.sent) setEmailMsg("새 이메일로 인증코드를 발송했어요. 메일함(스팸함 포함)을 확인해주세요.");
-        else setEmailMsg(`메일 발송 실패: ${(res.data as any)?.error || "Resend 설정(도메인·API 키)을 확인해주세요."}`);
-      } else {
-        setEmailMsg((res as any).error?.message || "발송에 실패했습니다.");
-      }
-    } catch { setEmailMsg("오류가 발생했습니다."); }
+      setEmailStep(2);
+      if (res.data?.dev_code) setEmailMsg(`인증코드를 발송했어요. (테스트: ${res.data.dev_code})`);
+      else if (res.data?.sent) setEmailMsg("새 이메일로 인증코드를 발송했어요. 메일함(스팸함 포함)을 확인해주세요.");
+      else setEmailMsg(`메일 발송 실패: ${(res.data as any)?.error || "Resend 설정(도메인·API 키)을 확인해주세요."}`);
+    } catch (e: any) { setEmailMsg(e?.message || "오류가 발생했습니다."); }
     finally { setEmailBusy(false); }
   };
   const handleVerifyEmailCode = async () => {
@@ -111,14 +112,10 @@ export default function CompanyAccountPage() {
     setEmailBusy(true); setEmailMsg("");
     try {
       const res = await companyMeApi.verifyEmailChange({ new_email: newEmail.trim(), code: emailCode.trim() });
-      if (res.success) {
-        setEmail((res.data as any).email);
-        setShowEmailModal(false);
-        alert("이메일이 변경되었습니다.");
-      } else {
-        setEmailMsg((res as any).error?.message || "인증에 실패했습니다.");
-      }
-    } catch { setEmailMsg("오류가 발생했습니다."); }
+      setEmail((res.data as any).email);
+      setShowEmailModal(false);
+      alert("이메일이 변경되었습니다.");
+    } catch (e: any) { setEmailMsg(e?.message || "인증에 실패했습니다."); }
     finally { setEmailBusy(false); }
   };
 
@@ -140,15 +137,11 @@ export default function CompanyAccountPage() {
     }
     setPwSaving(true);
     try {
-      const res = await companyMeApi.changePassword({ current_password: pwForm.current_password, new_password: pwForm.new_password });
-      if (res.success) {
-        alert("비밀번호가 변경되었습니다.");
-        setShowPwModal(false);
-        setPwForm({ current_password: "", new_password: "", confirm_password: "" });
-      } else {
-        alert((res as any).error?.message || "비밀번호 변경에 실패했습니다.");
-      }
-    } catch { alert("비밀번호 변경 중 오류가 발생했습니다."); }
+      await companyMeApi.changePassword({ current_password: pwForm.current_password, new_password: pwForm.new_password });
+      alert("비밀번호가 변경되었습니다.");
+      setShowPwModal(false);
+      setPwForm({ current_password: "", new_password: "", confirm_password: "" });
+    } catch (e: any) { alert(e?.message || "비밀번호 변경 중 오류가 발생했습니다."); }
     finally { setPwSaving(false); }
   };
 

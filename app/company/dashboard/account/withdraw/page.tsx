@@ -33,18 +33,16 @@ export default function CompanyWithdrawPage() {
     if (!pw) { alert("비밀번호를 입력해주세요."); return; }
     setWorking(true);
     try {
-      const res = await companyMeApi.withdraw(pw);
-      if (!res.success) {
-        alert((res as any).error?.message || "탈퇴에 실패했습니다.");
-        setWorking(false);
-        return;
-      }
+      await companyMeApi.withdraw(pw);
       alert("탈퇴가 완료되었습니다. 그동안 이용해 주셔서 감사합니다.");
       localStorage.removeItem("access_token");
       localStorage.removeItem("beautynjob-auth");
       window.location.href = "/";
-    } catch {
-      alert("탈퇴 중 오류가 발생했습니다.");
+    } catch (e: any) {
+      // api-client 는 실패 응답을 {success:false} 로 돌려주지 않고 던진다 — 여기서
+      // 잡아 실제 서버 메시지(예: "비밀번호가 일치하지 않습니다.")를 보여준다
+      // ("비밀번호를 잘못입력한건데. 안내가 잘못됬어" — 전엔 무조건 뭉뚱그린 메시지였다).
+      alert(e?.message || "탈퇴 중 오류가 발생했습니다.");
       setWorking(false);
     }
   };
