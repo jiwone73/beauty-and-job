@@ -3070,17 +3070,20 @@ export default function JobPostForm({
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
                       style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
-                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "검색 및 선택하기")}
+                      {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "목록에서 선택하기")}
                     </button>
                     )}
                     {freeField("benefits", fiBenefits, setFiBenefits, "예: 4대보험, 인센티브", false, () => setBenefitTags([]))}
                     {welfareOpen && !typeLocked && (() => {
                       const qq = benefitSearch.trim().toLowerCase();
-                      // 치기 전에는 아무것도 깔지 않는다. 마흔 개가 먼저 보이면 "다 고르라"는 말처럼
-                      // 읽히는데, 정작 담을 것은 그 매장이 실제로 주는 몇 가지다(이력서 스킬과 같은 결).
+                      // 처음엔 검색해야만 보였는데, 매장 입장에선 뭐가 있는지도 모른 채 빈
+                      // 검색창만 보게 돼 진입장벽이었다("검색이 아니라 목록에 있는 걸 고르는게
+                      // 나을듯"). 이제 목록을 항상 다 보여주고, 검색은 그 안에서 좁히는
+                      // 용도로만 쓴다. 훑어보기 쉽게 가나다순으로 정렬한다.
                       const match = (n: string) => n.toLowerCase().includes(qq);
                       const customSel = benefitTags.filter((t) => !benefitTagOptions.some((o) => o.name === t) && match(t)).map((t) => ({ name: t, is_curated: false }));
-                      const visible = qq ? [...customSel, ...benefitTagOptions.filter((o) => match(o.name))] : [];
+                      const visible = [...customSel, ...benefitTagOptions.filter((o) => match(o.name))]
+                        .sort((a, b) => a.name.localeCompare(b.name, "ko"));
                       const exact = benefitTagOptions.some((o) => o.name === benefitSearch.trim()) || benefitTags.includes(benefitSearch.trim());
                       const canAdd = benefitSearch.trim().length > 0 && !exact;
                       return (
@@ -3088,29 +3091,27 @@ export default function JobPostForm({
                         <div style={{ display: "flex", gap: 8 }}>
                           <input autoFocus value={benefitSearch} onChange={(e) => setBenefitSearch(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (canAdd) addNewBenefit(benefitSearch); } }}
-                            placeholder="찾는 혜택을 쳐 보세요"
+                            placeholder="검색으로 좁혀보기"
                             style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "8px 10px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 14, outline: "none" }} />
                           <button type="button" onClick={() => { if (canAdd) addNewBenefit(benefitSearch); }} disabled={!canAdd}
                             style={{ flexShrink: 0, padding: "0 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13, whiteSpace: "nowrap",
                               color: canAdd ? "#582681" : "#c4c4c9", cursor: canAdd ? "pointer" : "default" }}>직접입력</button>
                         </div>
 
-                        {qq && (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto", marginTop: 10 }}>
-                            {visible.map((o) => { const on = benefitTags.includes(o.name); return (
-                              <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
-                                style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                {o.name}
-                                {!o.is_curated && (
-                                  <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
-                                    onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
-                                    style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#a8a8ad" }}>×</span>
-                                )}
-                              </button>
-                            ); })}
-                            {visible.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>맞는 것이 없어요. ‘직접입력’으로 넣을 수 있어요.</span>}
-                          </div>
-                        )}
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto", marginTop: 10 }}>
+                          {visible.map((o) => { const on = benefitTags.includes(o.name); return (
+                            <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
+                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              {o.name}
+                              {!o.is_curated && (
+                                <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
+                                  onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
+                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#a8a8ad" }}>×</span>
+                              )}
+                            </button>
+                          ); })}
+                          {visible.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>맞는 것이 없어요. ‘직접입력’으로 넣을 수 있어요.</span>}
+                        </div>
 
                         {/* 담은 것 — 칩을 감춰 두니 여기서라도 보이고 지울 수 있어야 한다. */}
                         {benefitTags.length > 0 && (
