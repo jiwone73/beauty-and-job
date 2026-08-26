@@ -172,7 +172,7 @@ function CompanyJobsContent() {
     }
   };
 
-  // 재등록: 1건 선택 시 내용 복사해 새 공고 등록 화면으로
+  // 복사 등록: 1건 선택 시 내용 복사해 새 공고 등록 화면으로
   const handleReRegister = () => {
     if (checked.length !== 1) return;
     router.push(`/company/dashboard/jobs/new?copy=${checked[0]}`);
@@ -258,19 +258,23 @@ function CompanyJobsContent() {
             options={["등록일순", "마감일순"]} onChange={setSortBy} />
         </div>
         <div style={{display:"flex", gap:"8px", alignItems:"center"}}>
+          {/* 공고마감·복사 등록은 무엇을 고르면 되는지 미리 보이도록 항상 띄워 두고,
+              고르기 전엔 눌러도 안 되게만 막는다(체크 안 했을 때 아예 사라지면
+              이런 기능이 있는지조차 모른다). */}
+          <button
+            disabled={checked.length === 0}
+            style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length === 0 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length === 0 ? "not-allowed" : "pointer" }}
+            onClick={handleBulkClose}>
+            <Ban size={14} /> 공고마감
+          </button>
+          <button
+            disabled={checked.length !== 1}
+            style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length !== 1 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length !== 1 ? "not-allowed" : "pointer" }}
+            onClick={handleReRegister}>
+            <Copy size={14} /> 복사 등록
+          </button>
           {checked.length > 0 && (
             <>
-              <button
-                style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color:"#555", fontSize:14, fontWeight:500, cursor:"pointer" }}
-                onClick={handleBulkClose}>
-                <Ban size={14} /> 공고마감
-              </button>
-              <button
-                style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length !== 1 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length !== 1 ? "not-allowed" : "pointer" }}
-                disabled={checked.length !== 1}
-                onClick={handleReRegister}>
-                <Copy size={14} /> 재등록
-              </button>
               {/* 삭제·공고 등록도 '마감'과 같은 규격(7px 12px · 14px)으로 맞춘다 */}
               <button className="admin-danger-btn" onClick={handleBulkDelete}
                 style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
@@ -278,7 +282,7 @@ function CompanyJobsContent() {
               </button>
             </>
           )}
-          {/* 선택 중에는 감춘다. '재등록'도 등록 화면으로 가기 때문에 나란히 두면 잘못 눌러 선택이 날아간다.
+          {/* 선택 중에는 감춘다. '복사 등록'도 등록 화면으로 가기 때문에 나란히 두면 잘못 눌러 선택이 날아간다.
               해제하면 바로 돌아오므로 접근을 막는 게 아니라 지금 할 일만 남기는 것이다. */}
           {checked.length === 0 && (
             <Link href="/company/dashboard/jobs/new" className="company-primary-btn"
@@ -361,7 +365,7 @@ function CompanyJobsContent() {
                     <Ban size={14} /> 공고마감
                   </button>
                   <button className="co-mbar-btn" disabled={checked.length !== 1} onClick={handleReRegister}>
-                    <Copy size={14} /> 재등록
+                    <Copy size={14} /> 복사 등록
                   </button>
                 </>
               )}
