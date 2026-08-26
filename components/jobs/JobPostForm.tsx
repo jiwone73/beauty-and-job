@@ -3103,28 +3103,19 @@ export default function JobPostForm({
                             <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
                               style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
                               {o.name}
-                              {!o.is_curated && (
+                              {/* 고른 것은 여기 x로 바로 뺀다 — 아래 "담은 것" 칩을 따로 또
+                                  두면 같은 값이 위아래로 겹쳐 보여 헷갈렸다. */}
+                              {on ? (
+                                <span aria-hidden style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, color: "#efeff1" }}>×</span>
+                              ) : !o.is_curated && (
                                 <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
                                   onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
-                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: on ? "#efeff1" : "#a8a8ad" }}>×</span>
+                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: "#a8a8ad" }}>×</span>
                               )}
                             </button>
                           ); })}
                           {visible.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>맞는 것이 없어요. ‘직접입력’으로 넣을 수 있어요.</span>}
                         </div>
-
-                        {/* 담은 것 — 칩을 감춰 두니 여기서라도 보이고 지울 수 있어야 한다. */}
-                        {benefitTags.length > 0 && (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10, paddingTop: 10, borderTop: "1px solid #f4f4f5" }}>
-                            {benefitTags.map((t) => (
-                              <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 13px", borderRadius: 999, fontSize: 14, background: "#582681", color: "#fff" }}>
-                                {t}
-                                <button type="button" aria-label={`${t} 빼기`} onClick={() => toggleBenefit(t)}
-                                  style={{ border: "none", background: "none", color: "#efeff1", padding: 0, fontSize: 13, lineHeight: 1, cursor: "pointer" }}>×</button>
-                              </span>
-                            ))}
-                          </div>
-                        )}
 
                         {nonMember && <button type="button" onClick={() => { setWelfareOpen(false); setFiOpen("benefits"); }}
                           style={{ display: "block", width: "100%", textAlign: "left", marginTop: 10, border: "none", borderTop: "1px solid #eee", background: "none", padding: "9px 0 0", fontSize: 13, color: "#582681", cursor: "pointer" }}>✎ 한 줄로 직접 쓰기</button>}
