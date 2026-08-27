@@ -13393,8 +13393,13 @@ button,
      사이드 왼쪽 끝이 로고와 저절로 맞는다(1800 창에서 둘 다 252).
      사이드를 오른쪽으로 옮긴다("이력서 페이지에 있는 작성현황 카드도 동일하게
      페이지 오른쪽으로") — 채용공고 등록폼과 같은 방향. */
+  /* 첫 칸을 1fr 로 두면 본문(846px 고정)이 다 못 채운 자리가 그대로 빈 틈이
+     되어, 창이 넓어질수록 완성도 기둥이 본문에서 멀어진다(1280 에서 150px,
+     1580 에서 208px). 첫 칸을 본문 폭에 맞춰 두 칸을 붙이고, 남는 자리는
+     오른쪽에 둔다 — 본문 왼쪽 끝은 그대로라 머리줄 로고와 계속 맞는다. */
   .resume-layout {
-    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-columns: minmax(0, 846px) 220px;
+    justify-content: start;
     max-width: 1360px; margin: 0 auto; padding: 0 32px 60px;
     gap: 22px; align-items: stretch;
   }

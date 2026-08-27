@@ -463,7 +463,12 @@ export default function ResumeEditor({
 
       <section id="section-language" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title"><Globe size={16} className="resume-section-icon" />어학{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
+          {/* 어학에는 별표를 붙이지 않는다. 매장에만 붙어 있었는데(바로 위 스킬
+              줄을 그대로 복사한 것으로 보인다) 미용실·네일숍이 외국어를 필수로
+              보는 일은 없고, 정작 본사에는 안 붙어 있어 방향도 뒤집혀 있었다.
+              학력과 같은 이유다 — 볼 일 없는 칸에 별표를 붙이면 채우지 못한
+              사람이 제 이력서를 미완성으로 여기고 만다. */}
+          <h2 className="resume-section-title"><Globe size={16} className="resume-section-icon" />어학</h2>
           {(
             <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => addLanguage({ id: genId(), language: "", level: "", test: "" })}>
               <Plus size={18} />
