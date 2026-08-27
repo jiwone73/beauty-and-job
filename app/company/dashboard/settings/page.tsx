@@ -53,7 +53,7 @@ export default function CompanySettingsPage() {
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
       "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "프로필 사진": ImageIcon, "공고 배너 이미지": ImageIcon,
+      "회사 로고": ImageIcon, "대표이미지": ImageIcon, "공고 배너 이미지": ImageIcon,
     };
     const G = 표[이름];
     return G ? <G size={15} className="admin-form-icon" /> : null;
@@ -177,7 +177,7 @@ export default function CompanySettingsPage() {
     }
   };
 
-  // 프로필 사진 — 고르면 바로 올리지 않고 자르기 화면부터 연다.
+  // 대표이미지 — 고르면 바로 올리지 않고 자르기 화면부터 연다.
   const handleSignboardPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setCropFile(file);
@@ -203,7 +203,7 @@ export default function CompanySettingsPage() {
       if (data.success) {
         setSignboardUrl(data.data.signboard_url);
       } else {
-        alert(data.error?.message || "프로필 사진 업로드에 실패했습니다.");
+        alert(data.error?.message || "대표이미지 업로드에 실패했습니다.");
       }
     } finally {
       setSignboardUploading(false);
@@ -211,7 +211,7 @@ export default function CompanySettingsPage() {
   };
 
   const handleSignboardDelete = async () => {
-    if (!confirm("프로필 사진을 삭제하시겠습니까?")) return;
+    if (!confirm("대표이미지를 삭제하시겠습니까?")) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     try {
@@ -507,14 +507,14 @@ export default function CompanySettingsPage() {
               </div>
               )}
 
-              {/* 프로필 사진 — 매장은 로고 대신, 로고나 매장명이 보이는 사진을
+              {/* 대표이미지 — 매장은 로고 대신, 로고나 매장명이 보이는 사진을
                   선택적으로 등록한다. 헤더 아바타에 쓰이며, 없으면 공고 배너로 대체된다. */}
               {isStore && (
               <div className="admin-form-row">
                 <div>
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림("프로필 사진")}프로필 사진</label>
-                  <label title={signboardUrl ? "프로필 사진 변경" : "프로필 사진 등록"}
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("대표이미지")}대표이미지</label>
+                  <label title={signboardUrl ? "대표이미지 변경" : "대표이미지 등록"}
                     style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
                       borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
                       cursor: signboardUploading ? "wait" : "pointer"}}>
@@ -523,27 +523,47 @@ export default function CompanySettingsPage() {
                       disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
                   </label>
                 </div>
-                <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
-                  {/* 미리보기도 카드와 같은 3:2 — 여기서 보이는 모양이 목록에 그대로 나간다 */}
-                  <div style={{position:"relative", width:96, height:64, borderRadius:"10px", border:"1px solid #eee",
-                    background:"#fff", display:"flex", alignItems:"center", justifyContent:"center",
-                    overflow:"hidden", flexShrink:0}}>
-                    {signboardUrl ? (
-                      <>
-                        <img src={signboardUrl} alt="프로필 사진" style={{width:"100%", height:"100%", objectFit:"cover"}} />
-                        <button type="button" onClick={handleSignboardDelete} title="프로필 사진 삭제"
-                          style={{position:"absolute", top:2, right:2, width:18, height:18, borderRadius:"50%",
-                            background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
-                            display:"flex", alignItems:"center", justifyContent:"center"}}>
-                          <X size={11} />
-                        </button>
-                      </>
-                    ) : (
-                      <span style={{fontSize:"20px", fontWeight:700, color:"#e3e3e6"}}>{form.company_name?.[0] || "?"}</span>
-                    )}
+                {/* 설명만 적어 두면 "그래서 어디에 쓰이는데?"가 남는다. 실제 목록
+                    카드를 그대로 그려 보여 준다 — 사진이 없으면 그 카드가 얼마나
+                    허전한지가 곧 올릴 이유가 된다. 실물과 어긋나지 않게 채용공고
+                    카드와 같은 class 를 쓴다(누르는 기능만 뺀다). */}
+                <div style={{display:"flex", alignItems:"flex-start", gap:"14px", flexWrap:"wrap"}}>
+                  <div style={{width:190, flexShrink:0}}>
+                    <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
+                      style={{cursor:"default", transform:"none", boxShadow:"none"}}>
+                      <div className={`jobcard-cover${signboardUrl ? "" : " jobcard-cover-empty"}`}
+                        style={signboardUrl ? { aspectRatio: "3 / 2" } : undefined}>
+                        {signboardUrl ? (
+                          <>
+                            <img src={signboardUrl} alt="대표이미지" className="jobcard-cover-img" />
+                            <button type="button" onClick={handleSignboardDelete} title="대표이미지 삭제"
+                              style={{position:"absolute", top:6, right:6, width:22, height:22, borderRadius:"50%",
+                                background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
+                                display:"flex", alignItems:"center", justifyContent:"center", zIndex:1}}>
+                              <X size={12} />
+                            </button>
+                          </>
+                        ) : (
+                          <span className="jobcard-cover-name">{form.company_name || "매장명"}</span>
+                        )}
+                      </div>
+                      <div className="jobcard-body">
+                        <p className="jobcard-title">우리 매장 채용공고</p>
+                        <p className="jobcard-company">{form.company_name || "매장명"}</p>
+                        <div className="jobcard-metarow">
+                          <p className="jobcard-meta">{[form.region_sido, form.region_sigungu].filter(Boolean).join(" ") || "근무지"}</p>
+                          <span className="jobcard-deadline" style={{color:"#888"}}>상시</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p style={{margin:"7px 0 0", fontSize:11.5, color:"#b4b4b9", textAlign:"center"}}>
+                      채용공고 목록에서 이렇게 보여요
+                    </p>
                   </div>
-                  <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>
-                    <b style={{ color: "#666", fontWeight: 500 }}>채용공고 목록에 이 사진이 나가요.</b> 로고나 매장 이름이 잘 보이는 사진을 올려 주세요. 올리지 않으면 공고 배너 이미지로 대체돼요.
+                  <p style={{flex:1, minWidth:180, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.6}}>
+                    {signboardUrl
+                      ? <>로고나 매장 이름이 잘 보이는 사진일수록 목록에서 눈에 띄어요. 헤더 아바타에도 같은 사진이 쓰여요.</>
+                      : <><b style={{color:"#666", fontWeight:500}}>사진이 없으면 이렇게 이름만 나가요.</b> 로고나 매장 이름이 잘 보이는 사진을 올리면 목록에서 훨씬 눈에 띄어요. 올리지 않으면 공고 배너 이미지로 대체돼요.</>}
                   </p>
                 </div>
                 </div>
@@ -575,7 +595,9 @@ export default function CompanySettingsPage() {
                   /* 무슨 사진을 받는 칸인지 먼저 말한다. '이미지'라고만 하면 로고나
                      공고 포스터가 올라와 배너가 글자로 뒤덮인다. 여기 올린 사진은
                      공고를 쓸 때 '불러오기'로 가져다 쓴다. */
-                  <div style={{minHeight:110, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:5, padding:12,
+                  /* 빈 칸도 배너 한 쪽과 같은 6:2 로 둔다 — 올리기 전에도 어떤
+                     모양으로 들어갈 자리인지 보인다. */
+                  <div style={{aspectRatio:"6 / 2", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:5, padding:12,
                     background:"#f7f7f8", border:"1px dashed #efeff1", borderRadius:10, textAlign:"center", lineHeight:1.5}}>
                     <div style={{fontSize:13.5, color:"#8a8a8f"}}>
                       {isStore ? "매장 내·외관 홍보 사진" : "회사·사무실 홍보 사진"}
