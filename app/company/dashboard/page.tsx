@@ -268,10 +268,13 @@ export default function CompanyDashboard() {
                     <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
                     <td>
                       {(() => {
+                        // 마감일 칸이 바로 옆에 언제까지인지 말해주니, 여기는 지금 상태만
+                        // 짧게 말한다(채용공고 관리 목록과 같은 기준 — "상태가 필요할까?
+                        // 마감일하고 같은데").
                         const dl = job.deadline ? Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000) : null;
                         const closed = job.status === "CLOSED" || (dl !== null && dl < 0);
-                        const label = closed ? "마감" : !job.deadline ? "상시" : `D-${dl}`;
-                        const color = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
+                        const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지" : closed ? "마감" : "진행중";
+                        const color = job.status === "DRAFT" ? "#999" : job.status === "PAUSED" ? "#f59e0b" : closed ? "#888" : "#10b981";
                         return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
                       })()}
                     </td>
