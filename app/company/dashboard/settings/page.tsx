@@ -53,7 +53,7 @@ export default function CompanySettingsPage() {
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
       "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "대표이미지": ImageIcon, "공고 배너 이미지": ImageIcon,
+      "회사 로고": ImageIcon, "대표이미지": ImageIcon, "공고배너 이미지": ImageIcon,
     };
     const G = 표[이름];
     return G ? <G size={15} className="admin-form-icon" /> : null;
@@ -563,7 +563,7 @@ export default function CompanySettingsPage() {
                   <p style={{flex:1, minWidth:180, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.6}}>
                     {signboardUrl
                       ? <>로고나 매장 이름이 잘 보이는 사진일수록 목록에서 눈에 띄어요. 헤더 아바타에도 같은 사진이 쓰여요.</>
-                      : <><b style={{color:"#666", fontWeight:500}}>사진이 없으면 이렇게 이름만 나가요.</b> 로고나 매장 이름이 잘 보이는 사진을 올리면 목록에서 훨씬 눈에 띄어요. 올리지 않으면 공고 배너 이미지로 대체돼요.</>}
+                      : <><b style={{color:"#666", fontWeight:500}}>사진이 없으면 이렇게 이름만 나가요.</b> 로고나 매장 이름이 잘 보이는 사진을 올리면 목록에서 훨씬 눈에 띄어요. 올리지 않으면 공고배너 이미지로 대체돼요.</>}
                   </p>
                 </div>
                 </div>
@@ -575,7 +575,7 @@ export default function CompanySettingsPage() {
                 {/* 버튼은 제목 바로 옆에 붙인다(공고 등록 화면과 같은 자리).
                     모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다. */}
                 <div style={{display:"flex", alignItems:"center", gap:6, marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림("공고 배너 이미지")}공고 배너 이미지</label>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("공고배너 이미지")}공고배너 이미지</label>
                   <label title="여러 장 추가할 수 있어요" style={{...bannerBtn(false), cursor: coverUploading ? "wait" : "pointer"}}>
                     {!isMobile && <ImagePlus size={17} />}{coverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple

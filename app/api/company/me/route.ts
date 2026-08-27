@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
             c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
             c.status, c.business_license_path, c.created_at,
             -- 헤더·사이드바에 쓸 대표 사진. 매장은 간판 사진(매장명이 보이는 선택 항목)이
-            -- 있으면 그걸 먼저 쓰고, 없으면 예전처럼 공고 배너 이미지로 대체한다.
+            -- 있으면 그걸 먼저 쓰고, 없으면 예전처럼 공고배너 이미지로 대체한다.
             -- 오피스는 로고가 먼저다.
             CASE WHEN c.company_type = 'OFFICE'
               THEN COALESCE(c.logo_url, c.cover_images->0->>'url', jp.cover)

@@ -2732,7 +2732,7 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
-            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고 배너 이미지</h2>
+            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고배너 이미지</h2>
             <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
               {!isMobile && <ImagePlus size={16} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
               <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -2772,7 +2772,7 @@ export default function JobPostForm({
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
               {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
-              <h2 id="jp-banner" className="jobpost-section-title" style={{ marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: "auto" }}>공고 배너 이미지</h2>
+              <h2 id="jp-banner" className="jobpost-section-title" style={{ marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: "auto" }}>공고배너 이미지</h2>
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
