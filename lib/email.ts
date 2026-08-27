@@ -412,6 +412,65 @@ export async function sendResumeViewedEmail(
     `,
   });
 }
+// 인재검색에서 기업이 후보자에게 채용공고를 제안했을 때
+export async function sendProposalEmail(
+  to: string, name: string, jobTitle: string, companyName: string, message: string, jobPostingId: string
+) {
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const messageHtml = esc(message).replace(/\n/g, "<br/>");
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `[뷰티워크] ${companyName}에서 제안을 보냈어요`,
+    html: `
+      <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+          <tr><td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+              <tr>
+                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 32px 28px;">
+                  <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">새로운 제안이 도착했어요</p>
+                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${name} 님, ${esc(companyName)}에서 아래 공고로 함께하자는 제안을 보냈어요.</p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                    <tr>
+                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">공고</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${esc(jobTitle)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:14px 20px;font-size:14px;color:#888780;">기업</td>
+                      <td align="right" style="padding:14px 20px;font-size:14px;color:#2c2c2a;">${esc(companyName)}</td>
+                    </tr>
+                  </table>
+                  ${message ? `
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;background:#fff;border:1px solid #ece7f6;border-radius:10px;">
+                    <tr><td style="padding:16px 20px;font-size:14px;color:#444;line-height:1.7;">${messageHtml}</td></tr>
+                  </table>` : ""}
+                  <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">관심 있으면 공고를 확인하고 바로 지원해보세요.</p>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                      <a href="${SITE_URL}/jobs/${jobPostingId}" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">공고 보러가기</a>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </div>
+    `,
+  });
+}
+
 export async function sendJobRecommendationEmail(
   to: string,
   name: string,

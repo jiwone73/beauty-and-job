@@ -143,4 +143,6 @@ export const companyTalentApi = {
     api.post<ApiResponse<{ scrapped: boolean }>>(`/api/company/talent/${userId}/scrap`, {}),
   unscrap: (userId: string) =>
     api.delete<ApiResponse<{ scrapped: boolean }>>(`/api/company/talent/${userId}/scrap`),
+  propose: (userId: string, body: { jobPostingId: string; message: string }) =>
+    api.post<ApiResponse<{ sent: boolean }>>(`/api/company/talent/${userId}/propose`, body),
 };

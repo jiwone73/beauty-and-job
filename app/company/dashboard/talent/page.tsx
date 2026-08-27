@@ -3,9 +3,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Search, BookmarkCheck, Bookmark, X, FileText, Paperclip, Instagram,
-  Download, Printer, MapPin, ChevronDown, SlidersHorizontal,
+  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send,
 } from "lucide-react";
-import { companyTalentApi, type TalentItem } from "@/lib/api/company";
+import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -74,6 +74,14 @@ export default function TalentPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [view, setView] = useState<"search" | "scrap">("search");
+
+  // 제안하기 — 채팅 없이, 고른 공고 링크 + 메시지를 알림·이메일로만 보낸다.
+  const [proposeTarget, setProposeTarget] = useState<TalentItem | null>(null);
+  const [proposeJobs, setProposeJobs] = useState<{ id: string; title: string }[]>([]);
+  const [proposeJobsLoading, setProposeJobsLoading] = useState(false);
+  const [proposeJobId, setProposeJobId] = useState("");
+  const [proposeMessage, setProposeMessage] = useState("");
+  const [proposeSending, setProposeSending] = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -306,6 +314,37 @@ export default function TalentPage() {
       else await companyTalentApi.unscrap(item.id);
     } catch {
       update(!next);
+    }
+  };
+
+  const openPropose = async (item: TalentItem) => {
+    setProposeTarget(item);
+    setProposeJobId("");
+    setProposeMessage("");
+    if (proposeJobs.length === 0) {
+      setProposeJobsLoading(true);
+      try {
+        const res = await companyJobsApi.list({ status: "ACTIVE", limit: 100 });
+        if (res.success && res.data) setProposeJobs(res.data.map((j: any) => ({ id: j.id, title: j.title })));
+      } catch (e) {
+        console.error("[propose jobs fetch]", e);
+      } finally {
+        setProposeJobsLoading(false);
+      }
+    }
+  };
+
+  const sendPropose = async () => {
+    if (!proposeTarget || !proposeJobId || !proposeMessage.trim()) return;
+    setProposeSending(true);
+    try {
+      await companyTalentApi.propose(proposeTarget.id, { jobPostingId: proposeJobId, message: proposeMessage.trim() });
+      alert("제안을 보냈어요.");
+      setProposeTarget(null);
+    } catch (e: any) {
+      alert(e?.message || "제안 전송에 실패했습니다.");
+    } finally {
+      setProposeSending(false);
     }
   };
 
@@ -654,6 +693,12 @@ export default function TalentPage() {
                       <div className="co-li-meta2">{meta2}</div>
                     </div>
                   </div>
+                  <button type="button"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 10, background: "none", border: "1px solid #e2e2e6", borderRadius: 8, padding: "6px 10px", cursor: "pointer", color: "#582681", fontSize: 13, fontWeight: 500 }}
+                    onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
+                    <Send size={13} />
+                    <span>제안하기</span>
+                  </button>
                 </div>
               </div>
             );
@@ -741,6 +786,13 @@ export default function TalentPage() {
                             <span>이력서</span>
                           </button>
                         </div>
+                        <button
+                          style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: 13, fontWeight: 500, padding: "2px 4px" }}
+                          onClick={(e) => { e.stopPropagation(); openPropose(t); }}
+                        >
+                          <Send size={13} />
+                          <span>제안하기</span>
+                        </button>
                       </div>
                     </td>
                     {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
@@ -819,6 +871,58 @@ export default function TalentPage() {
               ) : (
                 <div style={{ padding: 60, textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 제안하기 모달 — 채팅이 아니라 공고 하나를 골라 메시지와 함께 알림·이메일로 보낸다 */}
+      {proposeTarget && (
+        <div className="rp-modal-overlay" onClick={() => !proposeSending && setProposeTarget(null)}>
+          <div style={{ background: "#fff", borderRadius: 14, width: "100%", maxWidth: 440, padding: "22px 22px 18px" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+              <strong style={{ fontSize: 16 }}>{proposeTarget.name} 님에게 제안하기</strong>
+              <button type="button" onClick={() => !proposeSending && setProposeTarget(null)}
+                style={{ border: "none", background: "none", cursor: "pointer", color: "#999", display: "flex" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>제안할 공고</label>
+            {proposeJobsLoading ? (
+              <div style={{ fontSize: 13.5, color: "#999", padding: "10px 0" }}>불러오는 중...</div>
+            ) : proposeJobs.length === 0 ? (
+              <div style={{ fontSize: 13.5, color: "#999", padding: "10px 0" }}>진행중인 공고가 없어요. 먼저 공고를 등록해주세요.</div>
+            ) : (
+              <select value={proposeJobId} onChange={(e) => setProposeJobId(e.target.value)}
+                style={{ width: "100%", height: 42, borderRadius: 8, border: "1px solid #ddd", padding: "0 10px", fontSize: 14, marginBottom: 14, boxSizing: "border-box" }}>
+                <option value="">공고를 선택해주세요</option>
+                {proposeJobs.map((j) => (
+                  <option key={j.id} value={j.id}>{j.title}</option>
+                ))}
+              </select>
+            )}
+
+            <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>제안 메시지</label>
+            <textarea value={proposeMessage} onChange={(e) => setProposeMessage(e.target.value.slice(0, 1000))}
+              placeholder={`안녕하세요, ${proposeTarget.name}님. 프로필을 보고 좋은 기회가 될 것 같아 제안드립니다.`}
+              rows={5}
+              style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, resize: "vertical", outline: "none", marginBottom: 4 }} />
+            <p style={{ fontSize: 11.5, color: "#bbb", margin: "0 0 16px", textAlign: "right" }}>{proposeMessage.length}/1000</p>
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <button type="button" onClick={() => setProposeTarget(null)} disabled={proposeSending}
+                style={{ flex: 1, height: 44, borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#666", fontSize: 14, cursor: "pointer" }}>
+                취소
+              </button>
+              <button type="button" onClick={sendPropose}
+                disabled={proposeSending || !proposeJobId || !proposeMessage.trim()}
+                style={{ flex: 1, height: 44, borderRadius: 9, border: "none", background: "#582681", color: "#fff",
+                  fontSize: 14, fontWeight: 600, cursor: (proposeSending || !proposeJobId || !proposeMessage.trim()) ? "not-allowed" : "pointer",
+                  opacity: (proposeSending || !proposeJobId || !proposeMessage.trim()) ? 0.5 : 1 }}>
+                {proposeSending ? "보내는 중…" : "제안 보내기"}
+              </button>
             </div>
           </div>
         </div>

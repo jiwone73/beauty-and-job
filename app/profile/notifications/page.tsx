@@ -43,6 +43,7 @@ export default function NotificationsPage() {
     }
     불러오기();
     if (n.related_type === "application") router.push("/profile/applied");
+    else if (n.related_type === "job_posting" && n.related_id) router.push(`/jobs/${n.related_id}`);
   };
   const 모두읽음 = async () => {
     const token = localStorage.getItem("access_token");
