@@ -686,7 +686,7 @@ export default function CompanySettingsPage() {
                     번호 — 필수는 아니다("매장전화번호 추가해줘. 필수는 아닌듯"). */}
                 <div className="admin-form-row">
                   <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
-                  <input className="admin-form-input" placeholder="02-XXX-XXXX" inputMode="numeric" maxLength={13}
+                  <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
                     value={formatPhone(form.company_phone)}
                     onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                 </div>
@@ -731,7 +731,7 @@ export default function CompanySettingsPage() {
                     </div>
                     <div className="admin-form-row">
                       <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
-                      <input className="admin-form-input" placeholder="02-XXX-XXXX" inputMode="numeric" maxLength={13}
+                      <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
                         value={formatPhone(form.company_phone)}
                         onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                     </div>
