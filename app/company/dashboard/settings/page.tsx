@@ -559,14 +559,11 @@ export default function CompanySettingsPage() {
                         </p>
                       </div>
                     </div>
-                    <p style={{margin:"6px 0 0", fontSize:11, color:"#c0c0c6", textAlign:"center", lineHeight:1.4}}>
-                      채용공고에 이렇게 나가요
-                    </p>
                   </div>
                   <p style={{flex:1, minWidth:190, fontSize:"13px", color:"#8a8a90", margin:0, lineHeight:1.7}}>
-                    매장 <b style={{color:"#582681", fontWeight:500}}>로고</b>나 <b style={{color:"#582681", fontWeight:500}}>간판</b>을 찍어 올려 보세요.<br />
-                    올린 사진은 채용공고마다 함께 나가서,<br />
-                    구직자가 우리 매장을 한눈에 알아봐요.
+                    채용공고를 올리면 이렇게 카드로 보여요.<br />
+                    매장 <b style={{color:"#582681", fontWeight:500}}>로고</b>나 <b style={{color:"#582681", fontWeight:500}}>간판</b>을 찍어 올려 두면,
+                    구직자가 공고를 열어보지 않아도 매장이 함께 알려져요.
                   </p>
                 </div>
                 </div>
