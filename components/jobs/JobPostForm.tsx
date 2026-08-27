@@ -2291,13 +2291,18 @@ export default function JobPostForm({
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
-    // 담당자 연락처·지원방법은 회원·비회원 구분 없이 실제 입력값 그대로 미리보기에 낸다
-    // ("전화번호나 지원방법 정보가 빠져서 문맥이 맞지 않는다" — 등록 폼과 미리보기가 같아야 한다).
+    // 관리자가 대신 올리는 공고는 지원 안내를 '뷰티워크 온라인지원' 하나로만 낸다.
+    //   원래 공고에 적혀 있던 담당자 이름·전화·이메일은 폼에 그대로 남아 저장되지만
+    //   (나중에 그 번호로 연락해 회원가입을 권해야 한다), 화면에 내보내면 구직자가
+    //   뷰티워크를 건너뛰고 매장으로 바로 연락해 버린다 — 지원이 남지 않아 매장도
+    //   우리도 무슨 일이 있었는지 알 수 없다.
+    // 기업이 직접 쓰는 폼은 그대로 둔다 — 제 연락처를 제 공고에 싣는 것이라
+    //   ("전화번호나 지원방법 정보가 빠져서 문맥이 맞지 않는다") 폼과 미리보기가 같아야 한다.
     isExternal: isNm,
-    contactName: 낼담당.이름,
-    contactPhone: 낼담당.전화,
-    contactEmail: 낼담당.메일,
-    contactMethods: contactMethods,
+    contactName: mode === "admin" ? "" : 낼담당.이름,
+    contactPhone: mode === "admin" ? "" : 낼담당.전화,
+    contactEmail: mode === "admin" ? "" : 낼담당.메일,
+    contactMethods: mode === "admin" ? ["뷰티워크 온라인지원"] : contactMethods,
   };
 
   // 본문 콘텐츠 가로 정렬. 사이드가 생긴 뒤로는 기업 폼도 왼쪽으로 붙인다 —
