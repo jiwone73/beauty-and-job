@@ -114,22 +114,44 @@ export default function BannerStrip({
     set쪽(갈곳);
   };
 
-  // 마우스로 배너를 누른 채 위아래로 끌면 페이지가 스크롤된다(휠·트랙패드 두 손가락과
-  // 달리 클릭+드래그는 브라우저 기본 동작이 아니라 스크롤이 안 됐다 — "스크롤되야
-  // 하는데 안되"). 끌어서 순서 바꾸기(onReorder)가 있는 등록 폼에서는 같은 손짓이
-  // 순서 바꾸기와 겹치므로, 순서 바꾸기가 없는 읽기 전용 화면에서만 켠다.
-  const drag = useRef<{ startY: number; startScrollY: number } | null>(null);
+  // 마우스로 배너를 누른 채 끌면 움직인다 — 폰에서 손으로 미는 것과 같은 손짓을
+  // 마우스에도 준다. 좌우로 끌면 다음/이전 쪽으로 넘어가고(터치 스와이프와 같다),
+  // 위아래로 끌면 페이지 자체가 스크롤된다(클릭+드래그는 브라우저 기본 동작이
+  // 아니라 원래 안 됐다 — "스크롤되야 하는데 안되"). 처음 몇 픽셀을 보고 어느 쪽으로
+  // 끄는지 정한 뒤에는 그 방향으로만 움직인다(대각선으로 흔들리지 않게).
+  // 끌어서 순서 바꾸기(onReorder)가 있는 등록 폼에서는 같은 손짓이 순서 바꾸기와
+  // 겹치므로, 순서 바꾸기가 없는 읽기 전용 화면에서만 켠다.
+  const drag = useRef<{ startX: number; startY: number; startScrollY: number; startScrollLeft: number; axis: "x" | "y" | null } | null>(null);
   const onBannerMouseDown = onReorder ? undefined : (e: ReactMouseEvent) => {
     if (e.button !== 0) return;
-    drag.current = { startY: e.clientY, startScrollY: window.scrollY };
+    const el = 띠.current;
+    if (!el) return;
+    drag.current = { startX: e.clientX, startY: e.clientY, startScrollY: window.scrollY, startScrollLeft: el.scrollLeft, axis: null };
     const onMove = (ev: MouseEvent) => {
-      if (!drag.current) return;
-      window.scrollTo(window.scrollX, drag.current.startScrollY - (ev.clientY - drag.current.startY));
+      const d = drag.current;
+      if (!d) return;
+      const dx = ev.clientX - d.startX;
+      const dy = ev.clientY - d.startY;
+      if (!d.axis) {
+        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return; // 손이 떨려도 방향이 바로 정해지지 않게
+        d.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+        if (d.axis === "x") el.style.scrollSnapType = "none"; // 끄는 동안은 쪽 경계로 튕기지 않게 잠깐 끈다
+      }
+      if (d.axis === "x") {
+        el.scrollLeft = Math.min(Math.max(0, d.startScrollLeft - dx), el.scrollWidth - el.clientWidth);
+      } else {
+        window.scrollTo(window.scrollX, d.startScrollY - dy);
+      }
     };
     const onUp = () => {
+      const d = drag.current;
       drag.current = null;
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
+      if (d?.axis === "x") {
+        el.style.scrollSnapType = "";
+        옮기기(Math.round(el.scrollLeft / el.clientWidth));
+      }
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
