@@ -156,7 +156,12 @@ export async function GET(req: NextRequest) {
         ) AS career_detail,
         EXISTS(
           SELECT 1 FROM company_talent_scraps WHERE company_id = $1 AND user_id = u.id
-        ) AS scrapped
+        ) AS scrapped,
+        -- 이미 제안한 사람인지. 모르면 같은 사람에게 또 보내게 된다.
+        (
+          SELECT MAX(created_at) FROM proposals
+          WHERE company_id = $1 AND user_id = u.id
+        ) AS proposed_at
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
       WHERE u.status = 'ACTIVE'
@@ -210,6 +215,7 @@ export async function GET(req: NextRequest) {
       jobSearchStatus: r.job_search_status || "SEEKING",
       jobSearchStatusAt: r.job_search_status_at || null,
       scrapped: r.scrapped,
+      proposedAt: r.proposed_at || null,
     }));
     return ok(data, 200, { total, page, limit });
   } catch (e: any) {

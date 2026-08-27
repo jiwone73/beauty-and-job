@@ -50,6 +50,13 @@ export async function POST(
     const coRes = await client.query(`SELECT company_name FROM companies WHERE id = $1`, [auth!.sub]);
     const companyName = coRes.rows[0]?.company_name || "기업";
 
+    // 남는 기록. 알림은 지워질 수 있어 여기가 제안의 원본이다.
+    await client.query(
+      `INSERT INTO proposals (company_id, user_id, job_posting_id, message)
+       VALUES ($1, $2, $3, $4)`,
+      [auth!.sub, params.userId, jobPostingId, message]
+    );
+
     await client.query(
       `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)
        VALUES ($1, 'PROPOSAL', $2, $3, $4, 'job_posting')`,

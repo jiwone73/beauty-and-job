@@ -106,6 +106,7 @@ export type TalentItem = {
   jobSearchStatus: "SEEKING" | "OPEN" | "CLOSED";
   jobSearchStatusAt: string | null;
   scrapped: boolean;
+  proposedAt?: string | null;   // 이미 제안한 사람이면 마지막 제안 시각
 };
 
 export const companyTalentApi = {

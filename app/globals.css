@@ -5027,6 +5027,57 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   white-space: nowrap;
   flex-shrink: 0;
 }
+/* 받은 제안 — 지원현황과 나란한 화면이라 카드 골격을 맞춘다.
+   다만 여기는 읽을거리(기업이 쓴 메시지)가 있어 한 줄이 아니라 층을 쌓는다. */
+.prop-list { display: flex; flex-direction: column; }
+.prop-item {
+  position: relative; padding: 16px 40px 16px 16px;
+  border-bottom: 1px solid #f7f7f8; cursor: pointer;
+}
+.prop-item:last-child { border-bottom: none; }
+.prop-item:hover { background: #fafafa; }
+.prop-item.unread { background: #fdfcff; }
+.prop-item.unread::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--color-primary);
+}
+.prop-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+.prop-co { font-size: 13px; color: #888; }
+.prop-date { font-size: 12px; color: #b4b4b9; margin-left: auto; white-space: nowrap; }
+.prop-title {
+  font-size: 15px; color: #2b2b2b; margin: 0 0 7px;
+  display: flex; align-items: center; gap: 7px;
+}
+.prop-closed {
+  font-size: 11px; color: #888; background: #f2f2f4;
+  padding: 1px 6px; border-radius: 4px; flex-shrink: 0;
+}
+.prop-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
+.prop-meta span { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: #6b6570; }
+.prop-meta svg { color: #b4b4b9; flex-shrink: 0; }
+/* 내 희망 조건과 겹치는 것 — 기업이 안 써도 붙는다 */
+.prop-match { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+.prop-match span {
+  font-size: 11.5px; color: var(--color-primary); background: #f4effa;
+  border: 1px solid #e6dbf5; padding: 2px 8px; border-radius: 5px;
+}
+.prop-msg {
+  font-size: 13.5px; color: #555; line-height: 1.6; margin: 0 0 10px;
+  white-space: pre-line; padding: 10px 12px; background: #f9f9fa;
+  border-radius: 8px;
+}
+.prop-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.prop-cta {
+  font-size: 12.5px; color: var(--color-primary);
+  border: 1px solid #e2d9ee; border-radius: 7px; padding: 5px 12px; background: #fff;
+}
+.prop-item:hover .prop-cta { background: #faf7fd; }
+.prop-how { font-size: 12px; color: #b4b4b9; }
+.prop-del {
+  position: absolute; top: 14px; right: 14px; border: none; background: none;
+  color: #c4c4c9; cursor: pointer; padding: 2px; line-height: 0;
+}
+.prop-del:hover { color: var(--color-error, #e74c3c); }
+
 .applied-status-review { background: #fff3cd; color: #856404; }
 .applied-status-pass { background: #f7f7f8; color: #582681; }
 .applied-status-fail { background: #fee2e2; color: #991b1b; }

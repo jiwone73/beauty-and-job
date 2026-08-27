@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { Bell, X, User, Send, Bookmark, Settings, LogOut } from "lucide-react";
+import { Bell, X, User, Send, Bookmark, Settings, LogOut, Inbox } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -23,6 +23,8 @@ import { useApplicationStore } from "@/lib/store/applicationStore";
 const 메뉴 = [
   { href: "/profile", 글: "프로필", 그림: User },
   { href: "/profile/applied", 글: "지원현황", 그림: Send },
+  // 지원현황이 '내가 움직인 것'이면 이건 '상대가 움직인 것'이라 바로 옆에 둔다.
+  { href: "/profile/proposals", 글: "받은 제안", 그림: Inbox },
   { href: "/profile/bookmarks", 글: "관심공고", 그림: Bookmark },
 ];
 
@@ -31,6 +33,7 @@ const 메뉴 = [
 const 메뉴제목: Record<string, string> = {
   "/profile": "프로필",
   "/profile/applied": "지원현황",
+  "/profile/proposals": "받은 제안",
   "/profile/bookmarks": "관심공고",
   "/profile/notifications": "알림",
 };
