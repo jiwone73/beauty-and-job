@@ -128,6 +128,17 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
 
   const endDrag = () => { dragRef.current = null; };
 
+  // 지금 박스의 가운데를 중심으로, 화면 안에 들어가는 가장 큰 4:3 박스.
+  // 점선 안내와 "4:3에 맞추기" 버튼이 이 값을 같이 쓴다.
+  const guide43 = (() => {
+    if (!display.w) return null;
+    const GUIDE = 4 / 3;
+    const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+    const w = Math.min(2 * Math.min(cx, display.w - cx), 2 * Math.min(cy, display.h - cy) * GUIDE);
+    const h = w / GUIDE;
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  })();
+
   const confirm = async () => {
     if (!display.w || !natural.w) return;
     setWorking(true);
@@ -161,6 +172,11 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
               style={{ width: "100%", height: "100%", display: "block", userSelect: "none" }} />
             {display.w > 0 && (
               <>
+                {/* 자유 비율일 때만 — 지금 박스 중심에 4:3이면 이런 모양이라는 점선 안내 */}
+                {!aspect && guide43 && (
+                  <div style={{ position: "absolute", left: guide43.x, top: guide43.y, width: guide43.w, height: guide43.h,
+                    border: "1.5px dashed rgba(88,38,129,0.55)", pointerEvents: "none", boxSizing: "border-box" }} />
+                )}
                 {/* 박스 바깥을 어둡게 덮어 박스 안이 실제로 남을 부분임을 보여준다 */}
                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)",
                   clipPath: `polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 ${box.y}px, ${box.x}px ${box.y}px, ${box.x}px ${box.y + box.h}px, ${box.x + box.w}px ${box.y + box.h}px, ${box.x + box.w}px ${box.y}px, 0 ${box.y}px)`,
@@ -187,9 +203,25 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
             )}
           </div>
         </div>
-        <p style={{ fontSize: 12.5, color: "#999", margin: "0 16px 12px", textAlign: "center" }}>
+        <p style={{ fontSize: 12.5, color: "#999", margin: "0 16px 4px", textAlign: "center" }}>
           박스를 끌어 옮기고, 모서리나 변을 끌어 크기를 바꾸세요
         </p>
+        {aspect ? (
+          <p style={{ fontSize: 12, color: "#bbb", margin: "0 16px 12px", textAlign: "center" }}>
+            선명하게 보이려면 500×500px 이상의 사진을 권장해요
+          </p>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, margin: "0 16px 12px" }}>
+            <p style={{ fontSize: 12, color: "#bbb", margin: 0 }}>
+              점선(4:3)에 맞추면 이 칸에 꽉 차게 보여요
+            </p>
+            <button type="button" onClick={() => guide43 && setBox(guide43)}
+              style={{ fontSize: 11.5, color: "#582681", background: "#f4f0f9", border: "1px solid #e6ddf2",
+                borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontWeight: 600, flexShrink: 0 }}>
+              4:3에 맞추기
+            </button>
+          </div>
+        )}
         <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
           <button type="button" onClick={onCancel}
             style={{ flex: 1, padding: "11px 0", borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#666", fontSize: 14, cursor: "pointer" }}>
