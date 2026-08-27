@@ -2,10 +2,21 @@
 import { useRef, useState } from "react";
 import { X, Check } from "lucide-react";
 
+/** 권하는 비율 하나. 점선으로 겹쳐 보여 주고, 눌러서 그 비율로 맞출 수 있다. */
+type Guide = { key: string; ratio: number; note?: string };
+
 interface Props {
   file: File;
-  /** 비워두면 가로세로 비율을 자유롭게 바꿀 수 있다(배너처럼 자르지 않는 게 기본인 사진). 숫자를 주면 그 비율로 고정된다(1 = 정사각). */
+  /** 그 비율로 잠근다(1 = 정사각). 잠그면 가로세로를 따로 못 바꾼다. */
   aspect?: number;
+  /**
+   * 잠그지 않고 권하기만 한다 — 가로세로를 자유롭게 끌되, 점선으로 권하는 비율을
+   * 겹쳐 보여 주고 눌러서 맞출 수 있다. 쓰는 자리마다 맞는 비율이 다르고(카드 3:2,
+   * 배너 한 쪽 6:2), 억지로 잠그면 사진에 따라 꼭 필요한 부분이 잘려 나간다.
+   */
+  guides?: Guide[];
+  /** 권하는 최소 크기(긴 변, px). 비우면 권장 문구를 띄우지 않는다. */
+  minLongEdge?: number;
   onCancel: () => void;
   onCropped: (blob: Blob) => void;
 }
@@ -33,7 +44,7 @@ type Drag = { mode: "move" | keyof typeof HANDLES; startLocal: { x: number; y: n
 
 // 박스를 사진 위에 올려 두고, 마우스(터치)로 옮기거나 모서리·변을 끌어 크기를 바꾼다 —
 // 화면에 보이는 그대로 잘린다. 확대 슬라이더 없이 드래그만으로 끝낸다.
-export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Props) {
+export default function ImageCropModal({ file, aspect, guides, minLongEdge, onCancel, onCropped }: Props) {
   const [imgUrl] = useState(() => URL.createObjectURL(file));
   const [natural, setNatural] = useState({ w: 0, h: 0 });
   const [display, setDisplay] = useState({ w: 0, h: 0 });
@@ -48,14 +59,18 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
     const scale = Math.min(MAX_W / nw, MAX_H / nh, 1);
     const dw = Math.round(nw * scale), dh = Math.round(nh * scale);
     let w: number, h: number;
-    if (aspect) {
-      w = Math.round(Math.min(dw, dh) * 0.8);
-      h = Math.round(w / aspect);
+    // 권하는 비율이 있으면 처음부터 그 비율로 크게 잡아 준다 — 대부분은 그대로 쓰고,
+    // 필요한 사람만 끌어서 바꾼다.
+    const 첫비율 = aspect || guides?.[0]?.ratio;
+    if (첫비율) {
+      w = Math.min(dw * 0.92, dh * 0.92 * 첫비율);
+      h = w / 첫비율;
     } else {
-      // 자유 비율은 기본적으로 사진 전체를 거의 다 남긴다 — 줄이고 싶을 때만 안으로 끌어들인다.
-      w = Math.round(dw * 0.92);
-      h = Math.round(dh * 0.92);
+      // 권하는 비율이 없으면 사진 전체를 거의 다 남긴다 — 줄이고 싶을 때만 안으로 끌어들인다.
+      w = dw * 0.92;
+      h = dh * 0.92;
     }
+    w = Math.round(w); h = Math.round(h);
     setNatural({ w: nw, h: nh });
     setDisplay({ w: dw, h: dh });
     setBox({ x: Math.round((dw - w) / 2), y: Math.round((dh - h) / 2), w, h });
@@ -128,15 +143,8 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
 
   const endDrag = () => { dragRef.current = null; };
 
-  // 배너 띠는 한 쪽에 3:2 칸이 둘이라 쪽 전체가 정확히 6:2 다. 그래서 꽉 차게
-  // 보이는 비율이 장수에 따라 갈린다 — 2장 이상이면 각 칸(3:2), 1장뿐이면 그
-  // 한 장이 쪽을 통째로 쓰므로 6:2. 둘 다 고를 수 있게 둔다.
-  // 3:2 는 목록 카드 썸네일과 같은 비율이라, 여기 맞춰 두면 카드에서도 안 잘린다.
-  const 안내들 = [
-    { key: "3:2", ratio: 3 / 2, 설명: "2장 이상" },
-    { key: "6:2", ratio: 3, 설명: "1장만" },
-  ];
-  const [안내비율, set안내비율] = useState(3 / 2);
+  const 안내들 = guides ?? [];
+  const [안내비율, set안내비율] = useState(안내들[0]?.ratio ?? 3 / 2);
 
   // 지금 박스의 가운데를 중심으로, 화면 안에 들어가는 가장 큰 안내 박스.
   // 점선과 "맞추기" 버튼이 이 값을 같이 쓴다.
@@ -181,8 +189,8 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
               style={{ width: "100%", height: "100%", display: "block", userSelect: "none" }} />
             {display.w > 0 && (
               <>
-                {/* 자유 비율일 때만 — 고른 비율이면 이런 모양이라는 점선 안내 */}
-                {!aspect && 안내박스 && (
+                {/* 권하는 비율이 있을 때만 — 그 비율이면 이런 모양이라는 점선 안내 */}
+                {!aspect && 안내들.length > 0 && 안내박스 && (
                   <div style={{ position: "absolute", left: 안내박스.x, top: 안내박스.y, width: 안내박스.w, height: 안내박스.h,
                     border: "1.5px dashed rgba(88,38,129,0.55)", pointerEvents: "none", boxSizing: "border-box" }} />
                 )}
@@ -215,16 +223,9 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
         <p style={{ fontSize: 12.5, color: "#999", margin: "0 16px 4px", textAlign: "center" }}>
           박스를 끌어 옮기고, 모서리나 변을 끌어 크기를 바꾸세요
         </p>
-        {aspect ? (
-          <p style={{ fontSize: 12, color: "#bbb", margin: "0 16px 12px", textAlign: "center" }}>
-            선명하게 보이려면 500×500px 이상의 사진을 권장해요
-          </p>
-        ) : (
-          <div style={{ margin: "0 16px 12px", textAlign: "center" }}>
-            <p style={{ fontSize: 12, color: "#bbb", margin: "0 0 7px", lineHeight: 1.5 }}>
-              사진을 <b style={{ color: "#999" }}>2장 이상</b> 올리면 3:2, <b style={{ color: "#999" }}>1장만</b> 올리면 6:2가 꽉 차 보여요
-            </p>
-            <div style={{ display: "inline-flex", gap: 6 }}>
+        <div style={{ margin: "0 16px 12px", textAlign: "center" }}>
+          {안내들.length > 0 && (
+            <div style={{ display: "inline-flex", gap: 6, marginBottom: minLongEdge ? 7 : 0 }}>
               {안내들.map((g) => {
                 const 켬 = Math.abs(안내비율 - g.ratio) < 0.001;
                 return (
@@ -241,13 +242,20 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
                       background: 켬 ? "#f4f0f9" : "#fff",
                       border: `1px solid ${켬 ? "#d9c7ef" : "#e6e6ea"}`,
                       borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontWeight: 500 }}>
-                    {g.key}에 맞추기 <span style={{ color: "#bbb", fontWeight: 400 }}>· {g.설명}</span>
+                    {g.key}에 맞추기{g.note && <span style={{ color: "#bbb", fontWeight: 400 }}> · {g.note}</span>}
                   </button>
                 );
               })}
             </div>
-          </div>
-        )}
+          )}
+          {/* 권하는 최소 크기는 쓰는 자리마다 다르다(카드에 크게 실리는 사진과
+              작은 아바타가 같을 리 없다). 부르는 쪽이 정해서 넘긴다. */}
+          {minLongEdge && (
+            <p style={{ fontSize: 12, color: "#bbb", margin: 0, lineHeight: 1.5 }}>
+              {minLongEdge}px 이상이면 화면에서 또렷하게 보여요
+            </p>
+          )}
+        </div>
         <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
           <button type="button" onClick={onCancel}
             style={{ flex: 1, padding: "11px 0", borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#666", fontSize: 14, cursor: "pointer" }}>

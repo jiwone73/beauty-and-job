@@ -833,14 +833,24 @@ export default function CompanySettingsPage() {
         </div>
       )}
       {cropFile && (
-        /* 목록 카드 썸네일과 같은 3:2. 헤더 아바타(정사각)에서는 좌우가 조금
-           잘리지만, 이 사진이 실제로 크게 쓰이는 곳은 카드다. */
-        <ImageCropModal file={cropFile} aspect={3 / 2}
+        /* 공고 카드와 같은 3:2 를 권하되 잠그지는 않는다 — 간판 사진은 가로로 길고
+           로고는 정사각에 가까워, 억지로 잠그면 꼭 필요한 부분이 잘려 나간다.
+           카드에서 가장 크게 보이는 곳이 313px 이라 2배 화면까지 900px 을 권한다. */
+        <ImageCropModal file={cropFile}
+          guides={[{ key: "3:2", ratio: 3 / 2, note: "공고 카드" }]}
+          minLongEdge={900}
           onCancel={() => setCropFile(null)}
           onCropped={handleSignboardCropped} />
       )}
       {coverCropCurrent && (
+        /* 배너 띠 한 쪽은 3:2 칸 둘이라 6:2 다 — 2장 이상이면 각 칸(3:2),
+           1장뿐이면 그 한 장이 쪽을 통째로 쓰므로 6:2 가 꽉 찬다. */
         <ImageCropModal file={coverCropCurrent}
+          guides={[
+            { key: "3:2", ratio: 3 / 2, note: "2장 이상" },
+            { key: "6:2", ratio: 3, note: "1장만" },
+          ]}
+          minLongEdge={1200}
           onCancel={() => { setCoverCropCurrent(null); setCoverCropQueue([]); }}
           onCropped={handleCoverCropped} />
       )}

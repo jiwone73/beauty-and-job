@@ -1024,7 +1024,10 @@ export default function ProfilePage() {
       )}
 
       {avatarCropFile && (
-        <ImageCropModal file={avatarCropFile} aspect={1}
+        /* 개인 프로필 사진은 정사각으로 잠근다 — 이력서 사진 칸과 동그란 아바타
+           양쪽에 쓰여서, 비율이 흔들리면 어느 한쪽이 늘 잘린다. 가장 크게 보이는
+           곳이 이력서 100x128 이라 2배 화면까지 500px 이면 넉넉하다. */
+        <ImageCropModal file={avatarCropFile} aspect={1} minLongEdge={500}
           onCancel={() => setAvatarCropFile(null)}
           onCropped={handleAvatarCropped} />
       )}
