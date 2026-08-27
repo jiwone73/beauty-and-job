@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { sendProposalEmail } from "@/lib/email";
+import { 인재열람가능 } from "@/lib/companyEntitlement";
 
 const MAX_MESSAGE = 1000;
 
@@ -20,6 +21,12 @@ export async function POST(
   if (!jobPostingId) return err("VALIDATION_001", "제안할 공고를 선택해주세요.", 400);
   if (!message) return err("VALIDATION_002", "제안 메시지를 입력해주세요.", 400);
   if (message.length > MAX_MESSAGE) return err("VALIDATION_003", `메시지는 ${MAX_MESSAGE}자 이내로 입력해주세요.`, 400);
+
+  // 화면에서 막는 것만으로는 이 API 를 직접 부르면 그대로 넘어간다.
+  // 공고가 곧 입장권이라는 규칙을 여기서도 지킨다.
+  if (!(await 인재열람가능(auth!.sub))) {
+    return err("PROPOSAL_005", "진행중인 공고가 있어야 제안할 수 있습니다.", 403);
+  }
 
   const client = await pool.connect();
   try {

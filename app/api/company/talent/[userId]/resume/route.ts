@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 인재열람가능 } from "@/lib/companyEntitlement";
 
 // 기업 인재검색: userId로 지원자 풀 이력서 조회 (ResumePreview용)
 export async function GET(
@@ -36,9 +37,22 @@ export async function GET(
       pool.query(`SELECT * FROM user_certificates WHERE user_id = $1 ORDER BY issued_ym DESC`, [userId]),
     ]);
 
+  // 셀렉미와 같은 잠금 — 연락처와 자기소개서는 공고를 등록한 곳에만 연다.
+  // 경력·학력·자격증·희망조건은 그대로 보여 준다(볼 수 있어야 제안할지 정한다).
+  const 열람가능 = await 인재열람가능(auth!.sub);
+  const u = { ...userRes.rows[0] };
+  const p = { ...(profile.rows[0] || {}) };
+  if (!열람가능) {
+    u.email = null;
+    u.phone = null;
+    p.intro = null;
+    p.core_competencies = null;
+  }
+
   return ok({
-    user: userRes.rows[0],
-    profile: profile.rows[0] || {},
+    talentAccess: 열람가능,
+    user: u,
+    profile: p,
     careers: careers.rows,
     educations: educations.rows,
     experiences: experiences.rows,

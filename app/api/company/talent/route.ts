@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 인재열람가능 } from "@/lib/companyEntitlement";
 
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
@@ -186,13 +187,18 @@ export async function GET(req: NextRequest) {
   params.push(limit, offset);
 
   try {
-    const { rows } = await pool.query(query, params);
+    const [{ rows }, 열람가능] = await Promise.all([
+      pool.query(query, params),
+      인재열람가능(auth!.sub),
+    ]);
     const total = rows[0]?.total_count ?? 0;
     const data = rows.map((r) => ({
       id: r.id,
       name: r.name,
-      email: r.email || null,
-      phone: r.phone || null,
+      // 연락처는 채용을 실제로 하고 있는 곳(공고 보유)에만 연다. 화면에서만
+      // 가리면 응답에 남아 개발자 도구로 그대로 보이므로 여기서 지워 보낸다.
+      email: 열람가능 ? (r.email || null) : null,
+      phone: 열람가능 ? (r.phone || null) : null,
       // 사진만 감춘 사람은 아예 내려보내지 않는다. 화면에서 가리면 응답에 남아
       // 개발자 도구로 볼 수 있다 — 가린 것이 가려진 것이 아니게 된다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,
@@ -217,7 +223,7 @@ export async function GET(req: NextRequest) {
       scrapped: r.scrapped,
       proposedAt: r.proposed_at || null,
     }));
-    return ok(data, 200, { total, page, limit });
+    return ok(data, 200, { total, page, limit, talentAccess: 열람가능 } as any);
   } catch (e: any) {
     console.error("[talent GET]", e);
     return err("TALENT_001", "인재 목록 조회 실패: " + e.message, 500);

@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Search, BookmarkCheck, Bookmark, X, FileText, Paperclip, Instagram,
-  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send,
+  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, Lock, Briefcase, Wallet,
 } from "lucide-react";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
@@ -12,6 +13,7 @@ import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { formatPhone } from "@/lib/phone";
 import { 지역비교 } from "@/lib/regionMatch";
+import { formatSalaryWon } from "@/lib/salary";
 import LinkCell from "@/components/company/LinkCell";
 
 type JobTab = "OFFICE" | "STORE";
@@ -50,6 +52,7 @@ function genderLabel(gender: string | null): string | null {
 }
 
 export default function TalentPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
   // 매장은 매장 인재만, 본사는 본사 인재만 본다. 서로의 인재풀을 볼 일이 없고,
   //   열어 두면 남의 이메일·전화만 넓게 보이는 셈이다. 겸업(BOTH) 회원만 고를 수 있다.
@@ -75,10 +78,16 @@ export default function TalentPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [view, setView] = useState<"search" | "scrap">("search");
+  // 공고가 곧 입장권(셀렉미와 같은 규칙). 없으면 연락처가 잠기고 제안도 못 보낸다.
+  const [talentAccess, setTalentAccess] = useState(true);
 
   // 제안하기 — 채팅 없이, 고른 공고 링크 + 메시지를 알림·이메일로만 보낸다.
   const [proposeTarget, setProposeTarget] = useState<TalentItem | null>(null);
-  const [proposeJobs, setProposeJobs] = useState<{ id: string; title: string; location?: string | null }[]>([]);
+  const [proposeJobs, setProposeJobs] = useState<{
+    id: string; title: string; location?: string | null;
+    employment_type?: string | null; salary_type?: string | null;
+    salary_min?: number | null; deadline?: string | null;
+  }[]>([]);
   const [proposeJobsLoading, setProposeJobsLoading] = useState(false);
   const [proposeJobId, setProposeJobId] = useState("");
   const [proposeMessage, setProposeMessage] = useState("");
@@ -218,6 +227,7 @@ export default function TalentPage() {
       if (res.success && res.data) {
         setTalents(res.data);
         setTotal(res.meta?.total ?? res.data.length);
+        setTalentAccess(((res.meta as any)?.talentAccess) !== false);
       }
     } catch (e) {
       console.error("[talent fetch]", e);
@@ -331,7 +341,11 @@ export default function TalentPage() {
             // 상태가 ACTIVE 여도 마감일이 지났으면 실질 마감이다. 이미 닫힌 공고로
             // 제안하면 받은 사람은 열어봐야 지원할 수 없다.
             .filter((j: any) => !j.deadline || new Date(j.deadline) >= new Date(new Date().toDateString()))
-            .map((j: any) => ({ id: j.id, title: j.title, location: j.location || null })));
+            .map((j: any) => ({
+              id: j.id, title: j.title, location: j.location || null,
+              employment_type: j.employment_type || null, salary_type: j.salary_type || null,
+              salary_min: j.salary_min ?? null, deadline: j.deadline || null,
+            })));
       } catch (e) {
         console.error("[propose jobs fetch]", e);
       } finally {
@@ -345,18 +359,21 @@ export default function TalentPage() {
   const 고른공고 = proposeJobs.find((j) => j.id === proposeJobId);
   const 지역어긋남 = 지역비교(고른공고?.location, proposeTarget?.regionPrefer) === "differ";
 
-  // 빈 칸을 마주하면 대충 쓰거나 그냥 닫는다. 고른 공고와 후보자 정보로 초안을 깔아 준다.
-  const 문구채우기 = () => {
-    if (!proposeTarget) return;
+  // 공고를 고르면 인사말을 깔아 둔다. 빈 칸을 마주하면 대충 쓰거나 그냥 닫는다 —
+  // 버튼으로 두면 못 찾는 사람에게는 여전히 빈 칸이라, 고르는 순간 채운다.
+  // 이미 손대 쓴 글이 있으면 덮지 않는다.
+  const 공고고르기 = (id: string) => {
+    setProposeJobId(id);
+    if (!id || !proposeTarget) return;
+    const 공고 = proposeJobs.find((j) => j.id === id);
     const 직 = proposeTarget.subJob || proposeTarget.mainJobGroup || "";
     const 년 = proposeTarget.careerCount && proposeTarget.careerYears ? proposeTarget.careerYears : null;
     const 경력 = 직 && 년 ? `${직} 경력 ${년}년`
       : 년 ? `${년}년 경력`
       : 직 ? `${직} 경험` : "";
     const 이유 = 경력 ? `${경력}을 보고 ` : "";
-    setProposeMessage(
-      `안녕하세요, ${proposeTarget.name}님.\n${이유}저희 '${고른공고?.title || "채용공고"}'에 함께하시면 좋을 것 같아 연락드립니다.\n공고 보시고 관심 있으시면 편하게 연락 주세요.`
-    );
+    const 초안 = `안녕하세요, ${proposeTarget.name}님.\n${이유}저희 '${공고?.title || "채용공고"}'에 함께하시면 좋을 것 같아 연락드립니다.\n공고 보시고 관심 있으시면 편하게 연락 주세요.`;
+    setProposeMessage((prev) => (prev.trim() && prev !== 초안 && !prev.startsWith("안녕하세요,") ? prev : 초안));
   };
 
   const sendPropose = async () => {
@@ -800,8 +817,19 @@ export default function TalentPage() {
                       )}
                     </td>
                     <td className="company-td-sub">
-                      <div style={{ marginBottom: 2, ...(t.email ? {} : { color: "#ccc" }) }}>{t.email || "이메일 없음"}</div>
-                      <div style={t.phone ? undefined : { color: "#ccc" }}>{t.phone ? formatPhone(t.phone) : "전화번호 없음"}</div>
+                      {talentAccess ? (
+                        <>
+                          <div style={{ marginBottom: 2, ...(t.email ? {} : { color: "#ccc" }) }}>{t.email || "이메일 없음"}</div>
+                          <div style={t.phone ? undefined : { color: "#ccc" }}>{t.phone ? formatPhone(t.phone) : "전화번호 없음"}</div>
+                        </>
+                      ) : (
+                        /* 값을 가린 게 아니라 서버가 안 내려준다. 무엇이 가려졌는지는
+                           보여 줘야 왜 공고를 올려야 하는지 알 수 있다. */
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#b4b4b9" }}>
+                          <Lock size={12} />
+                          <span>공고 등록 시 공개</span>
+                        </div>
+                      )}
                     </td>
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
@@ -934,19 +962,53 @@ export default function TalentPage() {
               </div>
             )}
 
+            {/* 공고가 없으면 여기서 끝난다. 다만 문장 하나로 막고 끝내면 인재를
+                찾아 마음먹은 사람이 그 자리에서 멈춘다 — 왜 막는지(받는 사람
+                사정으로) 말하고, 등록 화면까지 데려다준다. */}
+            {!proposeJobsLoading && proposeJobs.length === 0 ? (
+              <div style={{ padding: "18px 16px", background: "#f9f9fa", borderRadius: 10, textAlign: "center" }}>
+                <Lock size={20} style={{ color: "#b4b4b9" }} />
+                <p style={{ fontSize: 14.5, color: "#2b2b2b", margin: "8px 0 6px" }}>제안하려면 공고가 필요해요</p>
+                <p style={{ fontSize: 13, color: "#888", margin: "0 0 14px", lineHeight: 1.6 }}>
+                  받는 분이 근무지·급여·근무형태를 봐야<br />지원할지 판단할 수 있어요.
+                </p>
+                <button type="button"
+                  onClick={() => router.push("/company/dashboard/jobs/new")}
+                  style={{ border: "none", background: "#582681", color: "#fff", borderRadius: 9,
+                    padding: "10px 18px", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>
+                  공고 등록하러 가기
+                </button>
+              </div>
+            ) : (
+            <>
             <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>제안할 공고</label>
             {proposeJobsLoading ? (
               <div style={{ fontSize: 13.5, color: "#999", padding: "10px 0" }}>불러오는 중...</div>
-            ) : proposeJobs.length === 0 ? (
-              <div style={{ fontSize: 13.5, color: "#999", padding: "10px 0" }}>진행중인 공고가 없어요. 먼저 공고를 등록해주세요.</div>
             ) : (
-              <select value={proposeJobId} onChange={(e) => setProposeJobId(e.target.value)}
-                style={{ width: "100%", height: 42, borderRadius: 8, border: "1px solid #ddd", padding: "0 10px", fontSize: 14, marginBottom: 지역어긋남 ? 8 : 14, boxSizing: "border-box" }}>
+              <select value={proposeJobId} onChange={(e) => 공고고르기(e.target.value)}
+                style={{ width: "100%", height: 42, borderRadius: 8, border: "1px solid #ddd", padding: "0 10px", fontSize: 14, marginBottom: 10, boxSizing: "border-box" }}>
                 <option value="">공고를 선택해주세요</option>
                 {proposeJobs.map((j) => (
                   <option key={j.id} value={j.id}>{j.title}</option>
                 ))}
               </select>
+            )}
+
+            {/* 고른 공고의 핵심 = 상대가 받아 보게 될 내용. 보내기 전에 확인하는 자리다.
+                제안의 알맹이는 메시지가 아니라 공고라, 이게 비면 제안도 빈 것이 된다. */}
+            {고른공고 && (
+              <div style={{ marginBottom: 지역어긋남 ? 8 : 14, padding: "11px 13px", background: "#faf9fc",
+                border: "1px solid #eee7f5", borderRadius: 9 }}>
+                <p style={{ margin: "0 0 7px", fontSize: 11.5, color: "#a8a0b4" }}>받는 분에게 이렇게 보여요</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", fontSize: 12.5, color: "#555" }}>
+                  {고른공고.location && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><MapPin size={12} style={{ color: "#b4b4b9" }} />{고른공고.location}</span>}
+                  {고른공고.employment_type && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Briefcase size={12} style={{ color: "#b4b4b9" }} />{고른공고.employment_type}</span>}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <Wallet size={12} style={{ color: "#b4b4b9" }} />
+                    {고른공고.salary_min ? formatSalaryWon(고른공고.salary_min, 고른공고.salary_type) : "급여 협의"}
+                  </span>
+                </div>
+              </div>
             )}
 
             {/* 헛수고를 줄인다. 막지는 않는다 — 옮길 생각이 있는 사람도 있다. */}
@@ -958,16 +1020,11 @@ export default function TalentPage() {
               </div>
             )}
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-              <label style={{ fontSize: 13, color: "#666" }}>제안 메시지</label>
-              <button type="button" onClick={문구채우기} disabled={!proposeJobId}
-                style={{ fontSize: 12, color: proposeJobId ? "#582681" : "#ccc", background: "none",
-                  border: "none", cursor: proposeJobId ? "pointer" : "default", padding: 0, textDecoration: "underline" }}>
-                문구 채우기
-              </button>
-            </div>
+            <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>제안 메시지</label>
+            {/* 빈 칸을 두고 '문구 채우기' 버튼을 옆에 달아 뒀더니, 버튼을 못 찾으면
+                결국 빈 칸이었다. 공고를 고르는 순간 채워 두고 고쳐 쓰게 한다. */}
             <textarea value={proposeMessage} onChange={(e) => setProposeMessage(e.target.value.slice(0, 1000))}
-              placeholder={`안녕하세요, ${proposeTarget.name}님. 프로필을 보고 좋은 기회가 될 것 같아 제안드립니다.`}
+              placeholder="공고를 고르면 인사말이 채워져요. 덧붙이고 싶은 말이 있으면 고쳐 쓰세요."
               rows={5}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, resize: "vertical", outline: "none", marginBottom: 4 }} />
             <p style={{ fontSize: 11.5, color: "#bbb", margin: "0 0 16px", textAlign: "right" }}>{proposeMessage.length}/1000</p>
@@ -985,6 +1042,8 @@ export default function TalentPage() {
                 {proposeSending ? "보내는 중…" : "제안 보내기"}
               </button>
             </div>
+            </>
+            )}
           </div>
         </div>
       )}
