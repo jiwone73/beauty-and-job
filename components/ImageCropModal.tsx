@@ -4,6 +4,7 @@ import { X, Check } from "lucide-react";
 
 interface Props {
   file: File;
+  /** 비워두면 가로세로 비율을 자유롭게 바꿀 수 있다(배너처럼 자르지 않는 게 기본인 사진). 숫자를 주면 그 비율로 고정된다(1 = 정사각). */
   aspect?: number;
   onCancel: () => void;
   onCropped: (blob: Blob) => void;
@@ -11,10 +12,11 @@ interface Props {
 
 const MAX_W = 420;
 const MAX_H = 320;
-const MIN_BOX = 40;
+const MIN_BOX = 32;
+const MAX_OUT = 1400; // 잘라낸 결과의 긴 변 상한 — 서버에서 한 번 더 줄이지만 여기서도 과하게 크지 않게 막는다
 
-// 손잡이 하나 — own 은 박스 위 자기 자리(0=왼쪽/위, 1=오른쪽/아래, 0.5=가운데),
-// anchor 는 반대쪽(크기를 바꿔도 고정된 채 있는 자리). 모서리 4개 + 변 4개.
+// own 은 손잡이가 박스 위에서 자기 자리(0=왼쪽/위, 1=오른쪽/아래, 0.5=가운데),
+// 변 손잡이(n/s/e/w)는 한쪽 축만 0.5 다.
 const HANDLES: Record<string, { ownX: number; ownY: number; cursor: string }> = {
   nw: { ownX: 0, ownY: 0, cursor: "nwse-resize" },
   n: { ownX: 0.5, ownY: 0, cursor: "ns-resize" },
@@ -26,16 +28,16 @@ const HANDLES: Record<string, { ownX: number; ownY: number; cursor: string }> = 
   w: { ownX: 0, ownY: 0.5, cursor: "ew-resize" },
 };
 
-type Box = { x: number; y: number; size: number };
+type Box = { x: number; y: number; w: number; h: number };
 type Drag = { mode: "move" | keyof typeof HANDLES; startLocal: { x: number; y: number }; startBox: Box; anchor: { x: number; y: number } | null };
 
-// 정사각 박스를 사진 위에 올려 두고, 마우스(터치)로 옮기거나 모서리·변을 끌어
-// 크기를 바꾼다 — 화면에 보이는 그대로 잘린다. 확대 슬라이더 없이 드래그만으로 끝낸다.
-export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }: Props) {
+// 박스를 사진 위에 올려 두고, 마우스(터치)로 옮기거나 모서리·변을 끌어 크기를 바꾼다 —
+// 화면에 보이는 그대로 잘린다. 확대 슬라이더 없이 드래그만으로 끝낸다.
+export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Props) {
   const [imgUrl] = useState(() => URL.createObjectURL(file));
   const [natural, setNatural] = useState({ w: 0, h: 0 });
   const [display, setDisplay] = useState({ w: 0, h: 0 });
-  const [box, setBox] = useState<Box>({ x: 0, y: 0, size: 0 });
+  const [box, setBox] = useState<Box>({ x: 0, y: 0, w: 0, h: 0 });
   const [working, setWorking] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<Drag | null>(null);
@@ -45,10 +47,18 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
     const nw = img.naturalWidth, nh = img.naturalHeight;
     const scale = Math.min(MAX_W / nw, MAX_H / nh, 1);
     const dw = Math.round(nw * scale), dh = Math.round(nh * scale);
-    const size = Math.round(Math.min(dw, dh) * 0.8);
+    let w: number, h: number;
+    if (aspect) {
+      w = Math.round(Math.min(dw, dh) * 0.8);
+      h = Math.round(w / aspect);
+    } else {
+      // 자유 비율은 기본적으로 사진 전체를 거의 다 남긴다 — 줄이고 싶을 때만 안으로 끌어들인다.
+      w = Math.round(dw * 0.92);
+      h = Math.round(dh * 0.92);
+    }
     setNatural({ w: nw, h: nh });
     setDisplay({ w: dw, h: dh });
-    setBox({ x: Math.round((dw - size) / 2), y: Math.round((dh - size) / 2), size });
+    setBox({ x: Math.round((dw - w) / 2), y: Math.round((dh - h) / 2), w, h });
   };
 
   const local = (e: React.PointerEvent) => {
@@ -64,7 +74,7 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
     if (mode !== "move") {
       const h = HANDLES[mode];
       // 반대쪽 자리 = 1 - own 을 박스 좌표로 환산한 값. 이 점은 크기가 바뀌어도 그대로 있는다.
-      anchor = { x: box.x + (1 - h.ownX) * box.size, y: box.y + (1 - h.ownY) * box.size };
+      anchor = { x: box.x + (1 - h.ownX) * box.w, y: box.y + (1 - h.ownY) * box.h };
     }
     dragRef.current = { mode, startLocal: local(e), startBox: box, anchor };
   };
@@ -76,30 +86,44 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
     if (d.mode === "move") {
       const dx = p.x - d.startLocal.x;
       const dy = p.y - d.startLocal.y;
-      const size = d.startBox.size;
-      const x = Math.min(Math.max(0, d.startBox.x + dx), display.w - size);
-      const y = Math.min(Math.max(0, d.startBox.y + dy), display.h - size);
-      setBox({ x, y, size });
+      const w = d.startBox.w, h = d.startBox.h;
+      const x = Math.min(Math.max(0, d.startBox.x + dx), display.w - w);
+      const y = Math.min(Math.max(0, d.startBox.y + dy), display.h - h);
+      setBox({ x, y, w, h });
       return;
     }
-    const h = HANDLES[d.mode];
+    const handle = HANDLES[d.mode];
     const anchor = d.anchor!;
-    // anchor 는 반대쪽(own 의 반대) 자리에 있다 — 그 자리를 기준으로 방향을 다시 구한다.
-    const anchorRelX = 1 - h.ownX;
-    const anchorRelY = 1 - h.ownY;
-    let size: number;
-    if (h.ownY === 0.5) size = Math.abs(p.x - anchor.x);       // e/w: 가로로만 늘고 준다
-    else if (h.ownX === 0.5) size = Math.abs(p.y - anchor.y);  // n/s: 세로로만 늘고 준다
-    else size = Math.max(Math.abs(p.x - anchor.x), Math.abs(p.y - anchor.y)); // 모서리
+    const anchorRelX = 1 - handle.ownX;
+    const anchorRelY = 1 - handle.ownY;
+    const maxW = anchorRelX === 0 ? display.w - anchor.x : anchorRelX === 1 ? anchor.x : Math.min(anchor.x, display.w - anchor.x) * 2;
+    const maxH = anchorRelY === 0 ? display.h - anchor.y : anchorRelY === 1 ? anchor.y : Math.min(anchor.y, display.h - anchor.y) * 2;
 
-    // 화면(사진) 밖으로 못 나가게, anchor 기준으로 늘 수 있는 최대 크기로 막는다.
-    const maxX = anchorRelX === 0 ? display.w - anchor.x : anchorRelX === 1 ? anchor.x : Math.min(anchor.x, display.w - anchor.x) * 2;
-    const maxY = anchorRelY === 0 ? display.h - anchor.y : anchorRelY === 1 ? anchor.y : Math.min(anchor.y, display.h - anchor.y) * 2;
-    size = Math.min(Math.max(MIN_BOX, size), maxX, maxY);
+    let w: number, h: number;
+    if (aspect) {
+      // 대각 성분 중 더 크게 요구하는 쪽에 맞추고, 비율은 항상 지킨다.
+      const wFromX = Math.abs(p.x - anchor.x);
+      const wFromY = Math.abs(p.y - anchor.y) * aspect;
+      w = handle.ownY === 0.5 ? wFromX : handle.ownX === 0.5 ? wFromY : Math.max(wFromX, wFromY);
+      w = Math.min(Math.max(MIN_BOX, w), maxW, maxH * aspect);
+      h = w / aspect;
+    } else if (handle.ownY === 0.5) {
+      // e/w 변 — 가로만 바뀐다
+      w = Math.min(Math.max(MIN_BOX, Math.abs(p.x - anchor.x)), maxW);
+      h = d.startBox.h;
+    } else if (handle.ownX === 0.5) {
+      // n/s 변 — 세로만 바뀐다
+      w = d.startBox.w;
+      h = Math.min(Math.max(MIN_BOX, Math.abs(p.y - anchor.y)), maxH);
+    } else {
+      // 모서리 — 가로세로 독립적으로 바뀐다
+      w = Math.min(Math.max(MIN_BOX, Math.abs(p.x - anchor.x)), maxW);
+      h = Math.min(Math.max(MIN_BOX, Math.abs(p.y - anchor.y)), maxH);
+    }
 
-    const x = anchorRelX === 1 ? anchor.x - size : anchorRelX === 0.5 ? anchor.x - size / 2 : anchor.x;
-    const y = anchorRelY === 1 ? anchor.y - size : anchorRelY === 0.5 ? anchor.y - size / 2 : anchor.y;
-    setBox({ x, y, size });
+    const x = anchorRelX === 1 ? anchor.x - w : anchorRelX === 0.5 ? anchor.x - w / 2 : anchor.x;
+    const y = anchorRelY === 1 ? anchor.y - h : anchorRelY === 0.5 ? anchor.y - h / 2 : anchor.y;
+    setBox({ x, y, w, h });
   };
 
   const endDrag = () => { dragRef.current = null; };
@@ -109,7 +133,7 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
     setWorking(true);
     try {
       const scale = natural.w / display.w;
-      const area = { x: box.x * scale, y: box.y * scale, w: box.size * scale, h: box.size * scale };
+      const area = { x: box.x * scale, y: box.y * scale, w: box.w * scale, h: box.h * scale };
       const blob = await cropToBlob(imgUrl, area);
       onCropped(blob);
     } finally {
@@ -139,20 +163,20 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
               <>
                 {/* 박스 바깥을 어둡게 덮어 박스 안이 실제로 남을 부분임을 보여준다 */}
                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)",
-                  clipPath: `polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 ${box.y}px, ${box.x}px ${box.y}px, ${box.x}px ${box.y + box.size}px, ${box.x + box.size}px ${box.y + box.size}px, ${box.x + box.size}px ${box.y}px, 0 ${box.y}px)`,
+                  clipPath: `polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 ${box.y}px, ${box.x}px ${box.y}px, ${box.x}px ${box.y + box.h}px, ${box.x + box.w}px ${box.y + box.h}px, ${box.x + box.w}px ${box.y}px, 0 ${box.y}px)`,
                   pointerEvents: "none" }} />
                 <div onPointerDown={startDrag("move")}
-                  style={{ position: "absolute", left: box.x, top: box.y, width: box.size, height: box.size,
+                  style={{ position: "absolute", left: box.x, top: box.y, width: box.w, height: box.h,
                     border: "2px solid #fff", boxShadow: "0 0 0 1px rgba(0,0,0,0.3)", cursor: "move", boxSizing: "border-box" }}>
                   {(Object.keys(HANDLES) as (keyof typeof HANDLES)[]).map((key) => {
                     const h = HANDLES[key];
                     const isCorner = h.ownX !== 0.5 && h.ownY !== 0.5;
                     // 모서리는 작은 동그라미, 변은 길쭉한 막대 — 손잡이임을 한눈에 알아보게.
-                    const w = isCorner ? 16 : h.ownY === 0.5 ? 10 : box.size * 0.32;
-                    const hgt = isCorner ? 16 : h.ownX === 0.5 ? 10 : box.size * 0.32;
+                    const w = isCorner ? 16 : h.ownY === 0.5 ? 10 : Math.max(20, box.w * 0.32);
+                    const hgt = isCorner ? 16 : h.ownX === 0.5 ? 10 : Math.max(20, box.h * 0.32);
                     return (
                       <div key={key} onPointerDown={startDrag(key)}
-                        style={{ position: "absolute", left: h.ownX * box.size - w / 2, top: h.ownY * box.size - hgt / 2,
+                        style={{ position: "absolute", left: h.ownX * box.w - w / 2, top: h.ownY * box.h - hgt / 2,
                           width: w, height: hgt, borderRadius: isCorner ? "50%" : 5,
                           background: "#582681", border: "2px solid #fff", cursor: h.cursor,
                           boxShadow: "0 0 0 1px rgba(0,0,0,0.25)" }} />
@@ -187,13 +211,15 @@ function cropToBlob(imgUrl: string, area: { x: number; y: number; w: number; h: 
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
+      const outScale = Math.min(1, MAX_OUT / Math.max(area.w, area.h));
+      const outW = Math.max(1, Math.round(area.w * outScale));
+      const outH = Math.max(1, Math.round(area.h * outScale));
       const canvas = document.createElement("canvas");
-      const size = Math.min(Math.round(area.w), 640);
-      canvas.width = size;
-      canvas.height = size;
+      canvas.width = outW;
+      canvas.height = outH;
       const ctx = canvas.getContext("2d");
       if (!ctx) { reject(new Error("canvas unsupported")); return; }
-      ctx.drawImage(img, area.x, area.y, area.w, area.h, 0, 0, size, size);
+      ctx.drawImage(img, area.x, area.y, area.w, area.h, 0, 0, outW, outH);
       canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("crop fail"))), "image/webp", 0.9);
     };
     img.onerror = () => reject(new Error("decode fail"));

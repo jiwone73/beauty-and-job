@@ -6,7 +6,7 @@ import { Save, Camera, ImagePlus, Wand2, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
-import ImageCropModal from "@/components/company/ImageCropModal";
+import ImageCropModal from "@/components/ImageCropModal";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { SNS찾기 } from "@/lib/snsPresets";
@@ -264,35 +264,51 @@ export default function CompanySettingsPage() {
     } finally { setSampleBusy(false); }
   };
 
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 여러 장을 한 번에 고르면, 한 장씩 순서대로 자르기 화면을 띄운다.
+  const [coverCropQueue, setCoverCropQueue] = useState<File[]>([]);
+  const [coverCropCurrent, setCoverCropCurrent] = useState<File | null>(null);
+
+  const handleCoverPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    e.target.value = "";
     if (!files.length) return;
+    setCoverCropCurrent(files[0]);
+    setCoverCropQueue(files.slice(1));
+  };
+
+  const uploadOneCover = async (file: File) => {
     const token = localStorage.getItem("access_token");
     if (!token) { alert("로그인이 필요합니다."); return; }
     setCoverUploading(true);
     try {
-      for (const file of files) {
-        const resized = await downscaleImage(file, { maxDim: 1600, mime: "image/jpeg" });
-        const fd = new FormData();
-        fd.append("file", resized);
-        const res = await fetch("/api/company/me/cover", {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: fd,
-        });
-        const data = await res.json();
-        if (data.success) {
-          const cov = data.data.cover_images;
-          if (Array.isArray(cov)) setCoverImages(cov.filter((c: any) => c?.url));
-        } else {
-          alert(data.error?.message || "이미지 업로드에 실패했습니다.");
-          break;
-        }
+      const resized = await downscaleImage(file, { maxDim: 1600, mime: "image/jpeg" });
+      const fd = new FormData();
+      fd.append("file", resized);
+      const res = await fetch("/api/company/me/cover", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success) {
+        const cov = data.data.cover_images;
+        if (Array.isArray(cov)) setCoverImages(cov.filter((c: any) => c?.url));
+      } else {
+        alert(data.error?.message || "이미지 업로드에 실패했습니다.");
       }
     } finally {
       setCoverUploading(false);
-      e.target.value = "";
     }
+  };
+
+  const handleCoverCropped = async (blob: Blob) => {
+    const file = coverCropCurrent!;
+    setCoverCropCurrent(null);
+    await uploadOneCover(new File([blob], (file.name.replace(/\.[^.]+$/, "") || "banner") + ".webp", { type: "image/webp" }));
+    setCoverCropQueue((prev) => {
+      if (prev.length) { setCoverCropCurrent(prev[0]); return prev.slice(1); }
+      return prev;
+    });
   };
 
   const handleCoverDeleteOne = async (url: string) => {
@@ -542,7 +558,7 @@ export default function CompanySettingsPage() {
                   <label title="여러 장 추가할 수 있어요" style={{...bannerBtn(false), cursor: coverUploading ? "wait" : "pointer"}}>
                     {!isMobile && <ImagePlus size={17} />}{coverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                     <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                      disabled={coverUploading} onChange={handleCoverUpload} style={{display:"none"}} />
+                      disabled={coverUploading} onChange={handleCoverPick} style={{display:"none"}} />
                   </label>
                   <button type="button"
                     onClick={() => setSampleOpen((v) => {
@@ -796,6 +812,11 @@ export default function CompanySettingsPage() {
         <ImageCropModal file={cropFile} aspect={1}
           onCancel={() => setCropFile(null)}
           onCropped={handleSignboardCropped} />
+      )}
+      {coverCropCurrent && (
+        <ImageCropModal file={coverCropCurrent}
+          onCancel={() => { setCoverCropCurrent(null); setCoverCropQueue([]); }}
+          onCropped={handleCoverCropped} />
       )}
     </CompanyLayout>
   );

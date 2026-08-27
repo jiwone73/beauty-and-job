@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2,
   User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import ImageCropModal from "@/components/ImageCropModal";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { InlineText, InlinePick, InlineYMD } from "@/components/profile/inline/InlineField";
@@ -401,6 +402,8 @@ export default function ProfilePage() {
     img.src = url;
   });
 
+  const [avatarCropFile, setAvatarCropFile] = useState<File | null>(null);
+
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -408,15 +411,23 @@ export default function ProfilePage() {
       alert("JPG, PNG, WebP 이미지만 업로드 가능합니다."); e.target.value = ""; return;
     }
     if (file.size > 10 * 1024 * 1024) { alert("이미지가 너무 커요. 10MB 이하로 올려주세요."); e.target.value = ""; return; }
+    e.target.value = "";
+    setAvatarCropFile(file);
+  };
+
+  const handleAvatarCropped = async (blob: Blob) => {
+    const originalName = avatarCropFile?.name || "avatar";
+    setAvatarCropFile(null);
+    const file = new File([blob], (originalName.replace(/\.[^.]+$/, "") || "avatar") + ".webp", { type: "image/webp" });
     const token = localStorage.getItem("access_token");
     if (!token) return;
     setAvatarUploading(true);
     try {
-      const blob = await compressImage(file);
-      if (blob.size > 3 * 1024 * 1024) { alert("사진 용량이 커요. 3MB 이하 이미지로 올려주세요."); return; }
+      const compressed = await compressImage(file);
+      if (compressed.size > 3 * 1024 * 1024) { alert("사진 용량이 커요. 3MB 이하 이미지로 올려주세요."); return; }
       const uploadName = (file.name.replace(/\.[^.]+$/, "") || "avatar") + ".jpg";
       const formData = new FormData();
-      formData.append("file", new File([blob], uploadName, { type: "image/jpeg" }));
+      formData.append("file", new File([compressed], uploadName, { type: "image/jpeg" }));
       const res = await fetch("/api/users/me/avatar", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -432,7 +443,6 @@ export default function ProfilePage() {
       alert("네트워크 오류가 발생했습니다.");
     } finally {
       setAvatarUploading(false);
-      e.target.value = "";
     }
   };
 
@@ -1006,6 +1016,11 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {avatarCropFile && (
+        <ImageCropModal file={avatarCropFile} aspect={1}
+          onCancel={() => setAvatarCropFile(null)}
+          onCropped={handleAvatarCropped} />
+      )}
     </ProfileShell>
   );
 }
