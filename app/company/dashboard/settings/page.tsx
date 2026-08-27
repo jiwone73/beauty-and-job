@@ -53,7 +53,7 @@ export default function CompanySettingsPage() {
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
       "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "간판 사진": ImageIcon, "공고 배너 이미지": ImageIcon,
+      "회사 로고": ImageIcon, "프로필 사진": ImageIcon, "공고 배너 이미지": ImageIcon,
     };
     const G = 표[이름];
     return G ? <G size={15} className="admin-form-icon" /> : null;
@@ -177,7 +177,7 @@ export default function CompanySettingsPage() {
     }
   };
 
-  // 간판 사진 — 고르면 바로 올리지 않고 자르기 화면부터 연다.
+  // 프로필 사진 — 고르면 바로 올리지 않고 자르기 화면부터 연다.
   const handleSignboardPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setCropFile(file);
@@ -203,7 +203,7 @@ export default function CompanySettingsPage() {
       if (data.success) {
         setSignboardUrl(data.data.signboard_url);
       } else {
-        alert(data.error?.message || "간판 사진 업로드에 실패했습니다.");
+        alert(data.error?.message || "프로필 사진 업로드에 실패했습니다.");
       }
     } finally {
       setSignboardUploading(false);
@@ -211,7 +211,7 @@ export default function CompanySettingsPage() {
   };
 
   const handleSignboardDelete = async () => {
-    if (!confirm("간판 사진을 삭제하시겠습니까?")) return;
+    if (!confirm("프로필 사진을 삭제하시겠습니까?")) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     try {
@@ -507,14 +507,14 @@ export default function CompanySettingsPage() {
               </div>
               )}
 
-              {/* 간판 사진 — 매장은 로고 대신, 매장명을 확인할 수 있는 간판 사진을
+              {/* 프로필 사진 — 매장은 로고 대신, 로고나 매장명이 보이는 사진을
                   선택적으로 등록한다. 헤더 아바타에 쓰이며, 없으면 공고 배너로 대체된다. */}
               {isStore && (
               <div className="admin-form-row">
                 <div>
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림("간판 사진")}간판 사진</label>
-                  <label title={signboardUrl ? "간판 사진 변경" : "간판 사진 등록"}
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("프로필 사진")}프로필 사진</label>
+                  <label title={signboardUrl ? "프로필 사진 변경" : "프로필 사진 등록"}
                     style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
                       borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
                       cursor: signboardUploading ? "wait" : "pointer"}}>
@@ -529,8 +529,8 @@ export default function CompanySettingsPage() {
                     overflow:"hidden", flexShrink:0}}>
                     {signboardUrl ? (
                       <>
-                        <img src={signboardUrl} alt="간판 사진" style={{width:"100%", height:"100%", objectFit:"cover"}} />
-                        <button type="button" onClick={handleSignboardDelete} title="간판 사진 삭제"
+                        <img src={signboardUrl} alt="프로필 사진" style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                        <button type="button" onClick={handleSignboardDelete} title="프로필 사진 삭제"
                           style={{position:"absolute", top:2, right:2, width:18, height:18, borderRadius:"50%",
                             background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
                             display:"flex", alignItems:"center", justifyContent:"center"}}>
@@ -542,7 +542,7 @@ export default function CompanySettingsPage() {
                     )}
                   </div>
                   <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>
-                    선택 항목이에요. 매장명이 보이는 간판 사진을 올리면 헤더 아바타로 쓰여요. 올리지 않으면 공고 배너 이미지로 대체돼요.
+                    선택 항목이에요. 로고나 매장 이름이 잘 보이는 사진을 올리면 헤더 아바타로 쓰여요. 올리지 않으면 공고 배너 이미지로 대체돼요.
                   </p>
                 </div>
                 </div>
@@ -628,7 +628,8 @@ export default function CompanySettingsPage() {
                 {/* 여기서 한 번 올리면 공고마다 다시 올릴 필요가 없다는 점을 알려, 공고 등록 단계의 부담을 덜어준다. */}
                 <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0", lineHeight:1.55}}>
                   채용공고 상단에 배너로 표시돼요. {isStore ? "매장 내부·외관 사진" : "사무실이나 팀 사진"}을 올리면 홍보에도 좋아요.<br />
-                  한 번 등록해 두면 공고를 올릴 때마다 자동으로 들어가요.
+                  한 번 등록해 두면 공고를 올릴 때마다 자동으로 들어가요.<br />
+                  2장 이상 올려야 가로로 꽉 차 보여요. 1장만 올리면 가운데 작게 보여요.
                 </p>
               </div>
 

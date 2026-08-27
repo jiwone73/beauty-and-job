@@ -42,13 +42,34 @@ export default function BannerStrip({
 
   const PER = 2;                     // 화면 크기와 무관하게 한 번에 두 장
   const CELL_RATIO = "4 / 3";        // 한 장의 칸 비율(고정)
-  const 쪽수 = Math.ceil(n / PER);
-  // 마지막 쪽은 한 장만 남을 수 있다. 억지로 채우지 않고 가운데 두고 양옆을 사진 색으로 메운다.
-  const 쪽들 = Array.from({ length: 쪽수 }, (_, p) => images.slice(p * PER, p * PER + PER));
+
+  // 홀수 장이면 마지막 쪽에 한 장만 남는다. 끌어서 순서를 바꾸는 화면(onReorder)은
+  // 쪽 안 자리가 실제 배열 순서와 그대로 맞아야 드래그가 헷갈리지 않으니 그대로 두고,
+  // 그 외 화면(공고 상세 등 읽기 전용)에서는 마지막 쪽을 뒤에서 두 장으로 당겨 채워
+  // "3장인데 마지막 한 장만 반쪽으로 보인다"를 없앤다 — 바로 앞 장이 두 쪽에 겹쳐 보인다.
+  const 쪽들: number[][] = onReorder
+    ? Array.from({ length: Math.ceil(n / PER) }, (_, p) => {
+        const s = p * PER;
+        return Array.from({ length: Math.min(PER, n - s) }, (_, k) => s + k);
+      })
+    : (() => {
+        const pages: number[][] = [];
+        let start = 0;
+        while (start < n) {
+          const s = n - start < PER && n >= PER ? n - PER : start;
+          const page = Array.from({ length: Math.min(PER, n - s) }, (_, k) => s + k);
+          if (pages.length && pages[pages.length - 1].join() === page.join()) break;
+          pages.push(page);
+          start = s + PER;
+        }
+        return pages;
+      })();
+  const 쪽수 = 쪽들.length;
 
   // 한 장짜리 쪽의 좌우는 그 사진의 맨 왼쪽·오른쪽 테두리 색으로 채운다 — 사진과 여백의
   // 경계가 보이지 않는다. 사진을 못 읽는 경우(CORS 등)에는 비워 두고 뒤 배경이 비치게 한다.
-  const 홀로 = n % PER === 1 ? images[n - 1] : null;
+  // (겹쳐 채우기가 못 미치는 건 사진이 진짜 한 장뿐일 때뿐이다.)
+  const 홀로 = n === 1 ? images[0] : null;
   useEffect(() => {
     if (!홀로) { setEdge(null); return; }
     let alive = true;
@@ -127,16 +148,16 @@ export default function BannerStrip({
           set쪽(Math.round(el.scrollLeft / el.clientWidth));
         }}
       >
-        {쪽들.map((쪽사진, p) => (
+        {쪽들.map((쪽인덱스, p) => (
           <div key={p} className="bstrip-page">
-            {쪽사진.length < PER && edge && (
+            {쪽인덱스.length < PER && edge && (
               <>
                 <div aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "50%", background: edge.left }} />
                 <div aria-hidden style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "50%", background: edge.right }} />
               </>
             )}
-            {쪽사진.map((src, k) => {
-              const idx = p * PER + k;
+            {쪽인덱스.map((idx) => {
+              const src = images[idx];
               return (
                 <div key={`${idx}-${src}`}
                   draggable={!!onReorder}
@@ -151,8 +172,8 @@ export default function BannerStrip({
                   /* 한 장뿐이면 쪽을 통째로 쓴다. 띠 한 쪽은 4:3 칸 둘이라 정확히 8:3 이고,
                      샘플 배너도 8:3 으로 만든다 — 반쪽 칸에 넣으면 사방에 여백만 남았다. */
                   style={{ position: "relative",
-                    width: 쪽사진.length < PER ? "100%" : `${100 / PER}%`,
-                    aspectRatio: 쪽사진.length < PER ? "8 / 3" : CELL_RATIO,
+                    width: 쪽인덱스.length < PER ? "100%" : `${100 / PER}%`,
+                    aspectRatio: 쪽인덱스.length < PER ? "8 / 3" : CELL_RATIO,
                     flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
                   <BannerImg src={src} alt={alt} />
                   {/* 편집 화면은 순서만 보면 되지만(첫 장이 목록 썸네일이 된다),
