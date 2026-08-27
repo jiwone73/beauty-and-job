@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2,
-  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase } from "lucide-react";
+  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase, Camera } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import ImageCropModal from "@/components/ImageCropModal";
 import { useSignupStore } from "@/lib/store/signupStore";
@@ -599,6 +599,13 @@ export default function ProfilePage() {
                           업로드중
                         </div>
                       )}
+                    </div>
+                    {/* 원 안에 아이콘 하나 없으면 눌러서 사진을 바꾼다는 게 안 보인다.
+                        가장자리에 카메라 배지를 얹어 클릭을 유도한다(원티드 방식). 원 바깥으로
+                        살짝 걸치게 두는 거라, overflow:hidden 인 원 안이 아니라 바깥에 둔다. */}
+                    <div style={{ position: "absolute", right: 0, bottom: 6, width: 26, height: 26, borderRadius: "50%",
+                      background: "#582681", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                      <Camera size={13} color="#fff" />
                     </div>
                     {avatarMenu && (
                       <div onClick={(e) => e.stopPropagation()}
