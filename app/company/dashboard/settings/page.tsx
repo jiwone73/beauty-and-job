@@ -523,47 +523,45 @@ export default function CompanySettingsPage() {
                       disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
                   </label>
                 </div>
-                {/* 설명만 적어 두면 "그래서 어디에 쓰이는데?"가 남는다. 실제 목록
-                    카드를 그대로 그려 보여 준다 — 사진이 없으면 그 카드가 얼마나
-                    허전한지가 곧 올릴 이유가 된다. 실물과 어긋나지 않게 채용공고
-                    카드와 같은 class 를 쓴다(누르는 기능만 뺀다). */}
+                {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 목록 카드를 작게
+                    그려 둔다 — 자리를 알려 주는 그림이라 아래 글줄은 흐리게 두고
+                    제목 한 줄만 남긴다. 실물과 어긋나지 않게 채용공고 카드와 같은
+                    class 를 쓴다(누르는 기능만 뺀다). */}
                 <div style={{display:"flex", alignItems:"flex-start", gap:"14px", flexWrap:"wrap"}}>
-                  <div style={{width:190, flexShrink:0}}>
+                  <div style={{width:114, flexShrink:0}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
-                      style={{cursor:"default", transform:"none", boxShadow:"none"}}>
+                      style={{cursor:"default", transform:"none", boxShadow:"none", borderRadius:9}}>
                       <div className={`jobcard-cover${signboardUrl ? "" : " jobcard-cover-empty"}`}
                         style={signboardUrl ? { aspectRatio: "3 / 2" } : undefined}>
                         {signboardUrl ? (
                           <>
                             <img src={signboardUrl} alt="대표이미지" className="jobcard-cover-img" />
                             <button type="button" onClick={handleSignboardDelete} title="대표이미지 삭제"
-                              style={{position:"absolute", top:6, right:6, width:22, height:22, borderRadius:"50%",
+                              style={{position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%",
                                 background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
                                 display:"flex", alignItems:"center", justifyContent:"center", zIndex:1}}>
-                              <X size={12} />
+                              <X size={10} />
                             </button>
                           </>
                         ) : (
-                          <span className="jobcard-cover-name">{form.company_name || "매장명"}</span>
+                          <span className="jobcard-cover-name" style={{fontSize:11, left:7, right:7, bottom:6}}>
+                            {form.company_name || "매장명"}
+                          </span>
                         )}
                       </div>
-                      <div className="jobcard-body">
-                        <p className="jobcard-title">우리 매장 채용공고</p>
-                        <p className="jobcard-company">{form.company_name || "매장명"}</p>
-                        <div className="jobcard-metarow">
-                          <p className="jobcard-meta">{[form.region_sido, form.region_sigungu].filter(Boolean).join(" ") || "근무지"}</p>
-                          <span className="jobcard-deadline" style={{color:"#888"}}>상시</span>
-                        </div>
+                      <div className="jobcard-body" style={{padding:"5px 9px 7px"}}>
+                        <p className="jobcard-title" style={{fontSize:10.5, fontWeight:400, color:"#c8c8ce", margin:0}}>
+                          우리 매장 채용공고
+                        </p>
                       </div>
                     </div>
-                    <p style={{margin:"7px 0 0", fontSize:11.5, color:"#b4b4b9", textAlign:"center"}}>
-                      채용공고 목록에서 이렇게 보여요
+                    <p style={{margin:"6px 0 0", fontSize:11, color:"#c0c0c6", textAlign:"center", lineHeight:1.4}}>
+                      공고 목록 카드
                     </p>
                   </div>
                   <p style={{flex:1, minWidth:180, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.6}}>
-                    {signboardUrl
-                      ? <>로고나 매장 이름이 잘 보이는 사진일수록 목록에서 눈에 띄어요. 헤더 아바타에도 같은 사진이 쓰여요.</>
-                      : <><b style={{color:"#666", fontWeight:500}}>사진이 없으면 이렇게 이름만 나가요.</b> 로고나 매장 이름이 잘 보이는 사진을 올리면 목록에서 훨씬 눈에 띄어요. 올리지 않으면 공고배너 이미지로 대체돼요.</>}
+                    채용공고 목록 카드와 헤더에 쓰이는 사진이에요.<br />
+                    로고나 매장 이름이 보이는 사진이면 알아보기 쉬워요.
                   </p>
                 </div>
                 </div>
