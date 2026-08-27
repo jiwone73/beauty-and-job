@@ -9,6 +9,7 @@ import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import NotificationBell from "@/components/NotificationBell";
 
 function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
@@ -43,12 +44,19 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   }, [isLoggedIn, ownerType, setAvatar]);
 
   if (isLoggedIn) {
+    // 종은 아바타 옆에 둔다 — 내 것을 다루는 자리끼리 모아 둔다. 프로필 사이드에
+    //   있던 것을 옮겨 왔다. 사이드는 프로필 안에서만 보이는데, 알림은 어느 화면에
+    //   있든 봐야 하는 것이라 자리가 맞지 않았다. 그래서 아바타를 감추는 화면에서도
+    //   종은 남긴다 — 아바타는 사이드와 겹쳐서 감추는 것이고, 종은 겹칠 것이 없다.
+    const 종 = <NotificationBell ownerType={ownerType === "company" ? "company" : "user"} />;
+
     // 프로필·기업 대시보드 안에서는 사이드가 이미 누구인지 말하고 있다.
     //   같은 사진과 같은 링크를 머리줄에 또 두면 한 화면에 두 번 나온다.
     //   그 밖의 화면에서는 아바타가 프로필로 들어가는 유일한 길이라 꼭 있어야 한다.
-    if (프로필안) return null;
+    if (프로필안) return 종;
     return (
       <>
+        {종}
         <div className="auth-user-wrap">
           <button className={`auth-user-btn${ownerType === "company" ? "" : " auth-user-btn-round"}`} aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
             onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>

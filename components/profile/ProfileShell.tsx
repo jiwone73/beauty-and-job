@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { Bell, X, User, Send, Bookmark, Settings, LogOut, Inbox } from "lucide-react";
+import { X, User, Send, Bookmark, Settings, LogOut, Inbox } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -42,23 +42,9 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
   const router = useRouter();
   const pathname = usePathname();
   const { logout, userName } = useAuthStore();
-  const [unreadNotif, setUnreadNotif] = useState(0);
   const 현재제목 = pathname && 메뉴제목[pathname]
     ? 메뉴제목[pathname]
     : pathname?.startsWith("/profile/settings") ? "설정" : "";
-
-  const loadNotifs = () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    fetch("/api/users/me/notifications", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => {
-        // 개수만 쓴다 — 목록은 /profile/notifications 가 제 것을 불러온다.
-        if (res.success && res.data) setUnreadNotif(res.data.unread || 0);
-      })
-      .catch((e) => console.error("[notifs]", e));
-  };
-  useEffect(() => { loadNotifs(); }, []);
 
 
 
@@ -93,13 +79,9 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
             </div>
           )}
           {userName && <span className="pf-side-sep" />}
-          {/* 알림 — PC 는 본문에 편다. 사이드가 220px 이라 300px 짜리 판이 화면
-              밖으로 잘렸고, 지원현황·관심공고는 본문에 펴는데 알림만 판으로 뜰
-              이유도 없다(모바일은 지금 판 그대로 — 위 탭 줄에서 연다). */}
-          <Link href="/profile/notifications" className={pathname === "/profile/notifications" ? "on" : undefined}>
-            <Bell size={17} />알림
-            {unreadNotif > 0 && <em className="pf-side-badge">{unreadNotif > 9 ? "9+" : unreadNotif}</em>}
-          </Link>
+          {/* 알림은 머리줄 종으로 옮겼다. 사이드는 프로필 안에서만 보이는데
+              알림은 어느 화면에 있든 봐야 하는 것이라 자리가 맞지 않았다.
+              /profile/notifications 자체는 그대로 둔다 — 종에서 '전체 보기'로 온다. */}
           {메뉴.map((m) => (
             <Link key={m.href} href={m.href} className={pathname === m.href ? "on" : undefined}>
               <m.그림 size={17} />{m.글}

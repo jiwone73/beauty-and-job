@@ -397,11 +397,24 @@ function ResumePageContent() {
   const 채운활동 = experiences.some((x) => 있음(x.title));
   const 채운어학 = languages.some((l) => 있음(l.language) && 있음(l.level));
   const 포트폴리오채움 = portfolioImages.length > 0 || links.some((l) => 있음(l.url));
-  // 모바일 완성도 (사이드바와 동일 기준)
-  // 모바일 완성도 — 사이드 목록과 같은 기준. 접어 둔 칸은 값이 있을 때만 센다.
-  const progressItems = [true, 채운경력, 채운학력, skills.length > 0,
-    채운자격, 채운활동, 채운어학, 포트폴리오채움];
-  const progressRate = Math.round((progressItems.filter(Boolean).length / progressItems.length) * 100);
+  // 매장 이력서에서 학력·활동수상·어학은 뒤로 접어 두는 칸이다. 살롱은 이 셋을
+  // 거의 보지 않는데, 비었다고 완성도를 깎으면 볼 일 없는 칸 때문에 아무리
+  // 채워도 100%가 안 된다. 그래서 매장은 '채웠으면 세고, 비었으면 아예 목록에서
+  // 뺀다'. 자격증은 뺄 수 없다 — 미용사 면허가 곧 자격이라 이 업계에서는 본다.
+  const 접는칸 = resumeType === "salon";
+  const 완성항목: { id: string; label: string; done: boolean }[] = [
+    { id: "basic", label: "기본 정보", done: true },
+    { id: "career", label: "경력", done: 채운경력 },
+    ...(접는칸 && !채운학력 ? [] : [{ id: "education", label: "학력", done: 채운학력 }]),
+    { id: "skill", label: "스킬", done: skills.length > 0 },
+    { id: "certificate", label: "자격증", done: 채운자격 },
+    ...(접는칸 && !채운활동 ? [] : [{ id: "experience", label: "활동/수상", done: 채운활동 }]),
+    ...(접는칸 && !채운어학 ? [] : [{ id: "language", label: "어학", done: 채운어학 }]),
+    { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
+  ];
+  const progressRate = Math.round(
+    (완성항목.filter((s) => s.done).length / 완성항목.length) * 100
+  );
 
   return (
     <div className="resume-page">
@@ -444,18 +457,9 @@ function ResumePageContent() {
             // 완성도를 깎으면 아무리 채워도 100%가 안 된다.
             // 매장·본사가 같은 순서를 쓴다. 편집 화면·미리보기·이 목록이
             // 서로 다른 차례로 서 있으면 같은 이력서를 세 번 새로 읽게 된다.
-            const sections = [
-              { id: "basic", label: "기본 정보", done: true },
-              { id: "career", label: "경력", done: 채운경력 },
-              { id: "education", label: "학력", done: 채운학력 },
-              { id: "skill", label: "스킬", done: skills.length > 0 },
-              { id: "certificate", label: "자격증", done: 채운자격 },
-              { id: "experience", label: "활동/수상", done: 채운활동 },
-              { id: "language", label: "어학", done: 채운어학 },
-              { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
-            ];
+            const sections = 완성항목;
             const doneCount = sections.filter((s) => s.done).length;
-            const rate = Math.round((doneCount / sections.length) * 100);
+            const rate = progressRate;
             return (
               <>
                 <div className="resume-completion">
