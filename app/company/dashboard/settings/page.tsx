@@ -561,7 +561,7 @@ export default function CompanySettingsPage() {
                     </div>
                   </div>
                   <p style={{flex:1, minWidth:190, fontSize:"13px", color:"#8a8a90", margin:0, lineHeight:1.7}}>
-                    채용공고를 올리면 이렇게 카드로 보여요.<br />
+                    채용공고를 올리면 공고 목록에 이렇게 카드로 보여요.<br />
                     매장 <b style={{color:"#582681", fontWeight:500}}>로고</b>나 <b style={{color:"#582681", fontWeight:500}}>간판</b>을 찍어 올려 두면,
                     구직자가 공고를 열어보지 않아도 매장이 함께 알려져요.
                   </p>
