@@ -128,14 +128,22 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
 
   const endDrag = () => { dragRef.current = null; };
 
-  // 지금 박스의 가운데를 중심으로, 화면 안에 들어가는 가장 큰 4:3 박스.
-  // 점선 안내와 "4:3에 맞추기" 버튼이 이 값을 같이 쓴다.
-  const guide43 = (() => {
+  // 배너 띠는 한 쪽에 4:3 칸이 둘이라 쪽 전체가 정확히 8:3 이다. 그래서 꽉 차게
+  // 보이는 비율이 장수에 따라 갈린다 — 2장 이상이면 각 칸(4:3), 1장뿐이면 그
+  // 한 장이 쪽을 통째로 쓰므로 8:3. 둘 다 고를 수 있게 둔다.
+  const 안내들 = [
+    { key: "4:3", ratio: 4 / 3, 설명: "2장 이상" },
+    { key: "8:3", ratio: 8 / 3, 설명: "1장만" },
+  ];
+  const [안내비율, set안내비율] = useState(4 / 3);
+
+  // 지금 박스의 가운데를 중심으로, 화면 안에 들어가는 가장 큰 안내 박스.
+  // 점선과 "맞추기" 버튼이 이 값을 같이 쓴다.
+  const 안내박스 = (() => {
     if (!display.w) return null;
-    const GUIDE = 4 / 3;
     const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
-    const w = Math.min(2 * Math.min(cx, display.w - cx), 2 * Math.min(cy, display.h - cy) * GUIDE);
-    const h = w / GUIDE;
+    const w = Math.min(2 * Math.min(cx, display.w - cx), 2 * Math.min(cy, display.h - cy) * 안내비율);
+    const h = w / 안내비율;
     return { x: cx - w / 2, y: cy - h / 2, w, h };
   })();
 
@@ -172,9 +180,9 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
               style={{ width: "100%", height: "100%", display: "block", userSelect: "none" }} />
             {display.w > 0 && (
               <>
-                {/* 자유 비율일 때만 — 지금 박스 중심에 4:3이면 이런 모양이라는 점선 안내 */}
-                {!aspect && guide43 && (
-                  <div style={{ position: "absolute", left: guide43.x, top: guide43.y, width: guide43.w, height: guide43.h,
+                {/* 자유 비율일 때만 — 고른 비율이면 이런 모양이라는 점선 안내 */}
+                {!aspect && 안내박스 && (
+                  <div style={{ position: "absolute", left: 안내박스.x, top: 안내박스.y, width: 안내박스.w, height: 안내박스.h,
                     border: "1.5px dashed rgba(88,38,129,0.55)", pointerEvents: "none", boxSizing: "border-box" }} />
                 )}
                 {/* 박스 바깥을 어둡게 덮어 박스 안이 실제로 남을 부분임을 보여준다 */}
@@ -211,15 +219,32 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
             선명하게 보이려면 500×500px 이상의 사진을 권장해요
           </p>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, margin: "0 16px 12px" }}>
-            <p style={{ fontSize: 12, color: "#bbb", margin: 0 }}>
-              점선(4:3)에 맞추면 이 칸에 꽉 차게 보여요
+          <div style={{ margin: "0 16px 12px", textAlign: "center" }}>
+            <p style={{ fontSize: 12, color: "#bbb", margin: "0 0 7px", lineHeight: 1.5 }}>
+              사진을 <b style={{ color: "#999" }}>2장 이상</b> 올리면 4:3, <b style={{ color: "#999" }}>1장만</b> 올리면 8:3이 꽉 차 보여요
             </p>
-            <button type="button" onClick={() => guide43 && setBox(guide43)}
-              style={{ fontSize: 11.5, color: "#582681", background: "#f4f0f9", border: "1px solid #e6ddf2",
-                borderRadius: 6, padding: "3px 8px", cursor: "pointer", fontWeight: 600, flexShrink: 0 }}>
-              4:3에 맞추기
-            </button>
+            <div style={{ display: "inline-flex", gap: 6 }}>
+              {안내들.map((g) => {
+                const 켬 = Math.abs(안내비율 - g.ratio) < 0.001;
+                return (
+                  <button key={g.key} type="button"
+                    onClick={() => {
+                      set안내비율(g.ratio);
+                      // 고른 비율의 안내 상자를 그 자리에서 다시 재어 박스에 그대로 씌운다.
+                      if (!display.w) return;
+                      const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+                      const w = Math.min(2 * Math.min(cx, display.w - cx), 2 * Math.min(cy, display.h - cy) * g.ratio);
+                      setBox({ x: cx - w / 2, y: cy - (w / g.ratio) / 2, w, h: w / g.ratio });
+                    }}
+                    style={{ fontSize: 11.5, color: 켬 ? "#582681" : "#999",
+                      background: 켬 ? "#f4f0f9" : "#fff",
+                      border: `1px solid ${켬 ? "#d9c7ef" : "#e6e6ea"}`,
+                      borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontWeight: 500 }}>
+                    {g.key}에 맞추기 <span style={{ color: "#bbb", fontWeight: 400 }}>· {g.설명}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
         <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
