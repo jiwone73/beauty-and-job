@@ -512,43 +512,47 @@ export default function CompanySettingsPage() {
               {isStore && (
               <div className="admin-form-row">
                 <div>
-                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
+                <div style={{marginBottom:"8px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림("대표이미지")}대표이미지</label>
-                  <label title={signboardUrl ? "대표이미지 변경" : "대표이미지 등록"}
-                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
-                      borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
-                      cursor: signboardUploading ? "wait" : "pointer"}}>
-                    {signboardUploading ? "…" : <Camera size={18} />}
-                    <input type="file" accept="image/jpeg,image/png,image/webp"
-                      disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
-                  </label>
                 </div>
-                {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 목록 카드를 작게
-                    그려 둔다 — 자리를 알려 주는 그림이라 아래 글줄은 흐리게 두고
-                    제목 한 줄만 남긴다. 실물과 어긋나지 않게 채용공고 카드와 같은
-                    class 를 쓴다(누르는 기능만 뺀다). */}
+                {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 공고 카드를 작게
+                    그려 두고, 그 사진 자리를 그대로 올리기 단추로 쓴다 — 누르는 곳과
+                    바뀌는 곳이 같아야 무엇을 하는 건지 설명이 필요 없다. 실물과
+                    어긋나지 않게 채용공고 카드와 같은 class 를 쓴다. */}
                 <div style={{display:"flex", alignItems:"flex-start", gap:"14px", flexWrap:"wrap"}}>
                   <div style={{width:114, flexShrink:0}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
-                      style={{cursor:"default", transform:"none", boxShadow:"none", borderRadius:9}}>
-                      <div className={`jobcard-cover${signboardUrl ? "" : " jobcard-cover-empty"}`}
-                        style={signboardUrl ? { aspectRatio: "3 / 2" } : undefined}>
+                      /* 지우기 단추가 이 카드 안에 자리 잡도록 기준을 준다 */
+                      style={{cursor:"default", transform:"none", boxShadow:"none", borderRadius:9, position:"relative"}}>
+                      <label className={`jobcard-cover${signboardUrl ? "" : " jobcard-cover-empty"}`}
+                        title={signboardUrl ? "사진 바꾸기" : "사진 올리기"}
+                        style={{ aspectRatio: "3 / 2", display:"block",
+                          cursor: signboardUploading ? "wait" : "pointer" }}>
+                        <input type="file" accept="image/jpeg,image/png,image/webp"
+                          disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
                         {signboardUrl ? (
-                          <>
-                            <img src={signboardUrl} alt="대표이미지" className="jobcard-cover-img" />
-                            <button type="button" onClick={handleSignboardDelete} title="대표이미지 삭제"
-                              style={{position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%",
-                                background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
-                                display:"flex", alignItems:"center", justifyContent:"center", zIndex:1}}>
-                              <X size={10} />
-                            </button>
-                          </>
+                          <img src={signboardUrl} alt="대표이미지" className="jobcard-cover-img" />
                         ) : (
-                          <span className="jobcard-cover-name" style={{fontSize:11, left:7, right:7, bottom:6}}>
-                            {form.company_name || "매장명"}
+                          /* 빈 칸이 곧 올리기 단추다. 카메라와 한 줄로 무엇을 하는지 말한다. */
+                          <span style={{position:"absolute", inset:0, display:"flex", flexDirection:"column",
+                            alignItems:"center", justifyContent:"center", gap:4, color:"#a99bbd"}}>
+                            {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
+                              <>
+                                <Camera size={18} />
+                                <span style={{fontSize:10.5}}>사진 올리기</span>
+                              </>
+                            )}
                           </span>
                         )}
-                      </div>
+                      </label>
+                      {signboardUrl && (
+                        <button type="button" onClick={handleSignboardDelete} title="사진 지우기"
+                          style={{position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%",
+                            background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
+                            display:"flex", alignItems:"center", justifyContent:"center", zIndex:2}}>
+                          <X size={10} />
+                        </button>
+                      )}
                       <div className="jobcard-body" style={{padding:"5px 9px 7px"}}>
                         <p className="jobcard-title" style={{fontSize:10.5, fontWeight:400, color:"#c8c8ce", margin:0}}>
                           우리 매장 채용공고
@@ -556,12 +560,13 @@ export default function CompanySettingsPage() {
                       </div>
                     </div>
                     <p style={{margin:"6px 0 0", fontSize:11, color:"#c0c0c6", textAlign:"center", lineHeight:1.4}}>
-                      공고 목록 카드
+                      채용공고에 이렇게 나가요
                     </p>
                   </div>
-                  <p style={{flex:1, minWidth:180, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.6}}>
-                    채용공고 목록 카드와 헤더에 쓰이는 사진이에요.<br />
-                    로고나 매장 이름이 보이는 사진이면 알아보기 쉬워요.
+                  <p style={{flex:1, minWidth:190, fontSize:"13px", color:"#8a8a90", margin:0, lineHeight:1.7}}>
+                    매장 <b style={{color:"#582681", fontWeight:500}}>로고</b>나 <b style={{color:"#582681", fontWeight:500}}>간판</b>을 찍어 올려 보세요.<br />
+                    올린 사진은 채용공고마다 함께 나가서,<br />
+                    구직자가 우리 매장을 한눈에 알아봐요.
                   </p>
                 </div>
                 </div>
