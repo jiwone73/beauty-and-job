@@ -3827,22 +3827,23 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .auth-user-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 10px;
-  background: #f5f5f5;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   transition: background 0.15s;
 }
-.auth-user-btn:hover { background: #ebebeb; }
-/* 개인회원 얼굴 사진 전용. 사진(32x32, border-radius:50%)은 이미 원이었는데,
-   감싸는 단추가 그보다 큰 사각 여백(6px 10px)에 옅은 사각 배경(radius:8px)을
-   두르고 있어 사진 둘레로 네모난 회색 테가 비쳤다("아바타 배경이 4각형").
-   단추 자체를 사진과 같은 32x32 원으로 좁힌다 — 여백·배경을 없애 사진의
-   원 둘레가 곧 단추의 둘레가 되게 한다. 기업 로고(사각 radius:7)는
-   그대로 둔다 — 로고는 사진이 아니라 네모난 여백이 오히려 자연스럽다. */
-.auth-user-btn-round { width: 32px; height: 32px; padding: 0; background: transparent; border-radius: 50%; }
+.auth-user-btn:hover { background: #f0f0f0; }
+/* 개인회원·기업 둘 다 사진(32x32)과 같은 크기로 단추를 좁힌다 — 여백·배경을
+   없애 사진의 둘레가 곧 단추의 둘레가 되게 한다("아바타 배경이 4각형" /
+   "개인도 그렇고 기업도 그렇고 저 그레이 배경좀 지워줘"). 개인은 원(50%),
+   기업은 로고와 같은 둥근 사각(7px)만 다르다. */
+.auth-user-btn-round { border-radius: 50%; }
 .auth-user-btn-round:hover { background: #f0f0f0; }
 .auth-avatar {
   width: 26px;

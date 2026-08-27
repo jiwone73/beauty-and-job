@@ -55,7 +55,7 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             {avatarUrl && !그림깨짐 ? (
               <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
                 onError={() => set그림깨짐(true)}
-                style={{ width: 32, height: 32, flexShrink: 0, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block", background: "#f7f7f8" }} />
+                style={{ width: 32, height: 32, flexShrink: 0, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block" }} />
             ) : (
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>
@@ -69,19 +69,17 @@ function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
             없다 — 구직자 계정으로 기업 기능을 쓸 일이 없다. 아직 무엇으로
             가입할지 안 정한 손님(로그아웃 상태)에게는 이 문을 그대로 보여
             준다.
-            기업회원은 둘 다 본다 — '기업 서비스'(/company)는 가입 안내로
+            기업회원은 이걸 본다 — '기업 서비스'(/company)는 가입 안내로
             그치지 않고 광고·노출 상품 소개도 겸하고 있어("기업서비스가
             상품안내 페이지야"), 이미 가입한 회원도 새 상품을 보러 다시
-            들를 수 있다. '대시보드'는 그 옆에 따로 둔다. */}
+            들를 수 있다. '대시보드' 버튼은 따로 두지 않는다 — 바로 옆
+            아바타를 눌러도 같은 곳(/company/dashboard)으로 가는 같은
+            길이었다("저 아바타를 누르면 대시보드로 가니 구지 대시보드
+            버튼이 필요없어 보이는데"). */}
         {ownerType === "company" && (
-          <>
-            <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
-              기업 서비스
-            </Link>
-            <Link href="/company/dashboard" className="btn btn-outline-biz gnb-biz-btn">
-              대시보드 <ChevronDown size={14} />
-            </Link>
-          </>
+          <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
+            기업 서비스
+          </Link>
         )}
       </>
     );
