@@ -11878,11 +11878,14 @@ div:has(> table.admin-table),
 .apply-preview-doc .app-doc { padding-bottom: 8px; } /* 미리보기 하단 여백 축소(동의 문구와 간격 줄임) */
 @media (max-width: 640px) { .apply-preview-doc { margin-left: -18px; margin-right: -18px; } }
 .app-doc .rp-header { border-bottom: 1px solid #ececec; }         /* 기본정보 선 흐리게(자소서↔이력서 구분 강조) */
-/* 구직자 모달 배경 흰색 + 좌우 패딩은 캡처 안에서만 → 미리보기=PDF 동일 */
-.myapp-modal .rp-modal-body { background: #fff; padding: 0; }
+/* 이력서 모달 흰색 배경 변형 — 구직자 본인 지원서(내 지원현황)만 쓰다가, 회색 배경
+   프레임이 화면마다 달라 보인다는 지적("왜 통일이 안되었지?")으로 인재검색·
+   지원자관리 이력서 모달도 여기로 통일한다. 배경 흰색 + 좌우 패딩은 캡처 안에서만
+   → 미리보기=PDF 동일. */
+.resume-modal-flat .rp-modal-body { background: #fff; padding: 0; }
 /* 헤더 좌우 여백을 문서(.app-doc)와 동일하게 (데스크톱 40px / 모바일 16px) */
-.myapp-modal .rp-modal-header { padding-left: 40px; padding-right: 40px; }
-@media (max-width: 768px) { .myapp-modal .rp-modal-header { padding-left: 16px; padding-right: 16px; } }
+.resume-modal-flat .rp-modal-header { padding-left: 40px; padding-right: 40px; }
+@media (max-width: 768px) { .resume-modal-flat .rp-modal-header { padding-left: 16px; padding-right: 16px; } }
 
 /* === PC(≥769px)에서 본문 15px → 16px 일괄 상향 (모바일은 15px 유지) === */
 @media (min-width: 769px) {

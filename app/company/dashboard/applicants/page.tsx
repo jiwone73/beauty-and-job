@@ -738,11 +738,14 @@ function ApplicantsContent() {
       )}
 
       {selected && (
-        <div className="admin-modal-overlay">
-          <div className="admin-modal" style={{maxWidth:"720px", maxHeight:"90vh", display:"flex", flexDirection:"column"}} onClick={e => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h2 className="admin-modal-title">{selected.user_name}</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
+        <div className="rp-modal-overlay">
+          {/* 인재검색 이력서 모달과 같은 틀(.rp-modal + resume-modal-flat)을 쓴다 — 회색
+              배경에 흰 카드가 떠 있던 예전 모양과 다르게 보여 "왜 통일이 안되었지?"
+              지적을 받았다. 여기는 자기소개서가 하나 더 붙는 것 말고는 같은 문서다. */}
+          <div className="rp-modal resume-modal-flat" style={{maxWidth:"720px", maxHeight:"90vh", display:"flex", flexDirection:"column"}} onClick={e => e.stopPropagation()}>
+            <div className="rp-modal-header">
+              <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.user_name}</h2>
+              <div className="rp-modal-actions">
                 {resumeData && (
                   <>
                     <button onClick={handleDownloadPdf} disabled={isDownloading} title="PDF 다운로드"
@@ -755,16 +758,18 @@ function ApplicantsContent() {
                     </button>
                   </>
                 )}
-                <button className="admin-modal-close" onClick={() => setSelected(null)}><X size={20} /></button>
+                <button onClick={() => setSelected(null)} title="닫기"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 4, borderRadius: 6, border: "none", background: "none", color: "#888", cursor: "pointer" }}>
+                  <X size={20} />
+                </button>
               </div>
             </div>
-            <div className="admin-modal-body">
+            <div className="rp-modal-body">
               {/* ===== PDF 캡처 영역 (공용 지원서 문서) ===== */}
               {resumeLoading ? (
                 <div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
               ) : resumeData ? (
                 <>
-                <div style={{ margin: "-24px" }}>{/* admin-modal-body(24px) 4면 상쇄 → 문서 여백 40px로 통일 */}
                 <ApplicationDocument
                   ref={previewRef}
                   coverLetter={coverLetter}
@@ -775,7 +780,9 @@ function ApplicantsContent() {
                     ageDisplay: calcAge(detailInfo.birth) != null ? `${calcAge(detailInfo.birth)}세` : "",
                     genderDisplay: genderLabel(detailInfo.gender) || "",
                     addressDisplay: [detailInfo.road, detailInfo.detail].filter(Boolean).join(" ") || [detailInfo.sido, detailInfo.sigungu].filter(Boolean).join(" "),
-                    jobDisplay: "",
+                    // 빈 문자열로 하드코딩돼 있었다 — 직군/근무형태가 항상 안 보였다("빈 문자열로
+                    // 하드코딩 된 건 치명적인 이슈야"). 바로 옆에서 쓰는 값을 그대로 넘긴다.
+                    jobDisplay: selected.user_job_type === "STORE" ? "매장" : "본사",
                     phone: selected.user_phone || "",
                     email: selected.user_email || "",
                     portfolioImages: (selected as any).portfolio_images || [],
@@ -784,10 +791,10 @@ function ApplicantsContent() {
                     ...mapResume(resumeData),
                   }}
                 />
-                </div>
-                {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외. SHOW_RESUME_FILE_BANNER로 노출 제어 */}
+                {/* 첨부 이력서 파일 배너: 화면에서만(클릭 다운로드), PDF/인쇄 캡처에는 제외. SHOW_RESUME_FILE_BANNER로 노출 제어
+                    (.app-doc 좌우 40px과 같은 자리에 오도록 옆 여백을 맞춘다) */}
                 {SHOW_RESUME_FILE_BANNER && resumeFileInfo.url && (
-                  <div style={{ marginTop: "20px", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f7f7f8", border: "1.5px solid #efeff1", borderRadius: "10px" }}>
+                  <div style={{ margin: "20px 40px 0", display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", background: "#f7f7f8", border: "1.5px solid #efeff1", borderRadius: "10px" }}>
                     <FileText size={22} color="#582681" />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ fontSize: "14px", fontWeight: 600, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
