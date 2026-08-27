@@ -6,6 +6,7 @@ import { Save, Camera, ImagePlus, Wand2, X, ChevronRight } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
+import ImageCropModal from "@/components/company/ImageCropModal";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { SNS찾기 } from "@/lib/snsPresets";
@@ -37,6 +38,9 @@ export default function CompanySettingsPage() {
   const [savedMessage, setSavedMessage] = useState("");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [signboardUrl, setSignboardUrl] = useState<string | null>(null);
+  const [signboardUploading, setSignboardUploading] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
   const [coverImages, setCoverImages] = useState<{ url: string; name?: string }[]>([]);
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverStart, setCoverStart] = useState(0);
@@ -49,7 +53,7 @@ export default function CompanySettingsPage() {
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
       "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "공고 배너 이미지": ImageIcon,
+      "회사 로고": ImageIcon, "간판 사진": ImageIcon, "공고 배너 이미지": ImageIcon,
     };
     const G = 표[이름];
     return G ? <G size={15} className="admin-form-icon" /> : null;
@@ -96,6 +100,7 @@ export default function CompanySettingsPage() {
         const res = await companyMeApi.get();
         setInfo(res.data);
         setLogoUrl((res.data as any).logo_url || null);
+        setSignboardUrl((res.data as any).signboard_url || null);
         const cov = (res.data as any).cover_images;
         setCoverImages(Array.isArray(cov) ? cov.filter((c: any) => c?.url) : []);
         // 링크 목록. 아직 없으면 여태 쓰던 website_url 한 줄로 시작한다.
@@ -167,6 +172,55 @@ export default function CompanySettingsPage() {
       });
       const data = await res.json();
       if (data.success) setLogoUrl(null);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // 간판 사진 — 고르면 바로 올리지 않고 자르기 화면부터 연다.
+  const handleSignboardPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setCropFile(file);
+    e.target.value = "";
+  };
+
+  const handleSignboardCropped = async (blob: Blob) => {
+    setCropFile(null);
+    const token = localStorage.getItem("access_token");
+    if (!token) { alert("로그인이 필요합니다."); return; }
+    setSignboardUploading(true);
+    try {
+      const cropped = new File([blob], "signboard.webp", { type: "image/webp" });
+      const resized = await downscaleImage(cropped, { maxDim: 480, maxBytes: 200 * 1024, mime: "image/webp" });
+      const fd = new FormData();
+      fd.append("file", resized);
+      const res = await fetch("/api/company/me/signboard", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSignboardUrl(data.data.signboard_url);
+      } else {
+        alert(data.error?.message || "간판 사진 업로드에 실패했습니다.");
+      }
+    } finally {
+      setSignboardUploading(false);
+    }
+  };
+
+  const handleSignboardDelete = async () => {
+    if (!confirm("간판 사진을 삭제하시겠습니까?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    try {
+      const res = await fetch("/api/company/me/signboard", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) setSignboardUrl(null);
     } catch (e) {
       console.error(e);
     }
@@ -437,6 +491,48 @@ export default function CompanySettingsPage() {
               </div>
               )}
 
+              {/* 간판 사진 — 매장은 로고 대신, 매장명을 확인할 수 있는 간판 사진을
+                  선택적으로 등록한다. 헤더 아바타에 쓰이며, 없으면 공고 배너로 대체된다. */}
+              {isStore && (
+              <div className="admin-form-row">
+                <div>
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("간판 사진")}간판 사진</label>
+                  <label title={signboardUrl ? "간판 사진 변경" : "간판 사진 등록"}
+                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
+                      borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
+                      cursor: signboardUploading ? "wait" : "pointer"}}>
+                    {signboardUploading ? "…" : <Camera size={18} />}
+                    <input type="file" accept="image/jpeg,image/png,image/webp"
+                      disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
+                  </label>
+                </div>
+                <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
+                  <div style={{position:"relative", width:64, height:64, borderRadius:"12px", border:"1px solid #eee",
+                    background:"#fff", display:"flex", alignItems:"center", justifyContent:"center",
+                    overflow:"hidden", flexShrink:0}}>
+                    {signboardUrl ? (
+                      <>
+                        <img src={signboardUrl} alt="간판 사진" style={{width:"100%", height:"100%", objectFit:"cover"}} />
+                        <button type="button" onClick={handleSignboardDelete} title="간판 사진 삭제"
+                          style={{position:"absolute", top:2, right:2, width:18, height:18, borderRadius:"50%",
+                            background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
+                            display:"flex", alignItems:"center", justifyContent:"center"}}>
+                          <X size={11} />
+                        </button>
+                      </>
+                    ) : (
+                      <span style={{fontSize:"20px", fontWeight:700, color:"#e3e3e6"}}>{form.company_name?.[0] || "?"}</span>
+                    )}
+                  </div>
+                  <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>
+                    선택 항목이에요. 매장명이 보이는 간판 사진을 올리면 헤더 아바타로 쓰여요. 올리지 않으면 공고 배너 이미지로 대체돼요.
+                  </p>
+                </div>
+                </div>
+              </div>
+              )}
+
               {/* 공고 상단 배너 (여러 장) */}
               <div className="admin-form-row">
                 {/* 버튼은 제목 바로 옆에 붙인다(공고 등록 화면과 같은 자리).
@@ -695,6 +791,11 @@ export default function CompanySettingsPage() {
             <div ref={addrBoxRef} style={{ flex: 1, minHeight: 0 }} />
           </div>
         </div>
+      )}
+      {cropFile && (
+        <ImageCropModal file={cropFile} aspect={1}
+          onCancel={() => setCropFile(null)}
+          onCropped={handleSignboardCropped} />
       )}
     </CompanyLayout>
   );

@@ -10,14 +10,15 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   const result = await pool.query(
     `SELECT c.id, c.company_name, c.brand_name, c.industry, c.business_number, c.representative_name, c.manager_name, c.company_type,
-            c.email, c.phone, c.company_phone, c.logo_url, c.cover_images, c.description, c.website_url, c.links, c.address, c.address_detail,
+            c.email, c.phone, c.company_phone, c.logo_url, c.signboard_url, c.cover_images, c.description, c.website_url, c.links, c.address, c.address_detail,
             c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
             c.status, c.business_license_path, c.created_at,
-            -- 헤더·사이드바에 쓸 대표 사진. 매장은 로고를 받지 않으므로 배너 첫 장이 얼굴이고,
-            -- 오피스는 로고가 먼저다. 어느 쪽이든 없으면 남은 것으로 채운다.
+            -- 헤더·사이드바에 쓸 대표 사진. 매장은 간판 사진(매장명이 보이는 선택 항목)이
+            -- 있으면 그걸 먼저 쓰고, 없으면 예전처럼 공고 배너 이미지로 대체한다.
+            -- 오피스는 로고가 먼저다.
             CASE WHEN c.company_type = 'OFFICE'
               THEN COALESCE(c.logo_url, c.cover_images->0->>'url', jp.cover)
-              ELSE COALESCE(c.cover_images->0->>'url', jp.cover, c.logo_url)
+              ELSE COALESCE(c.signboard_url, c.cover_images->0->>'url', jp.cover, c.logo_url)
             END AS thumb_url
      FROM companies c
      LEFT JOIN LATERAL (

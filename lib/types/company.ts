@@ -51,6 +51,7 @@ export interface CompanyInfo {
   industry: string | null;
   company_type: CompanyType;
   logo_url: string | null;
+  signboard_url: string | null;
   description: string | null;
   website_url: string | null;
   representative_name: string | null;
