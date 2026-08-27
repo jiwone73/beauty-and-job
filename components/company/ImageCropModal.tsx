@@ -13,15 +13,32 @@ const MAX_W = 420;
 const MAX_H = 320;
 const MIN_BOX = 40;
 
-// 정사각 박스를 사진 위에 올려 두고, 마우스(터치)로 옮기거나 모서리를 끌어
+// 손잡이 하나 — own 은 박스 위 자기 자리(0=왼쪽/위, 1=오른쪽/아래, 0.5=가운데),
+// anchor 는 반대쪽(크기를 바꿔도 고정된 채 있는 자리). 모서리 4개 + 변 4개.
+const HANDLES: Record<string, { ownX: number; ownY: number; cursor: string }> = {
+  nw: { ownX: 0, ownY: 0, cursor: "nwse-resize" },
+  n: { ownX: 0.5, ownY: 0, cursor: "ns-resize" },
+  ne: { ownX: 1, ownY: 0, cursor: "nesw-resize" },
+  e: { ownX: 1, ownY: 0.5, cursor: "ew-resize" },
+  se: { ownX: 1, ownY: 1, cursor: "nwse-resize" },
+  s: { ownX: 0.5, ownY: 1, cursor: "ns-resize" },
+  sw: { ownX: 0, ownY: 1, cursor: "nesw-resize" },
+  w: { ownX: 0, ownY: 0.5, cursor: "ew-resize" },
+};
+
+type Box = { x: number; y: number; size: number };
+type Drag = { mode: "move" | keyof typeof HANDLES; startLocal: { x: number; y: number }; startBox: Box; anchor: { x: number; y: number } | null };
+
+// 정사각 박스를 사진 위에 올려 두고, 마우스(터치)로 옮기거나 모서리·변을 끌어
 // 크기를 바꾼다 — 화면에 보이는 그대로 잘린다. 확대 슬라이더 없이 드래그만으로 끝낸다.
 export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }: Props) {
   const [imgUrl] = useState(() => URL.createObjectURL(file));
   const [natural, setNatural] = useState({ w: 0, h: 0 });
   const [display, setDisplay] = useState({ w: 0, h: 0 });
-  const [box, setBox] = useState({ x: 0, y: 0, size: 0 });
+  const [box, setBox] = useState<Box>({ x: 0, y: 0, size: 0 });
   const [working, setWorking] = useState(false);
-  const dragRef = useRef<{ mode: "move" | "resize"; startX: number; startY: number; box: typeof box } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<Drag | null>(null);
 
   const onImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -34,31 +51,55 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
     setBox({ x: Math.round((dw - size) / 2), y: Math.round((dh - size) / 2), size });
   };
 
-  const clampBox = (b: { x: number; y: number; size: number }) => {
-    const size = Math.min(Math.max(MIN_BOX, b.size), Math.min(display.w, display.h));
-    const x = Math.min(Math.max(0, b.x), display.w - size);
-    const y = Math.min(Math.max(0, b.y), display.h - size);
-    return { x, y, size };
+  const local = (e: React.PointerEvent) => {
+    const rect = containerRef.current!.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   };
 
-  const startDrag = (mode: "move" | "resize") => (e: React.PointerEvent) => {
+  const startDrag = (mode: Drag["mode"]) => (e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    dragRef.current = { mode, startX: e.clientX, startY: e.clientY, box };
+    let anchor: { x: number; y: number } | null = null;
+    if (mode !== "move") {
+      const h = HANDLES[mode];
+      // 반대쪽 자리 = 1 - own 을 박스 좌표로 환산한 값. 이 점은 크기가 바뀌어도 그대로 있는다.
+      anchor = { x: box.x + (1 - h.ownX) * box.size, y: box.y + (1 - h.ownY) * box.size };
+    }
+    dragRef.current = { mode, startLocal: local(e), startBox: box, anchor };
   };
 
   const onDrag = (e: React.PointerEvent) => {
     const d = dragRef.current;
     if (!d) return;
-    const dx = e.clientX - d.startX;
-    const dy = e.clientY - d.startY;
+    const p = local(e);
     if (d.mode === "move") {
-      setBox(clampBox({ ...d.box, x: d.box.x + dx, y: d.box.y + dy }));
-    } else {
-      const delta = Math.max(dx, dy);
-      setBox(clampBox({ ...d.box, size: d.box.size + delta }));
+      const dx = p.x - d.startLocal.x;
+      const dy = p.y - d.startLocal.y;
+      const size = d.startBox.size;
+      const x = Math.min(Math.max(0, d.startBox.x + dx), display.w - size);
+      const y = Math.min(Math.max(0, d.startBox.y + dy), display.h - size);
+      setBox({ x, y, size });
+      return;
     }
+    const h = HANDLES[d.mode];
+    const anchor = d.anchor!;
+    // anchor 는 반대쪽(own 의 반대) 자리에 있다 — 그 자리를 기준으로 방향을 다시 구한다.
+    const anchorRelX = 1 - h.ownX;
+    const anchorRelY = 1 - h.ownY;
+    let size: number;
+    if (h.ownY === 0.5) size = Math.abs(p.x - anchor.x);       // e/w: 가로로만 늘고 준다
+    else if (h.ownX === 0.5) size = Math.abs(p.y - anchor.y);  // n/s: 세로로만 늘고 준다
+    else size = Math.max(Math.abs(p.x - anchor.x), Math.abs(p.y - anchor.y)); // 모서리
+
+    // 화면(사진) 밖으로 못 나가게, anchor 기준으로 늘 수 있는 최대 크기로 막는다.
+    const maxX = anchorRelX === 0 ? display.w - anchor.x : anchorRelX === 1 ? anchor.x : Math.min(anchor.x, display.w - anchor.x) * 2;
+    const maxY = anchorRelY === 0 ? display.h - anchor.y : anchorRelY === 1 ? anchor.y : Math.min(anchor.y, display.h - anchor.y) * 2;
+    size = Math.min(Math.max(MIN_BOX, size), maxX, maxY);
+
+    const x = anchorRelX === 1 ? anchor.x - size : anchorRelX === 0.5 ? anchor.x - size / 2 : anchor.x;
+    const y = anchorRelY === 1 ? anchor.y - size : anchorRelY === 0.5 ? anchor.y - size / 2 : anchor.y;
+    setBox({ x, y, size });
   };
 
   const endDrag = () => { dragRef.current = null; };
@@ -90,7 +131,7 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
           </button>
         </div>
         <div style={{ display: "flex", justifyContent: "center", padding: "20px 16px", background: "#f2f2f4" }}>
-          <div style={{ position: "relative", width: display.w || MAX_W, height: display.h || MAX_H, touchAction: "none" }}
+          <div ref={containerRef} style={{ position: "relative", width: display.w || MAX_W, height: display.h || MAX_H, touchAction: "none" }}
             onPointerMove={onDrag} onPointerUp={endDrag}>
             <img src={imgUrl} alt="" onLoad={onImgLoad} draggable={false}
               style={{ width: "100%", height: "100%", display: "block", userSelect: "none" }} />
@@ -103,16 +144,27 @@ export default function ImageCropModal({ file, aspect = 1, onCancel, onCropped }
                 <div onPointerDown={startDrag("move")}
                   style={{ position: "absolute", left: box.x, top: box.y, width: box.size, height: box.size,
                     border: "2px solid #fff", boxShadow: "0 0 0 1px rgba(0,0,0,0.3)", cursor: "move", boxSizing: "border-box" }}>
-                  <div onPointerDown={startDrag("resize")}
-                    style={{ position: "absolute", right: -8, bottom: -8, width: 20, height: 20, borderRadius: "50%",
-                      background: "#582681", border: "2px solid #fff", cursor: "nwse-resize" }} />
+                  {(Object.keys(HANDLES) as (keyof typeof HANDLES)[]).map((key) => {
+                    const h = HANDLES[key];
+                    const isCorner = h.ownX !== 0.5 && h.ownY !== 0.5;
+                    // 모서리는 작은 동그라미, 변은 길쭉한 막대 — 손잡이임을 한눈에 알아보게.
+                    const w = isCorner ? 16 : h.ownY === 0.5 ? 10 : box.size * 0.32;
+                    const hgt = isCorner ? 16 : h.ownX === 0.5 ? 10 : box.size * 0.32;
+                    return (
+                      <div key={key} onPointerDown={startDrag(key)}
+                        style={{ position: "absolute", left: h.ownX * box.size - w / 2, top: h.ownY * box.size - hgt / 2,
+                          width: w, height: hgt, borderRadius: isCorner ? "50%" : 5,
+                          background: "#582681", border: "2px solid #fff", cursor: h.cursor,
+                          boxShadow: "0 0 0 1px rgba(0,0,0,0.25)" }} />
+                    );
+                  })}
                 </div>
               </>
             )}
           </div>
         </div>
         <p style={{ fontSize: 12.5, color: "#999", margin: "0 16px 12px", textAlign: "center" }}>
-          박스를 끌어 옮기고, 오른쪽 아래 점을 끌어 크기를 바꾸세요
+          박스를 끌어 옮기고, 모서리나 변을 끌어 크기를 바꾸세요
         </p>
         <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
           <button type="button" onClick={onCancel}
