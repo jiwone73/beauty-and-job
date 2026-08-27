@@ -54,7 +54,7 @@ export async function GET(
            VALUES ($1, 'APP_VIEWED', $2, $3, $4, 'application')`,
           [
             row.user_id,
-            "기업이 내 지원서를 확인했어요",
+            `${companyName}에서 지원서를 확인했어요`,
             `${companyName}에서 '${row.job_title}' 지원서를 열람했어요.`,
             row.id,
           ]

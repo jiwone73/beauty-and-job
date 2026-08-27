@@ -192,7 +192,7 @@ export async function POST(
       await pool.query(
         `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
          VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
-        [job.company_id, '새 지원자가 있어요', `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
+        [job.company_id, `${p.name || '지원자'}님이 지원했어요`, `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
       )
     } catch (e) {
       console.error('[notification] NEW_APPLICANT 생성 실패', e)

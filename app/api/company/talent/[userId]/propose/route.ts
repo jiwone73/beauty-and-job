@@ -55,7 +55,7 @@ export async function POST(
        VALUES ($1, 'PROPOSAL', $2, $3, $4, 'job_posting')`,
       [
         target.id,
-        "새로운 제안이 도착했어요",
+        `${companyName}에서 제안을 보냈어요`,
         `${companyName}에서 '${jobTitle}' 공고를 제안했어요.${message ? `\n\n"${message}"` : ""}`,
         jobPostingId,
       ]

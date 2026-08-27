@@ -88,6 +88,12 @@ export default function NotificationsPage() {
                   <span className="pf-notif-title">{n.title}</span>
                   <span className="pf-notif-msg">{n.message}</span>
                   <span className="pf-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                  {/* 카드를 통째로 눌러도 이동하지만, 눌러도 되는 자리라는 게 안 보인다. */}
+                  {n.related_type === "job_posting" && n.related_id && (
+                    <button type="button" className="pf-notif-cta" onClick={(e) => { e.stopPropagation(); 누르기(n); }}>
+                      채용공고 보기
+                    </button>
+                  )}
                   <button type="button" className="pf-notif-del" aria-label="삭제" onClick={(e) => 하나지우기(n.id, e)}>
                     <X size={14} />
                   </button>
