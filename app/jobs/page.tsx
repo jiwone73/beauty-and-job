@@ -168,7 +168,11 @@ function JobsPageInner() {
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
             region: j.location || '국내',
             type: j.company_type === 'OFFICE' ? '본사' : j.company_type === 'STORE' ? '매장' : '본사',
-            thumbnail: (Array.isArray(j.cover_images) && j.cover_images[0]?.url) || j.logo_url || (Array.isArray(j.detail_images) && j.detail_images[0]?.url),
+            // 목록 카드는 '이 매장이 어디인가'를 먼저 말해야 한다. 그래서 매장이
+            // 그 용도로 직접 고른 프로필 사진(로고·간판)을 먼저 쓴다. 배너는
+            // 상세 페이지 상단에서 크게 보여 주려고 받은 홍보 사진이라 성격이 다르다.
+            // 프로필 사진이 없으면 예전처럼 배너로 물러선다.
+            thumbnail: j.signboard_url || (Array.isArray(j.cover_images) && j.cover_images[0]?.url) || j.logo_url || (Array.isArray(j.detail_images) && j.detail_images[0]?.url),
             color: '#f7f7f8',
             deadline: formatDeadline(j.deadline),
             employment: j.employment_type || null,

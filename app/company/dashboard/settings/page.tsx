@@ -524,7 +524,8 @@ export default function CompanySettingsPage() {
                   </label>
                 </div>
                 <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
-                  <div style={{position:"relative", width:64, height:64, borderRadius:"12px", border:"1px solid #eee",
+                  {/* 미리보기도 카드와 같은 3:2 — 여기서 보이는 모양이 목록에 그대로 나간다 */}
+                  <div style={{position:"relative", width:96, height:64, borderRadius:"10px", border:"1px solid #eee",
                     background:"#fff", display:"flex", alignItems:"center", justifyContent:"center",
                     overflow:"hidden", flexShrink:0}}>
                     {signboardUrl ? (
@@ -542,7 +543,7 @@ export default function CompanySettingsPage() {
                     )}
                   </div>
                   <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>
-                    선택 항목이에요. 로고나 매장 이름이 잘 보이는 사진을 올리면 헤더 아바타로 쓰여요. 올리지 않으면 공고 배너 이미지로 대체돼요.
+                    <b style={{ color: "#666", fontWeight: 500 }}>채용공고 목록에 이 사진이 나가요.</b> 로고나 매장 이름이 잘 보이는 사진을 올려 주세요. 올리지 않으면 공고 배너 이미지로 대체돼요.
                   </p>
                 </div>
                 </div>
@@ -810,7 +811,9 @@ export default function CompanySettingsPage() {
         </div>
       )}
       {cropFile && (
-        <ImageCropModal file={cropFile} aspect={1}
+        /* 목록 카드 썸네일과 같은 3:2. 헤더 아바타(정사각)에서는 좌우가 조금
+           잘리지만, 이 사진이 실제로 크게 쓰이는 곳은 카드다. */
+        <ImageCropModal file={cropFile} aspect={3 / 2}
           onCancel={() => setCropFile(null)}
           onCropped={handleSignboardCropped} />
       )}

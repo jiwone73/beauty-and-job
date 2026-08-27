@@ -41,7 +41,9 @@ export default function BannerStrip({
   const n = images.length;
 
   const PER = 2;                     // 화면 크기와 무관하게 한 번에 두 장
-  const CELL_RATIO = "4 / 3";        // 한 장의 칸 비율(고정)
+  // 한 칸은 목록 카드 썸네일과 같은 3:2 다. 매장이 사진을 한 벌만 준비해도
+  // 카드와 배너 양쪽에 그대로 쓸 수 있게 비율을 하나로 맞춘다.
+  const CELL_RATIO = "3 / 2";
 
   // 홀수 장이면 마지막 쪽에 한 장만 남는다. 끌어서 순서를 바꾸는 화면(onReorder)은
   // 쪽 안 자리가 실제 배열 순서와 그대로 맞아야 드래그가 헷갈리지 않으니 그대로 두고,
@@ -191,11 +193,11 @@ export default function BannerStrip({
                     if (from !== null && from !== idx) onReorder(from, idx);
                     dragFrom.current = null;
                   } : undefined}
-                  /* 한 장뿐이면 쪽을 통째로 쓴다. 띠 한 쪽은 4:3 칸 둘이라 정확히 8:3 이고,
-                     샘플 배너도 8:3 으로 만든다 — 반쪽 칸에 넣으면 사방에 여백만 남았다. */
+                  /* 한 장뿐이면 쪽을 통째로 쓴다. 띠 한 쪽은 3:2 칸 둘이라 정확히 6:2 이고,
+                     샘플 배너도 6:2 로 만든다 — 반쪽 칸에 넣으면 사방에 여백만 남았다. */
                   style={{ position: "relative",
                     width: 쪽인덱스.length < PER ? "100%" : `${100 / PER}%`,
-                    aspectRatio: 쪽인덱스.length < PER ? "8 / 3" : CELL_RATIO,
+                    aspectRatio: 쪽인덱스.length < PER ? "6 / 2" : CELL_RATIO,
                     flexShrink: 0, cursor: onReorder ? "grab" : undefined }}>
                   <BannerImg src={src} alt={alt} />
                   {/* 편집 화면은 순서만 보면 되지만(첫 장이 목록 썸네일이 된다),

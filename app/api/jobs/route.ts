@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
 
   const activeOrderBy = `j.created_at DESC`
   const listQuery = active ? `
-    SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.company_type,
+    SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
            j.experience_level, j.is_featured, j.deadline, j.created_at, j.categories, j.benefit_tags
     FROM v_active_jobs j
@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
     ORDER BY ${activeOrderBy}
     LIMIT $${idx++} OFFSET $${idx++}
   ` : `
-    SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, cover_images, company_type,
+    SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, cover_images, signboard_url, company_type,
            location, work_type, employment_type, salary_min, salary_max, salary_type,
            experience_level, is_featured, deadline, created_at, categories, benefit_tags
     FROM v_active_jobs

@@ -40,7 +40,8 @@ function mapJob(j: any) {
     deadline: formatDeadline(j.deadline),
     categories: j.categories || [],
     jobType: j.company_type || j.job_type || null,
-    image: (Array.isArray(j.cover_images) && j.cover_images[0]?.url) || j.logo_url || (Array.isArray(j.detail_images) && j.detail_images[0]?.url) || null,
+    // 채용공고 목록과 같은 차례 — 매장이 목록용으로 직접 고른 프로필 사진이 먼저다.
+    image: j.signboard_url || (Array.isArray(j.cover_images) && j.cover_images[0]?.url) || j.logo_url || (Array.isArray(j.detail_images) && j.detail_images[0]?.url) || null,
   };
 }
 

@@ -128,14 +128,15 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
 
   const endDrag = () => { dragRef.current = null; };
 
-  // 배너 띠는 한 쪽에 4:3 칸이 둘이라 쪽 전체가 정확히 8:3 이다. 그래서 꽉 차게
-  // 보이는 비율이 장수에 따라 갈린다 — 2장 이상이면 각 칸(4:3), 1장뿐이면 그
-  // 한 장이 쪽을 통째로 쓰므로 8:3. 둘 다 고를 수 있게 둔다.
+  // 배너 띠는 한 쪽에 3:2 칸이 둘이라 쪽 전체가 정확히 6:2 다. 그래서 꽉 차게
+  // 보이는 비율이 장수에 따라 갈린다 — 2장 이상이면 각 칸(3:2), 1장뿐이면 그
+  // 한 장이 쪽을 통째로 쓰므로 6:2. 둘 다 고를 수 있게 둔다.
+  // 3:2 는 목록 카드 썸네일과 같은 비율이라, 여기 맞춰 두면 카드에서도 안 잘린다.
   const 안내들 = [
-    { key: "4:3", ratio: 4 / 3, 설명: "2장 이상" },
-    { key: "8:3", ratio: 8 / 3, 설명: "1장만" },
+    { key: "3:2", ratio: 3 / 2, 설명: "2장 이상" },
+    { key: "6:2", ratio: 3, 설명: "1장만" },
   ];
-  const [안내비율, set안내비율] = useState(4 / 3);
+  const [안내비율, set안내비율] = useState(3 / 2);
 
   // 지금 박스의 가운데를 중심으로, 화면 안에 들어가는 가장 큰 안내 박스.
   // 점선과 "맞추기" 버튼이 이 값을 같이 쓴다.
@@ -221,7 +222,7 @@ export default function ImageCropModal({ file, aspect, onCancel, onCropped }: Pr
         ) : (
           <div style={{ margin: "0 16px 12px", textAlign: "center" }}>
             <p style={{ fontSize: 12, color: "#bbb", margin: "0 0 7px", lineHeight: 1.5 }}>
-              사진을 <b style={{ color: "#999" }}>2장 이상</b> 올리면 4:3, <b style={{ color: "#999" }}>1장만</b> 올리면 8:3이 꽉 차 보여요
+              사진을 <b style={{ color: "#999" }}>2장 이상</b> 올리면 3:2, <b style={{ color: "#999" }}>1장만</b> 올리면 6:2가 꽉 차 보여요
             </p>
             <div style={{ display: "inline-flex", gap: 6 }}>
               {안내들.map((g) => {

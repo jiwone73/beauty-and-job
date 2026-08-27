@@ -34,13 +34,13 @@ function wrapLines(ctx: CanvasRenderingContext2D, title: string, maxW: number, m
 }
 
 // 캔버스에 샘플 배너 그림: 사진을 배경으로 깔고 그 위에 문구를 얹는다.
-//   비율은 3:2 — 정사각으로 만들면 사진 비율을 그대로 쓰는 모바일에서 혼자만 키가 커진다.
-//   PC 배너는 칸을 정사각으로 잘라 쓰므로, 글자는 가운데 정사각(=높이) 안에서만 줄바꿈해
-//   어느 쪽에서도 잘리지 않게 한다.
+//   목록 카드는 이 배너를 3:2 로 잘라 쓰므로, 글자는 가운데 3:2 안에서만
+//   줄바꿈해 어느 쪽에서도 잘리지 않게 한다.
 export async function drawSampleBanner(canvas: HTMLCanvasElement, preset: (typeof BANNER_PRESETS)[number], title: string) {
-  // 공고 배너의 실제 비율은 8:3 이다. 상세 배너는 자르지 않고 그대로 보여주므로(BannerImg contain)
-  // 여기서 만든 모양이 곧 배너 모양이 된다.
-  const W = 1600, H = 600;
+  // 공고 배너 한 쪽의 실제 비율은 6:2(=3:1) 이다 — 3:2 칸 둘이 나란히 선다.
+  // 상세 배너는 자르지 않고 그대로 보여주므로(BannerImg contain) 여기서 만든
+  // 모양이 곧 배너 모양이 된다.
+  const W = 1800, H = 600;
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
