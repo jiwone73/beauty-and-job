@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Briefcase, Users, FileText, Settings, UserCog,
+  Briefcase, Users, FileText, Settings, UserCog, Store,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Plus
 } from "lucide-react";
 
@@ -20,6 +20,7 @@ const PAGE_TITLES: Record<string, string> = {
   scrapped: "스크랩 인재",
   settings: "기업 정보",
   account: "계정 설정",
+  notifications: "알림설정",
 };
 
 export default function CompanyLayout({ children, activePage }: {
@@ -153,10 +154,19 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "applicants", label: "지원자",       href: `${base}/applicants` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
+  // 설정 계열 사이드 메뉴. 머리줄 '프로필'로 들어오면 여기서 갈래가 나뉜다.
+  //   라벨이 함수인 것은 첫 칸만 매장/본사에 따라 이름이 갈리기 때문이다.
+  const SET_NAV = [
+    { id: "settings",      label: (info: string) => `${info} 관리`, icon: Store,   href: `${base}/settings` },
+    { id: "account",       label: () => "계정정보 관리",             icon: UserCog, href: `${base}/account` },
+    { id: "notifications", label: () => "알림설정",                  icon: Bell,    href: `${base}/notifications` },
+  ];
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
+  // 계정정보·알림설정은 '프로필'의 갈래라(옆 사이드로 들어간다) '프로필'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
     : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
+    : id === "settings" ? SET_NAV.some((m) => m.id === activePage)
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
   // 연장이니 그 메뉴가 계속 켜져 있어야 한다.
@@ -316,6 +326,17 @@ export default function CompanyLayout({ children, activePage }: {
         .co-top-body { max-width: 1360px; margin: 0 auto; padding: 26px 32px 80px;
           display: grid; grid-template-columns: fit-content(100%); justify-content: center; }
         .co-top-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; }
+        /* 설정 계열 사이드 — 개인회원 프로필 사이드(.pf-side)와 같은 결로 맞춘다. */
+        .co-set-wrap { display: flex; align-items: flex-start; gap: 28px; }
+        .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+          position: sticky; top: 92px; }
+        .co-set-item { display: flex; align-items: center; gap: 9px; padding: 10px 12px;
+          border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
+          white-space: nowrap; transition: background .15s, color .15s; }
+        .co-set-item svg { color: #b3b3ba; flex-shrink: 0; transition: color .15s; }
+        .co-set-item:hover { background: #f7f7f8; color: #1a1a1a; }
+        .co-set-item.on { background: #f4f0f8; color: var(--color-primary); font-weight: 600; }
+        .co-set-item.on svg { color: var(--color-primary); }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
       `}</style>
@@ -379,7 +400,22 @@ export default function CompanyLayout({ children, activePage }: {
 
       <div className="co-top-body">
         <h1 className="co-top-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</h1>
-        <main className="company-content">{children}</main>
+        {SET_NAV.some((m) => m.id === activePage) ? (
+          /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
+             대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
+          <div className="co-set-wrap">
+            <nav className="co-set-side">
+              {SET_NAV.map((m) => (
+                <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
+                  <m.icon size={16} />{m.label(infoLabel(companyInfo.type))}
+                </Link>
+              ))}
+            </nav>
+            <main className="company-content">{children}</main>
+          </div>
+        ) : (
+          <main className="company-content">{children}</main>
+        )}
       </div>
     </div>
   );

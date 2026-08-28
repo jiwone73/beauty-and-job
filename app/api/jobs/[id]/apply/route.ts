@@ -5,6 +5,7 @@ import { ok, err, requireAuth } from '@/lib/api'
 import { sendApplicationCompleteEmail, sendNewApplicantEmail } from '@/lib/email'
 import { buildResumeSnapshot } from '@/lib/resumeSnapshot'
 import { 이력서쓰기 } from '@/lib/resumeWrite'
+import { 켜져있나 } from '@/lib/companyNotifySettings'
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -187,13 +188,27 @@ export async function POST(
     `DELETE FROM application_drafts WHERE user_id = $1 AND job_posting_id = $2`,
     [auth!.sub, jobPostingId]
   ).catch((e) => console.error('[apply] 초안 정리 실패', e))
+  // 기업 알림설정 — 종과 메일을 따로 켜고 끈다. 없으면 둘 다 켜진 것으로 본다.
+  let 기업알림: any = null
   if (!isExternal && job.company_id) {
     try {
-      await pool.query(
-        `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
-         VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
-        [job.company_id, `${p.name || '지원자'}님이 지원했어요`, `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
+      const { rows } = await pool.query(
+        `SELECT notification_settings FROM companies WHERE id = $1`, [job.company_id]
       )
+      기업알림 = rows[0]?.notification_settings ?? {}
+    } catch (e) {
+      console.error('[notification] 기업 알림설정 조회 실패', e)
+    }
+  }
+  if (!isExternal && job.company_id) {
+    try {
+      if (켜져있나(기업알림, 'new_applicant')) {
+        await pool.query(
+          `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
+           VALUES ($1, 'NEW_APPLICANT', $2, $3, $4, 'application')`,
+          [job.company_id, `${p.name || '지원자'}님이 지원했어요`, `${p.name || '지원자'}님이 '${job.title}'에 지원했어요.`, result.rows[0].id]
+        )
+      }
     } catch (e) {
       console.error('[notification] NEW_APPLICANT 생성 실패', e)
     }
@@ -202,7 +217,7 @@ export async function POST(
   const jobTypeLabel = p.job_type === 'STORE' ? '매장직' : '사무직'
   sendApplicationCompleteEmail(p.email, p.name || '회원', job.title, companyNameDisplay, appliedDate)
     .catch((e) => console.error('[email] 지원완료 발송 실패', e))
-  if (!isExternal && job.company_email) {
+  if (!isExternal && job.company_email && 켜져있나(기업알림, 'new_applicant_email')) {
     sendNewApplicantEmail(job.company_email, job.company_name, p.name || '지원자', jobTypeLabel, job.title, appliedDate)
       .catch((e) => console.error('[email] 새 지원자 발송 실패', e))
   }
