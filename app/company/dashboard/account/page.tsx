@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { UserRound, Smartphone, Mail, KeyRound, UserX } from "lucide-react";
+import { UserRound, Smartphone, Mail, KeyRound, UserX, Building2 } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { InlineText } from "@/components/profile/inline/InlineField";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
@@ -17,6 +17,7 @@ export default function CompanyAccountPage() {
   const [managerName, setManagerName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [companyType, setCompanyType] = useState("");
 
   useEffect(() => {
     companyMeApi.get().then((res) => {
@@ -24,9 +25,14 @@ export default function CompanyAccountPage() {
         setManagerName((res.data as any).manager_name || "");
         setPhone((res.data as any).phone || "");
         setEmail(res.data.email || "");
+        setCompanyType((res.data as any).company_type || "");
       }
     }).finally(() => setLoading(false));
   }, []);
+
+  // 가입할 때 고른 값이고 여기서 바꾸지 않는다 — 이 값이 화면 곳곳의 말(매장명/기업명)과
+  // 업종 목록, 공고 직군을 통째로 가른다. 옛 'BOTH' 는 매장으로 본다(가입 선택지에서 빠졌다).
+  const 유형이름 = companyType === "OFFICE" ? "본사" : companyType ? "매장" : "";
 
   const formatPhone = (v: string) => {
     const d = (v || "").replace(/\D/g, "").slice(0, 11);
@@ -153,46 +159,70 @@ export default function CompanyAccountPage() {
 
   return (
     <CompanyLayout activePage="account">
-      <div style={{ maxWidth: 460 }}>
+      {/* 매장정보와 같은 짜임 — 두 칸씩. 옆에 사이드가 붙으면서 판이 넓어져
+          한 줄에 하나씩 세우면 오른쪽이 통째로 빈다. */}
+      <div style={{ maxWidth: 800 }}>
         {!loading && (
           <div className="company-card">
             <div className="admin-form-body settings-compact" style={{ gap: 0, paddingTop: 0, paddingBottom: 0 }}>
-              <div className="admin-form-row" style={row}>
-                <label className="admin-form-label" style={label}><UserRound size={15} className="admin-form-icon" />담당자</label>
-                <div style={content}><InlineText value={managerName} placeholder="담당자명" onSave={saveManagerName} /></div>
+              {/* 가입할 때 고른 값. 이 계정이 어느 쪽인지가 화면 곳곳의 말과 목록을
+                  가르므로 맨 위에 세운다. 바꾸는 칸이 아니라 확인하는 줄이다. */}
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row" style={row}>
+                  <label className="admin-form-label" style={label}><Building2 size={15} className="admin-form-icon" />가입 유형</label>
+                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ fontSize: 14, color: 유형이름 ? "#333" : "#bbb" }}>{유형이름 || "미등록"}</span>
+                    {/* 반 칸짜리 자리라 한마디만 — 긴 설명은 가입 화면에서 이미 읽었다. */}
+                    {유형이름 && (
+                      <span style={{ fontSize: 12, color: "#b0b0b6" }}>
+                        {유형이름 === "본사" ? "매장이 아닌 곳 채용" : "살롱·샵 채용"}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="admin-form-row" style={row}>
+                  <label className="admin-form-label" style={label}><UserRound size={15} className="admin-form-icon" />담당자</label>
+                  <div style={content}><InlineText value={managerName} placeholder="담당자명" onSave={saveManagerName} /></div>
+                </div>
               </div>
 
-              <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰</label>
-                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                  <span style={{ fontSize: 14, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
-                  <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
-                </span>
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, cursor: "pointer" }}>
+                  <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰</label>
+                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                    <span style={{ fontSize: 14, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
+                    <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
+                  </span>
+                </div>
+
+                <div className="admin-form-row"
+                  onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
+                  style={{ ...row, cursor: "pointer" }}>
+                  <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
+                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+                    <span style={{ fontSize: 14, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
+                    <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
+                  </span>
+                </div>
               </div>
 
-              <div className="admin-form-row"
-                onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
-                style={{ ...row, cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
-                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                  <span style={{ fontSize: 14, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
-                  <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
-                </span>
-              </div>
+              {/* 비밀번호와 탈퇴는 나머지와 성격이 다르다(계정을 다루는 일).
+                  마지막 줄이라 아래 선은 지운다. */}
+              <div className="admin-form-row-2col">
+                <div className="admin-form-row" onClick={() => setShowPwModal(true)} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
+                  <label className="admin-form-label" style={label}><KeyRound size={15} className="admin-form-icon" />비밀번호</label>
+                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
+                    변경하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
+                  </span>
+                </div>
 
-              <div className="admin-form-row" onClick={() => setShowPwModal(true)} style={{ ...row, cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}><KeyRound size={15} className="admin-form-icon" />비밀번호</label>
-                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
-                  변경하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
-                </span>
-              </div>
-
-              <div className="admin-form-row" onClick={() => router.push("/company/dashboard/account/withdraw")}
-                style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
-                <label className="admin-form-label" style={label}><UserX size={15} className="admin-form-icon" />회원 탈퇴</label>
-                <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
-                  탈퇴하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
-                </span>
+                <div className="admin-form-row" onClick={() => router.push("/company/dashboard/account/withdraw")}
+                  style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
+                  <label className="admin-form-label" style={label}><UserX size={15} className="admin-form-icon" />회원 탈퇴</label>
+                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
+                    탈퇴하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
