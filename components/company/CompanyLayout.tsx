@@ -363,8 +363,11 @@ export default function CompanyLayout({ children, activePage }: {
           position: sticky; top: 92px; }
         .co-set-main { flex: 1; min-width: 0; }
         .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
-        .co-set-head { font-size: 13px; font-weight: 600; color: #9a9aa2; letter-spacing: .02em;
-          padding: 0 12px 8px; margin-bottom: 6px; border-bottom: 1px solid #f0f0f2; }
+        /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
+           "지금 어디" 를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
+           선 대신 여백으로 아래 목록과 뗀다. */
+        .co-set-head { font-size: 19px; font-weight: 700; color: #1a1a1a;
+          padding: 0 12px; margin: 0 0 14px; }
         .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
