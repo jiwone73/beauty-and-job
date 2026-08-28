@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings, UserCog,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Plus
 } from "lucide-react";
 
 
@@ -29,7 +30,7 @@ export default function CompanyLayout({ children, activePage }: {
   const pathname = usePathname();
   // 매장 회원이면 '매장정보', 본사(기업) 회원이면 '기업정보'로 부른다.
   const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+본사는 매장으로 분류
-  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "" });
+  const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "", manager: "" });
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -50,6 +51,7 @@ export default function CompanyLayout({ children, activePage }: {
             type: res.data.company_type || "",
             cover: (Array.isArray(res.data.cover_images) && res.data.cover_images[0]?.url) ? res.data.cover_images[0].url : "",
             thumb: res.data.thumb_url || "",
+            manager: res.data.manager_name || "",
           });
         }
       })
@@ -139,6 +141,23 @@ export default function CompanyLayout({ children, activePage }: {
     // ("이 계정의 책임자는 담당자이지. 담당자 정보를 계정 설정으로 옮기자는거야?").
     { id: "account",   label: "계정 설정",                 icon: UserCog,      href: `${base}/account`, group: "settings" },
   ];
+
+  // PC 는 왼쪽 사이드 대신 머리줄 하나로 간다 — 메인 사이트와 같은 판(.header,
+  // .header-inner, .gnb)을 그대로 써서 두 화면이 한 서비스로 읽히게 한다.
+  // 사이드에 흩어져 있던 것을 한 줄에 세우느라 항목 이름도 짧게 줄였다.
+  const TOP_NAV = [
+    { id: "dashboard",  label: "홈",          href: base },
+    { id: "settings",   label: "프로필",       href: `${base}/settings` },
+    { id: "jobs",       label: "채용공고 관리", href: `${base}/jobs` },
+    { id: "talent",     label: "인재풀",       href: `${base}/talent` },
+    { id: "applicants", label: "지원자",       href: `${base}/applicants` },
+    { id: "ads",        label: "채용상품",     href: "/company/ads" },
+  ];
+  // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
+  const topActive = (id: string) =>
+    id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
+    : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
+    : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
   // 연장이니 그 메뉴가 계속 켜져 있어야 한다.
   const navActive = (id: string) => activePage === id || (id === "jobs" && activePage === "jobs-new");
@@ -261,100 +280,95 @@ export default function CompanyLayout({ children, activePage }: {
     );
   }
 
+  const logoImg = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+
   return (
-    <div className="company-layout">
-      <aside className={`company-sidebar ${sidebarOpen ? "" : "company-sidebar-closed"}`}>
-        <div className="company-sidebar-logo">
-          {/* 로고는 이제 아무것도 열지 않는다 — 로그아웃은 메뉴 맨 아래에 있다. */}
-          <div style={{ position: "relative" }}>
-            <div className="company-logo-link" style={{ textAlign: "left" }}>
-              <div className="company-logo-mark">
-                {(() => {
-                  const img = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
-                  return img ? (
-                    <img src={img} alt={`${companyInfo.name}`} />
-                  ) : (
-                    <span>{companyInfo.name?.[0] || "·"}</span>
-                  );
-                })()}
-              </div>
-              <div className="company-logo-info">
-                <span className="company-logo-name">{companyInfo.name}</span>
-                <span className="company-logo-category">{companyInfo.category}</span>
-              </div>
+    <div className="co-top">
+      <style>{`
+        /* 메인 사이트 머리줄(.header/.header-inner)과 같은 판·높이·여백을 쓴다.
+           기업 화면만 다른 껍데기를 쓰면 같은 서비스로 안 읽힌다. */
+        .co-top { min-height: 100vh; background: #fafafa; }
+        .co-top-nav { display: flex; gap: 26px; flex: 1; margin-left: 22px; }
+        .co-top-nav a { font-size: 15px; color: #555; text-decoration: none; white-space: nowrap; padding: 4px 0; }
+        .co-top-nav a:hover { color: #1a1a1a; }
+        .co-top-nav a.on { color: var(--color-primary); border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
+        .co-top-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .co-top-post { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 15px;
+          border-radius: 8px; background: var(--color-primary); color: #fff; font-size: 14px;
+          text-decoration: none; white-space: nowrap; }
+        .co-top-post:hover { background: #47206a; }
+        .co-top-me { display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
+        .co-top-ava { width: 32px; height: 32px; border-radius: 7px; overflow: hidden; flex-shrink: 0;
+          background: #f2f2f4; display: flex; align-items: center; justify-content: center;
+          font-size: 14px; font-weight: 700; color: var(--color-primary); }
+        .co-top-ava img { width: 100%; height: 100%; object-fit: cover; }
+        .co-top-mename { font-size: 14px; color: #333; max-width: 120px; overflow: hidden;
+          text-overflow: ellipsis; white-space: nowrap; }
+        .co-top-body { max-width: 1360px; margin: 0 auto; padding: 26px 32px 80px; }
+        .co-top-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; }
+        /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
+        .co-top-body .company-content { padding: 0 !important; }
+      `}</style>
+
+      <header className="header">
+        <div className="header-inner">
+          {/* 로고는 메인 사이트로 — 기업 화면에 갇히지 않게 하는 유일한 문이다. */}
+          <Link href="/" className="logo" aria-label="뷰티워크 홈">
+            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
+          </Link>
+          <nav className="co-top-nav">
+            {TOP_NAV.map((t) => (
+              <Link key={t.id} href={t.href} className={topActive(t.id) ? "on" : undefined}>{t.label}</Link>
+            ))}
+          </nav>
+          <div className="co-top-right">
+            <Link href={`${base}/jobs/new`} className="co-top-post">
+              <Plus size={15} />공고 등록
+            </Link>
+            <div style={{ position: "relative" }}>
+              <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
+                <Bell size={20} />
+                {unread > 0 && <span className="company-notif-badge">{unread > 9 ? "9+" : unread}</span>}
+              </button>
+              {notifOpen && (
+                <>
+                  <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setNotifOpen(false)} />
+                  <div className="company-notif-dropdown">
+                    <div className="company-notif-head">
+                      <span>알림</span>
+                      {unread > 0 && <button onClick={markAllRead} className="company-notif-readall">모두 읽음</button>}
+                    </div>
+                    <div className="company-notif-list">
+                      {notifs.length === 0 ? (
+                        <p className="company-notif-empty">새 알림이 없어요</p>
+                      ) : (
+                        notifs.map((n) => (
+                          <button key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
+                            onClick={() => handleNotifClick(n)}>
+                            <span className="company-notif-title">{n.title}</span>
+                            <span className="company-notif-msg">{n.message}</span>
+                            <span className="company-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-          </div>
-          <div style={{ marginLeft: "auto", position: "relative" }}>
-            <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
-              <Bell size={18} />
-              {unread > 0 && <span className="company-notif-badge">{unread > 9 ? "9+" : unread}</span>}
-            </button>
-            {notifOpen && (
-              <>
-                <div style={{ position: "fixed", inset: 0, zIndex: 90 }} onClick={() => setNotifOpen(false)} />
-                <div className="company-notif-dropdown">
-                  <div className="company-notif-head">
-                    <span>알림</span>
-                    {unread > 0 && <button onClick={markAllRead} className="company-notif-readall">모두 읽음</button>}
-                  </div>
-                  <div className="company-notif-list">
-                    {notifs.length === 0 ? (
-                      <p className="company-notif-empty">새 알림이 없어요</p>
-                    ) : (
-                      notifs.map((n) => (
-                        <button key={n.id} className={`company-notif-item ${n.is_read ? "" : "unread"}`}
-                          onClick={() => handleNotifClick(n)}>
-                          <span className="company-notif-title">{n.title}</span>
-                          <span className="company-notif-msg">{n.message}</span>
-                          <span className="company-notif-time">{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+            {/* 아바타와 담당자 이름 — 누르면 계정 설정으로. 이 계정의 책임자가 담당자다. */}
+            <Link href={`${base}/account`} className="co-top-me" title="계정 설정">
+              <span className="co-top-ava">
+                {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
+              </span>
+              <span className="co-top-mename">{companyInfo.manager || companyInfo.name || "담당자"}</span>
+            </Link>
           </div>
         </div>
+      </header>
 
-        <nav className="company-nav">
-          {NAV_ITEMS.map((item, i) => (
-            <div key={item.id}>
-              {item.group !== NAV_ITEMS[i - 1]?.group && i > 0 && <div className="company-nav-divider" />}
-              <Link href={item.href} className={`company-nav-item ${navActive(item.id) ? "active" : ""}`}>
-                <item.icon size={20} />
-                <span>{item.label}</span>
-                {/* 알림 종은 남기되("일단 종은 유지하자"), 지금 알림이 전부 새 지원자
-                    소식이라 실제로 움직여야 할 곳(지원자 관리)에 건수를 바로 보여준다. */}
-                {item.id === "applicants" && unread > 0 && (
-                  <span className="company-nav-badge">{unread > 99 ? "99+" : unread}</span>
-                )}
-              </Link>
-            </div>
-          ))}
-          {/* 사이트로 이동은 메뉴의 연장선이라 맨 아래가 아니라 마지막 메뉴 밑에 둔다. */}
-          <div className="company-nav-divider" />
-          <button className="company-nav-item" onClick={() => router.push("/")}>
-            <ExternalLink size={20} />
-            <span>사이트로 이동</span>
-          </button>
-          {/* 로그아웃은 메뉴 맨 아래. 로고를 눌러야 나오는 자리에 숨겨 두니
-              찾지 못하고 탭을 닫아 버리는 일이 생겼다. */}
-          <button className="company-nav-item" onClick={() => {
-            localStorage.removeItem("access_token");
-            useAuthStore.getState().logout();
-            router.push("/company/login");
-          }}>
-            <LogOut size={20} />
-            <span>로그아웃</span>
-          </button>
-        </nav>
-      </aside>
-
-      <div className="company-main">
-        <header className="company-header">
-          <h1 className="company-page-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</h1>
-        </header>
+      <div className="co-top-body">
+        <h1 className="co-top-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</h1>
         <main className="company-content">{children}</main>
       </div>
     </div>
