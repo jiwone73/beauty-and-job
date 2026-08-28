@@ -416,13 +416,11 @@ export default function CompanySettingsPage() {
               {/* 썸네일 — 매장은 로고 대신, 로고나 매장명이 보이는 사진을 등록한다.
                   공고 카드 표지이자 헤더 아바타로 쓰인다. */}
               {isStore && (
-              /* 맨 첫 줄이라 칸 사이를 띄우는 위 여백이 카드 안쪽 여백 위에 그대로 얹힌다.
-                 여기서만 걷어내 카드 위가 뜨지 않게 한다. */
-              <div className="admin-form-row" style={{paddingTop:0}}>
+              /* 칸 이름도 아래 선도 두지 않는다 — 그림이 곧 이름이라, 같은 말을 글로 또
+                 적으면 사진 한 장 올리는 자리가 항목처럼 무거워진다.
+                 맨 첫 줄이라 위 여백도 카드 안쪽 여백 위에 그대로 얹혀 걷어낸다. */
+              <div className="admin-form-row" style={{paddingTop:0, borderBottom:"none"}}>
                 <div>
-                <div style={{marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                </div>
                 {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 공고 카드를 작게
                     그려 두고, 그 사진 자리를 그대로 올리기 단추로 쓴다 — 누르는 곳과
                     바뀌는 곳이 같아야 무엇을 하는 건지 설명이 필요 없다. 실물과
@@ -447,7 +445,11 @@ export default function CompanySettingsPage() {
                             alignItems:"center", justifyContent:"center", gap:2, color:"#a99bbd"}}>
                             {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
                               <>
-                                <span style={{fontSize:11.5, fontWeight:500}}>로고 / 간판</span>
+                                {/* 칸 이름이 없어졌으니 무엇을 올리는 자리인지는 이 줄이 다 말한다.
+                                    필수 표시(*)도 여기 붙는다 — 이름이 있던 자리가 여기다. */}
+                                <span style={{fontSize:11.5, fontWeight:500, lineHeight:1.35}}>
+                                  로고/간판<br />썸네일<span style={{color:"#e74c3c", marginLeft:2}}>*</span>
+                                </span>
                                 {/* 고르기 창이 받는 것과 같은 목록(accept) — 다른 파일을 골랐다 되돌아오는 일을 던다 */}
                                 <span style={{fontSize:8.5, color:"#c4b8d3"}}>JPG · PNG · WEBP</span>
                               </>
