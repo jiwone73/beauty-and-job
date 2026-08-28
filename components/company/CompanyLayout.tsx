@@ -372,8 +372,6 @@ export default function CompanyLayout({ children, activePage }: {
            선 대신 여백으로 아래 목록과 뗀다.
            (이 style 은 글자 그대로 나가므로 따옴표·꺾쇠·＆ 를 쓰지 않는다 — 서버가
             그 글자를 빠져나가게 적어 보내 클라이언트와 어긋나면서 hydration 오류가 난다.) */
-        .co-set-head { font-size: 19px; font-weight: 400; color: #1a1a1a;
-          padding: 0 12px; margin: 0 0 14px; }
         .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
@@ -471,9 +469,6 @@ export default function CompanyLayout({ children, activePage }: {
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className="co-set-wrap">
             <nav className="co-set-side">
-              {/* 이 목록이 무엇의 갈래인지 — 머리줄에서 켜진 그 메뉴 이름을 그대로 가져온다.
-                  머리줄 이름이 바뀌면 여기도 같이 바뀐다(두 곳을 따로 고칠 일이 없다). */}
-              <div className="co-set-head">{TOP_NAV.find((t) => t.id === "settings")?.label}</div>
               {SET_NAV.map((m) => (
                 <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                   {m.label(infoLabel(companyInfo.type))}

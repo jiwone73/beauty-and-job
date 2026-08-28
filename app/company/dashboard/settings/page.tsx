@@ -382,7 +382,9 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row">
                 {/* 썸네일 오른쪽이 통째로 비어 있었다. 그 자리에 이름과 업종을 세로로
                     세운다 — 두 칸을 쌓은 높이가 썸네일 카드와 얼추 같아 나란히 선다. */}
-                <div style={{display:"flex", alignItems:"flex-start", gap:"28px"}}>
+                {/* 아래 칸들과 같은 2열 격자를 쓴다. 따로 폭을 잡으면 왼쪽 기준선이
+                    셋이 되어(썸네일 / 매장명·업종 / 직원수) 열이 어긋난다. */}
+                <div className="admin-form-row-2col" style={{alignItems:"start"}}>
                 <div style={{flexShrink:0}}>
                 <div style={{marginBottom:"8px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
@@ -393,7 +395,9 @@ export default function CompanySettingsPage() {
                     어긋나지 않게 채용공고 카드와 같은 class 를 쓴다. */}
                 <div style={{display:"flex", flexDirection:"column", alignItems:"flex-start", gap:"8px"}}>
                   {/* 값들과 같은 만큼 들여쓴다(아이콘 15 + 사이 6 = 21px) — 라벨 글자와 세로선이 맞는다 */}
-                  <div style={{width:100, flexShrink:0, marginLeft:21}}>
+                  {/* 폭은 아래끝을 헤어샵 글자에 맞춘 값이다(3:2 표지 + 테두리 2px = 66px 높이).
+                      숫자를 바꾸면 아래끝이 어긋난다. */}
+                  <div style={{width:99, flexShrink:0, marginLeft:21}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
                       /* 지우기 단추가 이 카드 안에 자리 잡도록 기준을 준다 */
                       style={{cursor:"default", transform:"none", boxShadow:"none", borderRadius:9, position:"relative"}}>
@@ -437,20 +441,13 @@ export default function CompanySettingsPage() {
                           <X size={10} />
                         </button>
                       )}
-                      {/* 카드 아래 글자도 위 '로고 / 간판'과 같은 크기·굵기·색으로 — 둘 다
-                          아직 안 채워진 자리를 보여주는 견본이라 무게가 같아야 한다. */}
-                      <div className="jobcard-body" style={{padding:"5px 9px 7px"}}>
-                        <p className="jobcard-title" style={{fontSize:11.5, fontWeight:500, color:"#a99bbd",
-                          margin:0, textAlign:"center"}}>
-                          채용공고
-                        </p>
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
                 </div>
                 {/* 오른쪽 — 이름과 업종 */}
-                <div style={{flex:1, minWidth:0}}>
+                <div style={{minWidth:0}}>
               {/* 오른쪽 칸 첫 줄 — 위 여백을 걷어내야 왼쪽 썸네일 이름과 같은 높이에 선다.
                   바깥 줄이 이미 여백을 갖고 있어 여기서 또 주면 13px 내려앉는다. */}
               <div className="admin-form-row" style={{paddingTop:0}}>
@@ -459,7 +456,7 @@ export default function CompanySettingsPage() {
                   value={form.company_name}
                   onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
               </div>
-              <div className="admin-form-row">
+              <div className="admin-form-row" style={{borderBottom:"none"}}>
                 <label className="admin-form-label">{칸그림("업종")}업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
                   value={form.industry}
