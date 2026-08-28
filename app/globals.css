@@ -5783,6 +5783,7 @@ div:has(> table.admin-table),
 .admin-form-label { font-size: 14px; font-weight: 400; color: #444; }
 /* 항목 아이콘 — 라벨 왼쪽. 값보다 흐리게 두어 글자를 가리지 않는다(프로필과 같은 규칙). */
 .settings-compact .admin-form-label { display: inline-flex; align-items: center; gap: 6px; }
+.settings-compact .admin-form-icon { color: var(--color-primary); opacity: 0.55; }
 .admin-form-icon { flex-shrink: 0; color: #b7b0c0; }
 
 /* ── 채용공고 등록/수정 폼: 프로필 기본정보와 동일한 1행(라벨 좌·내용 우) 레이아웃 ── */
@@ -5881,9 +5882,10 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-row:has(> .admin-form-label) > .admin-form-label {
   grid-column: 1; grid-row: 1; margin: 0; white-space: nowrap;
 }
-/* 공고등록의 기업정보 블록과 같은 규칙: 항목명은 연한 회색, 빈 칸만 56px 연보라 블록,
-   값이 들어오면 배경 없이 글자만 보인다. */
-.settings-compact .admin-form-label { color: #999; font-weight: 400; }
+/* 항목명은 뷰티워크 보라. 값(#333)과 결이 갈려 어디까지가 칸 이름이고 어디부터가
+   내가 적은 값인지 한눈에 나뉜다. (관리자 콘솔은 같은 class 를 쓰지만
+   .settings-compact 가 없어 여태 쓰던 회색 그대로다.) */
+.settings-compact .admin-form-label { color: var(--color-primary); font-weight: 400; }
 /* 빈 칸은 56px 회색 블록으로 덮고 placeholder 를 투명하게 두고 있었다. 무엇을 적는
    자리인지 알 길이 없어, 공고 등록 폼처럼 자리글을 그대로 보여준다. */
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
@@ -13730,6 +13732,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 항목의 첫 줄은 그 항목의 이름이다(매장명·학교명·자격증명). 여기까지
    흐려지면 무엇에 관한 줄인지가 먼저 사라진다. 한 단계 진하게 둔다. */
 .if-line-head .if-slot:not(.on) { color: #96969c; }
+/* 매장·계정 정보 화면의 SNS 줄("SNS명 | https://")은 아직 아무것도 안 적은
+   자리글이다. 두 토막에 구분 막대까지 있어 한 토막짜리 자리글(예: "숫자만
+   입력해주세요")보다 먹이 많아 보인다 — 그래서 한 단계 더 흐리게 둬야
+   같은 무게로 읽힌다. 값이 들어오면(.on) 원래 색으로 돌아온다. */
+.settings-compact .if-slot:not(.on) { color: #c6c6cb; }
+.settings-compact .if-line:not(:has(.if-slot.on)) .if-sep { color: #d4d4d9; }
 /* 칸 제목 옆에 덧붙이는 흐린 한마디 */
 .resume-title-note { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: #b4b4b9; }
 
