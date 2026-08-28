@@ -288,6 +288,15 @@ export default function CompanySettingsPage() {
   // SNS·홈페이지 — 한 줄만 받는다. 매장이 여러 곳을 쓰더라도 공고에 내보내는 것은
   //   대표 한 곳이면 충분하다(저장은 links 배열에 한 칸, 첫 링크가 website_url 이 된다).
   const 링크한줄 = links[0] || { id: "__빈", category: "", url: "" };
+  /* 계정 통제(로그인) 정보가 아니라 이 사업자가 법적으로 누구인지에 대한 사실이라
+     프로필에 둔다("사업자등록번호는 계정설정보다 프로필이 맞다"). 가입 때 검증한
+     값이라 여기서도 고치지는 못한다. 매장·본사가 짝지을 칸이 달라 조각으로 빼 둔다. */
+  const 사업자번호칸 = (
+    <div className="admin-form-row">
+      <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
+      <span style={{ fontSize: 15, color: info?.business_number ? "#333" : "#bbb" }}>{info?.business_number || "미등록"}</span>
+    </div>
+  );
   const 링크목록 = (
     <div className="admin-form-row">
       <label className="admin-form-label">{칸그림(isStore ? "SNS" : "웹사이트")}{isStore ? "SNS" : "웹사이트"}</label>
@@ -471,13 +480,8 @@ export default function CompanySettingsPage() {
               </div>
               )}
 
-              {/* 계정 통제(로그인) 정보가 아니라 이 사업자가 법적으로 누구인지에 대한
-                  사실이라 프로필로 옮겼다("사업자등록번호는 계정설정보다 프로필이 맞다").
-                  가입 때 검증한 값이라 여기서도 수정은 못 한다. */}
-              <div className="admin-form-row">
-                <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
-                <span style={{ fontSize: 15, color: info?.business_number ? "#333" : "#bbb" }}>{info?.business_number || "미등록"}</span>
-              </div>
+              {/* 이 매장·회사가 무엇인지부터 — 이름과 업종이 맨 위에 온다.
+                  사업자등록번호는 읽기 전용이라 먼저 나올 이유가 없어 아래 짝에 넣었다. */}
               <div className="admin-form-row-2col">
                 <div className="admin-form-row">
                   <label className="admin-form-label">{칸그림(L.name)}{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
@@ -508,8 +512,9 @@ export default function CompanySettingsPage() {
                   본사(매장이 아닌 곳)는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
               {isStore ? (
                 <>
+                {/* 두 칸씩 끝까지 맞아떨어지게 짝을 지었다 — 혼자 남아 반쪽만 차지하는 줄이 없다. */}
                 <div className="admin-form-row-2col">
-                  {링크목록}
+                  {사업자번호칸}
                   <div className="admin-form-row">
                     <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
                     <select className="admin-form-select" data-empty={!form.company_size}
@@ -523,23 +528,42 @@ export default function CompanySettingsPage() {
                 </div>
                 {/* 담당자 휴대폰(계정 설정, 내부용)과는 별개로 예약 문의 등에 쓸 매장 공개
                     번호 — 필수는 아니다("매장전화번호 추가해줘. 필수는 아닌듯"). */}
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
-                  <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
-                    value={formatPhone(form.company_phone)}
-                    onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                <div className="admin-form-row-2col">
+                  <div className="admin-form-row">
+                    <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
+                    <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
+                      value={formatPhone(form.company_phone)}
+                      onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
+                  </div>
+                  {링크목록}
                 </div>
                 </>
               ) : (
                 <>
                   <div className="admin-form-row-2col">
+                    {사업자번호칸}
                     <div className="admin-form-row">
                       <label className="admin-form-label">{칸그림("브랜드명")}브랜드명</label>
                       <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
                         value={form.brand_name}
                         onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
                     </div>
-                    {링크목록}
+                  </div>
+                  <div className="admin-form-row-2col">
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">{칸그림("대표자")}대표자</label>
+                      <input className="admin-form-input" placeholder="예) 홍길동"
+                        value={form.representative_name}
+                        onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
+                    </div>
+                    <div className="admin-form-row">
+                      <label className="admin-form-label">{칸그림("설립연도")}설립연도</label>
+                      <input type="number" className="admin-form-input" placeholder="예) 2020"
+                        style={{ height: 42, boxSizing: "border-box" }}
+                        min="1900" max={new Date().getFullYear()}
+                        value={form.founded_year}
+                        onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
+                    </div>
                   </div>
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
@@ -553,28 +577,15 @@ export default function CompanySettingsPage() {
                       </select>
                     </div>
                     <div className="admin-form-row">
-                      <label className="admin-form-label">{칸그림("설립연도")}설립연도</label>
-                      <input type="number" className="admin-form-input" placeholder="예) 2020"
-                        style={{ height: 42, boxSizing: "border-box" }}
-                        min="1900" max={new Date().getFullYear()}
-                        value={form.founded_year}
-                        onChange={(e) => setForm({ ...form, founded_year: e.target.value })} />
-                    </div>
-                  </div>
-                  <div className="admin-form-row-2col">
-                    <div className="admin-form-row">
-                      <label className="admin-form-label">{칸그림("대표자")}대표자</label>
-                      <input className="admin-form-input" placeholder="예) 홍길동"
-                        value={form.representative_name}
-                        onChange={(e) => setForm({ ...form, representative_name: e.target.value })} />
-                    </div>
-                    <div className="admin-form-row">
                       <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
                       <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
                         value={formatPhone(form.company_phone)}
                         onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                     </div>
                   </div>
+                  {/* 본사는 칸이 홀수라 하나가 짝 없이 남는다. 반쪽만 차지하고 옆이 비는
+                      것보다, 주소·소개처럼 한 줄을 다 쓰게 두는 편이 낫다(주소가 긴 칸이기도 하다). */}
+                  {링크목록}
                 </>
               )}
               {/* 주소도 다른 칸과 같은 결로 — 큰 테두리 상자 둘 대신 라벨 옆 한 줄.
