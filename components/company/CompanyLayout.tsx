@@ -37,6 +37,13 @@ export default function CompanyLayout({ children, activePage }: {
   const [unread, setUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
   const [logoMenuOpen, setLogoMenuOpen] = useState(false);
+  const [meMenuOpen, setMeMenuOpen] = useState(false);
+  const 나가기 = () => {
+    setMeMenuOpen(false);
+    localStorage.removeItem("access_token");
+    useAuthStore.getState().logout();
+    router.push("/company/login");
+  };
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -149,13 +156,15 @@ export default function CompanyLayout({ children, activePage }: {
   // 사이드에 흩어져 있던 것을 한 줄에 세우느라 항목 이름도 짧게 줄였다.
   const TOP_NAV = [
     { id: "dashboard",  label: "홈",          href: base },
-    { id: "settings",   label: "프로필",       href: `${base}/settings` },
+    // 이 갈래에 든 넷 중 프로필은 매장정보 하나뿐이고 나머지는 계정·보안·알림이다.
+    // 넷을 다 덮는 말은 '설정'이라 그렇게 부른다.
+    { id: "settings",   label: "설정",         href: `${base}/settings` },
     { id: "jobs",       label: "채용공고",     href: `${base}/jobs` },
     { id: "talent",     label: "인재풀",       href: `${base}/talent` },
     { id: "applicants", label: "지원자",       href: `${base}/applicants` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
-  // 설정 계열 사이드 메뉴. 머리줄 '프로필'로 들어오면 여기서 갈래가 나뉜다.
+  // 설정 계열 사이드 메뉴. 머리줄 '설정'으로 들어오면 여기서 갈래가 나뉜다.
   //   라벨이 함수인 것은 첫 칸만 매장/본사에 따라 이름이 갈리기 때문이다.
   const SET_NAV = [
     { id: "settings",      label: (info: string) => `${info} 관리`, href: `${base}/settings` },
@@ -164,7 +173,7 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "notifications", label: () => "알림설정",                  href: `${base}/notifications` },
   ];
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
-  // 계정정보·알림설정은 '프로필'의 갈래라(옆 사이드로 들어간다) '프로필'이 켜져 있어야 한다.
+  // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
     : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
@@ -321,6 +330,16 @@ export default function CompanyLayout({ children, activePage }: {
         .co-top-ava img { width: 100%; height: 100%; object-fit: cover; }
         .co-top-mename { font-size: 14px; color: #333; max-width: 120px; overflow: hidden;
           text-overflow: ellipsis; white-space: nowrap; }
+        .co-top-mewrap { position: relative; }
+        .co-top-me { background: none; border: none; padding: 0; cursor: pointer; }
+        .co-top-memask { position: fixed; inset: 0; z-index: 60; }
+        .co-top-memenu { position: absolute; top: 42px; right: 0; z-index: 61; min-width: 132px;
+          background: #fff; border: 1px solid #eee; border-radius: 10px; overflow: hidden;
+          box-shadow: 0 8px 22px rgba(0,0,0,0.14); }
+        .co-top-memenu button { display: flex; align-items: center; gap: 8px; width: 100%;
+          padding: 11px 14px; background: none; border: none; font-size: 14px; color: #333;
+          cursor: pointer; white-space: nowrap; }
+        .co-top-memenu button:hover { background: #f7f7f8; }
         /* 왼쪽 사이드가 빠지면서 판이 넓어졌다. 좁게 짜인 화면(공고 관리·인재풀·프로필)이
            그대로 왼쪽에 붙어 오른쪽이 텅 비어 보여, 제목과 본문을 한 칸에 묶어 가운데에 놓는다.
            칸 너비는 본문이 필요한 만큼이되 판을 넘지 않는다(fit-content) — 그래서 넓은 화면은
@@ -396,13 +415,29 @@ export default function CompanyLayout({ children, activePage }: {
                 </>
               )}
             </div>
-            {/* 아바타와 담당자 이름 — 누르면 계정 설정으로. 이 계정의 책임자가 담당자다. */}
-            <Link href={`${base}/account`} className="co-top-me" title="계정 설정">
-              <span className="co-top-ava">
-                {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
-              </span>
-              <span className="co-top-mename">{companyInfo.manager || companyInfo.name || "담당자"}</span>
-            </Link>
+            {/* 아바타와 담당자 이름 — 누르면 로그아웃만 나온다. 계정 갈래는 '설정' 메뉴가
+                맡으므로, 여기서 또 같은 곳으로 가는 문을 내지 않는다. */}
+            <div className="co-top-mewrap">
+              <button type="button" className="co-top-me" title="담당자 메뉴"
+                aria-haspopup="menu" aria-expanded={meMenuOpen}
+                onClick={() => setMeMenuOpen((v) => !v)}>
+                <span className="co-top-ava">
+                  {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
+                </span>
+                <span className="co-top-mename">{companyInfo.manager || companyInfo.name || "담당자"}</span>
+              </button>
+              {meMenuOpen && (
+                <>
+                  {/* 바깥을 누르면 닫힌다 */}
+                  <div className="co-top-memask" onClick={() => setMeMenuOpen(false)} />
+                  <div className="co-top-memenu" role="menu">
+                    <button type="button" role="menuitem" onClick={나가기}>
+                      <LogOut size={15} />로그아웃
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
