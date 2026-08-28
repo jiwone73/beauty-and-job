@@ -443,11 +443,15 @@ export default function CompanySettingsPage() {
                         ) : (
                           /* 빈 칸이 곧 올리기 단추다. 무엇을 올리는 자리인지만 적고,
                              누르면 된다는 신호는 아래 연필 단추가 맡는다. */
-                          <span style={{position:"absolute", inset:0, display:"flex",
-                            alignItems:"center", justifyContent:"center", color:"#a99bbd"}}>
-                            {signboardUploading
-                              ? <span style={{fontSize:11}}>올리는 중…</span>
-                              : <span style={{fontSize:11.5, fontWeight:500}}>로고 / 간판</span>}
+                          <span style={{position:"absolute", inset:0, display:"flex", flexDirection:"column",
+                            alignItems:"center", justifyContent:"center", gap:2, color:"#a99bbd"}}>
+                            {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
+                              <>
+                                <span style={{fontSize:11.5, fontWeight:500}}>로고 / 간판</span>
+                                {/* 고르기 창이 받는 것과 같은 목록(accept) — 다른 파일을 골랐다 되돌아오는 일을 던다 */}
+                                <span style={{fontSize:8.5, color:"#c4b8d3"}}>JPG · PNG · WEBP</span>
+                              </>
+                            )}
                           </span>
                         )}
                         {/* 사진이 있든 없든 늘 같은 자리에 있는 '고치기' 표시.
@@ -467,8 +471,10 @@ export default function CompanySettingsPage() {
                           <X size={10} />
                         </button>
                       )}
+                      {/* 카드 아래 글자도 위 '로고 / 간판'과 같은 크기·굵기·색으로 — 둘 다
+                          아직 안 채워진 자리를 보여주는 견본이라 무게가 같아야 한다. */}
                       <div className="jobcard-body" style={{padding:"5px 9px 7px"}}>
-                        <p className="jobcard-title" style={{fontSize:10.5, fontWeight:500, color:"#9a9aa2",
+                        <p className="jobcard-title" style={{fontSize:11.5, fontWeight:500, color:"#a99bbd",
                           margin:0, textAlign:"center"}}>
                           채용공고
                         </p>
