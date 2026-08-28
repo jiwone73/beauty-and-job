@@ -361,14 +361,19 @@ export default function CompanyLayout({ children, activePage }: {
            이 style 안에서는 자식 선택자(꺾쇠) 를 쓰지 않는다 — 서버가 그 글자를
            빠져나가게 적어 보내는 바람에 클라이언트 글자와 어긋나 hydration 오류가
            났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
-        .co-set-wrap { display: flex; align-items: flex-start; gap: 24px;
+        /* 두 칸·두 줄 격자. 제목은 오른쪽 칸 첫 줄에, 사이드와 본문 카드는 둘째 줄에
+           나란히 — 그래야 두 카드의 위 끝이 저절로 맞는다. */
+        .co-set-wrap { display: grid; grid-template-columns: 196px minmax(0, 800px);
+          gap: 0 24px; justify-content: center; align-items: start;
           width: 1020px; max-width: 100%; }
+        .co-set-title { grid-column: 2; grid-row: 1; }
+        .co-set-side  { grid-column: 1; grid-row: 2; }
+        .co-set-main  { grid-column: 2; grid-row: 2; }
         /* 사이드도 본문과 같은 흰 카드. 둘 사이 여백이 이미 갈라 주므로 세로 구분선은
            두지 않는다 — 선과 카드 테두리가 나란히 서면 두 줄로 보인다. */
-        .co-set-side { width: 196px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+        .co-set-side { display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px;
           background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; padding: 18px 12px; }
-        .co-set-main { flex: 1; min-width: 0; }
         .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
@@ -480,13 +485,13 @@ export default function CompanyLayout({ children, activePage }: {
                 </Link>
               ))}
             </nav>
-            <main className="company-content co-set-main">
-              {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
-              <h1 className="co-set-title">
-                {SET_NAV.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
-              </h1>
-              {children}
-            </main>
+            {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정).
+                본문 칸 위에 놓되 본문 안에 넣지는 않는다 — 안에 두면 그만큼 본문만 아래로
+                밀려 사이드 카드와 위 끝이 어긋난다. */}
+            <h1 className="co-set-title">
+              {SET_NAV.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
+            </h1>
+            <main className="company-content co-set-main">{children}</main>
           </div>
         ) : (
           <main className="company-content">{children}</main>
