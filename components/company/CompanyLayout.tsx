@@ -307,15 +307,11 @@ export default function CompanyLayout({ children, activePage }: {
   const logoImg = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
 
   return (
-    <div className={`co-top${SET_NAV.some((m) => m.id === activePage) ? " co-top-set" : ""}`}>
+    <div className="co-top">
       <style>{`
         /* 메인 사이트 머리줄(.header/.header-inner)과 같은 판·높이·여백을 쓴다.
            기업 화면만 다른 껍데기를 쓰면 같은 서비스로 안 읽힌다. */
         .co-top { min-height: 100vh; background: #fff; }
-        /* 설정 계열만 옅은 회색 바탕. 흰 바탕에 흰 카드를 얹으면 경계가 얇은 테두리
-           하나뿐이라 흐릿하고, 무엇으로 갈라도 선이 겹쳐 보인다. 바탕을 한 톤 내리면
-           카드가 저절로 떠올라 가르는 선 자체가 필요 없어진다. */
-        .co-top.co-top-set { background: #f7f7f9; }
         /* 글자 크기·굵기·색은 메인 사이트 메뉴(.gnb)와 같은 값을 쓴다 */
         .co-top-nav { display: flex; gap: 28px; flex: 1; margin-left: 22px; }
         .co-top-nav a { font-size: 16px; font-weight: 500; color: #2b2b2b; text-decoration: none;
@@ -361,27 +357,23 @@ export default function CompanyLayout({ children, activePage }: {
            이 style 안에서는 자식 선택자(꺾쇠) 를 쓰지 않는다 — 서버가 그 글자를
            빠져나가게 적어 보내는 바람에 클라이언트 글자와 어긋나 hydration 오류가
            났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
-        /* 두 칸·두 줄 격자. 제목은 오른쪽 칸 첫 줄에, 사이드와 본문 카드는 둘째 줄에
-           나란히 — 그래야 두 카드의 위 끝이 저절로 맞는다. */
-        .co-set-wrap { display: grid; grid-template-columns: 196px minmax(0, 800px);
-          gap: 0 24px; justify-content: center; align-items: start;
-          width: 1020px; max-width: 100%; }
-        .co-set-title { grid-column: 2; grid-row: 1; }
-        .co-set-side  { grid-column: 1; grid-row: 2; }
-        .co-set-main  { grid-column: 2; grid-row: 2; }
-        /* 사이드도 본문과 같은 흰 카드. 둘 사이 여백이 이미 갈라 주므로 세로 구분선은
-           두지 않는다 — 선과 카드 테두리가 나란히 서면 두 줄로 보인다. */
-        .co-set-side { display: flex; flex-direction: column; gap: 2px;
-          position: sticky; top: 92px;
-          background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; padding: 18px 12px; }
+        .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
+          width: 1018px; max-width: 100%; }
+        .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+          position: sticky; top: 92px; }
+        /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
+           네 줄뿐이라 거기 붙이면 선이 중간에서 끊긴다(218px vs 894px). 선은 여백
+           28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
+        .co-set-main { flex: 1; min-width: 0;
+          border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
         .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.
            (이 style 은 글자 그대로 나가므로 따옴표·꺾쇠·＆ 를 쓰지 않는다 — 서버가
             그 글자를 빠져나가게 적어 보내 클라이언트와 어긋나면서 hydration 오류가 난다.) */
-        .co-set-head { font-size: 14px; font-weight: 400; color: #9a9aa2;
-          padding: 0 10px; margin: 0 0 10px; }
+        .co-set-head { font-size: 19px; font-weight: 400; color: #1a1a1a;
+          padding: 0 12px; margin: 0 0 14px; }
         .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
@@ -389,7 +381,10 @@ export default function CompanyLayout({ children, activePage }: {
         .co-set-item.on { background: #f4f0f8; color: var(--color-primary); font-weight: 600; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
-
+        /* 다만 설정 화면은 왼쪽에 구분선이 있어 그만큼 안쪽으로 밀어야 한다. 위 규칙이
+           !important 라 같은 무게로 뒤에 한 번 더 적는다 — 안 그러면 선과 카드 테두리가
+           1px 차이로 겹쳐 두 줄로 보인다. */
+        .co-top-body .co-set-main { padding-left: 14px !important; }
       `}</style>
 
       <header className="header">
@@ -485,13 +480,13 @@ export default function CompanyLayout({ children, activePage }: {
                 </Link>
               ))}
             </nav>
-            {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정).
-                본문 칸 위에 놓되 본문 안에 넣지는 않는다 — 안에 두면 그만큼 본문만 아래로
-                밀려 사이드 카드와 위 끝이 어긋난다. */}
-            <h1 className="co-set-title">
-              {SET_NAV.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
-            </h1>
-            <main className="company-content co-set-main">{children}</main>
+            <main className="company-content co-set-main">
+              {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
+              <h1 className="co-set-title">
+                {SET_NAV.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
+              </h1>
+              {children}
+            </main>
           </div>
         ) : (
           <main className="company-content">{children}</main>

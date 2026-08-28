@@ -5864,11 +5864,9 @@ div:has(> table.admin-table),
   .settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
 }
 .settings-compact .admin-form-row {
-  padding: 16px 0;
-  border-bottom: 1px solid #f4f4f6;
+  padding: 13px 0;
+  border-bottom: 1px solid #f2f2f2;
 }
-/* 카드 안쪽 여백. 값이 짧은 칸들이라 빽빽하면 오히려 답답해 보인다. */
-.settings-compact { padding: 8px 26px !important; }
 /* 2열의 오른쪽 칸은 제 부모(.admin-form-row-2col)의 마지막 자식이라 이 규칙에 걸려
    업종·직원수·담당자 휴대폰 밑줄이 통째로 사라졌다. 맨 끝 줄만 걷는다. */
 .settings-compact > .admin-form-row:last-child,
@@ -5901,11 +5899,7 @@ div:has(> table.admin-table),
   background: transparent !important; width: 100%; color: #333;
 }
 /* 기업 소개(textarea)는 여러 줄이라 블록 대신 옅은 배경만 */
-/* 매장 소개만 회색 상자라 밑줄만 있는 다른 칸들 사이에서 혼자 튀었다.
-   같은 결로 — 바탕 없이 옅은 테두리만 두고, 쓰는 동안에만 또렷해진다. */
-.settings-compact .admin-form-textarea { background: #fff; border: 1px solid #f0f0f2;
-  border-radius: 8px; }
-.settings-compact .admin-form-textarea:focus { border-color: #d9cde6; background: #fff; }
+.settings-compact .admin-form-textarea { background: #f7f7f8; border: none; border-radius: 8px; }
 .settings-compact .admin-form-row:has(> .admin-form-label) > *:not(.admin-form-label) {
   grid-column: 1; grid-row: 2; min-width: 0;
   justify-self: start;
