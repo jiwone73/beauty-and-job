@@ -2,15 +2,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { UserRound, Smartphone, Mail, KeyRound, UserX, Building2 } from "lucide-react";
+import { UserRound, Smartphone, Mail, Building2 } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { InlineText } from "@/components/profile/inline/InlineField";
-import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
-// 계정 설정 — 매장정보(프로필)에서 담당자 정보를 옮겨와 이메일·비밀번호·탈퇴와
-// 한자리에 모은다("이 계정의 책임자는 담당자이지. 담당자 정보를 계정 설정으로
-// 옮기자는거야?"). 프로필은 매장을 소개하는 정보고, 여기는 이 계정을 누가
-// 책임지고 어떻게 로그인하는가에 대한 정보라 성격이 다르다.
+// 계정 설정 — 매장정보(프로필)에서 담당자 정보를 옮겨왔다("이 계정의 책임자는
+// 담당자이지. 담당자 정보를 계정 설정으로 옮기자는거야?"). 프로필은 매장을 소개하는
+// 정보고, 여기는 이 계정을 누가 책임지고 어떻게 로그인하는가에 대한 정보다.
+// 비밀번호 변경은 사이드의 제 화면으로 나갔고, 탈퇴는 카드 밖 링크로만 남는다.
 export default function CompanyAccountPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -125,32 +124,6 @@ export default function CompanyAccountPage() {
     finally { setEmailBusy(false); }
   };
 
-  // 비밀번호 변경
-  const [showPwModal, setShowPwModal] = useState(false);
-  const [showPw, setShowPw] = useState(false);
-  const [pwForm, setPwForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
-  const [pwSaving, setPwSaving] = useState(false);
-  const handleChangePassword = async () => {
-    if (!pwForm.current_password || !pwForm.new_password) {
-      alert("현재 비밀번호와 새 비밀번호를 입력해주세요.");
-      return;
-    }
-    const pwErr = passwordError(pwForm.new_password);
-    if (pwErr) { alert(pwErr); return; }
-    if (pwForm.new_password !== pwForm.confirm_password) {
-      alert("새 비밀번호가 일치하지 않습니다.");
-      return;
-    }
-    setPwSaving(true);
-    try {
-      await companyMeApi.changePassword({ current_password: pwForm.current_password, new_password: pwForm.new_password });
-      alert("비밀번호가 변경되었습니다.");
-      setShowPwModal(false);
-      setPwForm({ current_password: "", new_password: "", confirm_password: "" });
-    } catch (e: any) { alert(e?.message || "비밀번호 변경 중 오류가 발생했습니다."); }
-    finally { setPwSaving(false); }
-  };
-
   // 제목 밑에 내용, 내용은 제목 첫 글자(아이콘+간격만큼 들여쓴 자리)에 맞춘다
   // ("제목 밑에 내용으로 통일되게, 내용은 제목 첫글자에 맞쳐줘").
   const row = { display: "flex" as const, flexDirection: "column" as const, gap: 6, padding: "15px 0", borderBottom: "1px solid #f0f0f0" };
@@ -187,7 +160,7 @@ export default function CompanyAccountPage() {
               </div>
 
               <div className="admin-form-row-2col">
-                <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, cursor: "pointer" }}>
+                <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                     <span style={{ fontSize: 14, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
@@ -197,7 +170,7 @@ export default function CompanyAccountPage() {
 
                 <div className="admin-form-row"
                   onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
-                  style={{ ...row, cursor: "pointer" }}>
+                  style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                     <span style={{ fontSize: 14, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
@@ -206,25 +179,18 @@ export default function CompanyAccountPage() {
                 </div>
               </div>
 
-              {/* 비밀번호와 탈퇴는 나머지와 성격이 다르다(계정을 다루는 일).
-                  마지막 줄이라 아래 선은 지운다. */}
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row" onClick={() => setShowPwModal(true)} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
-                  <label className="admin-form-label" style={label}><KeyRound size={15} className="admin-form-icon" />비밀번호</label>
-                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
-                    변경하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
-                  </span>
-                </div>
-
-                <div className="admin-form-row" onClick={() => router.push("/company/dashboard/account/withdraw")}
-                  style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
-                  <label className="admin-form-label" style={label}><UserX size={15} className="admin-form-icon" />회원 탈퇴</label>
-                  <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, color: "#cfcfcf", fontSize: 14 }}>
-                    탈퇴하기 <span style={{ color: "#ccc", fontSize: 16 }}>›</span>
-                  </span>
-                </div>
-              </div>
             </div>
+          </div>
+        )}
+        {/* 탈퇴는 이 화면에서 유일하게 되돌릴 수 없는 일이라, 고치는 칸들과 같은 줄에
+            세우지 않는다. 카드 밖 오른쪽 아래에 작은 링크로만 둔다. */}
+        {!loading && (
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
+            <button type="button" onClick={() => router.push("/company/dashboard/account/withdraw")}
+              style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
+                fontSize: 13, color: "#a0a0a6", textDecoration: "underline", textUnderlineOffset: 3 }}>
+              회원 탈퇴
+            </button>
           </div>
         )}
       </div>
@@ -301,38 +267,6 @@ export default function CompanyAccountPage() {
         </div>
       )}
 
-      {showPwModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 16px" }}>비밀번호 변경</h3>
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="현재 비밀번호"
-              value={pwForm.current_password}
-              onChange={(e) => setPwForm({ ...pwForm, current_password: e.target.value })} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder={`새 비밀번호 (${PASSWORD_HINT})`}
-              style={{ marginTop: 8 }}
-              value={pwForm.new_password}
-              onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"} placeholder="새 비밀번호 확인"
-              style={{ marginTop: 8 }}
-              value={pwForm.confirm_password}
-              onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })} />
-            <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10, fontSize: 13, color: "#888", cursor: "pointer" }}>
-              <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
-              비밀번호 표시
-            </label>
-            <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
-              <button onClick={() => setShowPwModal(false)} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
-                취소
-              </button>
-              <button onClick={handleChangePassword} disabled={pwSaving}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: pwSaving ? "not-allowed" : "pointer", opacity: pwSaving ? 0.7 : 1 }}>
-                {pwSaving ? "변경 중..." : "변경하기"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </CompanyLayout>
   );
 }

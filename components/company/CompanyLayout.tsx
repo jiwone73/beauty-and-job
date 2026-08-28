@@ -20,6 +20,7 @@ const PAGE_TITLES: Record<string, string> = {
   scrapped: "스크랩 인재",
   settings: "기업 정보",
   account: "계정 설정",
+  password: "비밀번호 변경",
   notifications: "알림설정",
 };
 
@@ -159,6 +160,7 @@ export default function CompanyLayout({ children, activePage }: {
   const SET_NAV = [
     { id: "settings",      label: (info: string) => `${info} 관리`, href: `${base}/settings` },
     { id: "account",       label: () => "계정정보 관리",             href: `${base}/account` },
+    { id: "password",      label: () => "비밀번호 변경",             href: `${base}/account/password` },
     { id: "notifications", label: () => "알림설정",                  href: `${base}/notifications` },
   ];
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
