@@ -339,12 +339,13 @@ export default function JobPostForm({
     : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
         border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#666",
         fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" };
-  // 배너 칸이 비어 있으면 "공고마다 또 올려야 하나" 싶어 그냥 넘어가기 쉽다.
-  // 한 번 등록해 두면 자동으로 들어온다는 걸 이 자리에서 알려 준다.
   const infoPageLabel = companyProfile?.company_type === "OFFICE" ? "기업정보" : "매장정보";
+  // 배너 칸이 비어 있으면 무슨 사진을 올리는 자리인지 몰라 그냥 넘어가기 쉽다.
+  // (배너는 프로필이 아니라 공고마다 이 자리에서 올린다.)
   const bannerHint = mode === "company" && bannerImages.length === 0 ? (
     <p style={{ fontSize: 12.5, color: "#999", lineHeight: 1.55, margin: "8px 0 0" }}>
-      {infoPageLabel}에 배너를 등록해 두면 공고를 올릴 때마다 자동으로 들어가요.
+      {companyProfile?.company_type === "OFFICE" ? "사무실이나 팀 사진" : "매장 내부·외관 사진"}을 올리면
+      공고 맨 위에 크게 붙어요. 2장 이상 올리면 나란히 놓여 가로로 꽉 차요.
     </p>
   ) : null;
   const [nmCoverUploading, setNmCoverUploading] = useState(false);

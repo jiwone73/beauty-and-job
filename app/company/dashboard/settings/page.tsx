@@ -2,13 +2,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Save, Camera, ImagePlus, Wand2, X, ChevronRight } from "lucide-react";
+import { Save, Camera, X, ChevronRight, Pencil } from "lucide-react";
 import { companyMeApi } from "@/lib/api/company";
 import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
 import ImageCropModal from "@/components/ImageCropModal";
-import BannerStrip from "@/components/jobs/BannerStrip";
-import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { SNS찾기 } from "@/lib/snsPresets";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
 import { Plus, Trash2, Store, Tag, Link as LinkIcon, Globe, Users, Calendar,
@@ -42,9 +40,6 @@ export default function CompanySettingsPage() {
   const [signboardUrl, setSignboardUrl] = useState<string | null>(null);
   const [signboardUploading, setSignboardUploading] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
-  const [coverImages, setCoverImages] = useState<{ url: string; name?: string }[]>([]);
-  const [coverUploading, setCoverUploading] = useState(false);
-  const [coverStart, setCoverStart] = useState(0);
   /** 항목마다 왼쪽에 놓는 아이콘. 라벨 이름으로 고른다 — 칸이 늘어도 여기만 손보면 된다. */
   const 칸그림 = (이름: string) => {
     const 표: Record<string, any> = {
@@ -60,7 +55,6 @@ export default function CompanySettingsPage() {
     return G ? <G size={15} className="admin-form-icon" /> : null;
   };
 
-  const [samplePreset, setSamplePreset] = useState(0);   // 샘플 배너 배경 — 공고 등록 화면과 같은 목록
   // SNS·홈페이지 — 개인회원 프로필과 같은 방식으로 여러 개를 담는다.
   //   website_url 은 열다섯 곳에서 읽고 있어 그대로 두고, 첫 링크를 늘 거기에 맞춘다.
   const [links, setLinks] = useState<{ id: string; category: string; url: string }[]>([]);
@@ -102,8 +96,6 @@ export default function CompanySettingsPage() {
         setInfo(res.data);
         setLogoUrl((res.data as any).logo_url || null);
         setSignboardUrl((res.data as any).signboard_url || null);
-        const cov = (res.data as any).cover_images;
-        setCoverImages(Array.isArray(cov) ? cov.filter((c: any) => c?.url) : []);
         // 링크 목록. 아직 없으면 여태 쓰던 website_url 한 줄로 시작한다.
         const raw = (res.data as any).links;
         const 온것 = Array.isArray(raw) ? raw.filter((l: any) => l?.url) : [];
@@ -227,109 +219,6 @@ export default function CompanySettingsPage() {
     }
   };
 
-  // 배너 영역 버튼 — 공고 등록 화면과 같은 모양.
-  // 모바일은 제목 글자 높이를 넘지 않게 작게 줄이고, 아이콘 대신 짧은 글자만 남긴다.
-  const bannerBtn = (on: boolean): React.CSSProperties => isMobile
-    ? { display: "inline-flex", alignItems: "center", justifyContent: "center", height: 18, padding: "0 6px",
-        borderRadius: 5, border: "1px solid #dcdce0", background: on ? "#f4f4f6" : "#fff",
-        color: on ? "#582681" : "#777", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
-        cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }
-    : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
-        border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#666",
-        fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" };
-
-  // 샘플 배너 — 쓸 만한 매장 사진이 없어도 배너를 비워 두지 않게, 준비된 배경에 문구만 얹어 만든다.
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [sampleText, setSampleText] = useState("");
-  const [sampleBusy, setSampleBusy] = useState(false);
-  const addSampleBanner = async () => {
-    const text = sampleText.trim();
-    if (!text) { alert("배너에 넣을 문구를 입력해주세요."); return; }
-    const token = localStorage.getItem("access_token");
-    if (!token) { alert("로그인이 필요합니다."); return; }
-    setSampleBusy(true);
-    try {
-      const canvas = document.createElement("canvas");
-      await drawSampleBanner(canvas, BANNER_PRESETS[samplePreset] || BANNER_PRESETS[0], text);
-      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png", 0.92));
-      if (!blob) { alert("배너 생성에 실패했어요."); return; }
-      const fd = new FormData();
-      fd.append("file", new File([blob], `sample-banner-${text.slice(0, 8)}.png`, { type: "image/png" }));
-      const res = await fetch("/api/company/me/cover", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: fd });
-      const data = await res.json();
-      if (data.success) {
-        const cov = data.data.cover_images;
-        if (Array.isArray(cov)) setCoverImages(cov.filter((c: any) => c?.url));
-        setSampleOpen(false); setSampleText("");
-      } else alert(data.error?.message || "배너 등록에 실패했어요.");
-    } finally { setSampleBusy(false); }
-  };
-
-  // 여러 장을 한 번에 고르면, 한 장씩 순서대로 자르기 화면을 띄운다.
-  const [coverCropQueue, setCoverCropQueue] = useState<File[]>([]);
-  const [coverCropCurrent, setCoverCropCurrent] = useState<File | null>(null);
-
-  const handleCoverPick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    e.target.value = "";
-    if (!files.length) return;
-    setCoverCropCurrent(files[0]);
-    setCoverCropQueue(files.slice(1));
-  };
-
-  const uploadOneCover = async (file: File) => {
-    const token = localStorage.getItem("access_token");
-    if (!token) { alert("로그인이 필요합니다."); return; }
-    setCoverUploading(true);
-    try {
-      const resized = await downscaleImage(file, { maxDim: 1600, mime: "image/jpeg" });
-      const fd = new FormData();
-      fd.append("file", resized);
-      const res = await fetch("/api/company/me/cover", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const data = await res.json();
-      if (data.success) {
-        const cov = data.data.cover_images;
-        if (Array.isArray(cov)) setCoverImages(cov.filter((c: any) => c?.url));
-      } else {
-        alert(data.error?.message || "이미지 업로드에 실패했습니다.");
-      }
-    } finally {
-      setCoverUploading(false);
-    }
-  };
-
-  const handleCoverCropped = async (blob: Blob) => {
-    const file = coverCropCurrent!;
-    setCoverCropCurrent(null);
-    await uploadOneCover(new File([blob], (file.name.replace(/\.[^.]+$/, "") || "banner") + ".webp", { type: "image/webp" }));
-    setCoverCropQueue((prev) => {
-      if (prev.length) { setCoverCropCurrent(prev[0]); return prev.slice(1); }
-      return prev;
-    });
-  };
-
-  const handleCoverDeleteOne = async (url: string) => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    try {
-      const res = await fetch("/api/company/me/cover", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data?.cover_images)) {
-        setCoverImages(data.data.cover_images.filter((c: any) => c?.url));
-        setCoverStart(0);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
   // 직원수 구간은 매장과 본사가 다르다. 미용실은 1인샵~20명 남짓이 현실 범위라
   // "300~1000명" 같은 칸을 보여주면 고를 게 없다.
   const SIZE_OPTIONS = isStore
@@ -528,10 +417,6 @@ export default function CompanySettingsPage() {
                     바뀌는 곳이 같아야 무엇을 하는 건지 설명이 필요 없다. 실물과
                     어긋나지 않게 채용공고 카드와 같은 class 를 쓴다. */}
                 <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"8px"}}>
-                  {/* 무엇을 올리는지만 한 줄로 말한다. 어디에 쓰이는지는 아래 카드 그림이 설명한다. */}
-                  <p style={{fontSize:"13px", color:"#8a8a90", margin:0, textAlign:"center"}}>
-                    매장 <b style={{color:"#582681", fontWeight:500}}>로고</b> / <b style={{color:"#582681", fontWeight:500}}>간판</b>
-                  </p>
                   <div style={{width:114, flexShrink:0}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
                       /* 지우기 단추가 이 카드 안에 자리 잡도록 기준을 준다 */
@@ -545,17 +430,23 @@ export default function CompanySettingsPage() {
                         {signboardUrl ? (
                           <img src={signboardUrl} alt="채용공고 썸네일" className="jobcard-cover-img" />
                         ) : (
-                          /* 빈 칸이 곧 올리기 단추다. 카메라와 한 줄로 무엇을 하는지 말한다. */
-                          <span style={{position:"absolute", inset:0, display:"flex", flexDirection:"column",
-                            alignItems:"center", justifyContent:"center", gap:4, color:"#a99bbd"}}>
-                            {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
-                              <>
-                                <Camera size={18} />
-                                <span style={{fontSize:10.5}}>사진 올리기</span>
-                              </>
-                            )}
+                          /* 빈 칸이 곧 올리기 단추다. 무엇을 올리는 자리인지만 적고,
+                             누르면 된다는 신호는 아래 연필 단추가 맡는다. */
+                          <span style={{position:"absolute", inset:0, display:"flex",
+                            alignItems:"center", justifyContent:"center", color:"#a99bbd"}}>
+                            {signboardUploading
+                              ? <span style={{fontSize:11}}>올리는 중…</span>
+                              : <span style={{fontSize:11.5, fontWeight:500}}>로고 / 간판</span>}
                           </span>
                         )}
+                        {/* 사진이 있든 없든 늘 같은 자리에 있는 '고치기' 표시.
+                            label 안이라 이 동그라미를 눌러도 파일 고르기가 열린다. */}
+                        <span style={{position:"absolute", right:4, bottom:4, width:19, height:19,
+                          borderRadius:"50%", background:"#582681", color:"#fff", display:"flex",
+                          alignItems:"center", justifyContent:"center",
+                          boxShadow:"0 1px 3px rgba(0,0,0,0.28)", zIndex:2}}>
+                          <Pencil size={10} />
+                        </span>
                       </label>
                       {signboardUrl && (
                         <button type="button" onClick={handleSignboardDelete} title="사진 지우기"
@@ -577,92 +468,6 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
               )}
-
-              {/* 공고 상단 배너 (여러 장) */}
-              <div className="admin-form-row">
-                {/* 버튼은 제목 바로 옆에 붙인다(공고 등록 화면과 같은 자리).
-                    모바일은 테두리·아이콘을 빼고 글자만 남겨 좁은 폭을 제목에 내준다. */}
-                <div style={{display:"flex", alignItems:"center", gap:6, marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림("공고배너 이미지")}공고배너 이미지</label>
-                  <label title="여러 장 추가할 수 있어요" style={{...bannerBtn(false), cursor: coverUploading ? "wait" : "pointer"}}>
-                    {!isMobile && <ImagePlus size={17} />}{coverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
-                    <input type="file" accept="image/jpeg,image/png,image/webp" multiple
-                      disabled={coverUploading} onChange={handleCoverPick} style={{display:"none"}} />
-                  </label>
-                  <button type="button"
-                    onClick={() => setSampleOpen((v) => {
-                      // 배너에 들어갈 문구는 매장명으로 시작하는 게 대부분이라 열 때 미리 채워 둔다.
-                      if (!v && !sampleText.trim()) setSampleText(form.company_name || "");
-                      return !v;
-                    })}
-                    title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(sampleOpen)}>
-                    {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
-                  </button>
-                </div>
-                {coverImages.length === 0 ? (
-                  /* 무슨 사진을 받는 칸인지 먼저 말한다. '이미지'라고만 하면 로고나
-                     공고 포스터가 올라와 배너가 글자로 뒤덮인다. 여기 올린 사진은
-                     공고를 쓸 때 '불러오기'로 가져다 쓴다. */
-                  /* 빈 칸도 배너 한 쪽과 같은 6:2 로 둔다 — 올리기 전에도 어떤
-                     모양으로 들어갈 자리인지 보인다. */
-                  <div style={{aspectRatio:"6 / 2", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:5, padding:12,
-                    background:"#f7f7f8", border:"1px dashed #efeff1", borderRadius:10, textAlign:"center", lineHeight:1.5}}>
-                    <div style={{fontSize:13.5, color:"#8a8a8f"}}>
-                      {isStore ? "매장 내·외관 홍보 사진" : "회사·사무실 홍보 사진"}
-                    </div>
-                    <div style={{fontSize:12, color:"#b4b4b9"}}>
-                      여기 올려 두면 공고를 쓸 때 그대로 불러와요
-                    </div>
-                    <div style={{fontSize:12, color:"#b4b4b9"}}>
-                      쓸 만한 사진이 없다면 <b style={{color:"#582681", fontWeight:600}}>샘플 배너</b>로 문구만 넣어 만들어 보세요
-                    </div>
-                  </div>
-                ) : (
-                  /* 공고 상세와 같은 컴포넌트 — 여기서 보이는 모양이 실제 공고 배너와 같다. */
-                  <BannerStrip images={coverImages.map((c) => c.url)} onDelete={handleCoverDeleteOne} />
-                )}
-                {sampleOpen && (
-                  <div style={{marginTop:10, padding:12, border:"1px solid #efeff1", borderRadius:10, background:"#f7f7f8"}}>
-                    <div style={{fontSize:13, color:"#582681", fontWeight:600, marginBottom:8}}>
-                      샘플 배너 만들기 <span style={{fontWeight:400, color:"#999"}}>· 가운데 문구만 넣어요(줄바꿈 가능)</span>
-                    </div>
-                    <textarea value={sampleText} onChange={(e) => setSampleText(e.target.value)} rows={2}
-                      placeholder={`${form.company_name || "리안헤어 광명점"}\n함께 일할 디자이너를 찾습니다 (자유 입력)`}
-                      style={{width:"100%", boxSizing:"border-box", border:"1px solid #efeff1", borderRadius:8, padding:"8px 10px", fontSize:14, resize:"vertical", outline:"none"}} />
-                    {/* 배경 고르기 — 여태 첫 배경 하나로 고정돼 있어 샘플 배너를 쓴 매장이 다 같아 보였다.
-                        공고 등록 화면과 같은 목록을 여기에도 둔다. */}
-                    <div style={{display:"flex", flexWrap:"wrap", gap:8, margin:"10px 0"}}>
-                      {BANNER_PRESETS.map((pr, i) => (
-                        <button key={pr.key} type="button" onClick={() => setSamplePreset(i)}
-                          title={pr.label}
-                          style={{width:168, height:62, borderRadius:8, cursor:"pointer", overflow:"hidden",
-                            border: samplePreset === i ? "2px solid #582681" : "1.5px solid #efeff1",
-                            backgroundImage:`url(${pr.img})`, backgroundSize:"cover", backgroundPosition:"center",
-                            color: pr.text, fontSize:11, fontWeight:700, padding:"0 8px",
-                            textOverflow:"ellipsis", whiteSpace:"nowrap"}}>
-                          {/* 배경 이름 대신 실제로 들어갈 글자를 얹는다 — 고르기 전에 결과가 보인다.
-                              (배경 이름은 마우스를 올리면 title 로 뜬다) */}
-                          {sampleText.trim().split("\n")[0] || form.company_name || pr.label}
-                        </button>
-                      ))}
-                    </div>
-                    <div style={{display:"flex", gap:8, marginTop:10}}>
-                      <button type="button" onClick={addSampleBanner} disabled={sampleBusy || !sampleText.trim()}
-                        className="company-primary-btn" style={{padding:"8px 16px", fontSize:13, opacity:(sampleBusy || !sampleText.trim()) ? 0.6 : 1}}>
-                        {sampleBusy ? "만드는 중…" : "배너로 추가"}
-                      </button>
-                      <button type="button" onClick={() => setSampleOpen(false)}
-                        style={{border:"1px solid #efeff1", background:"#fff", borderRadius:8, padding:"8px 14px", fontSize:13, cursor:"pointer", color:"#666"}}>취소</button>
-                    </div>
-                  </div>
-                )}
-                {/* 여기서 한 번 올리면 공고마다 다시 올릴 필요가 없다는 점을 알려, 공고 등록 단계의 부담을 덜어준다. */}
-                <p style={{fontSize:"12.5px", color:"#999", margin:"6px 0 0", lineHeight:1.55}}>
-                  채용공고 상단에 배너로 표시돼요. {isStore ? "매장 내부·외관 사진" : "사무실이나 팀 사진"}을 올리면 홍보에도 좋아요.<br />
-                  한 번 등록해 두면 공고를 올릴 때마다 자동으로 들어가요.<br />
-                  2장 이상 올리면 나란히 놓여 가로로 꽉 차요. 1장만 올릴 때는 6:2로 잘라야 꽉 차고, 아니면 양옆에 여백이 남아요.
-                </p>
-              </div>
 
               {/* 계정 통제(로그인) 정보가 아니라 이 사업자가 법적으로 누구인지에 대한
                   사실이라 프로필로 옮겼다("사업자등록번호는 계정설정보다 프로필이 맞다").
@@ -849,18 +654,6 @@ export default function CompanySettingsPage() {
           minLongEdge={900}
           onCancel={() => setCropFile(null)}
           onCropped={handleSignboardCropped} />
-      )}
-      {coverCropCurrent && (
-        /* 배너 띠 한 쪽은 3:2 칸 둘이라 6:2 다 — 2장 이상이면 각 칸(3:2),
-           1장뿐이면 그 한 장이 쪽을 통째로 쓰므로 6:2 가 꽉 찬다. */
-        <ImageCropModal file={coverCropCurrent}
-          guides={[
-            { key: "3:2", ratio: 3 / 2, note: "2장 이상" },
-            { key: "6:2", ratio: 3, note: "1장만" },
-          ]}
-          minLongEdge={1200}
-          onCancel={() => { setCoverCropCurrent(null); setCoverCropQueue([]); }}
-          onCropped={handleCoverCropped} />
       )}
     </CompanyLayout>
   );
