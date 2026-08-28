@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Briefcase, Users, FileText, Settings, UserCog, Store,
+  Briefcase, Users, FileText, Settings, UserCog,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Plus
 } from "lucide-react";
 
@@ -157,9 +157,9 @@ export default function CompanyLayout({ children, activePage }: {
   // 설정 계열 사이드 메뉴. 머리줄 '프로필'로 들어오면 여기서 갈래가 나뉜다.
   //   라벨이 함수인 것은 첫 칸만 매장/본사에 따라 이름이 갈리기 때문이다.
   const SET_NAV = [
-    { id: "settings",      label: (info: string) => `${info} 관리`, icon: Store,   href: `${base}/settings` },
-    { id: "account",       label: () => "계정정보 관리",             icon: UserCog, href: `${base}/account` },
-    { id: "notifications", label: () => "알림설정",                  icon: Bell,    href: `${base}/notifications` },
+    { id: "settings",      label: (info: string) => `${info} 관리`, href: `${base}/settings` },
+    { id: "account",       label: () => "계정정보 관리",             href: `${base}/account` },
+    { id: "notifications", label: () => "알림설정",                  href: `${base}/notifications` },
   ];
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
   // 계정정보·알림설정은 '프로필'의 갈래라(옆 사이드로 들어간다) '프로필'이 켜져 있어야 한다.
@@ -327,16 +327,22 @@ export default function CompanyLayout({ children, activePage }: {
           display: grid; grid-template-columns: fit-content(100%); justify-content: center; }
         .co-top-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; }
         /* 설정 계열 사이드 — 개인회원 프로필 사이드(.pf-side)와 같은 결로 맞춘다. */
-        .co-set-wrap { display: flex; align-items: flex-start; gap: 28px; }
+        /* 폭을 못박는다(176 + 28 + 800). 판이 가운데 정렬이라, 화면마다 본문 폭이
+           다르면 사이드까지 따라 움직여 메뉴를 누를 때마다 화면이 흔들린다. 기준은
+           가장 내용이 많은 매장정보 관리(800px). 좁은 창에서는 같이 줄어든다.
+           이 style 안에서는 자식 선택자(꺾쇠) 를 쓰지 않는다 — 서버가 그 글자를
+           빠져나가게 적어 보내는 바람에 클라이언트 글자와 어긋나 hydration 오류가
+           났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
+        .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
+          width: 1004px; max-width: 100%; }
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
-        .co-set-item { display: flex; align-items: center; gap: 9px; padding: 10px 12px;
+        .co-set-main { flex: 1; min-width: 0; }
+        .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
-        .co-set-item svg { color: #b3b3ba; flex-shrink: 0; transition: color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #1a1a1a; }
         .co-set-item.on { background: #f4f0f8; color: var(--color-primary); font-weight: 600; }
-        .co-set-item.on svg { color: var(--color-primary); }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
       `}</style>
@@ -407,11 +413,11 @@ export default function CompanyLayout({ children, activePage }: {
             <nav className="co-set-side">
               {SET_NAV.map((m) => (
                 <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
-                  <m.icon size={16} />{m.label(infoLabel(companyInfo.type))}
+                  {m.label(infoLabel(companyInfo.type))}
                 </Link>
               ))}
             </nav>
-            <main className="company-content">{children}</main>
+            <main className="company-content co-set-main">{children}</main>
           </div>
         ) : (
           <main className="company-content">{children}</main>
