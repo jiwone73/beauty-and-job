@@ -148,7 +148,7 @@ export default function CompanyLayout({ children, activePage }: {
   const TOP_NAV = [
     { id: "dashboard",  label: "홈",          href: base },
     { id: "settings",   label: "프로필",       href: `${base}/settings` },
-    { id: "jobs",       label: "채용공고 관리", href: `${base}/jobs` },
+    { id: "jobs",       label: "공고관리",     href: `${base}/jobs` },
     { id: "talent",     label: "인재풀",       href: `${base}/talent` },
     { id: "applicants", label: "지원자",       href: `${base}/applicants` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },

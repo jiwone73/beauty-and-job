@@ -28,6 +28,8 @@ export default function CompanySettingsPage() {
     size: isStore ? "직원수" : "사원수",
     phone: isStore ? "매장 전화번호" : "회사 대표번호",
     intro: isStore ? "매장 소개" : "기업 소개",
+    // 이 사진이 무엇인지(우리 매장/기업)로 부른다. 어디에 쓰이는지는 바로 아래 공고 카드 그림이 말한다.
+    thumb: isStore ? "매장 썸네일" : "기업 썸네일",
     // 매장은 홈페이지가 거의 없고 인스타가 사실상 포트폴리오라, 같은 필드를 SNS로 쓴다.
     site: isStore ? "매장 SNS" : "웹사이트",
     sitePh: isStore ? "인스타·유튜브 주소" : "https://",
@@ -49,7 +51,7 @@ export default function CompanySettingsPage() {
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
       "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "채용공고 썸네일": GalleryThumbnails, "공고배너 이미지": ImageIcon,
+      "회사 로고": ImageIcon, "매장 썸네일": GalleryThumbnails, "기업 썸네일": GalleryThumbnails,
     };
     const G = 표[이름];
     return G ? <G size={15} className="admin-form-icon" /> : null;
@@ -196,7 +198,7 @@ export default function CompanySettingsPage() {
       if (data.success) {
         setSignboardUrl(data.data.signboard_url);
       } else {
-        alert(data.error?.message || "채용공고 썸네일 업로드에 실패했습니다.");
+        alert(data.error?.message || `${L.thumb} 업로드에 실패했습니다.`);
       }
     } finally {
       setSignboardUploading(false);
@@ -204,7 +206,7 @@ export default function CompanySettingsPage() {
   };
 
   const handleSignboardDelete = async () => {
-    if (!confirm("채용공고 썸네일을 삭제하시겠습니까?")) return;
+    if (!confirm(`${L.thumb}을 삭제하시겠습니까?`)) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     try {
@@ -325,7 +327,7 @@ export default function CompanySettingsPage() {
     }
     // 썸네일은 공고 카드의 표지다 — 없으면 목록에서 우리 매장만 빈 칸으로 남는다.
     if (isStore && !signboardUrl) {
-      alert("채용공고 썸네일은 필수입니다. 매장 로고나 간판 사진을 올려주세요.");
+      alert(`${L.thumb}은 필수입니다. 로고나 간판 사진을 올려주세요.`);
       return;
     }
     setSaving(true);
@@ -410,7 +412,7 @@ export default function CompanySettingsPage() {
               <div className="admin-form-row" style={{paddingTop:0}}>
                 <div>
                 <div style={{marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림("채용공고 썸네일")}채용공고 썸네일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 </div>
                 {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 공고 카드를 작게
                     그려 두고, 그 사진 자리를 그대로 올리기 단추로 쓴다 — 누르는 곳과
@@ -428,7 +430,7 @@ export default function CompanySettingsPage() {
                         <input type="file" accept="image/jpeg,image/png,image/webp"
                           disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
                         {signboardUrl ? (
-                          <img src={signboardUrl} alt="채용공고 썸네일" className="jobcard-cover-img" />
+                          <img src={signboardUrl} alt={L.thumb} className="jobcard-cover-img" />
                         ) : (
                           /* 빈 칸이 곧 올리기 단추다. 무엇을 올리는 자리인지만 적고,
                              누르면 된다는 신호는 아래 연필 단추가 맡는다. */
