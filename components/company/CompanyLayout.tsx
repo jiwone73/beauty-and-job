@@ -361,11 +361,17 @@ export default function CompanyLayout({ children, activePage }: {
           width: 1004px; max-width: 100%; }
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
-        .co-set-main { flex: 1; min-width: 0; }
+        /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
+           네 줄뿐이라 거기 붙이면 선이 중간에서 끊긴다(218px vs 894px). 선은 여백
+           28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
+        .co-set-main { flex: 1; min-width: 0;
+          border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
         .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
-           "지금 어디" 를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
-           선 대신 여백으로 아래 목록과 뗀다. */
+           지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
+           선 대신 여백으로 아래 목록과 뗀다.
+           (이 style 은 글자 그대로 나가므로 따옴표·꺾쇠·＆ 를 쓰지 않는다 — 서버가
+            그 글자를 빠져나가게 적어 보내 클라이언트와 어긋나면서 hydration 오류가 난다.) */
         .co-set-head { font-size: 19px; font-weight: 400; color: #1a1a1a;
           padding: 0 12px; margin: 0 0 14px; }
         .co-set-item { display: block; padding: 10px 12px;
