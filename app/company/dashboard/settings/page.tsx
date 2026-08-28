@@ -377,16 +377,18 @@ export default function CompanySettingsPage() {
                   아래 칸들과 같은 왼쪽 선에 세운다 — 가운데에 두면 어느 칸에도 안 속한
                   그림처럼 떠 보였다. 칸 이름도 다른 항목과 같은 자리에 붙인다. */}
               {isStore && (
-              /* 위 여백을 걷어내면 카드 위 선에 바싹 붙고, 오른쪽 매장명(위 여백 그대로)과
-                 수평도 어긋난다. 다른 줄과 같은 여백을 그대로 쓴다. */
-              <div className="admin-form-row">
+              /* 위 여백은 다른 줄과 같게 둔다 — 걷어내면 카드 위 선에 바싹 붙고 오른쪽
+                 매장명과 수평도 어긋난다.
+                 아래 여백은 0 — 안쪽 업종 줄이 이미 제 여백을 갖고 있어, 여기서 또 주면
+                 값과 구분선 사이가 두 배로 벌어진다(직원수 줄과 달라 보인다). */
+              <div className="admin-form-row" style={{paddingBottom:0}}>
                 {/* 썸네일 오른쪽이 통째로 비어 있었다. 그 자리에 이름과 업종을 세로로
                     세운다 — 두 칸을 쌓은 높이가 썸네일 카드와 얼추 같아 나란히 선다. */}
                 {/* 아래 칸들과 같은 2열 격자를 쓴다. 따로 폭을 잡으면 왼쪽 기준선이
                     셋이 되어(썸네일 / 매장명·업종 / 직원수) 열이 어긋난다. */}
                 <div className="admin-form-row-2col" style={{alignItems:"start"}}>
                 <div style={{flexShrink:0}}>
-                <div style={{marginBottom:"8px"}}>
+                <div style={{marginBottom:"6px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 </div>
                 {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 공고 카드를 작게
@@ -397,7 +399,7 @@ export default function CompanySettingsPage() {
                   {/* 값들과 같은 만큼 들여쓴다(아이콘 15 + 사이 6 = 21px) — 라벨 글자와 세로선이 맞는다 */}
                   {/* 폭은 아래끝을 헤어샵 글자에 맞춘 값이다(3:2 표지 + 테두리 2px = 66px 높이).
                       숫자를 바꾸면 아래끝이 어긋난다. */}
-                  <div style={{width:99, flexShrink:0, marginLeft:21}}>
+                  <div style={{width:97, flexShrink:0, marginLeft:21}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
                       /* 지우기 단추가 이 카드 안에 자리 잡도록 기준을 준다 */
                       style={{cursor:"default", transform:"none", boxShadow:"none", borderRadius:9, position:"relative"}}>
@@ -441,7 +443,14 @@ export default function CompanySettingsPage() {
                           <X size={10} />
                         </button>
                       )}
-                      
+                      {/* 공고 카드의 제목 자리. 칸 전체(테두리까지)를 오른쪽 업종 값에 맞춰야
+                          해서 글자 칸을 얇게 잡았다 — 여기 여백을 키우면 아래끝이 어긋난다. */}
+                      <div className="jobcard-body" style={{padding:"3px 6px 4px"}}>
+                        <p className="jobcard-title" style={{fontSize:9.5, fontWeight:500,
+                          color:"#a99bbd", margin:0, textAlign:"center", lineHeight:1.3}}>
+                          채용공고
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
