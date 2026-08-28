@@ -74,7 +74,7 @@ export default function CompanyPasswordPage() {
 
             <button onClick={handleSubmit} disabled={saving}
               style={{ width: "100%", height: 46, marginTop: 18, borderRadius: 8, border: "none",
-                background: "var(--color-primary)", color: "#fff", fontSize: 16, fontWeight: 600,
+                background: "var(--color-primary)", color: "#fff", fontSize: 16, fontWeight: 400,
                 cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
               {saving ? "변경 중..." : "변경하기"}
             </button>

@@ -636,7 +636,7 @@ export default function CompanySettingsPage() {
       {(
         <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
           {savedMessage && (
-            <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 600 }}>
+            <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 400 }}>
               {savedMessage}
             </span>
           )}

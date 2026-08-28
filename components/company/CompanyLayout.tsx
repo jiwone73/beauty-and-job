@@ -213,7 +213,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #582681; flex-shrink: 0; }
           .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
           .co-m-nametype { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
-          .co-m-name { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .co-m-name { font-size: 15px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .co-m-type { font-size: 11px; color: #999; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
           .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
@@ -229,7 +229,7 @@ export default function CompanyLayout({ children, activePage }: {
           .co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #9a9a9a; font-size: 11px; }
           .co-m-tab.on { color: #582681; }
           .co-m-notif { position: fixed; left: 0; right: 0; top: 55px; z-index: 61; background: #fff; border-bottom: 1px solid #eee; max-height: 62vh; overflow-y: auto; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
-          .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 600; }
+          .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 400; }
           .co-m-notif-item { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 12px 16px; border: none; border-bottom: 1px solid #f5f5f5; background: none; cursor: pointer; }
           .co-m-notif-item.unread { background: #f7f7f8; }
           .co-m-notif-empty { padding: 28px; text-align: center; color: #aaa; font-size: 13px; }
@@ -279,7 +279,7 @@ export default function CompanyLayout({ children, activePage }: {
               ) : (
                 notifs.map((n) => (
                   <button key={n.id} className={`co-m-notif-item ${n.is_read ? "" : "unread"}`} onClick={() => handleNotifClick(n)}>
-                    <span style={{ fontSize: 13.5, fontWeight: 600, color: "#1a1a1a" }}>{n.title}</span>
+                    <span style={{ fontSize: 13.5, fontWeight: 400, color: "#1a1a1a" }}>{n.title}</span>
                     <span style={{ fontSize: 12.5, color: "#777" }}>{n.message}</span>
                     <span style={{ fontSize: 11, color: "#aaa" }}>{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
                   </button>

@@ -198,7 +198,7 @@ export default function CompanyAccountPage() {
       {showPhoneModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>담당자 휴대폰 변경</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 400, margin: "0 0 6px" }}>담당자 휴대폰 변경</h3>
             <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
               {!phoneCodeSent ? "① 새 휴대폰 번호를 입력하고 인증번호를 받으세요." : "② 문자로 받은 인증번호를 입력하세요."}
             </p>
@@ -212,17 +212,17 @@ export default function CompanyAccountPage() {
             {phoneMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowPhoneModal(false)} disabled={phoneSending || phoneVerifying}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
                 취소
               </button>
               {!phoneCodeSent ? (
                 <button onClick={handleSendPhoneCode} disabled={phoneSending || newPhone.replace(/\D/g, "").length < 10}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: phoneSending ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 400, cursor: "pointer", opacity: phoneSending ? 0.7 : 1 }}>
                   {phoneSending ? "발송 중..." : "인증번호 받기"}
                 </button>
               ) : (
                 <button onClick={handleVerifyPhoneCode} disabled={phoneVerifying || phoneCode.length < 6}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.6 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 400, cursor: "pointer", opacity: (phoneVerifying || phoneCode.length < 6) ? 0.6 : 1 }}>
                   {phoneVerifying ? "확인 중..." : "인증하고 저장"}
                 </button>
               )}
@@ -234,7 +234,7 @@ export default function CompanyAccountPage() {
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px" }}>이메일 변경</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 400, margin: "0 0 6px" }}>이메일 변경</h3>
             <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
               {emailStep === 1 ? "① 새 이메일 주소를 입력하고 인증코드를 받으세요." : "② 새 이메일로 받은 인증코드를 입력하세요."}
             </p>
@@ -248,17 +248,17 @@ export default function CompanyAccountPage() {
             {emailMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 600, cursor: "pointer" }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
                 취소
               </button>
               {emailStep === 1 ? (
                 <button onClick={handleSendEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 400, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
                   {emailBusy ? "발송 중..." : "인증코드 받기"}
                 </button>
               ) : (
                 <button onClick={handleVerifyEmailCode} disabled={emailBusy}
-                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 600, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
+                  style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 16, fontWeight: 400, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>
                   {emailBusy ? "확인 중..." : "변경하기"}
                 </button>
               )}
