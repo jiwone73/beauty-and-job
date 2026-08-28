@@ -287,11 +287,16 @@ export default function CompanyLayout({ children, activePage }: {
       <style>{`
         /* 메인 사이트 머리줄(.header/.header-inner)과 같은 판·높이·여백을 쓴다.
            기업 화면만 다른 껍데기를 쓰면 같은 서비스로 안 읽힌다. */
-        .co-top { min-height: 100vh; background: #fafafa; }
-        .co-top-nav { display: flex; gap: 26px; flex: 1; margin-left: 22px; }
-        .co-top-nav a { font-size: 15px; color: #555; text-decoration: none; white-space: nowrap; padding: 4px 0; }
-        .co-top-nav a:hover { color: #1a1a1a; }
-        .co-top-nav a.on { color: var(--color-primary); border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
+        .co-top { min-height: 100vh; background: #fff; }
+        /* 글자 크기·굵기·색은 메인 사이트 메뉴(.gnb)와 같은 값을 쓴다 */
+        .co-top-nav { display: flex; gap: 28px; flex: 1; margin-left: 22px; }
+        .co-top-nav a { font-size: 16px; font-weight: 500; color: #2b2b2b; text-decoration: none;
+          white-space: nowrap; padding: 4px 0; transition: color .15s; }
+        .co-top-nav a:hover { color: var(--color-primary); }
+        .co-top-nav a.on { color: var(--color-primary); font-weight: 700;
+          border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
+        /* 메인 사이트가 PC에서 메뉴 글자를 한 단계 키우는 것까지 같이 따른다 */
+        @media (min-width: 769px) { .co-top-nav a { font-size: 18px; } }
         .co-top-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
         .co-top-post { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 15px;
           border-radius: 8px; background: var(--color-primary); color: #fff; font-size: 14px;
