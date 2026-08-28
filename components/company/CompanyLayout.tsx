@@ -309,7 +309,12 @@ export default function CompanyLayout({ children, activePage }: {
         .co-top-ava img { width: 100%; height: 100%; object-fit: cover; }
         .co-top-mename { font-size: 14px; color: #333; max-width: 120px; overflow: hidden;
           text-overflow: ellipsis; white-space: nowrap; }
-        .co-top-body { max-width: 1360px; margin: 0 auto; padding: 26px 32px 80px; }
+        /* 왼쪽 사이드가 빠지면서 판이 넓어졌다. 좁게 짜인 화면(공고 관리·인재풀·프로필)이
+           그대로 왼쪽에 붙어 오른쪽이 텅 비어 보여, 제목과 본문을 한 칸에 묶어 가운데에 놓는다.
+           칸 너비는 본문이 필요한 만큼이되 판을 넘지 않는다(fit-content) — 그래서 넓은 화면은
+           그대로 꽉 차고, 좁은 화면만 가운데로 모인다. 제목은 본문의 왼쪽 끝에 맞춰 선다. */
+        .co-top-body { max-width: 1360px; margin: 0 auto; padding: 26px 32px 80px;
+          display: grid; grid-template-columns: fit-content(100%); justify-content: center; }
         .co-top-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
