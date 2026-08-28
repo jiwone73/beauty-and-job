@@ -374,16 +374,19 @@ export default function CompanySettingsPage() {
             <div className="admin-form-body settings-compact">
               {/* 썸네일 — 매장은 로고 대신, 로고나 매장명이 보이는 사진을 등록한다.
                   공고 카드 표지이자 헤더 아바타로 쓰인다.
-                  칸 이름도 테두리도 없이 카드 밖 위에 홀로 둔다 — 적어 넣는 칸들과 성격이
-                  다르고(그 자리에서 바로 올라간다), 그림이 곧 이름이라 글이 필요 없다. */}
+                  아래 칸들과 같은 왼쪽 선에 세운다 — 가운데에 두면 어느 칸에도 안 속한
+                  그림처럼 떠 보였다. 칸 이름도 다른 항목과 같은 자리에 붙인다. */}
               {isStore && (
-              <div style={{marginBottom:16}}>
+              <div className="admin-form-row" style={{paddingTop:0}}>
                 <div>
+                <div style={{marginBottom:"8px"}}>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                </div>
                 {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 공고 카드를 작게
                     그려 두고, 그 사진 자리를 그대로 올리기 단추로 쓴다 — 누르는 곳과
                     바뀌는 곳이 같아야 무엇을 하는 건지 설명이 필요 없다. 실물과
                     어긋나지 않게 채용공고 카드와 같은 class 를 쓴다. */}
-                <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"8px"}}>
+                <div style={{display:"flex", flexDirection:"column", alignItems:"flex-start", gap:"8px"}}>
                   <div style={{width:114, flexShrink:0}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
                       /* 지우기 단추가 이 카드 안에 자리 잡도록 기준을 준다 */
@@ -403,11 +406,8 @@ export default function CompanySettingsPage() {
                             alignItems:"center", justifyContent:"center", gap:2, color:"#a99bbd"}}>
                             {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
                               <>
-                                {/* 칸 이름이 없어졌으니 무엇을 올리는 자리인지는 이 줄이 다 말한다.
-                                    필수 표시(*)도 여기 붙는다 — 이름이 있던 자리가 여기다. */}
-                                <span style={{fontSize:11.5, fontWeight:500, lineHeight:1.35}}>
-                                  로고/간판<br />썸네일<span style={{color:"#e74c3c", marginLeft:2}}>*</span>
-                                </span>
+                                {/* 칸 이름이 '썸네일' 이라 말하니, 여기서는 무엇을 올리는지만 */}
+                                <span style={{fontSize:11.5, fontWeight:500}}>로고 / 간판</span>
                                 {/* 고르기 창이 받는 것과 같은 목록(accept) — 다른 파일을 골랐다 되돌아오는 일을 던다 */}
                                 <span style={{fontSize:8.5, color:"#c4b8d3"}}>JPG · PNG · WEBP</span>
                               </>
