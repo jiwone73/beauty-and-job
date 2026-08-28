@@ -54,7 +54,7 @@ export default function CompanySettingsPage() {
       "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
       "주소": Home, "사업자등록번호": FileText,
       "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "썸네일": GalleryThumbnails, "공고배너 이미지": ImageIcon,
+      "회사 로고": ImageIcon, "채용공고 썸네일": GalleryThumbnails, "공고배너 이미지": ImageIcon,
     };
     const G = 표[이름];
     return G ? <G size={15} className="admin-form-icon" /> : null;
@@ -204,7 +204,7 @@ export default function CompanySettingsPage() {
       if (data.success) {
         setSignboardUrl(data.data.signboard_url);
       } else {
-        alert(data.error?.message || "썸네일 업로드에 실패했습니다.");
+        alert(data.error?.message || "채용공고 썸네일 업로드에 실패했습니다.");
       }
     } finally {
       setSignboardUploading(false);
@@ -212,7 +212,7 @@ export default function CompanySettingsPage() {
   };
 
   const handleSignboardDelete = async () => {
-    if (!confirm("썸네일을 삭제하시겠습니까?")) return;
+    if (!confirm("채용공고 썸네일을 삭제하시겠습니까?")) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     try {
@@ -436,7 +436,7 @@ export default function CompanySettingsPage() {
     }
     // 썸네일은 공고 카드의 표지다 — 없으면 목록에서 우리 매장만 빈 칸으로 남는다.
     if (isStore && !signboardUrl) {
-      alert("썸네일은 필수입니다. 매장 로고나 간판 사진을 올려주세요.");
+      alert("채용공고 썸네일은 필수입니다. 매장 로고나 간판 사진을 올려주세요.");
       return;
     }
     setSaving(true);
@@ -516,20 +516,21 @@ export default function CompanySettingsPage() {
               {/* 썸네일 — 매장은 로고 대신, 로고나 매장명이 보이는 사진을 등록한다.
                   공고 카드 표지이자 헤더 아바타로 쓰인다. */}
               {isStore && (
-              <div className="admin-form-row">
+              /* 맨 첫 줄이라 칸 사이를 띄우는 위 여백이 카드 안쪽 여백 위에 그대로 얹힌다.
+                 여기서만 걷어내 카드 위가 뜨지 않게 한다. */
+              <div className="admin-form-row" style={{paddingTop:0}}>
                 <div>
                 <div style={{marginBottom:"8px"}}>
-                  <label className="admin-form-label" style={{margin:0}}>{칸그림("썸네일")}썸네일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                  <label className="admin-form-label" style={{margin:0}}>{칸그림("채용공고 썸네일")}채용공고 썸네일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 </div>
                 {/* 어디에 쓰이는지는 글보다 그림이 빠르다. 실제 공고 카드를 작게
                     그려 두고, 그 사진 자리를 그대로 올리기 단추로 쓴다 — 누르는 곳과
                     바뀌는 곳이 같아야 무엇을 하는 건지 설명이 필요 없다. 실물과
                     어긋나지 않게 채용공고 카드와 같은 class 를 쓴다. */}
                 <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"8px"}}>
-                  {/* 무엇을 올리는지 · 어디에 쓰이는지를 한 줄로만 말한다. 나머지는 아래 그림이 설명한다. */}
+                  {/* 무엇을 올리는지만 한 줄로 말한다. 어디에 쓰이는지는 아래 카드 그림이 설명한다. */}
                   <p style={{fontSize:"13px", color:"#8a8a90", margin:0, textAlign:"center"}}>
                     매장 <b style={{color:"#582681", fontWeight:500}}>로고</b> / <b style={{color:"#582681", fontWeight:500}}>간판</b>
-                    <span style={{color:"#b6b6bd", margin:"0 6px"}}>·</span>공고 목록에 이 카드로 보여요
                   </p>
                   <div style={{width:114, flexShrink:0}}>
                     <div className={`jobcard${signboardUrl ? " jobcard-photo" : ""}`}
@@ -542,7 +543,7 @@ export default function CompanySettingsPage() {
                         <input type="file" accept="image/jpeg,image/png,image/webp"
                           disabled={signboardUploading} onChange={handleSignboardPick} style={{display:"none"}} />
                         {signboardUrl ? (
-                          <img src={signboardUrl} alt="썸네일" className="jobcard-cover-img" />
+                          <img src={signboardUrl} alt="채용공고 썸네일" className="jobcard-cover-img" />
                         ) : (
                           /* 빈 칸이 곧 올리기 단추다. 카메라와 한 줄로 무엇을 하는지 말한다. */
                           <span style={{position:"absolute", inset:0, display:"flex", flexDirection:"column",
@@ -565,8 +566,9 @@ export default function CompanySettingsPage() {
                         </button>
                       )}
                       <div className="jobcard-body" style={{padding:"5px 9px 7px"}}>
-                        <p className="jobcard-title" style={{fontSize:10.5, fontWeight:400, color:"#c8c8ce", margin:0}}>
-                          우리 매장 채용공고
+                        <p className="jobcard-title" style={{fontSize:10.5, fontWeight:500, color:"#9a9aa2",
+                          margin:0, textAlign:"center"}}>
+                          채용공고
                         </p>
                       </div>
                     </div>
