@@ -379,9 +379,11 @@ export default function CompanySettingsPage() {
               {isStore && (
               <div className="admin-form-row" style={{paddingTop:0}}>
                 {/* 썸네일 오른쪽이 통째로 비어 있었다. 그 자리에 이름과 업종을 세로로
-                    세운다 — 두 칸을 쌓은 높이가 썸네일 카드와 얼추 같아 나란히 선다. */}
-                <div style={{display:"flex", alignItems:"flex-start", gap:"28px"}}>
-                <div style={{flexShrink:0}}>
+                    세운다 — 두 칸을 쌓은 높이가 썸네일 카드와 얼추 같아 나란히 선다.
+                    아래 칸들과 같은 2열 격자를 쓴다. 따로 폭을 잡으면 왼쪽 기준선이
+                    셋이 되어(썸네일 / 이름·업종 / 직원수) 열이 어긋난다. */}
+                <div className="admin-form-row-2col" style={{alignItems:"start"}}>
+                <div>
                 <div style={{marginBottom:"8px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 </div>
@@ -446,15 +448,18 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
                 </div>
-                {/* 오른쪽 — 이름과 업종 */}
-                <div style={{flex:1, minWidth:0}}>
-              <div className="admin-form-row">
+                {/* 오른쪽 칸 — 이름과 업종을 세로로. 첫 줄은 위 여백을 걷어내야
+                    왼쪽 썸네일 이름과 같은 높이에서 시작한다(안 그러면 13px 내려앉는다). */}
+                <div style={{minWidth:0}}>
+              <div className="admin-form-row" style={{paddingTop:0}}>
                 <label className="admin-form-label">{칸그림(L.name)}{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <input className="admin-form-input" placeholder={isStore ? "예) 준오헤어 광명점" : "예) (주)뷰티워크"}
                   value={form.company_name}
                   onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
               </div>
-              <div className="admin-form-row">
+              {/* 이 칸 아래 선은 지운다 — 왼쪽 썸네일 쪽에는 짝이 될 선이 없어
+                  반쪽짜리 줄만 그어진 꼴이 된다. 아래 사업자등록번호 줄이 이미 구분해 준다. */}
+              <div className="admin-form-row" style={{borderBottom:"none"}}>
                 <label className="admin-form-label">{칸그림("업종")}업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
                   value={form.industry}
@@ -636,23 +641,20 @@ export default function CompanySettingsPage() {
         </div>
       )}
 
-      {(
-        <div style={{ margin: "24px 0 40px", maxWidth: "800px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          {savedMessage && (
-            <span style={{ color: "#10b981", fontSize: "15px", fontWeight: 400 }}>
-              {savedMessage}
-            </span>
-          )}
-          <button
-            className="resume-save-btn-full"
-            onClick={handleSave}
-            disabled={saving}
-            style={{ opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}
-          >
-            {saving ? "저장 중..." : "저장하기"}
-          </button>
-        </div>
-      )}
+      {/* 저장 — 카드 폭을 가로로 꽉 채운 짙은 덩어리였다. 화면에서 가장 먼저 읽히는 것이
+          매장 정보가 아니라 버튼이 되어, 필요한 만큼만 크게 줄이고 가운데에 둔다. */}
+      <div style={{ margin: "22px 0 48px", display: "flex", flexDirection: "column",
+        alignItems: "center", gap: "10px" }}>
+        {savedMessage && (
+          <span style={{ color: "#10b981", fontSize: "14px" }}>{savedMessage}</span>
+        )}
+        <button onClick={handleSave} disabled={saving}
+          style={{ minWidth: 200, height: 46, padding: "0 30px", borderRadius: 9, border: "none",
+            background: "var(--color-primary)", color: "#fff", fontSize: 15, fontFamily: "inherit",
+            opacity: saving ? 0.7 : 1, cursor: saving ? "not-allowed" : "pointer" }}>
+          {saving ? "저장 중..." : "저장하기"}
+        </button>
+      </div>
       {/* 주소 검색 레이어 — 닫기 버튼이 있어 언제든 빠져나올 수 있다 */}
       {addrOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}
