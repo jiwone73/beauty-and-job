@@ -48,7 +48,7 @@ export default function CompanyNotificationsPage() {
 
   return (
     <CompanyLayout activePage="notifications">
-      <div style={{ maxWidth: 560 }}>
+      <div style={{ maxWidth: 560, margin: "0 auto" }}>
         <div className="company-card">
           <div style={{ padding: "6px 20px 10px" }}>
             {loading ? (

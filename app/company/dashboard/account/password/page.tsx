@@ -47,7 +47,9 @@ export default function CompanyPasswordPage() {
 
   return (
     <CompanyLayout activePage="password">
-      <div style={{ maxWidth: 420 }}>
+      {/* 판(800)보다 좁은 화면이라 남은 자리 가운데에 세운다 — 제목이 가운데인데
+          내용만 왼쪽에 몰리면 둘이 따로 논다. */}
+      <div style={{ maxWidth: 420, margin: "0 auto" }}>
         <div className="company-card">
           <div style={{ padding: "20px" }}>
             <input className="admin-form-input" type={showPw ? "text" : "password"}

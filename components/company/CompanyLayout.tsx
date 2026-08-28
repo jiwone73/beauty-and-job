@@ -340,6 +340,7 @@ export default function CompanyLayout({ children, activePage }: {
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
         .co-set-main { flex: 1; min-width: 0; }
+        .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
         .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
@@ -407,7 +408,11 @@ export default function CompanyLayout({ children, activePage }: {
       </header>
 
       <div className="co-top-body">
-        <h1 className="co-top-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</h1>
+        {/* 설정 계열은 제목을 여기 두지 않는다 — 왼쪽 사이드에서 고른 것이 무엇인지는
+            그 옆 본문 위에서 말하는 게 맞다(아래 .co-set-title). */}
+        {!SET_NAV.some((m) => m.id === activePage) && (
+          <h1 className="co-top-title">{PAGE_TITLES[activePage] || "대시보드"}</h1>
+        )}
         {SET_NAV.some((m) => m.id === activePage) ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
@@ -419,7 +424,13 @@ export default function CompanyLayout({ children, activePage }: {
                 </Link>
               ))}
             </nav>
-            <main className="company-content co-set-main">{children}</main>
+            <main className="company-content co-set-main">
+              {/* 사이드에서 고른 항목 이름을 그대로 — 두 이름이 다르면 어디에 있는지 헷갈린다. */}
+              <h1 className="co-set-title">
+                {SET_NAV.find((m) => m.id === activePage)?.label(infoLabel(companyInfo.type))}
+              </h1>
+              {children}
+            </main>
           </div>
         ) : (
           <main className="company-content">{children}</main>
