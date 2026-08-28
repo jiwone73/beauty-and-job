@@ -358,7 +358,7 @@ export default function CompanyLayout({ children, activePage }: {
            빠져나가게 적어 보내는 바람에 클라이언트 글자와 어긋나 hydration 오류가
            났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
         .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
-          width: 1004px; max-width: 100%; }
+          width: 1018px; max-width: 100%; }
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
         /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
@@ -381,6 +381,10 @@ export default function CompanyLayout({ children, activePage }: {
         .co-set-item.on { background: #f4f0f8; color: var(--color-primary); font-weight: 600; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
+        /* 다만 설정 화면은 왼쪽에 구분선이 있어 그만큼 안쪽으로 밀어야 한다. 위 규칙이
+           !important 라 같은 무게로 뒤에 한 번 더 적는다 — 안 그러면 선과 카드 테두리가
+           1px 차이로 겹쳐 두 줄로 보인다. */
+        .co-top-body .co-set-main { padding-left: 14px !important; }
       `}</style>
 
       <header className="header">

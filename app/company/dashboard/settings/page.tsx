@@ -378,7 +378,10 @@ export default function CompanySettingsPage() {
                   그림처럼 떠 보였다. 칸 이름도 다른 항목과 같은 자리에 붙인다. */}
               {isStore && (
               <div className="admin-form-row" style={{paddingTop:0}}>
-                <div>
+                {/* 썸네일 오른쪽이 통째로 비어 있었다. 그 자리에 이름과 업종을 세로로
+                    세운다 — 두 칸을 쌓은 높이가 썸네일 카드와 얼추 같아 나란히 선다. */}
+                <div style={{display:"flex", alignItems:"flex-start", gap:"28px"}}>
+                <div style={{flexShrink:0}}>
                 <div style={{marginBottom:"8px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                 </div>
@@ -443,6 +446,33 @@ export default function CompanySettingsPage() {
                   </div>
                 </div>
                 </div>
+                {/* 오른쪽 — 이름과 업종 */}
+                <div style={{flex:1, minWidth:0}}>
+              <div className="admin-form-row">
+                <label className="admin-form-label">{칸그림(L.name)}{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <input className="admin-form-input" placeholder={isStore ? "예) 준오헤어 광명점" : "예) (주)뷰티워크"}
+                  value={form.company_name}
+                  onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
+              </div>
+              <div className="admin-form-row">
+                <label className="admin-form-label">{칸그림("업종")}업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
+                <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
+                  value={form.industry}
+                  onChange={(e) => setForm({ ...form, industry: e.target.value })}>
+                  <option value="">선택하기</option>
+                  {industryGroupsFor(info?.company_type as any).map((g, gi) =>
+                    g.label ? (
+                      <optgroup key={gi} label={g.label}>
+                        {g.items.map((it) => <option key={it} value={it}>{it}</option>)}
+                      </optgroup>
+                    ) : (
+                      g.items.map((it) => <option key={it} value={it}>{it}</option>)
+                    )
+                  )}
+                </select>
+              </div>
+                </div>
+                </div>
               </div>
               )}
               {/* 회사 로고 — 매장은 상호가 곧 브랜드라 쓸 만한 로고 파일이 없는 경우가 많고,
@@ -487,33 +517,6 @@ export default function CompanySettingsPage() {
               )}
 
 
-              {/* 이 매장·회사가 무엇인지부터 — 이름과 업종이 맨 위에 온다.
-                  사업자등록번호는 읽기 전용이라 먼저 나올 이유가 없어 아래 짝에 넣었다. */}
-              <div className="admin-form-row-2col">
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{칸그림(L.name)}{L.name}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <input className="admin-form-input" placeholder={isStore ? "예) 준오헤어 광명점" : "예) (주)뷰티워크"}
-                    value={form.company_name}
-                    onChange={(e) => setForm({ ...form, company_name: e.target.value })} />
-                </div>
-                <div className="admin-form-row">
-                  <label className="admin-form-label">{칸그림("업종")}업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
-                    value={form.industry}
-                    onChange={(e) => setForm({ ...form, industry: e.target.value })}>
-                    <option value="">선택하기</option>
-                    {industryGroupsFor(info?.company_type as any).map((g, gi) =>
-                      g.label ? (
-                        <optgroup key={gi} label={g.label}>
-                          {g.items.map((it) => <option key={it} value={it}>{it}</option>)}
-                        </optgroup>
-                      ) : (
-                        g.items.map((it) => <option key={it} value={it}>{it}</option>)
-                      )
-                    )}
-                  </select>
-                </div>
-              </div>
 
               {/* 매장은 상호가 곧 브랜드라 이름 칸이 하나면 된다(브랜드명·대표자·설립연도·매장 전화번호 없음).
                   본사(매장이 아닌 곳)는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
