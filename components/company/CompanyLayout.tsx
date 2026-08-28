@@ -21,7 +21,7 @@ const PAGE_TITLES: Record<string, string> = {
   settings: "기업 정보",
   account: "계정 설정",
   password: "비밀번호 변경",
-  notifications: "알림설정",
+  notifications: "알림 설정",
 };
 
 export default function CompanyLayout({ children, activePage }: {
@@ -166,11 +166,14 @@ export default function CompanyLayout({ children, activePage }: {
   ];
   // 설정 계열 사이드 메뉴. 머리줄 '설정'으로 들어오면 여기서 갈래가 나뉜다.
   //   라벨이 함수인 것은 첫 칸만 매장/본사에 따라 이름이 갈리기 때문이다.
+  //   사이드는 짧게 훑는 자리라 이름만 적고, 무엇을 하는 곳인지는 오른쪽 제목이
+  //   말한다(title). 비밀번호만 둘이 같은데, 여기서 하는 일이 설정이 아니라 변경
+  //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
   const SET_NAV = [
-    { id: "settings",      label: (info: string) => `${info} 관리`, href: `${base}/settings` },
-    { id: "account",       label: () => "계정정보 관리",             href: `${base}/account` },
-    { id: "password",      label: () => "비밀번호 변경",             href: `${base}/account/password` },
-    { id: "notifications", label: () => "알림설정",                  href: `${base}/notifications` },
+    { id: "settings",      label: (info: string) => info,  title: (info: string) => `${info} 설정`, href: `${base}/settings` },
+    { id: "account",       label: () => "계정정보",         title: () => "계정정보 설정",            href: `${base}/account` },
+    { id: "password",      label: () => "비밀번호 변경",     title: () => "비밀번호 변경",            href: `${base}/account/password` },
+    { id: "notifications", label: () => "알림",             title: () => "알림 설정",                href: `${base}/notifications` },
   ];
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
@@ -360,6 +363,8 @@ export default function CompanyLayout({ children, activePage }: {
           position: sticky; top: 92px; }
         .co-set-main { flex: 1; min-width: 0; }
         .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+        .co-set-head { font-size: 13px; font-weight: 600; color: #9a9aa2; letter-spacing: .02em;
+          padding: 0 12px 8px; margin-bottom: 6px; border-bottom: 1px solid #f0f0f2; }
         .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
@@ -453,6 +458,9 @@ export default function CompanyLayout({ children, activePage }: {
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className="co-set-wrap">
             <nav className="co-set-side">
+              {/* 이 목록이 무엇의 갈래인지 — 머리줄에서 켜진 그 메뉴 이름을 그대로 가져온다.
+                  머리줄 이름이 바뀌면 여기도 같이 바뀐다(두 곳을 따로 고칠 일이 없다). */}
+              <div className="co-set-head">{TOP_NAV.find((t) => t.id === "settings")?.label}</div>
               {SET_NAV.map((m) => (
                 <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                   {m.label(infoLabel(companyInfo.type))}
@@ -460,9 +468,9 @@ export default function CompanyLayout({ children, activePage }: {
               ))}
             </nav>
             <main className="company-content co-set-main">
-              {/* 사이드에서 고른 항목 이름을 그대로 — 두 이름이 다르면 어디에 있는지 헷갈린다. */}
+              {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
               <h1 className="co-set-title">
-                {SET_NAV.find((m) => m.id === activePage)?.label(infoLabel(companyInfo.type))}
+                {SET_NAV.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
               </h1>
               {children}
             </main>
