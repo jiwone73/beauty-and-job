@@ -403,3 +403,40 @@ export function searchJobItems(
   scored.sort((a, b) => a.score - b.score);
   return scored.slice(0, limit).map((s) => s.res);
 }
+
+// ───────────── 경력 단계 ─────────────
+// 대분류마다 사다리가 다르다. 실장은 헤어에만 둔다 — 피부·두피는 소분류에
+// 이미 '상담실장'이 있고 그쪽은 시술을 하지 않는 다른 자리다.
+export const 시술단계 = ["인턴", "신입", "주니어", "시니어"] as const;
+export const 헤어단계 = ["인턴", "신입", "주니어", "시니어", "실장"] as const;
+export const 관리단계 = ["신입", "매니저급", "점장급"] as const;
+export const 사무단계 = ["신입", "주니어", "시니어", "리드"] as const;
+
+const 단계표: Record<string, readonly string[]> = {
+  "헤어 & 바버": 헤어단계,
+  "메이크업": 시술단계,
+  "네일 & 속눈썹": 시술단계,
+  "스킨 & 바디케어": 시술단계,
+  "두피 & 탈모": 시술단계,
+  // 웨딩·이벤트는 수련 과정(인턴)이 따로 없다 — 바로 실무로 들어간다.
+  "웨딩 & 이벤트": ["신입", "주니어", "시니어"],
+  "뷰티 리테일(매장)": 관리단계,
+  // 의료미용 현장은 소분류에 '상담실장·코디네이터'가 이미 있어 실장을 단계로 두지 않는다.
+  "의료미용(현장)": ["신입", "주니어", "시니어"],
+};
+
+/** 대분류의 경력 단계. */
+export function 경력단계(대분류: string): readonly string[] {
+  return 단계표[대분류] || 사무단계;
+}
+
+/** 소분류 이름으로 찾을 때. */
+export function 직군의경력단계(item: string): readonly string[] {
+  const g = getGroupOfItem("STORE", item) || getGroupOfItem("OFFICE", item);
+  return (g && 단계표[g]) || 사무단계;
+}
+
+/** 새 단계를 옛 두 갈래(신입/경력)로 접는다 — 구직자 필터와 기존 공고가 그 둘을 쓴다. */
+export function 경력묶음(단계: string): "신입" | "경력" {
+  return 단계 === "인턴" || 단계 === "신입" ? "신입" : "경력";
+}

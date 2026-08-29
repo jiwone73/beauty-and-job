@@ -446,6 +446,8 @@ export default function JobPostForm({
   // 같은 모집분야를 여러 행으로 쓸 수 있게(예: 헤어디자이너 신입 1 · 경력 1) 내부 키에만 "#2" 꼬리표를 붙인다.
   //   화면 표시·저장은 항상 꼬리표를 뗀 원래 분야명으로 나간다.
   const baseCat = (c: string) => c.replace(/#\d+$/, "");
+  // 공고 하나에 한 번만 받는 값(고용형태·성별·학력·근무요일/시간)이 담기는 칸.
+  const 공통 = "__common";
   const nextDupKey = (base: string, list: string[]) => { let i = 2; while (list.includes(`${base}#${i}`)) i++; return `${base}#${i}`; };
   const MAX_POS_ROWS = 10;
   // "추가 ＋"에서 고른 분야를 새 행으로 붙인다. 이미 있는 분야면 중복 행이 된다(신입/경력 분리 모집).
@@ -949,6 +951,8 @@ export default function JobPostForm({
           // 예전엔 salaryNego 가 boolean(true=협의+금액제시) 이었다 — true 를 "open" 으로 옮긴다.
           const savedSalaryNego: "" | "open" | "hidden" = p.salaryNego === true ? "open" : (p.salaryNego === "open" || p.salaryNego === "hidden" ? p.salaryNego : "");
           meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
+          // 근무 조건은 행마다 같은 값이 복사돼 있다 — 첫 행에서 한 벌만 꺼내 공통 칸에 담는다.
+          if (!meta[공통]) meta[공통] = { ...emptyPos, education: p.education || "", employment: p.employment || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", gender: p.gender || "", shiftNego: !!p.shiftNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1772,7 +1776,9 @@ export default function JobPostForm({
     }
 
     // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    // 근무 조건은 공고 하나에 한 번만 받고, 저장할 때 모든 행에 같은 값을 넣는다.
+    const 공 = posMeta[공통] || emptyPos;
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: 공.education.trim(), employment: 공.employment.trim(), salary: r.salary.trim(), workDays: 공.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(공.workTime), headcount: r.headcount.trim(), gender: 공.gender.trim(), shiftNego: 공.shiftNego, salaryNego: r.salaryNego, shiftText: 공.shiftText.trim(), extraShifts: 공.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -2352,12 +2358,9 @@ export default function JobPostForm({
   // 두니(font-swap 반응 없음) 칸 너비는 이 비율 그대로 못박힌다.
   const posColLenOf = (s: string) => { let n = 0; for (const ch of s) n += /\s/.test(ch) ? 0.5 : 1; return n; };
   const POS_TABLE_COLS: { key: keyof PosRow | "category"; label: string }[] = [
+    // 고용형태·성별·학력·근무요일/시간은 '근무 조건'에서 한 번만 받는다.
     { key: "category", label: "모집분야" },
-    { key: "employment", label: "고용형태" },
-    { key: "gender", label: "성별" },
     { key: "career", label: "경력/직책" },
-    { key: "education", label: "학력" },
-    { key: "shiftText", label: "근무요일/시간" },
     { key: "salary", label: "급여" },
   ];
   const POS_TABLE_CAP: Partial<Record<string, number>> = { category: 22, shiftText: 16, salary: 14 };
@@ -2986,11 +2989,7 @@ export default function JobPostForm({
                       <thead>
                         <tr>
                           <th style={{ ...thc, ...firstCol }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
-                          <th style={thc}>고용형태</th>
-                          <th style={thc}>성별</th>
                           <th style={thc}>경력/직책</th>
-                          <th style={thc}>학력</th>
-                          <th style={thc}>근무요일 / 시간</th>
                           <th style={{ ...thc, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
                         </tr>
                       </thead>
@@ -3013,43 +3012,8 @@ export default function JobPostForm({
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>
                               </td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "employment", EMPLOYMENT_TYPES, "", true, undefined, true)}</td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "gender", ["무관", "여성 우대", "남성 우대"], "", false, undefined, true)}</td>
                               <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false, undefined, true)}</td>
                               {/* 매장(헤어·네일·피부 등 현장직)은 석사 학력을 요구할 일이 없다. */}
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "", false, undefined, true)}</td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }} className="posshift-pop">
-                                {/* 요일 원형 버튼+시간 두 칸을 채우던 구조를 접었다. 요일마다
-                                    시간이 다르면 근무시간 묶음을 몇 개나 만들어야 했는데, 원티드
-                                    처럼 자유 문장 하나로 받는다("월, 수 10시-18시 / 금 12시-20시").
-                                    처음엔 화면 가운데 뜨는 큰 모달이었는데("윈도우창이 너무
-                                    크지 않나") 다른 칸과 같은 작은 팝오버로 바꿨다. */}
-                                <button type="button" onClick={(e) => { if (shiftModalCat === cat) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(cat); }}
-                                  style={{ width: "100%", minHeight: 24, boxSizing: "border-box", textAlign: "center", border: "none",
-                                    borderRadius: 0, padding: "3px 6px", fontSize: 13.5, lineHeight: 1.35, cursor: "pointer",
-                                    color: shiftDisplay(row) ? "#333" : "#b4b4b9",
-                                    background: "transparent", display: "flex", alignItems: shiftDisplay(row) ? "flex-start" : "center", justifyContent: "center", gap: 4,
-                                    whiteSpace: "pre-line", wordBreak: "keep-all" }}>
-                                  {/* "/" 도 줄바꿈처럼 각자 한 줄로 — 근무시간 묶음이 여럿이면 표에서도 나뉘어 보인다.
-                                      빠른 선택은 요일과 시간을 이미 줄바꿈으로 나눠 저장한다("요일은
-                                      1행, 시간은 2행") — 협의 여지는 시간 줄에 붙어 있던 "(협의)"를
-                                      한 줄 더 내려 "협의가능"으로 바꿔 단다(총 3행). */}
-                                  <span style={{ flex: 1, minWidth: 0 }}>{shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, "\n협의가능")}</span>
-                                  {!shiftDisplay(row) && <ChevronDown size={12} style={{ flexShrink: 0, color: "#c4c4c9", marginTop: 2 }} />}
-                                </button>
-                                {shiftModalCat === cat && popAt && (
-                                  <WorkScheduleModal
-                                    value={shiftDisplay(row)}
-                                    onChange={(v) => setPos(cat, "shiftText", v)}
-                                    onClose={() => setShiftModalCat(null)}
-                                    popRef={popRef}
-                                    left={popAt.left}
-                                    top={popAt.top}
-                                    defaultStart={jobGroupType === "매장" ? 10 : 7}
-                                    defaultEnd={jobGroupType === "매장" ? 20 : 19}
-                                  />
-                                )}
-                              </td>
                               <td style={{ ...tdc, ...rb, position: "relative", borderRight: "none" }}>
                                 {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
                               </td>
@@ -3060,6 +3024,49 @@ export default function JobPostForm({
                     </table>
                   </div>
                 )}
+              </div>
+
+            </div>
+          </div>
+
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>근무 조건</h2>
+          <div className="company-card" style={{ overflow: "visible" }}>
+            <div className="admin-form-body">
+              <div className="jp-cond">
+                <div className="jp-cond-f">
+                  <label>고용형태</label>
+                  {posCell(공통, "employment", EMPLOYMENT_TYPES, "선택하기", true, undefined, true)}
+                </div>
+                <div className="jp-cond-f">
+                  <label>성별</label>
+                  {posCell(공통, "gender", ["무관", "여성 우대", "남성 우대"], "선택하기", false, undefined, true)}
+                </div>
+                <div className="jp-cond-f">
+                  <label>학력</label>
+                  {posCell(공통, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "선택하기", false, undefined, true)}
+                </div>
+                <div className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
+                  <label>근무요일 / 시간</label>
+                  <button type="button"
+                    onClick={(e) => { if (shiftModalCat === 공통) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(공통); }}
+                    className="jp-cond-btn"
+                    style={{ color: shiftDisplay(posMeta[공통] || emptyPos) ? "#333" : "#c6c6cb" }}>
+                    <span>{shiftDisplay(posMeta[공통] || emptyPos) || "선택하기"}</span>
+                    <ChevronDown size={13} style={{ flexShrink: 0, color: "#c4c4c9" }} />
+                  </button>
+                  {shiftModalCat === 공통 && popAt && (
+                    <WorkScheduleModal
+                      value={shiftDisplay(posMeta[공통] || emptyPos)}
+                      onChange={(v) => setPos(공통, "shiftText", v)}
+                      onClose={() => setShiftModalCat(null)}
+                      popRef={popRef}
+                      left={popAt.left}
+                      top={popAt.top}
+                      defaultStart={jobGroupType === "매장" ? 10 : 7}
+                      defaultEnd={jobGroupType === "매장" ? 20 : 19}
+                    />
+                  )}
+                </div>
               </div>
 
               {/* ── 복리후생. 모집부문과 같은 레벨(아이콘 + 제목)로 세운다
