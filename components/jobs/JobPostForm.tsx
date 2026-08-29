@@ -32,10 +32,14 @@ const POS_CAREER = ["무관", "신입", "경력", "1년~", "3년~", "5년~", "10
 // 급여: 지급 주기를 고르면 앞머리(시·주·월·연)가 자동으로 붙고 금액만 적으면 된다. 협의는 단독 값.
 const SALARY_UNITS: { label: string; prefix: string }[] = [
   { label: "시급", prefix: "시" },
+  { label: "일급", prefix: "일" },
   { label: "주급", prefix: "주" },
   { label: "월급", prefix: "월" },
   { label: "연봉", prefix: "연" },
 ];
+// 최저임금은 해마다 바뀐다 — 고시되면 이 두 줄만 고치면 된다.
+const 최저임금해 = 2026;
+const 최저시급원 = 10320;
 // "고졸"만 적으면 고졸인 사람만 되는 것처럼 읽힌다("최저학력이라고 해야 하나" 고민도 이 때문).
 // 헤더를 바꾸는 대신 값 자체를 표준 표기로 — EDUCATION_OPTIONS(불러오기 검증용)와 같은 방식이다.
 const POS_EDU = ["무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
@@ -2117,7 +2121,7 @@ export default function JobPostForm({
   // 클릭-선택 셀: 옵션 있으면 드롭다운(+비회원 '직접입력…'). 값이 목록에 없으면 클릭 텍스트→팝오버. 급여처럼 옵션 없으면 항상 팝오버.
   // 급여 앞머리 교체: "월 300" 에서 주기만 바꿔도 금액은 남는다. 협의였으면 금액 없이 시작.
   const withSalaryUnit = (cur: string, prefix: string) => {
-    const rest = cur.replace(/^\s*[시주월연]\s*/, "").replace(/^협의\s*$/, "").trim();
+    const rest = cur.replace(/^\s*[시일주월연]\s*/, "").replace(/^협의\s*$/, "").trim();
     return rest ? `${prefix} ${rest}` : `${prefix} `;
   };
   // 근무요일/시간 표시 문구. shiftText(원티드식 자유 문장)가 있으면 그대로 쓰고,
@@ -2126,7 +2130,7 @@ export default function JobPostForm({
   // 화면에서는 형태·금액·기준 셋으로 나눠 받고, 저장할 때 다시 한 줄로 잇는다.
   const 급여읽기 = (v: string) => {
     const u = SALARY_UNITS.find((x) => v.startsWith(x.prefix) || v.startsWith(x.label));
-    const 금액 = (v.match(/([\d,]+)\s*만원/) || [])[1]?.replace(/,/g, "") || "";
+    const 금액 = (v.match(/([\d,.]+)\s*만원/) || [])[1]?.replace(/,/g, "") || "";
     // 금액을 적기 전까지는 '이상'으로 둔다 — 문자열에 '이상'은 금액이 있어야 붙기 때문에,
     // 형태만 고른 상태에서 '정액'으로 뒤집혀 보이던 것을 막는다(기존 공고도 대부분 '이상'이다).
     return { 형태: u?.label || "", 금액, 이상: 금액 ? /이상/.test(v) : true };
@@ -2134,7 +2138,8 @@ export default function JobPostForm({
   const 급여쓰기 = (형태: string, 금액: string, 이상: boolean) => {
     if (!형태 && !금액) return "";
     const p = SALARY_UNITS.find((x) => x.label === 형태)?.prefix || "";
-    const n = 금액 ? `${Number(금액).toLocaleString()}만원` : "";
+    const [정수, 소수] = String(금액).split(".");
+    const n = 금액 ? `${Number(정수 || 0).toLocaleString()}${소수 != null ? `.${소수}` : ""}만원` : "";
     return [p, n, 이상 && n ? "이상" : ""].filter(Boolean).join(" ");
   };
   const shiftDisplay = (row: PosRow): string => {
@@ -2165,8 +2170,8 @@ export default function JobPostForm({
     // 최소·최대 두 칸으로 나눠 받고, 최대를 비운 채로 "이상" 표시만 고를 수 있게 한다.
     // 급여유형을 아직 안 골랐으면 매장은 월급, 본사는 연봉을 기본으로 삼는다 — 숫자만
     // 입력해도 그 단위가 자동으로 붙는다.
-    const salaryPrefix = units ? (v.match(/^\s*([시주월연])\s*/)?.[1] || (jobGroupType === "매장" ? "월" : "연")) : "";
-    const salaryRest = units ? v.replace(/^\s*[시주월연]\s*/, "") : "";
+    const salaryPrefix = units ? (v.match(/^\s*([시일주월연])\s*/)?.[1] || (jobGroupType === "매장" ? "월" : "연")) : "";
+    const salaryRest = units ? v.replace(/^\s*[시일주월연]\s*/, "") : "";
     const salaryParts = units ? salaryRest.match(/^(\d+)(~)?(\d*)$/) : null;
     const sMin = salaryParts ? salaryParts[1] : "";
     const sMax = salaryParts ? salaryParts[3] : "";
@@ -3175,8 +3180,9 @@ export default function JobPostForm({
                                     {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
                                   </select>
                                   <span className="jp-sal-amt">
-                                    <input inputMode="numeric" disabled={미정} placeholder="0" value={g.금액}
-                                      onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, e.target.value.replace(/[^0-9]/g, ""), g.이상))} />
+                                    <input inputMode="decimal" disabled={미정} placeholder="0" value={g.금액}
+                                      onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태,
+                                        e.target.value.replace(/[^0-9.]/g, "").replace(/^(\d*\.\d*).*$/, "$1"), g.이상))} />
                                     <em>만원</em>
                                   </span>
                                   {/* 협의를 따로 체크하지 않는다 — 적어 둔 금액을 어떻게 볼지(이상·정액·협의)를
@@ -3198,6 +3204,19 @@ export default function JobPostForm({
                                     <option value="협의">협의</option>
                                   </select>
                                 </span>
+                              );
+                            })()}
+                            {(() => {
+                              const g = 급여읽기(row.salary);
+                              if (g.형태 !== "시급") return null;
+                              // 최저시급을 외우고 있는 사장님은 드물다 — 눌러서 채운다.
+                              const 만원 = String(최저시급원 / 10000);
+                              return (
+                                <button type="button" className="jp-minwage" disabled={미정}
+                                  title={`${최저임금해}년 최저임금 ${최저시급원.toLocaleString()}원`}
+                                  onClick={() => setPos(c, "salary", 급여쓰기("시급", 만원, g.이상))}>
+                                  최저시급
+                                </button>
                               );
                             })()}
                             {/* 조건은 줄마다 따로 갖는다 — 인턴과 신입은 같은 자리가 아니다.

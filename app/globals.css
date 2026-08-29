@@ -13930,6 +13930,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal-amt input { width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
 .jp-sal-amt em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
 .jp-sal-basis { padding: 0 24px 0 10px; border-left: 1px solid #f0f0f2; color: #555; }
+/* 최저시급 — 급여 상자 옆 작은 단추. 눌러 채운다. */
+.jp-minwage { height: 34px; padding: 0 10px; border: 1px solid #ececf0; border-radius: 8px;
+  background: #fff; font-family: inherit; font-size: 12.5px; color: #8a8a90; cursor: pointer; flex-shrink: 0; }
+.jp-minwage:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.jp-minwage:disabled { color: #c8c8ce; background: #fafafb; cursor: not-allowed; }
 
 /* 부문 단위 근무 조건 — 단계별 인원·급여 아래, 한 줄로. */
 .jp-job-cond { flex: 1 0 100%; display: flex; flex-wrap: wrap; gap: 8px 10px;

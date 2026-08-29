@@ -96,8 +96,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const positions = Array.isArray(job.positions) ? job.positions.filter((p: any) => p && p.category) : [];
   // 모집부문 표 열 정의. 값이 아무 행에도 없는 열은 미리보기/상세에서 숨긴다(모집분야는 항상 표시).
   // 급여는 "월 320만원"처럼 한 글자로 저장된다 — 등록 화면은 '월급'이라 쓰므로 같은 말로 편다.
-  const 급여펴기 = (v: string) => String(v || "").replace(/^\s*([시주월연])\s/,
-    (_m, p1) => ({ 시: "시급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1]);
+  const 급여펴기 = (v: string) => String(v || "").replace(/^\s*([시일주월연])\s/,
+    (_m, p1) => ({ 시: "시급 ", 일: "일급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1]);
   const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
     { key: "category", label: "모집분야", get: (p) => p.category },
     // 근무지가 여러 곳인 공고만 자리가 생긴다 — 한 곳이면 아무 행에도 값이 없어 열이 숨는다.
