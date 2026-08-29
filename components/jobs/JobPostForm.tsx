@@ -447,11 +447,14 @@ export default function JobPostForm({
   // 같은 모집분야를 여러 행으로 쓸 수 있게(예: 헤어디자이너 신입 1 · 경력 1) 내부 키에만 "#2" 꼬리표를 붙인다.
   //   화면 표시·저장은 항상 꼬리표를 뗀 원래 분야명으로 나간다.
   const baseCat = (c: string) => c.replace(/#\d+$/, "");
-  // 공고 하나에 한 번만 받는 값(고용형태·성별·학력·근무요일/시간)이 담기는 칸.
-  const 공통 = "__common";
   const nextDupKey = (base: string, list: string[]) => { let i = 2; while (list.includes(`${base}#${i}`)) i++; return `${base}#${i}`; };
   const MAX_POS_ROWS = 10;
   // "추가 ＋"에서 고른 분야를 새 행으로 붙인다. 이미 있는 분야면 중복 행이 된다(신입/경력 분리 모집).
+  // 한 부문의 모든 단계 행에 같은 값을 넣는다 — 고용형태·근무요일/시간·학력·성별은
+  // 부문 단위로 정한다(단계마다 다르면 그건 사실상 다른 부문이다).
+  const set부문 = <K extends keyof PosRow>(rows: string[], k: K, v: PosRow[K]) =>
+    setPosMeta((m) => { const n = { ...m }; rows.forEach((c) => { n[c] = { ...(n[c] || emptyPos), [k]: v }; }); return n; });
+  const 부문조건 = ["employment", "workDays", "workTime", "shiftText", "shiftNego", "education", "gender"] as const;
   const addCatRow = (base: string) => {
     if (categories.length >= MAX_POS_ROWS) { alert(`모집부문은 최대 ${MAX_POS_ROWS}행까지예요.`); return; }
     const dup = categories.some((c) => baseCat(c) === base);
@@ -459,7 +462,16 @@ export default function JobPostForm({
     setCategories([...categories, key]);
     // 같은 분야가 이미 있으면 첫 행 값을 복제해 두고 다른 부분(경력 등)만 고치게
     const src = categories.find((c) => baseCat(c) === base);
-    if (src) setPosMeta((m) => ({ ...m, [key]: { ...(m[src] || emptyPos) } }));
+    // 새 부문이면 앞 부문의 근무 조건을 미리 채운다 — 대개 같고, 다르면 그 카드만 고치면 된다.
+    const 앞 = categories[0];
+    setPosMeta((m) => {
+      if (src) return { ...m, [key]: { ...(m[src] || emptyPos) } };
+      if (!앞) return m;
+      const a = m[앞] || emptyPos;
+      const 물림: Partial<PosRow> = {};
+      부문조건.forEach((k) => { (물림 as any)[k] = a[k]; });
+      return { ...m, [key]: { ...emptyPos, ...물림 } };
+    });
   };
   const removeCatRow = (cat: string) => {
     setCategories((prev) => prev.filter((c) => c !== cat));
@@ -471,7 +483,8 @@ export default function JobPostForm({
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
   const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
   const [열린그룹, set열린그룹] = useState<string[]>([]);
-  const [갓담은, set갓담은] = useState("");   // 방금 담은 분야 — 카드가 어디 생겼는지 잠깐 도드라지게
+  const [갓담은, set갓담은] = useState<string[]>([]);  // 방금 담은 분야 — 카드가 어디 생겼는지 잠깐 도드라지게
+  const 접기타이머 = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
   // 표 안 팝오버는 화면 기준(fixed) 좌표로 띄운다. 표를 overflow visible로 바꾸면 720px 표가
   //   페이지 밖으로 넘쳐 화면 전체가 옆으로 밀리기 때문(모바일에서 특히 심함).
@@ -954,8 +967,6 @@ export default function JobPostForm({
           // 예전엔 salaryNego 가 boolean(true=협의+금액제시) 이었다 — true 를 "open" 으로 옮긴다.
           const savedSalaryNego: "" | "open" | "hidden" = p.salaryNego === true ? "open" : (p.salaryNego === "open" || p.salaryNego === "hidden" ? p.salaryNego : "");
           meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
-          // 근무 조건은 행마다 같은 값이 복사돼 있다 — 첫 행에서 한 벌만 꺼내 공통 칸에 담는다.
-          if (!meta[공통]) meta[공통] = { ...emptyPos, education: p.education || "", employment: p.employment || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", gender: p.gender || "", shiftNego: !!p.shiftNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1778,10 +1789,10 @@ export default function JobPostForm({
       }
     }
 
-    // 모집부문 표(positions) — 분야별 경력·고용형태·급여·근무요일/시간·인원·성별우대. 필터·호환용 대표값은 첫 행에서 유도.
-    // 근무 조건은 공고 하나에 한 번만 받고, 저장할 때 모든 행에 같은 값을 넣는다.
-    const 공 = posMeta[공통] || emptyPos;
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: 공.education.trim(), employment: 공.employment.trim(), salary: r.salary.trim(), workDays: 공.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(공.workTime), headcount: r.headcount.trim(), gender: 공.gender.trim(), shiftNego: 공.shiftNego, salaryNego: r.salaryNego, shiftText: 공.shiftText.trim(), extraShifts: 공.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    // 모집부문 표(positions) — 부문마다 경력·고용형태·급여·근무요일/시간·인원·성별우대를
+    // 따로 담는다. 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다.
+    // 필터·호환용 대표값은 첫 행에서 유도.
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -2900,8 +2911,9 @@ export default function JobPostForm({
         {/* ═══ 왼쪽 컬럼: 기본정보 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
-          {/* 기본정보 */}
-          <h2 className="jobpost-section-title">기본정보</h2>
+          {/* 공고제목 — 매장명과 제목만 받는다. 마감일은 '언제까지 어떻게 지원하나'가
+              한 덩어리라 지원 방법으로 옮겼다. */}
+          <h2 className="jobpost-section-title">공고제목</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
@@ -2927,42 +2939,15 @@ export default function JobPostForm({
                 />
               </div>
 
-              {/* ── 마감일. 미리보기(공개 화면)에서 제목 바로 밑에 뜨는 것과 같은 자리로 옮긴다
-                  ("마감일이 공고 밑에 있어") — 전엔 모집분야와 한 행에 있어 모집부문 쪽으로 치우쳐 보였다. */}
-              <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative", margin: "0 0 12px" }}>
-                <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
-                <button type="button"
-                  onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                  style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                  {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
-                </button>
-                {deadlineModalOpen && popAt && (
-                  /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
-                  <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                    <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
-                      style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                      <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
-                    </label>
-                    <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                      <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
-                      <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
             </div>
           </div>
 
-          {/* 모집 조건 — 어떤 자리를, 어떤 조건으로 뽑는가. 전에는 이 셋이 다
-              '기본정보' 한 카드에 들어 있어 이름이 내용을 말해 주지 못했다. */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>모집 조건</h2>
+          {/* 모집부문 — 이 조건으로 이만큼 뽑는다는 한 덩어리. 부문 안에 무엇이 들어가든
+              이름이 흔들리지 않아, 근무 조건을 안으로 들여도 제목을 다시 고민할 일이 없다. */}
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>모집부문</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
-              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", fontWeight: 400, color: "#333" }}>
-                <Briefcase id="jp-positions" size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
-              </div>
+              <span id="jp-positions" />
               {/* 모집분야 — 대분류를 누르면 그 자리에서 소분류가 펼쳐진다.
                   모달로 덮으면 이미 고른 것이 안 보여 무엇을 더 골라야 할지 알 수 없었다. */}
               <div className="jp-pick">
@@ -2972,7 +2957,8 @@ export default function JobPostForm({
                   return (
                     <div key={g.group}>
                       <button type="button" className={`jp-pick-g ${고른수 > 0 ? "on" : ""} ${열림 ? "open" : ""}`}
-                        onClick={() => set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group])}>
+                        onClick={() => { clearTimeout(접기타이머.current[g.group]);
+                          set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group]); }}>
                         {g.group}
                         <span className="n">{고른수 > 0 ? `${고른수}/${g.items.length}` : g.items.length}</span>
                       </button>
@@ -2985,8 +2971,13 @@ export default function JobPostForm({
                                 onClick={() => {
                                   if (켜짐) { categories.filter((c) => baseCat(c) === it).forEach(removeCatRow); return; }
                                   addCatRow(it);
-                                  set열린그룹((p) => p.filter((x) => x !== g.group));  // 고르면 접는다
-                                  set갓담은(it); setTimeout(() => set갓담은(""), 1400);
+                                  // 한 대분류에서 둘 이상 고르는 일이 흔하다 — 바로 접지 않고
+                                  // 3초를 기다린다. 그 사이 또 고르면 시간은 다시 시작한다.
+                                  clearTimeout(접기타이머.current[g.group]);
+                                  접기타이머.current[g.group] = setTimeout(
+                                    () => set열린그룹((p) => p.filter((x) => x !== g.group)), 3000);
+                                  set갓담은((p) => (p.includes(it) ? p : [...p, it]));
+                                  setTimeout(() => set갓담은((p) => p.filter((x) => x !== it)), 3000);
                                 }}>
                                 {it}
                               </button>
@@ -3027,10 +3018,12 @@ export default function JobPostForm({
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
                   const 단계행 = (st: string) => 내행.find((c) => (posMeta[c] || emptyPos).career === st);
                   return (
-                    <div key={item} className={`jp-job ${갓담은 === item ? "just" : ""}`}>
+                    <div key={item} className={`jp-job ${갓담은.includes(item) ? "just" : ""}`}>
                       <div className="jp-job-head">
+                        {/* 대분류 › 소분류 — 어느 갈래를 타고 온 분야인지 한 줄로 보인다.
+                            대분류는 흐리게 둔다. 중요한 것은 소분류다. */}
                         <span className="jp-job-name">
-                          {그룹 && <span className="jp-job-grp">{그룹}</span>}
+                          {그룹 && <span className="jp-job-grp">{그룹}<i>›</i></span>}
                           {item}
                         </span>
                         <span className="jp-job-steps">
@@ -3044,7 +3037,13 @@ export default function JobPostForm({
                                 if (빈행) { setPosMeta((m) => ({ ...m, [빈행]: { ...(m[빈행] || emptyPos), career: st, headcount: (m[빈행] || emptyPos).headcount || "1" } })); return; }
                                 const key = nextDupKey(item, categories);
                                 setCategories([...categories, key]);
-                                setPosMeta((m) => ({ ...m, [key]: { ...emptyPos, career: st, headcount: "1" } }));
+                                // 같은 부문의 근무 조건을 그대로 물려준다 — 단계만 다른 줄이다.
+                                setPosMeta((m) => {
+                                  const a = m[내행[0]] || emptyPos;
+                                  const 물림: Partial<PosRow> = {};
+                                  부문조건.forEach((k) => { (물림 as any)[k] = a[k]; });
+                                  return { ...m, [key]: { ...emptyPos, ...물림, career: st, headcount: "1" } };
+                                });
                               }}>{st}</button>
                           ))}
                         </span>
@@ -3103,6 +3102,48 @@ export default function JobPostForm({
                           </div>
                         );
                       })}
+                      {/* 부문 단위 근무 조건 — 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다. */}
+                      {(() => {
+                        const 조 = posMeta[내행[0]] || emptyPos;
+                        const 시간키 = `cond|${내행[0]}`;
+                        return (
+                          <div className="jp-job-cond">
+                            <select className="jp-cond-sel" value={조.employment}
+                              onChange={(e) => set부문(내행, "employment", e.target.value)}>
+                              <option value="">고용형태</option>
+                              {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                            <span className="posshift-pop" style={{ position: "relative" }}>
+                              <button type="button" className={`jp-cond-sel jp-cond-shift ${shiftDisplay(조) ? "" : "ph"}`}
+                                onClick={(e) => { if (shiftModalCat === 시간키) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(시간키); }}>
+                                {shiftDisplay(조) || "근무요일 / 시간"}
+                              </button>
+                              {shiftModalCat === 시간키 && popAt && (
+                                <WorkScheduleModal
+                                  value={shiftDisplay(조)}
+                                  onChange={(v) => set부문(내행, "shiftText", v)}
+                                  onClose={() => setShiftModalCat(null)}
+                                  popRef={popRef}
+                                  left={popAt.left}
+                                  top={popAt.top}
+                                  defaultStart={jobGroupType === "매장" ? 10 : 7}
+                                  defaultEnd={jobGroupType === "매장" ? 20 : 19}
+                                />
+                              )}
+                            </span>
+                            <select className="jp-cond-sel" value={조.education}
+                              onChange={(e) => set부문(내행, "education", e.target.value)}>
+                              <option value="">학력</option>
+                              {(jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU).map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                            <select className="jp-cond-sel" value={조.gender}
+                              onChange={(e) => set부문(내행, "gender", e.target.value)}>
+                              <option value="">성별</option>
+                              {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                          </div>
+                        );
+                      })()}
                     </div>
                   );
                 })}
@@ -3111,68 +3152,17 @@ export default function JobPostForm({
             </div>
           </div>
 
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>근무 조건</h2>
+          {/* 근무 조건 섹션은 없앴다 — 고용형태·근무요일/시간·학력·성별은 자리마다 다를 수
+              있는 값이라 모집부문 카드 안으로 들어갔다. 남은 복리후생은 매장 전체 얘기라
+              제 제목을 달고 선다(전엔 근무 조건에 얹혀 하위 항목처럼 읽혔다).
+              근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 139건 중 1건만 채워져 있었다. */}
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>복리후생{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
-              <div className="jp-cond">
-                <div className="jp-cond-f">
-                  <label>고용형태</label>
-                  {posCell(공통, "employment", EMPLOYMENT_TYPES, "선택하기", true, undefined, true)}
-                </div>
-                <div className="jp-cond-f">
-                  <label>성별</label>
-                  {posCell(공통, "gender", ["무관", "여성 우대", "남성 우대"], "선택하기", false, undefined, true)}
-                </div>
-                <div className="jp-cond-f">
-                  <label>학력</label>
-                  {posCell(공통, "education", jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU, "선택하기", false, undefined, true)}
-                </div>
-                <div className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
-                  <label>근무요일 / 시간</label>
-                  <button type="button"
-                    onClick={(e) => { if (shiftModalCat === 공통) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(공통); }}
-                    className="jp-cond-btn"
-                    style={{ color: shiftDisplay(posMeta[공통] || emptyPos) ? "#333" : "#c6c6cb" }}>
-                    <span>{shiftDisplay(posMeta[공통] || emptyPos) || "선택하기"}</span>
-                    <ChevronDown size={13} style={{ flexShrink: 0, color: "#c4c4c9" }} />
-                  </button>
-                  {/* 협의 — 요일·시간을 못 박기 어려운 매장이 많다. 켜면 '협의'로 나간다. */}
-                  <label className="jp-cond-nego">
-                    <input type="checkbox"
-                      checked={shiftDisplay(posMeta[공통] || emptyPos) === "협의"}
-                      onChange={(e) => setPos(공통, "shiftText", e.target.checked ? "협의" : "")} />
-                    협의
-                  </label>
-                  {shiftModalCat === 공통 && popAt && (
-                    <WorkScheduleModal
-                      value={shiftDisplay(posMeta[공통] || emptyPos)}
-                      onChange={(v) => setPos(공통, "shiftText", v)}
-                      onClose={() => setShiftModalCat(null)}
-                      popRef={popRef}
-                      left={popAt.left}
-                      top={popAt.top}
-                      defaultStart={jobGroupType === "매장" ? 10 : 7}
-                      defaultEnd={jobGroupType === "매장" ? 20 : 19}
-                    />
-                  )}
-                </div>
-              </div>
-
-              {/* ── 복리후생. 모집부문과 같은 레벨(아이콘 + 제목)로 세운다
-                  ("복리후생을 모집부문과 동일한 레벨로 표기해줘") — 전엔 작은 인라인
-                  라벨이라 모집부문의 하위 항목처럼 읽혔다.
-                  근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 139건 중 1건만 채워져
-                  있었고, 그 반열이 복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
-              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 6px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
-                <Tag size={16} style={{ color: "#582681", flexShrink: 0 }} />복리후생{reqStar}
-              </div>
               <div>
                 <div className="job-detail-company-info">
                   {/* 복리후생 — 한 행을 다 쓴다. 태그가 여럿이라 좁으면 읽기 나쁘다. */}
-                  {/* 제목 아이콘(16px)+간격(6px)만큼 들여써 "복리후생" 글자 시작 위치에
-                      맞춘다("제목 첫글자 위치에 맞춰서 입력값이 들여쓰기") — 안 그러면
-                      아이콘 밑에서 시작해 제목과 어긋나 보였다. */}
-                  <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1", paddingLeft: 22 }}>
+                  <div id="jp-benefit" className="job-detail-company-row" ref={welfareRef} style={{ alignItems: "flex-start", position: "relative", gridColumn: "1 / -1" }}>
                     {/* 글자만 눌린다. flex:1 로 행을 다 차지하면 오른쪽 빈 곳을 눌러도
                         팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
                     {!fiBenefits.trim() && (
@@ -3312,6 +3302,31 @@ export default function JobPostForm({
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div>
+              {/* ── 마감일. 미리보기(공개 화면)에서 제목 바로 밑에 뜨는 것과 같은 자리로 옮긴다
+                  ("마감일이 공고 밑에 있어") — 전엔 모집분야와 한 행에 있어 모집부문 쪽으로 치우쳐 보였다. */}
+              <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative", margin: "0 0 12px" }}>
+                <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
+                <button type="button"
+                  onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
+                  style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                  {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
+                </button>
+                {deadlineModalOpen && popAt && (
+                  /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
+                  <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                    <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
+                      style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                      <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                    </label>
+                    <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                      <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                      <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
 
               {/* 지원방법(좌) · 담당자(우) 2열 — 기업회원·비회원 공용.
                   지원방법을 팝오버에서 고르면, 그 방법에 필요한 칸만 오른쪽에 생긴다.
