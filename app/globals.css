@@ -13763,7 +13763,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    예전엔 오른쪽 세로 사이드에 칸 목록까지 늘어놓았는데, 그 목록이 바로 아래 폼과
    같은 말을 두 번 하고 있었다. 남길 것은 얼마나 왔는지 하나뿐이다. */
 .jp-prog { display: flex; align-items: center; gap: 12px;
-  margin: 0 0 14px; padding: 0 2px; }
+  margin: 18px 0 24px; padding: 0 2px; }
 .jp-prog-label { font-size: 12.5px; color: #8a8a90; flex-shrink: 0; }
 .jp-prog-bar { flex: 1; height: 5px; background: #ececf0; border-radius: 3px; overflow: hidden; }
 .jp-prog-bar span { display: block; height: 5px; background: var(--color-primary);
