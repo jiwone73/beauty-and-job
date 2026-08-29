@@ -1137,7 +1137,7 @@ export default function JobPostForm({
     }
   };
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    줄세우기("body", e.target.files || []);
+    processFiles(e.target.files || []);
     e.target.value = "";
   };
   // 클립보드(Ctrl+V)에 담긴 이미지 파일 추출 — 스크린샷·복사한 이미지 붙여넣기 지원(드롭존이 포커스일 때)
@@ -1164,16 +1164,11 @@ export default function JobPostForm({
 
   // 사진을 고르면 자르기 창이 바로 뜬다. 여러 장이면 줄을 세워 한 장씩 묻는다.
   // '자르지 않고 넣기'로 넘기면 원본 그대로 올라가니, 자를 생각이 없어도 사진을 잃지 않는다.
-  const [자를줄, set자를줄] = useState<{ zone: "banner" | "body"; files: File[] } | null>(null);
-  const 줄세우기 = (zone: "banner" | "body", fileList: FileList | File[]) => {
+  const [자를줄, set자를줄] = useState<{ zone: "banner"; files: File[] } | null>(null);
+  const 줄세우기 = (zone: "banner", fileList: FileList | File[]) => {
     const files = Array.from(fileList);
     if (!files.length) return;
-    const 한도 = zone === "banner" ? 10 : 12;
-    const 이미 = zone === "banner" ? bannerImages.length : detailImages.length;
-    if (이미 + files.length > 한도) {
-      alert(zone === "banner" ? "배너는 최대 10장까지예요." : "상세 이미지는 최대 12장까지 첨부할 수 있습니다.");
-      return;
-    }
+    if (bannerImages.length + files.length > 10) { alert("배너는 최대 10장까지예요."); return; }
     set자를줄({ zone, files });
   };
   const 줄에서올리기 = async (f: File) => {
@@ -1181,8 +1176,7 @@ export default function JobPostForm({
     if (!줄) return;
     const 남은 = 줄.files.slice(1);
     set자를줄(남은.length ? { zone: 줄.zone, files: 남은 } : null);
-    if (줄.zone === "banner") await addBannerFiles([f]);
-    else await processFiles([f]);
+    await addBannerFiles([f]);
   };
 
   // 배너 자르기 — 실제로 찍히는 모양이 정해져 있다: 한 장이면 6:2, 여러 장이면 3:2.
@@ -3717,8 +3711,8 @@ export default function JobPostForm({
                   onFocus={() => setPasteZone("body")}
                   onBlur={() => setPasteZone((z) => (z === "body" ? null : z))}
                   onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) 줄세우기("body", e.dataTransfer.files); }}
-                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) 줄세우기("body", fs); } }}
+                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
+                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
                   style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 72, marginTop: 14, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: "#f7f7f8", outline: "none", fontSize: 13, color: "#a8a8ad" }}>
                   여기로 끌어다 놓거나, 눌러서 Ctrl+V
                 </div>
@@ -3759,9 +3753,7 @@ export default function JobPostForm({
               {/* 자르기 창은 배너·상세 칸이 모바일/PC로 갈리지 않는 이 자리에 모아 둔다. */}
               {자를줄 && 자를줄.files.length > 0 && (
                 <ImageCropModal file={자를줄.files[0]}
-                  guides={자를줄.zone === "banner"
-                    ? [{ key: "6:2", ratio: 3, note: "한 장일 때" }, { key: "3:2", ratio: 3 / 2, note: "여러 장일 때" }]
-                    : undefined}
+                  guides={[{ key: "6:2", ratio: 3, note: "한 장일 때" }, { key: "3:2", ratio: 3 / 2, note: "여러 장일 때" }]}
                   minLongEdge={900} cancelLabel="자르지 않고 넣기"
                   onCancel={() => 줄에서올리기(자를줄.files[0])}
                   onCropped={(blob) => {
