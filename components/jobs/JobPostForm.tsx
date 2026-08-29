@@ -439,8 +439,8 @@ export default function JobPostForm({
   // 생기기 전에 저장된 공고를 그대로 보여주기 위한 하위호환용으로만 남긴다.
   type ShiftSlot = { days: string; time: string };
   // salaryNego: "" 확정 / "hidden" 협의(금액 비공개) / "open" 협의(금액 제시).
-  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; shiftText: string; headcount: string; gender: string; shiftNego: boolean; salaryNego: "" | "open" | "hidden"; extraShifts: ShiftSlot[] };
-  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", shiftText: "", headcount: "", gender: "", shiftNego: false, salaryNego: "", extraShifts: [] };
+  type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; shiftText: string; headcount: string; gender: string; location: string; shiftNego: boolean; salaryNego: "" | "open" | "hidden"; extraShifts: ShiftSlot[] };
+  const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", shiftText: "", headcount: "", gender: "", location: "", shiftNego: false, salaryNego: "", extraShifts: [] };
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
   const setPos = <K extends keyof PosRow>(cat: string, k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
@@ -454,7 +454,7 @@ export default function JobPostForm({
   // 부문 단위로 정한다(단계마다 다르면 그건 사실상 다른 부문이다).
   const set부문 = <K extends keyof PosRow>(rows: string[], k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const n = { ...m }; rows.forEach((c) => { n[c] = { ...(n[c] || emptyPos), [k]: v }; }); return n; });
-  const 부문조건 = ["employment", "workDays", "workTime", "shiftText", "shiftNego", "education", "gender"] as const;
+  const 부문조건 = ["employment", "workDays", "workTime", "shiftText", "shiftNego", "education", "gender", "location"] as const;
   const addCatRow = (base: string) => {
     if (categories.length >= MAX_POS_ROWS) { alert(`모집부문은 최대 ${MAX_POS_ROWS}행까지예요.`); return; }
     const dup = categories.some((c) => baseCat(c) === base);
@@ -965,7 +965,7 @@ export default function JobPostForm({
           keys.push(key);
           // 예전엔 salaryNego 가 boolean(true=협의+금액제시) 이었다 — true 를 "open" 으로 옮긴다.
           const savedSalaryNego: "" | "open" | "hidden" = p.salaryNego === true ? "open" : (p.salaryNego === "open" || p.salaryNego === "hidden" ? p.salaryNego : "");
-          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
+          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", location: p.location || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1426,6 +1426,7 @@ export default function JobPostForm({
         workTime: typeof d.work_time === "string" ? d.work_time : "",
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? `${Number(d.headcount)}명` : "",
         gender: "",
+        location: "",
         shiftNego: false,
         salaryNego: d.salary_negotiable ? "open" : "",
         shiftText: "",
@@ -1791,7 +1792,7 @@ export default function JobPostForm({
     // 모집부문 표(positions) — 부문마다 경력·고용형태·급여·근무요일/시간·인원·성별우대를
     // 따로 담는다. 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다.
     // 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -1970,6 +1971,11 @@ export default function JobPostForm({
     const m = (addr || "").match(/(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)\S*\s*([가-힣]+[시군구])/);
     return m ? [`${SIDO_MAP[m[1]] || m[1]} ${m[2]}`] : [];
   };
+  // 이 공고에 등록된 근무지들 — 시/구까지만. 카드에서 부문마다 고르게 할 목록이다.
+  const 짧은지역 = (r: string) => r.replace(/(특별자치도|특별자치시|특별시|광역시|도)\s/, " ").trim();
+  const 근무지목록 = [...new Set(
+    [nmFullAddress, ...extraLocations.map((l) => [l.address, l.detail].filter(Boolean).join(" "))]
+      .flatMap((a) => deriveRegion(a)).map(짧은지역))];
 
   // ── 텍스트 항목 메타 ───────────────────────
   const benefitsLabel = jobGroupType === "매장" ? "근무조건·복지" : "복리후생";
@@ -3120,6 +3126,16 @@ export default function JobPostForm({
                         return (
                           <div className={`jp-job-cond ${미정 ? "off" : ""}`}>
                             {/* 칸마다 제목을 단다 — 값만 있으면 '무관'이 학력인지 성별인지 알 수 없다. */}
+                            {근무지목록.length >= 2 && (
+                              <label className="jp-cond-f">
+                                <span>근무지</span>
+                                <select className="jp-cond-sel" disabled={미정} value={조.location}
+                                  onChange={(e) => set부문(내행, "location", e.target.value)}>
+                                  <option value="">전체</option>
+                                  {근무지목록.map((r) => <option key={r} value={r}>{r}</option>)}
+                                </select>
+                              </label>
+                            )}
                             <label className="jp-cond-f">
                               <span>고용형태</span>
                               <select className="jp-cond-sel" disabled={미정} value={조.employment}
