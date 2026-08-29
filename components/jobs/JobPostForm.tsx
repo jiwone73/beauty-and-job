@@ -3028,8 +3028,8 @@ export default function JobPostForm({
 
               {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
               <div style={{ padding: "4px 0 14px", marginBottom: 4 }}>
-                {nonMember && (
-                  <div style={{ marginBottom: 6 }}>
+                <div style={{ marginBottom: 6 }}>
+                  {nonMember ? (
                     <input
                       value={newCompanyName}
                       onChange={(e) => setNewCompanyName(e.target.value)}
@@ -3037,8 +3037,12 @@ export default function JobPostForm({
                       className="jobpost-brand-input"
                       style={{ fontWeight: 700, color: "#6f6f75", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="jobpost-brand-input" style={{ fontWeight: 700, color: "#6f6f75" }}>
+                      {previewCompanyName}
+                    </div>
+                  )}
+                </div>
                 {/* 예시는 치는 동안에도 옆에 남아 있어야 참고가 된다. 자리글은 첫 글자에
                     통째로 사라지므로, 예시만 따로 겹쳐 그린다 — 적은 글자 뒤에 붙어
                     따라 밀리다가 칸 끝에서 잘려 나간다. */}
