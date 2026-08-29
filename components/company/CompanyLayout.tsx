@@ -373,9 +373,7 @@ export default function CompanyLayout({ children, activePage }: {
         .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
           width: 1018px; max-width: 100%; }
         /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
-           바뀌면 화면이 흔들린다. 공고 등록만 예외다: 모집분야가 일곱 칸짜리 표라
-           800px 에서는 칸마다 110px 밖에 안 돼 고르는 글자가 잘렸다. */
-        .co-set-wide { width: 1184px; }
+           바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
         /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
@@ -484,7 +482,7 @@ export default function CompanyLayout({ children, activePage }: {
         {사이드 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
-          <div className={`co-set-wrap co-set-${묶음}${activePage === "jobs-new" ? " co-set-wide" : ""}`}>
+          <div className={`co-set-wrap co-set-${묶음}`}>
             <nav className="co-set-side">
               {사이드.map((m) => (
                 <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>

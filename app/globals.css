@@ -13762,7 +13762,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 작성 현황 — 폼 맨 위 가로 띠.
    예전엔 오른쪽 세로 사이드에 칸 목록까지 늘어놓았는데, 그 목록이 바로 아래 폼과
    같은 말을 두 번 하고 있었다. 남길 것은 얼마나 왔는지 하나뿐이다. */
-.jp-prog { display: flex; align-items: center; gap: 12px; max-width: 960px;
+.jp-prog { display: flex; align-items: center; gap: 12px;
   margin: 0 0 14px; padding: 0 2px; }
 .jp-prog-label { font-size: 12.5px; color: #8a8a90; flex-shrink: 0; }
 .jp-prog-bar { flex: 1; height: 5px; background: #ececf0; border-radius: 3px; overflow: hidden; }
@@ -13813,7 +13813,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc { border: 1px solid #ececf0; border-radius: 12px; padding: 14px 18px 0;
   margin-bottom: 10px; transition: border-color .15s; }
 .co-jc-top { display: flex; align-items: center; gap: 20px; }
-.co-jc:hover { border-color: #ddd4e6; }
+/* 마우스를 올린 카드는 뷰티워크 보라 테두리로 — 옅은 보라는 흰 바탕에서 안 보였다. */
+.co-jc:hover { border-color: var(--color-primary); }
 /* 임시저장·마감은 살아 있는 공고와 갈라 보이게 한 톤 낮춘다. */
 .co-jc.off { background: #fcfcfd; }
 .co-jc-main { flex: 1; min-width: 0; }
@@ -13846,5 +13847,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   white-space: nowrap; transition: border-color .15s, color .15s; }
 .co-jc-act.sm { font-size: 12px; padding: 5px 10px; }
 .co-jc-act:hover { border-color: #d9cde6; color: var(--color-primary); }
-.co-jc-act.key { border-color: #d9cde6; color: var(--color-primary); }
-.co-jc-act.key:hover { background: #f7f4fa; }
+/* 그 줄에서 가장 하려는 일(복사해서 등록·이어서 작성)은 뷰티워크 보라로 채운다. */
+.co-jc-act.key { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.co-jc-act.key:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover);
+  color: #fff; }
