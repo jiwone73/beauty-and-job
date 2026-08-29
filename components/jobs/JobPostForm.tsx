@@ -3279,7 +3279,7 @@ export default function JobPostForm({
                                 <span>근무요일 / 시간</span>
                                 <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
-                                  {shiftDisplay(row) || "협의"}
+                                  {shiftDisplay(row) || "-"}
                                 </button>
                                 {shiftModalCat === c && popAt && (
                                   <WorkScheduleModal
