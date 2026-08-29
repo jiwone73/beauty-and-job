@@ -13771,11 +13771,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    같은 말을 두 번 하고 있었다. 남길 것은 얼마나 왔는지 하나뿐이다. */
 .jp-prog { display: flex; align-items: center; gap: 12px;
   margin: 18px 0 24px; padding: 0 2px; }
-.jp-prog-label { font-size: 12.5px; color: #8a8a90; flex-shrink: 0; }
+.jp-prog-label { font-size: 13px; color: #8a8a90; flex-shrink: 0; }
 .jp-prog-bar { flex: 1; height: 5px; background: #ececf0; border-radius: 3px; overflow: hidden; }
 .jp-prog-bar span { display: block; height: 5px; background: var(--color-primary);
   border-radius: 3px; transition: width .2s; }
-.jp-prog-count { font-size: 12.5px; color: #8a8a90; flex-shrink: 0;
+.jp-prog-count { font-size: 13px; color: #8a8a90; flex-shrink: 0;
   font-variant-numeric: tabular-nums; }
 
 /* 모집분야 ＋ — 이 화면에서 가장 먼저 누르는 것이라 제목보다 크게 세운다.
@@ -13867,7 +13867,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   margin: 14px 0 16px; }
 .jp-pick-g { width: 100%; box-sizing: border-box; display: flex; align-items: center;
   justify-content: space-between; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid #ececf0;
-  border-radius: 9px; background: #fff; font-family: inherit; font-size: 13.5px; color: #555;
+  border-radius: 9px; background: #fff; font-family: inherit; font-size: 13px; color: #555;
   cursor: pointer; transition: border-color .15s, color .15s; }
 .jp-pick-g:hover { border-color: var(--color-primary); }
 /* 펼쳐 둔 것은 테두리만, 고른 것이 있는 것은 채운다 — 접어도 어디에 담았는지 보인다. */
@@ -13879,7 +13879,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-pick-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px;
   margin: 8px 0 4px; padding-left: 12px; border-left: 2px solid #f2eff6; }
 .jp-pick-i { min-height: 38px; padding: 8px 10px; border: 1px solid #ececf0; border-radius: 8px;
-  background: #fff; font-family: inherit; font-size: 12.5px; color: #555; cursor: pointer;
+  background: #fff; font-family: inherit; font-size: 13px; color: #555; cursor: pointer;
   line-height: 1.3; transition: border-color .15s, color .15s; }
 .jp-pick-i:hover { border-color: var(--color-primary); }
 .jp-pick-i.on { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
@@ -13893,7 +13893,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-item { display: block; line-height: 1.35; }
 .jp-job-steps { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
 .jp-step { border: 1px solid #ececf0; border-radius: 7px; padding: 5px 11px; background: #fff;
-  font-family: inherit; font-size: 12.5px; color: #666; cursor: pointer;
+  font-family: inherit; font-size: 13px; color: #666; cursor: pointer;
   transition: border-color .15s, color .15s; white-space: nowrap; }
 .jp-step:hover { border-color: var(--color-primary); }
 .jp-step.on { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
@@ -13902,7 +13902,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-x:hover { color: var(--color-primary); }
 .jp-job-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 9px 0 2px;
   margin-top: 9px; border-top: 1px solid #f4f4f6; }
-.jp-job-lab { width: 78px; flex-shrink: 0; font-size: 12.5px; color: #8a8a90; }
+.jp-job-lab { width: 78px; flex-shrink: 0; font-size: 13px; color: #8a8a90; }
 /* 인원 — 숫자를 치는 대신 올리고 내린다. 대개 1~2명이라 두어 번 누르면 끝난다. */
 .jp-step-num { display: inline-flex; align-items: center; border: 1px solid #ececf0;
   border-radius: 7px; height: 34px; overflow: hidden; flex-shrink: 0; }
@@ -13910,9 +13910,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-family: inherit; font-size: 14px; color: #666; cursor: pointer; line-height: 1; }
 .jp-step-num button:hover:not(:disabled) { background: var(--color-primary); color: #fff; }
 .jp-step-num button:disabled { color: #d8d8dd; cursor: not-allowed; }
-.jp-step-num b { min-width: 26px; text-align: center; font-weight: 400; font-size: 13.5px;
+.jp-step-num b { min-width: 26px; text-align: center; font-weight: 400; font-size: 13px;
   font-variant-numeric: tabular-nums; }
-.jp-job-unit { font-size: 12.5px; color: #8a8a90; margin-right: 8px; }
+.jp-job-unit { font-size: 13px; color: #8a8a90; margin-right: 8px; }
 /* 급여 — 형태·금액·기준을 테두리 하나로 묶는다. 따로 떨어진 상자 셋이 어수선했다. */
 .jp-sal { display: inline-flex; align-items: center; height: 34px; border: 1px solid #ececf0;
   border-radius: 8px; overflow: hidden; background: #fff; flex-shrink: 0; }
@@ -13927,7 +13927,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal-amt { display: inline-flex; align-items: baseline; gap: 3px; height: 100%;
   padding: 0 10px; border-left: 1px solid #f0f0f2; }
 .jp-sal-amt input { width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
-.jp-sal-amt em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
+.jp-sal-amt em { font-style: normal; font-size: 13px; color: #8a8a90; }
 .jp-sal-basis { padding: 0 24px 0 10px; border-left: 1px solid #f0f0f2; color: #555; }
 /* 섹션 제목 줄 오른쪽 끝에 서는 단추 — 글자만 두면 눌러도 되는지 알기 어렵다. */
 .jp-add-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
@@ -13938,7 +13938,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 최저시급 — 급여 상자 옆 작은 단추. 눌러 채운다. */
 .jp-minwage { height: 34px; padding: 0 10px; border: 1px solid #ececf0; border-radius: 8px;
-  background: #fff; font-family: inherit; font-size: 12.5px; color: #8a8a90; cursor: pointer; flex-shrink: 0; }
+  background: #fff; font-family: inherit; font-size: 13px; color: #8a8a90; cursor: pointer; flex-shrink: 0; }
 .jp-minwage:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .jp-minwage:disabled { color: #c8c8ce; background: #fafafb; cursor: not-allowed; }
 
