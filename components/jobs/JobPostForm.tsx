@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark } from "lucide-react";
+import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -11,6 +11,7 @@ import CategoryPickPopover from "@/components/jobs/CategoryPickPopover";
 import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
+import ImageCropModal from "@/components/ImageCropModal";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { getGroupOfItem, getJobGroups, 직군의경력단계 } from "@/lib/data/jobGroups";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
@@ -1139,6 +1140,37 @@ export default function JobPostForm({
     } finally { setBusy(false); }
   };
 
+  // 첨부한 사진을 그 자리에서 자른다. 올린 뒤에 자르는 쪽이 낫다 — 자르기 창이 먼저 뜨면
+  // 자를 생각이 없던 사람도 매번 창을 닫아야 한다.
+  const [자를사진, set자를사진] = useState<{ idx: number; file: File } | null>(null);
+  const 자르기열기 = async (idx: number) => {
+    const src = detailImages[idx];
+    if (!src?.url) return;
+    try {
+      const r = await fetch(src.url);
+      const b = await r.blob();
+      set자를사진({ idx, file: new File([b], src.name || `상세${idx + 1}.jpg`, { type: b.type || "image/jpeg" }) });
+    } catch {
+      alert("사진을 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+    }
+  };
+  const 자른뒤 = async (blob: Blob) => {
+    const 대상 = 자를사진;
+    set자를사진(null);
+    if (!대상) return;
+    setUploading(true);
+    try {
+      const f = new File([blob], 대상.file.name, { type: blob.type || "image/jpeg" });
+      const r = await uploadImage(await compressImage(f));
+      if (r.success && r.url) {
+        setDetailImages((prev) => prev.map((x, i) => (i === 대상.idx ? { url: r.url!, name: r.name || x.name } : x)));
+      } else {
+        alert(r.error || "이미지 업로드에 실패했습니다.");
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
   const removeImage = (idx: number) =>
     setDetailImages((prev) => prev.filter((_, i) => i !== idx));
 
@@ -3575,7 +3607,7 @@ export default function JobPostForm({
                   <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
                 </label>
                 <span style={{ fontSize: 13, color: "#8a8a90" }}>
-                  이미지 {detailImages.length}/12 · JPG · PNG
+                  이미지 {detailImages.length}/12 · JPG·PNG·WebP · 5MB 이하
                 </span>
               </div>
               {detailImages.length > 0 && (
@@ -3591,9 +3623,17 @@ export default function JobPostForm({
                       <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
                       <button type="button" onClick={() => removeImage(idx)} title="삭제"
                         style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                      <button type="button" onClick={() => 자르기열기(idx)} title="사진 자르기"
+                        style={{ position: "absolute", bottom: 3, right: 3, display: "flex", alignItems: "center", justifyContent: "center", width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer" }}>
+                        <Crop size={11} />
+                      </button>
                     </div>
                   ))}
                 </div>
+              )}
+              {자를사진 && (
+                <ImageCropModal file={자를사진.file} minLongEdge={900}
+                  onCancel={() => set자를사진(null)} onCropped={자른뒤} />
               )}
             </div>
           </div>
