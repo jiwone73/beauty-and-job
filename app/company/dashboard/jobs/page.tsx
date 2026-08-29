@@ -457,42 +457,38 @@ function CompanyJobsContent() {
                     {job.title}
                   </button>
                 </div>
-                {/* 숫자는 오른쪽에. 0 은 흐리게 둬서 사람이 들어온 공고가 먼저 보인다. */}
-                <div className="co-jc-nums">
+                {/* 오른쪽은 두 줄 — 위에 자주 쓰는 수정·마감, 아래에 복사해서 등록과 성적.
+                    숫자는 늘 보이되 먼저 읽힐 필요는 없어 작게 둔다(0 은 더 흐리게). */}
+                <div className="co-jc-right">
+                  <div className="co-jc-acts">
+                    {draft ? (
+                      <>
+                        <button className="co-jc-act key"
+                          onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
+                        <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
+                      </>
+                    ) : closed ? (
+                      <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
+                    ) : (
+                      <>
+                        <button className="co-jc-act"
+                          onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
+                        <button className="co-jc-act" onClick={() => handleClose(job.id)}>마감</button>
+                      </>
+                    )}
+                  </div>
                   {!draft && (
-                    <>
-                      <span className="co-jc-num">
-                        <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
-                        지원자
+                    <div className="co-jc-foot">
+                      <button className="co-jc-act key sm"
+                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                        {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
+                      </button>
+                      <span className="co-jc-nums">
+                        지원자 <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
+                        <i>·</i>
+                        조회 <b className={(job.view_count ?? 0) === 0 ? "zero" : ""}>{job.view_count ?? 0}</b>
                       </span>
-                      <span className="co-jc-num">
-                        <b className={(job.view_count ?? 0) === 0 ? "zero" : ""}>{job.view_count ?? 0}</b>
-                        조회
-                      </span>
-                    </>
-                  )}
-                </div>
-                <div className="co-jc-acts">
-                  {draft ? (
-                    <>
-                      <button className="co-jc-act key"
-                        onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
-                      <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
-                    </>
-                  ) : closed ? (
-                    <>
-                      <button className="co-jc-act key"
-                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>복사해서 다시 올리기</button>
-                      <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
-                    </>
-                  ) : (
-                    <>
-                      <button className="co-jc-act"
-                        onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
-                      <button className="co-jc-act key"
-                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>복사해서 등록</button>
-                      <button className="co-jc-act" onClick={() => handleClose(job.id)}>마감</button>
-                    </>
+                    </div>
                   )}
                 </div>
               </div>

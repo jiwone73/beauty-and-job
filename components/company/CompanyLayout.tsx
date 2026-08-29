@@ -372,8 +372,8 @@ export default function CompanyLayout({ children, activePage }: {
            났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
         .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
           width: 1018px; max-width: 100%; }
-        /* 공고 목록은 표라서 설정 화면보다 넓어야 숨통이 트인다. */
-        .co-set-jobs { width: 1180px; }
+        /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
+           바뀌면 화면이 흔들린다. */
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
         /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
