@@ -7,18 +7,8 @@ import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag } from "lucide-react";
 
-  // 매장 공고는 적힌 값이 그대로 지켜지는 일이 드물다. 근무시간·급여는 면접에서
-// 다시 정하고, 복리후생은 매장마다 달라 표에 다 담기지 않는다. 그래서 구직자가
-// 표만 보고 단정하지 않도록 한마디씩 덧붙인다.
-const withNegotiable = (v: string) => {
-  const t = String(v || "").trim();
-  if (!t || t === "-") return "협의";
-  return /협의/.test(t) ? t : `${t} (협의)`;
-};
-const withSeeDetail = (v: string) => {
-  const t = String(v || "").trim();
-  return /상세요강\s*참조/.test(t) ? t : (t ? `${t} · 상세요강 참조` : "상세요강 참조");
-};
+// 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
+// 매장이 적은 적 없는 문구라, 두 화면을 나란히 놓으면 없던 말이 늘어나 보였다.
 
 // 공고 상단 이미지 갤러리. 표시 규칙(한 칸 4:3 · 한 화면에 두 장)은 BannerStrip에 모아 두고,
 // 기업정보 설정·공고 등록 미리보기에서도 같은 컴포넌트를 써 어디서나 같은 모양으로 보이게 한다.
@@ -274,13 +264,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           </tbody>
         </table>
       </div>
-      {/* 복리후생을 모집부문과 같은 레벨(아이콘+제목)로 세운다 — 등록폼과 같은 인상
-          ("복리후생을 모집부문과 동일한 레벨로 표기해줘"). 값이 없어도 늘 보인다 —
-          매장마다 달라 표에 다 담기지 않으니 '상세요강 참조'만이라도 걸어 둔다.
+      {/* 복리후생을 모집부문과 같은 레벨(아이콘+제목)로 세운다 — 등록폼과 같은 인상.
           근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
           복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
+      {(job.benefits || []).length > 0 && (<>
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 18 }}><Tag size={16} style={{ color: "#582681", flexShrink: 0 }} />복리후생</h2>
-      <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{withSeeDetail((job.benefits || []).join(", "))}</div>
+      <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{(job.benefits || []).join(", ")}</div>
+      </>)}
     </div>
   ) : null;
   // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
@@ -303,13 +293,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {positions.length === 0 && (
           <div className="job-detail-company-row">
             <span className="job-detail-company-label">근무시간</span>
-            <span>{withNegotiable(job.workTimeText)}</span>
+            <span>{job.workTimeText}</span>
           </div>
         )}
         {(
           <div className="job-detail-company-row" style={{ alignItems: "flex-start" }}>
             <span className="job-detail-company-label">복리후생</span>
-            <span>{withSeeDetail((job.benefits || []).join(", "))}</span>
+            <span>{(job.benefits || []).join(", ")}</span>
           </div>
         )}
       </div>
