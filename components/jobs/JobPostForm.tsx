@@ -3017,7 +3017,8 @@ export default function JobPostForm({
               {/* 고른 분야마다 카드 하나. 단계를 켜면 그 단계가 한 줄이 되고 줄마다 인원과 급여를 받는다. */}
               <div style={{ margin: "4px 0 20px" }}>
                 {[...new Set(categories.map(baseCat))].map((item) => {
-                  const 단계들 = 직군의경력단계(item);
+                  // 맨 끝에 '무관' — 직급을 가리지 않고 뽑는 자리가 흔하다.
+                  const 단계들 = [...직군의경력단계(item), "무관"];
                   const 내행 = categories.filter((c) => baseCat(c) === item);
                   const 켜진단계 = 내행.map((c) => (posMeta[c] || emptyPos).career).filter(Boolean);
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
@@ -3025,11 +3026,11 @@ export default function JobPostForm({
                   return (
                     <div key={item} className="jp-job">
                       <div className="jp-job-head">
-                        {/* 대분류 › 소분류 — 어느 갈래를 타고 온 분야인지 한 줄로 보인다.
-                            대분류는 흐리게 둔다. 중요한 것은 소분류다. */}
+                        {/* 대분류를 위에 두고 화살표로 아래를 가리킨다 — 위에서 아래로
+                            좁혀 고른 길이 그대로 보인다. 대분류는 흐리게, 주인공은 소분류다. */}
                         <span className="jp-job-name">
-                          {그룹 && <span className="jp-job-grp">{그룹}<i>›</i></span>}
-                          {item}
+                          {그룹 && <span className="jp-job-grp">{그룹}<i>↓</i></span>}
+                          <span className="jp-job-item">{item}</span>
                         </span>
                         <span className="jp-job-steps">
                           <b className="jp-req">*</b>
@@ -3063,7 +3064,7 @@ export default function JobPostForm({
                         const 미정 = !row.career;
                         return (
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
-                            <span className="jp-job-lab">{row.career || "신입"}</span>
+                            <span className="jp-job-lab">{row.career || "무관"}</span>
                             {(() => {
                               const n = Math.max(1, Number(row.headcount.replace(/[^0-9]/g, "")) || 1);
                               return (

@@ -13882,8 +13882,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job { border: 1px solid #ececf0; border-radius: 10px; padding: 13px 15px; margin-bottom: 10px; }
 .jp-job-head { display: flex; align-items: center; gap: 12px; }
 .jp-job-name { flex: 1; min-width: 0; font-size: 14.5px; color: #1a1a1a; }
-.jp-job-grp { font-size: 11.5px; color: #b4b4bb; }
-.jp-job-grp i { font-style: normal; margin: 0 5px; color: #d8d8de; }
+.jp-job-grp { display: block; font-size: 11.5px; color: #b4b4bb; line-height: 1.5; }
+.jp-job-grp i { font-style: normal; margin-left: 4px; color: #d8d8de; }
+.jp-job-item { display: block; line-height: 1.35; }
 .jp-job-steps { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
 .jp-step { border: 1px solid #ececf0; border-radius: 7px; padding: 5px 11px; background: #fff;
   font-family: inherit; font-size: 12.5px; color: #666; cursor: pointer;
