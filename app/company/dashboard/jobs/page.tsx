@@ -447,14 +447,16 @@ function CompanyJobsContent() {
             const 기간 = job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
             return (
               <div key={job.id} className={`co-jc ${closed || draft ? "off" : ""}`}>
-                <div className="co-jc-head">
-                  <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
-                  <span className="co-jc-term">{기간}</span>
+                <div className="co-jc-main">
+                  <div className="co-jc-head">
+                    <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
+                    <span className="co-jc-term">{기간}</span>
+                  </div>
+                  <button type="button" className="co-jc-title" title={job.title}
+                    onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                    {job.title}
+                  </button>
                 </div>
-                <button type="button" className="co-jc-title"
-                  onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
-                  {job.title}
-                </button>
                 {/* 숫자는 오른쪽에. 0 은 흐리게 둬서 사람이 들어온 공고가 먼저 보인다. */}
                 <div className="co-jc-nums">
                   {!draft && (
