@@ -12,7 +12,7 @@ import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
-import { getGroupOfItem } from "@/lib/data/jobGroups";
+import { getGroupOfItem, getJobGroups } from "@/lib/data/jobGroups";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
@@ -470,6 +470,7 @@ export default function JobPostForm({
   const [shiftModalCat, setShiftModalCat] = useState<string | null>(null); // WorkScheduleModal 이 열린 분야
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
   const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
+  const [열린그룹, set열린그룹] = useState<string[]>([]);
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
   // 표 안 팝오버는 화면 기준(fixed) 좌표로 띄운다. 표를 overflow visible로 바꾸면 720px 표가
   //   페이지 밖으로 넘쳐 화면 전체가 옆으로 밀리기 때문(모바일에서 특히 심함).
@@ -2946,8 +2947,39 @@ export default function JobPostForm({
               <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", fontWeight: 400, color: "#333" }}>
                 <Briefcase id="jp-positions" size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
               </div>
-              {/* ── 모집분야. 골라 담으면 모집부문 표의 행이 됨 ── */}
-              <div className="job-detail-meta-item" style={{ margin: "0 0 12px" }}>
+              {/* 모집분야 — 대분류를 누르면 그 자리에서 소분류가 펼쳐진다.
+                  모달로 덮으면 이미 고른 것이 안 보여 무엇을 더 골라야 할지 알 수 없었다. */}
+              <div className="jp-pick">
+                {getJobGroups(jobGroupType === "기업" ? "OFFICE" : "STORE").map((g) => {
+                  const 고른수 = g.items.filter((it) => categories.some((c) => baseCat(c) === it)).length;
+                  const 열림 = 열린그룹.includes(g.group) || 고른수 > 0;
+                  return (
+                    <div key={g.group}>
+                      <button type="button" className={`jp-pick-g ${열림 ? "on" : ""}`}
+                        onClick={() => set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group])}>
+                        {g.group}
+                        <span className="n">{고른수 > 0 ? `${고른수}/${g.items.length}` : g.items.length}</span>
+                      </button>
+                      {열림 && (
+                        <div className="jp-pick-items">
+                          {g.items.map((it) => {
+                            const 켜짐 = categories.some((c) => baseCat(c) === it);
+                            return (
+                              <button key={it} type="button" className={`jp-pick-i ${켜짐 ? "on" : ""}`}
+                                onClick={() => 켜짐
+                                  ? categories.filter((c) => baseCat(c) === it).forEach(removeCatRow)
+                                  : addCatRow(it)}>
+                                {it}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="job-detail-meta-item" style={{ margin: "0 0 12px", display: "none" }}>
                 <span style={{ fontSize: 15, color: "#999", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                 {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                     고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
