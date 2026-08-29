@@ -449,16 +449,16 @@ export default function CompanyLayout({ children, activePage }: {
                 </>
               )}
             </div>
-            {/* 아바타와 담당자 이름 — 누르면 로그아웃만 나온다. 계정 갈래는 '설정' 메뉴가
+            {/* 아바타와 매장 이름 — 누르면 로그아웃만 나온다. 계정 갈래는 '설정' 메뉴가
                 맡으므로, 여기서 또 같은 곳으로 가는 문을 내지 않는다. */}
             <div className="co-top-mewrap">
-              <button type="button" className="co-top-me" title="담당자 메뉴"
+              <button type="button" className="co-top-me" title="내 메뉴"
                 aria-haspopup="menu" aria-expanded={meMenuOpen}
                 onClick={() => setMeMenuOpen((v) => !v)}>
                 <span className="co-top-ava">
                   {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
                 </span>
-                <span className="co-top-mename">{companyInfo.manager || companyInfo.name || "담당자"}</span>
+                <span className="co-top-mename">{companyInfo.name || "내 매장"}</span>
               </button>
               {meMenuOpen && (
                 <>
