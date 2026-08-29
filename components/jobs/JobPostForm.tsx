@@ -3523,69 +3523,12 @@ export default function JobPostForm({
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
           {/* 상세요강 */}
-          {/* 모바일만 제목 옆 ＋(자리 절약). PC는 아래 드래그 박스에서 첨부한다.
-              위 여백은 '기본정보' 제목과 같게(앞 카드 아래 40px) — 컬럼 gap 8 + 카드 marginBottom을 감안해 24 추가. */}
+          {/* 위 여백은 '공고제목' 제목과 같게(앞 카드 아래 40px) — 컬럼 gap 8 + 카드 marginBottom을 감안해 24 추가. */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4, marginTop: 24 }}>
             <h2 id="jp-detail" className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
-            {isMobile && (
-              <label title="상세요강 이미지 추가"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: uploading ? "#bbb" : "#582681", borderRadius: 7, fontSize: 13, lineHeight: 1, cursor: uploading ? "wait" : "pointer" }}>
-                {uploading ? "…" : "＋"}
-                <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
-              </label>
-            )}
           </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
-
-              {/* ── 상세 내용 이미지 (본문 세로 스택) — 실제 미리보기의 상세요강 위치와 동일 ── */}
-              <div style={{ paddingBottom: 16, borderBottom: "1px solid var(--color-border)", marginBottom: 4 }}>
-                {isMobile
-                  ? detailImages.length === 0 && (
-                      <div style={{ fontSize: 12, color: "#999", marginBottom: 6 }}>상세요강 이미지가 있다면 <b>＋</b>를 눌러서 첨부해 주세요.</div>
-                    )
-                  : (
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 12, color: "#999" }}>갖고 계신 상세요강 이미지가 있다면 첨부해 주세요.</span>
-                    </div>
-                  )}
-                {/* PC는 원래의 점선 드래그·붙여넣기 박스, 모바일은 테두리 없이 썸네일만(좌우 간격 절반). */}
-                <div
-                  tabIndex={isMobile ? -1 : 0}
-                  onFocus={() => setPasteZone("body")}
-                  onBlur={() => setPasteZone((z) => (z === "body" ? null : z))}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
-                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
-                  style={isMobile
-                    ? { display: "flex", flexWrap: "wrap", gap: "8px 4px", alignItems: "center", outline: "none" }
-                    : { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", minHeight: 96, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: pasteZone === "body" ? "#f7f7f8" : "#f7f7f8", outline: "none" }}>
-                  {detailImages.map((d, idx) => (
-                    <div key={d.url + idx} draggable
-                      onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (imgDragRef.current) dropToBody(idx); }}
-                      style={{ position: "relative", width: 84, cursor: "grab" }}>
-                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ display: "block", width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
-                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
-                      <button type="button" onClick={() => removeImage(idx)} title="삭제"
-                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
-                    </div>
-                  ))}
-                  {/* PC 드래그 박스 안의 추가 타일·안내(모바일은 제목 옆 ＋로 대체) */}
-                  {!isMobile && (
-                    <label title="이미지 추가"
-                      style={{ width: 84, height: 84, flexShrink: 0, border: "1.5px dashed #e3e3e6", borderRadius: 8, background: "#fff", color: "#582681", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, cursor: uploading ? "wait" : "pointer" }}>
-                      <span style={{ fontSize: 22, lineHeight: 1 }}>{uploading ? "…" : "+"}</span>
-                      <span style={{ fontSize: 10 }}>추가</span>
-                      <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
-                    </label>
-                  )}
-                  {!isMobile && detailImages.length === 0 && (
-                    <span style={{ fontSize: 13, color: "#bbb" }}>상세요강 이미지가 있다면 여기로 첨부하거나, 이 영역을 클릭한 뒤 <b>Ctrl+V</b>로 붙여넣어 주세요.</span>
-                  )}
-                </div>
-              </div>
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
               {textFields.map((k) => {
@@ -3610,6 +3553,34 @@ export default function JobPostForm({
                   </div>
                 );
               })}
+
+              {/* 첨부 — 글 아래 한 줄. 드래그·붙여넣기 상자는 없앴다. 파일 고르기 하나면 된다. */}
+              <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, paddingTop: 14, borderTop: "1px solid var(--color-border)" }}>
+                <label style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, height: 34, padding: "0 14px", border: "1px solid #d8d8de", borderRadius: 8, background: "#fff", fontSize: 13.5, color: uploading ? "#b4b4b9" : "#444", cursor: uploading ? "wait" : "pointer" }}>
+                  {uploading ? "올리는 중…" : "파일 첨부하기"}
+                  <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
+                </label>
+                <span style={{ fontSize: 13, color: "#8a8a90" }}>
+                  이미지 {detailImages.length}/12 · JPG · PNG
+                </span>
+              </div>
+              {detailImages.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+                  {detailImages.map((d, idx) => (
+                    <div key={d.url + idx} draggable
+                      onDragStart={() => { imgDragRef.current = { zone: "body", idx }; }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) dropToBody(idx); }}
+                      title="끌어서 순서를 바꿔요"
+                      style={{ position: "relative", width: 84, cursor: "grab" }}>
+                      <img src={d.url} alt={`상세 ${idx + 1}`} style={{ display: "block", width: 84, height: 84, objectFit: "cover", borderRadius: 8, border: "1px solid #eee" }} />
+                      <span style={{ position: "absolute", bottom: 3, left: 3, background: "rgba(0,0,0,0.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 4, padding: "0 4px" }}>{idx + 1}</span>
+                      <button type="button" onClick={() => removeImage(idx)} title="삭제"
+                        style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, lineHeight: 1 }}>×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
