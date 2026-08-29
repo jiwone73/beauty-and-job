@@ -71,7 +71,7 @@ export default function CompanyNotificationsPage() {
   const 칸 = (key: string, title: string, 켜짐: boolean, 누름: () => void) => (
     <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "15px 16px",
       display: "flex", alignItems: "center", gap: 12 }}>
-      <div style={{ flex: 1, minWidth: 0, fontSize: 16.5, color: "#1a1a1a" }}>{title}</div>
+      <div style={{ flex: 1, minWidth: 0, fontSize: 17, color: "#1a1a1a" }}>{title}</div>
       <button type="button" role="switch" aria-checked={켜짐} aria-label={title} onClick={누름}
         style={{ width: 42, height: 24, borderRadius: 12, border: "none", flexShrink: 0,
           cursor: "pointer", padding: 2, display: "flex",
@@ -91,7 +91,7 @@ export default function CompanyNotificationsPage() {
     <CompanyLayout activePage="notifications">
       <div>
         {loading ? (
-          <p style={{ fontSize: 16, color: "#999", padding: "40px 0", textAlign: "center", margin: 0 }}>불러오는 중…</p>
+          <p style={{ fontSize: 15, color: "#999", padding: "40px 0", textAlign: "center", margin: 0 }}>불러오는 중…</p>
         ) : (
           <>
             <section style={{ marginBottom: 34 }}>
@@ -101,7 +101,7 @@ export default function CompanyNotificationsPage() {
                 {알림칸.map((c) => 칸(c.key, c.title, !!on[c.key], () => 알림바꾸기(c.key)))}
               </div>
               {알림칸.every((c) => !on[c.key]) && (
-                <p style={{ fontSize: 14.5, color: "#c98a2e", margin: "10px 2px 0", lineHeight: 1.6 }}>
+                <p style={{ fontSize: 15, color: "#c98a2e", margin: "10px 2px 0", lineHeight: 1.6 }}>
                   둘 다 끄면 지원이 들어와도 알려드리지 않아요.
                 </p>
               )}
