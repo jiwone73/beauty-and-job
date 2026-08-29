@@ -1114,8 +1114,8 @@ export default function JobPostForm({
       setUploading(false);
     }
   };
-  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    await processFiles(e.target.files || []);
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    줄세우기("body", e.target.files || []);
     e.target.value = "";
   };
   // 클립보드(Ctrl+V)에 담긴 이미지 파일 추출 — 스크린샷·복사한 이미지 붙여넣기 지원(드롭존이 포커스일 때)
@@ -1138,6 +1138,29 @@ export default function JobPostForm({
       if (r.success && r.url) setUrl(r.url);
       else alert(r.error || "이미지 업로드에 실패했습니다.");
     } finally { setBusy(false); }
+  };
+
+  // 사진을 고르면 자르기 창이 바로 뜬다. 여러 장이면 줄을 세워 한 장씩 묻는다.
+  // '자르지 않고 넣기'로 넘기면 원본 그대로 올라가니, 자를 생각이 없어도 사진을 잃지 않는다.
+  const [자를줄, set자를줄] = useState<{ zone: "banner" | "body"; files: File[] } | null>(null);
+  const 줄세우기 = (zone: "banner" | "body", fileList: FileList | File[]) => {
+    const files = Array.from(fileList);
+    if (!files.length) return;
+    const 한도 = zone === "banner" ? 10 : 12;
+    const 이미 = zone === "banner" ? bannerImages.length : detailImages.length;
+    if (이미 + files.length > 한도) {
+      alert(zone === "banner" ? "배너는 최대 10장까지예요." : "상세 이미지는 최대 12장까지 첨부할 수 있습니다.");
+      return;
+    }
+    set자를줄({ zone, files });
+  };
+  const 줄에서올리기 = async (f: File) => {
+    const 줄 = 자를줄;
+    if (!줄) return;
+    const 남은 = 줄.files.slice(1);
+    set자를줄(남은.length ? { zone: 줄.zone, files: 남은 } : null);
+    if (줄.zone === "banner") await addBannerFiles([f]);
+    else await processFiles([f]);
   };
 
   // 배너 자르기 — 실제로 찍히는 모양이 정해져 있다: 한 장이면 6:2, 여러 장이면 3:2.
@@ -2818,7 +2841,7 @@ export default function JobPostForm({
             <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
               {!isMobile && <ImagePlus size={16} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
               <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
-                onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+                onChange={(e) => { 줄세우기("banner", e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
             </label>
           </div>
           <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: 12, boxSizing: "border-box" }}>
@@ -2859,7 +2882,7 @@ export default function JobPostForm({
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
-                  onChange={(e) => { addBannerFiles(e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
+                  onChange={(e) => { 줄세우기("banner", e.target.files || []); e.currentTarget.value = ""; }} style={{ display: "none" }} />
               </label>
               {/* 샘플 배너는 관리자 대행 등록에만 둔다. 기업회원은 매장/기업정보에서
                   한 번 만들어 두고 공고에서는 '불러오기'로 가져다 쓴다 — 같은 일을 하는
@@ -2884,8 +2907,8 @@ export default function JobPostForm({
                   onBlur={() => setPasteZone((z) => (z === "banner" ? null : z))}
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
-                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) addBannerFiles(f); }}
-                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) addBannerFiles(fs); } }}
+                  onDrop={(e) => { e.preventDefault(); setDragOver(false); if (imgDragRef.current) { dropToBanner(null); return; } const f = e.dataTransfer.files; if (f && f.length && !nmCoverUploading) 줄세우기("banner", f); }}
+                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!nmCoverUploading) 줄세우기("banner", fs); } }}
                   style={{ padding: bannerImages.length ? 6 : 10, borderRadius: 10, border: `1.5px dashed ${dragOver || pasteZone === "banner" ? "#582681" : "#efeff1"}`, background: dragOver || pasteZone === "banner" ? "#f7f7f8" : "#f7f7f8", outline: "none" }}>
                   {bannerImages.length > 0 ? (
                     /* 공고에 실제로 찍히는 모양(3:1 · 한 장은 1/3 폭) 그대로 보여준다. 끌어서 순서를 바꿀 수 있다. */
@@ -2975,15 +2998,26 @@ export default function JobPostForm({
                     style={{ fontWeight: 700, color: "#6f6f75", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                   />
                 </div>
-                <AutoTextarea
-                  id="jp-title"
-                  placeholder="공고 제목을 입력하세요 * (예: 리안헤어 광명점 헤어디자이너·인턴 모집)"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
-                  className="jobpost-title-input"
-                  style={{ width: "100%", fontWeight: 400, color: "#1a1a1a", lineHeight: 1.3, fontFamily: "inherit" }}
-                />
+                {/* 예시는 치는 동안에도 옆에 남아 있어야 참고가 된다. 자리글은 첫 글자에
+                    통째로 사라지므로, 예시만 따로 겹쳐 그린다 — 적은 글자 뒤에 붙어
+                    따라 밀리다가 칸 끝에서 잘려 나간다. */}
+                <div style={{ position: "relative" }}>
+                  <AutoTextarea
+                    id="jp-title"
+                    placeholder="공고 제목을 입력하세요 * (예: 리안헤어 광명점 헤어디자이너·인턴 모집)"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
+                    className="jobpost-title-input"
+                    style={{ width: "100%", fontWeight: 400, color: "#1a1a1a", lineHeight: 1.3, fontFamily: "inherit", position: "relative", zIndex: 1, background: "transparent" }}
+                  />
+                  {!!form.title && (
+                    <div aria-hidden className="jobpost-title-input jp-title-eg">
+                      <span>{form.title}</span>
+                      <em> (예: 리안헤어 광명점 헤어디자이너·인턴 모집)</em>
+                    </div>
+                  )}
+                </div>
               </div>
 
             </div>
@@ -3580,9 +3614,11 @@ export default function JobPostForm({
                 const content = ((form as any)[k] || "") as string;
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
-                    <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
-                      {meta.label}
-                    </label>
+                    {isOffice && (
+                      <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block", color: "#a8a8ad", fontWeight: 400 }}>
+                        {meta.label}
+                      </label>
+                    )}
                     <AutoTextarea
                       value={content}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
@@ -3597,8 +3633,8 @@ export default function JobPostForm({
                   onFocus={() => setPasteZone("body")}
                   onBlur={() => setPasteZone((z) => (z === "body" ? null : z))}
                   onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
-                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
+                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) 줄세우기("body", e.dataTransfer.files); }}
+                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) 줄세우기("body", fs); } }}
                   style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 72, marginTop: 14, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: "#f7f7f8", outline: "none", fontSize: 13, color: "#a8a8ad" }}>
                   여기로 끌어다 놓거나, 눌러서 Ctrl+V
                 </div>
@@ -3636,12 +3672,24 @@ export default function JobPostForm({
                   ))}
                 </div>
               )}
-              {자를사진 && (
+              {/* 자르기 창은 배너·상세 칸이 모바일/PC로 갈리지 않는 이 자리에 모아 둔다. */}
+              {자를줄 && 자를줄.files.length > 0 && (
+                <ImageCropModal file={자를줄.files[0]}
+                  guides={자를줄.zone === "banner"
+                    ? [{ key: "6:2", ratio: 3, note: "한 장일 때" }, { key: "3:2", ratio: 3 / 2, note: "여러 장일 때" }]
+                    : undefined}
+                  minLongEdge={900} cancelLabel="자르지 않고 넣기"
+                  onCancel={() => 줄에서올리기(자를줄.files[0])}
+                  onCropped={(blob) => {
+                    const 원 = 자를줄.files[0];
+                    줄에서올리기(new File([blob], 원.name, { type: blob.type || "image/jpeg" }));
+                  }} />
+              )}
+              {!자를줄 && 자를사진 && (
                 <ImageCropModal file={자를사진.file} minLongEdge={900}
                   onCancel={() => set자를사진(null)} onCropped={자른뒤} />
               )}
-              {/* 배너 칸은 모바일·PC 두 갈래로 갈린다 — 자르기 창은 갈리지 않는 이 자리에 둔다. */}
-              {자를배너 && (
+              {!자를줄 && 자를배너 && (
                 <ImageCropModal file={자를배너.file}
                   guides={[{ key: "6:2", ratio: 3, note: "한 장일 때" }, { key: "3:2", ratio: 3 / 2, note: "여러 장일 때" }]}
                   minLongEdge={900}

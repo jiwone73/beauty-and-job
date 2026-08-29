@@ -356,7 +356,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       <span>
         {job.contactMethods.join("   ·   ")}
         {말로하는지원 && (
-          <div className="jd-guide-note">연락하실 때 “뷰티워크 보고 연락드렸습니다” 한마디면 이야기가 빨라요</div>
+          <div className="jd-guide-note">연락하실 때 뷰티워크에서 봤다고 하시면 매장에서 바로 알아봐요</div>
         )}
       </span>
     </div>

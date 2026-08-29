@@ -17,6 +17,8 @@ interface Props {
   guides?: Guide[];
   /** 권하는 최소 크기(긴 변, px). 비우면 권장 문구를 띄우지 않는다. */
   minLongEdge?: number;
+  /** 취소 단추 글자. 첨부하자마자 뜨는 창에서는 '자르지 않고 넣기'가 된다(사진을 잃지 않는다). */
+  cancelLabel?: string;
   onCancel: () => void;
   onCropped: (blob: Blob) => void;
 }
@@ -44,7 +46,7 @@ type Drag = { mode: "move" | keyof typeof HANDLES; startLocal: { x: number; y: n
 
 // 박스를 사진 위에 올려 두고, 마우스(터치)로 옮기거나 모서리·변을 끌어 크기를 바꾼다 —
 // 화면에 보이는 그대로 잘린다. 확대 슬라이더 없이 드래그만으로 끝낸다.
-export default function ImageCropModal({ file, aspect, guides, minLongEdge, onCancel, onCropped }: Props) {
+export default function ImageCropModal({ file, aspect, guides, minLongEdge, cancelLabel = "취소", onCancel, onCropped }: Props) {
   const [imgUrl] = useState(() => URL.createObjectURL(file));
   const [natural, setNatural] = useState({ w: 0, h: 0 });
   const [display, setDisplay] = useState({ w: 0, h: 0 });
@@ -259,7 +261,7 @@ export default function ImageCropModal({ file, aspect, guides, minLongEdge, onCa
         <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
           <button type="button" onClick={onCancel}
             style={{ flex: 1, padding: "11px 0", borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#666", fontSize: 14, cursor: "pointer" }}>
-            취소
+            {cancelLabel}
           </button>
           <button type="button" onClick={confirm} disabled={working}
             style={{ flex: 1, padding: "11px 0", borderRadius: 9, border: "none", background: "#582681", color: "#fff",
