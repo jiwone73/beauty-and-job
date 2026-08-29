@@ -13920,18 +13920,19 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal:focus-within { border-color: var(--color-primary); }
 .jp-sal select, .jp-sal input { border: none; outline: none; background: none;
   font-family: inherit; font-size: 13px; color: #333; height: 100%; }
-.jp-sal-unit { padding: 0 6px 0 10px; cursor: pointer; color: #555; }
+/* 셀렉트 화살표는 아래로 향한 갈매기 하나만 — 맥 기본 위아래 두 개는 상자 안에서 무겁다. */
+.jp-sal select { appearance: none; -webkit-appearance: none; background: #fff
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
+  no-repeat right 9px center; cursor: pointer; }
+.jp-sal-unit { padding: 0 24px 0 11px; color: #555; }
 .jp-sal-amt { display: inline-flex; align-items: baseline; gap: 3px; height: 100%;
   padding: 0 10px; border-left: 1px solid #f0f0f2; }
 .jp-sal-amt input { width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
 .jp-sal-amt em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
-.jp-sal-basis { padding: 0 8px 0 6px; border-left: 1px solid #f0f0f2; cursor: pointer; color: #555; }
+.jp-sal-basis { padding: 0 24px 0 10px; border-left: 1px solid #f0f0f2; color: #555; }
 .jp-cond-nego { display: inline-flex; align-items: center; gap: 6px; margin-top: 7px;
   font-size: 12.5px; color: #8a8a90; cursor: pointer; }
 .jp-cond-nego input { accent-color: var(--color-primary); }
-.jp-job-nego { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
-  font-size: 12.5px; color: #8a8a90; cursor: pointer; white-space: nowrap; }
-.jp-job-nego input { accent-color: var(--color-primary); }
 
 /* 분야를 고르면 카드가 아래에 생긴다 — 어디에 생겼는지 잠깐 도드라지게. */
 .jp-job.just { border-color: var(--color-primary); animation: jp-just 1.4s ease-out; }

@@ -3081,25 +3081,25 @@ export default function JobPostForm({
                                   <span className="jp-sal-amt">
                                     <input inputMode="numeric" placeholder="0" value={g.금액}
                                       onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, e.target.value.replace(/[^0-9]/g, ""), g.이상))} />
-                                    {/* 숫자를 넣어야 단위가 붙는다 — 빈 칸에 '만원'만 떠 있으면 뭘 적는 칸인지 흐려진다 */}
-                                    {g.금액 && <em>만원</em>}
+                                    <em>만원</em>
                                   </span>
-                                  {g.금액 && (
-                                    <select className="jp-sal-basis" value={g.이상 ? "이상" : "정액"}
-                                      onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, g.금액, e.target.value === "이상"))}>
-                                      <option value="이상">이상</option>
-                                      <option value="정액">정액</option>
-                                    </select>
-                                  )}
+                                  {/* 협의를 따로 체크하지 않는다 — 적어 둔 금액을 어떻게 볼지(이상·정액·협의)를
+                                      금액 바로 옆에서 고르게 한다. 체크 하나를 줄 끝에 떼어 두면 금액과 상관없어 보인다. */}
+                                  <select className="jp-sal-basis"
+                                    value={row.salaryNego === "open" ? "협의" : (g.이상 ? "이상" : "정액")}
+                                    onChange={(e) => {
+                                      const v = e.target.value;
+                                      if (v === "협의") { setPos(c, "salaryNego", "open"); return; }
+                                      setPos(c, "salaryNego", "");
+                                      setPos(c, "salary", 급여쓰기(g.형태, g.금액, v === "이상"));
+                                    }}>
+                                    <option value="이상">이상</option>
+                                    <option value="정액">정액</option>
+                                    <option value="협의">협의</option>
+                                  </select>
                                 </span>
                               );
                             })()}
-                            {/* 대부분 금액을 적고 '협의'를 함께 단다 — 팝오버 안에 두지 않고 줄에 내놓는다. */}
-                            <label className="jp-job-nego">
-                              <input type="checkbox" checked={row.salaryNego === "open"}
-                                onChange={(e) => setPos(c, "salaryNego", e.target.checked ? "open" : "")} />
-                              협의
-                            </label>
                           </div>
                         );
                       })}
