@@ -488,7 +488,6 @@ export default function JobPostForm({
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
   const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
   const [열린그룹, set열린그룹] = useState<string[]>([]);
-  const 접기타이머 = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
   // 표 안 팝오버는 화면 기준(fixed) 좌표로 띄운다. 표를 overflow visible로 바꾸면 720px 표가
   //   페이지 밖으로 넘쳐 화면 전체가 옆으로 밀리기 때문(모바일에서 특히 심함).
@@ -745,6 +744,14 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [cellOpen]);
+  // 모집분야 고르개: 바깥 클릭 시 접기. 시간으로 닫으면 고르는 중에 닫히거나,
+  // 다 고르고 나서도 한참 열려 있다 — 다른 데를 누르는 순간이 곧 다 골랐다는 뜻이다.
+  useEffect(() => {
+    if (열린그룹.length === 0) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".jp-pick")) set열린그룹([]); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [열린그룹]);
   // 고용형태 팝오버: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!고용열림) return;
@@ -3066,8 +3073,7 @@ export default function JobPostForm({
                   return (
                     <div key={g.group}>
                       <button type="button" className={`jp-pick-g ${고른수 > 0 ? "on" : ""} ${열림 ? "open" : ""}`}
-                        onClick={() => { clearTimeout(접기타이머.current[g.group]);
-                          set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group]); }}>
+                        onClick={() => set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group])}>
                         {g.group}
                         <span className="n">{고른수 > 0 ? `${고른수}/${g.items.length}` : g.items.length}</span>
                       </button>
@@ -3080,11 +3086,6 @@ export default function JobPostForm({
                                 onClick={() => {
                                   if (켜짐) { categories.filter((c) => baseCat(c) === it).forEach(removeCatRow); return; }
                                   addCatRow(it);
-                                  // 한 대분류에서 둘 이상 고르는 일이 흔하다 — 바로 접지 않고
-                                  // 3초를 기다린다. 그 사이 또 고르면 시간은 다시 시작한다.
-                                  clearTimeout(접기타이머.current[g.group]);
-                                  접기타이머.current[g.group] = setTimeout(
-                                    () => set열린그룹((p) => p.filter((x) => x !== g.group)), 3000);
                                 }}>
                                 {it}
                               </button>
