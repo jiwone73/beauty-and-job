@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     location, address, work_type, experience_level, deadline, categories,
     detail_images, hiring_process, notes, benefits, employment_type, benefit_tags,
     work_days, work_time, work_time_slots, responsibilities, headcount,
-    work_period, contact_methods, education, gender_preference, positions, cover_images, mention_source, status: reqStatus,
+    work_period, contact_methods, education, gender_preference, positions, cover_images, status: reqStatus,
     // 접수담당자 — 여태 받지 않아 기업회원이 적어도 저장되지 않고 사라졌다.
     external_contact_name, external_contact_phone, external_contact_email
   } = body
@@ -83,10 +83,10 @@ export async function POST(req: NextRequest) {
        salary_type, location, address, work_type, experience_level,
        deadline, categories, detail_images, hiring_process, notes,
        benefits, employment_type, benefit_tags,
-       work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images, mention_source,
+       work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images,
        external_contact_name, external_contact_phone, external_contact_email, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, '${jobStatus}'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -111,7 +111,6 @@ export async function POST(req: NextRequest) {
       // 공고별 상단 이미지. 미지정(undefined)이면 NULL → 상세에서 기업 커버로 폴백.
       //   빈 배열로 보내면 '이 공고는 상단 이미지 없음'으로 저장된다(기업정보는 건드리지 않음).
       Array.isArray(cover_images) ? JSON.stringify(cover_images) : null,
-      mention_source === true,
       (external_contact_name || '').trim() || null,
       (external_contact_phone || '').replace(/\D/g, '') || null,
       (external_contact_email || '').trim() || null

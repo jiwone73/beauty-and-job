@@ -102,7 +102,6 @@ export async function GET(
     external_contact_phone: job.external_contact_phone || '',
     external_contact_email: job.external_contact_email || '',
     contact_methods: job.contact_methods || [],
-    mention_source: job.mention_source === true,
     notes: job.notes || '',
     responsibilities: job.responsibilities || '',
     work_days: job.work_days || '',

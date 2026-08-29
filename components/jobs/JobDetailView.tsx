@@ -348,14 +348,15 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  // 매장이 켜 두면 붙는 한마디 — 전화로 받는 매장은 어느 공고를 보고 온 전화인지 모른다.
+  // 사람과 말을 주고받는 방법이 하나라도 있을 때만 붙는 한마디. 온라인지원만이면 할 말이 없다.
+  const 말로하는지원 = (job.contactMethods || []).some((m: string) => m !== "뷰티워크 온라인지원");
   const methodsInner = hasMethods ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">지원방법</span>
       <span>
         {job.contactMethods.join("   ·   ")}
-        {job.mentionSource && (
-          <div className="jd-guide-note">뷰티워크 채용공고 보고 연락드린다고 말씀해 주세요</div>
+        {말로하는지원 && (
+          <div className="jd-guide-note">연락하실 때 “뷰티워크 보고 연락드렸습니다” 한마디면 이야기가 빨라요</div>
         )}
       </span>
     </div>

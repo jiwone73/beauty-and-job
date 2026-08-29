@@ -117,7 +117,6 @@ export default function JobDetailPage() {
             contactPhone: j.external_contact_phone || '',
             contactEmail: j.external_contact_email || '',
             contactMethods: Array.isArray(j.contact_methods) ? j.contact_methods : [],
-            mentionSource: j.mention_source === true,
             companyInfo: {
               name: j.company?.company_name || '',
               brandName: j.company?.brand_name || '',

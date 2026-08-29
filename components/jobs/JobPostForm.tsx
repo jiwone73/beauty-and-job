@@ -955,7 +955,6 @@ export default function JobPostForm({
         headcount: j.headcount != null ? String(j.headcount) : "",
       });
       setAlwaysOpen(!j.deadline);
-      setMentionSource(j.mention_source === true);
       // 저장된 모집부문 행을 그대로 복원한다. 같은 분야가 여러 행이면 내부 키에 "#2"를 붙여 행을 유지.
       const savedPos = (Array.isArray(j.positions) ? j.positions : []).filter((p: any) => p?.category);
       if (savedPos.length) {
@@ -1143,9 +1142,6 @@ export default function JobPostForm({
 
   // 배너 자르기 — 실제로 찍히는 모양이 정해져 있다: 한 장이면 6:2, 여러 장이면 3:2.
   // 잠그지는 않는다(사진에 따라 꼭 필요한 데가 잘려 나간다). 점선으로 권하기만 한다.
-  // 전화로 받는 매장은 어느 공고를 보고 온 전화인지 모른다 — 한마디를 붙일지 고르게 한다.
-  // 새 공고는 켜진 채로 시작한다(이미 올라간 공고는 DB 기본값이 꺼짐이라 그대로다).
-  const [mentionSource, setMentionSource] = useState(true);
   const [자를배너, set자를배너] = useState<{ idx: number; file: File } | null>(null);
   const 사진가져오기 = async (url: string, name: string) => {
     const r = await fetch(url);
@@ -1947,7 +1943,6 @@ export default function JobPostForm({
       external_contact_name: 낼담당.이름 || null,
       external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
       contact_methods: contactMethods,
-      mention_source: mentionSource,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
       // 공고 전용 상단 이미지. 기업회원이 여기서 지워도 기업정보의 커버는 그대로 둔다.
@@ -2387,7 +2382,6 @@ export default function JobPostForm({
     // 예전엔 기업회원 모드에서 companyProfile의 커버를 썼는데, 이 공고만 배너를
     // 지우거나 새로 올리면 미리보기가 그걸 반영하지 못하고 매장정보 배너를 계속 보여줬다.
     cover_images: bannerImages.map((b) => ({ url: b.url })),
-    mentionSource,
     detailImages: detailImages,
     companyInfo: {
       name: previewCompanyName,
@@ -3474,14 +3468,6 @@ export default function JobPostForm({
                         )}
                       </div>
                      </div>
-                     {/* 여기 붙여야 뜻이 통한다 — 무엇으로 받는지 고른 바로 밑이다. */}
-                     <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8,
-                       fontSize: 13.5, color: "#6f6f75", cursor: "pointer" }}>
-                       <input type="checkbox" checked={mentionSource}
-                         onChange={(e) => setMentionSource(e.target.checked)}
-                         style={{ accentColor: "#582681" }} />
-                       뷰티워크 보고 연락드린다고 말해 달라고 하기
-                     </label>
                      {urlOnLeft && (
                        <div style={{ padding: "4px 0" }}>
                          <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>홈페이지 URL</div>
