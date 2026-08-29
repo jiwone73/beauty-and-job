@@ -1140,6 +1140,38 @@ export default function JobPostForm({
     } finally { setBusy(false); }
   };
 
+  // 배너 자르기 — 실제로 찍히는 모양이 정해져 있다: 한 장이면 6:2, 여러 장이면 3:2.
+  // 잠그지는 않는다(사진에 따라 꼭 필요한 데가 잘려 나간다). 점선으로 권하기만 한다.
+  const [자를배너, set자를배너] = useState<{ idx: number; file: File } | null>(null);
+  const 사진가져오기 = async (url: string, name: string) => {
+    const r = await fetch(url);
+    const b = await r.blob();
+    return new File([b], name, { type: b.type || "image/jpeg" });
+  };
+  const 배너자르기열기 = async (idx: number) => {
+    const src = bannerImages[idx];
+    if (!src?.url) return;
+    try { set자를배너({ idx, file: await 사진가져오기(src.url, src.name || `배너${idx + 1}.jpg`) }); }
+    catch { alert("사진을 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요."); }
+  };
+  const 배너자른뒤 = async (blob: Blob) => {
+    const 대상 = 자를배너;
+    set자를배너(null);
+    if (!대상) return;
+    setNmCoverUploading(true);
+    try {
+      const f = new File([blob], 대상.file.name, { type: blob.type || "image/jpeg" });
+      const r = await uploadImage(await compressImage(f));
+      if (r.success && r.url) {
+        setBannerImages((prev) => prev.map((x, i) => (i === 대상.idx ? { url: r.url!, name: r.name || x.name } : x)));
+      } else {
+        alert(r.error || "이미지 업로드에 실패했습니다.");
+      }
+    } finally {
+      setNmCoverUploading(false);
+    }
+  };
+
   // 첨부한 사진을 그 자리에서 자른다. 올린 뒤에 자르는 쪽이 낫다 — 자르기 창이 먼저 뜨면
   // 자를 생각이 없던 사람도 매번 창을 닫아야 한다.
   const [자를사진, set자를사진] = useState<{ idx: number; file: File } | null>(null);
@@ -1147,9 +1179,7 @@ export default function JobPostForm({
     const src = detailImages[idx];
     if (!src?.url) return;
     try {
-      const r = await fetch(src.url);
-      const b = await r.blob();
-      set자를사진({ idx, file: new File([b], src.name || `상세${idx + 1}.jpg`, { type: b.type || "image/jpeg" }) });
+      set자를사진({ idx, file: await 사진가져오기(src.url, src.name || `상세${idx + 1}.jpg`) });
     } catch {
       alert("사진을 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.");
     }
@@ -2829,6 +2859,7 @@ export default function JobPostForm({
                 <div style={{ width: "100%" }}>
                   {/* 공고 상세와 같은 컴포넌트로 그린다 — 편집 화면에서 보이는 모양이 곧 공개 화면 모양. */}
                   <BannerStrip images={bannerImages.map((b) => b.url)} showIndex
+                    onCrop={배너자르기열기}
                     onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))}
                     onReorder={(from, to) => setBannerImages((prev) => {
                       const next = [...prev];
@@ -2889,6 +2920,7 @@ export default function JobPostForm({
                   {bannerImages.length > 0 ? (
                     /* 공고에 실제로 찍히는 모양(3:1 · 한 장은 1/3 폭) 그대로 보여준다. 끌어서 순서를 바꿀 수 있다. */
                     <BannerStrip images={bannerImages.map((b) => b.url)} showIndex
+                      onCrop={배너자르기열기}
                       onDelete={(url) => setBannerImages((prev) => prev.filter((b) => b.url !== url))}
                       onReorder={(from, to) => setBannerImages((prev) => {
                         const next = [...prev];
@@ -3634,6 +3666,13 @@ export default function JobPostForm({
               {자를사진 && (
                 <ImageCropModal file={자를사진.file} minLongEdge={900}
                   onCancel={() => set자를사진(null)} onCropped={자른뒤} />
+              )}
+              {/* 배너 칸은 모바일·PC 두 갈래로 갈린다 — 자르기 창은 갈리지 않는 이 자리에 둔다. */}
+              {자를배너 && (
+                <ImageCropModal file={자를배너.file}
+                  guides={[{ key: "6:2", ratio: 3, note: "한 장일 때" }, { key: "3:2", ratio: 3 / 2, note: "여러 장일 때" }]}
+                  minLongEdge={900}
+                  onCancel={() => set자를배너(null)} onCropped={배너자른뒤} />
               )}
             </div>
           </div>

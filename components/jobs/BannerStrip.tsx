@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Crop } from "lucide-react";
 import { BannerImg } from "@/components/BannerImg";
 
 /**
@@ -22,6 +22,7 @@ export default function BannerStrip({
   images,
   alt,
   onDelete,
+  onCrop,
   onReorder,
   showIndex = false,
   radius = 0,
@@ -29,6 +30,7 @@ export default function BannerStrip({
   images: string[];
   alt?: string;
   onDelete?: (url: string) => void;                  // 편집 화면에서만 넘긴다(공개 화면은 생략)
+  onCrop?: (idx: number) => void;                    // 넘기면 사진마다 자르기 단추가 붙는다
   onReorder?: (from: number, to: number) => void;    // 넘기면 끌어서 순서를 바꿀 수 있다
   showIndex?: boolean;                               // 첫 장이 목록 카드 썸네일이 되므로 편집 화면에선 번호를 보여준다
   radius?: number;                                   // 기본은 각진 모서리(공고 배너는 화면 폭을 꽉 채운다)
@@ -214,6 +216,14 @@ export default function BannerStrip({
                         background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", cursor: "pointer",
                         display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <X size={13} />
+                    </button>
+                  )}
+                  {onCrop && (
+                    <button type="button" onClick={() => onCrop(idx)} title="사진 자르기"
+                      style={{ position: "absolute", bottom: 5, right: 5, width: 22, height: 22, borderRadius: "50%",
+                        background: "rgba(0,0,0,0.55)", color: "#fff", border: "none", cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Crop size={12} />
                     </button>
                   )}
                 </div>
