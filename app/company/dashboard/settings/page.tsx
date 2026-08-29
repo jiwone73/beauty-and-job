@@ -294,7 +294,7 @@ export default function CompanySettingsPage() {
   const 사업자번호칸 = (
     <div className="admin-form-row">
       <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
-      <span style={{ fontSize: 17, color: info?.business_number ? "#333" : "#bbb" }}>{info?.business_number || "미등록"}</span>
+      <span style={{ fontSize: 16, color: info?.business_number ? "#333" : "#bbb" }}>{info?.business_number || "미등록"}</span>
     </div>
   );
   const 링크목록 = (
@@ -671,7 +671,7 @@ export default function CompanySettingsPage() {
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 480, height: "min(560px, 85vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #f0f0f0", flexShrink: 0 }}>
-              <span style={{ fontSize: 17, color: "#222" }}>주소 검색</span>
+              <span style={{ fontSize: 16, color: "#222" }}>주소 검색</span>
               <button type="button" onClick={() => setAddrOpen(false)}
                 style={{ border: "none", background: "none", fontSize: 22, lineHeight: 1, color: "#999", cursor: "pointer", padding: "0 4px" }} aria-label="닫기">×</button>
             </div>

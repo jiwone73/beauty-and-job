@@ -2378,7 +2378,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 등록폼 기본정보: 필드 글자 크기 통일(공고 제목·회사명·섹션 제목 제외) */
 .jobpost-form .job-detail-meta-item, .jobpost-form .job-detail-meta-item *,
 .jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,
-.jobpost-form .admin-form-label { font-size: 15px !important; }
+.jobpost-form .admin-form-label { font-size: 16px !important; }
 .job-detail-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.8; white-space: pre-line; }
 .job-detail-brand-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 
@@ -5799,7 +5799,7 @@ div:has(> table.admin-table),
 .admin-form-header { width: 100%; max-width: 1216px; margin-left: auto; margin-right: auto; }
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
 /* 섹션 타이틀을 카드 밖(위)으로 — 프로필 기본정보와 동일 */
-.jobpost-section-title { color: #1a1a1a; font-size: 19px; font-weight: 400; margin: 4px 0 0 4px; }
+.jobpost-section-title { color: #1a1a1a; font-size: 16px; font-weight: 400; margin: 4px 0 0 4px; }
 .jobpost-form .admin-form-label { color: #555; font-size: 14px; }
 /* 공고 헤더(회사명·제목) — 화면 폭에 따라 크기를 줄인다(인라인 style 대신 여기서 관리) */
 .jobpost-brand-input { font-size: 14px; }
@@ -5855,10 +5855,10 @@ div:has(> table.admin-table),
   /* 좁은 화면에선 글자를 한 단계 줄여 한 줄에 더 담기게 */
   .jobpost-form .job-detail-meta-item, .jobpost-form .job-detail-meta-item *,
   .jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,
-  .jobpost-form .admin-form-label { font-size: 13.5px !important; }
+  .jobpost-form .admin-form-label { font-size: 15px !important; }
   .jobpost-form .jobpost-title-input { font-size: 17px; }
   .jobpost-form .jobpost-brand-input { font-size: 13.5px; }
-  .jobpost-section-title { font-size: 17px; }
+  .jobpost-section-title { font-size: 15px; }
   .jobpost-form .company-card-title { font-size: 14.5px; }
   .jobpost-form .job-detail-desc, .jobpost-form textarea { font-size: 13.5px; }
 }
@@ -13978,7 +13978,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-set-settings .co-set-main .if-slot,
 .co-set-settings .co-set-main .if-input,
 .co-set-settings .co-set-main .if-line-head .if-slot,
-.co-set-settings .co-set-main .if-sep { font-size: 17px; }
+.co-set-settings .co-set-main .if-sep { font-size: 16px; }
 /* 아직 안 채운 칸의 자리글은 한 단 낮춘다 — 적어 넣은 값과 같은 크기면 이미 채운
    것처럼 보인다. 값이 들어오는 순간 17px 로 커진다. */
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input:placeholder-shown,

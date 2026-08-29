@@ -3700,7 +3700,7 @@ export default function JobPostForm({
                     <AutoTextarea
                       value={content}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
-                      style={{ width: "100%", fontSize: 14, color: "#333", lineHeight: 1.5, fontFamily: "inherit" }} />
+                      style={{ width: "100%", fontSize: 16, color: "#333", lineHeight: 1.5, fontFamily: "inherit" }} />
                   </div>
                 );
               })}
