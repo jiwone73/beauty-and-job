@@ -5892,7 +5892,7 @@ div:has(> table.admin-table),
 /* 항목명은 뷰티워크 보라. 값(#333)과 결이 갈려 어디까지가 칸 이름이고 어디부터가
    내가 적은 값인지 한눈에 나뉜다. (관리자 콘솔은 같은 class 를 쓰지만
    .settings-compact 가 없어 여태 쓰던 회색 그대로다.) */
-.settings-compact .admin-form-label { color: var(--color-primary); font-weight: 400; }
+.settings-compact .admin-form-label { color: #1a1a1a; font-weight: 400; }
 /* 빈 칸은 56px 회색 블록으로 덮고 placeholder 를 투명하게 두고 있었다. 무엇을 적는
    자리인지 알 길이 없어, 공고 등록 폼처럼 자리글을 그대로 보여준다. */
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
@@ -13966,3 +13966,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-cond-sel:disabled, .jp-sal select:disabled, .jp-sal input:disabled {
   color: #c8c8ce; background-color: #fafafb; cursor: not-allowed; }
 .jp-sal.off .jp-sal-amt em { color: #c8c8ce; }
+
+/* ── 설정 갈래(매장정보·계정정보·비밀번호·알림) 본문 글자 크기 ──
+   같은 판을 쓰는 채용공고 갈래는 그대로 두려고 .co-set-settings 안으로만 건다. */
+.co-set-settings .co-set-main .admin-form-label { font-size: 16px; }
+.co-set-settings .co-set-main .admin-form-input,
+.co-set-settings .co-set-main .admin-form-select,
+.co-set-settings .co-set-main .admin-form-textarea { font-size: 16px; }
+.co-set-settings .co-set-main .if-slot,
+.co-set-settings .co-set-main .if-input { font-size: 15.5px; }
+.co-set-settings .co-set-main .if-line-head .if-slot { font-size: 17px; }
+.co-set-settings .co-set-main .if-sep { font-size: 15px; }

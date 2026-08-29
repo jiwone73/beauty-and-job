@@ -71,7 +71,7 @@ export default function CompanyNotificationsPage() {
   const 칸 = (key: string, title: string, 켜짐: boolean, 누름: () => void) => (
     <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "15px 16px",
       display: "flex", alignItems: "center", gap: 12 }}>
-      <div style={{ flex: 1, minWidth: 0, fontSize: 14.5, color: "#1a1a1a" }}>{title}</div>
+      <div style={{ flex: 1, minWidth: 0, fontSize: 16.5, color: "#1a1a1a" }}>{title}</div>
       <button type="button" role="switch" aria-checked={켜짐} aria-label={title} onClick={누름}
         style={{ width: 42, height: 24, borderRadius: 12, border: "none", flexShrink: 0,
           cursor: "pointer", padding: 2, display: "flex",
@@ -83,15 +83,15 @@ export default function CompanyNotificationsPage() {
     </div>
   );
 
-  const 묶음제목 = { fontSize: 15, color: "#1a1a1a", margin: "0 0 4px" } as const;
-  const 묶음설명 = { fontSize: 13, color: "#8a8a90", margin: "0 0 12px", lineHeight: 1.6 } as const;
+  const 묶음제목 = { fontSize: 17, color: "#1a1a1a", margin: "0 0 4px" } as const;
+  const 묶음설명 = { fontSize: 15, color: "#8a8a90", margin: "0 0 12px", lineHeight: 1.6 } as const;
   const 두칸 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } as const;
 
   return (
     <CompanyLayout activePage="notifications">
       <div>
         {loading ? (
-          <p style={{ fontSize: 14, color: "#999", padding: "40px 0", textAlign: "center", margin: 0 }}>불러오는 중…</p>
+          <p style={{ fontSize: 16, color: "#999", padding: "40px 0", textAlign: "center", margin: 0 }}>불러오는 중…</p>
         ) : (
           <>
             <section style={{ marginBottom: 34 }}>
@@ -101,7 +101,7 @@ export default function CompanyNotificationsPage() {
                 {알림칸.map((c) => 칸(c.key, c.title, !!on[c.key], () => 알림바꾸기(c.key)))}
               </div>
               {알림칸.every((c) => !on[c.key]) && (
-                <p style={{ fontSize: 12.5, color: "#c98a2e", margin: "10px 2px 0", lineHeight: 1.6 }}>
+                <p style={{ fontSize: 14.5, color: "#c98a2e", margin: "10px 2px 0", lineHeight: 1.6 }}>
                   둘 다 끄면 지원이 들어와도 알려드리지 않아요.
                 </p>
               )}
@@ -116,7 +116,7 @@ export default function CompanyNotificationsPage() {
             </section>
 
             {error && (
-              <p style={{ fontSize: 13, color: "#e05252", margin: "16px 2px 0" }}>{error}</p>
+              <p style={{ fontSize: 15, color: "#e05252", margin: "16px 2px 0" }}>{error}</p>
             )}
           </>
         )}

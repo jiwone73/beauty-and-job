@@ -144,10 +144,10 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row" style={row}>
                   <label className="admin-form-label" style={label}><Building2 size={15} className="admin-form-icon" />가입 유형</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 7 }}>
-                    <span style={{ fontSize: 14, color: 유형이름 ? "#333" : "#bbb" }}>{유형이름 || "미등록"}</span>
+                    <span style={{ fontSize: 16, color: 유형이름 ? "#333" : "#bbb" }}>{유형이름 || "미등록"}</span>
                     {/* 반 칸짜리 자리라 한마디만 — 긴 설명은 가입 화면에서 이미 읽었다. */}
                     {유형이름 && (
-                      <span style={{ fontSize: 12, color: "#b0b0b6" }}>
+                      <span style={{ fontSize: 14, color: "#b0b0b6" }}>
                         {유형이름 === "본사" ? "매장이 아닌 곳 채용" : "살롱·샵 채용"}
                       </span>
                     )}
@@ -163,8 +163,8 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ fontSize: 14, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
-                    <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
+                    <span style={{ fontSize: 16, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
+                    <span style={{ color: "#ccc", fontSize: 18, flexShrink: 0 }}>›</span>
                   </span>
                 </div>
 
@@ -173,8 +173,8 @@ export default function CompanyAccountPage() {
                   style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ fontSize: 14, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
-                    <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
+                    <span style={{ fontSize: 16, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
+                    <span style={{ color: "#ccc", fontSize: 18, flexShrink: 0 }}>›</span>
                   </span>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function CompanyAccountPage() {
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
             <button type="button" onClick={() => router.push("/company/dashboard/account/withdraw")}
               style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
-                fontSize: 13, color: "#a0a0a6", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                fontSize: 15, color: "#a0a0a6", textDecoration: "underline", textUnderlineOffset: 3 }}>
               회원 탈퇴
             </button>
           </div>
@@ -198,8 +198,8 @@ export default function CompanyAccountPage() {
       {showPhoneModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 400, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 400, margin: "0 0 6px" }}>담당자 휴대폰 변경</h3>
-            <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 400, margin: "0 0 6px" }}>담당자 휴대폰 변경</h3>
+            <p style={{ fontSize: 15, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
               {!phoneCodeSent ? "① 새 휴대폰 번호를 입력하고 인증번호를 받으세요." : "② 문자로 받은 인증번호를 입력하세요."}
             </p>
             {!phoneCodeSent ? (
@@ -209,7 +209,7 @@ export default function CompanyAccountPage() {
               <input className="admin-form-input" placeholder="인증번호 6자리" inputMode="numeric" maxLength={6}
                 value={phoneCode} onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
             )}
-            {phoneMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
+            {phoneMsg && <p style={{ fontSize: 15, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowPhoneModal(false)} disabled={phoneSending || phoneVerifying}
                 style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
@@ -234,8 +234,8 @@ export default function CompanyAccountPage() {
       {showEmailModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 16 }}>
           <div style={{ background: "#fff", borderRadius: 12, padding: 24, maxWidth: 420, width: "100%" }}>
-            <h3 style={{ fontSize: 18, fontWeight: 400, margin: "0 0 6px" }}>이메일 변경</h3>
-            <p style={{ fontSize: 13, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 400, margin: "0 0 6px" }}>이메일 변경</h3>
+            <p style={{ fontSize: 15, color: "#888", margin: "0 0 16px", lineHeight: 1.5 }}>
               {emailStep === 1 ? "① 새 이메일 주소를 입력하고 인증코드를 받으세요." : "② 새 이메일로 받은 인증코드를 입력하세요."}
             </p>
             {emailStep === 1 ? (
@@ -245,7 +245,7 @@ export default function CompanyAccountPage() {
               <input className="admin-form-input" placeholder="인증코드 6자리" inputMode="numeric" maxLength={6}
                 value={emailCode} onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))} style={{ marginBottom: 4 }} />
             )}
-            {emailMsg && <p style={{ fontSize: 13, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
+            {emailMsg && <p style={{ fontSize: 15, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
                 style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>

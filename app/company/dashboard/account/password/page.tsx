@@ -63,14 +63,14 @@ export default function CompanyPasswordPage() {
               value={form.confirm_password} onChange={고치기("confirm_password")}
               onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }} />
             <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10,
-              fontSize: 13, color: "#888", cursor: "pointer" }}>
+              fontSize: 15, color: "#888", cursor: "pointer" }}>
               <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
               비밀번호 표시
             </label>
 
             {/* 실패든 성공이든 같은 자리에서 말한다 — 팝업이 없어져 알림창을 띄울 이유도 없다. */}
-            {error && <p style={{ fontSize: 13, color: "#e05252", margin: "12px 0 0", lineHeight: 1.6 }}>{error}</p>}
-            {done && <p style={{ fontSize: 13, color: "#10b981", margin: "12px 0 0" }}>비밀번호가 변경되었습니다.</p>}
+            {error && <p style={{ fontSize: 15, color: "#e05252", margin: "12px 0 0", lineHeight: 1.6 }}>{error}</p>}
+            {done && <p style={{ fontSize: 15, color: "#10b981", margin: "12px 0 0" }}>비밀번호가 변경되었습니다.</p>}
 
             <button onClick={handleSubmit} disabled={saving}
               style={{ width: "100%", height: 46, marginTop: 18, borderRadius: 8, border: "none",
