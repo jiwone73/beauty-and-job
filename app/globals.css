@@ -13861,7 +13861,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 
 /* 모집부문 표 — 대분류는 소분류 아래 한 톤 눌러서. 주인공은 소분류다. */
-.jd-pos-grp { display: block; font-size: 10.5px; color: #c0c0c6; margin-bottom: 1px; }
 
 /* 공고 등록 · 모집분야 고르개 — 대분류 격자, 누르면 그 아래로 소분류가 펼쳐진다 */
 .jp-pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px;

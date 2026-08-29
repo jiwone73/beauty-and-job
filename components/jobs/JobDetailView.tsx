@@ -1,6 +1,5 @@
 "use client";
 import { forwardRef, type ReactNode } from "react";
-import { getGroupOfItem } from "@/lib/data/jobGroups";
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
@@ -210,7 +209,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               {posCols.map((c) => (
                 <th key={c.key} className="jd-pos-th">
                   {c.label}
-                  {c.key === "salary" && <span style={{ fontSize: "0.8em", fontWeight: 400 }}>(만원)</span>}
+
                 </th>
               ))}
             </tr>
@@ -263,16 +262,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                         : "협의")
                     : c.key === "salary"
                       ? salaryTxt
-                      : c.key === "category"
-                        ? (() => {
-                            // 소분류가 주인공이고, 대분류는 어디서 온 값인지만 알려 주면 된다.
-                            const g = getGroupOfItem(job.jobType === "본사" ? "OFFICE" : "STORE", p.category);
-                            return (<>
-                              {g && <span className="jd-pos-grp">{g}</span>}
-                              {p.category || "-"}
-                            </>);
-                          })()
-                        : (c.get(p) || "-");
+                      : (c.get(p) || "-");
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
                       {content}
@@ -378,7 +368,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  const applyGuideBlock = (hasContact || hasMethods || hasProcess) ? (
+  const deadlineInner = job.deadline ? (
+    <div className="jd-guide-row">
+      <span className="jd-guide-label">마감일</span>
+      <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
+    </div>
+  ) : null;
+
+  const applyGuideBlock = (hasContact || hasMethods || hasProcess || job.deadline) ? (
     <div className="jd-subblock" key="apply-guide">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#582681", flexShrink: 0 }} />지원 안내</h2>
       {(hasContact || hasMethods) && (
@@ -388,6 +385,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         </div>
       )}
       {processInner}
+      {deadlineInner}
     </div>
   ) : null;
 
@@ -479,12 +477,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {/* 성별우대는 모집부문 표에만 둔다. 여기에도 있으면 한 화면에 두 번 나오고,
                 자리마다 다를 수 있는 값을 하나로 뭉뚱그려 보여주게 된다.
                 (경력·학력·인원은 표가 없을 때만 나오는데 이 항목만 그 조건이 빠져 있었다.) */}
-            {job.deadline && (
-              <div className="job-detail-meta-item">
-                <span className="job-detail-meta-label">마감일</span>
-                <span className="job-detail-meta-value">{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
-              </div>
-            )}
+            {/* 마감일은 지원 안내로 옮겼다 — 언제까지 받는지는 어떻게 받는지와 한 덩어리다. */}
           </div>
 
           {/* 근무조건·근무지역·복리후생·채용담당자·채용절차를 기본정보 카드 안에 통합(빈 값 자동 숨김) */}
