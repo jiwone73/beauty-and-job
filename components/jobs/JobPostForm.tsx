@@ -3292,14 +3292,16 @@ export default function JobPostForm({
                                   />
                                 )}
                               </span>
-                              <label className="jp-cond-f">
-                                <span>학력</span>
-                                <select className="jp-cond-sel" disabled={미정} value={row.education}
-                                  onChange={(e) => setPos(c, "education", e.target.value)}>
-                                  <option value="">선택하기</option>
-                                  {(jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU).map((t) => <option key={t} value={t}>{t}</option>)}
-                                </select>
-                              </label>
+                              {isOffice && (
+                                <label className="jp-cond-f">
+                                  <span>학력</span>
+                                  <select className="jp-cond-sel" disabled={미정} value={row.education}
+                                    onChange={(e) => setPos(c, "education", e.target.value)}>
+                                    <option value="">선택하기</option>
+                                    {POS_EDU.map((t) => <option key={t} value={t}>{t}</option>)}
+                                  </select>
+                                </label>
+                              )}
                               <label className="jp-cond-f">
                                 <span>성별</span>
                                 <select className="jp-cond-sel" disabled={미정} value={row.gender}

@@ -96,7 +96,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     { key: "employment", label: "고용형태", get: (p) => p.employment },
     { key: "gender", label: "성별", get: (p) => p.gender },
     { key: "career", label: "경력/직책", get: (p) => p.career },
-    { key: "education", label: "학력", get: (p) => p.education },
+    { key: "education", label: "학력", get: (p) => (isOfficeJob ? p.education : "") },
     { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
     { key: "salary", label: "급여", get: (p) => 급여펴기(p.salary) },
   ];
