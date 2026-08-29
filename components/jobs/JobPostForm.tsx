@@ -12,7 +12,7 @@ import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
-import { getGroupOfItem, getJobGroups } from "@/lib/data/jobGroups";
+import { getGroupOfItem, getJobGroups, 직군의경력단계 } from "@/lib/data/jobGroups";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
@@ -2999,71 +2999,63 @@ export default function JobPostForm({
                 </span>
               </div>
 
-              {/* ── 모집부문 표: 분야별 고용형태·성별·경력/직책·학력·근무·급여 ── */}
-              <div style={{ margin: "10px 0 22px" }}>
-                {categories.length === 0 ? null : (
-                  /* auto 표 레이아웃은 내용의 실제 렌더 폭을 재서 칸 너비를 정한다 —
-                     동적 서브셋 웹폰트(Pretendard)가 아직 없는 글자를 처음 쓸 때는
-                     잠깐 대체 글꼴로 그리다 몇 초 뒤 폰트가 도착하면 폭이 바뀌어
-                     칸이 다시 잡혔다("처음 입력할 때 이렇게 보이다가 몇초 지나면
-                     정상으로 줄맞춤되"). fixed 레이아웃 + colgroup 비율로 칸 너비를
-                     아예 못박아 두면 글꼴이 언제 도착하든 칸 폭 자체는 안 흔들린다. */
-                  <div style={{ overflowX: "auto", border: "1px solid #e4e4e8", borderRadius: 8 }}>
-                    <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-                      <colgroup>
-                        {posColPct.map((pct, i) => <col key={POS_TABLE_COLS[i].key} style={{ width: `${pct}%` }} />)}
-                      </colgroup>
-                      {/* 빈 칸의 자리글은 비워 뒀다. 머리줄이 이미 칸 이름을 대고 있어
-                          같은 말이 위아래로 두 번 나오기 때문. 빈 칸은 회색 바탕(PH_BG)만으로
-                          아직 안 채운 자리임을 알린다.
-                          머리줄을 걷었더니 채운 뒤에 칸을 구별할 수 없었다("무관"이 셋 나란히).
-                          자리글은 채우면 사라지니 이름을 붙들어 줄 것이 필요하다.
-                          대신 자리글과 같은 흐린 회색·가는 글씨로 눌러 캡션처럼 읽히게 했다. */}
-                      <thead>
-                        <tr>
-                          <th style={{ ...thc, ...firstCol }} />{/* 위 '모집분야' 라벨이 이미 말해 준다 */}
-                          <th style={thc}>경력/직책</th>
-                          <th style={{ ...thc, borderRight: "none" }}>급여<span style={{ fontSize: "0.8em" }}>(만원)</span></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {categories.map((cat, rowIdx) => {
-                          const row = posMeta[cat] || emptyPos;
-                          // 마지막 행의 밑줄은 표를 감싼 바깥 테두리 바로 위에 겹쳐 두 줄이
-                          // 겹친 것처럼 두꺼워 보였다("테두리가 두꺼워 보여, 그림자 떄문인거
-                          // 같고") — 마지막 행만 밑줄을 뺀다.
-                          const isLastRow = rowIdx === categories.length - 1;
-                          const rb = isLastRow ? { borderBottom: "none" } : {};
-                          return (
-                            <tr key={cat}>
-                              <td style={{ ...tdc, ...firstCol, ...rb, fontSize: 13.5, color: "#333" }}>
-                                {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
-                                    가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
-                                <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 0, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>
-                                    {(() => {
-                                      // 대분류를 위에 작게 — 읽는 순서가 경로 순서(대분류 → 소분류)와 같다.
-                                      const g = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", baseCat(cat));
-                                      return g ? <span style={{ display: "block", fontSize: 10.5, color: "#c0c0c6", marginBottom: 1 }}>{g}</span> : null;
-                                    })()}
-                                    {baseCat(cat)}
-                                  </span>
-                                  <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
-                                    style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
-                                </div>
-                              </td>
-                              <td style={{ ...tdc, ...rb, position: "relative" }}>{posCell(cat, "career", POS_CAREER, "", false, undefined, true)}</td>
-                              {/* 매장(헤어·네일·피부 등 현장직)은 석사 학력을 요구할 일이 없다. */}
-                              <td style={{ ...tdc, ...rb, position: "relative", borderRight: "none" }}>
-                                {posCell(cat, "salary", [], "", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(cat, "salaryNego", v))}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+              {/* 고른 분야마다 카드 하나. 단계를 켜면 그 단계가 한 줄이 되고 줄마다 인원과 급여를 받는다. */}
+              <div style={{ margin: "4px 0 20px" }}>
+                {[...new Set(categories.map(baseCat))].map((item) => {
+                  const 단계들 = 직군의경력단계(item);
+                  const 내행 = categories.filter((c) => baseCat(c) === item);
+                  const 켜진단계 = 내행.map((c) => (posMeta[c] || emptyPos).career).filter(Boolean);
+                  const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
+                  const 단계행 = (st: string) => 내행.find((c) => (posMeta[c] || emptyPos).career === st);
+                  return (
+                    <div key={item} className="jp-job">
+                      <div className="jp-job-head">
+                        <span className="jp-job-name">
+                          {그룹 && <span className="jp-job-grp">{그룹}</span>}
+                          {item}
+                        </span>
+                        <span className="jp-job-steps">
+                          {단계들.map((st) => (
+                            <button key={st} type="button"
+                              className={`jp-step ${켜진단계.includes(st) ? "on" : ""}`}
+                              onClick={() => {
+                                const 있음 = 단계행(st);
+                                if (있음) { removeCatRow(있음); return; }
+                                const 빈행 = 내행.find((c) => !(posMeta[c] || emptyPos).career);
+                                if (빈행) { setPos(빈행, "career", st); return; }
+                                const key = nextDupKey(item, categories);
+                                setCategories([...categories, key]);
+                                setPosMeta((m) => ({ ...m, [key]: { ...emptyPos, career: st } }));
+                              }}>{st}</button>
+                          ))}
+                        </span>
+                        <button type="button" className="jp-job-x" title="이 분야 빼기"
+                          onClick={() => 내행.forEach(removeCatRow)}>×</button>
+                      </div>
+                      {내행.map((c) => {
+                        const row = posMeta[c] || emptyPos;
+                        return (
+                          <div key={c} className="jp-job-row">
+                            <span className="jp-job-lab">{row.career || "단계 선택"}</span>
+                            <input className="jp-job-num" inputMode="numeric" placeholder="0"
+                              value={row.headcount.replace(/[^0-9]/g, "")}
+                              onChange={(e) => setPos(c, "headcount", e.target.value.replace(/[^0-9]/g, ""))} />
+                            <span className="jp-job-unit">명</span>
+                            <span className="jp-job-sal">
+                              {posCell(c, "salary", [], "급여", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(c, "salaryNego", v))}
+                            </span>
+                            {/* 대부분 금액을 적고 '협의'를 함께 단다 — 팝오버 안에 두지 않고 줄에 내놓는다. */}
+                            <label className="jp-job-nego">
+                              <input type="checkbox" checked={row.salaryNego === "open"}
+                                onChange={(e) => setPos(c, "salaryNego", e.target.checked ? "open" : "")} />
+                              협의
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </div>
 
             </div>
@@ -3094,6 +3086,13 @@ export default function JobPostForm({
                     <span>{shiftDisplay(posMeta[공통] || emptyPos) || "선택하기"}</span>
                     <ChevronDown size={13} style={{ flexShrink: 0, color: "#c4c4c9" }} />
                   </button>
+                  {/* 협의 — 요일·시간을 못 박기 어려운 매장이 많다. 켜면 '협의'로 나간다. */}
+                  <label className="jp-cond-nego">
+                    <input type="checkbox"
+                      checked={shiftDisplay(posMeta[공통] || emptyPos) === "협의"}
+                      onChange={(e) => setPos(공통, "shiftText", e.target.checked ? "협의" : "")} />
+                    협의
+                  </label>
                   {shiftModalCat === 공통 && popAt && (
                     <WorkScheduleModal
                       value={shiftDisplay(posMeta[공통] || emptyPos)}
