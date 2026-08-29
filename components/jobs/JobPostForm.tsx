@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop } from "lucide-react";
+import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -2385,14 +2385,14 @@ export default function JobPostForm({
     title: form.title || "공고 제목",
     jobType: jobGroupType === "기업" ? "본사" : "매장",
     jobCategories: [...new Set(categories.map(baseCat))],
-    career: form.career || "경력무관",
+    career: form.career,
     education: form.education || "",
     region: regionList.join(", "),
-    employType: fiEmployment.trim() || (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : "협의"),
-    headcount: fiHeadcount.trim() || (form.headcount ? `${form.headcount}명` : "00명"), // 자유입력 우선, 미언급 시 '00명'
+    employType: fiEmployment.trim() || (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : ""),
+    headcount: fiHeadcount.trim() || (form.headcount ? `${form.headcount}명` : ""),
     genderPref: jobGroupType === "매장" ? genderPref : "",
-    deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
-    salary: fmtSalary() || "면접 후 협의",
+    deadline: alwaysOpen ? "상시채용" : (form.deadline ? form.deadline.replace(/-/g, ".") : ""),
+    salary: String(form.salary || "").trim() ? fmtSalary() : "",
     positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
     color: "#f7f7f8",
     description: form.description || "",
@@ -2424,9 +2424,10 @@ export default function JobPostForm({
     },
     // 근무지역은 이 공고의 주소를 먼저 쓰고, 비어 있을 때만 매장 프로필 주소로 물러선다.
     companyAddress: nmFullAddress.trim() || (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
-    workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : (workDays.length ? workDays.join("·") : "요일 협의")),
-    workPeriodText: fiWorkPeriod.trim() || workPeriod || "협의",
-    workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "시간 협의")),
+    // 안 고른 것은 비워 둔다 — 화면이 '협의'로 채우면 고른 적 없는 조건이 공고에 적힌다.
+    workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : workDays.join("·")),
+    workPeriodText: fiWorkPeriod.trim() || workPeriod,
+    workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "")),
     // 관리자가 대신 올리는 공고는 지원 안내를 '뷰티워크 온라인지원' 하나로만 낸다.
     //   원래 공고에 적혀 있던 담당자 이름·전화·이메일은 폼에 그대로 남아 저장되지만
     //   (나중에 그 번호로 연락해 회원가입을 권해야 한다), 화면에 내보내면 구직자가
@@ -3417,9 +3418,8 @@ export default function JobPostForm({
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 20 }}>
             <h2 id="jp-region" className="jobpost-section-title" style={{ margin: 0 }}>근무지{reqStar}</h2>
             <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
-              title="근무지를 하나 더 넣어요"
-              style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, border: "none", background: "none", color: "#582681", fontSize: 13.5, lineHeight: 1, padding: 0, cursor: "pointer" }}>
-              <span style={{ fontSize: 17, lineHeight: 1 }}>＋</span>추가</button>
+              title="근무지를 하나 더 넣어요" className="jp-add-btn">
+              <MapPinPlus size={14} />근무지 추가</button>
           </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">

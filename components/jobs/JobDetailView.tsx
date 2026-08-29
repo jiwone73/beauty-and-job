@@ -274,34 +274,26 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
   // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
-  const workCondSection = positions.length === 0 ? (
+  // 등록 화면에 없는 제목이라, 담을 값이 하나도 없으면 아예 세우지 않는다 —
+  // 빈 칸을 '협의'로 채우던 자리다.
+  const 근무조건줄: [string, string][] = positions.length === 0
+    ? ([
+        ["고용형태", job.employType || ""],
+        ["근무요일", job.workDaysText || ""],
+        ["근무시간", job.workTimeText || ""],
+        ["복리후생", (job.benefits || []).join(", ")],
+      ] as [string, string][])
+    : [];
+  const workCondSection = 근무조건줄.some(([, v]) => v.trim()) ? (
     <div className="jd-subblock" key="workcond">
       <h2 className="job-detail-subtitle">근무 조건</h2>
       <div className="job-detail-company-info">
-        {job.employType && positions.length === 0 && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">고용형태</span>
-            <span>{job.employType}</span>
+        {근무조건줄.map(([k, v]) => (
+          <div key={k} className="job-detail-company-row" style={k === "복리후생" ? { alignItems: "flex-start" } : undefined}>
+            <span className="job-detail-company-label">{k}</span>
+            <span>{v.trim() || "-"}</span>
           </div>
-        )}
-        {job.workDaysText && positions.length === 0 && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">근무요일</span>
-            <span>{job.workDaysText}</span>
-          </div>
-        )}
-        {positions.length === 0 && (
-          <div className="job-detail-company-row">
-            <span className="job-detail-company-label">근무시간</span>
-            <span>{job.workTimeText}</span>
-          </div>
-        )}
-        {(
-          <div className="job-detail-company-row" style={{ alignItems: "flex-start" }}>
-            <span className="job-detail-company-label">복리후생</span>
-            <span>{(job.benefits || []).join(", ")}</span>
-          </div>
-        )}
+        ))}
       </div>
     </div>
   ) : null;
