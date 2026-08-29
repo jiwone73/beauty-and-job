@@ -2931,8 +2931,15 @@ export default function JobPostForm({
                 )}
               </div>
 
-              {/* ── 모집부문 제목(모집분야 위, '지원 안내'와 동일 스타일) ── */}
-              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", paddingTop: 14, borderTop: "1px solid #f7f7f8", fontWeight: 400, color: "#333" }}>
+            </div>
+          </div>
+
+          {/* 모집 조건 — 어떤 자리를, 어떤 조건으로 뽑는가. 전에는 이 셋이 다
+              '기본정보' 한 카드에 들어 있어 이름이 내용을 말해 주지 못했다. */}
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>모집 조건</h2>
+          <div className="company-card" style={{ overflow: "visible" }}>
+            <div className="admin-form-body">
+              <div className="admin-form-label" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, margin: "0 0 16px", fontWeight: 400, color: "#333" }}>
                 <Briefcase id="jp-positions" size={16} style={{ color: "#582681", flexShrink: 0 }} />모집부문
               </div>
               {/* ── 모집분야. 골라 담으면 모집부문 표의 행이 됨 ── */}
@@ -3131,8 +3138,14 @@ export default function JobPostForm({
                   </div>
                 </div>
 
-              {/* 근무지역: 별도 섹션(제목+아이콘, 지원 안내와 동일 스타일). 전체 주소 → 필터용 시·군·구 자동 추출 + 지도 */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
+            </div>
+          </div>
+
+          {/* 근무지 — 전체 주소에서 필터용 시·군·구를 뽑아내고 지도를 함께 보여준다. */}
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>근무지</h2>
+          <div className="company-card" style={{ overflow: "visible" }}>
+            <div className="admin-form-body">
+              <div>
                 <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
                   <MapPin id="jp-region" size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e74c3c" }}>*</span>
                   {/* 근무지가 여럿일 때 칸을 더한다. 모집분야와 같은 자리·같은 모양. */}
@@ -3195,9 +3208,14 @@ export default function JobPostForm({
 
               </div>
 
-              {/* 지원 안내 (채용 담당자 · 접수방법 · 채용 절차) */}
-              <div style={{ paddingTop: 14, borderTop: "1px solid #f7f7f8", marginTop: 6 }}>
-                <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}><Send size={16} style={{ color: "#582681", flexShrink: 0 }} />지원 안내</div>
+            </div>
+          </div>
+
+          {/* 지원 방법 — 어디로 어떻게 넣는가(접수방법 · 담당자 · 채용 절차). */}
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>지원 방법</h2>
+          <div className="company-card" style={{ overflow: "visible" }}>
+            <div className="admin-form-body">
+              <div>
 
               {/* 지원방법(좌) · 담당자(우) 2열 — 기업회원·비회원 공용.
                   지원방법을 팝오버에서 고르면, 그 방법에 필요한 칸만 오른쪽에 생긴다.
