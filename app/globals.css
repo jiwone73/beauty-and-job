@@ -13901,12 +13901,26 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-row { display: flex; align-items: center; gap: 8px; padding: 9px 0 0; margin-top: 9px;
   border-top: 1px solid #f4f4f6; }
 .jp-job-lab { width: 78px; flex-shrink: 0; font-size: 12.5px; color: #8a8a90; }
-.jp-job-num { width: 56px; height: 34px; border: 1px solid #ececf0; border-radius: 7px;
-  padding: 0 9px; font-family: inherit; font-size: 13.5px; text-align: right; outline: none; }
-.jp-job-num:focus { border-color: var(--color-primary); }
+/* 인원 — 숫자를 치는 대신 올리고 내린다. 대개 1~2명이라 두어 번 누르면 끝난다. */
+.jp-step-num { display: inline-flex; align-items: center; border: 1px solid #ececf0;
+  border-radius: 7px; height: 34px; overflow: hidden; flex-shrink: 0; }
+.jp-step-num button { width: 30px; height: 100%; border: none; background: #fff;
+  font-family: inherit; font-size: 14px; color: #666; cursor: pointer; line-height: 1; }
+.jp-step-num button:hover:not(:disabled) { background: var(--color-primary); color: #fff; }
+.jp-step-num button:disabled { color: #d8d8dd; cursor: not-allowed; }
+.jp-step-num b { min-width: 26px; text-align: center; font-weight: 400; font-size: 13.5px;
+  font-variant-numeric: tabular-nums; }
 .jp-job-unit { font-size: 12.5px; color: #8a8a90; margin-right: 8px; }
-.jp-job-sal { flex: 1; min-width: 0; position: relative; border: 1px solid #ececf0;
-  border-radius: 7px; min-height: 34px; display: flex; align-items: center; padding: 0 4px; }
+/* 급여 — 형태 · 금액 · 기준 셋으로 나눠 받는다(팝오버 없이 줄에서 바로). */
+.jp-job-sel { height: 34px; border: 1px solid #ececf0; border-radius: 7px; padding: 0 8px;
+  font-family: inherit; font-size: 13px; color: #333; background: #fff; cursor: pointer;
+  outline: none; flex-shrink: 0; }
+.jp-job-sel.sm { width: 74px; }
+.jp-job-sel:focus { border-color: var(--color-primary); }
+.jp-job-amt { width: 78px; height: 34px; border: 1px solid #ececf0; border-radius: 7px;
+  padding: 0 9px; font-family: inherit; font-size: 13.5px; text-align: right; outline: none;
+  flex-shrink: 0; }
+.jp-job-amt:focus { border-color: var(--color-primary); }
 .jp-cond-nego { display: inline-flex; align-items: center; gap: 6px; margin-top: 7px;
   font-size: 12.5px; color: #8a8a90; cursor: pointer; }
 .jp-cond-nego input { accent-color: var(--color-primary); }

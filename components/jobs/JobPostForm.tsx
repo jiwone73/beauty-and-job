@@ -2008,6 +2008,21 @@ export default function JobPostForm({
   };
   // 근무요일/시간 표시 문구. shiftText(원티드식 자유 문장)가 있으면 그대로 쓰고,
   // 아직 그 필드가 없던 예전 공고(수정 진입)는 구조화 필드로 최대한 문장을 만들어 보여준다.
+  // 급여는 "월 320만원 이상" 같은 한 줄로 저장된다(공개 화면·검색이 그 모양을 읽는다).
+  // 화면에서는 형태·금액·기준 셋으로 나눠 받고, 저장할 때 다시 한 줄로 잇는다.
+  const 급여읽기 = (v: string) => {
+    const u = SALARY_UNITS.find((x) => v.startsWith(x.prefix) || v.startsWith(x.label));
+    const 금액 = (v.match(/([\d,]+)\s*만원/) || [])[1]?.replace(/,/g, "") || "";
+    // 금액을 적기 전까지는 '이상'으로 둔다 — 문자열에 '이상'은 금액이 있어야 붙기 때문에,
+    // 형태만 고른 상태에서 '정액'으로 뒤집혀 보이던 것을 막는다(기존 공고도 대부분 '이상'이다).
+    return { 형태: u?.label || "", 금액, 이상: 금액 ? /이상/.test(v) : true };
+  };
+  const 급여쓰기 = (형태: string, 금액: string, 이상: boolean) => {
+    if (!형태 && !금액) return "";
+    const p = SALARY_UNITS.find((x) => x.label === 형태)?.prefix || "";
+    const n = 금액 ? `${Number(금액).toLocaleString()}만원` : "";
+    return [p, n, 이상 && n ? "이상" : ""].filter(Boolean).join(" ");
+  };
   const shiftDisplay = (row: PosRow): string => {
     if (row.shiftText) return row.shiftText;
     if (!row.workDays && !row.workTime) return "";
@@ -3022,10 +3037,10 @@ export default function JobPostForm({
                                 const 있음 = 단계행(st);
                                 if (있음) { removeCatRow(있음); return; }
                                 const 빈행 = 내행.find((c) => !(posMeta[c] || emptyPos).career);
-                                if (빈행) { setPos(빈행, "career", st); return; }
+                                if (빈행) { setPosMeta((m) => ({ ...m, [빈행]: { ...(m[빈행] || emptyPos), career: st, headcount: (m[빈행] || emptyPos).headcount || "1" } })); return; }
                                 const key = nextDupKey(item, categories);
                                 setCategories([...categories, key]);
-                                setPosMeta((m) => ({ ...m, [key]: { ...emptyPos, career: st } }));
+                                setPosMeta((m) => ({ ...m, [key]: { ...emptyPos, career: st, headcount: "1" } }));
                               }}>{st}</button>
                           ))}
                         </span>
@@ -3037,13 +3052,38 @@ export default function JobPostForm({
                         return (
                           <div key={c} className="jp-job-row">
                             <span className="jp-job-lab">{row.career || "단계 선택"}</span>
-                            <input className="jp-job-num" inputMode="numeric" placeholder="0"
-                              value={row.headcount.replace(/[^0-9]/g, "")}
-                              onChange={(e) => setPos(c, "headcount", e.target.value.replace(/[^0-9]/g, ""))} />
+                            {(() => {
+                              const n = Math.max(1, Number(row.headcount.replace(/[^0-9]/g, "")) || 1);
+                              return (
+                                <span className="jp-step-num">
+                                  <button type="button" onClick={() => setPos(c, "headcount", String(Math.max(1, n - 1)))}
+                                    disabled={n <= 1} aria-label="한 명 줄이기">−</button>
+                                  <b>{n}</b>
+                                  <button type="button" onClick={() => setPos(c, "headcount", String(Math.min(99, n + 1)))}
+                                    aria-label="한 명 늘리기">＋</button>
+                                </span>
+                              );
+                            })()}
                             <span className="jp-job-unit">명</span>
-                            <span className="jp-job-sal">
-                              {posCell(c, "salary", [], "급여", true, SALARY_UNITS, true, row.salaryNego, (v) => setPos(c, "salaryNego", v))}
-                            </span>
+                            {(() => {
+                              const g = 급여읽기(row.salary);
+                              return (<>
+                                <select className="jp-job-sel" value={g.형태}
+                                  onChange={(e) => setPos(c, "salary", 급여쓰기(e.target.value, g.금액, g.이상))}>
+                                  <option value="">급여형태</option>
+                                  {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
+                                </select>
+                                <input className="jp-job-amt" inputMode="numeric" placeholder="0"
+                                  value={g.금액}
+                                  onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, e.target.value.replace(/[^0-9]/g, ""), g.이상))} />
+                                <span className="jp-job-unit">만원</span>
+                                <select className="jp-job-sel sm" value={g.이상 ? "이상" : "정액"}
+                                  onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, g.금액, e.target.value === "이상"))}>
+                                  <option value="이상">이상</option>
+                                  <option value="정액">정액</option>
+                                </select>
+                              </>);
+                            })()}
                             {/* 대부분 금액을 적고 '협의'를 함께 단다 — 팝오버 안에 두지 않고 줄에 내놓는다. */}
                             <label className="jp-job-nego">
                               <input type="checkbox" checked={row.salaryNego === "open"}
