@@ -13927,7 +13927,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal-unit { padding: 0 24px 0 11px; color: #555; }
 .jp-sal-amt { display: inline-flex; align-items: baseline; gap: 3px; height: 100%;
   padding: 0 10px; border-left: 1px solid #f0f0f2; }
-.jp-sal-amt input { width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
+.jp-sal-amt input { width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
 .jp-sal-amt em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
 .jp-sal-basis { padding: 0 24px 0 10px; border-left: 1px solid #f0f0f2; color: #555; }
 /* 최저시급 — 급여 상자 옆 작은 단추. 눌러 채운다. */

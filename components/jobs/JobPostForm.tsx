@@ -2128,9 +2128,17 @@ export default function JobPostForm({
   // 아직 그 필드가 없던 예전 공고(수정 진입)는 구조화 필드로 최대한 문장을 만들어 보여준다.
   // 급여는 "월 320만원 이상" 같은 한 줄로 저장된다(공개 화면·검색이 그 모양을 읽는다).
   // 화면에서는 형태·금액·기준 셋으로 나눠 받고, 저장할 때 다시 한 줄로 잇는다.
+  // 시급·일급은 원, 나머지는 만 원으로 받는다 — 시급을 만 원으로 받으면 0.95 같은
+  // 소수를 적어야 하고, 월급을 원으로 받으면 0을 여섯 개 세야 한다.
+  const 원단위 = (형태: string) => 형태 === "시급" || 형태 === "일급";
+  const 급여단위 = (형태: string) => (원단위(형태) ? "원" : "만원");
   const 급여읽기 = (v: string) => {
     const u = SALARY_UNITS.find((x) => v.startsWith(x.prefix) || v.startsWith(x.label));
-    const 금액 = (v.match(/([\d,.]+)\s*만원/) || [])[1]?.replace(/,/g, "") || "";
+    // 예전 공고는 '일급 14만원'처럼 단위가 다를 수 있다 — 지금 쓰는 단위로 옮겨 읽는다.
+    const m = v.match(/([\d,.]+)\s*(만원|원)/);
+    const 원값 = m ? Number(m[1].replace(/,/g, "")) * (m[2] === "만원" ? 10000 : 1) : null;
+    const 금액 = 원값 == null ? ""
+      : 원단위(u?.label || "") ? String(원값) : String(원값 / 10000);
     // 금액을 적기 전까지는 '이상'으로 둔다 — 문자열에 '이상'은 금액이 있어야 붙기 때문에,
     // 형태만 고른 상태에서 '정액'으로 뒤집혀 보이던 것을 막는다(기존 공고도 대부분 '이상'이다).
     return { 형태: u?.label || "", 금액, 이상: 금액 ? /이상/.test(v) : true };
@@ -2139,7 +2147,9 @@ export default function JobPostForm({
     if (!형태 && !금액) return "";
     const p = SALARY_UNITS.find((x) => x.label === 형태)?.prefix || "";
     const [정수, 소수] = String(금액).split(".");
-    const n = 금액 ? `${Number(정수 || 0).toLocaleString()}${소수 != null ? `.${소수}` : ""}만원` : "";
+    const n = 금액
+      ? `${Number(정수 || 0).toLocaleString()}${소수 != null ? `.${소수}` : ""}${급여단위(형태)}`
+      : "";
     return [p, n, 이상 && n ? "이상" : ""].filter(Boolean).join(" ");
   };
   const shiftDisplay = (row: PosRow): string => {
@@ -3175,15 +3185,24 @@ export default function JobPostForm({
                               return (
                                 <span className={`jp-sal ${미정 ? "off" : ""}`}>
                                   <select className="jp-sal-unit" disabled={미정} value={g.형태}
-                                    onChange={(e) => setPos(c, "salary", 급여쓰기(e.target.value, g.금액, g.이상))}>
+                                    onChange={(e) => {
+                                      const 새형태 = e.target.value;
+                                      const 옮김 = !g.금액 || 원단위(g.형태) === 원단위(새형태) ? g.금액
+                                        : 원단위(새형태) ? String(Number(g.금액) * 10000) : String(Number(g.금액) / 10000);
+                                      setPos(c, "salary", 급여쓰기(새형태, 옮김, g.이상));
+                                    }}>
                                     <option value="">급여형태</option>
                                     {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
                                   </select>
                                   <span className="jp-sal-amt">
                                     <input inputMode="decimal" disabled={미정} placeholder="0" value={g.금액}
-                                      onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태,
-                                        e.target.value.replace(/[^0-9.]/g, "").replace(/^(\d*\.\d*).*$/, "$1"), g.이상))} />
-                                    <em>만원</em>
+                                      onChange={(e) => {
+                                        const 원 = 원단위(g.형태);
+                                        const v = 원 ? e.target.value.replace(/[^0-9]/g, "")
+                                          : e.target.value.replace(/[^0-9.]/g, "").replace(/^(\d*\.\d*).*$/, "$1");
+                                        setPos(c, "salary", 급여쓰기(g.형태, v, g.이상));
+                                      }} />
+                                    <em>{급여단위(g.형태)}</em>
                                   </span>
                                   {/* 협의를 따로 체크하지 않는다 — 적어 둔 금액을 어떻게 볼지(이상·정액·협의)를
                                       금액 바로 옆에서 고르게 한다. 체크 하나를 줄 끝에 떼어 두면 금액과 상관없어 보인다. */}
@@ -3210,11 +3229,11 @@ export default function JobPostForm({
                               const g = 급여읽기(row.salary);
                               if (g.형태 !== "시급") return null;
                               // 최저시급을 외우고 있는 사장님은 드물다 — 눌러서 채운다.
-                              const 만원 = String(최저시급원 / 10000);
+
                               return (
                                 <button type="button" className="jp-minwage" disabled={미정}
                                   title={`${최저임금해}년 최저임금 ${최저시급원.toLocaleString()}원`}
-                                  onClick={() => setPos(c, "salary", 급여쓰기("시급", 만원, g.이상))}>
+                                  onClick={() => setPos(c, "salary", 급여쓰기("시급", String(최저시급원), g.이상))}>
                                   최저시급
                                 </button>
                               );
