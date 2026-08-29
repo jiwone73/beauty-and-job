@@ -3,15 +3,27 @@
  *  실제로 그 알림을 보내는 자리(지원 접수 등)와 설정 화면이 같은 목록을 봐야
  *  화면에만 있고 실은 안 지켜지는 스위치가 생기지 않는다.
  *
- *  지금 기업에게 가는 알림은 '새 지원자' 하나뿐이라, 끌지 말지가 아니라
- *  어느 길로 받을지(사이트 종 / 메일)를 고르게 했다.
+ *  두 갈래다.
+ *   - 우리 일에 대한 알림: companies.notification_settings 에 산다.
+ *   - 광고성 정보 수신 동의: term_agreements 에 산다. 가입 때 받은 그 동의와
+ *     같은 기록이라 따로 둘 수 없다(끄면 철회 시각이 남아야 증빙이 된다).
  */
 export const 알림칸 = [
-  { key: "new_applicant",       title: "새 지원자 알림",  desc: "우리 공고에 지원이 들어오면 화면 위 종에 알려드려요." },
-  { key: "new_applicant_email", title: "새 지원자 메일",  desc: "같은 소식을 담당자 이메일로도 보내드려요." },
+  { key: "new_applicant",       title: "화면 알림",  desc: "화면 위 종에 알려드려요." },
+  { key: "new_applicant_email", title: "이메일",     desc: "담당자 이메일로도 보내드려요." },
 ] as const;
 
 export type 알림열쇠 = (typeof 알림칸)[number]["key"];
+
+/** 광고성 정보 수신 동의 — terms.type 과 짝이다. */
+export const 동의칸 = [
+  { key: "MARKETING",      title: "이메일",
+    desc: "이벤트·혜택과 서비스 소식을 담당자 이메일로 받아요." },
+  { key: "RECOMMENDATION", title: "추천 인재 메일",
+    desc: "우리 공고에 맞는 인재를 골라 메일로 알려드려요." },
+] as const;
+
+export type 동의열쇠 = (typeof 동의칸)[number]["key"];
 
 /** 비워 두면 켜진 것으로 본다 — 지원자가 왔는데 아무 말도 없는 쪽이 더 나쁘다.
  *  이미 쓰고 있던 기업들의 동작이 이 설정이 생겼다고 바뀌지 않는다는 뜻이기도 하다. */
