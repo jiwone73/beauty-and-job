@@ -3,7 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
-import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, MapPin, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop } from "lucide-react";
+import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { formatSalaryWon } from "@/lib/salary";
@@ -3330,18 +3330,18 @@ export default function JobPostForm({
           </div>
 
           {/* 근무지 — 전체 주소에서 필터용 시·군·구를 뽑아내고 지도를 함께 보여준다. */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>근무지</h2>
+          {/* 카드 안에 '근무지역' 제목을 또 달면 섹션 이름과 같은 말이 위아래로 겹친다.
+              필수 표시는 섹션 제목이 받고, 추가 단추는 그 줄 오른쪽 끝에 선다. */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 20 }}>
+            <h2 id="jp-region" className="jobpost-section-title" style={{ margin: 0 }}>근무지{reqStar}</h2>
+            <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
+              title="근무지를 하나 더 넣어요"
+              style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, border: "none", background: "none", color: "#582681", fontSize: 13.5, lineHeight: 1, padding: 0, cursor: "pointer" }}>
+              <span style={{ fontSize: 17, lineHeight: 1 }}>＋</span>추가</button>
+          </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div>
-                <div className="admin-form-label" style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 0 10px", fontWeight: 400, color: "#333" }}>
-                  <MapPin id="jp-region" size={16} style={{ color: "#582681", flexShrink: 0 }} />근무지역 <span style={{ color: "#e74c3c" }}>*</span>
-                  {/* 근무지가 여럿일 때 칸을 더한다. 모집분야와 같은 자리·같은 모양. */}
-                  <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
-                    title="근무지역을 하나 더 넣어요"
-                    style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 3, flexShrink: 0, border: "none", background: "none", color: "#582681", fontSize: 13.5, lineHeight: 1, padding: 0, cursor: "pointer" }}>
-                    <span style={{ fontSize: 17, lineHeight: 1 }}>＋</span>추가</button>
-                </div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
                   <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
                     placeholder="주소 검색을 눌러주세요"
