@@ -447,19 +447,18 @@ function CompanyJobsContent() {
             const 기간 = job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
             return (
               <div key={job.id} className={`co-jc ${closed || draft ? "off" : ""}`}>
-                <div className="co-jc-main">
-                  <div className="co-jc-head">
-                    <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
-                    <span className="co-jc-term">{기간}</span>
+                {/* 윗줄 — 왼쪽에 상태와 제목, 오른쪽에 자주 쓰는 할 일. */}
+                <div className="co-jc-top">
+                  <div className="co-jc-main">
+                    <div className="co-jc-head">
+                      <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
+                      <span className="co-jc-term">{기간}</span>
+                    </div>
+                    <button type="button" className="co-jc-title" title={job.title}
+                      onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                      {job.title}
+                    </button>
                   </div>
-                  <button type="button" className="co-jc-title" title={job.title}
-                    onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
-                    {job.title}
-                  </button>
-                </div>
-                {/* 오른쪽은 두 줄 — 위에 자주 쓰는 수정·마감, 아래에 복사해서 등록과 성적.
-                    숫자는 늘 보이되 먼저 읽힐 필요는 없어 작게 둔다(0 은 더 흐리게). */}
-                <div className="co-jc-right">
                   <div className="co-jc-acts">
                     {draft ? (
                       <>
@@ -477,20 +476,22 @@ function CompanyJobsContent() {
                       </>
                     )}
                   </div>
-                  {!draft && (
-                    <div className="co-jc-foot">
-                      <button className="co-jc-act key sm"
-                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                        {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
-                      </button>
-                      <span className="co-jc-nums">
-                        지원자 <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
-                        <i>·</i>
-                        조회 <b className={(job.view_count ?? 0) === 0 ? "zero" : ""}>{job.view_count ?? 0}</b>
-                      </span>
-                    </div>
-                  )}
                 </div>
+                {/* 아랫줄 — 선 아래 왼쪽에 다시 올리기, 오른쪽 끝에 성적.
+                    임시저장은 아직 올린 적이 없어 복사할 것도 셀 것도 없다. */}
+                {!draft && (
+                  <div className="co-jc-foot">
+                    <button className="co-jc-act key"
+                      onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                      {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
+                    </button>
+                    <span className="co-jc-nums">
+                      지원자 <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
+                      <i>·</i>
+                      조회 <b className={(job.view_count ?? 0) === 0 ? "zero" : ""}>{job.view_count ?? 0}</b>
+                    </span>
+                  </div>
+                )}
               </div>
             );
           })}
