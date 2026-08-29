@@ -95,6 +95,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
   const positions = Array.isArray(job.positions) ? job.positions.filter((p: any) => p && p.category) : [];
   // 모집부문 표 열 정의. 값이 아무 행에도 없는 열은 미리보기/상세에서 숨긴다(모집분야는 항상 표시).
+  // 급여는 "월 320만원"처럼 한 글자로 저장된다 — 등록 화면은 '월급'이라 쓰므로 같은 말로 편다.
+  const 급여펴기 = (v: string) => String(v || "").replace(/^\s*([시주월연])\s/,
+    (_m, p1) => ({ 시: "시급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1]);
   const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
     { key: "category", label: "모집분야", get: (p) => p.category },
     // 근무지가 여러 곳인 공고만 자리가 생긴다 — 한 곳이면 아무 행에도 값이 없어 열이 숨는다.
@@ -102,9 +105,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     { key: "employment", label: "고용형태", get: (p) => p.employment },
     { key: "gender", label: "성별", get: (p) => p.gender },
     { key: "career", label: "경력/직책", get: (p) => p.career },
+    // 폼에서 직급마다 인원을 받는다 — 표에 없으면 몇 명 뽑는지 어디에도 안 나온다.
+    { key: "headcount", label: "인원", get: (p) => (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : "") },
     { key: "education", label: "학력", get: (p) => p.education },
     { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
-    { key: "salary", label: "급여", get: (p) => p.salary },
+    { key: "salary", label: "급여", get: (p) => 급여펴기(p.salary) },
   ];
   // 모집부문 첫 행의 급여 — 사이드 카드가 같은 값을 쓴다.
   // 자리마다 급여가 다르면 카드 한 줄에 다 못 담으니, 표를 보라는 뜻으로 첫 값만 쓴다.
@@ -221,7 +226,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // 금액의 일부처럼 읽혔다.
                   const salaryNego = p.salaryNego === "open" && !!c.get(p) && c.get(p) !== "협의";
                   const salaryBase = p.salaryNego === "hidden" ? "협의" : (c.get(p) || "협의");
-                  const salaryTxt = salaryNego ? <>{salaryBase}<div>협의가능</div></> : salaryBase;
+                  const salaryTxt = salaryNego ? <>{salaryBase}<div>협의</div></> : salaryBase;
                   const daysTxt = p.workDays || "";
                   const timeTxt = p.workTime || "";
                   // 요일마다 시간이 다르면("월·수·금은 이 시간, 화·목은 저 시간") 기본 한 벌
@@ -640,7 +645,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {asideSalary && (
             <div className="job-detail-aside-salary">
               {asideSalary.text}
-              {asideSalary.nego && <div>협의가능</div>}
+              {asideSalary.nego && <div>협의</div>}
             </div>
           )}
           {job.deadline && (

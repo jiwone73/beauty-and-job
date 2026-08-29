@@ -1879,7 +1879,7 @@ export default function JobPostForm({
     // 모집부문 표(positions) — 부문마다 경력·고용형태·급여·근무요일/시간·인원·성별우대를
     // 따로 담는다. 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다.
     // 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -2374,7 +2374,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: (alwaysOpen || !form.deadline) ? "상시채용" : form.deadline.replace(/-/g, "."),
     salary: fmtSalary() || "면접 후 협의",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim() || WEEKDAY_DAYS.join("·"), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
+    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
     color: "#f7f7f8",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -3105,7 +3105,7 @@ export default function JobPostForm({
               <div style={{ margin: "4px 0 20px" }}>
                 {[...new Set(categories.map(baseCat))].map((item) => {
                   // 맨 끝에 '무관' — 직급을 가리지 않고 뽑는 자리가 흔하다.
-                  const 단계들 = [...직군의경력단계(item), "무관"];
+                  const 단계들 = [...직군의경력단계(item), "경력무관"];
                   const 내행 = categories.filter((c) => baseCat(c) === item);
                   const 켜진단계 = 내행.map((c) => (posMeta[c] || emptyPos).career).filter(Boolean);
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
@@ -3151,7 +3151,7 @@ export default function JobPostForm({
                         const 미정 = !row.career;
                         return (
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
-                            <span className="jp-job-lab">{row.career || "무관"}</span>
+                            <span className="jp-job-lab">{row.career || "경력무관"}</span>
                             {(() => {
                               const n = Math.max(1, Number(row.headcount.replace(/[^0-9]/g, "")) || 1);
                               return (
@@ -3185,7 +3185,11 @@ export default function JobPostForm({
                                     value={row.salaryNego === "open" ? "협의" : (g.이상 ? "이상" : "정액")}
                                     onChange={(e) => {
                                       const v = e.target.value;
-                                      if (v === "협의") { setPos(c, "salaryNego", "open"); return; }
+                                      if (v === "협의") {
+                                        setPos(c, "salaryNego", "open");
+                                        setPos(c, "salary", 급여쓰기(g.형태, g.금액, false));
+                                        return;
+                                      }
                                       setPos(c, "salaryNego", "");
                                       setPos(c, "salary", 급여쓰기(g.형태, g.금액, v === "이상"));
                                     }}>
@@ -3235,7 +3239,7 @@ export default function JobPostForm({
                                 <span>근무요일 / 시간</span>
                                 <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
-                                  {shiftDisplay(row) || "선택하기"}
+                                  {shiftDisplay(row) || "협의"}
                                 </button>
                                 {shiftModalCat === c && popAt && (
                                   <WorkScheduleModal
