@@ -17,7 +17,8 @@ const NOTIFICATION_GROUPS = [
     items: [
       { id: "newsletter", title: "뷰티워크 뉴스레터 구독", desc: "엄선된 뷰티 채용 소식과 업계 인사이트를 메일로 받아보세요.", defaultOn: false },
       { id: "event", title: "이벤트·혜택 소식 받기", desc: "뷰티워크의 이벤트와 혜택 소식을 메일로 받아보세요.", defaultOn: false },
-      { id: "agent", title: "기업 채용 제안받기", desc: "프로필을 공개하면 기업이 직접 채용 제안을 보낼 수 있어요.", defaultOn: false },
+      // 안 건드리면 켜진 것으로 동작한다(제안 API 가 !== false 로 본다). 표시도 같게 둔다.
+      { id: "agent", title: "기업 채용 제안받기", desc: "기업이 내 프로필을 보고 채용 제안을 보낼 수 있어요. 끄면 제안이 오지 않아요.", defaultOn: true },
     ],
   },
   {

@@ -53,6 +53,12 @@ export async function POST(
       return err("USER_001", "제안할 수 없는 후보자입니다.", 404);
     }
     const target = userRes.rows[0];
+    // 구직자가 '기업 채용 제안받기'를 꺼 두었으면 보내지 않는다.
+    //   안 건드린 사람은 켜진 것으로 본다(!== false) — 이력서 열람 메일과 같은 규칙이고,
+    //   설정이 생겼다고 이미 쓰던 사람의 동작이 바뀌지 않는다.
+    if (target.notification_settings?.agent === false) {
+      return err("PROPOSAL_002", "이 후보자는 채용 제안을 받지 않도록 설정했습니다.", 403);
+    }
 
     const coRes = await client.query(`SELECT company_name FROM companies WHERE id = $1`, [auth!.sub]);
     const companyName = coRes.rows[0]?.company_name || "기업";
