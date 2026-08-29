@@ -13847,9 +13847,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border: 1px solid #ececf0; border-radius: 7px; padding: 6px 12px; cursor: pointer;
   white-space: nowrap; transition: border-color .15s, color .15s; }
 .co-jc-act.sm { font-size: 12px; padding: 5px 10px; }
-.co-jc-act:hover { border-color: #d9cde6; color: var(--color-primary); }
-/* 글자는 옆 단추들과 같은 회색이다 — 한 줄에 회색과 보라가 섞이면 어수선하다.
-   평소엔 테두리 색만 살짝 다르고, 마우스를 올렸을 때 뷰티워크 보라로 채운다. */
-.co-jc-act.key { border-color: #d9cde6; }
-.co-jc-act.key:hover { background: var(--color-primary); border-color: var(--color-primary);
+/* 마우스를 올리면 어느 단추든 뷰티워크 보라로 채워진다 — 수정·마감·삭제·복사
+   모두 같은 반응이라, 무엇을 누르려는지가 색 하나로 일관되게 보인다. */
+.co-jc-act:hover { background: var(--color-primary); border-color: var(--color-primary);
   color: #fff; }
+/* 그 줄에서 주된 일은 평소에도 테두리만 살짝 다르다(글자 색은 옆과 같은 회색). */
+.co-jc-act.key { border-color: #d9cde6; }
