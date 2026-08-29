@@ -3496,14 +3496,17 @@ export default function JobPostForm({
                               canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: (v: string) => setNmManagerPhone(전화꼴(v)), im: "numeric" as const, 폭: 122 } : null,
                               canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const, 폭: 168 } : null,
                             ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 폭: number }[];
+                            // 이름·전화와 한 줄을 나눠 쓰면 메일에 200px도 안 남는다 —
+                            // 주소가 조금만 길어도 끝이 잘려 무엇을 적었는지 못 본다.
+                            // 셋 다 있을 때는 메일을 아랫줄로 내려 칸 폭을 다 준다.
+                            const 메일따로 = canPhone && canEmail;
                             return (
-                              // 칸 폭은 들어갈 글자 길이에 맞춘다 — 이름 3자, 전화 010-1234-5678,
-                              // 메일 주소. 이름·전화는 제 폭만 쓰고, 남는 자리는 메일이 다 가져간다
-                              // (셋이 똑같이 늘면 가장 긴 메일이 제일 좁아진다).
+                              // 칸 폭은 들어갈 글자 길이에 맞춘다 — 이름 3자, 전화 010-1234-5678.
                               <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, padding: "3px 0", minWidth: 0 }}>
                                 {칸.map((f, i) => (
                                   <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0,
-                                    flex: f.k === "mail" ? `1 1 ${f.폭}px` : `0 1 ${f.폭}px` }}>
+                                    marginTop: f.k === "mail" && 메일따로 ? 6 : 0,
+                                    flex: f.k === "mail" ? (메일따로 ? "1 1 100%" : `1 1 ${f.폭}px`) : `0 1 ${f.폭}px` }}>
                                     {/* 크롬은 placeholder·name 에 든 낱말('전화'·'메일')로 칸을 알아보고
                                         연락처 아이콘을 띄운다. 그래서 자리글을 속성에서 빼고 우리가 그린다.
                                         name·autocomplete 도 뜻 없는 값으로 둔다. */}
@@ -3518,7 +3521,9 @@ export default function JobPostForm({
                                           fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
                                       )}
                                     </span>
-                                    {i < 칸.length - 1 && <span style={{ color: "#dcdce0", flexShrink: 0 }}>|</span>}
+                                    {i < 칸.length - 1 && !(메일따로 && 칸[i + 1].k === "mail") && (
+                                      <span style={{ color: "#dcdce0", flexShrink: 0 }}>|</span>
+                                    )}
                                   </span>
                                 ))}
                               </div>
