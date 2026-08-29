@@ -13936,12 +13936,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-cond-shift { text-align: left; }
 .jp-cond-shift.ph { color: #b4b4b9; }
 
-/* 분야를 고르면 카드가 아래에 생긴다 — 테두리와 바탕을 함께 바꿔 어디에 생겼는지 짚어 준다. */
-.jp-job.just { border-color: var(--color-primary); background: #faf7fc;
-  animation: jp-just 1.4s ease-out; }
-@keyframes jp-just {
-  0%   { box-shadow: 0 0 0 0 rgba(88,38,129,0.28); }
-  70%  { box-shadow: 0 0 0 7px rgba(88,38,129,0); }
-  100% { box-shadow: 0 0 0 0 rgba(88,38,129,0); }
-}
-@media (prefers-reduced-motion: reduce) { .jp-job.just { animation: none; } }
+/* 담긴 부문은 보라 테두리로 남는다 — 잠깐 켰다 끄면 무엇이 담겼는지 다시 알 수 없다. */
+.jp-job { border-color: var(--color-primary); }
+
+/* 직급을 고르기 전에는 아래를 못 만진다. */
+.jp-req { color: #e74c3c; font-weight: 400; margin-right: 2px; }
+.jp-job-row.off .jp-job-lab, .jp-job-cond.off .jp-cond-f > span { color: #c8c8ce; }
+.jp-job-row.off .jp-step-num, .jp-sal.off { background: #fafafb; border-color: #f0f0f2; }
+.jp-job-row.off .jp-step-num b, .jp-job-row.off .jp-job-unit { color: #c8c8ce; }
+.jp-cond-sel:disabled, .jp-sal select:disabled, .jp-sal input:disabled {
+  color: #c8c8ce; background-color: #fafafb; cursor: not-allowed; }
+.jp-sal.off .jp-sal-amt em { color: #c8c8ce; }
