@@ -13970,6 +13970,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* ── 설정 갈래(매장정보·계정정보·비밀번호·알림) 본문 글자 크기 ──
    같은 판을 쓰는 채용공고 갈래는 그대로 두려고 .co-set-settings 안으로만 건다. */
 .co-set-settings .co-set-main .admin-form-label,
+.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input,
+.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-select,
 .co-set-settings .co-set-main .admin-form-input,
 .co-set-settings .co-set-main .admin-form-select,
 .co-set-settings .co-set-main .admin-form-textarea,
@@ -13977,3 +13979,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-set-settings .co-set-main .if-input,
 .co-set-settings .co-set-main .if-line-head .if-slot,
 .co-set-settings .co-set-main .if-sep { font-size: 17px; }
+/* 아직 안 채운 칸의 자리글은 한 단 낮춘다 — 적어 넣은 값과 같은 크기면 이미 채운
+   것처럼 보인다. 값이 들어오는 순간 17px 로 커진다. */
+.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input:placeholder-shown,
+.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-select[data-empty="true"],
+.co-set-settings .co-set-main .admin-form-input:placeholder-shown,
+.co-set-settings .co-set-main .admin-form-textarea:placeholder-shown,
+.co-set-settings .co-set-main .admin-form-select[data-empty="true"],
+.co-set-settings .co-set-main .if-slot:not(.on),
+.co-set-settings .co-set-main .if-input:placeholder-shown { font-size: 15px; }
