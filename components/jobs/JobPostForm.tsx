@@ -3554,7 +3554,21 @@ export default function JobPostForm({
                 );
               })}
 
-              {/* 첨부 — 글 아래 한 줄. 드래그·붙여넣기 상자는 없앴다. 파일 고르기 하나면 된다. */}
+              {mode === "admin" && (
+                <div
+                  tabIndex={0}
+                  onFocus={() => setPasteZone("body")}
+                  onBlur={() => setPasteZone((z) => (z === "body" ? null : z))}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
+                  onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 72, marginTop: 14, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: "#f7f7f8", outline: "none", fontSize: 13, color: "#a8a8ad" }}>
+                  여기로 끌어다 놓거나, 눌러서 Ctrl+V
+                </div>
+              )}
+              {/* 첨부 — 회원은 글 아래 한 줄. 파일 고르기 하나면 된다.
+                  관리자 직접등록만 점선 상자를 남긴다: 외부 공고를 옮길 때 스크린샷을
+                  Ctrl+V 로 바로 붙이고 여러 장을 끌어다 놓는 일이 실제 작업이다. */}
               <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, paddingTop: 14, borderTop: "1px solid var(--color-border)" }}>
                 <label style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, height: 34, padding: "0 14px", border: "1px solid #d8d8de", borderRadius: 8, background: "#fff", fontSize: 13.5, color: uploading ? "#b4b4b9" : "#444", cursor: uploading ? "wait" : "pointer" }}>
                   {uploading ? "올리는 중…" : "파일 첨부하기"}
