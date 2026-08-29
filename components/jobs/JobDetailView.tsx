@@ -90,14 +90,14 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
     { key: "category", label: "모집분야", get: (p) => p.category },
     // 무엇을 몇 명 뽑는가 — 붙여 놓아야 한 번에 읽힌다.
-    { key: "headcount", label: "인원", get: (p) => (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : "") },
+    { key: "headcount", label: "인원", get: (p) => (!isOfficeJob && p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : "") },
     // 근무지가 여러 곳인 공고만 자리가 생긴다 — 한 곳이면 아무 행에도 값이 없어 열이 숨는다.
     { key: "location", label: "근무지", get: (p) => p.location },
     { key: "employment", label: "고용형태", get: (p) => p.employment },
     { key: "gender", label: "성별", get: (p) => p.gender },
     { key: "career", label: "경력/직책", get: (p) => p.career },
     { key: "education", label: "학력", get: (p) => (isOfficeJob ? p.education : "") },
-    { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
+    { key: "shift", label: "근무요일/시간", get: (p) => (isOfficeJob ? "" : (p.workDays || p.workTime || "")) },
     { key: "salary", label: "급여", get: (p) => 급여펴기(p.salary) },
   ];
   // 모집부문 첫 행의 급여 — 사이드 카드가 같은 값을 쓴다.
@@ -118,7 +118,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 값이 비어도 화면에는 "협의" 로 나가는 열(급여·근무요일/시간)은 숨기지 않는다.
   // 숨기면 등록 폼에는 있는 열이 미리보기에서 사라져, 무엇이 어떻게 보일지 대조할 수
   // 없게 된다. 나머지 열은 아무 행에도 값이 없으면 그대로 숨긴다.
-  const ALWAYS = new Set(["category", "salary", "shift"]);
+  const ALWAYS = new Set(isOfficeJob ? ["category", "salary"] : ["category", "salary", "shift"]);
   const posCols = posColDefs.filter((c) => ALWAYS.has(c.key) || positions.some((p: any) => (c.get(p) || "").toString().trim()));
   // 칸 폭을 정해진 비율이 아니라 그 공고에 실제로 들어간 값의 글자 수로 재서
   // 나눈다("내용에 따른 균등분할") — 학력이 "초대졸 이상"처럼 길면 그만큼

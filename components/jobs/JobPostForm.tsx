@@ -2379,7 +2379,7 @@ export default function JobPostForm({
     brandDesc: isNm ? nmDescription : (cp?.description || ""),
     tags: [] as string[],
     title: form.title || "공고 제목",
-    jobType: jobGroupType === "기업" ? "사무직" : "매장직",
+    jobType: jobGroupType === "기업" ? "본사" : "매장",
     jobCategories: [...new Set(categories.map(baseCat))],
     career: form.career || "경력무관",
     education: form.education || "",
@@ -3167,9 +3167,9 @@ export default function JobPostForm({
                         return (
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
                             <span className="jp-job-lab">{row.career || "경력무관"}</span>
-                            {(() => {
+                            {!isOffice && (() => {
                               const n = Math.max(1, Number(row.headcount.replace(/[^0-9]/g, "")) || 1);
-                              return (
+                              return (<>
                                 <span className="jp-step-num">
                                   <button type="button" onClick={() => setPos(c, "headcount", String(Math.max(1, n - 1)))}
                                     disabled={미정 || n <= 1} aria-label="한 명 줄이기">−</button>
@@ -3177,9 +3177,9 @@ export default function JobPostForm({
                                   <button type="button" disabled={미정} onClick={() => setPos(c, "headcount", String(Math.min(99, n + 1)))}
                                     aria-label="한 명 늘리기">＋</button>
                                 </span>
-                              );
+                                <span className="jp-job-unit">명</span>
+                              </>);
                             })()}
-                            <span className="jp-job-unit">명</span>
                             {(() => {
                               const g = 급여읽기(row.salary);
                               return (
@@ -3273,6 +3273,7 @@ export default function JobPostForm({
                                   </span>
                                 );
                               })()}
+                              {!isOffice && (
                               <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
                                 <span>근무요일 / 시간</span>
                                 <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
@@ -3292,6 +3293,7 @@ export default function JobPostForm({
                                   />
                                 )}
                               </span>
+                              )}
                               {isOffice && (
                                 <label className="jp-cond-f">
                                   <span>학력</span>
