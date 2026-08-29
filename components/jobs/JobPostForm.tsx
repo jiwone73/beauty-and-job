@@ -1827,20 +1827,11 @@ export default function JobPostForm({
       }
       // 근무조건 필수(발행 시). 경력·고용형태·급여·근무요일/시간·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
       if (status === "publish") {
-        // 자격요건은 선택 — 조건 없이 뽑는 공고도 있어 필수로 두지 않는다.
-        // 상세요강 이미지가 없으면 글이 그 자리를 대신한다 — 본문과 자격요건을 받는다.
-        //   (경력·학력은 모집부문 표에서, 우대사항은 끝까지 선택)
-        if (detailImages.length === 0) {
-          const 본문 = jobGroupType === "매장" ? form.description : form.responsibilities;
-          const 본문이름 = jobGroupType === "매장" ? "상세요강 글" : "담당업무";
-          if (!본문?.trim()) {
-            alert(`상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 ${본문이름}을 입력해주세요.`);
-            return;
-          }
-          if (!form.requirements?.trim()) {
-            alert("상세요강 이미지를 1장 이상 첨부하거나,\n이미지가 없으면 자격요건을 입력해주세요.");
-            return;
-          }
+        if (detailImages.length === 0
+            && !["description", "responsibilities", "requirements", "preferred"]
+                 .some((k) => String((form as any)[k] || "").trim())) {
+          alert("상세요강에 사진이나 글 중 하나는 넣어주세요.");
+          return;
         }
         if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
       }
@@ -2308,36 +2299,15 @@ export default function JobPostForm({
   // 부제(hint)는 두지 않는다. '필수 (이미지 없을 시)' 같은 말을 라벨 옆에 달면
   // 칸마다 설명이 붙어 어수선하다. 필수 여부는 빨간 * 하나로 말한다 —
   // 이미지가 없어 이 글이 곧 상세요강일 때만 별이 뜬다.
-  const textFieldMeta: Record<TextKey, { label: string; placeholder: string }> = {
-    benefits: { label: "혜택·복지", placeholder: "복리후생·혜택을 입력하세요" },
-    responsibilities: { label: "담당업무",
-      placeholder: detailImages.length > 0
-        ? "이미지에 없는 업무만 더해 주세요"
-        : "이미지 없으면 필수 · 맡을 일을 적어 주세요 — 예) 신제품 기획 · 협력사 관리 · 매출 분석" },
-    description: {
-      // 매장 공고에만 선다(textFields 참조 — 본사는 담당업무가 그 자리다).
-      // 섹션 제목도 '상세요강'이라 그 안의 글 칸임을 드러낸다(위는 이미지 칸).
-      label: "상세요강 글",
-      // 이미지가 있으면 보태는 자리, 없으면 이 칸이 상세요강 본문 노릇을 한다.
-      placeholder: detailImages.length > 0
-        ? "이미지에 없는 이야기만 더해 주세요 — 매장 분위기, 고객층, 성장 지원처럼"
-        : "이미지 없으면 필수 · 어떤 자리인지 소개해 주세요 — 하는 일, 매장 분위기, 고객층처럼",
-    },
-    requirements: { label: "자격요건",
-      placeholder: detailImages.length > 0
-        ? "이미지에 없는 조건만 더해 주세요"
-        : (isOffice
-            ? "이미지 없으면 필수 · 갖춰야 할 것을 적어 주세요 — 예) 관련 경력 3년 이상 · 엑셀 능숙"
-            : "이미지 없으면 필수 · 예) 미용사 면허 소지 · 디자이너 2년 이상"),
-    },
-    preferred: { label: "우대사항",
-      // 이미지가 없으면 여기가 마지막 칸이다. 앞 칸에 안 들어간 것을 여기서 부른다.
-      placeholder: detailImages.length > 0
-        ? (isOffice ? "예) 뷰티 업계 경험 · 해외 거래처 경험" : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능")
-        : (isOffice
-            ? "예) 뷰티 업계 경험 · 해외 거래처 경험 — 더 알릴 것이 있으면 여기에"
-            : "예) 중국어 가능 · 인근 거주 · 장기 근무 가능 — 더 알릴 것이 있으면 여기에"),
-    },
+  // 자리글은 두지 않는다 — 칸 이름이 이미 무엇을 적는 자리인지 말한다. 예시를 길게
+  // 깔면 그만큼 화면이 지저분해지고, 정작 읽지도 않는다.
+  const textFieldMeta: Record<TextKey, { label: string }> = {
+    benefits: { label: "혜택·복지" },
+    responsibilities: { label: "담당업무" },
+    // 매장 공고에만 선다(textFields 참조 — 본사는 담당업무가 그 자리다).
+    description: { label: "상세요강 글" },
+    requirements: { label: "자격요건" },
+    preferred: { label: "우대사항" },
   };
   // 본사는 담당업무(JD) 중심, 매장은 상세요강 글 중심
   const textFields: TextKey[] = isOffice
@@ -3598,7 +3568,8 @@ export default function JobPostForm({
           {/* 상세요강 */}
           {/* 위 여백은 '공고제목' 제목과 같게(앞 카드 아래 40px) — 컬럼 gap 8 + 카드 marginBottom을 감안해 24 추가. */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4, marginTop: 24 }}>
-            <h2 id="jp-detail" className="jobpost-section-title" style={{ margin: 0 }}>상세요강</h2>
+            {/* 필수는 칸이 아니라 섹션이 진다 — 사진이든 글이든 하나만 올라오면 된다. */}
+            <h2 id="jp-detail" className="jobpost-section-title" style={{ margin: 0 }}>상세요강{reqStar}</h2>
           </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
@@ -3607,19 +3578,12 @@ export default function JobPostForm({
               {textFields.map((k) => {
                 const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
-                // 상세 이미지가 없을 때만 본문(본사=담당업무 / 매장=상세요강 글)을 필수로 표시.
-                //   자격요건은 선택 — 조건 없이 뽑는 공고도 있다.
-                // 이미지가 없으면 이 글들이 곧 상세요강이다. 본문(본사=담당업무 / 매장=상세요강 글)과
-                // 자격요건까지 받는다. 우대사항만 끝까지 선택.
-                const isReq = detailImages.length === 0 && k !== "preferred";
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
                     <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block" }}>
                       {meta.label}
-                      {isReq && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}
                     </label>
                     <AutoTextarea
-                      placeholder={meta.placeholder}
                       value={content}
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
                       style={{ width: "100%", fontSize: 14, color: "#333", lineHeight: 1.5, fontFamily: "inherit" }} />
