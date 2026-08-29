@@ -1952,9 +1952,9 @@ export default function JobPostForm({
   // 등록하면 잘릴 수 있어, 폼만 보고는 미리 알 수 없었다.
   // 칸 사이 경계가 없으니 여러 줄로 접힌 값(근무요일/시간·급여)이 어느 줄까지 한 칸인지
   // 구분이 안 됐다("테이블 라인을 만들 수 있나"). 흐린 회색 선으로 칸을 나눈다.
-  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#b4b4b9", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #f2f2f2", borderRight: "1px solid #f2f2f2" };
+  const thc: React.CSSProperties = { textAlign: "center", padding: "0 4px 5px", fontSize: 13.5, color: "#8a8a90", fontWeight: 400, whiteSpace: "nowrap", borderBottom: "1px solid #e4e4e8", borderRight: "1px solid #e4e4e8" };
   const reqStar = <span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span>; // 필수 열 표시(모집분야만)
-  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #f2f2f2", borderRight: "1px solid #f2f2f2", verticalAlign: "middle" };
+  const tdc: React.CSSProperties = { padding: "9px 4px", borderBottom: "1px solid #e4e4e8", borderRight: "1px solid #e4e4e8", verticalAlign: "middle" };
   // 첫 열 왼쪽 여백 — 표에 테두리를 두르기 전엔 0으로 비워 위 라벨과 시작점을
   // 맞췄는데, 테두리가 생긴 뒤로는 글자가 선에 바로 붙어 보였다("문제성이
   // 왼쪽 테두리하고 딱 붙었어 · 1칸정도 띄어줘").
@@ -2965,7 +2965,7 @@ export default function JobPostForm({
                      칸이 다시 잡혔다("처음 입력할 때 이렇게 보이다가 몇초 지나면
                      정상으로 줄맞춤되"). fixed 레이아웃 + colgroup 비율로 칸 너비를
                      아예 못박아 두면 글꼴이 언제 도착하든 칸 폭 자체는 안 흔들린다. */
-                  <div style={{ overflowX: "auto", border: "1px solid #f2f2f2", borderRadius: 8 }}>
+                  <div style={{ overflowX: "auto", border: "1px solid #e4e4e8", borderRadius: 8 }}>
                     <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                       <colgroup>
                         {posColPct.map((pct, i) => <col key={POS_TABLE_COLS[i].key} style={{ width: `${pct}%` }} />)}
