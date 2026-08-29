@@ -13819,6 +13819,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    아래에 단추 줄을 따로 두면 카드가 두 배로 길어지는데, 정작 가로는 절반이 비어 있었다. */
 .co-jc { border: 1px solid #ececf0; border-radius: 12px; padding: 14px 18px 0;
   margin-bottom: 10px; transition: border-color .15s; }
+.co-jc:not(:has(.co-jc-foot)) { padding-bottom: 14px; }
 .co-jc-top { display: flex; align-items: center; gap: 20px; }
 /* 마우스를 올린 카드는 뷰티워크 보라 테두리로 — 옅은 보라는 흰 바탕에서 안 보였다. */
 .co-jc:hover { border-color: var(--color-primary); }
