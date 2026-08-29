@@ -3336,36 +3336,10 @@ export default function JobPostForm({
           </div>
 
           {/* 지원 방법 — 어디로 어떻게 넣는가(접수방법 · 담당자 · 채용 절차). */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>지원 방법</h2>
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>지원 안내</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div>
-              {/* ── 마감일. 미리보기(공개 화면)에서 제목 바로 밑에 뜨는 것과 같은 자리로 옮긴다
-                  ("마감일이 공고 밑에 있어") — 전엔 모집분야와 한 행에 있어 모집부문 쪽으로 치우쳐 보였다. */}
-              <div id="jp-deadline" className="job-detail-meta-item" ref={deadlineRef} style={{ position: "relative", margin: "0 0 12px" }}>
-                <span style={{ fontSize: 15, color: "#999", flexShrink: 0, width: 68 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
-                <button type="button"
-                  onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                  style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                  {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
-                </button>
-                {deadlineModalOpen && popAt && (
-                  /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
-                  <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                    <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
-                      style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                      <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
-                    </label>
-                    <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                      <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
-                      <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-
               {/* 지원방법(좌) · 담당자(우) 2열 — 기업회원·비회원 공용.
                   지원방법을 팝오버에서 고르면, 그 방법에 필요한 칸만 오른쪽에 생긴다.
                   문자·전화 → 전화 / 이메일 → 메일 / 둘 중 하나라도 → 이름 / 회사 홈페이지 지원 → 홈페이지 URL.
@@ -3404,11 +3378,11 @@ export default function JobPostForm({
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
                     {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
                     <div ref={contactMethodsRef} style={{ position: "relative", minWidth: 0 }}>
-                     {/* 제목 아이콘(16px)+간격(6px)만큼 들여써 "지원 안내" 글자 시작
-                         위치에 맞춘다(복리후생과 같은 규칙). */}
-                     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0", paddingLeft: 22 }}>
-                      <span style={{ ...lblS, paddingTop: 0 }}>지원방법</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
+                     {/* 제목을 값 위에 세운다 — 옆에 두면 라벨 폭(68px)만큼 값이 안으로 밀려
+                         왼쪽 끝이 다른 섹션과 어긋났다. 모집부문 조건 칸과 같은 규칙이다. */}
+                     <div style={{ padding: "4px 0" }}>
+                      <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>지원방법</div>
+                      <div style={{ minWidth: 0 }}>
                         <button type="button"
                           onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
                           style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5,
@@ -3431,8 +3405,8 @@ export default function JobPostForm({
                       </div>
                      </div>
                      {urlOnLeft && (
-                       <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0" }}>
-                         <span style={{ ...lblS, width: 88 }}>홈페이지 URL</span>
+                       <div style={{ padding: "4px 0" }}>
+                         <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>홈페이지 URL</div>
                          <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
                            placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
                        </div>
@@ -3440,14 +3414,12 @@ export default function JobPostForm({
                     </div>
                     {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성. 우측이 빌 때는 홈페이지 URL을 여기에 둔다 */}
                     {(canName || canUrl) ? (
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "4px 0", minWidth: 0 }}>
-                        {/* '담당자'는 세 글자라 68px 고정이면 오른쪽에 여유가 남는다.
-                            그 여유는 메일 칸이 쓰는 게 낫다(왼쪽 '지원방법'과 폭을 맞출 이유가 없다). */}
-                        <span style={{ ...lblS, ...(canName ? { width: "auto" } : { width: 88 }) }}>
+                      <div style={{ padding: "4px 0", minWidth: 0 }}>
+                        <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>
                           {canName ? "담당자" : "홈페이지 URL"}
-                          {isNmAdminJob && canName && <><br /><span style={{ fontSize: 10, color: "#e3e3e6" }}>관리자용</span></>}
-                        </span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {isNmAdminJob && canName && <span style={{ fontSize: 10, color: "#e3e3e6", marginLeft: 5 }}>관리자용</span>}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
                           {canUrl && !urlOnLeft && (
                             <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
                               placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
@@ -3497,6 +3469,31 @@ export default function JobPostForm({
                   </div>
                 );
               })()}
+              {/* 마감일 — 언제까지 받는지는 어떻게 받는지 다음에 온다. */}
+              <div id="jp-deadline" ref={deadlineRef} style={{ position: "relative", padding: "4px 0", marginTop: 10 }}>
+                <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></div>
+                <button type="button"
+                  onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
+                  style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                  {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
+                </button>
+                {deadlineModalOpen && popAt && (
+                  /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
+                  <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                    <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
+                      style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                      <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                    </label>
+                    <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                      <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                      <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+
 
               {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
               {jobGroupType === "기업" && (
