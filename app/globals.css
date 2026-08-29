@@ -13887,7 +13887,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 공고 등록 · 분야 카드 — 고른 분야마다 하나, 단계를 켜면 그 단계가 한 줄이 된다 */
 .jp-job { border: 1px solid #ececf0; border-radius: 10px; padding: 13px 15px; margin-bottom: 10px; }
 .jp-job-head { display: flex; align-items: center; gap: 12px; }
-.jp-job-name { flex: 1; min-width: 0; font-size: 14.5px; color: #1a1a1a; }
+.jp-job-name { flex: 1; min-width: 0; font-size: 15px; color: #1a1a1a; }
 .jp-job-grp { display: block; font-size: 11.5px; color: #b4b4bb; line-height: 1.5; }
 .jp-job-arrow { display: inline-block; margin-left: 4px; color: #c4c4cb; vertical-align: -2px; }
 .jp-job-item { display: block; line-height: 1.35; }
@@ -13946,7 +13946,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-cond { flex: 1 0 100%; display: flex; flex-wrap: wrap; gap: 8px 10px;
   margin: 4px 0; }
 .jp-cond-f { display: inline-flex; flex-direction: column; gap: 4px; }
-.jp-cond-f > span { font-size: 11.5px; color: #9a9aa2; padding-left: 1px; }
+.jp-cond-f > span { font-size: 13px; color: #9a9aa2; padding-left: 1px; }
 .jp-cond-sel { height: 34px; border: 1px solid #ececf0; border-radius: 8px; background: #fff
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
   no-repeat right 9px center; appearance: none; -webkit-appearance: none;
