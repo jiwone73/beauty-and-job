@@ -471,6 +471,7 @@ export default function JobPostForm({
   const [cellOpen, setCellOpen] = useState<string | null>(null); // 표 셀 직접입력 팝오버 `${cat}|${field}`
   const cellInputRef = useRef<HTMLInputElement>(null); // 표 셀 직접입력 팝오버의 입력칸(주기 클릭 후 바로 타이핑되게)
   const [열린그룹, set열린그룹] = useState<string[]>([]);
+  const [갓담은, set갓담은] = useState("");   // 방금 담은 분야 — 카드가 어디 생겼는지 잠깐 도드라지게
   const [addRowOpen, setAddRowOpen] = useState(false); // 모집부문 '행 추가' — 분야를 골라 행을 붙임(같은 분야 중복 가능)
   // 표 안 팝오버는 화면 기준(fixed) 좌표로 띄운다. 표를 overflow visible로 바꾸면 720px 표가
   //   페이지 밖으로 넘쳐 화면 전체가 옆으로 밀리기 때문(모바일에서 특히 심함).
@@ -2967,10 +2968,10 @@ export default function JobPostForm({
               <div className="jp-pick">
                 {getJobGroups(jobGroupType === "기업" ? "OFFICE" : "STORE").map((g) => {
                   const 고른수 = g.items.filter((it) => categories.some((c) => baseCat(c) === it)).length;
-                  const 열림 = 열린그룹.includes(g.group) || 고른수 > 0;
+                  const 열림 = 열린그룹.includes(g.group);
                   return (
                     <div key={g.group}>
-                      <button type="button" className={`jp-pick-g ${열림 ? "on" : ""}`}
+                      <button type="button" className={`jp-pick-g ${고른수 > 0 ? "on" : ""} ${열림 ? "open" : ""}`}
                         onClick={() => set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group])}>
                         {g.group}
                         <span className="n">{고른수 > 0 ? `${고른수}/${g.items.length}` : g.items.length}</span>
@@ -2981,9 +2982,12 @@ export default function JobPostForm({
                             const 켜짐 = categories.some((c) => baseCat(c) === it);
                             return (
                               <button key={it} type="button" className={`jp-pick-i ${켜짐 ? "on" : ""}`}
-                                onClick={() => 켜짐
-                                  ? categories.filter((c) => baseCat(c) === it).forEach(removeCatRow)
-                                  : addCatRow(it)}>
+                                onClick={() => {
+                                  if (켜짐) { categories.filter((c) => baseCat(c) === it).forEach(removeCatRow); return; }
+                                  addCatRow(it);
+                                  set열린그룹((p) => p.filter((x) => x !== g.group));  // 고르면 접는다
+                                  set갓담은(it); setTimeout(() => set갓담은(""), 1400);
+                                }}>
                                 {it}
                               </button>
                             );
@@ -3023,7 +3027,7 @@ export default function JobPostForm({
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
                   const 단계행 = (st: string) => 내행.find((c) => (posMeta[c] || emptyPos).career === st);
                   return (
-                    <div key={item} className="jp-job">
+                    <div key={item} className={`jp-job ${갓담은 === item ? "just" : ""}`}>
                       <div className="jp-job-head">
                         <span className="jp-job-name">
                           {그룹 && <span className="jp-job-grp">{그룹}</span>}
@@ -3067,22 +3071,28 @@ export default function JobPostForm({
                             <span className="jp-job-unit">명</span>
                             {(() => {
                               const g = 급여읽기(row.salary);
-                              return (<>
-                                <select className="jp-job-sel" value={g.형태}
-                                  onChange={(e) => setPos(c, "salary", 급여쓰기(e.target.value, g.금액, g.이상))}>
-                                  <option value="">급여형태</option>
-                                  {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
-                                </select>
-                                <input className="jp-job-amt" inputMode="numeric" placeholder="0"
-                                  value={g.금액}
-                                  onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, e.target.value.replace(/[^0-9]/g, ""), g.이상))} />
-                                <span className="jp-job-unit">만원</span>
-                                <select className="jp-job-sel sm" value={g.이상 ? "이상" : "정액"}
-                                  onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, g.금액, e.target.value === "이상"))}>
-                                  <option value="이상">이상</option>
-                                  <option value="정액">정액</option>
-                                </select>
-                              </>);
+                              return (
+                                <span className="jp-sal">
+                                  <select className="jp-sal-unit" value={g.형태}
+                                    onChange={(e) => setPos(c, "salary", 급여쓰기(e.target.value, g.금액, g.이상))}>
+                                    <option value="">급여형태</option>
+                                    {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
+                                  </select>
+                                  <span className="jp-sal-amt">
+                                    <input inputMode="numeric" placeholder="0" value={g.금액}
+                                      onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, e.target.value.replace(/[^0-9]/g, ""), g.이상))} />
+                                    {/* 숫자를 넣어야 단위가 붙는다 — 빈 칸에 '만원'만 떠 있으면 뭘 적는 칸인지 흐려진다 */}
+                                    {g.금액 && <em>만원</em>}
+                                  </span>
+                                  {g.금액 && (
+                                    <select className="jp-sal-basis" value={g.이상 ? "이상" : "정액"}
+                                      onChange={(e) => setPos(c, "salary", 급여쓰기(g.형태, g.금액, e.target.value === "이상"))}>
+                                      <option value="이상">이상</option>
+                                      <option value="정액">정액</option>
+                                    </select>
+                                  )}
+                                </span>
+                              );
                             })()}
                             {/* 대부분 금액을 적고 '협의'를 함께 단다 — 팝오버 안에 두지 않고 줄에 내놓는다. */}
                             <label className="jp-job-nego">
