@@ -1879,6 +1879,9 @@ export default function JobPostForm({
           return;
         }
         if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
+        // 아래 둘도 제목에 별표를 달았다 — 화면과 같은 기준으로 막는다.
+        if (bannerImages.length === 0) { alert("공고배너 이미지를 1장 이상 넣어주세요."); return; }
+        if (contactMethods.length === 0) { alert("지원방법을 1개 이상 선택해주세요."); return; }
       }
       // 마감일: 날짜 선택 또는 상시채용 필수
       if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -2872,7 +2875,7 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
           {/* 제목 옆에 ＋(이미지 추가) — 카드 안 공간을 쓰지 않는다 */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 4 }}>
-            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고배너 이미지</h2>
+            <h2 className="jobpost-section-title" style={{ margin: 0 }}>공고배너 이미지{reqStar}</h2>
             <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
               {!isMobile && <ImagePlus size={16} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
               <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -2913,7 +2916,7 @@ export default function JobPostForm({
             {/* 제목 옆에 ＋(이미지 추가)·샘플 배너 — 드래그 박스 안을 버튼으로 채우지 않는다. */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "0 4px" }}>
               {/* 제목은 왼쪽, 단추는 오른쪽 끝으로 밀어 붙인다. */}
-              <h2 id="jp-banner" className="jobpost-section-title" style={{ marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: "auto" }}>공고배너 이미지</h2>
+              <h2 id="jp-banner" className="jobpost-section-title" style={{ marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: "auto" }}>공고배너 이미지{reqStar}</h2>
               <label title="이미지 추가 (올릴 때 자동으로 0.3MB 내외로 줄여서 저장돼요)" style={{ ...bannerBtn(false), cursor: nmCoverUploading ? "wait" : "pointer" }}>
                 {!isMobile && <ImagePlus size={17} />}{nmCoverUploading ? (isMobile ? "…" : "업로드 중…") : (isMobile ? "＋" : "추가")}
                 <input type="file" accept="image/*" multiple disabled={nmCoverUploading || bannerImages.length >= 10}
@@ -3018,7 +3021,7 @@ export default function JobPostForm({
 
           {/* 공고제목 — 매장명과 제목만 받는다. 마감일은 '언제까지 어떻게 지원하나'가
               한 덩어리라 지원 방법으로 옮겼다. */}
-          <h2 className="jobpost-section-title">공고제목</h2>
+          <h2 className="jobpost-section-title">공고제목{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
 
@@ -3060,7 +3063,7 @@ export default function JobPostForm({
 
           {/* 모집부문 — 이 조건으로 이만큼 뽑는다는 한 덩어리. 부문 안에 무엇이 들어가든
               이름이 흔들리지 않아, 근무 조건을 안으로 들여도 제목을 다시 고민할 일이 없다. */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>모집부문</h2>
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>모집부문{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <span id="jp-positions" />
@@ -3485,7 +3488,7 @@ export default function JobPostForm({
           </div>
 
           {/* 지원 방법 — 어디로 어떻게 넣는가(접수방법 · 담당자 · 채용 절차). */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>지원 안내</h2>
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>지원 안내{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div>
