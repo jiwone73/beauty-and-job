@@ -12,6 +12,7 @@ import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
+import { getGroupOfItem } from "@/lib/data/jobGroups";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
@@ -3007,7 +3008,14 @@ export default function JobPostForm({
                                 {/* 긴 분야명이 한 줄로 늘어지며 표를 넓혀 급여·근무요일 칸까지
                                     가로 스크롤로 밀어냈다. 폭을 묶어 두 줄까지는 그대로 접는다. */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
-                                  <span style={{ flex: 1, minWidth: 0, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>{baseCat(cat)}</span>
+                                  <span style={{ flex: 1, minWidth: 0, whiteSpace: "normal", wordBreak: "keep-all", lineHeight: 1.35 }}>
+                                    {(() => {
+                                      // 대분류를 위에 작게 — 읽는 순서가 경로 순서(대분류 → 소분류)와 같다.
+                                      const g = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", baseCat(cat));
+                                      return g ? <span style={{ display: "block", fontSize: 10.5, color: "#c0c0c6", marginBottom: 1 }}>{g}</span> : null;
+                                    })()}
+                                    {baseCat(cat)}
+                                  </span>
                                   <button type="button" onClick={() => removeCatRow(cat)} title="이 행 삭제"
                                     style={{ width: 18, height: 18, flexShrink: 0, border: "none", background: "none", color: "#c4c4c9", fontSize: 14, lineHeight: 1, cursor: "pointer", padding: 0, marginTop: 1 }}>×</button>
                                 </div>

@@ -1,5 +1,6 @@
 "use client";
 import { forwardRef, type ReactNode } from "react";
+import { getGroupOfItem } from "@/lib/data/jobGroups";
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
@@ -255,7 +256,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                         : "협의")
                     : c.key === "salary"
                       ? salaryTxt
-                      : (c.get(p) || "-");
+                      : c.key === "category"
+                        ? (() => {
+                            // 소분류가 주인공이고, 대분류는 어디서 온 값인지만 알려 주면 된다.
+                            const g = getGroupOfItem(job.jobType === "본사" ? "OFFICE" : "STORE", p.category);
+                            return (<>
+                              {g && <span className="jd-pos-grp">{g}</span>}
+                              {p.category || "-"}
+                            </>);
+                          })()
+                        : (c.get(p) || "-");
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
                       {content}

@@ -13861,3 +13861,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border-radius: 8px; background: #fff; font-family: inherit; font-size: 13.5px; cursor: pointer;
   text-align: left; white-space: pre-line; }
 .jp-cond-btn:hover { border-color: var(--color-primary); }
+
+/* 모집부문 표 — 대분류는 소분류 아래 한 톤 눌러서. 주인공은 소분류다. */
+.jd-pos-grp { display: block; font-size: 10.5px; color: #c0c0c6; margin-bottom: 1px; }
