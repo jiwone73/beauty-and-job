@@ -348,10 +348,16 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
+  // 매장이 켜 두면 붙는 한마디 — 전화로 받는 매장은 어느 공고를 보고 온 전화인지 모른다.
   const methodsInner = hasMethods ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">지원방법</span>
-      <span>{job.contactMethods.join("   ·   ")}</span>
+      <span>
+        {job.contactMethods.join("   ·   ")}
+        {job.mentionSource && (
+          <div className="jd-guide-note">뷰티워크 채용공고 보고 연락드린다고 말씀해 주세요</div>
+        )}
+      </span>
     </div>
   ) : null;
 

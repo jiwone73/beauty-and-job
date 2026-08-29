@@ -2364,6 +2364,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jd-sublabel { font-size: 15px; color: var(--color-text-mute); margin: 0 0 8px; }
 /* 지원 안내: 라벨 + 값 한 줄 */
 .jd-guide-row { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0; font-size: 15px; color: var(--color-text); }
+/* 지원방법 아래 한마디 — 값에 붙이면 방법 이름의 일부처럼 읽힌다. 줄을 내리고 톤을 낮춘다. */
+.jd-guide-note { margin-top: 3px; font-size: 13px; color: #8a8a90; }
 .jd-guide-label { width: 76px; flex-shrink: 0; color: var(--color-text-mute); white-space: nowrap; }
 /* 채용 담당자 · 채용 절차 2열 배치 */
 .jd-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; align-items: start; }

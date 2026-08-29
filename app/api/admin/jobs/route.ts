@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     apply_method, external_apply_url, external_contact_email,
     external_contact_name, external_contact_phone, contact_methods,
     employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
-    salary_text, headcount_text, gender_preference, positions
+    salary_text, headcount_text, gender_preference, positions, mention_source
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -183,9 +183,9 @@ export async function POST(req: NextRequest) {
          status, created_by, source, apply_method, external_apply_url, external_contact_email, responsibilities,
          external_contact_name, external_contact_phone, contact_methods,
          employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
-         salary_text, headcount_text, gender_preference, positions, work_locations
+         salary_text, headcount_text, gender_preference, positions, work_locations, mention_source
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -207,7 +207,8 @@ export async function POST(req: NextRequest) {
         (salary_text || '').trim() || null, (headcount_text || '').trim() || null,
         (gender_preference || '').trim() || null,
         Array.isArray(positions) && positions.length ? JSON.stringify(positions) : null,
-        Array.isArray(work_locations) && work_locations.length ? JSON.stringify(work_locations) : null
+        Array.isArray(work_locations) && work_locations.length ? JSON.stringify(work_locations) : null,
+        mention_source === true
       ]
     )
 
