@@ -3183,73 +3183,66 @@ export default function JobPostForm({
                                 </span>
                               );
                             })()}
+                            {/* 조건은 줄마다 따로 갖는다 — 인턴과 신입은 같은 자리가 아니다.
+                                새 단계를 켜면 앞 줄 값을 물려받으니, 같으면 손댈 일이 없다. */}
+                            <div className={`jp-job-cond ${미정 ? "off" : ""}`}>
+                              <label className="jp-cond-f">
+                                <span>고용형태</span>
+                                <select className="jp-cond-sel" disabled={미정} value={row.employment}
+                                  onChange={(e) => setPos(c, "employment", e.target.value)}>
+                                  <option value="">선택하기</option>
+                                  {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                              </label>
+                              <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
+                                <span>근무요일 / 시간</span>
+                                <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
+                                  onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
+                                  {shiftDisplay(row) || "선택하기"}
+                                </button>
+                                {shiftModalCat === c && popAt && (
+                                  <WorkScheduleModal
+                                    value={shiftDisplay(row)}
+                                    onChange={(v) => setPos(c, "shiftText", v)}
+                                    onClose={() => setShiftModalCat(null)}
+                                    popRef={popRef}
+                                    left={popAt.left}
+                                    top={popAt.top}
+                                    defaultStart={jobGroupType === "매장" ? 10 : 7}
+                                    defaultEnd={jobGroupType === "매장" ? 20 : 19}
+                                  />
+                                )}
+                              </span>
+                              <label className="jp-cond-f">
+                                <span>학력</span>
+                                <select className="jp-cond-sel" disabled={미정} value={row.education}
+                                  onChange={(e) => setPos(c, "education", e.target.value)}>
+                                  <option value="">선택하기</option>
+                                  {(jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU).map((t) => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                              </label>
+                              <label className="jp-cond-f">
+                                <span>성별</span>
+                                <select className="jp-cond-sel" disabled={미정} value={row.gender}
+                                  onChange={(e) => setPos(c, "gender", e.target.value)}>
+                                  <option value="">선택하기</option>
+                                  {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                              </label>
+                              {근무지목록.length >= 2 && (
+                                <label className="jp-cond-f">
+                                  <span>근무지</span>
+                                  <select className="jp-cond-sel" disabled={미정} value={row.location}
+                                    onChange={(e) => setPos(c, "location", e.target.value)}>
+                                    <option value="">전체</option>
+                                    {근무지목록.map((r) => <option key={r} value={r}>{r}</option>)}
+                                  </select>
+                                </label>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
-                      {/* 부문 단위 근무 조건 — 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다. */}
-                      {(() => {
-                        const 조 = posMeta[내행[0]] || emptyPos;
-                        const 시간키 = `cond|${내행[0]}`;
-                        const 미정 = 켜진단계.length === 0;
-                        return (
-                          <div className={`jp-job-cond ${미정 ? "off" : ""}`}>
-                            {/* 칸마다 제목을 단다 — 값만 있으면 '무관'이 학력인지 성별인지 알 수 없다. */}
-                            {근무지목록.length >= 2 && (
-                              <label className="jp-cond-f">
-                                <span>근무지</span>
-                                <select className="jp-cond-sel" disabled={미정} value={조.location}
-                                  onChange={(e) => set부문(내행, "location", e.target.value)}>
-                                  <option value="">전체</option>
-                                  {근무지목록.map((r) => <option key={r} value={r}>{r}</option>)}
-                                </select>
-                              </label>
-                            )}
-                            <label className="jp-cond-f">
-                              <span>고용형태</span>
-                              <select className="jp-cond-sel" disabled={미정} value={조.employment}
-                                onChange={(e) => set부문(내행, "employment", e.target.value)}>
-                                <option value="">선택하기</option>
-                                {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                              </select>
-                            </label>
-                            <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
-                              <span>근무요일 / 시간</span>
-                              <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(조) ? "" : "ph"}`}
-                                onClick={(e) => { if (shiftModalCat === 시간키) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(시간키); }}>
-                                {shiftDisplay(조) || "선택하기"}
-                              </button>
-                              {shiftModalCat === 시간키 && popAt && (
-                                <WorkScheduleModal
-                                  value={shiftDisplay(조)}
-                                  onChange={(v) => set부문(내행, "shiftText", v)}
-                                  onClose={() => setShiftModalCat(null)}
-                                  popRef={popRef}
-                                  left={popAt.left}
-                                  top={popAt.top}
-                                  defaultStart={jobGroupType === "매장" ? 10 : 7}
-                                  defaultEnd={jobGroupType === "매장" ? 20 : 19}
-                                />
-                              )}
-                            </span>
-                            <label className="jp-cond-f">
-                              <span>학력</span>
-                              <select className="jp-cond-sel" disabled={미정} value={조.education}
-                                onChange={(e) => set부문(내행, "education", e.target.value)}>
-                                <option value="">선택하기</option>
-                                {(jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU).map((t) => <option key={t} value={t}>{t}</option>)}
-                              </select>
-                            </label>
-                            <label className="jp-cond-f">
-                              <span>성별</span>
-                              <select className="jp-cond-sel" disabled={미정} value={조.gender}
-                                onChange={(e) => set부문(내행, "gender", e.target.value)}>
-                                <option value="">선택하기</option>
-                                {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
-                              </select>
-                            </label>
-                          </div>
-                        );
-                      })()}
                     </div>
                   );
                 })}
