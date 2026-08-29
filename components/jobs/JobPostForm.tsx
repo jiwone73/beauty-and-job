@@ -3108,15 +3108,20 @@ export default function JobPostForm({
                         const 시간키 = `cond|${내행[0]}`;
                         return (
                           <div className="jp-job-cond">
-                            <select className="jp-cond-sel" value={조.employment}
-                              onChange={(e) => set부문(내행, "employment", e.target.value)}>
-                              <option value="">고용형태</option>
-                              {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                            </select>
-                            <span className="posshift-pop" style={{ position: "relative" }}>
+                            {/* 칸마다 제목을 단다 — 값만 있으면 '무관'이 학력인지 성별인지 알 수 없다. */}
+                            <label className="jp-cond-f">
+                              <span>고용형태</span>
+                              <select className="jp-cond-sel" value={조.employment}
+                                onChange={(e) => set부문(내행, "employment", e.target.value)}>
+                                <option value="">선택하기</option>
+                                {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                            </label>
+                            <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
+                              <span>근무요일 / 시간</span>
                               <button type="button" className={`jp-cond-sel jp-cond-shift ${shiftDisplay(조) ? "" : "ph"}`}
                                 onClick={(e) => { if (shiftModalCat === 시간키) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(시간키); }}>
-                                {shiftDisplay(조) || "근무요일 / 시간"}
+                                {shiftDisplay(조) || "선택하기"}
                               </button>
                               {shiftModalCat === 시간키 && popAt && (
                                 <WorkScheduleModal
@@ -3131,16 +3136,22 @@ export default function JobPostForm({
                                 />
                               )}
                             </span>
-                            <select className="jp-cond-sel" value={조.education}
-                              onChange={(e) => set부문(내행, "education", e.target.value)}>
-                              <option value="">학력</option>
-                              {(jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU).map((t) => <option key={t} value={t}>{t}</option>)}
-                            </select>
-                            <select className="jp-cond-sel" value={조.gender}
-                              onChange={(e) => set부문(내행, "gender", e.target.value)}>
-                              <option value="">성별</option>
-                              {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
-                            </select>
+                            <label className="jp-cond-f">
+                              <span>학력</span>
+                              <select className="jp-cond-sel" value={조.education}
+                                onChange={(e) => set부문(내행, "education", e.target.value)}>
+                                <option value="">선택하기</option>
+                                {(jobGroupType === "매장" ? POS_EDU.filter((e) => e !== "석사 이상") : POS_EDU).map((t) => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                            </label>
+                            <label className="jp-cond-f">
+                              <span>성별</span>
+                              <select className="jp-cond-sel" value={조.gender}
+                                onChange={(e) => set부문(내행, "gender", e.target.value)}>
+                                <option value="">선택하기</option>
+                                {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                            </label>
                           </div>
                         );
                       })()}
