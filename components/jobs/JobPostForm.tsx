@@ -1164,6 +1164,7 @@ export default function JobPostForm({
 
   // 사진을 고르면 자르기 창이 바로 뜬다. 여러 장이면 줄을 세워 한 장씩 묻는다.
   // '자르지 않고 넣기'로 넘기면 원본 그대로 올라가니, 자를 생각이 없어도 사진을 잃지 않는다.
+  const [제목쓰는중, set제목쓰는중] = useState(false);
   const [자를줄, set자를줄] = useState<{ zone: "banner"; files: File[] } | null>(null);
   const 줄세우기 = (zone: "banner", fileList: FileList | File[]) => {
     const files = Array.from(fileList);
@@ -2369,6 +2370,11 @@ export default function JobPostForm({
     ? ["responsibilities", "requirements", "preferred"]
     : ["description", "requirements", "preferred"];
 
+  // 제목 자리글은 한 글자 칠 때마다 앞에서 한 글자씩 지워진다 — 쳐 넣는 글이 자리글을
+  // 밀어내는 모양이라, 예시를 보면서 끝까지 쓸 수 있다. 칸을 떠나면 남은 자리글은 지운다.
+  const 제목자리글 = "공고 제목을 입력하세요 * (예: 리안헤어 광명점 헤어디자이너·인턴 모집)";
+  const 남은자리글 = (제목쓰는중 || !form.title) ? 제목자리글.slice(form.title.length) : "";
+
   const processFilled = hiringProcess.length > 0;
   const notesFilled = !!notes.trim();
 
@@ -3037,17 +3043,18 @@ export default function JobPostForm({
                 <div style={{ position: "relative" }}>
                   <AutoTextarea
                     id="jp-title"
-                    placeholder="공고 제목을 입력하세요 * (예: 리안헤어 광명점 헤어디자이너·인턴 모집)"
                     value={form.title}
                     onChange={(e) => setForm({ ...form, title: e.target.value })}
                     onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
+                    onFocus={() => set제목쓰는중(true)}
+                    onBlur={() => set제목쓰는중(false)}
                     className="jobpost-title-input"
                     style={{ width: "100%", fontWeight: 400, color: "#1a1a1a", lineHeight: 1.3, fontFamily: "inherit", position: "relative", zIndex: 1, background: "transparent" }}
                   />
-                  {!!form.title && (
+                  {!!남은자리글 && (
                     <div aria-hidden className="jobpost-title-input jp-title-eg">
                       <span>{form.title}</span>
-                      <em> (예: 리안헤어 광명점 헤어디자이너·인턴 모집)</em>
+                      <em>{남은자리글}</em>
                     </div>
                   )}
                 </div>
