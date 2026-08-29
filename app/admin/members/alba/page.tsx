@@ -20,7 +20,8 @@ type Posting = {
 };
 type Data = {
   adminId: string; startDate: string; today: string;
-  weeklyTargetHours: number; totalTargetHours: number; plannedWeeks: number;
+  weeklyTargetHours: number; currentWeekTargetMinutes?: number; reliefMinutes?: number;
+  totalTargetHours: number; plannedWeeks: number;
   totalMinutes: number; remainingMinutes: number; weeksLeft: number;
   neededPerWeekMinutes: number;
   currentWeek: Week | null; weeks: Week[];
@@ -93,7 +94,7 @@ export default function AlbaPage() {
   // 미달한 주가 있으면 채워야 할 총 시간이 늘어난다.
   const targetMin = data.adjustedTargetHours * 60;
   const pct = Math.min(100, Math.round((data.totalMinutes / targetMin) * 100));
-  const weeklyTargetMin = data.weeklyTargetHours * 60;
+  const weeklyTargetMin = data.currentWeekTargetMinutes ?? data.weeklyTargetHours * 60;
   const cw = data.currentWeek;
   const cwPct = cw ? Math.min(100, Math.round((cw.minutes / weeklyTargetMin) * 100)) : 0;
 
@@ -145,7 +146,7 @@ export default function AlbaPage() {
             <div style={{ width: `${cwPct}%`, height: "100%", background: cwPct >= 100 ? "#0f6e56" : "#582681" }} />
           </div>
           <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
-            최소 {data.weeklyTargetHours}시간 · {cw && cw.minutes >= weeklyTargetMin
+            최소 {formatMinutes(weeklyTargetMin)} · {cw && cw.minutes >= weeklyTargetMin
               ? "달성"
               : `${formatMinutes(Math.max(0, weeklyTargetMin - (cw?.minutes || 0)))} 남음`}
           </p>

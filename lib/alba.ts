@@ -16,6 +16,24 @@ export const ALBA_TOTAL_TARGET_HOURS = 70;
 // 그 벌로 채워야 할 총 시간이 이만큼 늘어난다 (미달 주 1회당).
 export const ALBA_SHORTFALL_PENALTY_HOURS = 1;
 
+// 그 주 사정으로 할당을 줄여 준 기록 (주차 → 줄인 분).
+// 줄인 만큼 전체 목표에 그대로 더한다 — 그 주만 가벼워지고 총량은 나중에 갚는다.
+// 미달 벌점(위)과 다르다. 저건 못 채운 벌이고, 이건 미리 합의해 옮긴 시간이다.
+export const ALBA_WEEK_RELIEF_MIN: Record<number, number> = {
+  // 2주차(2026-08-24~30): 남은 할당 5시간 31분 → 3시간. 옮긴 2시간 31분.
+  2: 151,
+};
+
+/** 그 주에 채워야 할 분 (감면을 반영한 값) */
+export function weekTargetMinutes(index: number): number {
+  return Math.max(0, ALBA_WEEKLY_TARGET_HOURS * 60 - (ALBA_WEEK_RELIEF_MIN[index] || 0));
+}
+
+/** 감면해 전체로 옮긴 시간의 합 (분) */
+export function totalReliefMinutes(): number {
+  return Object.values(ALBA_WEEK_RELIEF_MIN).reduce((a, b) => a + b, 0);
+}
+
 const KST = "Asia/Seoul";
 
 /** UTC 시각을 한국 날짜(YYYY-MM-DD)로 */

@@ -8,6 +8,8 @@ import {
   ALBA_START_DATE,
   ALBA_TOTAL_TARGET_HOURS,
   ALBA_WEEKLY_TARGET_HOURS,
+  weekTargetMinutes,
+  totalReliefMinutes,
   ALBA_SHORTFALL_PENALTY_HOURS,
   buildWeeks,
   kstDate,
@@ -93,12 +95,14 @@ export async function GET(req: NextRequest) {
 
   // 주 6시간은 최소치다. 더 한 주는 그대로 인정하고, 못 채운 주는 벌로 총 목표를 늘린다.
   // 이번 주는 아직 안 끝났으니 판정하지 않는다 — 지나간 주만 센다.
-  const weeklyTargetMinutes = ALBA_WEEKLY_TARGET_HOURS * 60;
   const pastWeeks = weeks.filter((w) => !w.isFuture && !w.isCurrent);
-  const shortfallWeeks = pastWeeks.filter((w) => w.minutes < weeklyTargetMinutes).length;
+  // 감면해 준 주는 그 주의 낮아진 목표로 판정한다 — 옮겨 준 시간을 미달로 또 세면 두 번 벌한다.
+  const shortfallWeeks = pastWeeks.filter((w) => w.minutes < weekTargetMinutes(w.index)).length;
   const penaltyHours = shortfallWeeks * ALBA_SHORTFALL_PENALTY_HOURS;
   const adjustedTargetHours = ALBA_TOTAL_TARGET_HOURS + penaltyHours;
-  const targetMinutes = adjustedTargetHours * 60;
+  // 그 주에서 뺀 시간은 전체 목표에 그대로 더한다 — 총량은 줄지 않는다.
+  const reliefMinutes = totalReliefMinutes();
+  const targetMinutes = adjustedTargetHours * 60 + reliefMinutes;
 
   // 남은 주(이번 주 포함) 동안 주당 몇 시간씩 해야 목표를 채우는지
   const weeksLeft = Math.max(1, totalWeeks() - pastWeeks.length);
@@ -109,6 +113,9 @@ export async function GET(req: NextRequest) {
     startDate: ALBA_START_DATE,
     today,
     weeklyTargetHours: ALBA_WEEKLY_TARGET_HOURS,
+    // 이번 주만 낮춰 준 목표가 있으면 그 값으로 — 화면이 '남음'을 이 기준으로 센다.
+    currentWeekTargetMinutes: current ? weekTargetMinutes(current.index) : ALBA_WEEKLY_TARGET_HOURS * 60,
+    reliefMinutes,
     totalTargetHours: ALBA_TOTAL_TARGET_HOURS,
     penaltyPerShortfallHours: ALBA_SHORTFALL_PENALTY_HOURS,
     shortfallWeeks,
