@@ -9,18 +9,16 @@
  *     같은 기록이라 따로 둘 수 없다(끄면 철회 시각이 남아야 증빙이 된다).
  */
 export const 알림칸 = [
-  { key: "new_applicant",       title: "화면 알림",  desc: "화면 위 종에 알려드려요." },
-  { key: "new_applicant_email", title: "이메일",     desc: "담당자 이메일로도 보내드려요." },
+  { key: "new_applicant",       title: "화면 알림" },
+  { key: "new_applicant_email", title: "이메일" },
 ] as const;
 
 export type 알림열쇠 = (typeof 알림칸)[number]["key"];
 
 /** 광고성 정보 수신 동의 — terms.type 과 짝이다. */
 export const 동의칸 = [
-  { key: "MARKETING",      title: "이메일",
-    desc: "이벤트·혜택과 서비스 소식을 담당자 이메일로 받아요." },
-  { key: "RECOMMENDATION", title: "추천 인재 메일",
-    desc: "우리 공고에 맞는 인재를 골라 메일로 알려드려요." },
+  { key: "MARKETING",      title: "이메일" },
+  { key: "RECOMMENDATION", title: "추천 인재 메일" },
 ] as const;
 
 export type 동의열쇠 = (typeof 동의칸)[number]["key"];

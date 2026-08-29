@@ -66,14 +66,12 @@ export default function CompanyNotificationsPage() {
     저장({ consents: { [key]: !이전 } }, () => set동의((p) => ({ ...p, [key]: 이전 })));
   };
 
-  /** 스위치 한 칸 — 사람인처럼 테두리 상자 안에 이름과 스위치를 좌우로 둔다. */
-  const 칸 = (key: string, title: string, desc: string, 켜짐: boolean, 누름: () => void) => (
-    <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "14px 16px",
+  /** 스위치 한 칸 — 테두리 상자 안에 이름과 스위치를 좌우로. 설명은 묶음 제목 아래
+   *  한 줄로 끝내고 칸마다 또 붙이지 않는다. */
+  const 칸 = (key: string, title: string, 켜짐: boolean, 누름: () => void) => (
+    <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "15px 16px",
       display: "flex", alignItems: "center", gap: 12 }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14.5, color: "#1a1a1a" }}>{title}</div>
-        <div style={{ fontSize: 12.5, color: "#9a9aa2", marginTop: 3, lineHeight: 1.5 }}>{desc}</div>
-      </div>
+      <div style={{ flex: 1, minWidth: 0, fontSize: 14.5, color: "#1a1a1a" }}>{title}</div>
       <button type="button" role="switch" aria-checked={켜짐} aria-label={title} onClick={누름}
         style={{ width: 42, height: 24, borderRadius: 12, border: "none", flexShrink: 0,
           cursor: "pointer", padding: 2, display: "flex",
@@ -98,25 +96,22 @@ export default function CompanyNotificationsPage() {
           <>
             <section style={{ marginBottom: 34 }}>
               <h2 style={묶음제목}>새 지원자 알림</h2>
-              <p style={묶음설명}>우리 공고에 지원이 들어오면 알려드려요. 어느 길로 받을지 고르세요.</p>
+              <p style={묶음설명}>우리 공고에 지원이 들어오면 알려드려요.</p>
               <div style={두칸}>
-                {알림칸.map((c) => 칸(c.key, c.title, c.desc, !!on[c.key], () => 알림바꾸기(c.key)))}
+                {알림칸.map((c) => 칸(c.key, c.title, !!on[c.key], () => 알림바꾸기(c.key)))}
               </div>
               {알림칸.every((c) => !on[c.key]) && (
                 <p style={{ fontSize: 12.5, color: "#c98a2e", margin: "10px 2px 0", lineHeight: 1.6 }}>
-                  둘 다 꺼 두면 지원이 들어와도 알려드리지 않아요. 지원자 화면에서 직접 확인해야 해요.
+                  둘 다 끄면 지원이 들어와도 알려드리지 않아요.
                 </p>
               )}
             </section>
 
             <section>
               <h2 style={묶음제목}>뷰티워크 소식 받기</h2>
-              <p style={묶음설명}>
-                이벤트·혜택 안내와 채용에 도움이 될 소식을 보내드려요. 가입할 때 받은 수신 동의라,
-                여기서 끄면 그때부터 보내지 않아요.
-              </p>
+              <p style={묶음설명}>가입할 때 받은 수신 동의예요. 끄면 그때부터 보내지 않아요.</p>
               <div style={두칸}>
-                {동의칸.map((c) => 칸(c.key, c.title, c.desc, !!동의[c.key], () => 동의바꾸기(c.key)))}
+                {동의칸.map((c) => 칸(c.key, c.title, !!동의[c.key], () => 동의바꾸기(c.key)))}
               </div>
             </section>
 
