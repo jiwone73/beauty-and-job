@@ -3029,7 +3029,7 @@ export default function JobPostForm({
                         {/* 대분류를 위에 두고 화살표로 아래를 가리킨다 — 위에서 아래로
                             좁혀 고른 길이 그대로 보인다. 대분류는 흐리게, 주인공은 소분류다. */}
                         <span className="jp-job-name">
-                          {그룹 && <span className="jp-job-grp">{그룹}<i>↓</i></span>}
+                          {그룹 && <span className="jp-job-grp">{그룹}<ChevronDown size={12} strokeWidth={2} className="jp-job-arrow" /></span>}
                           <span className="jp-job-item">{item}</span>
                         </span>
                         <span className="jp-job-steps">
