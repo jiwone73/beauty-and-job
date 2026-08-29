@@ -3142,7 +3142,11 @@ export default function JobPostForm({
                               className={`jp-step ${켜진단계.includes(st) ? "on" : ""}`}
                               onClick={() => {
                                 const 있음 = 단계행(st);
-                                if (있음) { removeCatRow(있음); return; }
+                                if (있음) {
+                                  if (내행.length === 1) { setPos(있음, "career", ""); return; }
+                                  removeCatRow(있음);
+                                  return;
+                                }
                                 const 빈행 = 내행.find((c) => !(posMeta[c] || emptyPos).career);
                                 if (빈행) { setPosMeta((m) => ({ ...m, [빈행]: { ...(m[빈행] || emptyPos), career: st, headcount: (m[빈행] || emptyPos).headcount || "1" } })); return; }
                                 const key = nextDupKey(item, categories);

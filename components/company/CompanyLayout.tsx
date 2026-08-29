@@ -394,7 +394,7 @@ export default function CompanyLayout({ children, activePage }: {
           border-radius: 8px; font-size: 14.5px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #1a1a1a; }
-        .co-set-item.on { background: #f4f0f8; color: var(--color-primary); font-weight: 600; }
+        .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
         /* 다만 설정 화면은 왼쪽에 구분선이 있어 그만큼 안쪽으로 밀어야 한다. 위 규칙이
