@@ -164,23 +164,36 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "applicants", label: "지원자",       href: `${base}/applicants` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
-  // 설정 계열 사이드 메뉴. 머리줄 '설정'으로 들어오면 여기서 갈래가 나뉜다.
-  //   라벨이 함수인 것은 첫 칸만 매장/본사에 따라 이름이 갈리기 때문이다.
+  // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
   //   사이드는 짧게 훑는 자리라 이름만 적고, 무엇을 하는 곳인지는 오른쪽 제목이
-  //   말한다(title). 비밀번호만 둘이 같은데, 여기서 하는 일이 설정이 아니라 변경
-  //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
-  const SET_NAV = [
-    { id: "settings",      label: (info: string) => info,  title: (info: string) => `${info} 설정`, href: `${base}/settings` },
-    { id: "account",       label: () => "계정정보",         title: () => "계정정보 설정",            href: `${base}/account` },
-    { id: "password",      label: () => "비밀번호 변경",     title: () => "비밀번호 변경",            href: `${base}/account/password` },
-    { id: "notifications", label: () => "알림",             title: () => "알림 설정",                href: `${base}/notifications` },
-  ];
+  //   말한다(title). 라벨이 함수인 것은 매장/본사에 따라 이름이 갈리는 칸이 있어서다.
+  //   묶음이 늘면 여기에 한 줄 더 넣으면 된다 — 껍데기는 손댈 것이 없다.
+  const SIDE_NAV: Record<string, { id: string; label: (i: string) => string;
+    title: (i: string) => string; href: string }[]> = {
+    // 채용공고 — 셀렉미가 '채용 정보 등록 / 관리·수정'을 나눠 둔 것과 같은 짜임.
+    //   목록이 들어오는 문이라 위에 두고, 등록을 아래에 둔다.
+    jobs: [
+      { id: "jobs",     label: () => "공고 관리", title: () => "채용공고 관리", href: `${base}/jobs` },
+      { id: "jobs-new", label: () => "공고 등록", title: () => "채용공고 등록", href: `${base}/jobs/new` },
+    ],
+    // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
+    //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
+    settings: [
+      { id: "settings",      label: (i: string) => i,      title: (i: string) => `${i} 설정`, href: `${base}/settings` },
+      { id: "account",       label: () => "계정정보",       title: () => "계정정보 설정",      href: `${base}/account` },
+      { id: "password",      label: () => "비밀번호 변경",   title: () => "비밀번호 변경",      href: `${base}/account/password` },
+      { id: "notifications", label: () => "알림",           title: () => "알림 설정",          href: `${base}/notifications` },
+    ],
+  };
+  /** 지금 화면이 어느 묶음에 드는지 — 사이드를 보일지, 머리줄 어느 메뉴를 켤지가 이걸로 정해진다. */
+  const 묶음 = Object.keys(SIDE_NAV).find((k) => SIDE_NAV[k].some((m) => m.id === activePage));
+  const 사이드 = 묶음 ? SIDE_NAV[묶음] : null;
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
     : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
-    : id === "settings" ? SET_NAV.some((m) => m.id === activePage)
+    : id === "settings" ? 묶음 === "settings"
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
   // 연장이니 그 메뉴가 계속 켜져 있어야 한다.
@@ -461,15 +474,15 @@ export default function CompanyLayout({ children, activePage }: {
       <div className="co-top-body">
         {/* 설정 계열은 제목을 여기 두지 않는다 — 왼쪽 사이드에서 고른 것이 무엇인지는
             그 옆 본문 위에서 말하는 게 맞다(아래 .co-set-title). */}
-        {!SET_NAV.some((m) => m.id === activePage) && (
+        {!사이드 && (
           <h1 className="co-top-title">{PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
-        {SET_NAV.some((m) => m.id === activePage) ? (
+        {사이드 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className="co-set-wrap">
             <nav className="co-set-side">
-              {SET_NAV.map((m) => (
+              {사이드.map((m) => (
                 <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                   {m.label(infoLabel(companyInfo.type))}
                 </Link>
@@ -478,7 +491,7 @@ export default function CompanyLayout({ children, activePage }: {
             <main className="company-content co-set-main">
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
               <h1 className="co-set-title">
-                {SET_NAV.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
+                {사이드.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
               </h1>
               {children}
             </main>
