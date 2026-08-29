@@ -622,15 +622,18 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           <h3 className="job-detail-aside-title">{job.title}</h3>
           {/* 경력보다 무슨 자리인지가 먼저 궁금하다. 좁은 칸에 한 줄뿐이라 모집분야를 둔다
               (경력은 아래 모집부문 표에 있다). 분야를 못 받은 옛 공고는 경력으로 물러선다. */}
-          <div className="job-detail-aside-meta">
-            {(job.jobCategories?.length ? job.jobCategories.join(", ") : job.career) && (
-              <>
-                <span>{job.jobCategories?.length ? job.jobCategories.join(", ") : job.career}</span>
-                <span className="dot">·</span>
-              </>
-            )}
-            <span>{shortRegion(job.region || "")}</span>
-          </div>
+          {(() => {
+            const 분야 = (job.jobCategories?.length ? job.jobCategories.join(", ") : job.career) || "";
+            const 지역 = shortRegion(job.region || "");
+            if (!분야 && !지역) return null;
+            return (
+              <div className="job-detail-aside-meta">
+                {분야 && <span>{분야}</span>}
+                {분야 && 지역 && <span className="dot">·</span>}
+                {지역 && <span>{지역}</span>}
+              </div>
+            );
+          })()}
           {/* 급여는 모집부문 표에 적힌 값을 그대로 쓴다. 예전엔 카드가 따로 계산한
               범위("월 210만원 ~ 250만원")를 보여줘, 표의 "월 210만원 이상 (협의)"와
               한 화면에서 서로 다른 말을 했다. 두 값이 다르면 구직자는 어느 쪽이
