@@ -89,13 +89,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     (_m, p1) => ({ 시: "시급 ", 일: "일급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1]);
   const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
     { key: "category", label: "모집분야", get: (p) => p.category },
+    // 무엇을 몇 명 뽑는가 — 붙여 놓아야 한 번에 읽힌다.
+    { key: "headcount", label: "인원", get: (p) => (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : "") },
     // 근무지가 여러 곳인 공고만 자리가 생긴다 — 한 곳이면 아무 행에도 값이 없어 열이 숨는다.
     { key: "location", label: "근무지", get: (p) => p.location },
     { key: "employment", label: "고용형태", get: (p) => p.employment },
     { key: "gender", label: "성별", get: (p) => p.gender },
     { key: "career", label: "경력/직책", get: (p) => p.career },
-    // 폼에서 직급마다 인원을 받는다 — 표에 없으면 몇 명 뽑는지 어디에도 안 나온다.
-    { key: "headcount", label: "인원", get: (p) => (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : "") },
     { key: "education", label: "학력", get: (p) => p.education },
     { key: "shift", label: "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
     { key: "salary", label: "급여", get: (p) => 급여펴기(p.salary) },
