@@ -510,6 +510,10 @@ export default function JobPostForm({
     placePop(el, width, height);
   };
   // 팝오버가 그려진 뒤 실제 크기를 재서 위치를 다시 잡는다(내용에 맞춘 폭이라 추정치와 다를 수 있음)
+  // 고용형태는 한 자리에 둘 이상 걸리는 일이 흔하다(정규직·아르바이트 둘 다 받는 식).
+  // 셋까지 고르게 하고, 저장은 지금까지처럼 쉼표로 이은 한 줄이다.
+  const [고용열림, set고용열림] = useState<string | null>(null);
+  const 고용최대 = 3;
   const popRef = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => {
     const t = popTrigger.current;
@@ -737,6 +741,13 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [cellOpen]);
+  // 고용형태 팝오버: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!고용열림) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".jp-emp-pop")) set고용열림(null); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [고용열림]);
   // 근무요일/시간 팝오버: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!shiftModalCat) return;
@@ -1901,8 +1912,10 @@ export default function JobPostForm({
     const expLevel = anyFree || (anyNew && anyExp) ? "ANY"
       : anyNew ? "NEW"
       : anyExp ? "EXPERIENCED" : "ANY";
-    const workType = (p0.employment === "아르바이트" || p0.employment === "스페어") ? "PART_TIME"
-      : p0.employment === "계약직" ? "CONTRACT" : "FULL_TIME";
+    // 고용형태는 여럿을 쉼표로 잇는다 — 공고 하나에 붙는 대표값은 첫 번째로 잡는다.
+    const 대표고용 = String(p0.employment || "").split(",")[0].trim();
+    const workType = (대표고용 === "아르바이트" || 대표고용 === "스페어") ? "PART_TIME"
+      : 대표고용 === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
     let salaryMaxVal: number | null = null;
     if (!salaryNego && form.salary) {
@@ -3186,14 +3199,38 @@ export default function JobPostForm({
                             {/* 조건은 줄마다 따로 갖는다 — 인턴과 신입은 같은 자리가 아니다.
                                 새 단계를 켜면 앞 줄 값을 물려받으니, 같으면 손댈 일이 없다. */}
                             <div className={`jp-job-cond ${미정 ? "off" : ""}`}>
-                              <label className="jp-cond-f">
-                                <span>고용형태</span>
-                                <select className="jp-cond-sel" disabled={미정} value={row.employment}
-                                  onChange={(e) => setPos(c, "employment", e.target.value)}>
-                                  <option value="">선택하기</option>
-                                  {EMPLOYMENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                                </select>
-                              </label>
+                              {(() => {
+                                const 고른것 = row.employment.split(",").map((x) => x.trim()).filter(Boolean);
+                                return (
+                                  <span className="jp-cond-f jp-emp-pop" style={{ position: "relative" }}>
+                                    <span>고용형태</span>
+                                    <button type="button" disabled={미정}
+                                      className={`jp-cond-sel jp-cond-shift ${고른것.length ? "" : "ph"}`}
+                                      onClick={(e) => { if (고용열림 === c) { set고용열림(null); return; } openPopAt(e.currentTarget, 232, 190); set고용열림(c); }}>
+                                      {고른것.join(", ") || "선택하기"}
+                                    </button>
+                                    {고용열림 === c && popAt && (
+                                      <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                        {EMPLOYMENT_TYPES.map((t) => {
+                                          const on = 고른것.includes(t);
+                                          // 셋을 채우면 더는 못 켜되, 이미 켠 것은 언제든 끌 수 있어야 한다.
+                                          const 잠김 = !on && 고른것.length >= 고용최대;
+                                          return (
+                                            <button key={t} type="button" disabled={잠김}
+                                              onClick={() => setPos(c, "employment",
+                                                (on ? 고른것.filter((x) => x !== t) : [...고른것, t]).join(", "))}
+                                              style={{ padding: "5px 11px", borderRadius: 999, fontSize: 13,
+                                                cursor: 잠김 ? "not-allowed" : "pointer",
+                                                border: on ? "1.5px solid #582681" : "1.5px solid #efeff1",
+                                                background: on ? "#582681" : "#fff",
+                                                color: on ? "#fff" : (잠김 ? "#cfcfcf" : "#666") }}>{t}</button>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </span>
+                                );
+                              })()}
                               <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
                                 <span>근무요일 / 시간</span>
                                 <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
