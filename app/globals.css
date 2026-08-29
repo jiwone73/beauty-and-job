@@ -13809,3 +13809,67 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jobpost-form .job-detail-meta-item .jp-add-wrap {
   display: inline-flex; align-items: center; gap: 5px;
 }
+
+/* 채용공고 관리 — 상태 고르개.
+   네모 상자 넷이 아니라 이름+수를 한 줄에 늘어놓은 탭이다(사람인 공고 관리와 같은 결).
+   켜진 것은 밑줄로 말하고, 수는 한 톤 진하게 두어 이름보다 먼저 읽히지 않게 한다. */
+.co-jobtabs { display: flex; gap: 26px; border-bottom: 1px solid #ececf0; margin-bottom: 20px; }
+.co-jobtab { background: none; border: none; font-family: inherit; cursor: pointer;
+  padding: 0 2px 12px; font-size: 15px; color: #8a8a90; display: inline-flex; align-items: center;
+  gap: 7px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s; }
+.co-jobtab:hover { color: #1a1a1a; }
+.co-jobtab.on { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.co-jobtab-n { font-size: 14px; color: #b0b0b6; font-variant-numeric: tabular-nums; }
+.co-jobtab.on .co-jobtab-n { color: var(--color-primary); }
+
+/* 채용공고 목록 — 표를 성기게.
+   세로 칸선을 지우고 줄 높이를 키운다. 칸마다 선을 그으면 값이 몇 글자 안 되는
+   표가 격자무늬처럼 보여 빽빽해진다(사람인 공고 관리에도 세로선이 없다). */
+.co-joblist .admin-table th { background: #fff; border-right: none; font-size: 14px;
+  color: #9a9aa2; padding: 14px 16px; }
+.co-joblist .admin-table td { border-right: none; padding: 18px 16px; font-size: 14.5px; }
+.co-joblist .admin-table tbody tr td { border-bottom: 1px solid #f4f4f6; }
+/* 공고명은 이 표의 주인공이라 가운데가 아니라 왼쪽에서 시작한다. */
+.co-joblist .admin-table th:nth-child(2),
+.co-joblist .admin-table td:nth-child(2) { text-align: left; }
+/* 툴바와 표 사이도 벌린다 — 붙어 있으면 한 덩어리로 읽힌다. */
+.co-joblist .admin-search-wrap { margin-bottom: 4px; }
+
+/* 채용공고 관리 — 공고 카드.
+   표에서 카드로 바꾼 이유는 이 화면에서 할 일(수정·복사·마감)이 표에 없었기 때문이다.
+   카드 하나가 공고 하나이고, 그 안에 상태·기간·성적·할 일이 다 들어 있다. */
+.co-jc-count { font-size: 13.5px; color: #8a8a90; margin: 0 2px 12px; }
+.co-jc-count strong { color: var(--color-primary); font-weight: 400; }
+.co-jc { border: 1px solid #ececf0; border-radius: 12px; padding: 16px 18px 0;
+  margin-bottom: 12px; display: grid; grid-template-columns: 1fr auto; gap: 6px 20px;
+  align-items: start; transition: border-color .15s; }
+.co-jc:hover { border-color: #ddd4e6; }
+/* 임시저장·마감은 살아 있는 공고와 갈라 보이게 한 톤 낮춘다. */
+.co-jc.off { background: #fcfcfd; }
+.co-jc-head { grid-column: 1; display: flex; align-items: center; gap: 8px; }
+.co-jc-term { font-size: 12.5px; color: #a0a0a6; font-variant-numeric: tabular-nums; }
+.co-jc-badge { font-size: 11.5px; padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
+.co-jc-badge.live { background: #f4f0f8; color: var(--color-primary); }
+.co-jc-badge.soon { background: #fbf0f0; color: #c0504d; }
+.co-jc-badge.draft { background: #f4f4f6; color: #8a8a90; }
+.co-jc-badge.closed { background: #f4f4f6; color: #a0a0a6; }
+/* 제목이 곧 공고를 여는 문이다 — 표에서는 줄 아무 데나 눌러야 열려 눌리는 곳이 안 보였다. */
+.co-jc-title { grid-column: 1; grid-row: 2; justify-self: start; background: none; border: none;
+  padding: 0; font-family: inherit; font-size: 16px; color: #1a1a1a; text-align: left;
+  cursor: pointer; line-height: 1.4; }
+.co-jc-title:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.co-jc.off .co-jc-title { color: #8a8a90; }
+/* 숫자는 오른쪽 끝에. 0 은 흐리게 두어 사람이 들어온 공고가 먼저 눈에 들어온다. */
+.co-jc-nums { grid-column: 2; grid-row: 1 / 3; display: flex; gap: 24px; align-self: center; }
+.co-jc-num { font-size: 11.5px; color: #9a9aa2; text-align: right; }
+.co-jc-num b { display: block; font-size: 19px; font-weight: 400; color: #1a1a1a;
+  line-height: 1.25; font-variant-numeric: tabular-nums; }
+.co-jc-num b.zero { color: #c6c6cb; }
+.co-jc-acts { grid-column: 1 / -1; display: flex; gap: 6px; margin-top: 12px;
+  padding: 12px 0; border-top: 1px solid #f4f4f6; }
+.co-jc-act { font-family: inherit; font-size: 12.5px; color: #666; background: #fff;
+  border: 1px solid #ececf0; border-radius: 7px; padding: 6px 12px; cursor: pointer;
+  transition: border-color .15s, color .15s; }
+.co-jc-act:hover { border-color: #d9cde6; color: var(--color-primary); }
+.co-jc-act.key { border-color: #d9cde6; color: var(--color-primary); }
+.co-jc-act.key:hover { background: #f7f4fa; }

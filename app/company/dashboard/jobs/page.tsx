@@ -228,20 +228,18 @@ function CompanyJobsContent() {
 
   return (
     <CompanyLayout activePage="jobs">
-      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
-      {/* 요약 카드 (데스크톱만) */}
+      <div className="co-joblist" style={{ width: isMobile ? "100%" : "100%", maxWidth: "100%" }}>
+      {/* 상태 고르개 (데스크톱만).
+          누르면 걸리는 필터인데 네모 상자 넷으로 그려 두니 그냥 숫자판처럼 보였다.
+          사람인 공고 관리처럼 이름과 수를 한 줄에 늘어놓은 탭으로 바꾼다 — 무엇이
+          켜져 있는지가 밑줄로 바로 보이고, 상자가 사라져 아래 줄과 안 붙는다. */}
       {!isMobile && (
-        <div className="company-stat-grid">
+        <div className="co-jobtabs">
           {statCardsData.map((s) => (
-            <button key={s.label} type="button" className="company-stat-card"
-              onClick={() => setStatusFilter(s.status)}
-              style={{ cursor: "pointer", textAlign: "left", font: "inherit",
-                border: statusFilter === s.status ? `1px solid ${s.color}` : undefined,
-                background: statusFilter === s.status ? "#f7f7f8" : undefined }}>
-              <div className="company-stat-value" style={{color: s.color}}>
-                {s.value}<span className="company-stat-unit">{s.unit}</span>
-              </div>
-              <div className="company-stat-label">{s.label}</div>
+            <button key={s.label} type="button"
+              className={`co-jobtab ${statusFilter === s.status ? "on" : ""}`}
+              onClick={() => setStatusFilter(s.status)}>
+              {s.label}<span className="co-jobtab-n">{s.value}</span>
             </button>
           ))}
         </div>
@@ -263,40 +261,9 @@ function CompanyJobsContent() {
           <FilterDropdown label="정렬" value={sortBy}
             options={["등록일순", "마감일순"]} onChange={setSortBy} />
         </div>
-        <div style={{display:"flex", gap:"8px", alignItems:"center"}}>
-          {/* 공고마감·복사 등록은 무엇을 고르면 되는지 미리 보이도록 항상 띄워 두고,
-              고르기 전엔 눌러도 안 되게만 막는다(체크 안 했을 때 아예 사라지면
-              이런 기능이 있는지조차 모른다). */}
-          <button
-            disabled={checked.length === 0}
-            style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length === 0 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length === 0 ? "not-allowed" : "pointer" }}
-            onClick={handleBulkClose}>
-            <Ban size={14} /> 공고마감
-          </button>
-          <button
-            disabled={checked.length !== 1}
-            style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, border:"1px solid #ddd", background:"#fff", color: checked.length !== 1 ? "#bbb" : "#555", fontSize:14, fontWeight:500, cursor: checked.length !== 1 ? "not-allowed" : "pointer" }}
-            onClick={handleReRegister}>
-            <Copy size={14} /> 복사 등록
-          </button>
-          {checked.length > 0 && (
-            <>
-              {/* 삭제·공고 등록도 '마감'과 같은 규격(7px 12px · 14px)으로 맞춘다 */}
-              <button className="admin-danger-btn" onClick={handleBulkDelete}
-                style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
-                <Trash2 size={14} /> 삭제 ({checked.length})
-              </button>
-            </>
-          )}
-          {/* 선택 중에는 감춘다. '복사 등록'도 등록 화면으로 가기 때문에 나란히 두면 잘못 눌러 선택이 날아간다.
-              해제하면 바로 돌아오므로 접근을 막는 게 아니라 지금 할 일만 남기는 것이다. */}
-          {checked.length === 0 && (
-            <Link href="/company/dashboard/jobs/new" className="company-primary-btn"
-              style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:8, fontSize:14, fontWeight:500, border:"1px solid transparent" }}>
-              신규 등록
-            </Link>
-          )}
-        </div>
+        {/* 마감·복사·삭제는 이제 카드마다 붙어 있다. 여기 또 두면 체크칸을 켜야만
+            살아나는 단추가 되어(무엇을 고르라는 건지 알기 어려웠다) 같은 일을 하는 길이
+            둘이 된다. 등록도 머리줄 단추와 사이드에 이미 있어 뺀다. */}
       </div>
       )}
 
@@ -459,78 +426,76 @@ function CompanyJobsContent() {
         </div>
       )}
 
-      {/* 테이블 (데스크톱) */}
+      {/* 목록 (데스크톱) — 표에서 카드로.
+          이 화면에서 하는 일은 "살아 있나 보고, 하나 골라 고치거나 마감하거나 다시 올리기"인데
+          표에는 그 할 일이 없었다. 체크칸을 정확히 하나 켜야 툴바 단추가 살아나서,
+          있는 줄도 모르고 지나치기 쉬웠다. 카드마다 그 자리에 붙인다.
+          할 일은 상태마다 다르다 — 마감된 공고에 '수정'은 뜻이 없고, 대신 다시 올리는 것이 할 일이다. */}
       {!loading && filtered.length > 0 && !isMobile && (
-        <div className="company-card">
-          {/* 선택 건수는 버튼 줄이 아니라 목록 건수 옆에 둔다 — 무엇을 세는 숫자인지가 바로 붙어 읽힌다. */}
-          <div className="admin-table-meta">
-            총 <strong>{filtered.length}</strong>건
-            {checked.length > 0 && (
-              <span style={{ marginLeft: 8, color: "#582681" }}><strong>{checked.length}</strong>건 선택</span>
-            )}
-          </div>
-          {/* 폭이 모자라면 칸을 눌러 글자를 쪼개지 말고 가로로 넘긴다 — 공고명만 두 줄까지 감싼다. */}
-          <div style={{ overflowX: "auto" }}>
-          <table className="company-table">
-            <thead>
-              <tr>
-                <th style={{width:"36px"}}>
-                  <input type="checkbox"
-                    checked={checked.length === filtered.length && filtered.length > 0}
-                    onChange={toggleAll} />
-                </th>
-                <th>공고명</th>
-                <th>등록일</th>
-                <th>마감일</th>
-                <th>지원자</th>
-                <th>조회수</th>
-                <th>상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((job) => (
-                <tr key={job.id} style={{background: checked.includes(job.id) ? "#f7f7f8" : ""}}>
-                  <td>
-                    <input type="checkbox"
-                      checked={checked.includes(job.id)}
-                      onChange={() => toggleCheck(job.id)} />
-                  </td>
-                  <td className="company-td-name">
-                    {/* 임시저장(DRAFT)은 발행 전이라 공개 페이지에 없다 — 공고 보기로 보내면
-                        늘 404였다("눌러도 불러오는중으로 표시되면서 안열려"). 이어서 쓰도록
-                        등록 화면으로 보낸다. */}
-                    <span className="tbl-name-btn" title={job.status === "DRAFT" ? "이어서 작성" : "공고 보기"}
-                      onClick={() => router.push(job.status === "DRAFT" ? `/company/dashboard/jobs/new?id=${job.id}` : `/jobs/${job.id}`)}>
-                      <span className="tbl-name-txt td-clamp2" style={{color:"#1a1a1a", fontWeight:400}}>{job.title}</span>
-                    </span>
-                  </td>
-                  <td className="company-td-sub">
-                    {new Date(job.created_at).toLocaleDateString("ko-KR")}
-                  </td>
-                  <td className="company-td-sub">{formatDeadline(job.deadline)}</td>
-                  <td>
-                    <Link href={`/company/dashboard/applicants?job_id=${job.id}`}
-                      style={{color:"#555", fontSize:14, textDecoration:"none"}}>
-                      {job.application_count}명
-                    </Link>
-                  </td>
-                  <td className="company-td-sub">{job.view_count}</td>
-                  <td>
-                    {(() => {
-                      // 마감일 칸과 그대로 겹쳐 보였다("상태가 필요할까? 마감일하고
-                      // 같은데") — 마감 처리해도 deadline 값 자체는 안 바뀌어(closed_at만
-                      // 기록) 사실은 다른 정보인데 우연히 같아 보인 것뿐이었다. 여기는
-                      // "지금 상태가 뭔지"만 짧게 말한다.
-                      const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지" : isJobClosed(job) ? "마감" : "진행중";
-                      const color = job.status === "DRAFT" ? "#999" : job.status === "PAUSED" ? "#f59e0b" : isJobClosed(job) ? "#888" : "#10b981";
-                      return <span style={{ color, fontWeight: 500, fontSize: 14, whiteSpace: "nowrap" }}>{label}</span>;
-                    })()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
+        <div>
+          <div className="co-jc-count">총 <strong>{filtered.length}</strong>건</div>
+          {filtered.map((job) => {
+            const closed = isJobClosed(job);
+            const draft = job.status === "DRAFT";
+            const dl = daysLeft(job.deadline);
+            const 임박 = !closed && !draft && dl !== null && dl <= 7;
+            const 상태 =
+              draft ? { 글: "임시저장", 결: "draft" }
+              : closed ? { 글: "마감", 결: "closed" }
+              : 임박 ? { 글: dl === 0 ? "오늘 마감" : `D-${dl}`, 결: "soon" }
+              : { 글: "진행중", 결: "live" };
+            const 기간 = job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
+            return (
+              <div key={job.id} className={`co-jc ${closed || draft ? "off" : ""}`}>
+                <div className="co-jc-head">
+                  <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
+                  <span className="co-jc-term">{기간}</span>
+                </div>
+                <button type="button" className="co-jc-title"
+                  onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                  {job.title}
+                </button>
+                {/* 숫자는 오른쪽에. 0 은 흐리게 둬서 사람이 들어온 공고가 먼저 보인다. */}
+                <div className="co-jc-nums">
+                  {!draft && (
+                    <>
+                      <span className="co-jc-num">
+                        <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
+                        지원자
+                      </span>
+                      <span className="co-jc-num">
+                        <b className={(job.view_count ?? 0) === 0 ? "zero" : ""}>{job.view_count ?? 0}</b>
+                        조회
+                      </span>
+                    </>
+                  )}
+                </div>
+                <div className="co-jc-acts">
+                  {draft ? (
+                    <>
+                      <button className="co-jc-act key"
+                        onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
+                      <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
+                    </>
+                  ) : closed ? (
+                    <>
+                      <button className="co-jc-act key"
+                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>복사해서 다시 올리기</button>
+                      <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="co-jc-act"
+                        onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
+                      <button className="co-jc-act key"
+                        onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>복사해서 등록</button>
+                      <button className="co-jc-act" onClick={() => handleClose(job.id)}>마감</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
       </div>
