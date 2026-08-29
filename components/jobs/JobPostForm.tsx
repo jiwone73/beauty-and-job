@@ -2313,7 +2313,9 @@ export default function JobPostForm({
   const 기업폼 = mode !== "admin";
   // 기업 폼은 브라우저를 넓히면 끝없이 늘어났다("본문 내용도 넓이도 계속
   // 늘어나는데") — 매장정보 페이지(설정 화면 본문 800px)와 같은 값으로 고정한다.
-  const 콘텐츠폭: number | "none" = 기업폼 ? 800 : 760;
+  // 오른쪽 작성현황 사이드를 걷어내면서 남은 폭을 폼이 쓴다. 모집분야가 일곱 칸짜리
+  // 표라 800px 에서는 칸마다 110px 밖에 안 됐다.
+  const 콘텐츠폭: number | "none" = 기업폼 ? 960 : 760;
   // 왼쪽 사이드에 세울 칸 목록. 아래로 내려가지 않아도 무엇이 남았는지 보인다.
   // 작성 현황은 '지금 발행할 수 있나'를 말해야 쓸모가 있다. 그래서 판정을 발행 검증과
   // 한 글자씩 맞춘다. 어긋나 있던 것들:
@@ -2719,18 +2721,14 @@ export default function JobPostForm({
           붙여넣고 위에서 아래로 훑어 내리는 작업이라 한 줄이 맞다 — 그쪽은
           클래스를 비워 두어 이 감싸개가 아무 일도 하지 않는다. */}
       <div className={기업폼 ? "jp-shell" : undefined}>
+        {/* 작성 현황 — 오른쪽 세로 사이드였는데, 칸 목록이 폼과 같은 말을 두 번 하고 있었다.
+            남길 것은 "얼마나 왔나" 하나뿐이라 폼 맨 위에 가로 띠 하나로 둔다. */}
         {기업폼 && (
-          <aside className="jp-side">
-            <p className="jp-side-title">작성 현황</p>
-            <div className="jp-side-bar"><span style={{ width: `${작성률}%` }} /></div>
-            <p className="jp-side-count">{채운칸}/{할칸.length} 완료</p>
-            {할칸.map((c) => (
-              <button key={c.id} type="button" className={`jp-side-item ${c.done ? "on" : ""}`}
-                onClick={() => document.getElementById(`jp-${c.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}>
-                <span>{c.done ? "✓" : "○"}</span>{c.label}
-              </button>
-            ))}
-          </aside>
+          <div className="jp-prog">
+            <span className="jp-prog-label">작성 현황</span>
+            <span className="jp-prog-bar"><span style={{ width: `${작성률}%` }} /></span>
+            <span className="jp-prog-count">{채운칸}/{할칸.length} 완료</span>
+          </div>
         )}
         <div className={기업폼 ? "jp-body" : undefined}>
       {/* 공고 상단 이미지 */}

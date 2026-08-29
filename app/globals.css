@@ -13759,50 +13759,18 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 제목이 헤더 줄로 옮겨 온 뒤 '공고 배너 이미지' 위 여백이 남아돌았다. */
 .company-content:has(.jp-shell) .admin-form-header { margin-bottom: 0; }
 
-@media (min-width: 1180px) {
-  /* 사이드를 오른쪽으로("작성현황은 오른쪽으로 배치해주고 본문 페이지를
-     왼쪽으로 밀어줘") — DOM 순서(사이드 먼저, 본문 다음)는 그대로 두고
-     grid-column 으로 칸만 맞바꾼다. */
-  .jp-shell {
-    /* 사이드가 왼쪽일 땐 폭 제한이 없어도 됐다(넘치는 폭이 본문 오른쪽에
-       빈 띠로만 남았다) — 오른쪽으로 옮긴 뒤로는 그 빈 띠가 그대로 사이드를
-       화면 오른쪽 끝까지 떠밀어 본문과 멀어졌다("작성현황이 오른쪽 끝으로
-       밀렸네"). 본문(800) + 간격(26) + 사이드(150) 만큼만 쓴다. */
-    display: grid; grid-template-columns: minmax(0, 1fr) 150px;
-    max-width: 976px;
-    gap: 26px; margin: 0; align-items: start;
-  }
-  /* 사이드가 왼쪽에 있을 때는 본문이 176px(사이드+간격) 밀려나 상단 버튼 줄과
-     오른쪽 끝이 어긋났다. 사이드가 오른쪽으로 옮겨온 지금은 본문이 그리드
-     맨 왼쪽 칸(헤더와 같은 시작점)이라 더 밀 필요가 없다. */
-  .jp-header-offset { margin-left: 0; }
-  .jp-side {
-    /* 바탕도 여백도 없이 떠 있어 본문 카드와 따로 놀았다. 이력서 사이드처럼
-       흰 바탕에 여백을 두르고, 본문 첫 카드와 윗변을 맞춘다.
-       grid-row 를 안 박아 두면 auto-placement가 본문을 다음 줄로 밀어
-       사이드 밑에 큰 빈 칸이 생겼다 — 두 칸 다 1행에 못박는다. */
-    grid-column: 2; grid-row: 1;
-    display: flex; flex-direction: column; position: sticky; top: 96px;
-    background: #fff; border: 1px solid #f0f0f0; border-radius: 12px;
-    padding: 16px 14px; margin-top: 5px;   /* '공고 배너 이미지' 글자 윗변과 맞춘다 */
-  }
-  .jp-body { grid-column: 1; grid-row: 1; }
-  .jp-side-title { font-size: 12px; color: #6f6f75; margin: 0 0 7px; }
-  .jp-side-bar { height: 4px; background: #e3e3e6; border-radius: 2px; overflow: hidden; }
-  .jp-side-bar span { display: block; height: 4px; background: var(--color-primary); border-radius: 2px; transition: width .2s; }
-  .jp-side-count { font-size: 12px; color: #8a8a8f; margin: 5px 0 12px; }
-  .jp-side-item {
-    display: flex; align-items: center; gap: 7px; width: 100%; text-align: left;
-    background: none; border: none; cursor: pointer; padding: 7px 8px; border-radius: 7px;
-    font-family: inherit; font-size: 14px; color: #6b6570; transition: background .12s, color .12s;
-  }
-  .jp-side-item span { width: 13px; flex-shrink: 0; color: #c4c4c9; }
-  .jp-side-item:hover { background: #efeff1; color: #2b2b2b; }
-  .jp-side-item.on { color: #c9c9ce; }
-  .jp-side-item.on span { color: #c9c9ce; }
+/* 작성 현황 — 폼 맨 위 가로 띠.
+   예전엔 오른쪽 세로 사이드에 칸 목록까지 늘어놓았는데, 그 목록이 바로 아래 폼과
+   같은 말을 두 번 하고 있었다. 남길 것은 얼마나 왔는지 하나뿐이다. */
+.jp-prog { display: flex; align-items: center; gap: 12px; max-width: 960px;
+  margin: 0 0 14px; padding: 0 2px; }
+.jp-prog-label { font-size: 12.5px; color: #8a8a90; flex-shrink: 0; }
+.jp-prog-bar { flex: 1; height: 5px; background: #ececf0; border-radius: 3px; overflow: hidden; }
+.jp-prog-bar span { display: block; height: 5px; background: var(--color-primary);
+  border-radius: 3px; transition: width .2s; }
+.jp-prog-count { font-size: 12.5px; color: #8a8a90; flex-shrink: 0;
+  font-variant-numeric: tabular-nums; }
 
-  .jp-body { min-width: 0; }
-}
 /* 모집분야 ＋ — 이 화면에서 가장 먼저 누르는 것이라 제목보다 크게 세운다.
    .job-detail-meta-item * 가 15px 을 !important 로 박고 있어 같은 무게로 되받는다. */
 .jobpost-form .job-detail-meta-item .jp-add-cat { font-size: 22px !important; }
