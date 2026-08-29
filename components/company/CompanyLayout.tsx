@@ -335,10 +335,13 @@ export default function CompanyLayout({ children, activePage }: {
         /* 메인 사이트가 PC에서 메뉴 글자를 한 단계 키우는 것까지 같이 따른다 */
         @media (min-width: 769px) { .co-top-nav a { font-size: 18px; } }
         .co-top-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        /* 평소엔 테두리만, 마우스를 올렸을 때 뷰티워크 보라로 채운다 — 머리줄에 늘 떠 있는
+           단추라 채워 두면 짙은 덩어리 하나가 화면에서 제일 먼저 읽힌다. */
         .co-top-post { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 15px;
-          border-radius: 8px; background: var(--color-primary); color: #fff; font-size: 14px;
-          text-decoration: none; white-space: nowrap; }
-        .co-top-post:hover { background: #47206a; }
+          border-radius: 8px; background: #fff; border: 1px solid var(--color-primary);
+          color: var(--color-primary); font-size: 14px; text-decoration: none; white-space: nowrap;
+          transition: background .15s, color .15s; }
+        .co-top-post:hover { background: var(--color-primary); color: #fff; }
         .co-top-me { display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
         .co-top-ava { width: 32px; height: 32px; border-radius: 7px; overflow: hidden; flex-shrink: 0;
           background: #f2f2f4; display: flex; align-items: center; justify-content: center;

@@ -13834,8 +13834,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 0 은 흐리게 두어 사람이 들어온 공고가 먼저 눈에 들어온다. */
 .co-jc-acts { display: flex; gap: 6px; flex-shrink: 0; }
 /* 선 아래 — 왼쪽에 다시 올리기, 오른쪽 끝에 성적. */
+/* 아래 여백을 카드 위 여백과 같은 14px 로 — 11px 이면 아랫줄이 테두리에 붙어 보인다. */
 .co-jc-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-top: 12px; padding: 11px 0; border-top: 1px solid #f4f4f6; }
+  margin-top: 12px; padding: 14px 0; border-top: 1px solid #f4f4f6; }
 /* 숫자는 늘 보이되 먼저 읽힐 필요는 없다 — 작게, 0 은 더 흐리게. */
 .co-jc-nums { font-size: 12px; color: #a0a0a6; white-space: nowrap;
   font-variant-numeric: tabular-nums; }
@@ -13847,7 +13848,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   white-space: nowrap; transition: border-color .15s, color .15s; }
 .co-jc-act.sm { font-size: 12px; padding: 5px 10px; }
 .co-jc-act:hover { border-color: #d9cde6; color: var(--color-primary); }
-/* 그 줄에서 가장 하려는 일(복사해서 등록·이어서 작성)은 뷰티워크 보라로 채운다. */
-.co-jc-act.key { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
-.co-jc-act.key:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover);
+/* 그 줄에서 가장 하려는 일(복사해서 등록·이어서 작성)은 평소엔 테두리만 두르고,
+   마우스를 올렸을 때 뷰티워크 보라로 채워 지금 누르는 것이 무엇인지 말한다. */
+.co-jc-act.key { border-color: #d9cde6; color: var(--color-primary); }
+.co-jc-act.key:hover { background: var(--color-primary); border-color: var(--color-primary);
   color: #fff; }
