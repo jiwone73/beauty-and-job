@@ -136,7 +136,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 return (
                   <div key={r.type}>
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
-                      disabled={r.type === "custom" && quickType === "weeks"}
+                      disabled={quickType !== null && quickType !== r.type}
                       onClick={() => {
                         if (on) { setQuickType(null); setDraft(""); return; }
                         applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin);
@@ -184,6 +184,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
                         </div>
+                        {/* 조율 여지는 시간에 걸리는 값이라 시간 바로 밑, 이 카드 안에 둔다.
+                            팝오버 맨 아래에 두면 어느 항목에 걸리는지 자리로 알 수 없었다. */}
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
+                          <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
+                            style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                          협의 가능
+                        </label>
                       </div>
                     )}
                   </div>
@@ -205,13 +212,12 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
               </ul>
             </div>
           )}
-          {/* 시간은 정해 두고도 조율 여지를 남기고 싶을 때. 값을 지우고 '협의'로
-              바꿔치기하는 것과 달리, 시간은 그대로 두고 "(협의)"만 붙는다. */}
-          {draft.trim() && draft.trim() !== "협의" && (
+          {/* 직접 입력에는 카드가 없으니 여기 둔다. 빠른 선택은 고른 카드 안에 있다. */}
+          {tab === "free" && store && draft.trim() && draft.trim() !== "협의" && (
             <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
               <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
                 style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-              협의 가능 (시간은 두고 조율 여지만 표시)
+              협의 가능
             </label>
           )}
         </div>
