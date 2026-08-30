@@ -399,7 +399,13 @@ function CompanyJobsContent() {
                     onChange={() => toggleCheck(job.id)} />
                 )}
                 <div className={`co-li ${on ? "on" : ""}`}
-                  onClick={() => selectMode ? toggleCheck(job.id) : router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                  onClick={() => {
+                    if (selectMode) { toggleCheck(job.id); return; }
+                    // 카드형과 같다 — 이름을 누르면 그 공고를 본다. 임시저장만
+                    // 보여 줄 화면이 없어 이어서 쓰러 간다.
+                    if (job.status === "DRAFT") router.push(`/company/dashboard/jobs/new?id=${job.id}`);
+                    else window.open(`/jobs/${job.id}`, "_blank", "noopener");
+                  }}>
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
                     <span className="co-li-status" style={{ color: badgeColor }}>
