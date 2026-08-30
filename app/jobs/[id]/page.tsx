@@ -84,19 +84,19 @@ export default function JobDetailPage() {
             tags: [],
             title: j.title,
             jobType: j.job_type === 'OFFICE' ? '본사' : '매장',
-            career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
+            career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '',
             education: j.education || '',
             jobCategories: Array.isArray(j.categories) ? j.categories : [],
             region: j.location || '',
             // 고용형태: 저장된 employment_type(비회원 자유입력 포함) 우선, 없으면 work_type 매핑
-            employType: j.employment_type || (j.work_type === 'FULL_TIME' ? '정규직' : j.work_type === 'PART_TIME' ? '파트타임' : j.work_type === 'CONTRACT' ? '계약직' : '정규직'),
-            headcount: j.headcount_text || (j.headcount ? `${j.headcount}명` : '00명'), // 자유입력 우선, 미언급 시 '00명'
+            employType: j.employment_type || '',
+            headcount: j.headcount_text || (j.headcount ? `${j.headcount}명` : ''),
             genderPref: j.gender_preference || '',
             deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
             positions: Array.isArray(j.positions) ? j.positions : [],
             salary: j.salary_text || (((j.salary_max && j.salary_max > j.salary_min)
               ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
-              : formatSalaryWon(j.salary_min, j.salary_type)) || '면접 후 협의'),
+              : formatSalaryWon(j.salary_min, j.salary_type)) || ''),
             color: '#f7f7f8',
             description: j.description || '',
             requirements: j.requirements ? j.requirements.split('\n').filter(Boolean) : [],
@@ -110,13 +110,16 @@ export default function JobDetailPage() {
             //   공고에서 지운 경우엔 빈 배열이 와서 상단 이미지 없이 표시된다(기업정보는 그대로).
             cover_images: Array.isArray(j.cover_images) ? j.cover_images : (j.company?.cover_images || []),
             detailImages: j.detail_images || [],
-            workPeriodText: j.work_period || "협의",
-            workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : "요일 협의"),
-            workTimeText: j.work_time === "협의" ? "시간 협의" : (j.work_time || "시간 협의"),
-            contactName: j.external_contact_name || '',
-            contactPhone: j.external_contact_phone || '',
-            contactEmail: j.external_contact_email || '',
-            contactMethods: Array.isArray(j.contact_methods) ? j.contact_methods : [],
+            workPeriodText: j.work_period || "",
+            workDaysText: j.work_days === "협의" ? "요일 협의" : (j.work_days ? String(j.work_days).split(",").join("·") : ""),
+            workTimeText: j.work_time === "협의" ? "시간 협의" : (j.work_time || ""),
+            // 관리자가 대신 올린 공고는 담당자 연락처를 내보내지 않고 지원 안내를
+            // '뷰티워크 온라인지원' 하나로 낸다 — 등록 화면 미리보기와 같은 규칙이다.
+            // 값은 DB에 그대로 남아 있다(나중에 그 번호로 연락해 회원가입을 권한다).
+            contactName: j.is_external ? '' : (j.external_contact_name || ''),
+            contactPhone: j.is_external ? '' : (j.external_contact_phone || ''),
+            contactEmail: j.is_external ? '' : (j.external_contact_email || ''),
+            contactMethods: j.is_external ? ['뷰티워크 온라인지원'] : (Array.isArray(j.contact_methods) ? j.contact_methods : []),
             companyInfo: {
               name: j.company?.company_name || '',
               brandName: j.company?.brand_name || '',
