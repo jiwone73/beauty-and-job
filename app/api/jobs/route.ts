@@ -71,10 +71,9 @@ export async function GET(req: NextRequest) {
     params.push(kw, kw, kw)
     idx += 3
   }
-  if (active) {
-    where.push(`j.deadline IS NOT NULL`)
-    where.push(`j.deadline::date >= CURRENT_DATE`)
-  }
+  // 마감 지난 공고는 v_active_jobs 가 이미 걸러 낸다. 예전에는 여기서 마감일이
+  // 있어야 한다는 조건을 더해, 상시채용 공고를 전부 떨어뜨렸다 — 메인의
+  // '지금 적극 채용 중'이 208건 중 4건만 보고 있었다.
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
