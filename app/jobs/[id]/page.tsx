@@ -30,8 +30,9 @@ export default function JobDetailPage() {
   // 안열려") — 실패를 구분해 안내로 갈아 끼운다.
   const [notFound, setNotFound] = useState(false);
 
+  const 본문왔다 = !!job;
   useEffect(() => {
-    if (!id) return;
+    if (!id || !본문왔다) return;
     fetch(`/api/jobs/${id}/related`)
       .then(r => r.json())
       .then(res => { if (res.success && res.data) setRelated(res.data.related || []); })
@@ -40,7 +41,7 @@ export default function JobDetailPage() {
       .then(r => r.json())
       .then(res => { if (res.success && res.data) setCompanyJobsCount(res.data.total || 0); })
       .catch(() => {});
-  }, [id]);
+  }, [id, 본문왔다]);
 
   // 공유: 모바일은 OS 공유 시트, 미지원 브라우저는 링크 복사로 폴백
   const handleShare = async () => {

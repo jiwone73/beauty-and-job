@@ -2,8 +2,7 @@
 import { forwardRef, type ReactNode } from "react";
 import Link from "next/link";
 import { shortRegion } from "@/lib/regionShort";
-import KakaoMap from "@/components/KakaoMap";
-import AddressMap from "@/components/AddressMap";
+import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag } from "lucide-react";
@@ -306,11 +305,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       {job.companyAddress?.trim() && (
         <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
       )}
-      {ci.latitude && ci.longitude ? (
-        <KakaoMap latitude={Number(ci.latitude)} longitude={Number(ci.longitude)} name={ci.name} />
-      ) : (
-        <AddressMap address={job.companyAddress} name={ci.name} height={280} />
-      )}
+      <LazyMap latitude={ci.latitude} longitude={ci.longitude} address={job.companyAddress} name={ci.name} height={280} />
     </div>
   ) : null;
 
