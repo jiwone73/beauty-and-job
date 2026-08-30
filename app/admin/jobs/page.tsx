@@ -313,12 +313,14 @@ function AdminJobsPageInner() {
                     <input type="checkbox" checked={checkedIds.has(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
-                  {/* 공고명 (길면 2줄) */}
+                  {/* 공고명 (길면 2줄) — noopener 를 빼면 크롬이 새 탭을 이 목록과 같은
+                      렌더러에 붙인다. 목록은 공고를 전부 그려 무거워서, 새 탭이 그
+                      메인 스레드를 기다리느라 몇 초씩 '무제'로 멈춰 있었다. */}
                   <td>
                     <span className="adm-td2 adm-w-lg"
                       title={job.title}
                       style={{ color: "#333", cursor: "pointer", fontWeight: 400 }}
-                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank")}>
+                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
                       {job.title}
                     </span>
                   </td>
