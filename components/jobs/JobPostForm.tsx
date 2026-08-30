@@ -18,6 +18,7 @@ import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
+import { 전화꼴 } from "@/lib/phoneFormat";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
@@ -2106,14 +2107,6 @@ export default function JobPostForm({
   //   "9"→09:00, "930"→09:30, "0930"→09:30, "2000"→20:00 (24시 넘거나 60분 넘으면 잘라 맞춤)
   // 전화번호에 하이픈을 넣어 준다. 저장할 때는 숫자만 남기므로 화면 표기만 바뀐다.
   //   02 는 지역번호가 두 자리, 나머지는 세 자리다.
-  const 전화꼴 = (v: string) => {
-    const d = (v || "").replace(/\D/g, "").slice(0, 11);
-    const 서울 = d.startsWith("02");
-    const 앞 = 서울 ? 2 : 3;
-    if (d.length <= 앞) return d;
-    if (d.length <= 앞 + 4) return `${d.slice(0, 앞)}-${d.slice(앞)}`;
-    return `${d.slice(0, 앞)}-${d.slice(앞, d.length - 4)}-${d.slice(-4)}`;
-  };
   const fmtTime = (v: string) => {
     const d = v.replace(/\D/g, "").slice(0, 4);
     if (!d) return "";

@@ -5,6 +5,7 @@ import { shortRegion } from "@/lib/regionShort";
 import KakaoMap from "@/components/KakaoMap";
 import AddressMap from "@/components/AddressMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
+import { 전화꼴 } from "@/lib/phoneFormat";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -322,7 +323,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const contactInner = hasContact ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">채용담당자</span>
-      <span>{[job.contactName || "인사담당", job.contactPhone, job.contactEmail].filter(Boolean).join("   ·   ")}</span>
+      <span>{[job.contactName || "인사담당", 전화꼴(job.contactPhone), job.contactEmail].filter(Boolean).join("   ·   ")}</span>
     </div>
   ) : null;
 
