@@ -447,6 +447,10 @@ export default function JobPostForm({
   type PosRow = { career: string; education: string; employment: string; salary: string; workDays: string; workTime: string; shiftText: string; headcount: string; gender: string; location: string; shiftNego: boolean; salaryNego: "" | "open" | "hidden"; extraShifts: ShiftSlot[] };
   const emptyPos: PosRow = { career: "", education: "", employment: "", salary: "", workDays: "", workTime: "", shiftText: "", headcount: "", gender: "", location: "", shiftNego: false, salaryNego: "", extraShifts: [] };
   const [posMeta, setPosMeta] = useState<Record<string, PosRow>>({});
+  // 예전에 저장해 둔 행에는 나중에 생긴 칸이 없다 — 빈 행을 바탕에 깔고 덮어 읽는다.
+  // 그냥 읽으면 undefined.trim() 에서 터지고, 그게 단추를 누른 순간이라
+  // 아무 일도 일어나지 않은 것처럼 보인다.
+  const 행읽기 = (cat: string): PosRow => ({ ...emptyPos, ...(posMeta[cat] || {}) });
   const setPos = <K extends keyof PosRow>(cat: string, k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const cur = m[cat] || emptyPos; return { ...m, [cat]: { ...cur, [k]: v } }; });
   // 같은 모집분야를 여러 행으로 쓸 수 있게(예: 헤어디자이너 신입 1 · 경력 1) 내부 키에만 "#2" 꼬리표를 붙인다.
@@ -472,7 +476,7 @@ export default function JobPostForm({
     setPosMeta((m) => {
       if (src) return { ...m, [key]: { ...(m[src] || emptyPos) } };
       if (!앞) return m;
-      const a = m[앞] || emptyPos;
+      const a = { ...emptyPos, ...(m[앞] || {}) };
       const 물림: Partial<PosRow> = {};
       부문조건.forEach((k) => { (물림 as any)[k] = a[k]; });
       return { ...m, [key]: { ...emptyPos, ...물림 } };
@@ -1888,7 +1892,7 @@ export default function JobPostForm({
     // 모집부문 표(positions) — 부문마다 경력·고용형태·급여·근무요일/시간·인원·성별우대를
     // 따로 담는다. 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다.
     // 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const positions = categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -2168,7 +2172,7 @@ export default function JobPostForm({
   // 표 셀 입력: iOS 네이티브 select 피커가 화면 절반을 덮을 만큼 커서, 목록도 자체 팝오버로 띄운다.
   //   options가 있으면 컴팩트 목록, units(급여)면 지급주기 칩, 그 외에는 자유입력.
   const posCell = (cat: string, field: keyof PosRow, options: string[], ph = "직접 입력", allowFi = true, units?: typeof SALARY_UNITS, wrap = false, nego: "" | "open" | "hidden" = "", onNegoChange?: (v: "" | "open" | "hidden") => void) => {
-    const v = (posMeta[cat] || emptyPos)[field] as string;
+    const v = 행읽기(cat)[field] as string;
     // 협의를 셋으로 나눈다 — "확정"(그대로 노출), "비공개 협의"(금액은 감추고
     // '협의'만), "제시 협의"(금액을 보여주고 조율 여지도 표시, 예전의 '협의+').
     // 값을 지우고 그 자리를 '협의'로 바꿔치기하던 예전 방식은 이미 적어 둔
@@ -2399,7 +2403,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: alwaysOpen ? "상시채용" : (form.deadline ? form.deadline.replace(/-/g, ".") : ""),
     salary: String(form.salary || "").trim() ? fmtSalary() : "",
-    positions: categories.map((c) => { const r = posMeta[c] || emptyPos; return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
+    positions: categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
     color: "#f7f7f8",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -2503,7 +2507,7 @@ export default function JobPostForm({
   const posTableWeights = POS_TABLE_COLS.map((c) => {
     let w = posColLenOf(c.label);
     categories.forEach((cat) => {
-      const row = posMeta[cat] || emptyPos;
+      const row = 행읽기(cat);
       if (c.key === "category") { w = Math.max(w, posColLenOf(baseCat(cat))); return; }
       if (c.key === "shiftText") {
         const lines = shiftDisplay(row).replace(/\s*\/\s*/g, "\n").replace(/\s*\(\+?협의\)\s*$/, "\n협의가능").split("\n").filter(Boolean);
@@ -3134,9 +3138,9 @@ export default function JobPostForm({
                   // 맨 끝에 '무관' — 직급을 가리지 않고 뽑는 자리가 흔하다.
                   const 단계들 = [...직군의경력단계(item), "경력무관"];
                   const 내행 = categories.filter((c) => baseCat(c) === item);
-                  const 켜진단계 = 내행.map((c) => (posMeta[c] || emptyPos).career).filter(Boolean);
+                  const 켜진단계 = 내행.map((c) => 행읽기(c).career).filter(Boolean);
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
-                  const 단계행 = (st: string) => 내행.find((c) => (posMeta[c] || emptyPos).career === st);
+                  const 단계행 = (st: string) => 내행.find((c) => 행읽기(c).career === st);
                   return (
                     <div key={item} className="jp-job">
                       <div className="jp-job-head">
@@ -3158,13 +3162,13 @@ export default function JobPostForm({
                                   removeCatRow(있음);
                                   return;
                                 }
-                                const 빈행 = 내행.find((c) => !(posMeta[c] || emptyPos).career);
+                                const 빈행 = 내행.find((c) => !행읽기(c).career);
                                 if (빈행) { setPosMeta((m) => ({ ...m, [빈행]: { ...(m[빈행] || emptyPos), career: st, headcount: (m[빈행] || emptyPos).headcount || "1" } })); return; }
                                 const key = nextDupKey(item, categories);
                                 setCategories([...categories, key]);
                                 // 같은 부문의 근무 조건을 그대로 물려준다 — 단계만 다른 줄이다.
                                 setPosMeta((m) => {
-                                  const a = m[내행[0]] || emptyPos;
+                                  const a = { ...emptyPos, ...(m[내행[0]] || {}) };
                                   const 물림: Partial<PosRow> = {};
                                   부문조건.forEach((k) => { (물림 as any)[k] = a[k]; });
                                   return { ...m, [key]: { ...emptyPos, ...물림, career: st, headcount: "1" } };
@@ -3176,7 +3180,7 @@ export default function JobPostForm({
                           onClick={() => 내행.forEach(removeCatRow)}>×</button>
                       </div>
                       {내행.map((c) => {
-                        const row = posMeta[c] || emptyPos;
+                        const row = 행읽기(c);
                         // 직급을 고르기 전에는 아래를 못 만지게 둔다 — 누구를 뽑는지부터 정해야
                         // 인원도 급여도 뜻이 생긴다. 라벨은 가장 흔한 신입을 흐리게 미리 보여 준다.
                         const 미정 = !row.career;

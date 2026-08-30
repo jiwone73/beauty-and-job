@@ -214,7 +214,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   // 아래 줄에 "협의가능"으로 따로 뗀다 — 값과 붙어 있으면 협의 여지가
                   // 금액의 일부처럼 읽혔다.
                   const salaryNego = p.salaryNego === "open" && !!c.get(p) && c.get(p) !== "협의";
-                  const salaryBase = p.salaryNego === "hidden" ? "협의" : (c.get(p) || "-");
+                  const salaryBase = p.salaryNego === "hidden" ? "협의"
+                    : (c.get(p) || (p.salaryNego === "open" ? "협의" : "-"));
                   const salaryTxt = salaryNego ? <>{salaryBase}<div>협의</div></> : salaryBase;
                   const daysTxt = p.workDays || "";
                   const timeTxt = p.workTime || "";
