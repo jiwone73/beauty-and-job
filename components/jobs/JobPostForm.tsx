@@ -3691,7 +3691,7 @@ export default function JobPostForm({
               })()}
               {/* 마감일 — 언제까지 받는지는 어떻게 받는지 다음에 온다. */}
               <div id="jp-deadline" ref={deadlineRef} style={{ position: "relative", padding: "4px 0", marginTop: 10 }}>
-                <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>마감일<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></div>
+                <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>마감일</div>
                 <button type="button"
                   onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
                   style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
