@@ -24,6 +24,13 @@ export const ALBA_WEEK_RELIEF_MIN: Record<number, number> = {
   2: 151,
 };
 
+// 미달 벌점을 매기지 않는 주. 알바가 안 한 것이 아니라 할 수 없었던 주다
+// (일감 쪽에 버그가 많고 기능이 아직 없어 작업이 막혔다). 못 채운 시간은
+// 그대로 남은 목표에 남아 다음 주로 넘어간다 — 벌로 총량을 더 늘리지만 않는다.
+export const ALBA_NO_PENALTY_WEEKS: number[] = [
+  2, // 2026-08-24~30: 등록 폼 버그·미구현으로 작업 불가
+];
+
 /** 그 주에 채워야 할 분 (감면을 반영한 값) */
 export function weekTargetMinutes(index: number): number {
   return Math.max(0, ALBA_WEEKLY_TARGET_HOURS * 60 - (ALBA_WEEK_RELIEF_MIN[index] || 0));

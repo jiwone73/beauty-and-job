@@ -10,6 +10,7 @@ import {
   ALBA_WEEKLY_TARGET_HOURS,
   weekTargetMinutes,
   totalReliefMinutes,
+  ALBA_NO_PENALTY_WEEKS,
   ALBA_SHORTFALL_PENALTY_HOURS,
   buildWeeks,
   kstDate,
@@ -97,7 +98,9 @@ export async function GET(req: NextRequest) {
   // 이번 주는 아직 안 끝났으니 판정하지 않는다 — 지나간 주만 센다.
   const pastWeeks = weeks.filter((w) => !w.isFuture && !w.isCurrent);
   // 감면해 준 주는 그 주의 낮아진 목표로 판정한다 — 옮겨 준 시간을 미달로 또 세면 두 번 벌한다.
-  const shortfallWeeks = pastWeeks.filter((w) => w.minutes < weekTargetMinutes(w.index)).length;
+  const shortfallWeeks = pastWeeks.filter(
+    (w) => w.minutes < weekTargetMinutes(w.index) && !ALBA_NO_PENALTY_WEEKS.includes(w.index)
+  ).length;
   const penaltyHours = shortfallWeeks * ALBA_SHORTFALL_PENALTY_HOURS;
   const adjustedTargetHours = ALBA_TOTAL_TARGET_HOURS + penaltyHours;
   // 그 주에서 뺀 시간은 전체 목표에 그대로 더한다 — 총량은 줄지 않는다.
