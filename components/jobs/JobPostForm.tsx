@@ -1850,6 +1850,13 @@ export default function JobPostForm({
     finally { setCurating(false); }
   };
 
+  // 복리후생은 화면에 보이는 것만 나간다 — 직접 적은 것, 아니면 고른 태그.
+  // 불러오기가 채운 글은 화면 어디에도 안 보이므로 쓰지 않는다. 보이지 않는 값을
+  // 대신 실어 보내면 매장이 고른 것과 공고에 적힌 것이 달라진다.
+  const 복리후생값 = fiBenefits.trim()
+    ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean)
+    : benefitTags;
+
   const handleSubmit = async (status: "draft" | "publish") => {
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
@@ -1946,7 +1953,7 @@ export default function JobPostForm({
       requirements: form.requirements || null,
       preferred_qualifications: form.preferred || null,
       // 복리후생 자유입력이 있으면 텍스트 컬럼에도 줄바꿈으로 저장(공개 상세가 benefits 텍스트를 표시)
-      benefits: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean).join("\n") : (form.benefits || null),
+      benefits: 복리후생값.length ? 복리후생값.join("\n") : null,
       responsibilities: form.responsibilities || null,
       education: p0.education || null, // 모집부문 표 첫 행 기준
       salary_min: salaryMin, salary_max: salaryMaxVal,
@@ -1964,7 +1971,7 @@ export default function JobPostForm({
       // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
       employment_type: p0.employment || null, // 모집부문 표 첫 행 기준(대표값)
       experience_level: expLevel,
-      benefit_tags: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean) : benefitTags,
+      benefit_tags: 복리후생값,
       work_period: fiWorkPeriod.trim() || workPeriod || null,
       work_days: p0.workDays || null,
       work_time: p0.workTime || null,
@@ -2408,7 +2415,7 @@ export default function JobPostForm({
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
     preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
-    benefits: fiBenefits.trim() ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean) : (form.benefits ? form.benefits.split("\n").filter(Boolean) : benefitTags),
+    benefits: 복리후생값,
     responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
     process: hiringProcess.filter((s) => s.trim()),
     notes: notes,
