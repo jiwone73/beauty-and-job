@@ -23,6 +23,7 @@ type Data = {
   weeklyTargetHours: number; currentWeekTargetMinutes?: number; reliefMinutes?: number;
   totalTargetHours: number; plannedWeeks: number;
   totalMinutes: number; remainingMinutes: number; weeksLeft: number;
+  blockedWeeks?: Record<number, string>;
   neededPerWeekMinutes: number;
   currentWeek: Week | null; weeks: Week[];
   sessions: Session[]; postings: Posting[];
@@ -201,6 +202,9 @@ export default function AlbaPage() {
                     {w.isFuture ? <span style={{ color: "#bbb" }}>예정</span>
                       : done ? <span style={{ color: "#0f6e56" }}>달성</span>
                       : w.isCurrent ? <span style={{ color: "#582681" }}>{formatMinutes(weeklyTargetMin - w.minutes)} 남음</span>
+                      : data.blockedWeeks?.[w.index] ? <span style={{ color: "#8a8a90" }}>
+                          미달 {formatMinutes(weeklyTargetMin - w.minutes)} · {data.blockedWeeks[w.index]}
+                        </span>
                       : <span style={{ color: "#e74c3c" }}>
                           미달 {formatMinutes(weeklyTargetMin - w.minutes)} · 목표 +{data.penaltyPerShortfallHours}시간
                         </span>}

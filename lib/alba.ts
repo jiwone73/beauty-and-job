@@ -24,12 +24,14 @@ export const ALBA_WEEK_RELIEF_MIN: Record<number, number> = {
   2: 151,
 };
 
-// 미달 벌점을 매기지 않는 주. 알바가 안 한 것이 아니라 할 수 없었던 주다
-// (일감 쪽에 버그가 많고 기능이 아직 없어 작업이 막혔다). 못 채운 시간은
-// 그대로 남은 목표에 남아 다음 주로 넘어간다 — 벌로 총량을 더 늘리지만 않는다.
-export const ALBA_NO_PENALTY_WEEKS: number[] = [
-  2, // 2026-08-24~30: 등록 폼 버그·미구현으로 작업 불가
-];
+// 일감 쪽이 막혀 일할 수 없었던 주와 그 사유. 알바가 안 한 것이 아니라
+// 할 수 없었던 주라 벌점을 매기지 않는다. 못 채운 시간은 남은 목표에 그대로
+// 남고, 그만큼 일할 주가 없었으므로 계획 주 수를 그 수만큼 늘린다 — 총량은
+// 그대로 채우되 끝나는 날이 밀린다.
+export const ALBA_BLOCKED_WEEKS: Record<number, string> = {
+  2: "기능보강·버그로 작업 불가", // 2026-08-24~30
+};
+export const ALBA_NO_PENALTY_WEEKS = Object.keys(ALBA_BLOCKED_WEEKS).map(Number);
 
 /** 그 주에 채워야 할 분 (감면을 반영한 값) */
 export function weekTargetMinutes(index: number): number {
@@ -93,7 +95,8 @@ export type AlbaWeek = {
 
 /** 시작일부터 목표를 채우는 데 필요한 주 수 (마지막 주는 남는 시간만큼만) */
 export function totalWeeks(): number {
-  return Math.ceil(ALBA_TOTAL_TARGET_HOURS / ALBA_WEEKLY_TARGET_HOURS);
+  // 막힌 주는 일할 수 없었으므로 계획에서 한 주씩 뒤로 민다.
+  return Math.ceil(ALBA_TOTAL_TARGET_HOURS / ALBA_WEEKLY_TARGET_HOURS) + ALBA_NO_PENALTY_WEEKS.length;
 }
 
 /** 어떤 날짜가 몇 주차인지 (1부터). 시작 전이면 0 */
