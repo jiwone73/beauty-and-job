@@ -64,7 +64,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     // 매장은 어느 요일인지보다 주 몇 일 나오는지가 먼저다 — 요일은 매주 돌아가며 바뀐다.
     if (type === "hours") { setDraft(`${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`); return; }
     if (type === "weeks") {
-      setDraft(`주 ${weekDays}일${biweekly ? " (격주 가능)" : ""}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
+      setDraft(`주 ${weekDays}일${biweekly ? " (격주근무 가능)" : ""}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
       return;
     }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
@@ -103,6 +103,8 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         .ws-body { padding: 10px; max-height: 60vh; overflow-y: auto; }
         .ws-quick-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 9px; border: 1px solid #e3e3e6; border-radius: 8px; background: #fff; cursor: pointer; text-align: left; margin-bottom: 6px; font-size: 12.5px; color: #333; }
         .ws-quick-row.on { border-color: #582681; background: #582681; color: #fff; }
+        .ws-quick-row:disabled { color: #c8c8ce; background: #fafafb; border-color: #f0f0f2; cursor: not-allowed; }
+        .ws-quick-row:disabled svg { color: #d8d8de !important; }
         .ws-daychip { width: 24px; height: 24px; border-radius: 50%; font-size: 11px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; }
         .ws-daychip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
         .ws-weekchip { height: 28px; padding: 0 10px; border-radius: 7px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; font-family: inherit; }
@@ -134,7 +136,11 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 return (
                   <div key={r.type}>
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
-                      onClick={() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin)}>
+                      disabled={r.type === "custom" && quickType === "weeks"}
+                      onClick={() => {
+                        if (on) { setQuickType(null); setDraft(""); return; }
+                        applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin);
+                      }}>
                       <r.icon size={13} style={{ color: on ? "#fff" : "#582681", flexShrink: 0 }} />{r.label}
                     </button>
                     {quickType === r.type && r.type !== "nego" && (
@@ -148,22 +154,20 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         )}
                         {/* 매장은 주 몇 일 나오는지를 고른다 — 요일은 주마다 돌아가며 바뀐다. */}
                         {r.type === "weeks" && (
-                          <>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 8 }}>
-                              {WEEK_DAY_COUNTS.map((n) => (
-                                <button key={n} type="button" className={`ws-weekchip ${qWeekDays === n ? "on" : ""}`}
-                                  onClick={() => { setQWeekDays(n); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, n, qBiweekly); }}>
-                                  주 {n}일
-                                </button>
-                              ))}
-                            </div>
-                            <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, fontSize: 12, color: "#555", cursor: "pointer" }}>
+                          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5, marginBottom: 8 }}>
+                            {WEEK_DAY_COUNTS.map((n) => (
+                              <button key={n} type="button" className={`ws-weekchip ${qWeekDays === n ? "on" : ""}`}
+                                onClick={() => { setQWeekDays(n); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, n, qBiweekly); }}>
+                                주 {n}일
+                              </button>
+                            ))}
+                            <label style={{ display: "inline-flex", alignItems: "center", gap: 5, marginLeft: 4, fontSize: 13, color: "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
                               <input type="checkbox" checked={qBiweekly}
                                 onChange={(e) => { setQBiweekly(e.target.checked); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, e.target.checked); }}
                                 style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                              격주 가능
+                              격주근무 가능
                             </label>
-                          </>
+                          </div>
                         )}
                         <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                           <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
