@@ -64,7 +64,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     // 매장은 어느 요일인지보다 주 몇 일 나오는지가 먼저다 — 요일은 매주 돌아가며 바뀐다.
     if (type === "hours") { setDraft(`${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`); return; }
     if (type === "weeks") {
-      setDraft(`주 ${weekDays}일${biweekly ? " (격주근무 가능)" : ""}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
+      setDraft(`주 ${weekDays}일${biweekly ? " (격주 가능)" : ""}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
       return;
     }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
@@ -165,7 +165,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                               <input type="checkbox" checked={qBiweekly}
                                 onChange={(e) => { setQBiweekly(e.target.checked); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, e.target.checked); }}
                                 style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                              격주근무 가능
+                              격주 가능
                             </label>
                           </div>
                         )}
