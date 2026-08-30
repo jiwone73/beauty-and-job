@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   try {
     // 후보는 넉넉히 가져와 앱에서 점수를 매긴다. SQL 로 점수를 짜면 규칙을 고칠 때마다
     // 쿼리를 다시 써야 하고, 왜 그 점수인지 설명하기도 어렵다.
-    const 조건: string[] = ["TRUE"];
+    const 조건: string[] = ["j.is_sample IS NOT TRUE"];
     const params: any[] = [];
     if (jobTypeQ === "STORE" || jobTypeQ === "OFFICE") { 조건.push(`j.job_type = $${params.length + 1}`); params.push(jobTypeQ); }
     if (excludeIds.length) { 조건.push(`NOT (j.id = ANY($${params.length + 1}::uuid[]))`); params.push(excludeIds); }

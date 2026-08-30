@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
   const regions = searchParams.get('regions')
   const q = searchParams.get('q')
   const active = searchParams.get('active')
+  // 샘플 공고는 화면을 채우려고 만든 가짜다 — 메인처럼 몇 건만 보여주는 자리에서는 뺀다.
+  const noSample = searchParams.get('nosample') === '1' 
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
@@ -31,6 +33,8 @@ export async function GET(req: NextRequest) {
   const params: any[] = []
   let idx = 1
   const prefix = active ? 'j.' : ''
+
+  if (noSample) where.push(`${prefix}is_sample IS NOT TRUE`)
 
   if (jobType) {
     where.push(`${prefix}job_type = $${idx++}`)
@@ -74,7 +78,8 @@ export async function GET(req: NextRequest) {
 
   const whereClause = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
-  const activeOrderBy = `j.created_at DESC`
+  // 샘플은 가짜라 진짜 공고 뒤에 세운다.
+  const activeOrderBy = `j.is_sample NULLS FIRST, j.created_at DESC`
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
@@ -101,7 +106,7 @@ export async function GET(req: NextRequest) {
            experience_level, is_featured, deadline, created_at, categories, benefit_tags
     FROM v_active_jobs
     ${whereClause}
-    ORDER BY is_featured DESC, created_at DESC
+    ORDER BY is_sample NULLS FIRST, is_featured DESC, created_at DESC
     LIMIT $${idx++} OFFSET $${idx++}
   `
 

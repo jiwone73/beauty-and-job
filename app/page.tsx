@@ -131,7 +131,7 @@ function Hero() {
         set공지(list.find((n: any) => n.type !== "event") || null);
       })
       .catch(() => {});
-    fetch("/api/jobs?limit=8")
+    fetch("/api/jobs?limit=8&nosample=1")
       .then((r) => r.json())
       .then((res) => { if (Array.isArray(res?.data)) set속보(res.data); })
       .catch(() => {});
@@ -304,7 +304,7 @@ function Hero() {
 function SectionActiveHiring({ onLoaded }: { onLoaded: (ids: string[]) => void }) {
   const [jobs, setJobs] = useState<any[]>([]);
   useEffect(() => {
-    fetch("/api/jobs?active=1&limit=4")
+    fetch("/api/jobs?active=1&limit=4&nosample=1")
       .then((r) => r.json())
       .then((res) => {
         if (res.success && Array.isArray(res.data)) { setJobs(res.data); onLoaded(res.data.map((j: any) => j.id)); }
