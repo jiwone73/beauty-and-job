@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, getAuth } from '@/lib/api'
+import { 공고읽기 } from '@/lib/jobDetail'
 
 export async function GET(
   req: NextRequest,
@@ -11,41 +12,10 @@ export async function GET(
   const { id } = params
   const auth = getAuth(req)
 
-  // 공고 + 기업 정보 조회
-  const jobRes = await pool.query(
-    `SELECT
-       jp.*,
-       c.id AS company_id,
-       c.company_name,
-       c.brand_name,
-       c.representative_name,
-       c.company_phone,
-       c.logo_url, c.cover_images AS company_cover_images,
-       c.company_type,
-       c.industry AS company_industry,
-       c.description AS company_description,
-       c.website_url,
-       c.address AS company_address,
-       c.region_sido AS company_region_sido,
-       c.region_sigungu AS company_region_sigungu,
-       c.company_size,
-       c.founded_year,
-       c.latitude AS company_latitude,
-       c.longitude AS company_longitude,
-       c.is_member
-     FROM job_postings jp
-     LEFT JOIN companies c ON c.id = jp.company_id
-     WHERE jp.id = $1 AND jp.status = 'ACTIVE'`,
-    [id]
-  )
-
-  if (jobRes.rowCount === 0) {
+  const response = await 공고읽기(id)
+  if (!response) {
     return err('JOB_001', '공고를 찾을 수 없거나 마감되었습니다.', 404)
   }
-
-  const job = jobRes.rows[0]
-  // 외부에서 옮겨 온 공고인지 — apply 라우트의 REDIRECT 분기 등에서 쓴다(연락처는 더는 가리지 않는다).
-  const isExternalJob = job.source === 'EXTERNAL' || job.is_member === false
 
   // 조회수 +1 (비동기로 처리, 응답 지연 안 시킴)
   pool.query(
@@ -54,9 +24,6 @@ export async function GET(
   ).catch(e => console.error('[view_count update]', e))
 
   // 로그인 유저의 경우: 북마크 / 지원 여부 추가 조회
-  let is_bookmarked = false
-  let has_applied = false
-
   if (auth?.owner_type === 'user') {
     const [bookmarkRes, applyRes] = await Promise.all([
       pool.query(
@@ -68,79 +35,8 @@ export async function GET(
         [auth.sub, id]
       )
     ])
-    is_bookmarked = (bookmarkRes.rowCount ?? 0) > 0
-    has_applied = (applyRes.rowCount ?? 0) > 0
-  }
-
-  // 응답 구조 정리
-  const response = {
-    id: job.id,
-    title: job.title,
-    job_type: job.job_type,
-    description: job.description,
-    requirements: job.requirements,
-    preferred_qualifications: job.preferred_qualifications,
-    salary_min: job.salary_min,
-    salary_max: job.salary_max,
-    salary_type: job.salary_type,
-    salary_text: job.salary_text || null, // 비회원 자유입력 급여 — 있으면 표시 우선
-    positions: Array.isArray(job.positions) ? job.positions : [], // 모집부문 표(분야별 경력·급여·인원)
-    location: job.location,
-    address: job.address,
-    work_type: job.work_type,
-    employment_type: job.employment_type || '',
-    experience_level: job.experience_level,
-    education: job.education || '',
-    deadline: job.deadline,
-    headcount: job.headcount,
-    headcount_text: job.headcount_text || null, // 비회원 자유입력 모집인원 — 있으면 표시 우선
-    gender_preference: job.gender_preference || '', // 성별우대(매장)
-    categories: job.categories || [],
-    detail_images: job.detail_images || [],
-    hiring_process: job.hiring_process || [],
-    external_contact_name: job.external_contact_name || '',
-    external_contact_phone: job.external_contact_phone || '',
-    external_contact_email: job.external_contact_email || '',
-    contact_methods: job.contact_methods || [],
-    notes: job.notes || '',
-    responsibilities: job.responsibilities || '',
-    work_days: job.work_days || '',
-    work_time: job.work_time || '',
-    work_period: job.work_period || '',
-    work_time_slots: job.work_time_slots || '',
-    benefits: job.benefits || '',
-    benefit_tags: job.benefit_tags || [],
-    view_count: job.view_count,
-    application_count: job.application_count,
-    created_at: job.created_at,
-    source: job.source,
-    is_external: isExternalJob,
-    apply_method: job.apply_method,
-    external_apply_url: job.external_apply_url,
-    // 공고 전용 상단 이미지. null이면 기업정보의 커버를 쓴다(빈 배열은 '이 공고는 없음').
-    cover_images: Array.isArray(job.cover_images) ? job.cover_images : null,
-    company: {
-      id: job.is_member === false ? null : job.company_id,
-      company_name: job.company_name,
-      brand_name: job.brand_name,
-      representative_name: job.representative_name,
-      company_phone: job.company_phone,
-      logo_url: job.logo_url,
-      cover_images: job.company_cover_images || [],
-      company_type: job.company_type,
-      industry: job.company_industry,
-      description: job.company_description,
-      website_url: job.website_url,
-      address: job.company_address,
-      region_sido: job.company_region_sido,
-      region_sigungu: job.company_region_sigungu,
-      company_size: job.company_size,
-      founded_year: job.founded_year,
-      latitude: job.company_latitude,
-      longitude: job.company_longitude
-    },
-    is_bookmarked,
-    has_applied
+    response.is_bookmarked = (bookmarkRes.rowCount ?? 0) > 0
+    response.has_applied = (applyRes.rowCount ?? 0) > 0
   }
 
   return ok(response)
