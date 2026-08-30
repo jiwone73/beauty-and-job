@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { ALBA_ADMIN_ID } from "@/lib/alba";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
@@ -80,6 +81,12 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
   const [authChecked, setAuthChecked] = useState(false);
   const [newInquiries, setNewInquiries] = useState(0);
   const [newSupportInquiries, setNewSupportInquiries] = useState(0);
+  // 머리줄에 세우는 '지금 밀린 것' — 어느 화면에 있든 쌓이는 값이라 메뉴 배지로
+  // 흩어 두면 메뉴를 훑어야 알 수 있었다.
+  const [jobIssues, setJobIssues] = useState(0);
+  const [newApplications, setNewApplications] = useState(0);
+  const [meOpen, setMeOpen] = useState(false);
+  const [adminId, setAdminId] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -95,12 +102,31 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
           router.replace("/admin/login");
         } else {
           setAuthChecked(true);
+          res.json().then((d) => setAdminId(d?.data?.adminId || "")).catch(() => {});
         }
       })
       .catch(() => {
         setAuthChecked(true);
       });
   }, [router]);
+
+  // 등록 이슈·새 지원 — 머리줄 표시용
+  useEffect(() => {
+    if (!authChecked) return;
+    const token = localStorage.getItem("admin_token");
+    const h = { Authorization: `Bearer ${token}` };
+    fetch("/api/admin/app-notes?list=jobissue", { headers: h })
+      .then((r) => r.json())
+      .then((d) => setJobIssues(Array.isArray(d?.data) ? d.data.length : (d?.data?.items?.length || 0)))
+      .catch(() => {});
+    fetch("/api/admin/applications", { headers: h })
+      .then((r) => r.json())
+      .then((d) => {
+        const items = d?.data?.items || d?.data || [];
+        setNewApplications(Array.isArray(items) ? items.filter((x: any) => (x.status || "").toUpperCase() === "APPLIED").length : 0);
+      })
+      .catch(() => {});
+  }, [authChecked]);
 
   // 미처리(신규) 문의 개수 — 사이드바 "문의 관리" 배지용
   useEffect(() => {
@@ -227,36 +253,58 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
           })}
         </nav>
 
-        <div className="admin-sidebar-bottom">
-          <button className="admin-nav-item" onClick={() => router.push("/")}>
-            <LogOut size={20} />
-            {sidebarOpen && <span>사이트로 이동</span>}
-          </button>
-          <button className="admin-nav-item" onClick={() => {
-            localStorage.removeItem("admin_token");
-            router.push("/admin/login");
-          }}>
-            <LogOut size={20} />
-            {sidebarOpen && <span>로그아웃</span>}
-          </button>
-        </div>
       </aside>
 
       <div className="admin-main">
+        {/* 대분류는 사이드에서 이미 켜져 있다 — 머리줄에 또 적으면 같은 말이 두 번이다.
+            화면 이름은 본문 위로 내리고, 머리줄에는 어느 화면에 있든 쌓이는 것만 둔다. */}
         <header className="admin-header">
           <div className="admin-header-inner">
-          <div className="admin-header-left">
-            <h1 className="admin-page-title">
-              {PAGE_TITLES[activeMenu] || "관리자"}
-            </h1>
-            {PAGE_SUBTITLES[activeMenu] && (
-              <div className="admin-page-subtitle">{PAGE_SUBTITLES[activeMenu]}</div>
-            )}
-          </div>
-          <div className="admin-header-right"></div>
+            <div className="admin-header-left" />
+            <div className="admin-header-right">
+              <div className="admin-todo">
+                <button type="button" className={`admin-todo-item ${jobIssues ? "on" : ""}`}
+                  onClick={() => router.push("/admin/jobs/issues")}>
+                  등록 이슈 <b>{jobIssues}</b>
+                </button>
+                <button type="button" className={`admin-todo-item ${newApplications ? "on" : ""}`}
+                  onClick={() => router.push("/admin/resumes/applications")}>
+                  새 지원 <b>{newApplications}</b>
+                </button>
+                <button type="button" className={`admin-todo-item ${newInquiries + newSupportInquiries ? "on" : ""}`}
+                  onClick={() => router.push("/admin/inquiries")}>
+                  문의 <b>{newInquiries + newSupportInquiries}</b>
+                </button>
+              </div>
+              <div className="admin-me">
+                <button type="button" className="admin-me-btn" onClick={() => setMeOpen((v) => !v)}>
+                  <span className="admin-me-ava">{(adminId || "?")[0].toUpperCase()}</span>
+                  {adminId || "…"}
+                  <em className="admin-me-role">{adminId === ALBA_ADMIN_ID ? "알바" : "관리자"}</em>
+                  <ChevronDown size={13} />
+                </button>
+                {meOpen && (
+                  <>
+                    <div className="admin-me-mask" onClick={() => setMeOpen(false)} />
+                    <div className="admin-me-menu">
+                      <button type="button" onClick={() => router.push("/")}>사이트로 이동</button>
+                      <button type="button" onClick={() => {
+                        localStorage.removeItem("admin_token");
+                        router.push("/admin/login");
+                      }}>로그아웃</button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </header>
-        <main className="admin-content">{children}</main>
+        <main className="admin-content">
+          {PAGE_SUBTITLES[activeMenu] && (
+            <h1 className="admin-page-title">{PAGE_SUBTITLES[activeMenu]}</h1>
+          )}
+          {children}
+        </main>
       </div>
     </div>
   );
