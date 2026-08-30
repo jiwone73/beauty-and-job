@@ -74,7 +74,7 @@ function AdminJobNewForm() {
   };
 
   return (
-    <AdminLayout activeMenu={editId ? "jobs" : "jobs-new"}>
+    <AdminLayout activeMenu="jobs-new">
       <JobPostForm
         mode="admin"
         editId={editId}

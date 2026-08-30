@@ -1870,6 +1870,10 @@ export default function JobPostForm({
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
+    if (isNmAdmin) {
+      if (!jobGroupType) { alert("채용유형(매장/본사)을 선택해주세요."); return; }
+      if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
+    }
     // 추가 근무지의 지역도 함께 담아야 그 지역으로 찾는 사람에게도 보인다.
     const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
     const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
@@ -3883,7 +3887,9 @@ export default function JobPostForm({
                     </div>
                     <div style={row}><span style={lbl2}>{L.name}<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
-                    <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
+                    {isOffice && (
+                      <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
+                    )}
                     <div style={{ ...row, alignItems: "flex-start" }}><span style={{ ...lbl2, paddingTop: 6 }}>{L.site}</span>
                       {/* 인스타 주소는 한 줄에 안 들어간다. input 은 줄바꿈이 안 되므로 늘어나는 칸을 쓴다. */}
                       <AutoTextarea style={nmHomepage ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.5 } : { ...inpHl(false), marginTop: 6 }}
@@ -3897,8 +3903,10 @@ export default function JobPostForm({
                         onChange={(e) => setNmAddressDetail(e.target.value)} placeholder="동·호수 등" />
                     </div>
                     <div style={row}><span style={lbl2}>{L.size}</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
-                    <div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inpHl(!!nmFounded)} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} /></div>
-                    <div style={row}><span style={lbl2}>대표자</span><input style={inpHl(!!nmRepresentative)} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} /></div>
+                    {isOffice && (<div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inpHl(!!nmFounded)} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} /></div>)}
+                    {isOffice && (
+                      <div style={row}><span style={lbl2}>대표자</span><input style={inpHl(!!nmRepresentative)} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} /></div>
+                    )}
                     <div style={row}><span style={lbl2}>{L.phone}</span><input style={inpHl(!!nmPhone)} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} /></div>
                   </div>
                 );
