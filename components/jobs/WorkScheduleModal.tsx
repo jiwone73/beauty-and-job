@@ -18,6 +18,8 @@ interface Props {
   top: number;
   defaultStart?: number; // 매장 10시 / 본사 7시 — 빠른 선택 시간의 기본값
   defaultEnd?: number;   // 매장 20시 / 본사 19시
+  /** 매장이면 요일을 못 박는 대신 '주 N일'로 받는다. 본사는 평일·주말 그대로. */
+  store?: boolean;
 }
 
 // 근무요일/시간 — 원티드식 자유 문장으로. 요일 원형 버튼+시작·종료 시간을 팝오버
@@ -31,17 +33,21 @@ interface Props {
 // 배경은 다른 칸과 같은 흰색 — 보라는 "선택된" 빠른선택 항목 버튼에만 쓴다.
 // "(협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
 // 그 꼬리를 떼어 draft(시간 부분)와 nego(체크 여부)로 나눈다.
+type QuickType = "weeks" | "hours" | "weekday" | "weekend" | "custom" | "nego";
+const WEEK_DAY_COUNTS = [2, 3, 4, 5, 6];
 const splitNego = (v: string): [string, boolean] => {
   const m = (v || "").match(/^(.*?)\s*\(\+?협의\)$/s);
   return m ? [m[1], true] : [v || "", false];
 };
 
-export default function WorkScheduleModal({ value, onChange, onClose, popRef, left, top, defaultStart = 10, defaultEnd = 18 }: Props) {
+export default function WorkScheduleModal({ value, onChange, onClose, popRef, left, top, defaultStart = 10, defaultEnd = 18, store = false }: Props) {
   const [tab, setTab] = useState<"quick" | "free">("quick");
   const [initDraft, initNego] = splitNego(value);
   const [draft, setDraft] = useState(initDraft);
   const [nego, setNego] = useState(initNego);
-  const [quickType, setQuickType] = useState<"weekday" | "weekend" | "custom" | "nego" | null>(null);
+  const [quickType, setQuickType] = useState<QuickType | null>(null);
+  const [qWeekDays, setQWeekDays] = useState(5);   // 매장: 주 몇 일
+  const [qBiweekly, setQBiweekly] = useState(false); // 매장: 격주 가능
   const [qDays, setQDays] = useState<string[]>([]);
   const [qStart, setQStart] = useState(defaultStart);
   const [qStartMin, setQStartMin] = useState(0);
@@ -50,10 +56,17 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
 
   useEffect(() => { const [d, n] = splitNego(value); setDraft(d); setNego(n); }, [value]);
 
-  const applyQuick = (type: "weekday" | "weekend" | "custom" | "nego", days: string[], startH: number, startM: number, endH: number, endM: number) => {
+  const applyQuick = (type: QuickType, days: string[], startH: number, startM: number, endH: number, endM: number,
+    weekDays = qWeekDays, biweekly = qBiweekly) => {
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
+    // 매장은 어느 요일인지보다 주 몇 일 나오는지가 먼저다 — 요일은 매주 돌아가며 바뀐다.
+    if (type === "hours") { setDraft(`${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`); return; }
+    if (type === "weeks") {
+      setDraft(`주 ${weekDays}일${biweekly ? " (격주 가능)" : ""}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
+      return;
+    }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
     // 값 자체에 적어 둔다.
     const label = type === "weekday" ? "평일(월~금)" : type === "weekend" ? "주말(토~일)" : days.join(", ");
@@ -68,12 +81,17 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     applyQuick("custom", next, qStart, qStartMin, qEnd, qEndMin);
   };
 
-  const quickRows: { type: "weekday" | "weekend" | "custom" | "nego"; icon: any; label: string }[] = [
-    { type: "weekday", icon: Calendar, label: "평일 (월~금)" },
-    { type: "weekend", icon: Calendar, label: "주말 (토~일)" },
-    { type: "custom", icon: Calendar, label: "지정 요일" },
-    { type: "nego", icon: MessageCircle, label: "협의" },
-  ];
+  const quickRows: { type: QuickType; icon: any; label: string }[] = store
+    ? [
+        { type: "weeks", icon: Calendar, label: "주 N일 근무" },
+        { type: "custom", icon: Calendar, label: "지정 요일" },
+        { type: "nego", icon: MessageCircle, label: "협의" },
+      ]
+    // 본사는 주 5일 정시가 기본이라 요일을 고를 일이 없다 — 시간만 받는다.
+    : [
+        { type: "hours", icon: Clock, label: "근무시간" },
+        { type: "nego", icon: MessageCircle, label: "협의" },
+      ];
 
   return (
     <>
@@ -87,6 +105,8 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         .ws-quick-row.on { border-color: #582681; background: #582681; color: #fff; }
         .ws-daychip { width: 24px; height: 24px; border-radius: 50%; font-size: 11px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; }
         .ws-daychip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
+        .ws-weekchip { height: 28px; padding: 0 10px; border-radius: 7px; font-size: 12px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; font-family: inherit; }
+        .ws-weekchip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
         .ws-hourSel { height: 28px; border: 1px solid #ddd; border-radius: 6px; padding: 0 4px; font-size: 12px; color: #333; background: #fff; }
         .ws-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-top: 1px solid #eee; }
       `}</style>
@@ -96,13 +116,18 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
           <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 2 }}><X size={15} /></button>
         </div>
 
-        <div className="ws-tabs">
-          <button type="button" className={`ws-tab ${tab === "quick" ? "on" : ""}`} onClick={() => setTab("quick")}>빠른 선택</button>
-          <button type="button" className={`ws-tab ${tab === "free" ? "on" : ""}`} onClick={() => setTab("free")}>직접 입력</button>
-        </div>
+        {/* 직접 입력은 매장에만. 본사는 요일·시간이 정해져 있어 문장으로 적을 일이 없다. */}
+        {store ? (
+          <div className="ws-tabs">
+            <button type="button" className={`ws-tab ${tab === "quick" ? "on" : ""}`} onClick={() => setTab("quick")}>빠른 선택</button>
+            <button type="button" className={`ws-tab ${tab === "free" ? "on" : ""}`} onClick={() => setTab("free")}>직접 입력</button>
+          </div>
+        ) : (
+          <div style={{ borderBottom: "1px solid #eee" }} />
+        )}
 
         <div className="ws-body">
-          {tab === "quick" ? (
+          {(tab === "quick" || !store) ? (
             <div>
               {quickRows.map((r) => {
                 const on = quickType === r.type;
@@ -120,6 +145,25 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                               <button key={d} type="button" className={`ws-daychip ${qDays.includes(d) ? "on" : ""}`} onClick={() => toggleQDay(d)}>{d}</button>
                             ))}
                           </div>
+                        )}
+                        {/* 매장은 주 몇 일 나오는지를 고른다 — 요일은 주마다 돌아가며 바뀐다. */}
+                        {r.type === "weeks" && (
+                          <>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 8 }}>
+                              {WEEK_DAY_COUNTS.map((n) => (
+                                <button key={n} type="button" className={`ws-weekchip ${qWeekDays === n ? "on" : ""}`}
+                                  onClick={() => { setQWeekDays(n); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, n, qBiweekly); }}>
+                                  주 {n}일
+                                </button>
+                              ))}
+                            </div>
+                            <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, fontSize: 12, color: "#555", cursor: "pointer" }}>
+                              <input type="checkbox" checked={qBiweekly}
+                                onChange={(e) => { setQBiweekly(e.target.checked); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, e.target.checked); }}
+                                style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                              격주 가능
+                            </label>
+                          </>
                         )}
                         <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                           <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>

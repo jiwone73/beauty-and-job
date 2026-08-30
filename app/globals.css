@@ -13989,3 +13989,21 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-set-settings .co-set-main .admin-form-select[data-empty="true"],
 .co-set-settings .co-set-main .if-slot:not(.on),
 .co-set-settings .co-set-main .if-input:placeholder-shown { font-size: 15px; }
+
+/* 전형절차 — 고른 것만 차례로 늘어놓고 사이를 화살표로 잇는다.
+   몇 단계인지, 어느 차례인지가 한눈에 보인다. */
+.jp-proc { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.jp-proc-item { display: inline-flex; align-items: center; gap: 6px; }
+.jp-proc-item:last-of-type i, .jp-proc-item i { font-style: normal; color: #c8c8ce; font-size: 13px; }
+.jp-proc-step { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 8px 0 12px;
+  border: 1px solid #ececf0; border-radius: 8px; background: #fff; font-size: 13px; color: #333; }
+.jp-proc-step button { border: none; background: none; padding: 0 2px; color: #c4c4c9;
+  font-size: 13px; line-height: 1; cursor: pointer; }
+.jp-proc-step button:hover { color: var(--color-primary); }
+.jp-proc-ph { font-size: 13px; color: #c8c8ce; margin-right: 2px; }
+.jp-proc-add { width: 34px; height: 34px; border: 1px dashed #d8d8de; border-radius: 8px;
+  background: #fff; font-family: inherit; font-size: 15px; color: #8a8a90; cursor: pointer; line-height: 1; }
+.jp-proc-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.jp-proc-opt { display: block; width: 100%; text-align: left; border: none; background: none;
+  padding: 8px 10px; border-radius: 7px; font-family: inherit; font-size: 13px; color: #333; cursor: pointer; }
+.jp-proc-opt:hover { background: #f7f7f8; color: var(--color-primary); }

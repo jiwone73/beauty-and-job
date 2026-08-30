@@ -757,6 +757,14 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [열린그룹]);
+  const [절차열림, set절차열림] = useState(false);
+  // 전형절차 팝오버: 바깥 클릭 시 닫기
+  useEffect(() => {
+    if (!절차열림) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".jp-proc")) set절차열림(false); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [절차열림]);
   // 고용형태 팝오버: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!고용열림) return;
@@ -3292,9 +3300,8 @@ export default function JobPostForm({
                                   </span>
                                 );
                               })()}
-                              {!isOffice && (
                               <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
-                                <span>근무요일 / 시간</span>
+                                <span>{isOffice ? "근무시간" : "근무요일 / 시간"}</span>
                                 <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
                                   {shiftDisplay(row) || "-"}
@@ -3309,10 +3316,10 @@ export default function JobPostForm({
                                     top={popAt.top}
                                     defaultStart={jobGroupType === "매장" ? 10 : 7}
                                     defaultEnd={jobGroupType === "매장" ? 20 : 19}
+                                    store={jobGroupType === "매장"}
                                   />
                                 )}
                               </span>
-                              )}
                               {isOffice && (
                                 <label className="jp-cond-f">
                                   <span>학력</span>
@@ -3497,6 +3504,48 @@ export default function JobPostForm({
             </div>
           </div>
 
+          {/* 전형절차 — 본사 공고에만. 서류·면접이 몇 번인지가 지원 여부를 가르는 값이라
+              지원 안내 안에 묻어 두지 않고 제 제목을 달고 그 앞에 선다. */}
+          {jobGroupType === "기업" && (
+            <>
+              <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>전형절차</h2>
+              <div className="company-card" style={{ overflow: "visible" }}>
+                <div className="admin-form-body">
+                  <div className="jp-proc">
+                    {hiringProcess.length === 0 && (
+                      <span className="jp-proc-ph">예) 서류전형 › 1차 면접 › 최종합격</span>
+                    )}
+                    {hiringProcess.map((p, i) => (
+                      <span key={`${p}-${i}`} className="jp-proc-item">
+                        <span className="jp-proc-step on">
+                          {p}
+                          <button type="button" aria-label={`${p} 빼기`}
+                            onClick={() => setHiringProcess(hiringProcess.filter((_, k) => k !== i))}>×</button>
+                        </span>
+                        <i>›</i>
+                      </span>
+                    ))}
+                    <span className="jp-proc-item posshift-pop" style={{ position: "relative" }}>
+                      <button type="button" className="jp-proc-add" aria-label="전형 단계 더하기"
+                        onClick={(e) => { if (절차열림) { set절차열림(false); return; } openPopAt(e.currentTarget, 200, 250); set절차열림(true); }}>＋</button>
+                      {절차열림 && popAt && (
+                        <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width: 200, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                          {PRESET_PROCESS.기업.filter((x) => !hiringProcess.includes(x)).map((x) => (
+                            <button key={x} type="button" className="jp-proc-opt"
+                              onClick={() => { setHiringProcess([...hiringProcess, x]); set절차열림(false); }}>{x}</button>
+                          ))}
+                          {PRESET_PROCESS.기업.every((x) => hiringProcess.includes(x)) && (
+                            <div style={{ fontSize: 12.5, color: "#a8a8ad", padding: "8px 10px" }}>더할 단계가 없어요</div>
+                          )}
+                        </div>
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
           {/* 지원 방법 — 어디로 어떻게 넣는가(접수방법 · 담당자 · 채용 절차). */}
           <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>지원 안내{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
@@ -3666,24 +3715,6 @@ export default function JobPostForm({
 
 
 
-              {/* 채용 절차 — 본사(기업) 공고에서만 노출 */}
-              {jobGroupType === "기업" && (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" }}>
-                  <span style={{ width: 72, flexShrink: 0, color: "#999", fontSize: 15 }}>채용 절차</span>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", flex: 1 }}>
-                    {PRESET_PROCESS.기업.map((p) => {
-                      const on = hiringProcess.includes(p);
-                      return (
-                        <button key={p} type="button"
-                          onClick={() => setHiringProcess(on ? hiringProcess.filter((x) => x !== p) : [...hiringProcess, p])}
-                          style={{ border: "none", background: "none", padding: 0, fontSize: 15, cursor: "pointer", color: on ? "#582681" : "#c4c4c4" }}>
-                          {p}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
               </div>
             </div>
           </div>
