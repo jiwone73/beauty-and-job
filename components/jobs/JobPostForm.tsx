@@ -2396,10 +2396,10 @@ export default function JobPostForm({
   const previewJob = {
     id: editId || "preview",
     companyId: "",
-    brand: isNm ? (newBrandName || newCompanyName) : (cp?.brand_name || cp?.company_name || (mode === "admin" ? companyName : "우리 회사")),
+    brand: isNm ? (newBrandName || newCompanyName) : (cp?.brand_name || cp?.company_name || (mode === "admin" ? companyName : "")),
     brandDesc: isNm ? nmDescription : (cp?.description || ""),
     tags: [] as string[],
-    title: form.title || "공고 제목",
+    title: form.title,
     jobType: jobGroupType === "기업" ? "본사" : "매장",
     jobCategories: [...new Set(categories.map(baseCat))],
     career: form.career,
@@ -2410,7 +2410,7 @@ export default function JobPostForm({
     genderPref: jobGroupType === "매장" ? genderPref : "",
     deadline: alwaysOpen ? "상시채용" : (form.deadline ? form.deadline.replace(/-/g, ".") : ""),
     salary: String(form.salary || "").trim() ? fmtSalary() : "",
-    positions: categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
+    positions: categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
     color: "#f7f7f8",
     description: form.description || "",
     requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
@@ -2445,13 +2445,12 @@ export default function JobPostForm({
     workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : workDays.join("·")),
     workPeriodText: fiWorkPeriod.trim() || workPeriod,
     workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "")),
-    // 관리자가 대신 올리는 공고는 지원 안내를 '뷰티워크 온라인지원' 하나로만 낸다.
-    //   원래 공고에 적혀 있던 담당자 이름·전화·이메일은 폼에 그대로 남아 저장되지만
-    //   (나중에 그 번호로 연락해 회원가입을 권해야 한다), 화면에 내보내면 구직자가
-    //   뷰티워크를 건너뛰고 매장으로 바로 연락해 버린다 — 지원이 남지 않아 매장도
-    //   우리도 무슨 일이 있었는지 알 수 없다.
-    // 기업이 직접 쓰는 폼은 그대로 둔다 — 제 연락처를 제 공고에 싣는 것이라
-    //   ("전화번호나 지원방법 정보가 빠져서 문맥이 맞지 않는다") 폼과 미리보기가 같아야 한다.
+    // 미리보기는 폼에 적힌 것만 보여준다 — 화면에 없는 값을 지어 넣지 않는다.
+    // 딱 하나, 관리자가 대신 올리는 공고의 지원 안내만 '뷰티워크 온라인지원'으로 낸다.
+    //   원래 공고의 담당자 연락처는 폼에 남아 저장되지만(나중에 그 번호로 연락해
+    //   회원가입을 권해야 한다), 화면에 내보내면 구직자가 뷰티워크를 건너뛰고 매장으로
+    //   바로 연락해 버린다 — 지원이 남지 않아 매장도 우리도 무슨 일이 있었는지 모른다.
+    //   이건 지어낸 값이 아니라 의도한 규칙이고, 실제 공개 화면도 같게 나간다.
     isExternal: isNm,
     contactName: mode === "admin" ? "" : 낼담당.이름,
     contactPhone: mode === "admin" ? "" : 낼담당.전화,
