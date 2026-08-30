@@ -447,7 +447,11 @@ function CompanyJobsContent() {
             const 기간 = job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
             return (
               <div key={job.id} className={`co-jc ${closed || draft ? "off" : ""}`}>
-                {/* 윗줄 — 왼쪽에 상태와 제목, 오른쪽에 자주 쓰는 할 일. */}
+                {/* 윗줄 — 왼쪽에 상태와 제목, 오른쪽에 자주 쓰는 할 일.
+                    공고명은 공고를 보러 가는 자리다(고치는 건 옆의 '수정'이 맡는다).
+                    임시저장은 아직 공개된 화면이 없어 이어서 쓰러 간다. 새 탭으로
+                    여는 건 목록을 잃지 않기 위해서다 — 공고 화면의 되돌아가기는
+                    구직자용 목록으로 가서, 여기서 넘어가면 돌아올 데가 없어진다. */}
                 <div className="co-jc-top">
                   <div className="co-jc-main">
                     <div className="co-jc-head">
@@ -455,7 +459,9 @@ function CompanyJobsContent() {
                       <span className="co-jc-term">{기간}</span>
                     </div>
                     <button type="button" className="co-jc-title" title={job.title}
-                      onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                      onClick={() => draft
+                        ? router.push(`/company/dashboard/jobs/new?id=${job.id}`)
+                        : window.open(`/jobs/${job.id}`, "_blank", "noopener")}>
                       {job.title}
                     </button>
                   </div>
