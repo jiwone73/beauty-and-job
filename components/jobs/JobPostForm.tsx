@@ -593,7 +593,7 @@ export default function JobPostForm({
   //
   // 새로 쓰는 공고에서만 한다. 기존 공고를 고칠 때는 서버 값이 맞는 값이라,
   // 남아 있던 옛 입력이 그 위에 덮이면 안 된다.
-  const AUTOSAVE_KEY = "jobpost:autosave:new";
+  const AUTOSAVE_KEY = `jobpost:autosave:${mode}:new`;
   const autosaveReady = useRef(false);
   const snapshot = () => ({
     v: 1,
@@ -613,7 +613,7 @@ export default function JobPostForm({
 
   // 값이 바뀔 때마다 저장. 타자마다 쓰지 않도록 잠깐 모았다가 한 번 쓴다.
   useEffect(() => {
-    if (editId || mode !== "admin") return;
+    if (editId) return;
     if (!autosaveReady.current) { autosaveReady.current = true; return; } // 복원 직후 한 번은 건너뛴다
     const t = setTimeout(() => {
       try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(snapshot())); } catch { /* 용량 초과 등은 무시 */ }
@@ -636,7 +636,7 @@ export default function JobPostForm({
   // 한다. 브라우저가 알려주는 이동 방식(reload / navigate)으로 가른다.
   const 판단함 = useRef(false);
   useEffect(() => {
-    if (editId || mode !== "admin") return;
+    if (editId) return;
     if (판단함.current) return; // 개발 모드에서 효과가 두 번 도는 것 방지
     판단함.current = true;
 
@@ -921,6 +921,23 @@ export default function JobPostForm({
       .then((d) => { if (d?.success && d.data) setCompanyProfile(d.data); })
       .catch(() => {});
   }, [mode, companyProfile]);
+
+  // 매장정보를 새 탭에서 고치고 돌아왔을 때 그 자리가 옛 값이면 고친 보람이 없다.
+  // 탭이 다시 보이면 한 번 더 읽는다.
+  useEffect(() => {
+    if (mode !== "company") return;
+    const 다시읽기 = () => {
+      if (document.visibilityState !== "visible") return;
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+      fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((d) => { if (d?.success && d.data) setCompanyProfile(d.data); })
+        .catch(() => {});
+    };
+    document.addEventListener("visibilitychange", 다시읽기);
+    return () => document.removeEventListener("visibilitychange", 다시읽기);
+  }, [mode]);
 
   // 관리자가 기업회원의 공고를 다룰 때도 그 매장정보를 보여 준다 — 비회원 공고는
   // 아래 '기업 정보' 칸에서 직접 받으니 그때는 부르지 않는다.
@@ -3852,9 +3869,14 @@ export default function JobPostForm({
           아래 '기업 정보' 칸에서 직접 받으므로 여기 나오지 않는다. */}
       {(기업폼 || !nonMember) && cp && (
         <div className={`jobpost-form${기업폼 ? " jp-header-offset" : ""}`} style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
-          <h2 className="jobpost-section-title">{infoPageLabel}</h2>
-          <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>
-            {infoPageLabel} 페이지에 저장된 값이 그대로 나가요{기업폼 && (<> · <a href="/company/dashboard/settings" style={{ color: "#582681" }}>{infoPageLabel} 수정하기</a></>)}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <h2 className="jobpost-section-title" style={{ margin: 0, marginRight: "auto" }}>{infoPageLabel}</h2>
+            {기업폼 && (
+              <button type="button" style={bannerBtn(false)}
+                onClick={() => window.open("/company/dashboard/settings", "_blank", "noopener")}>
+                수정
+              </button>
+            )}
           </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
