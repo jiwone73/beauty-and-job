@@ -423,7 +423,6 @@ function CompanyJobsContent() {
                     ) : (
                       <span>지원자 <b>{job.application_count}</b></span>
                     )}
-                    <span>조회 <b>{job.view_count}</b></span>
                   </div>
                 </div>
               </div>
@@ -499,8 +498,6 @@ function CompanyJobsContent() {
                     </button>
                     <span className="co-jc-nums">
                       지원자 <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
-                      <i>·</i>
-                      조회 <b className={(job.view_count ?? 0) === 0 ? "zero" : ""}>{job.view_count ?? 0}</b>
                     </span>
                   </div>
                 )}
@@ -538,7 +535,6 @@ function CompanyJobsContent() {
               <div className="admin-modal-info-grid">
                 <div><label>마감일</label><span>{formatDeadline(selected.deadline)}</span></div>
                 <div><label>지원자</label><span>{selected.application_count}명</span></div>
-                <div><label>조회수</label><span>{selected.view_count}회</span></div>
                 <div><label>상태</label><span>{STATUS_LABEL[selected.status]}</span></div>
                 <div><label>등록일</label><span>{new Date(selected.created_at).toLocaleDateString("ko-KR")}</span></div>
               </div>

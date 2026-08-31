@@ -15,7 +15,6 @@ interface JobItem {
   title: string;
   job_type: string;
   status: string;
-  view_count: number;
   application_count: number;
   unviewed_count: number;
   deadline: string | null;
@@ -187,7 +186,7 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>조회수</th><th>안 본 지원자</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>안 본 지원자</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
@@ -195,9 +194,6 @@ export default function CompanyDashboard() {
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
                     <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
-                    <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
-                    {/* 조회는 많은데 안 본 지원자가 0이면 사장님이 스스로 답을 찾는다 —
-                        보긴 봤는데 안 넣었다는 뜻이라 급여·근무요일을 손볼 신호다. */}
                     <td className="company-td-sub" style={job.unviewed_count > 0 ? { color: "#582681" } : undefined}>
                       {job.unviewed_count > 0 ? `${job.unviewed_count}명` : "-"}
                     </td>
