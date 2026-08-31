@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
   const regions     = searchParams.get("regions") || null;        // 쉼표 구분 (매장직)
   const ageGroup    = searchParams.get("ageGroup") || null;       // 매장직
   const gender      = searchParams.get("gender") || null;         // 매장직
+  // 제안에 「관심 있어요」를 누른 사람만. 알림에서 넘어올 때 쓴다.
+  const interested  = searchParams.get("interested") === "1";
   const page        = parseInt(searchParams.get("page") || "1");
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
@@ -167,7 +169,13 @@ export async function GET(req: NextRequest) {
         (
           SELECT MAX(interested_at) FROM proposals
           WHERE company_id = $1 AND user_id = u.id AND interested_at IS NOT NULL
-        ) AS interested_at
+        ) AS interested_at,
+        -- 관심에 붙인 한마디("주 4일 가능할까요?"). 가장 최근 것 하나.
+        (
+          SELECT interest_message FROM proposals
+           WHERE company_id = $1 AND user_id = u.id AND interested_at IS NOT NULL
+           ORDER BY interested_at DESC LIMIT 1
+        ) AS interest_message
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
       WHERE u.status = 'ACTIVE'
@@ -175,6 +183,10 @@ export async function GET(req: NextRequest) {
           SELECT 1 FROM user_company_blocks b
           WHERE b.user_id = u.id AND b.company_id = $1
         )
+        ${interested ? `AND EXISTS (
+          SELECT 1 FROM proposals pi
+           WHERE pi.company_id = $1 AND pi.user_id = u.id AND pi.interested_at IS NOT NULL
+        )` : ""}
         ${jobTypeClause}
         ${jobGroupClause}
         ${searchClause}
@@ -207,6 +219,7 @@ export async function GET(req: NextRequest) {
       email: (열람가능 || r.interested_at) ? (r.email || null) : null,
       phone: (열람가능 || r.interested_at) ? (r.phone || null) : null,
       interestedAt: r.interested_at || null,
+      interestMessage: r.interest_message || null,
       // 사진만 감춘 사람은 아예 내려보내지 않는다. 화면에서 가리면 응답에 남아
       // 개발자 도구로 볼 수 있다 — 가린 것이 가려진 것이 아니게 된다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,

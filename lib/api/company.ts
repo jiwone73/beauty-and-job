@@ -107,7 +107,8 @@ export type TalentItem = {
   jobSearchStatusAt: string | null;
   scrapped: boolean;
   proposedAt?: string | null;   // 이미 제안한 사람이면 마지막 제안 시각
-  interestedAt?: string | null; // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
+  interestedAt?: string | null;   // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
+  interestMessage?: string | null; // 관심에 붙인 한마디("주 4일 가능할까요?")
 };
 
 export const companyTalentApi = {
@@ -120,6 +121,7 @@ export const companyTalentApi = {
     ageGroup?: string;
     gender?: string;
     jobSearchStatus?: string;
+    interested?: boolean;   // 제안에 「관심 있어요」를 누른 사람만
     page?: number;
     limit?: number;
   }) => {
@@ -136,6 +138,7 @@ export const companyTalentApi = {
       qs.set("gender", params.gender);
     if (params?.jobSearchStatus && params.jobSearchStatus !== "전체")
       qs.set("jobSearchStatus", params.jobSearchStatus);
+    if (params?.interested) qs.set("interested", "1");
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const query = qs.toString() ? `?${qs}` : "";

@@ -34,15 +34,21 @@ export async function POST(
   const { auth, res: authErr } = requireAuth(req, "user");
   if (authErr) return authErr;
   try {
+    // 관심은 대개 조건부다 — "주 4일 가능한가요" 한마디가 다음 통화를 짧게 만든다.
+    // 선택이라 안 적고 보내도 관심은 전해진다.
+    const body = await req.json().catch(() => ({}));
+    const 한마디 = String(body?.message || "").trim().slice(0, 300) || null;
+
     // 이미 누른 것은 그대로 둔다(누른 시각이 뒤로 밀리지 않게).
     const { rows } = await pool.query(
       `UPDATE proposals p
-          SET interested_at = COALESCE(p.interested_at, NOW())
+          SET interested_at = COALESCE(p.interested_at, NOW()),
+              interest_message = COALESCE(p.interest_message, $3)
         WHERE p.id = $1 AND p.user_id = $2
-      RETURNING p.company_id, p.interested_at,
+      RETURNING p.company_id, p.interested_at, p.interest_message,
                 (SELECT title FROM job_postings WHERE id = p.job_posting_id) AS job_title,
                 (SELECT name FROM users WHERE id = p.user_id) AS user_name`,
-      [params.id, auth!.sub]
+      [params.id, auth!.sub, 한마디]
     );
     if (!rows.length) return err("PROPOSAL_005", "제안을 찾을 수 없습니다.", 404);
 
@@ -58,7 +64,9 @@ export async function POST(
         [
           r.company_id,
           `${r.user_name || "구직자"}님이 관심을 보였어요`,
-          `${r.user_name || "구직자"}님이 '${r.job_title || "제안하신 공고"}'에 관심 있어요. 연락처를 확인할 수 있어요.`,
+          r.interest_message
+            ? `${r.user_name || "구직자"}님: "${r.interest_message}"`
+            : `${r.user_name || "구직자"}님이 '${r.job_title || "제안하신 공고"}'에 관심 있어요. 연락처를 확인할 수 있어요.`,
           params.id,
         ]
       ).catch((e) => console.error("[proposal interest notify]", e));

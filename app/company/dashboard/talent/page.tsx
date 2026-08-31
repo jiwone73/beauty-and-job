@@ -207,6 +207,14 @@ export default function TalentPage() {
     };
   };
 
+  // 알림에서 「관심 있어요」를 눌러 넘어오면 그 사람들만 추려 본다 —
+  // 목록이 길면 누가 답했는지 찾는 일이 일이 된다.
+  const [관심만, set관심만] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    set관심만(new URLSearchParams(window.location.search).get("interested") === "1");
+  }, []);
+
   const fetchTalents = useCallback(async () => {
     setLoading(true);
     try {
@@ -218,6 +226,7 @@ export default function TalentPage() {
         page: 1,
         limit: 50,
       };
+      if (관심만) params.interested = true;
       if (activeTab === "STORE") {
         if (selectedRegions.length > 0) params.regions = selectedRegions.join(",");
         if (ageFilter !== "전체") params.ageGroup = ageFilter;
@@ -234,7 +243,7 @@ export default function TalentPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, search, selectedJobGroups, careerFilter, selectedRegions, ageFilter, genderFilter]);
+  }, [activeTab, search, selectedJobGroups, careerFilter, selectedRegions, ageFilter, genderFilter, 관심만]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -843,10 +852,17 @@ export default function TalentPage() {
                           </button>
                         </div>
                         {t.interestedAt ? (
-                          <span title={`${new Date(t.interestedAt).toLocaleDateString("ko-KR")}에 관심을 보냈어요`}
-                            style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "#582681", fontSize: 13, padding: "2px 4px" }}>
-                            <Send size={13} />
-                            <span>관심 있어요</span>
+                          <span title={t.interestMessage || `${new Date(t.interestedAt).toLocaleDateString("ko-KR")}에 관심을 보냈어요`}
+                            style={{ display: "inline-flex", flexDirection: "column", gap: 2, color: "#582681", fontSize: 13, padding: "2px 4px", maxWidth: 200 }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <Send size={13} />
+                              관심 있어요
+                            </span>
+                            {t.interestMessage && (
+                              <span style={{ color: "#6a6a70", fontSize: 12, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                                “{t.interestMessage}”
+                              </span>
+                            )}
                           </span>
                         ) : (
                         <button

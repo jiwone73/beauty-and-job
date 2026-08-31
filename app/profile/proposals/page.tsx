@@ -22,6 +22,7 @@ type Proposal = {
   message: string;
   read_at: string | null;
   interested_at: string | null;
+  interest_message: string | null;
   created_at: string;
   job_posting_id: string;
   company_name: string;
@@ -67,14 +68,29 @@ export default function ProposalsPage() {
 
   // 「관심 있어요」 — 누르면 매장이 내 연락처를 볼 수 있고 알림이 간다.
   // 수락/거절이 아니라 한 방향이라, 관심 없으면 그냥 두면 된다.
-  const 관심 = async (id: string, e: React.MouseEvent) => {
+  // 관심은 대개 조건부라 한마디를 붙일 수 있게 열어 준다(선택).
+  const [관심쓰는중, set관심쓰는중] = useState<string | null>(null);
+  const [한마디, set한마디] = useState("");
+
+  const 관심열기 = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    set한마디("");
+    set관심쓰는중(id);
+  };
+
+  const 관심보내기 = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const token = localStorage.getItem("access_token");
     if (!token) return;
+    const 글 = 한마디.trim();
     // 눌린 표시를 먼저 바꾼다 — 응답을 기다리는 동안 아무 일도 안 일어난 것처럼 보인다.
-    set목록((prev) => prev.map((p) => (p.id === id ? { ...p, interested_at: new Date().toISOString() } : p)));
+    set목록((prev) => prev.map((p) => (p.id === id
+      ? { ...p, interested_at: new Date().toISOString(), interest_message: 글 || null } : p)));
+    set관심쓰는중(null);
     await fetch(`/api/users/me/proposals/${id}`, {
-      method: "POST", headers: { Authorization: `Bearer ${token}` },
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: 글 }),
     }).catch(() => {});
   };
 
@@ -147,14 +163,27 @@ export default function ProposalsPage() {
                       {p.message && <p className="prop-msg">{p.message}</p>}
 
                       {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
-                      {!마감 && (
-                        <button type="button"
-                          className={`prop-interest${p.interested_at ? " on" : ""}`}
-                          disabled={!!p.interested_at}
-                          onClick={(e) => 관심(p.id, e)}>
-                          {p.interested_at ? "관심을 보냈어요" : "관심 있어요"}
+                      {!마감 && (p.interested_at ? (
+                        <div className="prop-interest on">
+                          관심을 보냈어요
+                          {p.interest_message && <span className="prop-interest-msg">{p.interest_message}</span>}
+                        </div>
+                      ) : 관심쓰는중 === p.id ? (
+                        <div className="prop-interest-box" onClick={(e) => e.stopPropagation()}>
+                          <textarea value={한마디} onChange={(e) => set한마디(e.target.value)} rows={2}
+                            maxLength={300} autoFocus
+                            placeholder="궁금한 점이나 조건이 있으면 적어주세요 (예: 주 4일 가능할까요?)" />
+                          <div className="prop-interest-acts">
+                            <button type="button" onClick={(e) => { e.stopPropagation(); set관심쓰는중(null); }}>취소</button>
+                            <button type="button" className="key" onClick={(e) => 관심보내기(p.id, e)}>보내기</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button type="button" className="prop-interest"
+                          onClick={(e) => 관심열기(p.id, e)}>
+                          관심 있어요
                         </button>
-                      )}
+                      ))}
 
                       <div className="prop-foot">
                         <span className="prop-cta">채용공고 보기</span>

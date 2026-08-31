@@ -93,6 +93,7 @@ export default function CompanyLayout({ children, activePage }: {
     setNotifOpen(false);
     loadNotifs();
     if (n.related_type === "application") router.push(`${base}/applicants`);
+    else if (n.related_type === "proposal") router.push(`${base}/talent?interested=1`);
   };
 
   const markAllRead = async () => {
