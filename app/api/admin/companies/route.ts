@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const result = await client.query(`
       SELECT
         c.id, c.company_name, c.brand_name, c.business_number,
-        c.company_type, c.email::text AS email, c.phone,
+        c.company_type, c.email::text AS email, c.phone, c.industry,
         c.logo_url, c.cover_images, c.description, c.website_url, c.address,
         c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
         c.status, c.is_member, c.business_license_path, c.created_at,

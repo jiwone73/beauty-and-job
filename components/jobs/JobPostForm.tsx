@@ -910,15 +910,32 @@ export default function JobPostForm({
     return () => document.removeEventListener("mousedown", onDown);
   }, [employOpen]);
   const [showPreview, setShowPreview] = useState(false);
+  // 매장정보는 폼 맨 아래에도 그대로 붙는다. 예전에는 미리보기를 한 번 열어야
+  // 불러와서, 폼에서는 그 자리가 통째로 비어 있었다.
   useEffect(() => {
-    if (!showPreview || mode !== "company" || companyProfile) return;
+    if (mode !== "company" || companyProfile) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     fetch("/api/company/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((d) => { if (d?.success && d.data) setCompanyProfile(d.data); })
       .catch(() => {});
-  }, [showPreview, mode, companyProfile]);
+  }, [mode, companyProfile]);
+
+  // 관리자가 기업회원의 공고를 다룰 때도 그 매장정보를 보여 준다 — 비회원 공고는
+  // 아래 '기업 정보' 칸에서 직접 받으니 그때는 부르지 않는다.
+  useEffect(() => {
+    if (mode !== "admin" || nonMember || !companyId || companyProfile) return;
+    const token = localStorage.getItem("admin_token");
+    if (!token) return;
+    fetch("/api/admin/companies", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => {
+        const 찾은 = (d?.data || []).find((c: any) => c.id === companyId);
+        if (찾은) setCompanyProfile(찾은);
+      })
+      .catch(() => {});
+  }, [mode, nonMember, companyId, companyProfile]);
   const [isDownloading, setIsDownloading] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -3830,15 +3847,17 @@ export default function JobPostForm({
         </div>
       </div>
 
-      {/* ═══ 매장정보/기업정보 (맨 하단, 기업회원 전용) ═══
+      {/* ═══ 매장정보/기업정보 (맨 하단) ═══
           이 폼에서 새로 받지 않는다 — 매장정보 설정 페이지에 이미 저장된 값을
           그대로 불러와 보여주기만 한다("매장정보로 항목 추가해서 불러와줘").
-          같은 값을 두 군데서 받으면 어긋날 수 있어 여기서는 읽기 전용이다. */}
-      {기업폼 && cp && (
-        <div className="jobpost-form jp-header-offset" style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
+          같은 값을 두 군데서 받으면 어긋날 수 있어 여기서는 읽기 전용이다.
+          관리자도 기업회원의 공고를 다룰 때는 같은 값을 본다. 비회원 공고는
+          아래 '기업 정보' 칸에서 직접 받으므로 여기 나오지 않는다. */}
+      {(기업폼 || !nonMember) && cp && (
+        <div className={`jobpost-form${기업폼 ? " jp-header-offset" : ""}`} style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `16px ${mx} 0`, boxSizing: "border-box" }}>
           <h2 className="jobpost-section-title">{infoPageLabel}</h2>
           <div style={{ fontSize: 12, color: "#999", margin: "8px 0 8px 2px" }}>
-            {infoPageLabel} 페이지에 저장된 값이 그대로 나가요 · <a href="/company/dashboard/settings" style={{ color: "#582681" }}>{infoPageLabel} 수정하기</a>
+            {infoPageLabel} 페이지에 저장된 값이 그대로 나가요{기업폼 && (<> · <a href="/company/dashboard/settings" style={{ color: "#582681" }}>{infoPageLabel} 수정하기</a></>)}
           </div>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
