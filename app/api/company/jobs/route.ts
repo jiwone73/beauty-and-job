@@ -31,6 +31,9 @@ export async function GET(req: NextRequest) {
            employment_type, salary_type, salary_min, salary_max,
            (SELECT COUNT(*)::int FROM applications a
               WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN') AS application_count,
+           (SELECT COUNT(*)::int FROM applications a
+              WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'
+                AND a.viewed_at IS NULL) AS unviewed_count,
            deadline, is_featured, created_at, closed_at
     FROM job_postings
     WHERE ${whereClause}

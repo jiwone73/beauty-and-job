@@ -3,15 +3,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Users, Briefcase, FileText, TrendingUp, Plus, Inbox, AlarmClock } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Briefcase, FileText, Plus, Inbox, AlarmClock } from "lucide-react";
 
 interface Stats {
   active_jobs: number;
-  total_applications: number;
-  today_applications: number;
-  trends: { label: string; value: number }[];
-  job_conversion: { id: string; title: string; view_count: number; application_count: number; rate: number | null }[];
   deadline_today: number;
 }
 
@@ -22,6 +17,7 @@ interface JobItem {
   status: string;
   view_count: number;
   application_count: number;
+  unviewed_count: number;
   deadline: string | null;
   created_at: string;
 }
@@ -45,28 +41,6 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(".", ".");
 }
 
-function CompanyRangeToggle({ range, onChange }: { range: string; onChange: (r: "7d" | "1m" | "3m") => void }) {
-  return (
-    <div style={{ display: "flex", gap: 4 }}>
-      {([["7d", "7일"], ["1m", "1개월"], ["3m", "3개월"]] as const).map(([val, label]) => (
-        <button
-          key={val}
-          onClick={() => onChange(val)}
-          style={{
-            padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600,
-            cursor: "pointer", border: "1px solid #efeff1",
-            background: range === val ? "#582681" : "#fff",
-            color: range === val ? "#fff" : "#582681",
-            transition: "all 0.15s",
-          }}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export default function CompanyDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
@@ -75,8 +49,6 @@ export default function CompanyDashboard() {
   const [loading, setLoading] = useState(true);
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
   const [jobTypeTab, setJobTypeTab] = useState<"전체" | "OFFICE" | "STORE">("전체");
-  const [trendRange, setTrendRange] = useState<"7d" | "1m" | "3m">("7d");
-  const [trendRows, setTrendRows] = useState<{ day: string; value: number }[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -93,7 +65,7 @@ export default function CompanyDashboard() {
     Promise.all([
       fetch("/api/company/dashboard/stats", { headers }).then((r) => r.json()),
       fetch("/api/company/jobs?limit=10", { headers }).then((r) => r.json()),
-      fetch("/api/company/applications?limit=5", { headers }).then((r) => r.json()),
+      fetch("/api/company/applications?limit=50", { headers }).then((r) => r.json()),
     ])
       .then(([statsRes, jobsRes, applicantsRes]) => {
         if (statsRes.success) setStats(statsRes.data);
@@ -116,35 +88,20 @@ export default function CompanyDashboard() {
       .catch(console.error);
   }, [jobTypeTab]);
 
-  // 지원자 추이 (기간 토글) — 독립 fetch
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    const headers = { Authorization: `Bearer ${token}` };
-    const jt = jobTypeTab === "전체" ? "" : `&job_type=${jobTypeTab}`;
-    fetch(`/api/company/dashboard/trend?range=${trendRange}${jt}`, { headers })
-      .then((r) => r.json())
-      .then((res) => { if (res.success) setTrendRows(res.data.rows || []); })
-      .catch(console.error);
-  }, [trendRange, jobTypeTab]);
 
   // 통계 카드 데이터
+  // 누적 숫자(총 지원자·오늘 지원)는 봐도 할 일이 생기지 않아 뺐다. 남긴 둘은
+  // 각각 '지금 몇 자리 뽑고 있나'와 '오늘 손쓰지 않으면 내려간다'로 행동이 붙는다.
+  // 다섯 줄까지만 보인다 — 더 있으면 '전체보기'로 간다.
+  const 안본전체 = applicants.filter((a) => !a.viewed_at);
+  const 안본지원자 = 안본전체.slice(0, 5);
+
   const statCards = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#582681", icon: FileText, href: "/company/dashboard/jobs" },
-    { label: "총 지원자", value: stats?.total_applications ?? 0, unit: "명", color: "#0ea5e9", icon: Users, href: "/company/dashboard/applicants" },
-    { label: "오늘 지원", value: stats?.today_applications ?? 0, unit: "명", color: "#10b981", icon: TrendingUp, href: "/company/dashboard/applicants" },
     // 오늘 안에 손쓰지 않으면 내려가는 공고. 목록으로 넘어가면 같은 조건이 걸린 채로 보인다.
     { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs?status=오늘 마감" },
   ];
 
-  const fmtTrendDay = (day: string, range: string) => {
-    const dt = new Date(day);
-    const md = `${dt.getMonth() + 1}/${dt.getDate()}`;
-    return range === "7d" ? md : `${md}~`;
-  };
-  const chartData = trendRows.map((t) => ({ day: fmtTrendDay(t.day, trendRange), 지원수: t.value }));
-
-  const conversion = stats?.job_conversion ?? [];
 
   return (
     <CompanyLayout activePage="dashboard">
@@ -165,61 +122,35 @@ export default function CompanyDashboard() {
         ))}
       </div>
 
-      {/* 차트 + 최근 지원자 */}
-      <div className="company-dashboard-grid">
+      {/* 아직 안 본 지원자 — 사장님이 대시보드를 매일 여는 이유가 이것 하나다.
+          누적 지원자 수가 아니라 '내가 아직 안 본 사람'이 행동으로 이어진다. */}
+      <div style={{ marginTop: 16 }}>
         <div className="company-card">
           <div className="company-card-head">
-            <h2 className="company-card-title">지원자 추이</h2>
-            <CompanyRangeToggle range={trendRange} onChange={setTrendRange} />
-          </div>
-          <div style={{ padding: "8px 6px 4px 0" }}>
-            <ResponsiveContainer width="100%" height={170}>
-              <BarChart data={chartData} margin={{ top: 6, right: 8, left: -8, bottom: 0 }}>
-                <XAxis dataKey="day" tick={{ fontSize: 10 }} minTickGap={4}
-                  interval={chartData.length <= 8 ? 0 : Math.max(1, Math.ceil(chartData.length / 6) - 1)} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} width={26} />
-                <Tooltip
-                  cursor={{ fill: "rgba(95,0,128,0.06)" }}
-                  contentStyle={{ border: "none", boxShadow: "none", background: "transparent", padding: 0 }}
-                  labelStyle={{ fontSize: 10, color: "#999", marginBottom: 0 }}
-                  itemStyle={{ fontSize: 10, color: "#3d9be0", padding: 0 }} />
-                <Bar dataKey="지원수" fill="#8ec8f0" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="company-card">
-          <div className="company-card-head">
-            <h2 className="company-card-title">최근 지원자</h2>
+            <h2 className="company-card-title">아직 안 본 지원자{안본전체.length > 0 && <span style={{ marginLeft: 8, color: "#582681" }}>{안본전체.length}</span>}</h2>
             {applicants.length > 0 && (
               <Link href="/company/dashboard/applicants" className="company-card-more">전체보기 →</Link>
             )}
           </div>
-          {applicants.length === 0 ? (
+          {안본지원자.length === 0 ? (
             <EmptyState
               icon={<Inbox size={32} />}
-              message={loading ? "불러오는 중..." : "아직 지원자가 없습니다"}
-              hint={loading ? "" : "채용공고를 등록하면 지원자가 들어와요"}
+              message={loading ? "불러오는 중..." : applicants.length > 0 ? "지원자를 모두 확인했어요" : "아직 지원자가 없습니다"}
+              hint={loading ? "" : applicants.length > 0 ? "" : "채용공고를 등록하면 지원자가 들어와요"}
             />
           ) : (
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th><th>열람</th></tr>
+                <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th></tr>
               </thead>
               <tbody>
-                {applicants.map((a) => (
+                {안본지원자.map((a) => (
                   <tr key={a.id} onClick={() => router.push("/company/dashboard/applicants")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name">{a.user_name}</td>
                     <td className="company-td-sub">{a.job_title}</td>
                     <td className="company-td-sub">{a.experience_level ? EXP_LABEL[a.experience_level] || "-" : "-"}</td>
                     <td className="company-td-sub">{formatDate(a.applied_at)}</td>
-                    <td>
-                      <span className={`company-badge ${a.viewed_at ? "viewed" : "new"}`}>
-                        {a.viewed_at ? "열람" : "미열람"}
-                      </span>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -230,7 +161,7 @@ export default function CompanyDashboard() {
       </div>
 
       {/* 내 채용공고 + 공고별 전환율 */}
-      <div className="company-dashboard-grid" style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 16 }}>
         {/* 내 채용공고 */}
         <div className="company-card">
           <div className="company-card-head">
@@ -256,7 +187,7 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>지원자</th><th>조회수</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>조회수</th><th>안 본 지원자</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
@@ -264,8 +195,12 @@ export default function CompanyDashboard() {
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
                     <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
-                    <td className="company-td-sub">{job.application_count}명</td>
                     <td className="company-td-sub">{job.view_count.toLocaleString()}</td>
+                    {/* 조회는 많은데 안 본 지원자가 0이면 사장님이 스스로 답을 찾는다 —
+                        보긴 봤는데 안 넣었다는 뜻이라 급여·근무요일을 손볼 신호다. */}
+                    <td className="company-td-sub" style={job.unviewed_count > 0 ? { color: "#582681" } : undefined}>
+                      {job.unviewed_count > 0 ? `${job.unviewed_count}명` : "-"}
+                    </td>
                     <td>
                       {(() => {
                         // 마감일 칸이 바로 옆에 언제까지인지 말해주니, 여기는 지금 상태만
@@ -280,47 +215,6 @@ export default function CompanyDashboard() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-            </div>
-          )}
-        </div>
-        {/* 공고별 지원 전환율 */}
-        <div className="company-card">
-          <div className="company-card-head">
-            <h2 className="company-card-title">공고별 지원 전환율</h2>
-          </div>
-          {conversion.length === 0 ? (
-            <EmptyState
-              icon={<Briefcase size={32} />}
-              message={loading ? "불러오는 중..." : "진행중인 공고가 없습니다"}
-            />
-          ) : (
-            <div style={{ overflowX: "auto" }}>
-            <table className="company-table dash-table" style={{ width: "100%" }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left" }}>공고명</th>
-                  <th>조회수</th>
-                  <th>지원</th>
-                  <th>전환율</th>
-                </tr>
-              </thead>
-              <tbody>
-                {conversion.map((c) => {
-                  const rate = c.rate;
-                  // 전환율에 색을 입히지 않는다. 대시보드에서 빨강은 "지금 조치가 필요하다"로 읽히는데,
-                  // 조회 7건에서 나온 0%와 89건에서 나온 0%는 성격이 전혀 다르다.
-                  // 표본이 쌓여 공고끼리 비교가 될 때 다시 판단한다.
-                  return (
-                    <tr key={c.id}>
-                      <td className="company-td-name" style={{ textAlign: "left" }} title={c.title}><span className="td-clamp2" style={{ margin: 0 }}>{c.title}</span></td>
-                      <td className="company-td-sub">{c.view_count.toLocaleString()}</td>
-                      <td className="company-td-sub">{c.application_count}</td>
-                      <td className="company-td-sub" style={{ fontWeight: 600 }}>{rate === null ? "—" : `${rate}%`}</td>
-                    </tr>
-                  );
-                })}
               </tbody>
             </table>
             </div>
