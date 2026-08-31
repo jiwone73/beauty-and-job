@@ -3897,22 +3897,15 @@ export default function JobPostForm({
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inpHl(filled), appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer" });
                 const full: CSSProperties = { gridColumn: "1 / -1" };
                 return (
-                  // 트랙을 그냥 1fr 로 두면 긴 값(인스타 주소 등)이 칸을 밀어내 카드 밖으로 삐져나간다.
-                  // minmax(0,1fr) 이어야 칸 안에서 줄바꿈된다.
-                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: "2px 20px" }}>
-                    <div style={{ ...row, ...full, alignItems: "flex-start" }}>
-                      <span style={{ ...lbl2, paddingTop: 6 }}>{L.intro}</span>
-                      <AutoTextarea style={nmDescription ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.6 } : { ...inpHl(false), marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
-                    </div>
+                  // 기업회원 폼 맨 아래 매장정보와 같은 배치 — 한 줄에 한 항목씩.
+                  // 두 단으로 짜면 이름과 값이 지그재그로 흩어져 읽기 어려웠다.
+                  // minmax(0,1fr) 이어야 긴 값(인스타 주소 등)이 칸 안에서 줄바꿈된다.
+                  <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 0 }}>
                     <div style={row}><span style={lbl2}>{L.name}<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
                     {isOffice && (
                       <div style={row}><span style={lbl2}>브랜드명</span><input style={inpHl(!!newBrandName)} value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} /></div>
                     )}
-                    <div style={{ ...row, alignItems: "flex-start" }}><span style={{ ...lbl2, paddingTop: 6 }}>{L.site}</span>
-                      {/* 인스타 주소는 한 줄에 안 들어간다. input 은 줄바꿈이 안 되므로 늘어나는 칸을 쓴다. */}
-                      <AutoTextarea style={nmHomepage ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.5 } : { ...inpHl(false), marginTop: 6 }}
-                        value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>주소<span style={req}> *</span></span>
                       <input readOnly style={{ ...inpHl(!!nmAddress), cursor: "pointer" }} value={nmAddress}
                         onClick={() => openAddressSearch()} placeholder="주소 검색을 눌러주세요" />
@@ -3921,12 +3914,20 @@ export default function JobPostForm({
                       <input style={inpHl(!!nmAddressDetail)} value={nmAddressDetail}
                         onChange={(e) => setNmAddressDetail(e.target.value)} placeholder="동·호수 등" />
                     </div>
+                    <div style={{ ...row, alignItems: "flex-start" }}><span style={{ ...lbl2, paddingTop: 6 }}>{L.site}</span>
+                      {/* 인스타 주소는 한 줄에 안 들어간다. input 은 줄바꿈이 안 되므로 늘어나는 칸을 쓴다. */}
+                      <AutoTextarea style={nmHomepage ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.5 } : { ...inpHl(false), marginTop: 6 }}
+                        value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     <div style={row}><span style={lbl2}>{L.size}</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((s) => (<option key={s} value={s}>{s}</option>))}</select></div>
                     {isOffice && (<div style={row}><span style={lbl2}>설립연도</span><input type="number" min="1900" max={new Date().getFullYear()} style={inpHl(!!nmFounded)} value={nmFounded} onChange={(e) => setNmFounded(e.target.value)} /></div>)}
                     {isOffice && (
                       <div style={row}><span style={lbl2}>대표자</span><input style={inpHl(!!nmRepresentative)} value={nmRepresentative} onChange={(e) => setNmRepresentative(e.target.value)} /></div>
                     )}
                     <div style={row}><span style={lbl2}>{L.phone}</span><input style={inpHl(!!nmPhone)} value={nmPhone} onChange={(e) => setNmPhone(e.target.value)} /></div>
+                    <div style={{ ...row, ...full, alignItems: "flex-start" }}>
+                      <span style={{ ...lbl2, paddingTop: 6 }}>{L.intro}</span>
+                      <AutoTextarea style={nmDescription ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.6 } : { ...inpHl(false), marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
+                    </div>
                   </div>
                 );
               })()}
