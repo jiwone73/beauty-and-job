@@ -4,12 +4,18 @@ import { useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import JobPostForm from "@/components/jobs/JobPostForm";
 import { companyMeApi } from "@/lib/api/company";
+import StartJobModal from "@/components/company/StartJobModal";
+import { useRouter } from "next/navigation";
 
 function CompanyJobNewForm() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const editId = searchParams?.get("id") || null;
   const copyId = searchParams?.get("copy") || null;
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | null>(null);
+  // 빈 폼으로 들어올 때만 묻는다. 이어서 쓰거나 복사해서 온 길에는 끼어들지 않는다.
+  // 모달은 고를 것이 있을 때만 스스로 뜬다(임시저장도 지난 공고도 없으면 안 뜬다).
+  const [고르기, set고르기] = useState(!editId && !copyId);
 
   useEffect(() => {
     companyMeApi.get()
@@ -65,6 +71,12 @@ function CompanyJobNewForm() {
 
   return (
     <CompanyLayout activePage="jobs-new">
+        {고르기 && (
+          <StartJobModal
+            onClose={() => set고르기(false)}
+            onPick={(href) => { set고르기(false); router.push(href); }}
+          />
+        )}
         <JobPostForm
           mode="company"
           editId={editId || copyId}
