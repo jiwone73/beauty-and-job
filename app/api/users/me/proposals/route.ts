@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const { rows } = await pool.query(
-      `SELECT p.id, p.message, p.read_at, p.created_at,
+      `SELECT p.id, p.message, p.read_at, p.interested_at, p.created_at,
               p.job_posting_id,
               c.company_name, c.brand_name,
               jp.title AS job_title, jp.status AS job_status, jp.deadline,

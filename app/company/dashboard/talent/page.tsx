@@ -842,6 +842,13 @@ export default function TalentPage() {
                             <span>이력서</span>
                           </button>
                         </div>
+                        {t.interestedAt ? (
+                          <span title={`${new Date(t.interestedAt).toLocaleDateString("ko-KR")}에 관심을 보냈어요`}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "#582681", fontSize: 13, padding: "2px 4px" }}>
+                            <Send size={13} />
+                            <span>관심 있어요</span>
+                          </span>
+                        ) : (
                         <button
                           title={t.proposedAt ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 제안함` : "제안하기"}
                           style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: t.proposedAt ? "#582681" : "#888", fontSize: 13, fontWeight: 500, padding: "2px 4px" }}
@@ -850,6 +857,7 @@ export default function TalentPage() {
                           <Send size={13} />
                           <span>{t.proposedAt ? "제안함" : "제안하기"}</span>
                         </button>
+                        )}
                       </div>
                     </td>
                     {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}

@@ -162,7 +162,12 @@ export async function GET(req: NextRequest) {
         (
           SELECT MAX(created_at) FROM proposals
           WHERE company_id = $1 AND user_id = u.id
-        ) AS proposed_at
+        ) AS proposed_at,
+        -- 제안에 「관심 있어요」를 누른 사람. 본인이 연 것이라 연락처를 보여 준다.
+        (
+          SELECT MAX(interested_at) FROM proposals
+          WHERE company_id = $1 AND user_id = u.id AND interested_at IS NOT NULL
+        ) AS interested_at
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
       WHERE u.status = 'ACTIVE'
@@ -197,8 +202,11 @@ export async function GET(req: NextRequest) {
       name: r.name,
       // 연락처는 채용을 실제로 하고 있는 곳(공고 보유)에만 연다. 화면에서만
       // 가리면 응답에 남아 개발자 도구로 그대로 보이므로 여기서 지워 보낸다.
-      email: 열람가능 ? (r.email || null) : null,
-      phone: 열람가능 ? (r.phone || null) : null,
+      // 「관심 있어요」를 누른 사람은 스스로 문을 연 것이라 열람권과 무관하게 보여 준다.
+      // 그래야 제안을 받은 사람이 답했는데 연락할 길이 없는 일이 안 생긴다.
+      email: (열람가능 || r.interested_at) ? (r.email || null) : null,
+      phone: (열람가능 || r.interested_at) ? (r.phone || null) : null,
+      interestedAt: r.interested_at || null,
       // 사진만 감춘 사람은 아예 내려보내지 않는다. 화면에서 가리면 응답에 남아
       // 개발자 도구로 볼 수 있다 — 가린 것이 가려진 것이 아니게 된다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,

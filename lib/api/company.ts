@@ -107,6 +107,7 @@ export type TalentItem = {
   jobSearchStatusAt: string | null;
   scrapped: boolean;
   proposedAt?: string | null;   // 이미 제안한 사람이면 마지막 제안 시각
+  interestedAt?: string | null; // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
 };
 
 export const companyTalentApi = {
