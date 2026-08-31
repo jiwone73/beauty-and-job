@@ -90,7 +90,7 @@ export default function StartJobModal({
                       {j.title || "제목 없음"}
                       <span style={{ display: "block", fontSize: 12.5, color: "#aaa", marginTop: 3 }}>{날짜(j.created_at)}</span>
                     </span>
-                    <span style={뱃지("#582681", "#f4f0f8")}>이어서 작성</span>
+                    <span style={뱃지("#582681", "#f7f7f8")}>이어서 작성</span>
                   </button>
                 ))}
               </div>
@@ -106,7 +106,7 @@ export default function StartJobModal({
                   const 마감 = j.deadline ? new Date(j.deadline) < new Date() : false;
                   return (
                     <label key={j.id}
-                      style={{ ...줄, borderColor: 고름 ? "#582681" : "#efeff1", background: 고름 ? "#faf8fc" : "#fff" }}>
+                      style={{ ...줄, borderColor: 고름 ? "#582681" : "#efeff1", background: 고름 ? "#f7f7f8" : "#fff" }}>
                       <input type="radio" name="지난공고" checked={고름} onChange={() => set고른것(j.id)}
                         style={{ marginTop: 3, accentColor: "#582681", flexShrink: 0 }} />
                       <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#333", lineHeight: 1.45 }}>
