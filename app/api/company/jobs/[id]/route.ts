@@ -44,6 +44,7 @@ export async function PATCH(
     "cover_images",
     // 접수담당자
     "external_contact_name", "external_contact_phone", "external_contact_email",
+    "external_contact_kakao",
   ];
 
   const updates: string[] = [];

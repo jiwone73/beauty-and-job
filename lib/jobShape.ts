@@ -52,6 +52,7 @@ export function 공고모양(j: any) {
         contactName: j.is_external ? '' : (j.external_contact_name || ''),
         contactPhone: j.is_external ? '' : (j.external_contact_phone || ''),
         contactEmail: j.is_external ? '' : (j.external_contact_email || ''),
+        contactKakao: j.is_external ? '' : (j.external_contact_kakao || ''),
         contactMethods: j.is_external ? ['뷰티워크 온라인지원'] : (Array.isArray(j.contact_methods) ? j.contact_methods : []),
         companyInfo: {
           name: j.company?.company_name || '',

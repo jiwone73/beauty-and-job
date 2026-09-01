@@ -311,14 +311,15 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
   // 담당자: 전화·이메일 중 하나라도 있어야 표기. 이름 없으면 '인사담당'으로.
-  const hasContact = !!(job.contactPhone || job.contactEmail);
+  const hasContact = !!(job.contactPhone || job.contactEmail || job.contactKakao);
   const hasMethods = !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0);
   // 지원 안내: 담당자 · 지원방법 · 채용 절차 (라벨 + 값 한 줄)
   const contactInner = hasContact ? (
     <div className="jd-guide-row">
       <span className="jd-guide-label">채용담당자</span>
-      <span>{[job.contactName || "인사담당", 전화꼴(job.contactPhone), job.contactEmail].filter(Boolean).join("   ·   ")}</span>
+      <span>{[job.contactName || "인사담당", 전화꼴(job.contactPhone), job.contactEmail,
+              job.contactKakao ? `카카오톡 ${job.contactKakao}` : ""].filter(Boolean).join("   ·   ")}</span>
     </div>
   ) : null;
 

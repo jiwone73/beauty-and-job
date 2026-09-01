@@ -76,6 +76,7 @@ export async function 공고읽기(id: string) {
     external_contact_name: job.external_contact_name || '',
     external_contact_phone: job.external_contact_phone || '',
     external_contact_email: job.external_contact_email || '',
+    external_contact_kakao: job.external_contact_kakao || '',
     contact_methods: job.contact_methods || [],
     notes: job.notes || '',
     responsibilities: job.responsibilities || '',

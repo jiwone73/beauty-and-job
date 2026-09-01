@@ -114,7 +114,7 @@ const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "�
 const 상세합치기 = (...조각: (string | null | undefined)[]) =>
   조각.map((x) => (x || "").trim()).filter(Boolean).join("\n\n");
 
-const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원", "상세요강 참조"]; // 지원방법(복수)
+const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "카카오톡", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원", "상세요강 참조"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 
 // 내용에 맞춰 늘어나는 textarea.
@@ -282,6 +282,7 @@ export default function JobPostForm({
   const [newCompanyName, setNewCompanyName] = useState("");
   const [newBrandName, setNewBrandName] = useState("");
   const [nmContactEmail, setNmContactEmail] = useState("");
+  const [nmKakaoId, setNmKakaoId] = useState("");
   const [nmHomepage, setNmHomepage] = useState("");
   const [applyMethod, setApplyMethod] = useState<"MANAGED" | "EMAIL" | "REDIRECT">("MANAGED");
   const [externalApplyUrl, setExternalApplyUrl] = useState("");
@@ -611,7 +612,7 @@ export default function JobPostForm({
     importImages,
     nonMember, newCompanyName, newBrandName, nmDescription, nmAddress, nmAddressDetail,
     nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
-    nmManagerName, nmManagerPhone, nmContactEmail, contactMethods,
+    nmManagerName, nmManagerPhone, nmContactEmail, nmKakaoId, contactMethods,
     applyMethod, externalApplyUrl,
   });
 
@@ -628,7 +629,7 @@ export default function JobPostForm({
       hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
       parseUrl, importMode, findQuery, importImages, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
-      nmManagerName, nmManagerPhone, nmContactEmail, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
+      nmManagerName, nmManagerPhone, nmContactEmail, nmKakaoId, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
 
   const [restored, setRestored] = useState<string | null>(null);
   // 새로고침이 아닌 길로 들어왔을 때, 지우지 않고 되살릴 수 있다고만 알린다.
@@ -672,7 +673,7 @@ export default function JobPostForm({
       "pasteText", "ocrSourceUrl", "parseUrl", "findQuery",
       "newCompanyName", "newBrandName", "nmDescription", "nmAddress", "nmAddressDetail",
       "nmIndustry", "nmSize", "nmFounded", "nmRepresentative", "nmPhone", "nmHomepage",
-      "nmManagerName", "nmManagerPhone", "nmContactEmail", "contactMethods", "externalApplyUrl"];
+      "nmManagerName", "nmManagerPhone", "nmContactEmail", "nmKakaoId", "contactMethods", "externalApplyUrl"];
     if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
     if (!자동복원) { set되살릴것(d.at || ""); return; }
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
@@ -690,6 +691,7 @@ export default function JobPostForm({
     set(setNmIndustry, d.nmIndustry); set(setNmSize, d.nmSize); set(setNmFounded, d.nmFounded);
     set(setNmRepresentative, d.nmRepresentative); set(setNmPhone, d.nmPhone); set(setNmHomepage, d.nmHomepage);
     set(setNmManagerName, d.nmManagerName); set(setNmManagerPhone, d.nmManagerPhone); set(setNmContactEmail, d.nmContactEmail);
+    set(setNmKakaoId, d.nmKakaoId);
     set(setContactMethods, d.contactMethods); set(setApplyMethod, d.applyMethod); set(setExternalApplyUrl, d.externalApplyUrl);
     setRestored(d.at || "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1107,6 +1109,7 @@ export default function JobPostForm({
         setNmManagerName(j.external_contact_name || "");
         setNmManagerPhone(j.external_contact_phone || "");
         setNmContactEmail(j.external_contact_email || "");
+        setNmKakaoId(j.external_contact_kakao || "");
         setContactMethods(Array.isArray(j.contact_methods) ? j.contact_methods : []);
         if (["MANAGED", "EMAIL", "REDIRECT"].includes(j.apply_method)) {
           setApplyMethod(j.apply_method === "EMAIL" ? "MANAGED" : j.apply_method);
@@ -2046,6 +2049,7 @@ export default function JobPostForm({
       external_contact_email: 낼담당.메일 || null,
       external_contact_name: 낼담당.이름 || null,
       external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
+      external_contact_kakao: 낼담당.카톡 || null,
       contact_methods: contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
@@ -2397,9 +2401,11 @@ export default function JobPostForm({
   //   둘 중 하나라도 → 이름. 미리보기와 저장이 같은 규칙을 써야 보이는 대로 나간다.
   const 쓸전화 = contactMethods.includes("문자") || contactMethods.includes("전화");
   const 쓸메일 = contactMethods.includes("이메일");
-  const 낼담당 = { 이름: (쓸전화 || 쓸메일) ? nmManagerName.trim() : "",
+  const 쓸카톡 = contactMethods.includes("카카오톡");
+  const 낼담당 = { 이름: (쓸전화 || 쓸메일 || 쓸카톡) ? nmManagerName.trim() : "",
                   전화: 쓸전화 ? nmManagerPhone.trim() : "",
-                  메일: 쓸메일 ? nmContactEmail.trim() : "" };
+                  메일: 쓸메일 ? nmContactEmail.trim() : "",
+                  카톡: 쓸카톡 ? nmKakaoId.trim() : "" };
   // 매장은 '회사'가 아니라 '매장' 기준으로 부른다. 기업회원 설정 화면
   // (company/dashboard/settings)과 같은 말을 쓴다 — 같은 값을 두 화면에서
   // 다르게 부르면 관리자도 매장도 헷갈린다.
@@ -2501,6 +2507,7 @@ export default function JobPostForm({
     //   바로 연락해 버린다 — 지원이 남지 않아 매장도 우리도 무슨 일이 있었는지 모른다.
     //   이건 지어낸 값이 아니라 의도한 규칙이고, 실제 공개 화면도 같게 나간다.
     isExternal: isNm,
+    contactKakao: mode === "admin" ? "" : 낼담당.카톡,
     contactName: mode === "admin" ? "" : 낼담당.이름,
     contactPhone: mode === "admin" ? "" : 낼담당.전화,
     contactEmail: mode === "admin" ? "" : 낼담당.메일,
@@ -3626,7 +3633,8 @@ export default function JobPostForm({
                   .filter((m) => m !== "상세요강 참조" || mode === "admin");
                 const canPhone = contactMethods.includes("문자") || contactMethods.includes("전화");
                 const canEmail = contactMethods.includes("이메일");
-                const canName = canPhone || canEmail;
+                const canKakao = contactMethods.includes("카카오톡");
+                const canName = canPhone || canEmail || canKakao;
                 const canUrl = isOffice && contactMethods.includes("회사 홈페이지 지원");
                 // 담당자 칸이 생기면 URL은 지원방법 밑(좌)에, 우측이 비면 URL을 우측에 둔다.
                 const urlOnLeft = canUrl && canName;
@@ -3697,11 +3705,12 @@ export default function JobPostForm({
                               { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined), 폭: 66 },
                               canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: (v: string) => setNmManagerPhone(전화꼴(v)), im: "numeric" as const, 폭: 122 } : null,
                               canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const, 폭: 168 } : null,
+                              canKakao ? { k: "kakao", ph: "카카오톡 ID", v: nmKakaoId, set: setNmKakaoId, im: undefined as ("numeric" | "email" | undefined), 폭: 150 } : null,
                             ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 폭: number }[];
                             // 이름·전화와 한 줄을 나눠 쓰면 메일에 200px도 안 남는다 —
                             // 주소가 조금만 길어도 끝이 잘려 무엇을 적었는지 못 본다.
                             // 셋 다 있을 때는 메일을 아랫줄로 내려 칸 폭을 다 준다.
-                            const 메일따로 = canPhone && canEmail;
+                            const 메일따로 = canPhone && (canEmail || canKakao);
                             return (
                               // 두 칸짜리 격자 — 첫 칸은 이름(제 폭만), 둘째 칸이 남는 자리를 다 쓴다.
                               // 메일은 둘째 칸으로 내려 전화와 왼쪽 끝이 맞는다(칸 폭을 어림해
@@ -3711,10 +3720,10 @@ export default function JobPostForm({
                                 alignItems: "center", gap: "6px", padding: "3px 0", minWidth: 0 }}>
                                 {칸.map((f, i) => (
                                   <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0,
-                                    ...(f.k === "mail" && 메일따로 ? { gridColumn: 2 } : null) }}>
+                                    ...((f.k === "mail" || f.k === "kakao") && 메일따로 ? { gridColumn: 2 } : null) }}>
                                     {i > 0 && (
                                       <span aria-hidden style={{ flexShrink: 0,
-                                        color: 메일따로 && f.k === "mail" ? "transparent" : "#dcdce0" }}>|</span>
+                                        color: 메일따로 && (f.k === "mail" || f.k === "kakao") ? "transparent" : "#dcdce0" }}>|</span>
                                     )}
                                     {/* 크롬은 placeholder·name 에 든 낱말('전화'·'메일')로 칸을 알아보고
                                         연락처 아이콘을 띄운다. 그래서 자리글을 속성에서 빼고 우리가 그린다.
