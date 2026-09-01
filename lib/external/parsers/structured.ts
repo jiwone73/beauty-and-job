@@ -173,7 +173,7 @@ function parseHairinjob(html: string): StructuredResult | null {
     if (/바버|barber/i.test(ck)) mappedCats = ["바버(Barber)"];
     else if (/웨딩|본식|업스타일|혼주/.test(ck)) mappedCats = ["웨딩 헤어디자이너"];
     else if (/디자이너|스타일리스트|원장|실장/.test(ck)) mappedCats = ["헤어 디자이너"];
-    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어스탭"];
+    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어 스탭(시니어·주니어)"];
   }
   const job_categories = mappedCats.length ? mappedCats : sug.job_categories;
 
@@ -361,19 +361,21 @@ function regionFromAddress(loc: any): string {
 function mapRole(text: string): { job_type: string; item: string } | null {
   const ns = (text || "").toLowerCase().replace(/\s/g, "");
   const R: [RegExp, string, string][] = [
-    [/네일(스탭|스태프|인턴|보조)/, "STORE", "네일스탭·인턴"],
+    [/네일(스탭|스태프|인턴|보조)/, "STORE", "네일 스탭·인턴"],
     [/네일|nail|젤네일/, "STORE", "네일 아티스트"],
-    [/속눈썹|래쉬|eyelash|반영구|왁싱|제모|waxing/, "STORE", "속눈썹·반영구 아티스트"],
+    // 왁싱은 제 직군이 생겼다. 속눈썹·반영구보다 먼저 봐서 그리로 보낸다.
+    [/왁싱|제모|waxing|브라질리언|슈가링/, "STORE", "왁싱·제모 전문가"],
+    [/속눈썹|래쉬|eyelash|반영구/, "STORE", "속눈썹·반영구 아티스트"],
     [/(웨딩|본식|혼주)메이크업|웨딩헤어메이크업/, "STORE", "웨딩·혼주 메이크업"],
     [/메이크업|makeup|분장|mua/, "STORE", "메이크업 아티스트"],
     [/바버|barber|이용사/, "STORE", "바버(Barber)"],
-    [/상담실장|상담사|카운셀러|counselor/, "STORE", "에스테틱 상담실장"],
+    [/상담실장|상담사|카운셀러|counselor/, "STORE", "에스테틱 상담 실장"],
     // '두피'는 브랜드명(닥터스칼프 등)에도 흔히 들어가므로, 역할 맥락(관리/케어/테라피/스탭)이 있을 때만.
     [/두피관리|두피케어|두피테라|헤드스파|탈모관리|모발이식/, "STORE", "두피 관리사"],
-    [/피부미용|피부관리|피부관리사|피부테라|에스테티션|aesthetician|페이셜|경락|스킨케어|에스테틱|바디관리|체형관리/, "STORE", "피부관리사(일반·경락)"],
+    [/피부미용|피부관리|피부관리사|피부테라|에스테티션|aesthetician|페이셜|경락|스킨케어|에스테틱|바디관리|체형관리/, "STORE", "피부 관리사(일반·경락)"],
     [/스파테라|아로마테라|테라피스트/, "STORE", "스파 테라피스트"],
-    [/점장|샵마스터|매장관리/, "STORE", "매장 점장·샵마스터"],
-    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어스탭"],
+    [/점장|샵마스터|매장관리/, "STORE", "매장 점장·샵마스터(직영)"],
+    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어 스탭(시니어·주니어)"],
     [/헤어디자이너|헤어스타일리스트|스타일리스트|미용사|hairstylist/, "STORE", "헤어 디자이너"],
     // ── OFFICE(본사·기업) ──
     [/화장품연구|제형연구|연구원|r&d/, "OFFICE", "화장품 연구원(R&D)"],
@@ -821,8 +823,9 @@ function parseBeautyjob(html: string): StructuredResult | null {
     const ck = `${jobArea} ${title}`;
     if (/두피|탈모/.test(ck)) { mappedCats = ["두피 관리사"]; industry = "피부·에스테틱"; }
     else if (/네일/.test(ck)) { mappedCats = ["네일 아티스트"]; industry = "네일샵"; }
+    else if (/왁싱|제모|브라질리언|슈가링/.test(ck)) { mappedCats = ["왁싱·제모 전문가"]; industry = "속눈썹·왁싱·반영구"; }
     else if (/속눈썹|래쉬|반영구/.test(ck)) { mappedCats = ["속눈썹·반영구 아티스트"]; industry = "속눈썹·왁싱·반영구"; }
-    else if (/피부|에스테틱|경락|스킨\s*케어|마사지|관리사|테라피/.test(ck)) { mappedCats = ["피부관리사(일반·경락)"]; industry = "피부·에스테틱"; }
+    else if (/피부|에스테틱|경락|스킨\s*케어|마사지|관리사|테라피/.test(ck)) { mappedCats = ["피부 관리사(일반·경락)"]; industry = "피부·에스테틱"; }
     else if (/메이크업|분장/.test(ck)) { mappedCats = ["메이크업 아티스트"]; industry = "메이크업"; }
     else if (/바버|barber/i.test(ck)) { mappedCats = ["바버(Barber)"]; industry = "헤어샵"; }
     else if (/헤어|미용실|살롱|디자이너|미용사|스타일리스트/.test(ck)) { mappedCats = ["헤어 디자이너"]; industry = "헤어샵"; }
@@ -865,11 +868,11 @@ function mapSelectmeCat(name: string): string {
   const n = (name || "").replace(/\s/g, "");
   if (/바버|barber/i.test(n)) return "바버(Barber)";
   if (/헤어디자이너|디자이너/.test(n)) return "헤어 디자이너";
-  if (/헤어스탭|헤어스텝|헤어스태프|스탭|스텝|인턴/.test(n)) return "헤어스탭";
+  if (/헤어스탭|헤어스텝|헤어스태프|스탭|스텝|인턴/.test(n)) return "헤어 스탭(시니어·주니어)";
   if (/메이크업/.test(n)) return "메이크업 아티스트";
   if (/네일/.test(n)) return "네일 아티스트";
   if (/속눈썹|래쉬|반영구/.test(n)) return "속눈썹·반영구 아티스트";
-  if (/피부|에스테틱|관리사/.test(n)) return "피부관리사(일반·경락)";
+  if (/피부|에스테틱|관리사/.test(n)) return "피부 관리사(일반·경락)";
   return "";
 }
 function parseSelectme(html: string, url?: string): StructuredResult | null {
