@@ -80,7 +80,22 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
+  // 답 안 한 문의 — 구직자가 말을 걸었는데 매장이 아직 답하지 않은 대화.
+  // 답하고 말고는 매장의 몫이지만, 몇 건이 기다리는지는 보여야 판단이 선다.
+  const unansweredRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt
+       FROM proposals p
+      WHERE p.company_id = $1
+        AND EXISTS (SELECT 1 FROM proposal_messages m WHERE m.proposal_id = p.id)
+        AND (SELECT sender FROM proposal_messages m
+              WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) = 'USER'
+        AND NOT EXISTS (SELECT 1 FROM user_company_blocks b
+                         WHERE b.user_id = p.user_id AND b.company_id = p.company_id)`,
+    [companyId]
+  )
+
   return ok({
+    unanswered_chats: unansweredRes.rows[0].cnt,
     active_jobs: activeJobs.rows[0].cnt,
     total_applications: totalApplications.rows[0].cnt,
     today_applications: todayApplications.rows[0].cnt,

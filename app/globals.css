@@ -14150,3 +14150,22 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-form button.key { border-color: var(--color-primary); color: var(--color-primary); }
 
 .pth-warn { margin: 0; padding: 0 18px 12px; font-size: 12.5px; color: #a0a0a6; }
+
+.pth-more { position: relative; flex-shrink: 0; }
+.pth-menu {
+  position: absolute; right: 0; top: 28px; z-index: 2; background: #fff;
+  border: 1px solid #ececf0; border-radius: 10px; padding: 4px; min-width: 108px;
+}
+.pth-menu button {
+  display: block; width: 100%; text-align: left; padding: 8px 10px; border: none;
+  background: none; font-size: 13.5px; font-family: inherit; color: #555; cursor: pointer; border-radius: 6px;
+}
+.pth-menu button:hover { background: #f7f7f8; }
+/* 차단·만료된 대화는 읽기만 남긴다 — 지난 대화까지 사라지면 무슨 일이
+   있었는지 확인할 길이 없다. */
+.pth-closed {
+  margin: 0; padding: 16px 18px; border-top: 1px solid #f2f2f4;
+  font-size: 13.5px; color: #a0a0a6; text-align: center;
+}
+/* 남은 날은 사흘 안쪽일 때만 말한다 — 일주일 내내 세고 있으면 재촉으로 읽힌다. */
+.prop-interest-left { margin-left: 6px; font-size: 12.5px; color: #a0a0a6; }

@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, CalendarPlus, Send } from "lucide-react";
+import { X, CalendarPlus, Send, MoreHorizontal } from "lucide-react";
+import { 제안유효일 } from "@/lib/proposal";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 화면을 쓴다 — 한쪽만 다르게 보이면
 // 무슨 말이 어떻게 갔는지 서로 다르게 기억하게 된다.
@@ -43,13 +44,21 @@ export default function ProposalThread({
   const [보내는중, set보내는중] = useState(false);
   const [약속열림, set약속열림] = useState(false);
   const [약속값, set약속값] = useState("");
+  const [차단됨, set차단됨] = useState(false);
+  const [만료됨, set만료됨] = useState(false);
+  const [메뉴, set메뉴] = useState(false);
   const 바닥 = useRef<HTMLDivElement>(null);
 
   const 헤더 = { Authorization: `Bearer ${token}` };
 
   const 불러오기 = useCallback(async () => {
     const r = await fetch(`/api/proposals/${proposalId}/messages`, { headers: 헤더 }).then((x) => x.json()).catch(() => null);
-    if (r?.success && r.data) { set메시지들(r.data.messages || []); set나(r.data.me); }
+    if (r?.success && r.data) {
+      set메시지들(r.data.messages || []);
+      set나(r.data.me);
+      set차단됨(!!r.data.blocked);
+      set만료됨(!!r.data.expired);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, token]);
 
@@ -93,6 +102,27 @@ export default function ProposalThread({
     await 불러오기();
   };
 
+  const 신고 = async () => {
+    set메뉴(false);
+    const 사유 = prompt("어떤 점을 신고할까요? (예: 욕설·비하, 허위 공고, 개인정보 요구)");
+    if (!사유?.trim()) return;
+    const r = await fetch(`/api/proposals/${proposalId}/report`, {
+      method: "POST", headers: { ...헤더, "Content-Type": "application/json" },
+      body: JSON.stringify({ reason: 사유.trim() }),
+    }).then((x) => x.json()).catch(() => null);
+    alert(r?.success ? "신고했어요. 확인 후 조치할게요." : "신고하지 못했어요.");
+  };
+
+  const 차단 = async () => {
+    set메뉴(false);
+    if (!confirm("차단하면 서로 보이지 않고 더 이상 대화할 수 없어요. 차단할까요?")) return;
+    const r = await fetch(`/api/proposals/${proposalId}/block`, {
+      method: "POST", headers: 헤더,
+    }).then((x) => x.json()).catch(() => null);
+    if (r?.success) { set차단됨(true); alert("차단했어요."); }
+    else alert("차단하지 못했어요.");
+  };
+
   const 잡힌약속 = [...메시지들].reverse()
     .find((m) => m.kind === "APPOINTMENT" && m.appointment_status === "ACCEPTED");
 
@@ -103,6 +133,15 @@ export default function ProposalThread({
           <div>
             <div className="pth-who">{상대}</div>
             <div className="pth-job">{제목}</div>
+          </div>
+          <div className="pth-more">
+            <button type="button" onClick={() => set메뉴((v) => !v)} aria-label="더보기"><MoreHorizontal size={20} /></button>
+            {메뉴 && (
+              <div className="pth-menu">
+                <button type="button" onClick={신고}>신고하기</button>
+                <button type="button" onClick={차단}>차단하기</button>
+              </div>
+            )}
           </div>
           <button type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
         </div>
@@ -153,7 +192,11 @@ export default function ProposalThread({
           <div ref={바닥} />
         </div>
 
-        {약속열림 ? (
+        {차단됨 || 만료됨 ? (
+          <p className="pth-closed">
+            {차단됨 ? "차단된 대화예요." : `답변 기간(${제안유효일}일)이 지나 닫힌 대화예요.`}
+          </p>
+        ) : 약속열림 ? (
           <div className="pth-appt-form">
             <input type="datetime-local" value={약속값} onChange={(e) => set약속값(e.target.value)} />
             <button type="button" onClick={() => { set약속열림(false); set약속값(""); }}>취소</button>

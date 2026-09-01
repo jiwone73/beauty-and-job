@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Briefcase, FileText, Plus, Inbox, AlarmClock } from "lucide-react";
+import { Briefcase, FileText, Plus, Inbox, AlarmClock, MessageSquare } from "lucide-react";
 
 interface Stats {
   active_jobs: number;
   deadline_today: number;
+  unanswered_chats: number;
 }
 
 interface JobItem {
@@ -99,6 +100,9 @@ export default function CompanyDashboard() {
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#582681", icon: FileText, href: "/company/dashboard/jobs" },
     // 오늘 안에 손쓰지 않으면 내려가는 공고. 목록으로 넘어가면 같은 조건이 걸린 채로 보인다.
     { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs?status=오늘 마감" },
+    // 구직자가 말을 걸었는데 아직 답하지 않은 대화. 답하고 말고는 매장의 몫이지만,
+    // 몇 건이 기다리는지는 보여야 판단이 선다.
+    { label: "답 안 한 문의", value: stats?.unanswered_chats ?? 0, unit: "건", color: "#582681", icon: MessageSquare, href: "/company/dashboard/talent?interested=1" },
   ];
 
 

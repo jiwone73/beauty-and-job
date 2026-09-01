@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, MapPin, Wallet, Briefcase } from "lucide-react";
 import ProposalThread from "@/components/proposal/ProposalThread";
+import { 제안만료, 제안남은날 } from "@/lib/proposal";
 import ProfileShell from "@/components/profile/ProfileShell";
 import { formatSalaryWon } from "@/lib/salary";
 import { 지역비교 } from "@/lib/regionMatch";
@@ -130,6 +131,10 @@ export default function ProposalsPage() {
                 {목록.map((p) => {
                   const 마감 = p.job_status === "CLOSED"
                     || (p.deadline && new Date(p.deadline) < new Date());
+                  // 답 없이 기간이 지나면 닫힌다. 거절을 통보하는 대신 기다리는
+                  // 기간을 정해 둔 것이라, 남은 날을 미리 알려 준다.
+                  const 만료 = 제안만료(p.created_at, p.interested_at);
+                  const 남은날 = 제안남은날(p.created_at);
                   // 기업이 따로 쓰지 않아도, 내 희망 조건과 겹치는 것을 찾아 붙인다.
                   const 맞는점: string[] = [];
                   if (지역비교(p.location, p.region_prefer) === "same") 맞는점.push("희망 지역");
@@ -166,7 +171,10 @@ export default function ProposalsPage() {
                       {p.message && <p className="prop-msg">{p.message}</p>}
 
                       {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
-                      {!마감 && (p.interested_at ? (
+                      {!마감 && 만료 && (
+                        <div className="prop-interest on">답변 기간이 지났어요</div>
+                      )}
+                      {!마감 && !만료 && (p.interested_at ? (
                         <button type="button" className="prop-interest"
                           onClick={(e) => { e.stopPropagation(); set대화(p); }}>
                           대화하기
@@ -185,6 +193,7 @@ export default function ProposalsPage() {
                         <button type="button" className="prop-interest"
                           onClick={(e) => 관심열기(p.id, e)}>
                           관심 있어요
+                          {남은날 <= 3 && <span className="prop-interest-left">{남은날}일 남음</span>}
                         </button>
                       ))}
 
