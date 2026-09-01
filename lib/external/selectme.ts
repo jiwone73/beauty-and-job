@@ -43,8 +43,17 @@ export function extractRecruits(html: string): SelectmeRecruit[] {
   const text = unescapeRsc(html);
   const out: SelectmeRecruit[] = [];
   const seen = new Set<number>();
-  // 객체 경계: "isInvisibleClosedRecruit": 이후 ~ 다음 경계 전까지가 한 공고
-  const chunks = text.split('"isInvisibleClosedRecruit":').slice(1);
+  // 객체 경계: 공고마다 붙는 "id":<n>,"ceoId": 쌍을 시작점으로 삼는다.
+  // (예전에는 "isInvisibleClosedRecruit" 플래그로 잘랐는데 셀렉미가 그 칸을
+  //  응답에서 빼면서 통째로 0건이 됐다.)
+  const chunks: string[] = [];
+  const 경계 = /"id":(\d+),"ceoId":/g;
+  let m: RegExpExecArray | null;
+  const 시작: { id: number; at: number }[] = [];
+  while ((m = 경계.exec(text)) !== null) 시작.push({ id: Number(m[1]), at: m.index });
+  for (let i = 0; i < 시작.length; i++) {
+    chunks.push(text.slice(시작[i].at, 시작[i + 1]?.at ?? 시작[i].at + 4000));
+  }
   for (const c of chunks) {
     const idM = c.match(/"id":(\d+),"ceoId":/);
     if (!idM) continue;
@@ -52,7 +61,7 @@ export function extractRecruits(html: string): SelectmeRecruit[] {
     if (!id || seen.has(id)) continue;
     const snM = c.match(/"shopName":"([^"]*)"/);
     const tiM = c.match(/"title":"((?:[^"\\]|\\.)*)"/);
-    const stM = c.match(/^(?:true|false),"status":"([^"]*)"/);
+    const stM = c.match(/"status":"([^"]*)"/);
     const shopName = (snM?.[1] || "").trim();
     if (!shopName) continue;
     // 등록일: startDisplayDate(게시 시작) 우선, 없으면 createdAt. RSC는 "$D2026-08-03T..." 형태.
