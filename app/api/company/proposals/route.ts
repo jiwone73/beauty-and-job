@@ -14,8 +14,7 @@ export async function GET(req: NextRequest) {
   try {
     const { rows } = await pool.query(
       `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message,
-              u.id AS user_id, u.name AS user_name, u.avatar_url,
-              up.avatar_public,
+              u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
               (SELECT sender FROM proposal_messages m
@@ -24,7 +23,6 @@ export async function GET(req: NextRequest) {
                        WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked
          FROM proposals p
          JOIN users u ON u.id = p.user_id
-         LEFT JOIN user_profiles up ON up.user_id = p.user_id
          LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
         WHERE p.company_id = $1
         ORDER BY p.created_at DESC
