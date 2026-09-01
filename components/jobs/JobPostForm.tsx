@@ -111,8 +111,26 @@ const SOURCE_CAFES: { name: string; url: string }[] = [
 
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
 // 나뉘어 온 글을 한 덩이로 잇는다. 빈 것은 건너뛰고, 사이는 빈 줄 하나로 띄운다.
-const 상세합치기 = (...조각: (string | null | undefined)[]) =>
-  조각.map((x) => (x || "").trim()).filter(Boolean).join("\n\n");
+const 상세합치기 = (...조각: (string | null | undefined)[]) => {
+  const 본줄 = new Set<string>();
+  const 담을것: string[] = [];
+  for (const 조각하나 of 조각) {
+    const 글 = (조각하나 || "").trim();
+    if (!글) continue;
+    // 통째로 이미 담긴 조각은 버린다(파서가 description 과 requirements 에 같은 글을
+    // 넣어 보내는 일이 흔하다).
+    const 남길줄 = 글.split("\n").filter((줄) => {
+      const 열쇠 = 줄.replace(/\s+/g, "");
+      if (!열쇠) return true;              // 빈 줄은 모양이라 세지 않는다
+      if (본줄.has(열쇠)) return false;
+      본줄.add(열쇠);
+      return true;
+    });
+    const 남은글 = 남길줄.join("\n").trim();
+    if (남은글) 담을것.push(남은글);
+  }
+  return 담을것.join("\n\n");
+};
 
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "카카오톡", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원", "상세요강 참조"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
