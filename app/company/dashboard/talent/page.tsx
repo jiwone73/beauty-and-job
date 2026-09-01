@@ -805,6 +805,7 @@ export default function TalentPage() {
                       {나이성별 && <span className="tal-sub">{나이성별}</span>}
                       <span className="tal-sub">{careerLabel(t.careerYears, t.careerCount)}</span>
                     </div>
+                    {t.intro && <div className="tal-intro">{t.intro}</div>}
                     <div className="tal-meta">
                       {직군 && <span>{직군}</span>}
                       {지역 && <span>{지역}</span>}

@@ -14267,3 +14267,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    무엇에 붙은 표시인지 흐려진다. */
 .tal-nameline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
 .tal-nameline .tal-name { margin-bottom: 0; }
+/* 한줄소개 — 본인이 고른 한 마디라 직군·지역보다 위에 둔다. 두 줄까지만 보이고
+   그보다 길면 줄인다(60자 제한이라 대개 한 줄이다). */
+.tal-intro {
+  font-size: 13.5px; color: #4a4453; line-height: 1.5; margin: 2px 0 5px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
