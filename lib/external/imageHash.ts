@@ -51,7 +51,7 @@ export const isContentImg = (u: string) =>
 export function classifyOrigin(url: string): "company" | "site_upload" | "site_template" {
   const u = (url || "").toLowerCase();
   if (/\/template\/|\/static\/hiring\/images\/template\/|contents\.albamon\.[a-z]+\/[^"']*\/(?:template|assets|header)\/|\/images\/(?:newhair|main)\//.test(u)) return "site_template";
-  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|hairinjob\.com\/upload\/|file\.selectme\.co\.kr/.test(u)) return "site_upload";
+  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|pds\.saramin\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|hairinjob\.com\/upload\/|file\.selectme\.co\.kr/.test(u)) return "site_upload";
   return "company";
 }
 

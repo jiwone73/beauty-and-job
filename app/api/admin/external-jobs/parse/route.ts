@@ -547,12 +547,15 @@ export async function POST(req: NextRequest) {
               const j = stops.map((x) => { const p = s.indexOf(x); return p < 0 ? Infinity : p; }).reduce((m, x) => Math.min(m, x), Infinity);
               return (j === Infinity ? s : s.slice(0, j)).trim();
             };
-            // 사람인 이미지는 별도 CDN(saraminimage.co.kr)에 있음. 두 종류를 구분한다:
+            // 사람인 이미지는 CDN 이 둘이다 — saraminimage.co.kr 과 pds.saramin.co.kr.
             //  · /recruit/… : 회사 디자인 포스터(제니하우스형) → 상세요강 이미지
             //  · /static/hiring/images/template/… : 사람인 기본 템플릿 상단 배너(닥터스칼프형) → 상단 배너
+            // 예전에는 saraminimage 만 봐서 pds 에 올라온 공고는 한 장도 못 가져왔다.
             const norm = (u: string) => (u.startsWith("//") ? "https:" + u : u);
-            const posters = [...new Set([...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif|webp)/gi)].map((m) => m[0]))]
-              .map(norm).filter((u) => !/watermark/i.test(u)).slice(0, 12);
+            const posters = [...new Set([
+              ...[...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/recruit\/[^\s"')]+\.(?:png|jpe?g|gif|webp)/gi)].map((m) => m[0]),
+              ...[...ih.matchAll(/(?:https?:)?\/\/pds\.saramin\.co\.kr\/[^\s"')]+\.(?:png|jpe?g|gif|webp)/gi)].map((m) => m[0]),
+            ])].map(norm).filter((u) => !/watermark/i.test(u)).slice(0, 12);
             const banners = [...new Set([...ih.matchAll(/(?:https?:)?\/\/[a-z0-9.]*saraminimage\.co\.kr\/static\/hiring\/images\/template\/[^\s"')]+\.(?:png|jpe?g|gif|webp)/gi)].map((m) => m[0]))]
               .map(norm).filter((u) => !/watermark/i.test(u)).slice(0, 3);
             if (posters.length) {
