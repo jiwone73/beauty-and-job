@@ -631,6 +631,8 @@ export default function JobPostForm({
       nmManagerName, nmManagerPhone, nmContactEmail, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
 
   const [restored, setRestored] = useState<string | null>(null);
+  // 새로고침이 아닌 길로 들어왔을 때, 지우지 않고 되살릴 수 있다고만 알린다.
+  const [되살릴것, set되살릴것] = useState<string | null>(null);
   const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
 
   // 화면이 뜰 때 남아 있던 내용을 되살린다.
@@ -648,10 +650,9 @@ export default function JobPostForm({
     const 화면전환 = 폼이열린적있음;
     폼이열린적있음 = true;
     const 이동방식 = (performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined)?.type;
-    if (화면전환 || 이동방식 !== "reload") {
-      try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ }
-      return;
-    }
+    // 넘어온 길이면 새 공고를 쓰겠다는 뜻이라 자동으로 되살리지는 않는다.
+    // 다만 지우지도 않는다 — 다른 화면 잠깐 갔다 왔다고 쓰던 글이 사라지면 안 된다.
+    const 자동복원 = !화면전환 && 이동방식 === "reload";
 
     let d: any = null;
     try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
@@ -673,6 +674,7 @@ export default function JobPostForm({
       "nmIndustry", "nmSize", "nmFounded", "nmRepresentative", "nmPhone", "nmHomepage",
       "nmManagerName", "nmManagerPhone", "nmContactEmail", "contactMethods", "externalApplyUrl"];
     if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
+    if (!자동복원) { set되살릴것(d.at || ""); return; }
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
     set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
     set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
@@ -2703,6 +2705,26 @@ export default function JobPostForm({
       )}
 
       {/* 새로고침 뒤 남아 있던 내용을 되살렸다는 표시. 원치 않으면 여기서 비운다. */}
+      {/* 넘어온 길이라 자동으로 되살리진 않았지만, 쓰던 것이 남아 있다고 알린다.
+          지우지 않고 두는 것만으로는 부족하다 — 있는 줄 모르면 없는 것과 같다. */}
+      {!restored && 되살릴것 !== null && (
+        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box",
+          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+          padding: "10px 14px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10 }}>
+          <span style={{ fontSize: 13.5, color: "#4a4453" }}>
+            쓰던 내용이 남아 있어요{되살릴것 ? ` (${new Date(되살릴것).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })} 기준)` : ""}.
+          </span>
+          <button type="button" onClick={() => location.reload()}
+            style={{ marginLeft: "auto", border: "1px solid var(--color-primary)", background: "#fff", color: "var(--color-primary)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}>
+            이어서 작성
+          </button>
+          <button type="button" onClick={() => { clearAutosave(); set되살릴것(null); }}
+            style={{ border: "1px solid #e5e5ea", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}>
+            새로 시작
+          </button>
+        </div>
+      )}
+
       {restored && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box",
           display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
@@ -2756,21 +2778,11 @@ export default function JobPostForm({
               placeholder={"공고 글을 통째로 복사해 붙여넣으세요.\n(제목·모집분야·급여·근무시간·연락처가 다 들어가면 좋아요)"}
               style={{ width: "100%", minHeight: 160, padding: 12, border: "1.5px solid #e3e3e6", borderRadius: 8, fontSize: 13.5, lineHeight: 1.6, resize: "vertical", background: "#fff" }}
             />
-            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
-              <input
-                type="text"
-                value={ocrSourceUrl}
-                onChange={(e) => setOcrSourceUrl(e.target.value)}
-                placeholder="원문 주소 (예: cafe.naver.com/… , instagram.com/p/… )"
-                style={{ flex: 1, minWidth: 0, height: 38, padding: "0 12px", border: "1px solid #e0e0e0", borderRadius: 8, fontSize: 13.5 }}
-              />
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
               <button type="button" onClick={runPaste} disabled={parsing || !pasteText.trim()}
                 style={{ flexShrink: 0, padding: "9px 18px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, cursor: (parsing || !pasteText.trim()) ? "default" : "pointer", opacity: parsing ? 0.6 : 1 }}>
                 {parsing ? "불러오는 중..." : "불러오기"}
               </button>
-            </div>
-            <div style={{ marginTop: 6, fontSize: 12.5, color: "#6f6f75" }}>
-              글자만 읽어요 · 붙여 둔 사진은 요금이 붙지 않아요
             </div>
             {importImages.length > 0 && (
               <div style={{ marginTop: 8, padding: "10px 12px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
