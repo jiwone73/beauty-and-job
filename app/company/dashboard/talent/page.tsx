@@ -799,7 +799,7 @@ export default function TalentPage() {
                   <div className="tal-main">
                     <div className="tal-nameline">
                       <button type="button" className="tal-name" onClick={() => setSelected(t)}>{t.name}</button>
-                      {t.interestedAt && <span className="tal-badge">회신 도착</span>}
+                      {t.interestedAt && <span className="tal-badge">대화 수락</span>}
                     </div>
                     <div className="tal-head">
                       {나이성별 && <span className="tal-sub">{나이성별}</span>}
@@ -833,7 +833,7 @@ export default function TalentPage() {
                       </button>
                     ) : t.proposedAt ? (
                       <span className="tal-sent" title={`${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄`}>
-                        제안함 · 회신 대기
+                        제안완료
                       </span>
                     ) : (
                       <button type="button" className="tal-btn" onClick={() => openPropose(t)}>

@@ -30,11 +30,11 @@ function 상태(p: 제안): { 글: string; 색: string; 급한가: boolean } {
   if (p.interestedAt) {
     return p.lastSender === "USER"
       ? { 글: "답장 기다리는 중", 색: "#582681", 급한가: true }
-      : { 글: "회신 도착", 색: "#1f7a4d", 급한가: false };
+      : { 글: "대화 수락", 색: "#1f7a4d", 급한가: false };
   }
   if (제안만료(p.createdAt, p.interestedAt)) return { 글: "기간 지남", 색: "#b4b4b9", 급한가: false };
   return p.readAt
-    ? { 글: "읽음 · 회신 대기", 색: "#8a8a90", 급한가: false }
+    ? { 글: "읽음 · 답변 대기", 색: "#8a8a90", 급한가: false }
     : { 글: "아직 안 읽음", 색: "#8a8a90", 급한가: false };
 }
 
