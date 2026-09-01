@@ -201,7 +201,7 @@ export default function ScrappedTalentPage() {
                       <td>
                         <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
                           style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                          <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <div className="talent-avatar" style={{ width: 34, height: 44, borderRadius: 4, overflow: "hidden", flexShrink: 0, border: "1px solid #e0e0e0", background: "#f5f5f5", color: "#582681", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                             {t.avatar_url
                               ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                               : (t.name || "?").slice(0, 1)}

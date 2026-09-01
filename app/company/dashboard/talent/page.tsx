@@ -710,7 +710,8 @@ export default function TalentPage() {
             .co-li-r1 { display: flex; align-items: center; gap: 10px; }
             .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
             .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; flex-shrink: 0; }
-            .co-li-avatar { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: #582681; color: #fff; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+            /* 이력서 사진과 같은 사각형. 원형 40px 은 얼굴이 너무 작아 알아볼 수 없었다. */
+            .co-li-avatar { width: 44px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
             .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
