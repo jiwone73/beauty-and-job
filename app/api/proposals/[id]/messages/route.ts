@@ -13,8 +13,15 @@ async function 당사자(req: NextRequest, proposalId: string) {
   const { rows } = await pool.query(
     `SELECT p.company_id, p.user_id, p.created_at, p.interested_at,
             EXISTS (SELECT 1 FROM user_company_blocks b
-                     WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked
-       FROM proposals p WHERE p.id = $1`,
+                     WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked,
+            -- 약속 장소의 기본값. 공고에 적힌 근무지가 먼저고, 없으면 매장 주소다.
+            COALESCE(NULLIF(TRIM(jp.address), ''), NULLIF(TRIM(c.address), ''),
+                     NULLIF(TRIM(CONCAT_WS(' ', c.region_sido, c.region_sigungu)), '')) AS 기본장소,
+            COALESCE(c.brand_name, c.company_name) AS 매장명
+       FROM proposals p
+       LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
+       LEFT JOIN companies c ON c.id = p.company_id
+      WHERE p.id = $1`,
     [proposalId]
   );
   if (!rows.length) return { auth: null, 쪽: null as null, res: err("PROP_MSG_001", "제안을 찾을 수 없습니다.", 404) };
@@ -29,7 +36,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (res) return res;
   try {
     const { rows } = await pool.query(
-      `SELECT id, sender, kind, body, appointment_at, appointment_status, created_at
+      `SELECT id, sender, kind, body, appointment_at, appointment_place, appointment_status, created_at
          FROM proposal_messages WHERE proposal_id = $1 ORDER BY created_at`,
       [params.id]
     );
@@ -45,6 +52,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       messages: rows,
       blocked: !!제안?.blocked,
       expired: !!제안 && 제안만료(제안.created_at, 제안.interested_at),
+      기본장소: 제안?.기본장소 || null,
+      매장명: 제안?.매장명 || null,
     });
   } catch (e: any) {
     console.error("[proposal messages GET]", e);
@@ -67,6 +76,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const kind = b?.kind === "APPOINTMENT" ? "APPOINTMENT" : "TEXT";
     const body = String(b?.body || "").trim().slice(0, 1000);
     const at = b?.appointmentAt ? new Date(b.appointmentAt) : null;
+    const 장소 = String(b?.place || "").trim().slice(0, 200) || 제안?.기본장소 || null;
 
     if (kind === "TEXT" && !body) return err("PROP_MSG_003", "보낼 내용을 적어주세요.", 400);
     if (kind === "APPOINTMENT") {
@@ -75,10 +85,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     const { rows } = await pool.query(
-      `INSERT INTO proposal_messages (proposal_id, sender, kind, body, appointment_at, appointment_status)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, sender, kind, body, appointment_at, appointment_status, created_at`,
+      `INSERT INTO proposal_messages (proposal_id, sender, kind, body, appointment_at, appointment_place, appointment_status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, sender, kind, body, appointment_at, appointment_place, appointment_status, created_at`,
       [params.id, 쪽, kind, body || null, kind === "APPOINTMENT" ? at : null,
+       kind === "APPOINTMENT" ? 장소 : null,
        kind === "APPOINTMENT" ? "PROPOSED" : null]
     );
 

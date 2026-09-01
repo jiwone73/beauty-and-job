@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, CalendarPlus, Send, MoreHorizontal } from "lucide-react";
+import { X, CalendarPlus, Send, MoreHorizontal, MapPin } from "lucide-react";
 import { 제안유효일 } from "@/lib/proposal";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 화면을 쓴다 — 한쪽만 다르게 보이면
@@ -15,6 +15,7 @@ type 메시지 = {
   kind: "TEXT" | "APPOINTMENT";
   body: string | null;
   appointment_at: string | null;
+  appointment_place: string | null;
   appointment_status: "PROPOSED" | "ACCEPTED" | "DECLINED" | null;
   created_at: string;
 };
@@ -27,6 +28,10 @@ const 약속때 = (iso: string) =>
 
 // 번호를 주고받는 것은 막지 않는다 — 이 업계 채용은 결국 통화로 정해진다.
 // 다만 아무 데나 남기는 일은 없게 한 줄 알려 준다.
+// 지도는 공고 상세에서 이미 카카오를 쓰고 있다. 길찾기도 같은 곳으로 보낸다 —
+// 앱이 깔려 있으면 앱으로 열리고, 없으면 웹 지도로 열린다.
+const 길찾기 = (주소: string) => `https://map.kakao.com/link/search/${encodeURIComponent(주소)}`;
+
 const 번호있나 = (s: string) => /(01[016-9])[ .-]?\d{3,4}[ .-]?\d{4}/.test(s);
 
 export default function ProposalThread({
@@ -47,6 +52,9 @@ export default function ProposalThread({
   const [차단됨, set차단됨] = useState(false);
   const [만료됨, set만료됨] = useState(false);
   const [메뉴, set메뉴] = useState(false);
+  // 어디서 볼지. 기본값은 그 공고의 근무지고, 다른 데서 보기로 했으면 고쳐 쓴다.
+  const [장소, set장소] = useState("");
+  const [기본장소, set기본장소] = useState("");
   const 바닥 = useRef<HTMLDivElement>(null);
 
   const 헤더 = { Authorization: `Bearer ${token}` };
@@ -58,6 +66,7 @@ export default function ProposalThread({
       set나(r.data.me);
       set차단됨(!!r.data.blocked);
       set만료됨(!!r.data.expired);
+      set기본장소(r.data.기본장소 || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, token]);
@@ -85,10 +94,10 @@ export default function ProposalThread({
     const r = await fetch(`/api/proposals/${proposalId}/messages`, {
       method: "POST",
       headers: { ...헤더, "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "APPOINTMENT", appointmentAt: new Date(약속값).toISOString() }),
+      body: JSON.stringify({ kind: "APPOINTMENT", appointmentAt: new Date(약속값).toISOString(), place: 장소.trim() || 기본장소 }),
     }).then((x) => x.json()).catch(() => null);
     if (r && !r.success) alert(r.error?.message || "약속을 보내지 못했어요.");
-    set약속열림(false); set약속값("");
+    set약속열림(false); set약속값(""); set장소("");
     await 불러오기();
     set보내는중(false);
   };
@@ -151,6 +160,11 @@ export default function ProposalThread({
           <div className="pth-fixed">
             <span>면접 약속</span>
             <b>{약속때(잡힌약속.appointment_at)}</b>
+            {잡힌약속.appointment_place && (
+              <a href={길찾기(잡힌약속.appointment_place)} target="_blank" rel="noopener noreferrer">
+                <MapPin size={13} />{잡힌약속.appointment_place}
+              </a>
+            )}
           </div>
         )}
 
@@ -167,6 +181,12 @@ export default function ProposalThread({
                     <CalendarPlus size={15} />
                     <b>{약속때(m.appointment_at)}</b>
                   </div>
+                  {m.appointment_place && (
+                    <a className="pth-appt-place" href={길찾기(m.appointment_place)} target="_blank" rel="noopener noreferrer">
+                      <MapPin size={13} />
+                      <span>{m.appointment_place}</span>
+                    </a>
+                  )}
                   {m.appointment_status === "ACCEPTED" ? (
                     <span className="pth-appt-done">약속됐어요</span>
                   ) : m.appointment_status === "DECLINED" ? (
@@ -199,8 +219,12 @@ export default function ProposalThread({
         ) : 약속열림 ? (
           <div className="pth-appt-form">
             <input type="datetime-local" value={약속값} onChange={(e) => set약속값(e.target.value)} />
-            <button type="button" onClick={() => { set약속열림(false); set약속값(""); }}>취소</button>
-            <button type="button" className="key" disabled={!약속값 || 보내는중} onClick={약속보내기}>약속 보내기</button>
+            <input type="text" value={장소} placeholder={기본장소 || "만날 곳"}
+              onChange={(e) => set장소(e.target.value)} />
+            <div className="pth-appt-form-acts">
+              <button type="button" onClick={() => { set약속열림(false); set약속값(""); set장소(""); }}>취소</button>
+              <button type="button" className="key" disabled={!약속값 || 보내는중} onClick={약속보내기}>약속 보내기</button>
+            </div>
           </div>
         ) : (
           <div className="pth-send">
