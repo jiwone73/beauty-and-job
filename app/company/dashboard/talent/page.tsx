@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Search, BookmarkCheck, Bookmark, X, FileText, Paperclip, Instagram,
-  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, Lock, Briefcase, Wallet,
+  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, MessageSquare, Lock, Briefcase, Wallet,
 } from "lucide-react";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
@@ -811,26 +811,30 @@ export default function TalentPage() {
                   </div>
 
                   <div className="tal-acts">
-                    <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
-                      className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
-                      {t.scrapped
-                        ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-                        : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
-                    </button>
-                    <button type="button" className="tal-btn" onClick={() => setSelected(t)}>
-                      <FileText size={14} /> 이력서
-                    </button>
+                    <div className="tal-acts-top">
+                      <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
+                        className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                        {t.scrapped
+                          ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+                          : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+                      </button>
+                      <button type="button" className="tal-btn" onClick={() => setSelected(t)}>
+                        <FileText size={14} /> 이력서
+                      </button>
+                    </div>
                     {t.interestedAt ? (
                       /* 물어본 말은 카드에 늘어놓지 않는다 — 대화창을 열면 보인다. */
                       <button type="button" className="tal-btn key"
                         onClick={() => { if (t.interestProposalId) set대화({ id: t.interestProposalId, 이름: t.name }); }}>
-                        <Send size={14} /> 대화하기
+                        <MessageSquare size={14} /> 대화하기
                       </button>
+                    ) : t.proposedAt ? (
+                      <span className="tal-sent" title={`${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄`}>
+                        제안함 · 회신 대기
+                      </span>
                     ) : (
-                      <button type="button" className="tal-btn"
-                        title={t.proposedAt ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 제안함` : "제안하기"}
-                        onClick={() => openPropose(t)}>
-                        <Send size={14} /> {t.proposedAt ? "제안함" : "제안하기"}
+                      <button type="button" className="tal-btn" onClick={() => openPropose(t)}>
+                        <Send size={14} /> 제안하기
                       </button>
                     )}
                   </div>
