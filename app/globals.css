@@ -14185,3 +14185,51 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-form { flex-wrap: wrap; }
 .pth-appt-form input[type="text"] { flex: 1 1 100%; }
 .pth-appt-form-acts { display: flex; gap: 6px; margin-left: auto; }
+
+/* ── 인재풀 카드 ─────────────────────────────────────────────
+   표는 관리자 화면을 그대로 가져온 것이라 사람을 줄로 읽게 만들었다.
+   채용공고 관리 카드와 같은 구조로 맞춘다. */
+.tal-list { display: flex; flex-direction: column; gap: 10px; }
+.tal-card {
+  border: 1px solid #ececf0; border-radius: 12px; background: #fff;
+  padding: 14px 18px 0;
+}
+.tal-card:hover { border-color: var(--color-primary); }
+.tal-top { display: flex; align-items: flex-start; gap: 14px; }
+.tal-avatar {
+  width: 46px; height: 46px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: #582681; color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.tal-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.tal-main { flex: 1; min-width: 0; }
+.tal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.tal-badge {
+  font-size: 11.5px; padding: 2px 9px; border-radius: 20px;
+  background: #f7f7f8; color: var(--color-primary); white-space: nowrap;
+}
+.tal-sub { font-size: 12.5px; color: #a0a0a6; }
+.tal-name {
+  display: block; background: none; border: none; padding: 0; font-family: inherit;
+  font-size: 16px; color: #1a1a1a; cursor: pointer; margin-bottom: 3px;
+}
+.tal-name:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.tal-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #666; }
+.tal-recent { font-size: 13px; color: #999; margin-top: 2px; }
+.tal-acts { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.tal-scrap { background: none; border: none; padding: 2px; cursor: pointer; display: inline-flex; }
+.tal-btn {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px;
+  border: 1px solid #e2e2e6; border-radius: 8px; background: #fff;
+  font-size: 13px; font-family: inherit; color: #666; cursor: pointer; white-space: nowrap;
+}
+.tal-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.tal-btn.key { border-color: var(--color-primary); color: var(--color-primary); }
+.tal-foot {
+  display: flex; align-items: center; gap: 12px; margin-top: 12px;
+  padding: 11px 0; border-top: 1px solid #f2f2f4;
+}
+.tal-contact { font-size: 13px; color: #666; }
+.tal-contact i { font-style: normal; color: #d8d8dc; margin: 0 7px; }
+.tal-locked { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #b4b4b9; }
+.tal-links { margin-left: auto; display: flex; gap: 12px; }

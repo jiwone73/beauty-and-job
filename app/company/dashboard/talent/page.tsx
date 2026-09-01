@@ -762,137 +762,89 @@ export default function TalentPage() {
           })}
         </div>
       ) : (
-        <div className="company-card">
-          <table className="company-table" style={{ whiteSpace: "nowrap" }}>
-            <thead>
-              <tr>
-                <th>이름</th>
-                <th>구직 직군</th>
-                <th>지역</th>
-                <th>최근경력</th>
-                <th>연락처</th>
-                <th>이력서</th>
-                <th>포트폴리오</th>
-              </tr>
-            </thead>
-            <tbody>
-              {talents.map((t) => {
-                const gl = genderLabel(t.gender);
-                return (
-                  <tr key={t.id}>
-                    <td>
-                      <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
-                        style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 10, textAlign: "left" }}>
-                        <div className="talent-avatar" style={{ width: 28, height: 28, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          {t.avatarUrl
-                            ? <img src={t.avatarUrl} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                            : <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{t.name?.slice(0, 1) || "?"}</span>}
-                        </div>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
-                            <span className="tbl-name-txt">{t.name}</span>
-                            {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
-                            {/* 스크랩은 이력서가 아니라 사람에 대한 표시라 이름 옆에 둔다. */}
-                            <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
-                              onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}
-                              style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                              {t.scrapped
-                                ? <BookmarkCheck size={15} style={{ color: "#582681" }} />
-                                : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
-                            </button>
-                          </div>
-                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
-                            {[t.age ? `${t.age}세` : null, careerLabel(t.careerYears, t.careerCount)].filter(Boolean).join(" · ")}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="company-td-sub">
-                      {(t.subJob || t.mainJobGroup) ? (
-                        <div className="adm-td2 adm-w-md" style={{ textAlign: "left", wordBreak: "break-word" }}
-                          title={[t.mainJobGroup, t.subJob].filter(Boolean).join(" · ")}>
-                          {[t.mainJobGroup, t.subJob].filter(Boolean).join(" · ")}
-                        </div>
-                      ) : "—"}
-                    </td>
-                    <td className="company-td-sub">{shortenRegion(t.regionPrefer)}</td>
-                    <td className="company-td-sub">
-                      {t.careerDetail ? (
-                        <>
-                          <div style={{ maxWidth: 160, margin: "0 auto", overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
-                          {t.careerDetail.position && (
-                            <div style={{ maxWidth: 160, margin: "2px auto 0", overflow: "hidden", textOverflow: "ellipsis", color: "#aaa" }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
-                          )}
-                        </>
-                      ) : (
-                        <span style={{ color: "#ccc" }}>—</span>
-                      )}
-                    </td>
-                    <td className="company-td-sub">
-                      {talentAccess ? (
-                        <>
-                          <div style={{ marginBottom: 2, ...(t.email ? {} : { color: "#ccc" }) }}>{t.email || "이메일 없음"}</div>
-                          <div style={t.phone ? undefined : { color: "#ccc" }}>{t.phone ? formatPhone(t.phone) : "전화번호 없음"}</div>
-                        </>
-                      ) : (
-                        /* 값을 가린 게 아니라 서버가 안 내려준다. 무엇이 가려졌는지는
-                           보여 줘야 왜 공고를 올려야 하는지 알 수 있다. */
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#b4b4b9" }}>
-                          <Lock size={12} />
-                          <span>공고 등록 시 공개</span>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <button
-                            style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
-                            onClick={(e) => { e.stopPropagation(); setSelected(t); }}
-                          >
-                            <FileText size={14} />
-                            <span>이력서</span>
-                          </button>
-                        </div>
-                        {t.interestedAt ? (
-                          <button type="button"
-                            title={t.interestMessage || `${new Date(t.interestedAt).toLocaleDateString("ko-KR")}에 관심을 보냈어요`}
-                            onClick={(e) => { e.stopPropagation(); if (t.interestProposalId) set대화({ id: t.interestProposalId, 이름: t.name }); }}
-                            style={{ display: "inline-flex", flexDirection: "column", gap: 2, color: "#582681", fontSize: 13, padding: "2px 4px", maxWidth: 200, background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                              <Send size={13} />
-                              대화하기
-                            </span>
-                            {t.interestMessage && (
-                              <span style={{ color: "#6a6a70", fontSize: 12, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                                “{t.interestMessage}”
-                              </span>
-                            )}
-                          </button>
-                        ) : (
-                        <button
-                          title={t.proposedAt ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 제안함` : "제안하기"}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: t.proposedAt ? "#582681" : "#888", fontSize: 13, fontWeight: 500, padding: "2px 4px" }}
-                          onClick={(e) => { e.stopPropagation(); openPropose(t); }}
-                        >
-                          <Send size={13} />
-                          <span>{t.proposedAt ? "제안함" : "제안하기"}</span>
-                        </button>
-                        )}
-                      </div>
-                    </td>
-                    {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
-                    <td>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        <LinkCell url={t.portfolioImages?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
-                        <LinkCell url={t.snsUrl} icon={<Instagram size={13} />} label="SNS" />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="tal-list">
+          {/* 표에서 카드로. 표는 관리자 화면을 그대로 가져온 것이라 사람을 줄로
+              읽게 만들었다. 채용공고 관리 카드와 같은 구조로 맞춘다 — 위에 이름과
+              사진, 오른쪽에 할 일, 아랫줄에 연락처. */}
+          {talents.map((t) => {
+            const gl = genderLabel(t.gender);
+            const 나이성별 = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
+            const 직군 = [t.mainJobGroup, t.subJob].filter(Boolean).join(" · ");
+            const 지역 = shortenRegion(t.regionPrefer);
+            const 최근 = t.careerDetail
+              ? [t.careerDetail.company, t.careerDetail.position].filter(Boolean).join(" · ")
+              : null;
+            return (
+              <div key={t.id} className="tal-card">
+                <div className="tal-top">
+                  <div className="tal-avatar" onClick={() => setSelected(t)} title="이력서 보기">
+                    {t.avatarUrl
+                      ? <img src={t.avatarUrl} alt={t.name} loading="lazy" />
+                      : <span>{t.name?.slice(0, 1) || "?"}</span>}
+                  </div>
+
+                  <div className="tal-main">
+                    <div className="tal-head">
+                      {t.interestedAt && <span className="tal-badge">관심 있어요</span>}
+                      {나이성별 && <span className="tal-sub">{나이성별}</span>}
+                      <span className="tal-sub">{careerLabel(t.careerYears, t.careerCount)}</span>
+                    </div>
+                    <button type="button" className="tal-name" onClick={() => setSelected(t)}>{t.name}</button>
+                    <div className="tal-meta">
+                      {직군 && <span>{직군}</span>}
+                      {지역 && <span>{지역}</span>}
+                    </div>
+                    {최근 && <div className="tal-recent">최근 · {최근}</div>}
+                  </div>
+
+                  <div className="tal-acts">
+                    <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
+                      className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                      {t.scrapped
+                        ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+                        : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+                    </button>
+                    <button type="button" className="tal-btn" onClick={() => setSelected(t)}>
+                      <FileText size={14} /> 이력서
+                    </button>
+                    {t.interestedAt ? (
+                      /* 물어본 말은 카드에 늘어놓지 않는다 — 대화창을 열면 보인다. */
+                      <button type="button" className="tal-btn key"
+                        onClick={() => { if (t.interestProposalId) set대화({ id: t.interestProposalId, 이름: t.name }); }}>
+                        <Send size={14} /> 대화하기
+                      </button>
+                    ) : (
+                      <button type="button" className="tal-btn"
+                        title={t.proposedAt ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 제안함` : "제안하기"}
+                        onClick={() => openPropose(t)}>
+                        <Send size={14} /> {t.proposedAt ? "제안함" : "제안하기"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="tal-foot">
+                  {/* 관심을 보낸 사람은 스스로 연 것이라 열람권과 무관하게 보인다.
+                      잠겼을 때는 빈칸으로 두지 않는다 — 왜 비었는지 알아야 한다. */}
+                  {(talentAccess || t.interestedAt) ? (
+                    <span className="tal-contact">
+                      {t.phone ? formatPhone(t.phone) : "전화번호 없음"}
+                      {t.email && <><i>·</i>{t.email}</>}
+                    </span>
+                  ) : (
+                    <span className="tal-locked">
+                      <Lock size={12} />
+                      공고를 올리면 연락처가 열려요
+                    </span>
+                  )}
+                  <span className="tal-links">
+                    <LinkCell url={t.portfolioImages?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
+                    <LinkCell url={t.snsUrl} icon={<Instagram size={13} />} label="SNS" />
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
       </div>
