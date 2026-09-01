@@ -110,6 +110,10 @@ const SOURCE_CAFES: { name: string; url: string }[] = [
 ];
 
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
+// 나뉘어 온 글을 한 덩이로 잇는다. 빈 것은 건너뛰고, 사이는 빈 줄 하나로 띄운다.
+const 상세합치기 = (...조각: (string | null | undefined)[]) =>
+  조각.map((x) => (x || "").trim()).filter(Boolean).join("\n\n");
+
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원", "상세요강 참조"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션
 
@@ -1018,9 +1022,10 @@ export default function JobPostForm({
       setForm({
         title: j.title || "", career, education: j.education || "", type,
         deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
-        salary, description: j.description || "", requirements: j.requirements || "",
-        preferred: j.preferred_qualifications || "", benefits: j.benefits || "",
-        responsibilities: j.responsibilities || "",
+        salary,
+        description: 상세합치기(j.responsibilities, j.description, j.requirements, j.preferred_qualifications),
+        requirements: "", preferred: "", responsibilities: "",
+        benefits: j.benefits || "",
         headcount: j.headcount != null ? String(j.headcount) : "",
       });
       setAlwaysOpen(!j.deadline);
@@ -1537,12 +1542,14 @@ export default function JobPostForm({
       setForm((f) => ({
         ...f,
         title: d.title || "",
-        description: asText(d.description, ""),
+        // 원문이 담당업무·자격요건·우대사항으로 나뉘어 와도 상세요강 한 칸에 모은다.
+        description: 상세합치기(asText(d.main_duties, ""), asText(d.description, ""),
+                                asText(d.requirements, ""), asText(d.preferred, "")),
         deadline: isAlways ? "" : (d.deadline || ""),
-        requirements: asText(d.requirements, ""),
-        preferred: asText(d.preferred, ""),
+        requirements: "",
+        preferred: "",
         benefits: asText(d.benefits, ""),
-        responsibilities: asText(d.main_duties, ""),
+        responsibilities: "",
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : ""),
         education: (EDUCATION_OPTIONS.includes(d.education) ? d.education : ""),
         // 고용형태: 폼 옵션(EMPLOYMENT_TYPES) 전체 허용 + 예전 '파트타임'은 '아르바이트'로 별칭 매핑
@@ -1880,10 +1887,11 @@ export default function JobPostForm({
       setForm((f) => ({
         ...f,
         title: d.title || f.title,
-        description: d.description || f.description,
-        responsibilities: d.responsibilities || f.responsibilities,
-        requirements: d.requirements || f.requirements,
-        preferred: d.preferred || f.preferred,
+        description: 상세합치기(d.responsibilities, d.description, d.requirements, d.preferred)
+          || f.description,
+        responsibilities: "",
+        requirements: "",
+        preferred: "",
         benefits: d.benefits || f.benefits,
       }));
       if (typeof d.company_description === "string" && d.company_description.trim()) setNmDescription(d.company_description);
@@ -2415,10 +2423,10 @@ export default function JobPostForm({
     requirements: { label: "자격요건" },
     preferred: { label: "우대사항" },
   };
-  // 본사는 담당업무(JD) 중심, 매장은 상세요강 글 중심
-  const textFields: TextKey[] = isOffice
-    ? ["responsibilities", "requirements", "preferred"]
-    : ["description", "requirements", "preferred"];
+  // 상세요강은 칸 하나다. 담당업무·자격요건·우대사항으로 갈라 두었더니 불러온 글이
+  // 어느 칸에도 안 맞아 사라졌다(본사는 description 칸이 아예 없어서 통째로 유실).
+  // 원문은 그 셋으로 깔끔히 나뉘지 않는다 — 나누지 말고 있는 그대로 담는다.
+  const textFields: TextKey[] = ["description"];
 
   // 제목 자리글은 한 글자 칠 때마다 앞에서 한 글자씩 지워진다 — 쳐 넣는 글이 자리글을
   // 밀어내는 모양이라, 예시를 보면서 끝까지 쓸 수 있다. 칸을 떠나면 남은 자리글은 지운다.
@@ -3770,17 +3778,14 @@ export default function JobPostForm({
 
               {/* 상세 항목 → 그 자리에서 바로 쓰는 인라인 textarea(모달·팝오버 없음, 자동 높이) */}
               {textFields.map((k) => {
-                const meta = textFieldMeta[k];
                 const content = ((form as any)[k] || "") as string;
                 return (
                   <div key={k} style={{ padding: "8px 0", borderBottom: k === textFields[textFields.length - 1] ? "none" : "1px solid var(--color-border)" }}>
-                    {isOffice && (
-                      <label className="admin-form-label" style={{ margin: "0 0 4px", display: "block", color: "#a8a8ad", fontWeight: 400 }}>
-                        {meta.label}
-                      </label>
-                    )}
+                    {/* 칸 이름을 세우지 않는다 — 칸이 하나라 무엇을 적는 자리인지
+                        섹션 제목이 이미 말한다. 무엇이 들어가는지는 자리글 한 줄로. */}
                     <AutoTextarea
                       value={content}
+                      placeholder="담당업무 · 자격요건 · 우대사항 등 공고 내용을 그대로 붙여넣으세요"
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
                       style={{ width: "100%", fontSize: 16, color: "#333", lineHeight: 1.5, fontFamily: "inherit" }} />
                   </div>
