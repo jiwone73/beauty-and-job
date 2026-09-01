@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Clock, Calendar, MessageCircle, ChevronDown, X } from "lucide-react";
 
 const DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
@@ -46,7 +46,8 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   const [draft, setDraft] = useState(initDraft);
   const [nego, setNego] = useState(initNego);
   const [quickType, setQuickType] = useState<QuickType | null>(null);
-  const [qWeekDays, setQWeekDays] = useState(5);   // 매장: 주 몇 일
+  // 「주 5~6일」처럼 걸쳐 뽑는 매장이 많다 — 하나만 고르게 하면 그런 자리를 못 적는다.
+  const [qWeekDays, setQWeekDays] = useState<number[]>([5]);
   const [qBiweekly, setQBiweekly] = useState(false); // 매장: 격주 가능
   const [qDays, setQDays] = useState<string[]>([]);
   const [qStart, setQStart] = useState(defaultStart);
@@ -63,24 +64,86 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
 
   useEffect(() => { const [d, n] = splitNego(value); setDraft(d); setNego(n); }, [value]);
 
+  // 다시 열었을 때 눌린 것이 풀려 있지 않게, 저장된 문장에서 상태를 되짚는다.
+  // (값만 읽고 빠른 선택 상태를 안 읽어 격주·주 일수·주말이 매번 초기화됐다.)
+  const 되짚음 = useRef(false);
+  useEffect(() => {
+    if (되짚음.current) return;
+    되짚음.current = true;
+    const [본문] = splitNego(value);
+    if (!본문.trim()) return;
+    const [첫줄, ...나머지] = 본문.split("\n");
+
+    if (첫줄.includes("협의") && !첫줄.includes("주 ")) { setQuickType("nego"); return; }
+
+    // 주 N일 / 주 N~M일 / 주 N·M일
+    const 일수 = 첫줄.match(/주\s*([\d~·,]+)\s*일/);
+    if (일수) {
+      const 값 = 일수[1];
+      let ns: number[] = [];
+      const 물결 = 값.match(/^(\d+)~(\d+)$/);
+      if (물결) { for (let i = Number(물결[1]); i <= Number(물결[2]); i++) ns.push(i); }
+      else ns = 값.split(/[·,]/).map(Number).filter((n) => n > 0);
+      if (ns.length) setQWeekDays(ns);
+      setQuickType("weeks");
+    } else if (/^(평일|주말)\(/.test(첫줄)) {
+      setQuickType(첫줄.startsWith("평일") ? "weekday" : "weekend");
+    } else if (첫줄.includes("근무") && /[토일]/.test(첫줄)) {
+      setQuickType("weeks");
+    } else if (/^\d/.test(첫줄)) {
+      setQuickType("hours");
+    } else if (첫줄.trim()) {
+      setQuickType("custom");
+      setQDays(첫줄.split(/[,·]/).map((x) => x.trim()).filter((x) => DAY_OPTIONS.includes(x)));
+    }
+
+    if (첫줄.includes("격주")) setQBiweekly(true);
+    const 주말괄호 = (첫줄.match(/\+\s*([^)]*)\)/) || [])[1] || "";
+    const 주말머리 = /근무/.test(첫줄) ? 첫줄.split("근무")[0] : "";
+    const 주말 = ["토", "일"].filter((d) => 주말괄호.includes(d) || 주말머리.includes(d));
+    if (주말.length) setQ주말(주말);
+
+    // 시간 줄들. "평일 10:30 ~ 19:30" / "토 9:00 ~ 16:00" / "10:30 ~ 19:30"
+    const 시분 = (t: string) => { const [h, m] = t.split(":").map(Number); return [h, m || 0] as const; };
+    for (const 줄 of 나머지) {
+      const m = 줄.match(/(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})/);
+      if (!m) continue;
+      const [sh, sm] = 시분(m[1]);
+      const [eh, em] = 시분(m[2]);
+      if (/^(토|일)/.test(줄.trim())) { setQ주말시작(sh); setQ주말시작분(sm); setQ주말끝(eh); setQ주말끝분(em); }
+      else { setQStart(sh); setQStartMin(sm); setQEnd(eh); setQEndMin(em); }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // 주말에 나오면 시간 줄이 둘로 갈린다. 무엇이 평일 시간인지 알 수 있게 앞줄에도
   // '평일'을 적는다 — 시간 두 줄만 있으면 어느 게 어느 요일인지 모른다.
-  const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays = qWeekDays) => {
+  const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays) => {
     if (!주말.length) return `${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`;
     const 주말시간 = `${주말.join("·")} ${fmtT(q주말시작, q주말시작분)} ~ ${fmtT(q주말끝, q주말끝분)}`;
     // 평일에 안 나오는 자리(주말 알바)는 평일 시간을 적지 않는다.
-    if (weekDays - 주말.length <= 0) return 주말시간;
+    if ((weekDays.length ? Math.min(...weekDays) : 0) - 주말.length <= 0) return 주말시간;
     return `평일 ${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}\n${주말시간}`;
   };
 
   // 「주 5일 · 평일 4일＋토」처럼 요일 구성을 적는다. 평일 일수는 주 N일에서
   // 고른 주말 수를 뺀 값이라 따로 묻지 않는다.
-  const 요일줄 = (weekDays: number, biweekly: boolean, 주말 = q주말) => {
+  // 고른 일수를 한 마디로. 이어진 수는 물결로 묶는다(5,6 → 5~6).
+  const 일수말 = (ns: number[]) => {
+    const a = [...ns].sort((x, y) => x - y);
+    if (!a.length) return "";
+    const 이어짐 = a.every((n, i) => i === 0 || n === a[i - 1] + 1);
+    return a.length === 1 ? `${a[0]}` : 이어짐 ? `${a[0]}~${a[a.length - 1]}` : a.join("·");
+  };
+  const 요일줄 = (weekDays: number[], biweekly: boolean, 주말 = q주말) => {
     const 격주 = biweekly ? " (격주 가능)" : "";
-    if (!주말.length) return `주 ${weekDays}일${격주}`;
-    const 평일 = weekDays - 주말.length;
+    const 말 = 일수말(weekDays);
+    if (!말) return `요일 협의${격주}`;
+    if (!주말.length) return `주 ${말}일${격주}`;
+    // 평일 수는 가장 적게 나오는 주 기준으로 적는다 — 「주 5~6일 (평일 4일 + 토)」.
+    const 평일 = Math.min(...weekDays) - 주말.length;
     if (평일 <= 0) return `${주말.join("·")} 근무${격주}`;
-    return `주 ${weekDays}일 (평일 ${평일}일 + ${주말.join("·")})${격주}`;
+    return `주 ${말}일 (평일 ${평일}일 + ${주말.join("·")})${격주}`;
   };
 
   // 주말 요일·시간이 바뀔 때 값을 다시 만든다. 상태 반영은 다음 렌더라 새 값을 직접 받는다.
@@ -88,7 +151,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     const 주말시간 = `${주말.join("·")} ${fmtT(sh, sm)} ~ ${fmtT(eh, em)}`;
     const 줄 = !주말.length
       ? `${fmtT(qStart, qStartMin)} ~ ${fmtT(qEnd, qEndMin)}`
-      : (qWeekDays - 주말.length <= 0
+      : ((qWeekDays.length ? Math.min(...qWeekDays) : 0) - 주말.length <= 0
           ? 주말시간
           : `평일 ${fmtT(qStart, qStartMin)} ~ ${fmtT(qEnd, qEndMin)}\n${주말시간}`);
     if (type === "weeks") setDraft(`${요일줄(qWeekDays, qBiweekly, 주말)}\n${줄}`);
@@ -100,7 +163,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   };
 
   const applyQuick = (type: QuickType, days: string[], startH: number, startM: number, endH: number, endM: number,
-    weekDays = qWeekDays, biweekly = qBiweekly) => {
+    weekDays: number[] = qWeekDays, biweekly = qBiweekly) => {
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
@@ -199,8 +262,12 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         {r.type === "weeks" && (
                           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5, marginBottom: 8 }}>
                             {WEEK_DAY_COUNTS.map((n) => (
-                              <button key={n} type="button" className={`ws-weekchip ${qWeekDays === n ? "on" : ""}`}
-                                onClick={() => { setQWeekDays(n); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, n, qBiweekly); }}>
+                              <button key={n} type="button" className={`ws-weekchip ${qWeekDays.includes(n) ? "on" : ""}`}
+                                onClick={() => {
+                                  const 다음 = qWeekDays.includes(n) ? qWeekDays.filter((x) => x !== n) : [...qWeekDays, n].sort((a, b) => a - b);
+                                  setQWeekDays(다음);
+                                  applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, 다음, qBiweekly);
+                                }}>
                                 주 {n}일
                               </button>
                             ))}
