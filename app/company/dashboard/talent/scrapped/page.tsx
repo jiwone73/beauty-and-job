@@ -1,45 +1,29 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { mapResume } from "@/lib/resumeView";
-import { Search, BookmarkCheck, X, FileText, Paperclip, Instagram, Download, Printer, Send } from "lucide-react";
+import TalentCard from "@/components/company/TalentCard";
+import { mapResume, calcAgeFromBirth } from "@/lib/resumeView";
+import { Search, X, Download, Printer } from "lucide-react";
 import ResumePreview from "@/components/profile/ResumePreview";
-import { formatPhone } from "@/lib/phone";
-import LinkCell from "@/components/company/LinkCell";
-import { JS_LABEL, statusAge } from "@/lib/jobSearchStatus";
+import { companyTalentApi, type TalentItem } from "@/lib/api/company";
 
-function calcAgeFromBirth(birth: string | null): number {
-  if (!birth) return 0;
-  const y = parseInt(String(birth).slice(0, 4));
-  return new Date().getFullYear() - y;
-}
-
-function careerLabel(years: number | null, count: number): string {
-  if (!count || years === null || years === 0) return "신입";
-  return `경력 ${years}년`;
-}
-
-function genderLabel(gender: string | null): string | null {
-  if (gender === "FEMALE" || gender === "여성" || gender === "F") return "여";
-  if (gender === "MALE" || gender === "남성" || gender === "M") return "남";
-  return null;
-}
-
-function shortenRegion(region: string | null | undefined): string {
-  if (!region) return "—";
-  return region
-    .replace(/특별자치도|특별자치시|특별시|광역시/g, "")
-    .replace(/\s+/g, " ")
-    .trim() || region;
-}
+// 스크랩 인재. 나중에 제안하려고 담아 둔 사람들이라, 보는 눈은 인재 검색과 같다 —
+// 카드도 인재 검색과 같은 것을 쓴다. 표였을 때는 이름 가리기도 제안 이력도 빠져
+// 있어서, 같은 사람이 두 화면에서 다르게 보였다.
 
 export default function ScrappedTalentPage() {
   const router = useRouter();
-  const [talents, setTalents] = useState<any[]>([]);
+  const pathname = usePathname();
+  const base = pathname.split("/").filter(Boolean)[0] === "company"
+    ? "/company/dashboard"
+    : `/${pathname.split("/").filter(Boolean)[0]}`;
+
+  const [talents, setTalents] = useState<TalentItem[]>([]);
+  const [talentAccess, setTalentAccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<any | null>(null);
+  const [selected, setSelected] = useState<TalentItem | null>(null);
   const [resumeData, setResumeData] = useState<any>(null);
   const [resumeLoading, setResumeLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -49,46 +33,42 @@ export default function ScrappedTalentPage() {
     ? (localStorage.getItem("access_token") || "")
     : "";
 
-
-  useEffect(() => {
-    const fetchScrapped = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/company/talent/scrapped", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setTalents(data.data?.talents || data.talents || []);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
+  // 인재 검색과 같은 API 를 쓴다(scrapped=1). 목록이 두 벌이면 곧 어긋난다.
+  const 불러오기 = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res: any = await companyTalentApi.list({ scrapped: true, limit: 200 });
+      if (res?.success) {
+        setTalents(res.data || []);
+        setTalentAccess(!!res.meta?.talentAccess);
       }
-    };
-    fetchScrapped();
-  }, [token]);
+    } catch (e) {
+      console.error("[scrapped]", e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  useEffect(() => { 불러오기(); }, [불러오기]);
 
   useEffect(() => {
     if (!selected) { setResumeData(null); return; }
     setResumeLoading(true);
-    fetch(`/api/company/talent/${selected.user_id}/resume`, {
+    fetch(`/api/company/talent/${selected.id}/resume`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
       .then(d => setResumeData(d.data || d))
       .catch(e => console.error(e))
       .finally(() => setResumeLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
-  const handleUnscrap = async (userId: string) => {
-    if (!confirm("스크랩을 해제하시겠습니까?")) return;
+  // 여기서 스크랩을 풀면 그 줄은 목록에서 빠진다 — 스크랩한 사람만 모은 자리다.
+  const 스크랩풀기 = async (t: TalentItem) => {
     try {
-      await fetch(`/api/company/talent/${userId}/scrap`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTalents(prev => prev.filter(t => t.user_id !== userId));
-      if (selected?.user_id === userId) setSelected(null);
+      await companyTalentApi.unscrap(t.id);
+      setTalents(prev => prev.filter(x => x.id !== t.id));
+      if (selected?.id === t.id) setSelected(null);
     } catch (e) {
       console.error(e);
     }
@@ -128,12 +108,15 @@ export default function ScrappedTalentPage() {
   };
 
   const filtered = talents.filter(t =>
-    !search || (t.name || "").includes(search) || (t.job_category || "").includes(search)
+    !search
+    || (t.name || "").includes(search)
+    || (t.mainJobGroup || "").includes(search)
+    || (t.subJob || "").includes(search)
   );
 
   return (
     <CompanyLayout activePage="scrapped">
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
+      <div style={{ width: "100%" }}>
         <div className="admin-search-wrap" style={{ maxWidth: 400, marginBottom: 12 }}>
           <Search size={16} className="admin-search-icon" />
           <input className="admin-search-input" placeholder="이름, 직군 검색"
@@ -147,123 +130,20 @@ export default function ScrappedTalentPage() {
         ) : filtered.length === 0 ? (
           <div className="admin-empty">스크랩한 인재가 없습니다.</div>
         ) : (
-          <div className="company-card">
-            <table className="company-table" style={{ whiteSpace: "nowrap" }}>
-              <thead>
-                <tr>
-                  <th>이름</th>
-                  <th>구직 직군</th>
-                  <th>지역</th>
-                  <th>최근경력</th>
-                  <th>구직상태</th>
-                  <th>연락처</th>
-                  <th>이력서</th>
-                  <th>포트폴리오</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((t) => {
-                  const gl = genderLabel(t.gender);
-                  const region = shortenRegion(t.location || t.region_prefer);
-                  const email = t.email as string | null;
-                  const phone = t.phone as string | null;
-                  return (
-                    <tr key={t.user_id}>
-                      <td>
-                        <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(t)}
-                          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                          <div className="talent-avatar" style={{ width: 34, height: 44, borderRadius: 4, overflow: "hidden", flexShrink: 0, border: "1px solid #e0e0e0", background: "#f5f5f5", color: "#582681", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {t.avatar_url
-                              ? <img src={t.avatar_url} alt={t.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                              : (t.name || "?").slice(0, 1)}
-                          </div>
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ fontWeight: 400, fontSize: 15, color: "#1a1a1a", display: "flex", alignItems: "center", gap: 4 }}>
-                              <span className="tbl-name-txt">{t.name}</span>
-                              {gl && <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{gl}</span>}
-                              {/* 스크랩은 이력서가 아니라 사람에 대한 표시라 이름 옆에 둔다. 여기선 누르면 해제. */}
-                              <button type="button" title="스크랩 해제"
-                                onClick={(e) => { e.stopPropagation(); handleUnscrap(t.user_id); }}
-                                style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                                <BookmarkCheck size={15} style={{ color: "#582681" }} />
-                              </button>
-                            </div>
-                            <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
-                              {[t.age ? `${t.age}세` : null, careerLabel(t.career_years, t.career_count)].filter(Boolean).join(" · ")}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="company-td-sub">
-                        {(t.sub_job || t.job_category) ? (
-                          <div className="adm-td2 adm-w-md" style={{ textAlign: "left", wordBreak: "break-word" }}
-                            title={[t.job_category, t.sub_job].filter(Boolean).join(" · ")}>
-                            {[t.job_category, t.sub_job].filter(Boolean).join(" · ")}
-                          </div>
-                        ) : "—"}
-                      </td>
-                      <td className="company-td-sub">{region}</td>
-                      <td className="company-td-sub">
-                        {t.careerDetail ? (
-                          <>
-                            <div style={{ maxWidth: 160, margin: "0 auto", overflow: "hidden", textOverflow: "ellipsis" }} title={t.careerDetail.company}>{t.careerDetail.company}</div>
-                            {t.careerDetail.position && (
-                              <div style={{ maxWidth: 160, margin: "2px auto 0", overflow: "hidden", textOverflow: "ellipsis", color: "#aaa" }} title={t.careerDetail.position}>{t.careerDetail.position}</div>
-                            )}
-                          </>
-                        ) : <span style={{ color: "#ccc" }}>—</span>}
-                      </td>
-                      <td className="company-td-sub">
-                        {(() => {
-                          const js = JS_LABEL[String(t.job_search_status || "SEEKING")] || JS_LABEL.SEEKING;
-                          const age = statusAge(t.job_search_status_at || null);
-                          return (
-                            <>
-                              <div style={{ display: "inline-block", padding: "2px 8px", borderRadius: 11, fontSize: 12.5, fontWeight: 500, color: js.color, background: js.bg }}>
-                                {js.text}
-                              </div>
-                              {age && <div style={{ color: "#aaa", fontSize: 12, marginTop: 3 }}>{age}</div>}
-                            </>
-                          );
-                        })()}
-                      </td>
-                      <td className="company-td-sub">
-                        <div style={{ marginBottom: 2, ...(email ? {} : { color: "#ccc" }) }}>{email || "이메일 없음"}</div>
-                        <div style={phone ? undefined : { color: "#ccc" }}>{phone ? formatPhone(phone) : "전화번호 없음"}</div>
-                      </td>
-                      <td>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <button style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
-                              onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
-                              <FileText size={14} /><span>이력서</span>
-                            </button>
-                            <button className="tal-btn key" style={{ padding: "5px 10px", fontSize: 13 }}
-                              onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/talent?propose=${t.id}`); }}>
-                              <Send size={13} /> 제안 보내기
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                      {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
-                      <td>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                          <LinkCell url={t.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
-                          <LinkCell url={t.sns_url} icon={<Instagram size={13} />} label="SNS" />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="tal-list">
+            {filtered.map((t) => (
+              <TalentCard key={t.id} t={t} talentAccess={talentAccess} base={base}
+                onOpenResume={setSelected}
+                onToggleScrap={스크랩풀기}
+                onPropose={(x) => router.push(`${base}/talent?propose=${x.id}`)} />
+            ))}
           </div>
         )}
       </div>
 
       {/* 이력서 모달 */}
       {selected && (
-        <div className="rp-modal-overlay">
+        <div className="rp-modal-overlay" onClick={() => setSelected(null)}>
           <div className="rp-modal" onClick={e => e.stopPropagation()}>
             <div className="rp-modal-header">
               <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.name}</h2>

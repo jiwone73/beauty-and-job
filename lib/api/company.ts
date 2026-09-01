@@ -123,6 +123,7 @@ export const companyTalentApi = {
     gender?: string;
     jobSearchStatus?: string;
     interested?: boolean;   // 제안에 「관심 있어요」를 누른 사람만
+    scrapped?: boolean;     // 스크랩해 둔 사람만 — 스크랩 인재 화면
     page?: number;
     limit?: number;
   }) => {
@@ -140,6 +141,7 @@ export const companyTalentApi = {
     if (params?.jobSearchStatus && params.jobSearchStatus !== "전체")
       qs.set("jobSearchStatus", params.jobSearchStatus);
     if (params?.interested) qs.set("interested", "1");
+    if (params?.scrapped) qs.set("scrapped", "1");
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const query = qs.toString() ? `?${qs}` : "";

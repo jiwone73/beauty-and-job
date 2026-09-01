@@ -14287,3 +14287,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    얼굴을 살피는 크기다. 연락처 줄이 없어 아래 여백은 이 카드가 직접 맡는다. */
 .tal-card.prop { padding-bottom: 14px; }
 .tal-card.prop .tal-avatar { width: 52px; height: 66px; font-size: 17px; }
+
+/* 카드 목록의 기준 폭 — 인재 검색 카드가 기준이다(사이드 176 + 여백 28 을 뺀 값).
+   사이드가 없는 화면(지원자)도 같은 폭으로 세워야 카드 크기가 화면마다 달라지지
+   않는다. 사이드가 있는 화면은 .co-set-main 이 이미 이 폭이다. */
+.co-cardw { width: 814px; max-width: 100%; }

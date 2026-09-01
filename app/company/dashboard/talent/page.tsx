@@ -5,7 +5,7 @@ import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { mapResume } from "@/lib/resumeView";
 import {
-  Search, BookmarkCheck, Bookmark, X, FileText, Paperclip, Instagram,
+  Search, BookmarkCheck, Bookmark, X, FileText,
   Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, Lock, Briefcase, Wallet,
 } from "lucide-react";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
@@ -13,10 +13,9 @@ import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
-import { formatPhone } from "@/lib/phone";
 import { 지역비교 } from "@/lib/regionMatch";
 import { formatSalaryWon } from "@/lib/salary";
-import LinkCell from "@/components/company/LinkCell";
+import TalentCard from "@/components/company/TalentCard";
 
 type JobTab = "OFFICE" | "STORE";
 
@@ -486,7 +485,7 @@ export default function TalentPage() {
         </div>
       )}
 
-      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
+      <div style={{ width: "100%" }}>
       {/* 컨트롤 바 (모바일) */}
       {isMobile && (
         <>
@@ -678,7 +677,7 @@ export default function TalentPage() {
       )}
 
       {/* 리스트 */}
-      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
+      <div style={{ width: "100%" }}>
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>
       ) : talents.length === 0 ? (
@@ -758,88 +757,10 @@ export default function TalentPage() {
           {/* 표에서 카드로. 표는 관리자 화면을 그대로 가져온 것이라 사람을 줄로
               읽게 만들었다. 채용공고 관리 카드와 같은 구조로 맞춘다 — 위에 이름과
               사진, 오른쪽에 할 일, 아랫줄에 연락처. */}
-          {talents.map((t) => {
-            const gl = genderLabel(t.gender);
-            const 나이성별 = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
-            const 직군 = [t.mainJobGroup, t.subJob].filter(Boolean).join(" · ");
-            const 지역 = shortenRegion(t.regionPrefer);
-            const 최근 = t.careerDetail
-              ? [t.careerDetail.company, t.careerDetail.position].filter(Boolean).join(" · ")
-              : null;
-            return (
-              <div key={t.id} className="tal-card">
-                <div className="tal-top">
-                  <div className="tal-avatar" onClick={() => setSelected(t)} title="이력서 보기">
-                    {t.avatarUrl
-                      ? <img src={t.avatarUrl} alt={t.name} loading="lazy" />
-                      : <span>{t.name?.slice(0, 1) || "?"}</span>}
-                  </div>
-
-                  <div className="tal-main">
-                    <div className="tal-nameline">
-                      <button type="button" className="tal-name" onClick={() => setSelected(t)}>{t.name}</button>
-                      {/* 스크랩은 그 사람에 붙는 표시라 이름 옆이 제자리다. */}
-                      <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
-                        className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
-                        {t.scrapped
-                          ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
-                          : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
-                      </button>
-                    </div>
-                    <div className="tal-head">
-                      {나이성별 && <span className="tal-sub">{나이성별}</span>}
-                      <span className="tal-sub">{careerLabel(t.careerYears, t.careerCount)}</span>
-                    </div>
-                    {t.intro && <div className="tal-intro">{t.intro}</div>}
-                    <div className="tal-meta">
-                      {직군 && <span>{직군}</span>}
-                      {지역 && <span>{지역}</span>}
-                    </div>
-                    {최근 && <div className="tal-recent">최근 · {최근}</div>}
-                  </div>
-
-                  {/* 이 화면의 일은 제안을 보내는 데서 끝난다 — 읽었는지, 대화를
-                      수락했는지, 며칠 남았는지는 보낸 제안이 맡는다. 다만 이미 보냈다는
-                      표시는 여기 남긴다. 같은 사람에게 또 보내는 실수가 일어나는 자리가
-                      정확히 여기다. */}
-                  <div className="tal-acts">
-                    {t.proposedAt || t.interestedAt ? (
-                      <Link className="tal-sent" href={`${base}/proposals`}
-                        title={t.proposedAt
-                          ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄 · 보낸 제안에서 보기`
-                          : "보낸 제안에서 보기"}>
-                        제안완료
-                      </Link>
-                    ) : (
-                      <button type="button" className="tal-btn" onClick={() => openPropose(t)}>
-                        제안하기
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="tal-foot">
-                  {/* 관심을 보낸 사람은 스스로 연 것이라 열람권과 무관하게 보인다.
-                      잠겼을 때는 빈칸으로 두지 않는다 — 왜 비었는지 알아야 한다. */}
-                  {(talentAccess || t.interestedAt) ? (
-                    <span className="tal-contact">
-                      {t.phone ? formatPhone(t.phone) : "전화번호 없음"}
-                      {t.email && <><i>·</i>{t.email}</>}
-                    </span>
-                  ) : (
-                    <span className="tal-locked">
-                      <Lock size={12} />
-                      공고를 올리면 연락처가 열려요
-                    </span>
-                  )}
-                  <span className="tal-links">
-                    <LinkCell url={t.portfolioImages?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
-                    <LinkCell url={t.snsUrl} icon={<Instagram size={13} />} label="SNS" />
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+          {talents.map((t) => (
+            <TalentCard key={t.id} t={t} talentAccess={talentAccess} base={base}
+              onOpenResume={setSelected} onToggleScrap={toggleScrap} onPropose={openPropose} />
+          ))}
         </div>
       )}
       </div>

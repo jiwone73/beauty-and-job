@@ -278,7 +278,7 @@ function ApplicantsContent() {
 
   return (
     <CompanyLayout activePage="applicants">
-      <div style={{ width: isMobile ? "100%" : "fit-content", maxWidth: "100%" }}>
+      <div className={isMobile ? undefined : "co-cardw"} style={isMobile ? { width: "100%" } : undefined}>
       {isMobile ? (
         <div className="co-topbar">
           <button className="co-jobdd" onClick={() => setJobSheetOpen(true)}>

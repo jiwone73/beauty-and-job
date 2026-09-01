@@ -19,6 +19,9 @@ export async function GET(req: NextRequest) {
   const gender      = searchParams.get("gender") || null;         // 매장직
   // 제안에 「관심 있어요」를 누른 사람만. 알림에서 넘어올 때 쓴다.
   const interested  = searchParams.get("interested") === "1";
+  // 스크랩해 둔 사람만. 스크랩 목록도 인재 검색과 같은 카드를 쓰려면 같은 모양으로
+  // 내려와야 한다 — 따로 만든 쿼리는 이름 가리기도, 제안 이력도 빠져 있었다.
+  const onlyScrapped = searchParams.get("scrapped") === "1";
   const page        = parseInt(searchParams.get("page") || "1");
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
@@ -87,7 +90,9 @@ export async function GET(req: NextRequest) {
 
   // 인재검색에 나오는 사람은 '공개'로 둔 사람뿐이다. 비공개는 자기 이력서를
   // 기업에게 보이지 않겠다는 뜻이라 어떤 조건으로도 검색되지 않는다.
-  const jsClause = "AND up.job_search_status <> 'CLOSED'";
+  // 스크랩 목록에서만은 비공개로 돌린 사람도 보여준다 — 이미 담아 둔 사람이라
+  // 그 사람이 문을 닫았다는 사실 자체가 알아야 할 정보다.
+  const jsClause = onlyScrapped ? "" : "AND up.job_search_status <> 'CLOSED'";
 
   // 경력 (CTE 이후)
   let careerClause = "";
@@ -192,6 +197,10 @@ export async function GET(req: NextRequest) {
         ${interested ? `AND EXISTS (
           SELECT 1 FROM proposals pi
            WHERE pi.company_id = $1 AND pi.user_id = u.id AND pi.interested_at IS NOT NULL
+        )` : ""}
+        ${onlyScrapped ? `AND EXISTS (
+          SELECT 1 FROM company_talent_scraps cs
+           WHERE cs.company_id = $1 AND cs.user_id = u.id
         )` : ""}
         ${jobTypeClause}
         ${jobGroupClause}
