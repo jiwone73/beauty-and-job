@@ -21,7 +21,8 @@ type Posting = {
 type Data = {
   adminId: string; startDate: string; today: string;
   weeklyTargetHours: number; currentWeekTargetMinutes?: number; reliefMinutes?: number;
-  totalTargetHours: number; plannedWeeks: number;
+  totalTargetHours: number;
+  targetMinutes: number;      // 실제 총량(기본 + 미달 벌점 + 옮긴 시간) plannedWeeks: number;
   totalMinutes: number; remainingMinutes: number; weeksLeft: number;
   blockedWeeks?: Record<number, string>;
   neededPerWeekMinutes: number;
@@ -110,7 +111,7 @@ export default function AlbaPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <p style={{ margin: 0, fontSize: 13, color: "#777" }}>
           아이디 <b style={{ color: "#582681" }}>{data.adminId}</b> · {data.startDate} 시작 ·
-          {" "}매주 월~일 기준 주 {data.weeklyTargetHours}시간, 합계 {data.totalTargetHours}시간
+          {" "}매주 월~일 기준 주 {data.weeklyTargetHours}시간, 합계 {formatMinutes(data.targetMinutes)}
           {data.running && (
             <span style={{ marginLeft: 8, color: "#0f6e56" }}>● 지금 근무 중</span>
           )}
@@ -123,13 +124,13 @@ export default function AlbaPage() {
       {/* 요약 */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 20 }}>
         <div style={card}>
-          <p style={label}>누적 근무</p>
-          <p style={big}>{formatMinutes(data.totalMinutes)}</p>
+          <p style={label}>총 근무 할당 시간</p>
+          <p style={big}>{formatMinutes(data.targetMinutes)}</p>
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: "#582681" }} />
           </div>
           <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
-            {data.adjustedTargetHours}시간 중 {pct}%
+            {formatMinutes(data.totalMinutes)} 완료 · {pct}%
             {data.penaltyHours > 0 && (
               <span style={{ color: "#e74c3c" }}>
                 {" "}(기본 {data.totalTargetHours} + 미달 {data.shortfallWeeks}주 × {data.penaltyPerShortfallHours}시간)
@@ -154,10 +155,10 @@ export default function AlbaPage() {
         </div>
 
         <div style={card}>
-          <p style={label}>남은 목표</p>
+          <p style={label}>남은 근무시간</p>
           <p style={big}>{formatMinutes(data.remainingMinutes)}</p>
           <p style={{ fontSize: 12, color: "#888", marginTop: 10 }}>
-            남은 {data.weeksLeft}주 동안 주 {formatMinutes(data.neededPerWeekMinutes)}씩
+            주 {formatMinutes(data.neededPerWeekMinutes)}씩 · {data.weeksLeft}주 더
           </p>
         </div>
 

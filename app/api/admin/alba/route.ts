@@ -104,13 +104,16 @@ export async function GET(req: NextRequest) {
   ).length;
   const penaltyHours = shortfallWeeks * ALBA_SHORTFALL_PENALTY_HOURS;
   const adjustedTargetHours = ALBA_TOTAL_TARGET_HOURS + penaltyHours;
-  // 그 주에서 뺀 시간은 전체 목표에 그대로 더한다 — 총량은 줄지 않는다.
+  // 총량은 불변이다(기본 70시간 + 미달 벌점). 주간 감면은 그 주 판정만 낮출 뿐,
+  // 못 채운 시간은 어차피 남은 시간에 그대로 남는다 — 총량에 또 더하면 두 번 센다.
   const reliefMinutes = totalReliefMinutes();
-  const targetMinutes = adjustedTargetHours * 60 + reliefMinutes;
+  const targetMinutes = adjustedTargetHours * 60;
 
   // 남은 주(이번 주 포함) 동안 주당 몇 시간씩 해야 목표를 채우는지
-  const weeksLeft = Math.max(1, totalWeeks() - pastWeeks.length);
   const remainingMinutes = Math.max(0, targetMinutes - totalMinutes);
+  // 주 6시간은 고정이다. 남은 시간을 남은 주로 나누면 「주 5시간 58분」 같은 값이
+  // 나와 약속과 다른 말이 된다. 시간은 그대로 두고, 그 속도로 몇 주가 더 필요한지를 센다.
+  const weeksLeft = Math.max(1, Math.ceil(remainingMinutes / (ALBA_WEEKLY_TARGET_HOURS * 60)));
 
   return ok({
     adminId,
@@ -129,7 +132,9 @@ export async function GET(req: NextRequest) {
     totalMinutes,
     remainingMinutes,
     weeksLeft,
-    neededPerWeekMinutes: Math.ceil(remainingMinutes / weeksLeft),
+    neededPerWeekMinutes: ALBA_WEEKLY_TARGET_HOURS * 60,
+    // 실제 총량(기본 + 미달 벌점 + 옮긴 시간). 화면이 '합계'로 말해야 빼기가 맞는다.
+    targetMinutes,
     currentWeek: current,
     weeks,
     blockedWeeks: ALBA_BLOCKED_WEEKS,
