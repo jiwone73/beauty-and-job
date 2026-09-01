@@ -53,8 +53,35 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   const [qStartMin, setQStartMin] = useState(0);
   const [qEnd, setQEnd] = useState(defaultEnd);
   const [qEndMin, setQEndMin] = useState(0);
+  // 평일과 주말 시간이 다른 매장이 많다(평일 10:30~19:30 / 토 09:00~16:00).
+  // 켤 때만 둘째 줄이 서고, 안 켜면 예전과 똑같이 시간 한 줄로 나간다.
+  const [q주말따로, setQ주말따로] = useState(false);
+  const [q주말시작, setQ주말시작] = useState(9);
+  const [q주말시작분, setQ주말시작분] = useState(0);
+  const [q주말끝, setQ주말끝] = useState(16);
+  const [q주말끝분, setQ주말끝분] = useState(0);
 
   useEffect(() => { const [d, n] = splitNego(value); setDraft(d); setNego(n); }, [value]);
+
+  // 주말 시간이 따로면 한 줄 더 붙인다. 무엇이 평일 시간인지 알 수 있게
+  // 앞줄에도 '평일'을 적는다 — 시간 두 줄만 있으면 어느 게 어느 요일인지 모른다.
+  const 시간줄 = (startH: number, startM: number, endH: number, endM: number) =>
+    q주말따로
+      ? `평일 ${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}\n주말 ${fmtT(q주말시작, q주말시작분)} ~ ${fmtT(q주말끝, q주말끝분)}`
+      : `${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`;
+
+  // 주말 시간이 바뀔 때 값을 다시 만든다. 상태 반영은 다음 렌더라 새 값을 직접 받는다.
+  const 주말반영 = (type: QuickType, sh: number, sm: number, eh: number, em: number, 따로 = q주말따로) => {
+    const 줄 = 따로
+      ? `평일 ${fmtT(qStart, qStartMin)} ~ ${fmtT(qEnd, qEndMin)}\n주말 ${fmtT(sh, sm)} ~ ${fmtT(eh, em)}`
+      : `${fmtT(qStart, qStartMin)} ~ ${fmtT(qEnd, qEndMin)}`;
+    if (type === "weeks") setDraft(`주 ${qWeekDays}일${qBiweekly ? " (격주 가능)" : ""}\n${줄}`);
+    else if (type === "hours") setDraft(줄);
+    else {
+      const label = type === "weekday" ? "평일(월~금)" : type === "weekend" ? "주말(토~일)" : qDays.join(", ");
+      setDraft(`${label}\n${줄}`);
+    }
+  };
 
   const applyQuick = (type: QuickType, days: string[], startH: number, startM: number, endH: number, endM: number,
     weekDays = qWeekDays, biweekly = qBiweekly) => {
@@ -62,9 +89,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
     // 매장은 어느 요일인지보다 주 몇 일 나오는지가 먼저다 — 요일은 매주 돌아가며 바뀐다.
-    if (type === "hours") { setDraft(`${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`); return; }
+    if (type === "hours") { setDraft(시간줄(startH, startM, endH, endM)); return; }
     if (type === "weeks") {
-      setDraft(`주 ${weekDays}일${biweekly ? " (격주 가능)" : ""}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
+      setDraft(`주 ${weekDays}일${biweekly ? " (격주 가능)" : ""}\n${시간줄(startH, startM, endH, endM)}`);
       return;
     }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
@@ -72,7 +99,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     const label = type === "weekday" ? "평일(월~금)" : type === "weekend" ? "주말(토~일)" : days.join(", ");
     // 요일과 시간을 한 줄에 붙이면 길어서 표·칸에서 줄바꿈 없이 한 줄로 늘어졌다
     // ("시간 줄바꿈 안되어 있어") — 요일 다음 줄에 시간을 따로 둔다.
-    setDraft(`${label}\n${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
+    setDraft(`${label}\n${시간줄(startH, startM, endH, endM)}`);
   };
 
   const toggleQDay = (d: string) => {
@@ -184,6 +211,38 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
                         </div>
+                        {/* 평일과 주말 시간이 다른 매장이 많다. 켤 때만 줄이 하나 더 선다 —
+                            늘 두 줄이면 같은 시간인 곳도 두 번 고르게 된다.
+                            '협의' 카드는 바깥에서 이미 걸러져 여기에 오지 않는다. */}
+                        <>
+                            <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
+                              <input type="checkbox" checked={q주말따로}
+                                onChange={(e) => {
+                                  setQ주말따로(e.target.checked);
+                                  주말반영(r.type, q주말시작, q주말시작분, q주말끝, q주말끝분, e.target.checked);
+                                }}
+                                style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                              주말은 시간이 달라요
+                            </label>
+                            {q주말따로 && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
+                                <span style={{ fontSize: 12.5, color: "#888", marginRight: 2 }}>주말</span>
+                                <select className="ws-hourSel" value={q주말시작} onChange={(e) => { const v = Number(e.target.value); setQ주말시작(v); 주말반영(r.type, v, q주말시작분, q주말끝, q주말끝분); }}>
+                                  {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
+                                </select>
+                                <select className="ws-hourSel" value={q주말시작분} onChange={(e) => { const v = Number(e.target.value); setQ주말시작분(v); 주말반영(r.type, q주말시작, v, q주말끝, q주말끝분); }}>
+                                  {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
+                                </select>
+                                <span style={{ color: "#888", fontSize: 13 }}>~</span>
+                                <select className="ws-hourSel" value={q주말끝} onChange={(e) => { const v = Number(e.target.value); setQ주말끝(v); 주말반영(r.type, q주말시작, q주말시작분, v, q주말끝분); }}>
+                                  {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
+                                </select>
+                                <select className="ws-hourSel" value={q주말끝분} onChange={(e) => { const v = Number(e.target.value); setQ주말끝분(v); 주말반영(r.type, q주말시작, q주말시작분, q주말끝, v); }}>
+                                  {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
+                                </select>
+                              </div>
+                            )}
+                        </>
                         {/* 조율 여지는 시간에 걸리는 값이라 시간 바로 밑, 이 카드 안에 둔다.
                             팝오버 맨 아래에 두면 어느 항목에 걸리는지 자리로 알 수 없었다. */}
                         <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
