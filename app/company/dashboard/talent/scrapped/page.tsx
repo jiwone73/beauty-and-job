@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Search, BookmarkCheck, X, FileText, Paperclip, Instagram, Download, Printer } from "lucide-react";
+import { Search, BookmarkCheck, X, FileText, Paperclip, Instagram, Download, Printer, Send } from "lucide-react";
 import ResumePreview from "@/components/profile/ResumePreview";
 import { formatPhone } from "@/lib/phone";
 import LinkCell from "@/components/company/LinkCell";
@@ -33,6 +34,7 @@ function shortenRegion(region: string | null | undefined): string {
 }
 
 export default function ScrappedTalentPage() {
+  const router = useRouter();
   const [talents, setTalents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -266,6 +268,10 @@ export default function ScrappedTalentPage() {
                             <button style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: "2px 4px" }}
                               onClick={(e) => { e.stopPropagation(); setSelected(t); }}>
                               <FileText size={14} /><span>이력서</span>
+                            </button>
+                            <button className="tal-btn key" style={{ padding: "5px 10px", fontSize: 13 }}
+                              onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/talent?propose=${t.id}`); }}>
+                              <Send size={13} /> 제안 보내기
                             </button>
                           </div>
                         </div>

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings, UserCog,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Plus
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Plus, Send
 } from "lucide-react";
 
 
@@ -18,6 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   applicants: "지원자 관리",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
+  proposals: "보낸 제안",
   settings: "기업 정보",
   account: "계정 설정",
   password: "비밀번호 변경",
@@ -145,6 +146,7 @@ export default function CompanyLayout({ children, activePage }: {
     { id: "jobs",      label: "채용공고",       icon: FileText,     href: `${base}/jobs`, group: "jobs" },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
+    { id: "proposals", label: "보낸 제안",     icon: Send,         href: `${base}/proposals`, group: "talent" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
     // 계정의 책임자는 담당자다 — 담당자 정보를 매장정보(프로필)에서 계정 설정으로 옮긴다
@@ -193,7 +195,7 @@ export default function CompanyLayout({ children, activePage }: {
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
-    : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
+    : id === "talent" ? (activePage === "talent" || activePage === "scrapped" || activePage === "proposals")
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의

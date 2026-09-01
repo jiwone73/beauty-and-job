@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Briefcase, FileText, Plus, Inbox, AlarmClock, MessageSquare } from "lucide-react";
+import { Briefcase, FileText, Plus, Inbox, AlarmClock, MessageSquare, BookmarkCheck, Send } from "lucide-react";
 
 interface Stats {
   active_jobs: number;
   deadline_today: number;
+  scrapped_talents: number;
+  awaiting_reply: number;
   unanswered_chats: number;
 }
 
@@ -102,7 +104,9 @@ export default function CompanyDashboard() {
     { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs?status=오늘 마감" },
     // 구직자가 말을 걸었는데 아직 답하지 않은 대화. 답하고 말고는 매장의 몫이지만,
     // 몇 건이 기다리는지는 보여야 판단이 선다.
-    { label: "답 안 한 문의", value: stats?.unanswered_chats ?? 0, unit: "건", color: "#582681", icon: MessageSquare, href: "/company/dashboard/talent?interested=1" },
+    { label: "찜한 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#582681", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
+    { label: "회신 대기", value: stats?.awaiting_reply ?? 0, unit: "건", color: "#8a8a90", icon: Send, href: "/company/dashboard/proposals" },
+    { label: "미답변 문의", value: stats?.unanswered_chats ?? 0, unit: "건", color: "#582681", icon: MessageSquare, href: "/company/dashboard/talent?interested=1" },
   ];
 
 

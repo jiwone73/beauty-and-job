@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest } from 'next/server'
+import { 제안유효일 } from "@/lib/proposal";
 import pool from '@/lib/db'
 import { ok, requireAuth } from '@/lib/api'
 
@@ -94,7 +95,22 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
+  // 찜한 인재 — 제안하려고 담아 둔 사람. 쌓인 숫자가 아니라 아직 안 보낸 할 일이다.
+  const scrapRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt FROM company_talent_scraps WHERE company_id = $1`,
+    [companyId]
+  )
+  // 회신 대기 — 보냈는데 아직 답이 없는 제안(기한 안쪽). 기한이 지난 것은 끝난 것이라 세지 않는다.
+  const awaitingRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt FROM proposals
+      WHERE company_id = $1 AND interested_at IS NULL
+        AND created_at >= NOW() - ($2 || ' days')::interval`,
+    [companyId, String(제안유효일)]
+  )
+
   return ok({
+    scrapped_talents: scrapRes.rows[0].cnt,
+    awaiting_reply: awaitingRes.rows[0].cnt,
     unanswered_chats: unansweredRes.rows[0].cnt,
     active_jobs: activeJobs.rows[0].cnt,
     total_applications: totalApplications.rows[0].cnt,

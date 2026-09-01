@@ -211,6 +211,13 @@ export default function TalentPage() {
   // 알림에서 「관심 있어요」를 눌러 넘어오면 그 사람들만 추려 본다 —
   // 목록이 길면 누가 답했는지 찾는 일이 일이 된다.
   const [관심만, set관심만] = useState(false);
+  // 스크랩 목록에서 「제안 보내기」로 넘어오면 그 사람 제안 창을 바로 연다 —
+  // 찜해 둔 사람을 다시 검색해서 찾게 하지 않는다.
+  const [보낼사람, set보낼사람] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    set보낼사람(new URLSearchParams(window.location.search).get("propose"));
+  }, []);
   // 관심을 보인 사람과 이어서 말한다. 목록을 떠나지 않는다.
   const [대화, set대화] = useState<{ id: string; 이름: string } | null>(null);
   useEffect(() => {
@@ -238,6 +245,11 @@ export default function TalentPage() {
       const res = await companyTalentApi.list(params);
       if (res.success && res.data) {
         setTalents(res.data);
+        if (보낼사람) {
+          const 그사람 = res.data.find((t) => t.id === 보낼사람);
+          if (그사람) openPropose(그사람);
+          set보낼사람(null);
+        }
         setTotal(res.meta?.total ?? res.data.length);
         setTalentAccess(((res.meta as any)?.talentAccess) !== false);
       }
