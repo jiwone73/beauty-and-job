@@ -14252,3 +14252,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-check { width: 15px; height: 15px; margin: 2px 0 0; accent-color: #582681; flex-shrink: 0; }
 /* 고른 줄의 바탕은 사이드 메뉴 선택색과 같다. */
 .tal-card.on { background: #f7f7f8; border-color: var(--color-primary); }
+/* 미열람은 눌러서 그 공고 지원자로 바로 간다 — 숫자만 보여 주면 어디로
+   가야 하는지 다시 찾아야 한다. */
+.co-jc-unread { background: none; border: none; padding: 0; font: inherit; color: var(--color-primary); cursor: pointer; }
+.co-jc-unread b { color: var(--color-primary); font-weight: 500; }
+.co-jc-unread:hover { text-decoration: underline; text-underline-offset: 3px; }

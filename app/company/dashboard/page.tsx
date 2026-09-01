@@ -130,7 +130,7 @@ export default function CompanyDashboard() {
       <div style={{ marginTop: 16 }}>
         <div className="company-card">
           <div className="company-card-head">
-            <h2 className="company-card-title">아직 안 본 지원자{안본전체.length > 0 && <span style={{ marginLeft: 8, color: "#582681" }}>{안본전체.length}</span>}</h2>
+            <h2 className="company-card-title">미열람 지원자{안본전체.length > 0 && <span style={{ marginLeft: 8, color: "#582681" }}>{안본전체.length}</span>}</h2>
             {applicants.length > 0 && (
               <Link href="/company/dashboard/applicants" className="company-card-more">전체보기 →</Link>
             )}
@@ -190,7 +190,7 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>안 본 지원자</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>미열람</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (

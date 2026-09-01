@@ -498,6 +498,15 @@ function CompanyJobsContent() {
                     </button>
                     <span className="co-jc-nums">
                       지원자 <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
+                      {(job.unviewed_count ?? 0) > 0 && (
+                        <>
+                          <i>·</i>
+                          <button type="button" className="co-jc-unread"
+                            onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); }}>
+                            미열람 <b>{job.unviewed_count}</b>
+                          </button>
+                        </>
+                      )}
                     </span>
                   </div>
                 )}

@@ -13,6 +13,7 @@ export interface CompanyJob {
   status: JobStatus;
   view_count: number;
   application_count: number;
+  unviewed_count?: number;   // 아직 열어보지 않은 지원자 수
   deadline: string | null;
   is_featured: boolean;
   created_at: string;
