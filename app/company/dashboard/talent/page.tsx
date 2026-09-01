@@ -799,7 +799,13 @@ export default function TalentPage() {
                   <div className="tal-main">
                     <div className="tal-nameline">
                       <button type="button" className="tal-name" onClick={() => setSelected(t)}>{t.name}</button>
-                      {t.interestedAt && <span className="tal-badge">대화 수락</span>}
+                      {/* 스크랩은 그 사람에 붙는 표시라 이름 옆이 제자리다. */}
+                      <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
+                        className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                        {t.scrapped
+                          ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
+                          : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
+                      </button>
                     </div>
                     <div className="tal-head">
                       {나이성별 && <span className="tal-sub">{나이성별}</span>}
@@ -813,31 +819,25 @@ export default function TalentPage() {
                     {최근 && <div className="tal-recent">최근 · {최근}</div>}
                   </div>
 
+                  {/* 오른쪽은 위에 지금 상태, 아래에 할 일 하나. 이력서 버튼은 뺐다 —
+                      이름이나 사진을 누르면 열려서 같은 일을 하는 자리가 둘이었다. */}
                   <div className="tal-acts">
-                    <div className="tal-acts-top">
-                      <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
-                        className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
-                        {t.scrapped
-                          ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-                          : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
-                      </button>
-                      <button type="button" className="tal-btn" onClick={() => setSelected(t)}>
-                        <FileText size={14} /> 이력서
-                      </button>
-                    </div>
-                    {t.interestedAt ? (
+                    <span className="tal-state">
+                      {t.interestedAt ? <span className="tal-badge">대화 수락</span>
+                        : t.proposedAt ? <span className="tal-sent" title={`${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄`}>제안완료</span>
+                        : null}
+                    </span>
+                    {t.proposedAt || t.interestedAt ? (
                       /* 물어본 말은 카드에 늘어놓지 않는다 — 대화창을 열면 보인다. */
-                      <button type="button" className="tal-btn key"
+                      <button type="button" className={`tal-btn${t.interestedAt ? " key" : ""}`}
+                        disabled={!t.interestedAt}
+                        title={t.interestedAt ? "" : "상대가 대화를 수락하면 열려요"}
                         onClick={() => { if (t.interestProposalId) set대화({ id: t.interestProposalId, 이름: t.name }); }}>
-                        <MessageSquare size={14} /> 대화하기
+                        대화하기
                       </button>
-                    ) : t.proposedAt ? (
-                      <span className="tal-sent" title={`${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄`}>
-                        제안완료
-                      </span>
                     ) : (
                       <button type="button" className="tal-btn" onClick={() => openPropose(t)}>
-                        <Send size={14} /> 제안하기
+                        제안하기
                       </button>
                     )}
                   </div>

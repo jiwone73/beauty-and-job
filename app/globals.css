@@ -14217,8 +14217,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-name {
   display: block; background: none; border: none; padding: 0; font-family: inherit;
   font-size: 17px; color: #1a1a1a; cursor: pointer; margin-bottom: 4px; text-align: left;
+  text-decoration: underline; text-decoration-color: #d8d3de;
+  text-decoration-thickness: 1px; text-underline-offset: 3px;
 }
-.tal-name:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.tal-name:hover { color: var(--color-primary); text-decoration-color: var(--color-primary); }
 .tal-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #666; }
 .tal-recent { font-size: 13px; color: #999; margin-top: 2px; }
 .tal-acts { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
@@ -14273,3 +14275,19 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13.5px; color: #4a4453; line-height: 1.5; margin: 2px 0 5px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+/* 오른쪽 칸 — 위에 상태, 아래에 할 일 하나. 상태 자리는 비어도 높이를 지켜
+   버튼이 카드마다 다른 높이에 서지 않게 한다. */
+.tal-state { display: flex; align-items: center; min-height: 20px; }
+.tal-nameline .tal-scrap { padding: 0; display: inline-flex; }
+/* 오른쪽 칸 — 위에 지금 상태, 아래에 그 상태에서 할 수 있는 것 하나.
+   상태가 비어도 자리는 지킨다. 안 그러면 버튼이 카드마다 다른 높이에 선다. */
+.tal-state { display: flex; align-items: center; min-height: 22px; }
+.tal-nameline .tal-scrap { padding: 0; display: inline-flex; }
+.tal-btn:disabled { border-color: #ececf0; color: #c8c8ce; cursor: default; }
+.tal-btn:disabled:hover { border-color: #ececf0; color: #c8c8ce; }
+/* 오른쪽 칸 — 위에 지금 상태, 아래에 그 상태에서 할 수 있는 것 하나.
+   상태가 비어도 자리는 지킨다. 안 그러면 버튼이 카드마다 다른 높이에 선다. */
+.tal-state { display: flex; align-items: center; min-height: 22px; }
+.tal-nameline .tal-scrap { padding: 0; display: inline-flex; }
+.tal-btn:disabled { border-color: #ececf0; color: #c8c8ce; cursor: default; }
+.tal-btn:disabled:hover { border-color: #ececf0; color: #c8c8ce; }
