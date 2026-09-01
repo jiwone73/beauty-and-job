@@ -521,24 +521,27 @@ export default function JobPostForm({
   //   페이지 밖으로 넘쳐 화면 전체가 옆으로 밀리기 때문(모바일에서 특히 심함).
   const [popAt, setPopAt] = useState<{ left: number; top: number } | null>(null);
   const [cellFree, setCellFree] = useState(false); // 목록 대신 직접입력 모드
-  const popTrigger = useRef<{ el: HTMLElement; width: number; height: number } | null>(null);
-  const placePop = (el: HTMLElement, width: number, height: number) => {
+  const popTrigger = useRef<{ el: HTMLElement; width: number; height: number; 위로?: boolean } | null>(null);
+  // 팝오버는 트리거에 붙어 다닌다. 화면 안으로 가두면(예전에 그랬다) 팝오버가
+  // 화면보다 크거나 아래쪽에 있을 때 그 값에 눌러앉아, 페이지를 굴려도 혼자
+  // 제자리에 남아 잘린 채로 보였다. 붙어 있으면 스크롤로 마저 볼 수 있다.
+  const placePop = (el: HTMLElement, width: number, height: number, 위로?: boolean) => {
     const r = el.getBoundingClientRect();
+    // 좌우는 가둔다 — 옆으로는 굴릴 수 없어 화면 밖으로 나가면 아예 못 본다.
     const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
-    // 아래 공간이 모자라면 트리거 위쪽으로 뒤집어 띄운다(모바일 하단에서 잘리지 않게).
-    //   위쪽도 모자라면(내용이 큰 팝오버가 화면 중간 트리거에서 열릴 때) 무조건 위로
-    //   뒤집지 않고 공간이 더 넉넉한 쪽을 골라 잘리는 걸 줄인다.
-    const below = r.bottom + 4;
-    const spaceBelow = window.innerHeight - 8 - below;
-    const spaceAbove = r.top - 4 - 8;
-    const raw = below + height > window.innerHeight - 8 && spaceAbove > spaceBelow ? r.top - height - 4 : below;
-    const top = Math.max(8, Math.min(raw, window.innerHeight - height - 8)); // 항상 화면 안
+    const top = 위로 ? r.top - height - 4 : r.bottom + 4;
     setPopAt({ left, top });
   };
   const openPopAt = (el: HTMLElement | null, width: number, height: number) => {
     if (!el) return;
-    popTrigger.current = { el, width, height };
-    placePop(el, width, height);
+    // 위로 띄울지는 열 때 한 번만 정한다. 스크롤할 때마다 다시 정하면 팝오버가
+    // 위아래로 튀어 어디를 보고 있었는지 놓친다.
+    const r = el.getBoundingClientRect();
+    const 아래공간 = window.innerHeight - 8 - (r.bottom + 4);
+    const 위공간 = r.top - 4 - 8;
+    const 위로 = r.bottom + 4 + height > window.innerHeight - 8 && 위공간 > 아래공간;
+    popTrigger.current = { el, width, height, 위로 };
+    placePop(el, width, height, 위로);
   };
   // 팝오버가 그려진 뒤 실제 크기를 재서 위치를 다시 잡는다(내용에 맞춘 폭이라 추정치와 다를 수 있음)
   // 고용형태는 한 자리에 둘 이상 걸리는 일이 흔하다(정규직·아르바이트 둘 다 받는 식).
@@ -553,28 +556,35 @@ export default function JobPostForm({
     const { width, height } = el.getBoundingClientRect();
     if (Math.abs(width - t.width) < 1 && Math.abs(height - t.height) < 1) return;
     popTrigger.current = { ...t, width, height };
-    placePop(t.el, width, height);
+    placePop(t.el, width, height, t.위로);
   }, [popAt]);
   // 스크롤·리사이즈에는 닫지 말고 위치만 다시 잡는다.
   //   (터치로 표를 스크롤하면 곧바로 scroll 이벤트가 떠서, 닫아버리면 팝오버가 안 열린 것처럼 보인다)
   useEffect(() => {
     if (!popAt) return;
-    const onMove = () => {
+    const 다시두기 = (키보드때문인가: boolean) => {
       const t = popTrigger.current;
       if (!t || !t.el.isConnected) return;
-      // 팝오버 안에서 입력 중이면 그대로 둔다(키보드가 뷰포트를 줄이면서 팝오버가 튀는 것 방지)
-      const ae = document.activeElement as HTMLElement | null;
-      if (ae?.closest?.(".poscell-pop, .posshift-pop")) return;
-      placePop(t.el, t.width, t.height);
+      // 리사이즈는 모바일 키보드가 뷰포트를 줄일 때도 뜬다. 그때 팝오버 안에서
+      // 입력 중이면 그대로 둔다 — 안 그러면 글자를 칠 때마다 팝오버가 튄다.
+      // 스크롤은 예외 없이 따라간다. 예전에는 여기서도 걸러, select 를 한 번
+      // 건드린 뒤로는 페이지를 굴려도 팝오버가 제자리에 남았다.
+      if (키보드때문인가) {
+        const ae = document.activeElement as HTMLElement | null;
+        if (ae?.closest?.(".poscell-pop, .posshift-pop")) return;
+      }
+      placePop(t.el, t.width, t.height, t.위로);
     };
-    window.addEventListener("scroll", onMove, true);
-    window.addEventListener("resize", onMove);
+    const onScroll = () => 다시두기(false);
+    const onResize = () => 다시두기(true);
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onResize);
     // 회사 프로필(배너·기본정보)이 늦게 도착해 트리거 버튼이 밀리는 경우가 있다
     //   (스크롤·리사이즈가 아니라 콘텐츠 높이 변화라 위 리스너로는 못 잡는다 —
     //   "+ 누르면 그자리에서 팝오버여야 하는데 위치 내려갔어"). 본문 높이 변화를 관찰해 같이 재배치한다.
-    const ro = new ResizeObserver(onMove);
+    const ro = new ResizeObserver(onResize);
     ro.observe(document.body);
-    return () => { window.removeEventListener("scroll", onMove, true); window.removeEventListener("resize", onMove); ro.disconnect(); };
+    return () => { window.removeEventListener("scroll", onScroll, true); window.removeEventListener("resize", onResize); ro.disconnect(); };
   }, [popAt !== null]);
   const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 두 장을 넘으면 화살표로 넘길 시작 위치
   const [regionList, setRegionList] = useState<string[]>([]);
