@@ -785,12 +785,12 @@ export default function TalentPage() {
                   </div>
 
                   <div className="tal-main">
+                    <button type="button" className="tal-name" onClick={() => setSelected(t)}>{t.name}</button>
                     <div className="tal-head">
                       {t.interestedAt && <span className="tal-badge">관심 있어요</span>}
                       {나이성별 && <span className="tal-sub">{나이성별}</span>}
                       <span className="tal-sub">{careerLabel(t.careerYears, t.careerCount)}</span>
                     </div>
-                    <button type="button" className="tal-name" onClick={() => setSelected(t)}>{t.name}</button>
                     <div className="tal-meta">
                       {직군 && <span>{직군}</span>}
                       {지역 && <span>{지역}</span>}

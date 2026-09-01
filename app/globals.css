@@ -14208,7 +14208,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .tal-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .tal-main { flex: 1; min-width: 0; }
-.tal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.tal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
 .tal-badge {
   font-size: 11.5px; padding: 2px 9px; border-radius: 20px;
   background: #f7f7f8; color: var(--color-primary); white-space: nowrap;
@@ -14216,7 +14216,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-sub { font-size: 12.5px; color: #a0a0a6; }
 .tal-name {
   display: block; background: none; border: none; padding: 0; font-family: inherit;
-  font-size: 16px; color: #1a1a1a; cursor: pointer; margin-bottom: 3px;
+  font-size: 17px; color: #1a1a1a; cursor: pointer; margin-bottom: 4px; text-align: left;
 }
 .tal-name:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 .tal-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #666; }
