@@ -615,115 +615,87 @@ function ApplicantsContent() {
 
       {/* 테이블 (데스크톱) */}
       {!loading && filtered.length > 0 && !isMobile && (
-        <div className="company-card">
-          <div className="admin-table-meta">총 <strong>{filtered.length}</strong>명</div>
-          <table className="company-table">
-            <thead>
-              <tr>
-                <th style={{ width: "36px" }}>
-                  <input type="checkbox"
-                    checked={checked.length === filtered.length && filtered.length > 0}
-                    onChange={toggleAll} />
-                </th>
-                <th>이름</th>
-                <th>지원 공고</th>
-                <th>지원일</th>
-                <th>지역</th>
-                <th>연락처</th>
-                <th>상태</th>
-                <th>이력서</th>
-                <th>포트폴리오</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((a) => (
-                <tr key={a.id} style={{ background: checked.includes(a.id) ? "#f7f7f8" : "" }}>
-                  <td style={{ textAlign: "center" }}>
-                    <input type="checkbox"
-                      checked={checked.includes(a.id)}
-                      onChange={() => toggleCheck(a.id)} />
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div className="tbl-name-btn" title="이력서 보기" onClick={() => setSelected(a)}
-                        style={{ display: "flex", alignItems: "center", gap: 10, width: 160, flexShrink: 0 }}>
-                      <div className="talent-avatar" style={{ width: 34, height: 44, borderRadius: 4, overflow: "hidden", flexShrink: 0, border: "1px solid #e0e0e0", background: "#f5f5f5", color: "#582681", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        {(a as any).user_avatar_url
-                          ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          : (a.user_name || "?").slice(0, 1)}
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                          <span className="tbl-name-txt" style={{ color: "#1a1a1a", fontWeight: 400, fontSize: 15 }}>{a.user_name}</span>
-                          {genderLabel((a as any).user_gender) && (
-                            <span style={{ fontSize: 12, fontWeight: 400, color: "#999" }}>{genderLabel((a as any).user_gender)}</span>
-                          )}
-                          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
-                            onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}
-                            style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
-                            {(a as any).scrapped
-                                ? <BookmarkCheck size={15} style={{ color: "#582681" }} />
-                                : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
-                          </button>
-                        </div>
-                        <span style={{ fontSize: 13, color: "#888" }}>
-                          {(() => {
-                            const age = calcAge((a as any).user_birth_date);
-                            const ct = (a as any).career_type;
-                            const career = ct === "NEWCOMER"
-                              ? "신입"
-                              : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
-                            return [age != null ? `${age}세` : null, career].filter(Boolean).join(" · ");
-                          })()}
+        <div>
+          {/* 표에서 카드로. 인재풀과 같은 구조로 맞춘다 — 사진과 이름이 앞에,
+              할 일이 오른쪽에, 연락처가 아랫줄에. 지원자는 여기에 체크(일괄
+              처리)와 상태가 더 붙는다. */}
+          <div className="tal-listhead">
+            <label className="tal-all">
+              <input type="checkbox"
+                checked={checked.length === filtered.length && filtered.length > 0}
+                onChange={toggleAll} />
+              전체 선택
+            </label>
+            <span>총 <strong>{filtered.length}</strong>명</span>
+          </div>
+          <div className="tal-list">
+            {filtered.map((a) => {
+              const 고름 = checked.includes(a.id);
+              const 나이 = calcAge((a as any).user_birth_date);
+              const ct = (a as any).career_type;
+              const 경력 = ct === "NEWCOMER"
+                ? "신입"
+                : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
+              const 나이성별 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
+              const 지역 = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
+              const 상태색 = a.status === "APPLIED" ? "#0ea5e9" : a.status === "VIEWED" ? "#f59e0b"
+                : a.status === "PASSED" ? "#10b981" : a.status === "REJECTED" ? "#e74c3c" : "#999";
+              return (
+                <div key={a.id} className={`tal-card${고름 ? " on" : ""}`}>
+                  <div className="tal-top">
+                    <input type="checkbox" className="tal-check" checked={고름} onChange={() => toggleCheck(a.id)} />
+                    <div className="tal-avatar" onClick={() => setSelected(a)} title="이력서 보기">
+                      {(a as any).user_avatar_url
+                        ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
+                        : <span>{(a.user_name || "?").slice(0, 1)}</span>}
+                    </div>
+
+                    <div className="tal-main">
+                      <button type="button" className="tal-name" onClick={() => setSelected(a)}>{a.user_name}</button>
+                      <div className="tal-head">
+                        <span style={{ fontSize: 12.5, color: 상태색 }}>
+                          {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
                         </span>
+                        {나이성별 && <span className="tal-sub">{나이성별}</span>}
+                        <span className="tal-sub">{경력}</span>
                       </div>
+                      <div className="tal-meta">
+                        <span>
+                          {a.job_title}
+                          {isJobClosed(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
+                        </span>
+                        {지역 && <span>{지역}</span>}
+                      </div>
+                      <div className="tal-recent">{formatDate(a.applied_at)} 지원</div>
                     </div>
+
+                    <div className="tal-acts">
+                      <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+                        className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}>
+                        {(a as any).scrapped
+                          ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+                          : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+                      </button>
+                      <button type="button" className="tal-btn" onClick={() => setSelected(a)}>
+                        <FileText size={14} /> 이력서
+                      </button>
                     </div>
-                  </td>
-                  <td className="company-td-sub">
-                    {a.job_title}
-                    {isJobClosed(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
-                  </td>
-                  <td className="company-td-sub">
-                    {formatDate(a.applied_at)}
-                  </td>
-                  <td className="company-td-sub">
-                    {shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" ")) || <span style={{ color: "#ccc" }}>—</span>}
-                  </td>
-                  <td className="company-td-sub">
-                    <div style={{ marginBottom: 2, ...(a.user_email ? {} : { color: "#ccc" }) }}>
-                      {a.user_email || "이메일 없음"}
-                    </div>
-                    <div style={a.user_phone ? undefined : { color: "#ccc" }}>
+                  </div>
+
+                  <div className="tal-foot">
+                    <span className="tal-contact">
                       {a.user_phone ? formatPhone(a.user_phone) : "전화번호 없음"}
-                    </div>
-                  </td>
-                  <td>
-                    <span style={{ color: a.status === "APPLIED" ? "#0ea5e9" : a.status === "VIEWED" ? "#f59e0b" : a.status === "PASSED" ? "#10b981" : a.status === "REJECTED" ? "#e74c3c" : "#999", fontSize: 14 }}>
-                      {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+                      {a.user_email && <><i>·</i>{a.user_email}</>}
                     </span>
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <button onClick={() => setSelected(a)} title="이력서 보기"
-                          style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: 0 }}>
-                          <FileText size={16} /><span>이력서</span>
-                        </button>
-                      </div>
-                    </div>
-                  </td>
-                  {/* 작업물은 이력서와 성격이 달라 열을 나눈다 — 미용은 사진이 곧 경력이다. */}
-                  <td>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                      <LinkCell url={(a as any).portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={14} />} label="사진" />
-                      <LinkCell url={(a as any).sns_url} icon={<Instagram size={14} />} label="SNS" />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <span className="tal-links">
+                      <LinkCell url={(a as any).portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
+                      <LinkCell url={(a as any).sns_url} icon={<Instagram size={13} />} label="SNS" />
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
       </div>

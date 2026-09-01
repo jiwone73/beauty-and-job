@@ -14238,3 +14238,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-contact i { font-style: normal; color: #d8d8dc; margin: 0 7px; }
 .tal-locked { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #b4b4b9; }
 .tal-links { margin-left: auto; display: flex; gap: 12px; }
+
+/* 지원자 카드는 인재풀 카드와 같은 틀을 쓰되, 일괄 처리를 위한 체크와
+   고른 표시가 더 붙는다. */
+.tal-listhead {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 2px 10px; font-size: 13.5px; color: #8a8a90;
+}
+.tal-all { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.tal-all input { width: 14px; height: 14px; margin: 0; accent-color: #582681; }
+.tal-listhead > span { margin-left: auto; }
+.tal-listhead strong { color: var(--color-primary); font-weight: 500; }
+.tal-check { width: 15px; height: 15px; margin: 2px 0 0; accent-color: #582681; flex-shrink: 0; }
+/* 고른 줄의 바탕은 사이드 메뉴 선택색과 같다. */
+.tal-card.on { background: #f7f7f8; border-color: var(--color-primary); }
