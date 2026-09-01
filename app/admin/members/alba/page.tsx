@@ -140,7 +140,7 @@ export default function AlbaPage() {
         </div>
 
         <div style={card}>
-          <p style={label}>이번주 근무시간 ({cw ? `${fmtDate(cw.start)}~${fmtDate(cw.end)}` : "-"})</p>
+          <p style={label}>이번 주 근무시간 ({cw ? `${fmtDate(cw.start)}~${fmtDate(cw.end)}` : "-"})</p>
           <p style={{ ...big, color: cw && cw.minutes >= weeklyTargetMin ? "#0f6e56" : "#1a1a1a" }}>
             {formatMinutes(cw?.minutes || 0)}
           </p>
