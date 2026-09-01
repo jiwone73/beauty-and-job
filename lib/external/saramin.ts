@@ -7,6 +7,7 @@
 //   결과 HTML에서 rec_idx=<id> + 제목(앵커) 추출. 제목에 회사명 포함으로 필터(짧은 명칭 잡음 제거).
 
 import type { FoundJob } from "./hairinjob";
+import { 브랜드공고인가 } from "./beautyMatch";
 
 const BASE = "https://www.saramin.co.kr";
 const UA =
@@ -58,7 +59,7 @@ export async function findJobsByCompany(
     });
   }
 
-  const matched = list.filter((j) => j.title.replace(/\s+/g, "").includes(key));
+  const matched = list.filter((j) => 브랜드공고인가(j.title, company, true));
   const jobs = (opts.strict ?? true) ? matched : list;
   return { total: list.length, matched: matched.length, jobs };
 }
