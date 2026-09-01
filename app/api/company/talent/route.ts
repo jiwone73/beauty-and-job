@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 인재열람가능 } from "@/lib/companyEntitlement";
+import { 인재열람가능, 이름가리기, 재직가리기 } from "@/lib/companyEntitlement";
 
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
@@ -217,7 +217,8 @@ export async function GET(req: NextRequest) {
     const total = rows[0]?.total_count ?? 0;
     const data = rows.map((r) => ({
       id: r.id,
-      name: r.name,
+      // 관심을 보낸 사람은 스스로 문을 연 것이라 열람권과 무관하게 그대로 보인다.
+      name: (열람가능 || r.interested_at) ? r.name : 이름가리기(r.name),
       // 연락처는 채용을 실제로 하고 있는 곳(공고 보유)에만 연다. 화면에서만
       // 가리면 응답에 남아 개발자 도구로 그대로 보이므로 여기서 지워 보낸다.
       // 「관심 있어요」를 누른 사람은 스스로 문을 연 것이라 열람권과 무관하게 보여 준다.
@@ -234,7 +235,7 @@ export async function GET(req: NextRequest) {
       snsUrl: r.sns_url || null,
       gender: r.gender,
       age: r.age,
-      intro: r.intro,
+      intro: (열람가능 || r.interested_at) ? r.intro : null,
       mainJobGroup: r.main_job_group,
       subJob: r.sub_job,
       skills: r.skills || [],
@@ -245,7 +246,12 @@ export async function GET(req: NextRequest) {
       careerYears: r.career_years,
       careerCount: r.career_count,
       educationDetail: r.education_detail,
-      careerDetail: r.career_detail,
+      // 재직 매장 이름은 연락할 수 있게 된 다음에 알면 된다. 그전에는 직책만.
+      careerDetail: (열람가능 || r.interested_at)
+        ? r.career_detail
+        : (r.career_detail
+            ? { ...r.career_detail, company: 재직가리기(r.career_detail.position) || "일하는 중", position: null }
+            : null),
       jobSearchStatus: r.job_search_status || "SEEKING",
       jobSearchStatusAt: r.job_search_status_at || null,
       scrapped: r.scrapped,

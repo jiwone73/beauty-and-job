@@ -26,3 +26,28 @@ export async function 인재열람가능(companyId: string): Promise<boolean> {
 /** 잠겼을 때 화면에 대신 보여줄 값. 서버에서 지워 보낸다 — 화면에서만 가리면
  *  응답에 남아 개발자 도구로 그대로 보인다. */
 export const 잠긴값 = null;
+
+/**
+ * 이름 가리기 — 하지원 → 하○○.
+ *
+ * 과금 때문만이 아니다. 미용 업계는 바닥이 좁고, 재직 중인 디자이너가 몰래
+ * 알아보는 것이 이 판의 현실이다. 「하지원 · 반티바 재직」이 그대로 뜨면 지금
+ * 다니는 매장 사장님도 그것을 본다. 이름과 재직 매장은 실제로 연락할 수 있는
+ * 곳에만 연다(원티드도 제안을 수락하기 전까지 '김 OO'로 둔다).
+ */
+export function 이름가리기(name?: string | null): string {
+  const n = (name || "").trim();
+  if (!n) return "";
+  if (n.length <= 1) return n;
+  return n[0] + "○".repeat(n.length - 1);
+}
+
+/**
+ * 재직 매장 가리기 — 매장 이름은 지우고 직책만 남긴다.
+ * 「반티바 · 매니저」 → 「매니저로 일하는 중」. 판단에 필요한 것은 직책이고,
+ * 어느 매장인지는 연락할 수 있게 된 다음에 알면 된다.
+ */
+export function 재직가리기(직책?: string | null): string | null {
+  const p = (직책 || "").trim();
+  return p ? `${p}로 일하는 중` : null;
+}
