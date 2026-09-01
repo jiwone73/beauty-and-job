@@ -2,12 +2,14 @@
 import { useCallback, useEffect, useState } from "react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
+import ResumePreview from "@/components/profile/ResumePreview";
+import { mapResume, calcAgeFromBirth } from "@/lib/resumeView";
 import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
-import { Send, MessageSquare } from "lucide-react";
+import { Send, X } from "lucide-react";
 
-// 보낸 제안. 지금까지 볼 데가 없어서, 누구에게 언제 보냈는지·읽었는지·며칠
-// 남았는지를 알려면 인재 목록을 뒤져야 했다. 7일 기한을 정해 놓고 정작 그
-// 기한을 보는 화면이 없었다.
+// 보낸 제안. 인재 검색은 끝까지 검색이라 제안을 보내는 데서 끝나고, 보낸 뒤의
+// 시간축 — 읽었는지, 대화를 수락했는지, 며칠 남았는지 — 은 전부 여기서 본다.
+// 사람인의 '인재풀 검색 / 후보자 관리', 셀렉미의 '인재정보 / 보낸제안'과 같은 갈래다.
 
 type 제안 = {
   id: string;
@@ -15,6 +17,7 @@ type 제안 = {
   readAt: string | null;
   interestedAt: string | null;
   interestMessage: string | null;
+  userId: string;
   userName: string;
   avatarUrl: string | null;
   jobTitle: string | null;
@@ -42,6 +45,11 @@ export default function CompanyProposalsPage() {
   const [목록, set목록] = useState<제안[]>([]);
   const [로딩, set로딩] = useState(true);
   const [대화, set대화] = useState<제안 | null>(null);
+  // 이력서는 인재 검색에서만 열리던 것이라, 여기서 사람을 보고도 다시 검색으로
+  // 돌아가야 했다. 이름과 사진을 누르면 그 자리에서 열린다.
+  const [이력서, set이력서] = useState<제안 | null>(null);
+  const [이력서값, set이력서값] = useState<any>(null);
+  const [이력서로딩, set이력서로딩] = useState(false);
 
   const 불러오기 = useCallback(async () => {
     const token = localStorage.getItem("access_token");
@@ -53,6 +61,17 @@ export default function CompanyProposalsPage() {
   }, []);
   useEffect(() => { 불러오기(); }, [불러오기]);
 
+  useEffect(() => {
+    if (!이력서) { set이력서값(null); return; }
+    const token = localStorage.getItem("access_token");
+    set이력서로딩(true);
+    fetch(`/api/company/talent/${이력서.userId}/resume`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => set이력서값(d.data || d))
+      .catch(() => set이력서값(null))
+      .finally(() => set이력서로딩(false));
+  }, [이력서]);
+
   // 답장을 기다리게 둔 것이 맨 위. 그다음 회신 대기, 끝난 것은 아래로.
   const 정렬 = [...목록].sort((a, b) => {
     const 급 = (p: 제안) => (상태(p).급한가 ? 0 : 제안만료(p.createdAt, p.interestedAt) || p.blocked ? 2 : 1);
@@ -63,7 +82,7 @@ export default function CompanyProposalsPage() {
 
   return (
     <CompanyLayout activePage="proposals">
-      <div style={{ maxWidth: 1440 }}>
+      <div>
         <div className="tal-listhead">
           <span style={{ marginLeft: 0 }}>
             보낸 제안 <strong>{목록.length}</strong>
@@ -89,16 +108,18 @@ export default function CompanyProposalsPage() {
               const 남은 = 제안남은날(p.createdAt);
               const 진행중 = !p.interestedAt && !p.blocked && !제안만료(p.createdAt, p.interestedAt);
               return (
-                <div key={p.id} className="tal-card">
+                <div key={p.id} className="tal-card prop">
                   <div className="tal-top">
-                    <div className="tal-avatar">
+                    <div className="tal-avatar" onClick={() => set이력서(p)} title="이력서 보기">
                       {p.avatarUrl
                         ? <img src={p.avatarUrl} alt={p.userName} loading="lazy" />
                         : <span>{(p.userName || "?").slice(0, 1)}</span>}
                     </div>
 
                     <div className="tal-main">
-                      <span className="tal-name" style={{ cursor: "default" }}>{p.userName}</span>
+                      <div className="tal-nameline">
+                        <button type="button" className="tal-name" onClick={() => set이력서(p)}>{p.userName}</button>
+                      </div>
                       <div className="tal-head">
                         <span style={{ fontSize: 12.5, color: st.색 }}>{st.글}</span>
                         {/* 기한은 사흘 안쪽일 때만 말한다 — 일주일 내내 세고 있으면 재촉으로 읽힌다. */}
@@ -115,10 +136,12 @@ export default function CompanyProposalsPage() {
                       )}
                     </div>
 
+                    {/* 이 화면의 할 일은 대화 하나뿐이라 모양도 하나다. 급한 건은
+                        버튼 색이 아니라 상태 문구와 맨 위 자리가 말한다. */}
                     <div className="tal-acts">
                       {p.interestedAt && !p.blocked && (
                         <button type="button" className="tal-btn key" onClick={() => set대화(p)}>
-                          <MessageSquare size={14} /> 대화하기
+                          대화하기
                         </button>
                       )}
                     </div>
@@ -145,6 +168,45 @@ export default function CompanyProposalsPage() {
           token={typeof window !== "undefined" ? localStorage.getItem("access_token") || "" : ""}
           onClose={() => { set대화(null); 불러오기(); }}
         />
+      )}
+
+      {이력서 && (
+        <div className="rp-modal-overlay" onClick={() => set이력서(null)}>
+          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="rp-modal-header">
+              <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0 }}>{이력서.userName}</h2>
+              <div className="rp-modal-actions">
+                <button onClick={() => set이력서(null)} title="닫기"
+                  style={{ display: "inline-flex", padding: 4, border: "none", background: "none", color: "#888", cursor: "pointer" }}>
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="rp-modal-body">
+              {이력서로딩 ? (
+                <div className="admin-empty">이력서 불러오는 중...</div>
+              ) : 이력서값 ? (
+                <ResumePreview
+                  name={이력서값.user?.name || 이력서.userName}
+                  birthDisplay={
+                    이력서값.user?.birth_date
+                      ? `${String(이력서값.user.birth_date).slice(0, 4)}년 (${calcAgeFromBirth(이력서값.user.birth_date)}세, ${이력서값.user.gender === "FEMALE" ? "여" : 이력서값.user.gender === "MALE" ? "남" : ""})`
+                      : ""
+                  }
+                  jobDisplay={이력서값.user?.job_type === "STORE" ? "매장" : "본사"}
+                  phone={이력서값.user?.phone || ""}
+                  email={이력서값.user?.email || ""}
+                  portfolioImages={이력서값.user?.portfolio_images || []}
+                  avatarUrl={이력서값.user?.avatar_url || null}
+                  resumeType={이력서값.user?.job_type === "STORE" ? "salon" : "office"}
+                  {...mapResume(이력서값)}
+                />
+              ) : (
+                <div className="admin-empty">이력서 데이터를 불러올 수 없습니다.</div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </CompanyLayout>
   );

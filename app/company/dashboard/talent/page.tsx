@@ -1,16 +1,17 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import { mapResume } from "@/lib/resumeView";
 import {
   Search, BookmarkCheck, Bookmark, X, FileText, Paperclip, Instagram,
-  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, MessageSquare, Lock, Briefcase, Wallet,
+  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, Lock, Briefcase, Wallet,
 } from "lucide-react";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
-import ProposalThread from "@/components/proposal/ProposalThread";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { formatPhone } from "@/lib/phone";
 import { 지역비교 } from "@/lib/regionMatch";
@@ -54,6 +55,11 @@ function genderLabel(gender: string | null): string | null {
 
 export default function TalentPage() {
   const router = useRouter();
+  // 머리줄과 같은 규칙 — /company/dashboard/* 아래면 그대로, 아니면 /{companyId} 아래다.
+  const pathname = usePathname();
+  const base = pathname.split("/").filter(Boolean)[0] === "company"
+    ? "/company/dashboard"
+    : `/${pathname.split("/").filter(Boolean)[0]}`;
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
   // 매장은 매장 인재만, 본사는 본사 인재만 본다. 서로의 인재풀을 볼 일이 없고,
   //   열어 두면 남의 이메일·전화만 넓게 보이는 셈이다. 겸업(BOTH) 회원만 고를 수 있다.
@@ -175,38 +181,6 @@ export default function TalentPage() {
     return y ? new Date().getFullYear() - y : null;
   };
 
-  const mapResume = (data: any) => {
-    const p = data?.profile || {};
-    return {
-      careers: (data?.careers || []).map((c: any) => ({
-        id: String(c.id), company: c.company || "", department: c.department || "",
-        position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
-        isVerified: c.is_verified || false, description: c.description || "",
-      })),
-      educations: (data?.educations || []).map((e: any) => ({
-        id: String(e.id), school: e.school || "", major: e.major || "",
-        status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
-        description: e.description || "",
-      })),
-      experiences: (data?.experiences || []).map((x: any) => ({
-        id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
-      })),
-      languages: (data?.languages || []).map((l: any) => ({
-        id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
-      })),
-      links: (data?.links || []).map((lk: any) => ({
-        id: String(lk.id), category: lk.category || "", url: lk.url || "",
-      })),
-      skills: p.skills || [],
-      skillAreas: p.skill_areas || [],
-      officeJobAreas: p.office_job_areas || [],
-      certificates: p.certificates || [],
-      intro: p.intro || "",
-      coreCompetencies: p.core_competencies || "",
-      workTypePrefer: p.work_type_prefer || "",
-      regionPrefer: p.region_prefer || "",
-    };
-  };
 
   // 알림에서 「관심 있어요」를 눌러 넘어오면 그 사람들만 추려 본다 —
   // 목록이 길면 누가 답했는지 찾는 일이 일이 된다.
@@ -218,8 +192,6 @@ export default function TalentPage() {
     if (typeof window === "undefined") return;
     set보낼사람(new URLSearchParams(window.location.search).get("propose"));
   }, []);
-  // 관심을 보인 사람과 이어서 말한다. 목록을 떠나지 않는다.
-  const [대화, set대화] = useState<{ id: string; 이름: string } | null>(null);
   useEffect(() => {
     if (typeof window === "undefined") return;
     set관심만(new URLSearchParams(window.location.search).get("interested") === "1");
@@ -763,12 +735,19 @@ export default function TalentPage() {
                       <div className="co-li-meta2">{meta2}</div>
                     </div>
                   </div>
-                  <button type="button"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 10, background: "none", border: "1px solid #e2e2e6", borderRadius: 8, padding: "6px 10px", cursor: "pointer", color: "#582681", fontSize: 13, fontWeight: 500 }}
-                    onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
-                    <Send size={13} />
-                    <span>제안하기</span>
-                  </button>
+                  {t.proposedAt || t.interestedAt ? (
+                    <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
+                      style={{ display: "inline-block", marginTop: 10, fontSize: 13, color: "#a0a0a6", textDecoration: "none" }}>
+                      제안완료
+                    </Link>
+                  ) : (
+                    <button type="button"
+                      style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 10, background: "none", border: "1px solid #e2e2e6", borderRadius: 8, padding: "6px 10px", cursor: "pointer", color: "#582681", fontSize: 13, fontWeight: 500 }}
+                      onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
+                      <Send size={13} />
+                      <span>제안하기</span>
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -819,22 +798,18 @@ export default function TalentPage() {
                     {최근 && <div className="tal-recent">최근 · {최근}</div>}
                   </div>
 
-                  {/* 오른쪽은 위에 지금 상태, 아래에 할 일 하나. 이력서 버튼은 뺐다 —
-                      이름이나 사진을 누르면 열려서 같은 일을 하는 자리가 둘이었다. */}
+                  {/* 이 화면의 일은 제안을 보내는 데서 끝난다 — 읽었는지, 대화를
+                      수락했는지, 며칠 남았는지는 보낸 제안이 맡는다. 다만 이미 보냈다는
+                      표시는 여기 남긴다. 같은 사람에게 또 보내는 실수가 일어나는 자리가
+                      정확히 여기다. */}
                   <div className="tal-acts">
-                    <span className="tal-state">
-                      {t.interestedAt ? <span className="tal-badge">대화 수락</span>
-                        : t.proposedAt ? <span className="tal-sent" title={`${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄`}>제안완료</span>
-                        : null}
-                    </span>
                     {t.proposedAt || t.interestedAt ? (
-                      /* 물어본 말은 카드에 늘어놓지 않는다 — 대화창을 열면 보인다. */
-                      <button type="button" className={`tal-btn${t.interestedAt ? " key" : ""}`}
-                        disabled={!t.interestedAt}
-                        title={t.interestedAt ? "" : "상대가 대화를 수락하면 열려요"}
-                        onClick={() => { if (t.interestProposalId) set대화({ id: t.interestProposalId, 이름: t.name }); }}>
-                        대화하기
-                      </button>
+                      <Link className="tal-sent" href={`${base}/proposals`}
+                        title={t.proposedAt
+                          ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄 · 보낸 제안에서 보기`
+                          : "보낸 제안에서 보기"}>
+                        제안완료
+                      </Link>
                     ) : (
                       <button type="button" className="tal-btn" onClick={() => openPropose(t)}>
                         제안하기
@@ -1047,15 +1022,6 @@ export default function TalentPage() {
             )}
           </div>
         </div>
-      )}
-      {대화 && (
-        <ProposalThread
-          proposalId={대화.id}
-          제목="제안한 공고"
-          상대={대화.이름}
-          token={localStorage.getItem("access_token") || ""}
-          onClose={() => set대화(null)}
-        />
       )}
     </CompanyLayout>
   );

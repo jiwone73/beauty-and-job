@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import { mapResume } from "@/lib/resumeView";
 import { Search, BookmarkCheck, X, FileText, Paperclip, Instagram, Download, Printer, Send } from "lucide-react";
 import ResumePreview from "@/components/profile/ResumePreview";
 import { formatPhone } from "@/lib/phone";
@@ -48,38 +49,6 @@ export default function ScrappedTalentPage() {
     ? (localStorage.getItem("access_token") || "")
     : "";
 
-  const mapResume = (data: any) => {
-    const p = data?.profile || {};
-    return {
-      careers: (data?.careers || []).map((c: any) => ({
-        id: String(c.id), company: c.company || "", department: c.department || "",
-        position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
-        isVerified: c.is_verified || false, description: c.description || "",
-      })),
-      educations: (data?.educations || []).map((e: any) => ({
-        id: String(e.id), school: e.school || "", major: e.major || "",
-        status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
-        description: e.description || "",
-      })),
-      experiences: (data?.experiences || []).map((x: any) => ({
-        id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
-      })),
-      languages: (data?.languages || []).map((l: any) => ({
-        id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
-      })),
-      links: (data?.links || []).map((lk: any) => ({
-        id: String(lk.id), category: lk.category || "", url: lk.url || "",
-      })),
-      skills: p.skills || [],
-      skillAreas: p.skill_areas || [],
-      officeJobAreas: p.office_job_areas || [],
-      certificates: p.certificates || [],
-      intro: p.intro || "",
-      coreCompetencies: p.core_competencies || "",
-      workTypePrefer: p.work_type_prefer || "",
-      regionPrefer: p.region_prefer || "",
-    };
-  };
 
   useEffect(() => {
     const fetchScrapped = async () => {

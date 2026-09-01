@@ -14276,19 +14276,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13.5px; color: #4a4453; line-height: 1.5; margin: 2px 0 5px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-/* 오른쪽 칸 — 위에 상태, 아래에 할 일 하나. 상태 자리는 비어도 높이를 지켜
-   버튼이 카드마다 다른 높이에 서지 않게 한다. */
-.tal-state { display: flex; align-items: center; min-height: 20px; }
 .tal-nameline .tal-scrap { padding: 0; display: inline-flex; }
-/* 오른쪽 칸 — 위에 지금 상태, 아래에 그 상태에서 할 수 있는 것 하나.
-   상태가 비어도 자리는 지킨다. 안 그러면 버튼이 카드마다 다른 높이에 선다. */
-.tal-state { display: flex; align-items: center; min-height: 22px; }
-.tal-nameline .tal-scrap { padding: 0; display: inline-flex; }
-.tal-btn:disabled { border-color: #ececf0; color: #c8c8ce; cursor: default; }
-.tal-btn:disabled:hover { border-color: #ececf0; color: #c8c8ce; }
-/* 오른쪽 칸 — 위에 지금 상태, 아래에 그 상태에서 할 수 있는 것 하나.
-   상태가 비어도 자리는 지킨다. 안 그러면 버튼이 카드마다 다른 높이에 선다. */
-.tal-state { display: flex; align-items: center; min-height: 22px; }
-.tal-nameline .tal-scrap { padding: 0; display: inline-flex; }
-.tal-btn:disabled { border-color: #ececf0; color: #c8c8ce; cursor: default; }
-.tal-btn:disabled:hover { border-color: #ececf0; color: #c8c8ce; }
+/* 이미 보낸 사람에게는 「제안완료」만 남긴다. 상태를 다루는 일은 보낸 제안이 맡으니
+   여기서는 그리로 가는 문만 열어 둔다 — 인재 검색이 제안 관리를 겸하면 둘 다 흐려진다. */
+.tal-sent { text-decoration: none; cursor: pointer; }
+.tal-sent:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+
+/* 보낸 제안 카드 — 인재 검색과 같은 틀을 쓰되 사진만 줄인다. 여기 있는 사람은
+   이미 내가 골라서 제안까지 보낸 사람이라 알아볼 만큼이면 되고, 72x92 는 처음 보는
+   얼굴을 살피는 크기다. 연락처 줄이 없어 아래 여백은 이 카드가 직접 맡는다. */
+.tal-card.prop { padding-bottom: 14px; }
+.tal-card.prop .tal-avatar { width: 52px; height: 66px; font-size: 17px; }

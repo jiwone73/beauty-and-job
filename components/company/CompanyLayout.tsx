@@ -94,7 +94,7 @@ export default function CompanyLayout({ children, activePage }: {
     setNotifOpen(false);
     loadNotifs();
     if (n.related_type === "application") router.push(`${base}/applicants`);
-    else if (n.related_type === "proposal") router.push(`${base}/talent?interested=1`);
+    else if (n.related_type === "proposal") router.push(`${base}/proposals`);
   };
 
   const markAllRead = async () => {
@@ -178,6 +178,15 @@ export default function CompanyLayout({ children, activePage }: {
     jobs: [
       { id: "jobs",     label: () => "공고 관리", title: () => "채용공고 관리", href: `${base}/jobs` },
       { id: "jobs-new", label: () => "공고 등록", title: () => "채용공고 등록", href: `${base}/jobs/new` },
+    ],
+    // 인재풀 — 찾는 곳과 보낸 뒤를 보는 곳을 나눈다. 인재 검색은 끝까지 검색이라
+    //   제안을 보내는 데서 끝나고, 보낸 뒤의 상태(읽음·대화 수락·기한)는 보낸 제안이
+    //   맡는다. 사람인의 '인재풀 검색 / 후보자 관리', 셀렉미의 '인재정보 / 찜한 인재·
+    //   보낸제안'과 같은 갈래다.
+    talent: [
+      { id: "talent",    label: () => "인재 검색",   title: () => "인재 검색",   href: `${base}/talent` },
+      { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재", href: `${base}/talent/scrapped` },
+      { id: "proposals", label: () => "보낸 제안",   title: () => "보낸 제안",   href: `${base}/proposals` },
     ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
@@ -380,6 +389,12 @@ export default function CompanyLayout({ children, activePage }: {
           width: 1018px; max-width: 100%; }
         /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
            바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
+        /* 인재풀 세 화면은 사람을 가로로 펼쳐 놓고 읽는 자리라 설정 계열(1018px)로는
+           카드가 접힌다. 이 묶음 안에서는 셋 다 같은 폭이라 오갈 때 흔들리지 않는다. */
+        .co-set-wrap.co-set-talent { width: 1296px; }
+        /* 판이 넓어지면 가운데 제목은 목록에서 멀리 떨어져 혼자 뜬다. 인재풀에서는
+           본문 왼쪽 끝에 맞춘다 — 아래 목록이 시작하는 자리와 같은 줄이다. */
+        .co-set-wrap.co-set-talent .co-set-title { text-align: left; }
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
         /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
