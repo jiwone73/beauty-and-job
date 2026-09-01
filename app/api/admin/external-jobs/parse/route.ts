@@ -64,7 +64,7 @@ function classifyImageOrigin(url: string): "company" | "site_upload" | "site_tem
   // 사이트 기본 템플릿/디자인 그래픽
   if (/\/template\/|\/static\/hiring\/images\/template\/|contents\.albamon\.[a-z]+\/[^"']*\/(?:template|assets|header)\/|\/images\/(?:newhair|main)\//.test(u)) return "site_template";
   // 구직사이트 에디터 업로드 CDN(회사 업로드분)
-  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|hairinjob\.com\/upload\/|file\.selectme\.co\.kr/.test(u)) return "site_upload";
+  if (/file2?\.jobkorea\.co\.kr|saraminimage\.co\.kr|pds\.saramin\.co\.kr|file\.albamon\.com|beautyjob\.kr\/data\/|hairinjob\.com\/upload\/|file\.selectme\.co\.kr/.test(u)) return "site_upload";
   // 그 외 = 회사 외부 호스트 → 기업 제공
   return "company";
 }
