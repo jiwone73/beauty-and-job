@@ -467,7 +467,8 @@ export default function AdminOutreachPage() {
                 </th>
                 <th style={{ ...th, width: 34 }}>#</th>
                 <th style={{ ...th, minWidth: 230 }}>브랜드명 <span style={{ fontWeight: 400, color: "#b7b0c0" }}>(클릭=홈페이지)</span></th>
-                <th style={{ ...th, minWidth: 150 }}>채용유무</th>
+                <th style={{ ...th, width: 110 }}>채용유무</th>
+                <th style={{ ...th, minWidth: 130 }}>활성공고</th>
                 <th style={{ ...th, width: 100 }}>등록유무</th>
                 <th style={{ ...th, minWidth: 120 }}>연락처</th>
                 <th style={{ ...th, minWidth: 150 }}>이메일</th>
@@ -477,9 +478,9 @@ export default function AdminOutreachPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={10} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={10} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row, rowIdx) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
@@ -546,10 +547,14 @@ export default function AdminOutreachPage() {
                           </select>
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
                         </div>
-                        {row.found_count > 0 && (() => {
+                      </td>
+                      {/* 활성공고 — 채용유무는 우리가 매기는 상태고, 이쪽은 조회로
+                          찾아낸 실제 공고 수다. 성격이 달라 칸을 나눈다. */}
+                      <td style={td}>
+                        {row.found_count > 0 ? (() => {
                           const newCnt = (row.found_jobs || []).filter((j) => isNewJob(j.first_seen)).length;
                           return (
-                            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 4, flexWrap: "wrap" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                               <button onClick={() => { setSrcTab(""); setExpanded(expanded === row.id ? null : row.id); }}
                                 style={{ background: "none", border: "none", padding: 0, cursor: "pointer", ...badge("#0a7d34") }}>
                                 {/* 열렸을 때 ▼(아래=펼쳐진 목록을 가리킴), 닫혔을 때 ▶ */}
@@ -562,7 +567,7 @@ export default function AdminOutreachPage() {
                               )}
                             </div>
                           );
-                        })()}
+                        })() : <span style={{ color: "#c8c8ce" }}>—</span>}
                       </td>
                       {/* 등록유무 */}
                       <td style={td}>
@@ -614,7 +619,7 @@ export default function AdminOutreachPage() {
                       const shown = activeTab ? row.found_jobs.filter((jb) => jb.source === activeTab) : row.found_jobs;
                       return (
                       <tr>
-                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={9}>
+                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={10}>
                           <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 6 }}>
                             조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
                           </div>
