@@ -10,6 +10,7 @@ import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/com
 import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
+import ProposalThread from "@/components/proposal/ProposalThread";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { formatPhone } from "@/lib/phone";
 import { 지역비교 } from "@/lib/regionMatch";
@@ -210,6 +211,8 @@ export default function TalentPage() {
   // 알림에서 「관심 있어요」를 눌러 넘어오면 그 사람들만 추려 본다 —
   // 목록이 길면 누가 답했는지 찾는 일이 일이 된다.
   const [관심만, set관심만] = useState(false);
+  // 관심을 보인 사람과 이어서 말한다. 목록을 떠나지 않는다.
+  const [대화, set대화] = useState<{ id: string; 이름: string } | null>(null);
   useEffect(() => {
     if (typeof window === "undefined") return;
     set관심만(new URLSearchParams(window.location.search).get("interested") === "1");
@@ -852,18 +855,20 @@ export default function TalentPage() {
                           </button>
                         </div>
                         {t.interestedAt ? (
-                          <span title={t.interestMessage || `${new Date(t.interestedAt).toLocaleDateString("ko-KR")}에 관심을 보냈어요`}
-                            style={{ display: "inline-flex", flexDirection: "column", gap: 2, color: "#582681", fontSize: 13, padding: "2px 4px", maxWidth: 200 }}>
+                          <button type="button"
+                            title={t.interestMessage || `${new Date(t.interestedAt).toLocaleDateString("ko-KR")}에 관심을 보냈어요`}
+                            onClick={(e) => { e.stopPropagation(); if (t.interestProposalId) set대화({ id: t.interestProposalId, 이름: t.name }); }}
+                            style={{ display: "inline-flex", flexDirection: "column", gap: 2, color: "#582681", fontSize: 13, padding: "2px 4px", maxWidth: 200, background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: "inherit" }}>
                             <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                               <Send size={13} />
-                              관심 있어요
+                              대화하기
                             </span>
                             {t.interestMessage && (
                               <span style={{ color: "#6a6a70", fontSize: 12, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                                 “{t.interestMessage}”
                               </span>
                             )}
-                          </span>
+                          </button>
                         ) : (
                         <button
                           title={t.proposedAt ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 제안함` : "제안하기"}
@@ -1070,6 +1075,15 @@ export default function TalentPage() {
             )}
           </div>
         </div>
+      )}
+      {대화 && (
+        <ProposalThread
+          proposalId={대화.id}
+          제목="제안한 공고"
+          상대={대화.이름}
+          token={localStorage.getItem("access_token") || ""}
+          onClose={() => set대화(null)}
+        />
       )}
     </CompanyLayout>
   );

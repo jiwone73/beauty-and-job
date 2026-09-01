@@ -71,6 +71,17 @@ export async function POST(
         ]
       ).catch((e) => console.error("[proposal interest notify]", e));
     }
+    // 첫 한마디는 스레드의 첫 줄이기도 하다. 대화는 여기서 시작한다.
+    // (interest_message 칸은 인재 카드·알림이 조인 없이 읽으려고 그대로 둔다.)
+    if (한마디) {
+      await pool.query(
+        `INSERT INTO proposal_messages (proposal_id, sender, kind, body)
+         SELECT $1, 'USER', 'TEXT', $2
+          WHERE NOT EXISTS (SELECT 1 FROM proposal_messages WHERE proposal_id = $1)`,
+        [params.id, 한마디]
+      ).catch((e) => console.error("[interest first message]", e));
+      await pool.query(`UPDATE proposals SET last_message_at = NOW() WHERE id = $1`, [params.id]).catch(() => {});
+    }
     return ok({ interested: true });
   } catch (e: any) {
     console.error("[proposal POST]", e);

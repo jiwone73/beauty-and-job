@@ -175,7 +175,13 @@ export async function GET(req: NextRequest) {
           SELECT interest_message FROM proposals
            WHERE company_id = $1 AND user_id = u.id AND interested_at IS NOT NULL
            ORDER BY interested_at DESC LIMIT 1
-        ) AS interest_message
+        ) AS interest_message,
+        -- 대화를 이어 갈 스레드. 관심을 보인 가장 최근 제안 하나.
+        (
+          SELECT id FROM proposals
+           WHERE company_id = $1 AND user_id = u.id AND interested_at IS NOT NULL
+           ORDER BY interested_at DESC LIMIT 1
+        ) AS interest_proposal_id
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
       WHERE u.status = 'ACTIVE'
@@ -220,6 +226,7 @@ export async function GET(req: NextRequest) {
       phone: (열람가능 || r.interested_at) ? (r.phone || null) : null,
       interestedAt: r.interested_at || null,
       interestMessage: r.interest_message || null,
+      interestProposalId: r.interest_proposal_id || null,
       // 사진만 감춘 사람은 아예 내려보내지 않는다. 화면에서 가리면 응답에 남아
       // 개발자 도구로 볼 수 있다 — 가린 것이 가려진 것이 아니게 된다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,

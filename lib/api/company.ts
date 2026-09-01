@@ -108,7 +108,8 @@ export type TalentItem = {
   scrapped: boolean;
   proposedAt?: string | null;   // 이미 제안한 사람이면 마지막 제안 시각
   interestedAt?: string | null;   // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
-  interestMessage?: string | null; // 관심에 붙인 한마디("주 4일 가능할까요?")
+  interestMessage?: string | null;    // 관심에 붙인 한마디("주 4일 가능할까요?")
+  interestProposalId?: string | null; // 그 대화를 이어 갈 제안 스레드
 };
 
 export const companyTalentApi = {

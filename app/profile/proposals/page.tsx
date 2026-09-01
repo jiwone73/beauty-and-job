@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, MapPin, Wallet, Briefcase } from "lucide-react";
+import ProposalThread from "@/components/proposal/ProposalThread";
 import ProfileShell from "@/components/profile/ProfileShell";
 import { formatSalaryWon } from "@/lib/salary";
 import { 지역비교 } from "@/lib/regionMatch";
@@ -69,6 +70,8 @@ export default function ProposalsPage() {
   // 「관심 있어요」 — 누르면 매장이 내 연락처를 볼 수 있고 알림이 간다.
   // 수락/거절이 아니라 한 방향이라, 관심 없으면 그냥 두면 된다.
   // 관심은 대개 조건부라 한마디를 붙일 수 있게 열어 준다(선택).
+  // 관심을 보낸 뒤에는 그 자리에서 대화를 이어 간다 — 새 화면으로 보내지 않는다.
+  const [대화, set대화] = useState<Proposal | null>(null);
   const [관심쓰는중, set관심쓰는중] = useState<string | null>(null);
   const [한마디, set한마디] = useState("");
 
@@ -164,10 +167,10 @@ export default function ProposalsPage() {
 
                       {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
                       {!마감 && (p.interested_at ? (
-                        <div className="prop-interest on">
-                          관심을 보냈어요
-                          {p.interest_message && <span className="prop-interest-msg">{p.interest_message}</span>}
-                        </div>
+                        <button type="button" className="prop-interest"
+                          onClick={(e) => { e.stopPropagation(); set대화(p); }}>
+                          대화하기
+                        </button>
                       ) : 관심쓰는중 === p.id ? (
                         <div className="prop-interest-box" onClick={(e) => e.stopPropagation()}>
                           <textarea value={한마디} onChange={(e) => set한마디(e.target.value)} rows={2}
@@ -206,6 +209,15 @@ export default function ProposalsPage() {
           </div>
         </section>
       </div>
+      {대화 && (
+        <ProposalThread
+          proposalId={대화.id}
+          제목={대화.job_title}
+          상대={대화.brand_name || 대화.company_name}
+          token={localStorage.getItem("access_token") || ""}
+          onClose={() => set대화(null)}
+        />
+      )}
     </ProfileShell>
   );
 }
