@@ -171,15 +171,15 @@ export default function ProposalsPage() {
                       {p.message && <p className="prop-msg">{p.message}</p>}
 
                       {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
-                      {!마감 && 만료 && (
-                        <div className="prop-interest on">답변 기간이 지났어요</div>
-                      )}
-                      {!마감 && !만료 && (p.interested_at ? (
+                      {p.interested_at ? (
                         <button type="button" className="prop-interest"
                           onClick={(e) => { e.stopPropagation(); set대화(p); }}>
                           대화하기
                         </button>
-                      ) : 관심쓰는중 === p.id ? (
+                      ) : 마감 ? null : 만료 ? (
+                        <div className="prop-interest on">답변 기간이 지났어요</div>
+                      ) : (
+                        관심쓰는중 === p.id ? (
                         <div className="prop-interest-box" onClick={(e) => e.stopPropagation()}>
                           <textarea value={한마디} onChange={(e) => set한마디(e.target.value)} rows={2}
                             maxLength={300} autoFocus
@@ -195,7 +195,8 @@ export default function ProposalsPage() {
                           관심 있어요
                           {남은날 <= 3 && <span className="prop-interest-left">{남은날}일 남음</span>}
                         </button>
-                      ))}
+                        )
+                      )}
 
                       <div className="prop-foot">
                         <span className="prop-cta">채용공고 보기</span>
