@@ -389,12 +389,6 @@ export default function CompanyLayout({ children, activePage }: {
           width: 1018px; max-width: 100%; }
         /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
            바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
-        /* 인재풀 세 화면은 사람을 가로로 펼쳐 놓고 읽는 자리라 설정 계열(1018px)로는
-           카드가 접힌다. 이 묶음 안에서는 셋 다 같은 폭이라 오갈 때 흔들리지 않는다. */
-        .co-set-wrap.co-set-talent { width: 1296px; }
-        /* 판이 넓어지면 가운데 제목은 목록에서 멀리 떨어져 혼자 뜬다. 인재풀에서는
-           본문 왼쪽 끝에 맞춘다 — 아래 목록이 시작하는 자리와 같은 줄이다. */
-        .co-set-wrap.co-set-talent .co-set-title { text-align: left; }
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; }
         /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
