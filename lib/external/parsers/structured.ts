@@ -361,10 +361,11 @@ function regionFromAddress(loc: any): string {
 function mapRole(text: string): { job_type: string; item: string } | null {
   const ns = (text || "").toLowerCase().replace(/\s/g, "");
   const R: [RegExp, string, string][] = [
+    [/발관리|발 관리|풋케어|footcare|내성발톱|굳은살|티눈/, "STORE", "발 관리사(풋케어)"],
     [/네일(스탭|스태프|인턴|보조)/, "STORE", "네일 스탭·인턴"],
     [/네일|nail|젤네일/, "STORE", "네일 아티스트"],
-    // 왁싱은 스킨 & 바디케어의 제 직군이 있다(피부미용사 자격 범위에 제모가 든다).
-    // '피부관리' 규칙보다 먼저 봐야 왁싱 공고가 피부 관리사로 뭉뚱그려지지 않는다.
+    // 왁싱·발관리는 스킨 & 바디케어의 제 직군이 있다. '피부관리' 규칙보다 먼저
+    // 봐야 피부 관리사로 뭉뚱그려지지 않는다.
     [/왁싱|제모|waxing|브라질리언|슈가링/, "STORE", "왁싱·제모 전문가"],
     [/속눈썹|래쉬|eyelash|반영구/, "STORE", "속눈썹·반영구 아티스트"],
     [/(웨딩|본식|혼주)메이크업|웨딩헤어메이크업/, "STORE", "웨딩·혼주 메이크업"],
@@ -824,6 +825,7 @@ function parseBeautyjob(html: string): StructuredResult | null {
     const ck = `${jobArea} ${title}`;
     if (/두피|탈모/.test(ck)) { mappedCats = ["두피 관리사"]; industry = "피부·에스테틱"; }
     else if (/네일/.test(ck)) { mappedCats = ["네일 아티스트"]; industry = "네일샵"; }
+    else if (/발관리|발 관리|풋케어|내성발톱|굳은살|티눈/.test(ck)) { mappedCats = ["발 관리사(풋케어)"]; industry = "피부·에스테틱"; }
     else if (/왁싱|제모|브라질리언|슈가링/.test(ck)) { mappedCats = ["왁싱·제모 전문가"]; industry = "속눈썹·왁싱·반영구"; }
     else if (/속눈썹|래쉬|반영구/.test(ck)) { mappedCats = ["속눈썹·반영구 아티스트"]; industry = "속눈썹·왁싱·반영구"; }
     else if (/피부|에스테틱|경락|스킨\s*케어|마사지|관리사|테라피/.test(ck)) { mappedCats = ["피부 관리사(일반·경락)"]; industry = "피부·에스테틱"; }
