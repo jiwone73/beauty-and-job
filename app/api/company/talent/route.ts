@@ -235,7 +235,10 @@ export async function GET(req: NextRequest) {
       snsUrl: r.sns_url || null,
       gender: r.gender,
       age: r.age,
-      intro: (열람가능 || r.interested_at) ? r.intro : null,
+      // 한줄소개는 자기 PR 한 줄이라 열어 둔다 — 무료로도 판단할 수 있어야 목록이
+      // 뜻을 갖는다. 지원할 때 쓰는 자기소개서(applications.cover_letter)는
+      // 이 쿼리에 아예 없어 인재검색에 노출될 일이 없다.
+      intro: r.intro,
       mainJobGroup: r.main_job_group,
       subJob: r.sub_job,
       skills: r.skills || [],
