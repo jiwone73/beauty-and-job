@@ -141,7 +141,13 @@ export default function AccountSettingsPage() {
                     disabled={offerSaving || openToOffers === null}
                     onChange={() => {}}
                     onClick={() => 공개칸고르기(o.key)} />
-                  <span className="pf-vis-opt-t">{o.label}</span>
+                  <span className="pf-vis-opt-t">
+                    {o.label}
+                    {/* 이 칸만 누르면 창이 열린다. 화살표는 이 화면이 이미 쓰는
+                        「누르면 열림」 표시(열람 제한 기업 줄·비밀번호 변경 줄)와
+                        같은 것으로 둔다. */}
+                    {o.key === "except" && <ChevronRight size={13} className="pf-vis-opt-go" />}
+                  </span>
                   <span className="pf-vis-opt-d">{o.desc}</span>
                 </label>
               ))}
