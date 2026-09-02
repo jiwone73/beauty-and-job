@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
+import { 프로필못채움 } from "@/lib/applyReady"
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { sendApplicationCompleteEmail, sendNewApplicantEmail } from '@/lib/email'
@@ -63,14 +64,7 @@ export async function POST(
     [auth!.sub]
   )
   const p = profileCheck.rows[0] || {}
-  const missing: string[] = []
-  if (!p.phone) missing.push('휴대전화')
-  if (!p.birth_date) missing.push('생년월일')
-  if (!p.gender) missing.push('성별')
-  if (!p.email) missing.push('이메일')
-  if (!p.region_sido) missing.push('거주지')
-  if (!Array.isArray(p.preferred_regions) || p.preferred_regions.length === 0) missing.push('희망 근무지역')
-  if (!p.job_type) missing.push('직군')
+  const missing = 프로필못채움(p)
   if (missing.length > 0) {
     return err('APP_002', `지원하려면 프로필을 완성해주세요. (미입력: ${missing.join(', ')})`, 422)
   }

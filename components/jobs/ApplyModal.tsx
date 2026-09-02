@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useProfileStore, type 이력서한벌 } from "@/lib/store/profileStore";
 import { shortenRegion } from "@/lib/memberFormat";
+import { 전화꼴 } from "@/lib/phoneFormat";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
@@ -473,6 +474,21 @@ export default function ApplyModal({
                   </button>
                 </div>
               )}
+              {/* 지원 정보 — 매장이 실제로 연락하는 값이다. 옛 번호가 그대로면
+                  지원 자체가 헛일이 되는데, 지금까지는 미리보기 이력서 본문에
+                  섞여 있어 따로 확인하는 자리가 없었다.
+                  번호와 메일은 여기서 못 고친다 — 둘 다 본인 확인을 거쳐야
+                  바뀌는 값이라, 고치는 자리로 보내는 것이 맞다. */}
+              <div className="apply-info">
+                <div className="apply-info-head">
+                  <span>지원 정보</span>
+                  <a href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
+                </div>
+                <div className="apply-info-row"><span>이름</span><b>{name}</b></div>
+                <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
+                <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>
+              </div>
+
               <div style={{ padding: 0 }}>
               <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
                 자기소개서
