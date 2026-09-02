@@ -26,6 +26,16 @@
   --color-warn: #e8a317;
   --color-kakao: #fee500;
   --color-kakao-text: #191919;
+  /* 카드 글자 — 기업 인재·공고 카드가 기준이다. 카드마다 제 값을 들고 있어
+     화면을 옮길 때마다 크기가 달라졌다. 여기 한 곳에서만 정한다. */
+  --card-title: 15.5px;      /* 카드 제목·헤드라인 */
+  --card-sub: 13.5px;        /* 곁줄(이름·조건·회사명) */
+  --card-meta: 12.5px;       /* 태그·부가정보 */
+  --card-badge: 11.5px;      /* 뱃지 */
+  --card-title-c: #1a1a1a;
+  --card-sub-c: #666;
+  --card-meta-c: #8a8a90;
+  --card-date-c: #b0b0b6;
 
   /* 전 페이지 공통 폰트(사이트·기업·어드민 동일) */
   --font-sans: "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, "Malgun Gothic", sans-serif;
@@ -5073,21 +5083,21 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .applied-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
 .applied-position {
-  font-size: 14px;
-  font-weight: 700;
-  color: #555;
+  font-size: var(--card-title);
+  font-weight: 400;
+  color: var(--card-title-c);
   margin: 0;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .applied-company {
-  font-size: 14px;
-  color: #555;
+  font-size: var(--card-sub);
+  color: var(--card-sub-c);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.applied-date { font-size: 12px; color: #888; white-space: nowrap; }
+.applied-date { font-size: var(--card-meta); color: var(--card-date-c); white-space: nowrap; }
 .applied-status-text {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--card-sub);
+  font-weight: 400;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -5105,33 +5115,33 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--color-primary);
 }
 .prop-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 3px; }
-.prop-co { font-size: 13px; color: #888; }
-.prop-date { font-size: 12px; color: #b4b4b9; margin-left: auto; white-space: nowrap; }
+.prop-co { font-size: var(--card-sub); color: var(--card-sub-c); }
+.prop-date { font-size: var(--card-meta); color: var(--card-date-c); margin-left: auto; white-space: nowrap; }
 .prop-title {
-  font-size: 15px; color: #2b2b2b; margin: 0 0 7px;
+  font-size: var(--card-title); color: var(--card-title-c); margin: 0 0 7px;
   display: flex; align-items: center; gap: 7px;
 }
 .prop-closed {
-  font-size: 11px; color: #888; background: #f2f2f4;
+  font-size: var(--card-badge); color: #888; background: #f2f2f4;
   padding: 1px 6px; border-radius: 4px; flex-shrink: 0;
 }
 .prop-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
-.prop-meta span { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: #6b6570; }
+.prop-meta span { display: inline-flex; align-items: center; gap: 4px; font-size: var(--card-meta); color: var(--card-meta-c); }
 .prop-meta svg { color: #b4b4b9; flex-shrink: 0; }
 /* 내 희망 조건과 겹치는 것 — 기업이 안 써도 붙는다 */
 .prop-match { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
 .prop-match span {
-  font-size: 11.5px; color: var(--color-primary); background: #f4effa;
+  font-size: var(--card-badge); color: var(--color-primary); background: #f4effa;
   border: 1px solid #e6dbf5; padding: 2px 8px; border-radius: 5px;
 }
 .prop-msg {
-  font-size: 13.5px; color: #555; line-height: 1.6; margin: 0 0 10px;
+  font-size: var(--card-sub); color: var(--card-sub-c); line-height: 1.6; margin: 0 0 10px;
   white-space: pre-line; padding: 10px 12px; background: #f9f9fa;
   border-radius: 8px;
 }
 .prop-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .prop-cta {
-  font-size: 12.5px; color: var(--color-primary);
+  font-size: var(--card-meta); color: var(--color-primary);
   border: 1px solid #e2d9ee; border-radius: 7px; padding: 5px 12px; background: #fff;
 }
 .prop-item:hover .prop-cta { background: #faf7fd; }
@@ -5163,11 +5173,11 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .bookmark-item:hover { border-color: #582681; }
 .bookmark-item-left { flex: 1; min-width: 0; }
-.bookmark-brand { font-size: 14px; color: #555; display: block; margin-bottom: 4px; }
+.bookmark-brand { font-size: var(--card-sub); color: var(--card-sub-c); display: block; margin-bottom: 4px; }
 .bookmark-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #555;
+  font-size: var(--card-title);
+  font-weight: 400;
+  color: var(--card-title-c);
   margin: 0 0 6px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5175,7 +5185,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 /* 아이콘이 글자보다 안으로 들어가면 회사명과 줄머리가 어긋난다 —
    아이콘을 줄머리에 붙이고 글자만 간격만큼 띄운다. */
-.bookmark-location { font-size: 12px; color: #888; display: inline-flex; align-items: center; gap: 4px; }
+.bookmark-location { font-size: var(--card-meta); color: var(--card-meta-c); display: inline-flex; align-items: center; gap: 4px; }
 .bookmark-location svg { flex-shrink: 0; color: #b7b0c0; }
 .bookmark-deadline {
   font-size: 14px;
@@ -13861,15 +13871,15 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 임시저장·마감은 살아 있는 공고와 갈라 보이게 한 톤 낮춘다. */
 .co-jc-main { flex: 1; min-width: 0; }
 .co-jc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.co-jc-term { font-size: 12.5px; color: #a0a0a6; font-variant-numeric: tabular-nums; }
-.co-jc-badge { font-size: 11.5px; padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
+.co-jc-term { font-size: var(--card-meta); color: var(--card-meta-c); font-variant-numeric: tabular-nums; }
+.co-jc-badge { font-size: var(--card-badge); padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
 .co-jc-badge.live { background: #f4f0f8; color: var(--color-primary); }
 .co-jc-badge.soon { background: #fbf0f0; color: #c0504d; }
 .co-jc-badge.draft { background: #f4f4f6; color: #8a8a90; }
 .co-jc-badge.closed { background: #f4f4f6; color: #a0a0a6; }
 /* 제목이 곧 공고를 여는 문이다 — 표에서는 줄 아무 데나 눌러야 열려 눌리는 곳이 안 보였다. */
 .co-jc-title { display: block; background: none; border: none; padding: 0; font-family: inherit;
-  font-size: 16px; color: #1a1a1a; text-align: left; cursor: pointer; line-height: 1.4;
+  font-size: var(--card-title); color: var(--card-title-c); text-align: left; cursor: pointer; line-height: 1.4;
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .co-jc-title:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 .co-jc.off .co-jc-title { color: #8a8a90; }
@@ -14335,15 +14345,15 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-avatar { width: 60px; height: 60px; border-radius: 50%; font-size: 20px; }
 .tal-main { cursor: pointer; }
 .tal-main:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 6px; }
-.tal-name { font-size: 15.5px; color: #1a1a1a; margin-bottom: 6px; text-decoration: none;
+.tal-name { font-size: var(--card-title); color: var(--card-title-c); margin-bottom: 6px; text-decoration: none;
   display: block; line-height: 1.45; }
 .tal-main:hover .tal-name { color: var(--color-primary); text-decoration: underline;
   text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
-.tal-who { font-size: 13.5px; color: #666; line-height: 1.55; }
+.tal-who { font-size: var(--card-sub); color: var(--card-sub-c); line-height: 1.55; }
 .tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
 .tal-foot { justify-content: space-between; margin-top: 11px; padding: 9px 0 11px; }
-.tal-tags { font-size: 12.5px; color: #8a8a90; }
-.tal-when { margin-left: auto; font-size: 12.5px; color: #b0b0b6; }
+.tal-tags { font-size: var(--card-meta); color: var(--card-meta-c); }
+.tal-when { margin-left: auto; font-size: var(--card-meta); color: var(--card-date-c); }
 
 /* 인재 이력서 페이지 — 모달이 아니라 제 주소를 가진 화면이다. 위에 돌아갈 길과
    그 사람에게 할 수 있는 일을 세우고, 이력서는 종이처럼 흰 판 위에 놓는다. */
