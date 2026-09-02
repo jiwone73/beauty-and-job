@@ -1809,7 +1809,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
 .resume-section { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; }
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.resume-section-title { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #582681; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
+/* 칸 이름은 먹색이다 — 프로필·매장정보의 칸 이름(16px/#1a1a1a)과 같은 값.
+   보라는 지금 손이 가야 할 것에만 쓴다. */
+.resume-section-title { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #1a1a1a; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
 /* 프로필 항목 앞 아이콘(.profile-info-icon)과 같은 값 — 옅은 회색, 채우지 않는다. */
 .resume-section-icon { flex-shrink: 0; color: #b7b0c0; }
 .apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
