@@ -14595,7 +14595,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pf-vis-opt input { grid-area: r; width: 18px; height: 18px; accent-color: var(--color-primary); margin: 0; cursor: pointer; }
 .pf-vis-opt-t {
   grid-area: t; display: inline-flex; align-items: center; gap: 3px;
-  font-size: 14.5px; color: #333; line-height: 18px; white-space: nowrap;
+  font-size: 15px; color: #333; line-height: 18px; white-space: nowrap;
 }
 /* 「재직 중인 기업 등…」처럼 길어지는 줄이 있어 한 줄로 묶지 않는다. 대신
    폭에 상한을 두어 두 줄에서 멈추게 한다. */
@@ -14606,7 +14606,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 .pf-set-line.is-col { display: flex; flex-direction: column; align-items: stretch; gap: 6px; cursor: pointer; }
 .pf-set-line.is-col .profile-info-label { display: flex; align-items: center; width: 100%; }
-.pf-vis-row-v { min-width: 0; font-size: 16px; color: #333; line-height: 1.45; overflow-wrap: anywhere; }
+.pf-vis-row-v { min-width: 0; font-size: 15px; color: #333; line-height: 1.45; overflow-wrap: anywhere; }
 .pf-vis-row-v.is-empty { color: #c4c4c9; }
 .pf-pay { display: inline-flex; align-items: center; gap: 4px; padding-left: 22px; }
 /* 테두리도 바탕도 없이 글자로만 선다. 적는 칸만 올렸을 때 옅게 든다. */
