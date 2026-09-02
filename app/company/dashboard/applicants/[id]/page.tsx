@@ -6,7 +6,7 @@ import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { ApplicationStatus } from "@/lib/types/company";
-import { ArrowLeft, Download, Printer, FileText } from "lucide-react";
+import { ArrowLeft, Download, Printer } from "lucide-react";
 
 // 지원서. 모달이 아니라 페이지다 — 이력서와 같은 이유로, 한 사람을 앉아서 읽는
 // 자리는 제 주소를 가져야 한다(뒤로가기가 목록으로 가고, 링크로 건넬 수 있고,
@@ -129,21 +129,6 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
                 ...mapResume(자료.resume),
               }}
             />
-            {자료.resume_file_preview_url && (
-              <div style={{ margin: "20px 40px 0", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "#f7f7f8", border: "1.5px solid #efeff1", borderRadius: 10 }}>
-                <FileText size={22} color="#582681" />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {자료.resume_file_name || "첨부 이력서"}
-                  </p>
-                  <p style={{ fontSize: 13, color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
-                </div>
-                <a href={자료.resume_file_preview_url} target="_blank" rel="noopener noreferrer"
-                  style={{ padding: "8px 14px", borderRadius: 8, background: "#582681", color: "#fff", fontSize: 14, textDecoration: "none", whiteSpace: "nowrap" }}>
-                  다운로드
-                </a>
-              </div>
-            )}
           </div>
         )}
       </div>

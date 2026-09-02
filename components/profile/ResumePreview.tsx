@@ -293,14 +293,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           )}
         </div>
       )}
-      {/* 첨부 이력서 — 현재 숨김 처리 */}
-      {false && resumeFileName && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">첨부 이력서</h2>
-          <p className="rp-text">{resumeFileName}</p>
-        </div>
-      )}
-
 
       {/* 자기소개서는 이력서의 맨 끝이다 — 경력·학력을 먼저 훑고 나서 읽는 글이다. */}
       {coverLetter && coverLetter.trim() && (

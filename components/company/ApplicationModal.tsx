@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Download, Printer, FileText } from "lucide-react";
+import { X, Download, Printer } from "lucide-react";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
@@ -122,8 +122,7 @@ export default function ApplicationModal({
           ) : !자료 ? (
             <div className="admin-empty">지원서를 불러오지 못했어요.</div>
           ) : (
-            <>
-              <ApplicationDocument
+            <ApplicationDocument
                 ref={previewRef}
                 coverLetter={자료.cover_letter}
                 subtitle={자료.job_title}
@@ -141,23 +140,7 @@ export default function ApplicationModal({
                   resumeType: 자료.user_job_type === "STORE" ? "salon" : "office",
                   ...mapResume(자료.resume),
                 }}
-              />
-              {자료.resume_file_preview_url && (
-                <div style={{ margin: "20px 40px 0", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "#f7f7f8", border: "1.5px solid #efeff1", borderRadius: 10 }}>
-                  <FileText size={22} color="#582681" />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 14, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {자료.resume_file_name || "첨부 이력서"}
-                    </p>
-                    <p style={{ fontSize: 13, color: "#888", margin: "2px 0 0" }}>지원자가 첨부한 이력서 파일</p>
-                  </div>
-                  <a href={자료.resume_file_preview_url} target="_blank" rel="noopener noreferrer"
-                    style={{ padding: "8px 14px", borderRadius: 8, background: "#582681", color: "#fff", fontSize: 14, textDecoration: "none", whiteSpace: "nowrap" }}>
-                    다운로드
-                  </a>
-                </div>
-              )}
-            </>
+            />
           )}
         </div>
       </div>
