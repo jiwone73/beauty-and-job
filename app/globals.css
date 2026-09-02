@@ -14351,6 +14351,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-count-value { font-size: 26px; color: #c8c8ce; line-height: 1.1; }
 .co-count.on .co-count-value { color: var(--color-primary); }
 .co-count:hover .co-count-label { color: #1a1a1a; }
+/* 칸이 곧 필터인 화면(지원자)에서 고른 칸 */
+.co-count.sel { background: #f7f7f8; }
+.co-count.sel .co-count-label { color: #1a1a1a; }
 @media (max-width: 767px) {
   .co-counts { grid-template-columns: repeat(2, 1fr); row-gap: 20px; padding: 18px 0; }
   .co-count:nth-child(2n+1) { border-left: none; }

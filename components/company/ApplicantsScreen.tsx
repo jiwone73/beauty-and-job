@@ -221,13 +221,11 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
     // 미열람 → 열람 → 면접 → 합격 순서. '전체'는 바로 아래 '총 N명'이 이미 보여주므로 칸을 쓰지 않고,
     // 선택된 카드를 다시 누르면 전체로 돌아간다.
     // 상태값 APPLIED는 이력서를 열면 곧바로 VIEWED가 되므로 사실상 미열람과 같아 따로 세지 않는다.
-    // 색은 브랜드 보라 하나만 쓴다. 넷을 빨강·주황·보라·초록으로 칠해 두니 숫자가
-    // 아니라 색이 먼저 읽혔고, 로고에 없는 색이라 화면에서 겉돌았다. 지금 손이
-    // 가야 할 곳(미열람)만 보라, 나머지는 먹색이다.
-    { label: "미열람", value: String(counts.미열람), unit: "명", color: "#582681", status: "미열람" },
-    { label: "열람", value: String(counts.열람), unit: "명", color: "#1a1a1a", status: "열람" },
-    { label: "면접", value: String(counts.면접), unit: "명", color: "#1a1a1a", status: "면접" },
-    { label: "합격", value: String(counts.합격), unit: "명", color: "#1a1a1a", status: "합격" },
+    // 색은 쓰지 않는다. 0 이면 흐리게, 숫자가 있으면 보라 — 홈과 같은 규칙이다.
+    { label: "미열람", value: String(counts.미열람), status: "미열람" },
+    { label: "열람", value: String(counts.열람), status: "열람" },
+    { label: "면접", value: String(counts.면접), status: "면접" },
+    { label: "합격", value: String(counts.합격), status: "합격" },
   ];
 
   return (
@@ -242,27 +240,24 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
           <div className="co-statrow">
             {statCardsData.map((s) => (
               <button key={s.label} type="button"
-                className={`co-stat ${statusFilter === s.status ? "on" : ""}`}
-                onClick={() => setStatusFilter((cur) => (cur === s.status ? "전체" : s.status))}
-                style={statusFilter === s.status ? { borderColor: s.color, background: "#f7f7f8" } : undefined}>
-                <span className="n" style={{ color: s.color }}>{s.value}</span>
+                className={`co-stat${Number(s.value) > 0 ? " has" : ""}${statusFilter === s.status ? " on" : ""}`}
+                onClick={() => setStatusFilter((cur) => (cur === s.status ? "전체" : s.status))}>
                 <span className="l">{s.label}</span>
+                <span className="n">{s.value}</span>
               </button>
             ))}
           </div>
         </div>
       ) : (
-        <div className="company-stat-grid">
+        /* 홈의 카운터와 같은 짜임 — 한 판 안에 칸, 라벨이 위 숫자가 아래.
+           여기서는 칸이 곧 상태 필터라, 고른 칸만 바탕을 준다. */
+        <div className="co-counts">
           {statCardsData.map((s) => (
-            <button key={s.label} type="button" className="company-stat-card"
-              onClick={() => setStatusFilter((cur) => (cur === s.status ? "전체" : s.status))}
-              style={{ cursor: "pointer", textAlign: "left", font: "inherit",
-                border: statusFilter === s.status ? `1px solid ${s.color}` : undefined,
-                background: statusFilter === s.status ? "#f7f7f8" : undefined }}>
-              <div className="company-stat-value" style={{color: s.color}}>
-                {s.value}<span className="company-stat-unit">{s.unit}</span>
-              </div>
-              <div className="company-stat-label">{s.label}</div>
+            <button key={s.label} type="button"
+              className={`co-count${Number(s.value) > 0 ? " on" : ""}${statusFilter === s.status ? " sel" : ""}`}
+              onClick={() => setStatusFilter((cur) => (cur === s.status ? "전체" : s.status))}>
+              <span className="co-count-label">{s.label}</span>
+              <span className="co-count-value">{s.value}</span>
             </button>
           ))}
         </div>
@@ -346,8 +341,10 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
             .co-jobdd .chev { flex-shrink: 0; color: #999; }
             .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
             .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
-            .co-stat .n { font-size: 16px; font-weight: 600 !important; line-height: 1; }
-            .co-stat .l { font-size: 11px; color: #666; white-space: nowrap; }
+            .co-stat .l { font-size: 11px; color: #888; white-space: nowrap; }
+            .co-stat .n { font-size: 17px; line-height: 1; color: #c8c8ce; }
+            .co-stat.has .n { color: #582681; }
+            .co-stat.on { border-color: #582681; background: #f7f7f8; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
             .co-mbar-count strong { color: #1a1a1a; }
