@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bookmark, BookmarkCheck, Pencil } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
+import { 마감인가 } from "@/lib/jobClosed";
 import type { CompanyApplication } from "@/lib/types/company";
 
 // 지원자 카드. 지원자 목록과 공고 카드 안(펼치기)이 같은 카드를 쓴다 —
@@ -30,11 +31,7 @@ const 고용형태: Record<string, string> = {
   FREELANCE: "프리랜서", INTERN: "인턴", TEMPORARY: "일용직",
 };
 
-const 마감인가 = (a: CompanyApplication) => {
-  const st = (a as any).job_status;
-  const dl = (a as any).job_deadline;
-  return st === "CLOSED" || (dl && new Date(dl) < new Date());
-};
+const 마감 = (a: CompanyApplication) => 마감인가((a as any).job_status, (a as any).job_deadline);
 
 export default function ApplicantCard({
   a, onOpen, onToggleScrap, onNote, checked, onCheck, showJob = true,
@@ -155,7 +152,7 @@ export default function ApplicantCard({
               {/* 모집부문이 넷인 공고에서는 「지원했다」만으로 무엇을 받았는지
                   알 수 없다. 지원 때 고른 자리를 공고 이름 뒤에 붙인다. */}
               {(a as any).position_title && <span style={{ color: "#8a8a90" }}> · {(a as any).position_title}</span>}
-              {마감인가(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
+              {마감(a) && <span className="job-closed-tag">마감</span>}
             </span>
           )}
           {유입 && <span className="tal-from">{유입}</span>}

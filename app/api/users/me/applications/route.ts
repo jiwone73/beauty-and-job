@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
     SELECT
       a.id, a.status, a.applied_at, a.viewed_at, a.job_snapshot,
       jp.id AS job_id,
+      jp.status AS job_status,
       COALESCE(jp.title, a.job_snapshot->>'title') AS job_title,
       COALESCE(jp.location, a.job_snapshot->>'location') AS location,
       COALESCE(jp.deadline, NULLIF(a.job_snapshot->>'deadline', '')::timestamptz) AS deadline,

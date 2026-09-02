@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { shortRegion } from "@/lib/regionShort";
+import { 마감인가 } from "@/lib/jobClosed";
 import MyApplicationModal from "@/components/profile/MyApplicationModal";
 import JobSearchCertificateModal from "@/components/profile/JobSearchCertificateModal";
 import JobPostingCertificateModal from "@/components/profile/JobPostingCertificateModal";
@@ -217,7 +218,14 @@ export default function AppliedList({ userName }: { userName: string }) {
                 className="applied-body"
                 onClick={() => (selectMode ? toggleSelect(app.id) : app.job_id && router.push(`/jobs/${app.job_id}`))}
               >
-                <h3 className="applied-position">{app.job_title}</h3>
+                <h3 className="applied-position">
+                  {app.job_title}
+                  {/* 매장이 마감을 누르면 지원자 화면에도 그대로 보인다 — 같은
+                      공고를 두고 두 화면이 다르게 보이면 안 된다. */}
+                  {마감인가((app as any).job_status, (app as any).deadline) && (
+                    <span className="job-closed-tag">마감</span>
+                  )}
+                </h3>
                 <span className="applied-company">{app.brand_name || app.company_name}</span>
                 <span className="applied-date">지원일 {dateStr}</span>
               </div>
