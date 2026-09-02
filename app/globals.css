@@ -14399,3 +14399,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 판 위에 놓이므로 카드 테두리는 옅게, 바탕은 흰색으로 남긴다. */
 .co-jc-apps .tal-card { border-color: #ececf0; background: #fff; }
+
+/* 지원자 카드 아랫줄 — 직군 태그 · 지원한 공고 · 어떻게 들어왔는지. 값이 여럿이라
+   가운뎃점 대신 여백으로 가른다(가운뎃점은 태그의 「·」와 섞인다). */
+.tal-foot .tal-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.tal-job { color: #666; }
+.tal-foot .tal-from { margin-left: 0; }

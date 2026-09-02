@@ -23,6 +23,11 @@ function shortenRegion(region: string): string {
   return region.replace(/특별자치도|특별자치시|특별시|광역시/g, "").replace(/\s+/g, " ").trim();
 }
 
+const 고용형태: Record<string, string> = {
+  FULL_TIME: "정규직", PART_TIME: "아르바이트", CONTRACT: "계약직",
+  FREELANCE: "프리랜서", INTERN: "인턴", TEMPORARY: "일용직",
+};
+
 const 마감인가 = (a: CompanyApplication) => {
   const st = (a as any).job_status;
   const dl = (a as any).job_deadline;
@@ -55,6 +60,11 @@ export default function ApplicantCard({
     : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#1a1a1a";
   const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
     : (a as any).proposed_at ? "제안 후 지원" : null;
+  // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
+  const 태그 = [
+    (a as any).user_sub_job || (a as any).user_main_job_group,
+    (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
+  ].filter(Boolean) as string[];
 
   return (
     <div className={`tal-card${checked ? " on" : ""}`}>
@@ -96,13 +106,14 @@ export default function ApplicantCard({
 
       <div className="tal-foot">
         <span className="tal-tags">
+          {태그.length > 0 && <span>{태그.map((g) => `#${g}`).join(" ")}</span>}
           {showJob && (
-            <>
+            <span className="tal-job">
               {a.job_title}
               {마감인가(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
-            </>
+            </span>
           )}
-          {유입 && <span className="tal-from" style={showJob ? undefined : { marginLeft: 0 }}>{유입}</span>}
+          {유입 && <span className="tal-from">{유입}</span>}
         </span>
         <span className="tal-when">{날짜(a.applied_at)} 지원</span>
       </div>

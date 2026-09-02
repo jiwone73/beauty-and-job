@@ -55,8 +55,12 @@ export async function GET(req: NextRequest) {
        u.region_sido AS user_region_sido,
        u.region_sigungu AS user_region_sigungu,
        u.portfolio_images,
-       -- 인재 카드와 같은 얼굴을 쓴다 — 맨 윗줄은 본인이 고른 한 마디다.
+       -- 인재 카드와 같은 얼굴을 쓴다 — 맨 윗줄은 본인이 고른 한 마디고,
+       -- 아랫줄은 사람을 거르는 태그다(직군·고용형태).
        up.intro AS user_intro,
+       up.main_job_group AS user_main_job_group,
+       up.sub_job AS user_sub_job,
+       up.work_type_prefer AS user_work_type_prefer,
         (
           SELECT ul.url FROM user_links ul
           WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''

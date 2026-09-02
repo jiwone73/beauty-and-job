@@ -5,6 +5,7 @@ import { Search, Bookmark, BookmarkCheck, XCircle, ChevronDown } from "lucide-re
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import ApplicantCard from "@/components/company/ApplicantCard";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import { companyApplicationsApi, companyJobsApi, companyTalentApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
@@ -536,75 +537,11 @@ function ApplicantsContent() {
             <span>총 <strong>{filtered.length}</strong>명</span>
           </div>
           <div className="tal-list">
-            {filtered.map((a) => {
-              const 고름 = checked.includes(a.id);
-              const 나이 = calcAge((a as any).user_birth_date);
-              const ct = (a as any).career_type;
-              // 연차를 모르면 「경력」이라는 말만 덩그러니 남는다 — 그럴 바엔 안 적는다.
-              const 경력 = ct === "NEWCOMER"
-                ? "신입"
-                : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : ""; })();
-              const 나이성별 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
-              const 지역 = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
-              // 브랜드 보라 하나로 간다. 아직 안 본 사람만 보라(할 일이 남은 것),
-              // 끝난 것(불합격·지원취소)은 흐리게, 나머지는 먹색.
-              const 상태색 = a.status === "APPLIED" ? "#582681"
-                : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#1a1a1a";
-              return (
-                <div key={a.id} className={`tal-card${고름 ? " on" : ""}`}>
-                  <div className="tal-top">
-                    <input type="checkbox" className="tal-check" checked={고름} onChange={() => toggleCheck(a.id)} />
-                    <div className="tal-avatar" onClick={() => 열기(a)} title="지원서 보기">
-                      {(a as any).user_avatar_url
-                        ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
-                        : <span>{(a.user_name || "?").slice(0, 1)}</span>}
-                    </div>
-
-                    {/* 인재 카드와 같은 얼굴 — 맨 위는 본인이 고른 한 마디, 그 아래에
-                        그 사람을 특정하는 값. 한줄소개를 안 쓴 사람은 이름이 대신한다. */}
-                    <div className="tal-main" role="button" tabIndex={0} title="지원서 보기"
-                      onClick={() => 열기(a)}
-                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); 열기(a); } }}>
-                      <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
-                      <div className="tal-who">
-                        {(a as any).user_intro ? a.user_name : ""}
-                        {(a as any).user_intro && 나이성별 ? " " : ""}
-                        {나이성별 && `(${나이성별})`}
-                        {경력 && <>{((a as any).user_intro || 나이성별) ? " · " : ""}{경력}</>}
-                      </div>
-                      {지역 && <div className="tal-who">{지역}</div>}
-                    </div>
-
-                    <div className="tal-acts">
-                      <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
-                        className="tal-scrap" onClick={(e) => { e.stopPropagation(); toggleScrap(a); }}>
-                        {(a as any).scrapped
-                          ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-                          : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
-                      </button>
-                      <span style={{ fontSize: 12.5, color: 상태색 }}>
-                        {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 아랫줄은 인재 카드의 태그·날짜 자리 — 여기서는 어느 공고로 어떻게
-                      들어왔는지와 지원한 날. 연락처는 지원서를 열면 나온다. */}
-                  <div className="tal-foot">
-                    <span className="tal-tags">
-                      {a.job_title}
-                      {isJobClosed(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
-                      {(a as any).proposal_interested_at
-                        ? <span className="tal-from">대화 후 지원</span>
-                        : (a as any).proposed_at
-                          ? <span className="tal-from">제안 후 지원</span>
-                          : null}
-                    </span>
-                    <span className="tal-when">{formatDate(a.applied_at)} 지원</span>
-                  </div>
-                </div>
-              );
-            })}
+            {filtered.map((a) => (
+              <ApplicantCard key={a.id} a={a}
+                checked={checked.includes(a.id)} onCheck={toggleCheck}
+                onOpen={열기} onToggleScrap={toggleScrap} />
+            ))}
           </div>
         </div>
       )}
