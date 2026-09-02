@@ -42,15 +42,12 @@ export const companyApplicationsApi = {
   list: (params?: {
     status?: ApplicationStatus;
     job_id?: string;
-    /** 마감된 공고의 지원자를 갈라 본다. 기본은 진행 중인 공고. */
-    scope?: "active" | "past" | "all";
     page?: number;
     limit?: number;
   }) => {
     const qs = new URLSearchParams();
     if (params?.status) qs.set("status", params.status);
     if (params?.job_id) qs.set("job_id", params.job_id);
-    if (params?.scope) qs.set("scope", params.scope);
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const query = qs.toString() ? `?${qs}` : "";

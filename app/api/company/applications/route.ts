@@ -12,22 +12,20 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const jobId = searchParams.get('job_id')
   const status = searchParams.get('status')
-  // 마감된 공고의 지원자는 「지난 지원자」로 갈라 본다. 한 목록에 섞여 있으면
-  // 오늘 답해야 할 사람이 이미 끝난 건에 묻힌다.
-  const scope = searchParams.get('scope') || 'active'   // active | past | all
+
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '100')
   const offset = (page - 1) * limit
 
   const where: string[] = ['jp.company_id = $1', 'a.hidden_by_company = false', "a.status <> 'WITHDRAWN'"]
+  // 공고가 지원자의 축이라 마감 여부로 목록을 가르지 않는다 — 사이드의 공고 목록에서
+  // 「마감」으로 드러나고, 공고를 고르면 그 지원자만 보인다.
+  // 다만 채용이 끝난 뒤에도 남의 이력서를 계속 들여다볼 수 있으면 안 된다. 마감한
+  // 공고는 90일까지만 연다 — 사람인·잡코리아가 나란히 쓰는 기간이고, 뽑았다가 금방
+  // 그만두는 경우(수습 전후)가 그 안에 든다. 마감일이 없이 내린 공고는 내린 때 기준.
   const 지난공고 = "(jp.status = 'CLOSED' OR (jp.deadline IS NOT NULL AND jp.deadline < CURRENT_DATE))"
-  // 마감일이 없이 내린 공고는 내린 때를, 마감일이 있으면 그날을 기준으로 센다.
   const 마감날 = "COALESCE(jp.deadline, jp.closed_at::date, jp.updated_at::date)"
-  // 채용이 끝난 뒤에도 남의 이력서를 계속 들여다볼 수 있으면 안 된다. 사람인·잡코리아가
-  // 나란히 쓰는 90일을 따른다 — 뽑았다가 금방 그만두는 경우(수습 전후)가 그 안에 든다.
-  const 보관기한 = `${마감날} >= CURRENT_DATE - INTERVAL '90 days'`
-  if (scope === 'past') where.push(지난공고, 보관기한)
-  else if (scope === 'active') where.push(`NOT ${지난공고}`)
+  where.push(`(NOT ${지난공고} OR ${마감날} >= CURRENT_DATE - INTERVAL '90 days')`)
   const params: any[] = [companyId]
   let idx = 2
 

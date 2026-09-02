@@ -51,8 +51,7 @@ const STATUS_ACTIONS: [ApplicationStatus, string, string][] = [
   ["REJECTED", "불합격", "#8a8a90"],
 ];
 
-function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) {
-  const 지난 = scope === "past";
+function ApplicantsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -131,7 +130,6 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
     try {
       const res = await companyApplicationsApi.list({
         ...(jobFilter ? { job_id: jobFilter } : {}),
-        scope,
         limit: 100,
       });
       setApplicants(res.data);
@@ -145,7 +143,7 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
   useEffect(() => {
     loadApplicants();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobFilter, scope]);
+  }, [jobFilter]);
 
   // 공고 목록 (필터용)
   useEffect(() => {
@@ -228,8 +226,30 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
     { label: "합격", value: String(counts.합격), status: "합격" },
   ];
 
+  // 사이드는 공고 목록이다. 마감 여부는 여기서 뱃지로 드러나고, 마감한 공고는
+  // 90일이 지나면 지원자와 함께 목록에서 내려간다.
+  const 공고사이드 = (
+    <>
+      <button type="button" className={`co-set-item co-jobitem${jobFilter === "" ? " on" : ""}`}
+        onClick={() => setJobFilter("")}>
+        <span className="co-jobitem-t">전체</span>
+        <span className="co-jobitem-n">{applicants.length}</span>
+      </button>
+      {jobs.filter((j) => j.applicationCount > 0 || j.id === jobFilter).map((j) => (
+        <button key={j.id} type="button" className={`co-set-item co-jobitem${jobFilter === j.id ? " on" : ""}`}
+          onClick={() => setJobFilter(j.id)} title={j.title}>
+          <span className="co-jobitem-t">
+            {j.title}
+            {j.closed && <span className="co-jobitem-off">마감</span>}
+          </span>
+          <span className="co-jobitem-n">{j.applicationCount}</span>
+        </button>
+      ))}
+    </>
+  );
+
   return (
-    <CompanyLayout activePage={지난 ? "applicants-past" : "applicants"}>
+    <CompanyLayout activePage="applicants" side={공고사이드}>
       <div style={{ width: "100%" }}>
       {isMobile ? (
         <div className="co-topbar">
@@ -260,39 +280,6 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
               <span className="co-count-value">{s.value}</span>
             </button>
           ))}
-        </div>
-      )}
-
-      {!isMobile && jobFilter && (
-        <div style={{
-          background: "#f7f7f8",
-          border: "1px solid #f7f7f8",
-          borderRadius: "10px",
-          padding: "12px 16px",
-          marginBottom: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 10,
-        }}>
-          <span style={{ fontSize: "14px", color: "#582681", fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {jobFilterTitle ? `'${jobFilterTitle}' 지원자` : "특정 공고의 지원자만 표시 중"}
-          </span>
-          <button
-            onClick={() => setJobFilter("")}
-            style={{
-              border: "1px solid #582681",
-              background: "#fff",
-              color: "#582681",
-              padding: "4px 12px",
-              borderRadius: "6px",
-              fontSize: "13px",
-              cursor: "pointer",
-              flexShrink: 0,
-            }}
-          >
-            전체 보기
-          </button>
         </div>
       )}
 
@@ -433,7 +420,7 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
       {!loading && filtered.length === 0 && (
         <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
           {applicants.length === 0
-            ? (지난 ? "마감 후 90일 안에 받은 지원이 없어요." : "아직 지원자가 없어요.")
+            ? "아직 지원자가 없어요."
             : "조건에 맞는 지원자가 없어요."}
         </div>
       )}
@@ -622,12 +609,6 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
         </div>
       )}
 
-      {/* 기한은 목록 아래 한 줄로. 카드마다 붙이면 같은 말이 스무 번 선다. */}
-      {지난 && !loading && filtered.length > 0 && (
-        <p style={{ margin: "14px 2px 0", fontSize: 12.5, color: "#a0a0a6" }}>
-          마감 후 90일까지 볼 수 있어요.
-        </p>
-      )}
       </div>
 
       {/* 선택 액션바 (모바일) */}
@@ -644,13 +625,12 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
   );
 }
 
-/** 지원자 화면. 「지원자 목록」과 「지난 지원자」가 같은 화면을 쓰고 범위만 바꾼다.
- *  라우트 파일이 아니라 컴포넌트로 둔 것은 Next 가 page.tsx 의 내보내기를 검사해
- *  props 도, 이름을 단 내보내기도 허락하지 않아서다. */
-export default function ApplicantsScreen({ scope = "active" }: { scope?: "active" | "past" }) {
+/** 지원자 화면. 사이드에 공고 목록을 세우고, 고른 공고의 지원자를 오른쪽에 둔다 —
+ *  공고가 지원자의 축이다(사람인의 후보자 리스트도 [공고] 탭으로 묶는다). */
+export default function ApplicantsScreen() {
   return (
-    <Suspense fallback={<CompanyLayout activePage={scope === "past" ? "applicants-past" : "applicants"}><div /></CompanyLayout>}>
-      <ApplicantsContent scope={scope} />
+    <Suspense fallback={<CompanyLayout activePage="applicants"><div /></CompanyLayout>}>
+      <ApplicantsContent />
     </Suspense>
   );
 }

@@ -15,8 +15,7 @@ const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
   jobs: "채용공고",
   "jobs-new": "채용공고 등록",
-  applicants: "진행중 공고 지원자",
-  "applicants-past": "마감 공고 지원자",
+  applicants: "지원자",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
   proposals: "보낸 제안",
@@ -26,11 +25,14 @@ const PAGE_TITLES: Record<string, string> = {
   notifications: "알림 설정",
 };
 
-export default function CompanyLayout({ children, activePage, title }: {
+export default function CompanyLayout({ children, activePage, title, side }: {
   children: React.ReactNode;
   activePage: string;
   /** 화면 제목을 갈아 끼운다 — 한 사람의 이력서처럼 제목이 내용마다 달라지는 곳. */
   title?: string;
+  /** 화면이 제 사이드를 직접 그린다. 지원자처럼 사이드에 세울 것이 고정 메뉴가
+   *  아니라 그때그때 달라지는 목록(공고)인 경우에 쓴다. */
+  side?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -191,15 +193,6 @@ export default function CompanyLayout({ children, activePage, title }: {
       { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재", href: `${base}/talent/scrapped` },
       { id: "proposals", label: () => "보낸 제안",   title: () => "보낸 제안",   href: `${base}/proposals` },
     ],
-    // 지원자 — 마감된 공고의 지원자를 갈라 둔다. 한 목록에 섞여 있으면 오늘 답해야
-    //   할 사람이 이미 끝난 건에 묻힌다. 지난 것은 사람이 아니라 공고다 — 그래서
-    //   「지난 지원자」가 아니고, 그렇다고 「마감 공고」로 두면 지원자 갈래 안에서
-    //   공고 메뉴처럼 읽힌다. 사이드는 머리줄(지원자)을 이어받으니 상태만 적는다.
-    //   사람인 공고관리 탭도 같은 말(진행중·마감)을 쓴다.
-    applicants: [
-      { id: "applicants",      label: () => "진행중", title: () => "진행중 공고 지원자", href: `${base}/applicants` },
-      { id: "applicants-past", label: () => "마감",   title: () => "마감 공고 지원자",   href: `${base}/applicants/past` },
-    ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
     settings: [
@@ -212,12 +205,12 @@ export default function CompanyLayout({ children, activePage, title }: {
   /** 지금 화면이 어느 묶음에 드는지 — 사이드를 보일지, 머리줄 어느 메뉴를 켤지가 이걸로 정해진다. */
   const 묶음 = Object.keys(SIDE_NAV).find((k) => SIDE_NAV[k].some((m) => m.id === activePage));
   const 사이드 = 묶음 ? SIDE_NAV[묶음] : null;
+  const 사이드있나 = !!(사이드 || side);
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
     : id === "talent" ? (activePage === "talent" || activePage === "scrapped" || activePage === "proposals")
-    : id === "applicants" ? 묶음 === "applicants"
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
@@ -506,24 +499,26 @@ export default function CompanyLayout({ children, activePage, title }: {
       <div className="co-top-body">
         {/* 설정 계열은 제목을 여기 두지 않는다 — 왼쪽 사이드에서 고른 것이 무엇인지는
             그 옆 본문 위에서 말하는 게 맞다(아래 .co-set-title). */}
-        {!사이드 && (
+        {!사이드있나 && (
           <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
-        {사이드 ? (
+        {사이드있나 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
-          <div className={`co-set-wrap co-set-${묶음}`}>
+          <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
             <nav className="co-set-side">
-              {사이드.map((m) => (
-                <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
-                  {m.label(infoLabel(companyInfo.type))}
-                </Link>
-              ))}
+              {사이드
+                ? 사이드.map((m) => (
+                    <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
+                      {m.label(infoLabel(companyInfo.type))}
+                    </Link>
+                  ))
+                : side}
             </nav>
             <main className="company-content co-set-main">
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
               <h1 className="co-set-title">
-                {title || 사이드.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
+                {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
               </h1>
               {children}
             </main>
