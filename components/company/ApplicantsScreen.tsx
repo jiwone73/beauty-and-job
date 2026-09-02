@@ -46,9 +46,9 @@ function formatDate(dateStr: string): string {
 // 사람이 직접 고르는 상태만 버튼으로 둔다.
 // 미열람·열람은 이력서를 열면 자동으로 바뀌므로 손댈 이유가 없다.
 const STATUS_ACTIONS: [ApplicationStatus, string, string][] = [
-  ["INTERVIEW", "면접", "#8b5cf6"],
-  ["PASSED", "합격", "#10b981"],
-  ["REJECTED", "불합격", "#e74c3c"],
+  ["INTERVIEW", "면접", "#582681"],
+  ["PASSED", "합격", "#582681"],
+  ["REJECTED", "불합격", "#8a8a90"],
 ];
 
 function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) {
@@ -221,10 +221,13 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
     // 미열람 → 열람 → 면접 → 합격 순서. '전체'는 바로 아래 '총 N명'이 이미 보여주므로 칸을 쓰지 않고,
     // 선택된 카드를 다시 누르면 전체로 돌아간다.
     // 상태값 APPLIED는 이력서를 열면 곧바로 VIEWED가 되므로 사실상 미열람과 같아 따로 세지 않는다.
-    { label: "미열람", value: String(counts.미열람), unit: "명", color: "#e05252", status: "미열람" },
-    { label: "열람", value: String(counts.열람), unit: "명", color: "#f59e0b", status: "열람" },
-    { label: "면접", value: String(counts.면접), unit: "명", color: "#8b5cf6", status: "면접" },
-    { label: "합격", value: String(counts.합격), unit: "명", color: "#10b981", status: "합격" },
+    // 색은 브랜드 보라 하나만 쓴다. 넷을 빨강·주황·보라·초록으로 칠해 두니 숫자가
+    // 아니라 색이 먼저 읽혔고, 로고에 없는 색이라 화면에서 겉돌았다. 지금 손이
+    // 가야 할 곳(미열람)만 보라, 나머지는 먹색이다.
+    { label: "미열람", value: String(counts.미열람), unit: "명", color: "#582681", status: "미열람" },
+    { label: "열람", value: String(counts.열람), unit: "명", color: "#1a1a1a", status: "열람" },
+    { label: "면접", value: String(counts.면접), unit: "명", color: "#1a1a1a", status: "면접" },
+    { label: "합격", value: String(counts.합격), unit: "명", color: "#1a1a1a", status: "합격" },
   ];
 
   return (
@@ -559,8 +562,10 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
                 : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : ""; })();
               const 나이성별 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
               const 지역 = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
-              const 상태색 = a.status === "APPLIED" ? "#0ea5e9" : a.status === "VIEWED" ? "#f59e0b"
-                : a.status === "PASSED" ? "#10b981" : a.status === "REJECTED" ? "#e74c3c" : "#999";
+              // 브랜드 보라 하나로 간다. 아직 안 본 사람만 보라(할 일이 남은 것),
+              // 끝난 것(불합격·지원취소)은 흐리게, 나머지는 먹색.
+              const 상태색 = a.status === "APPLIED" ? "#582681"
+                : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#1a1a1a";
               return (
                 <div key={a.id} className={`tal-card${고름 ? " on" : ""}`}>
                   <div className="tal-top">
