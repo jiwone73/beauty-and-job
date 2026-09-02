@@ -1,22 +1,22 @@
 import pool from "@/lib/db";
 
 /**
- * 이 기업이 인재의 연락처·자기소개서를 볼 수 있고 제안을 보낼 수 있는가.
+ * 이 기업이 인재의 개인정보(이름·연락처·사진·자기소개서·재직 매장)를 볼 수 있고
+ * 제안을 보낼 수 있는가.
  *
- * 셀렉미와 같은 규칙을 쓴다 — 공고가 입장권이다("유료공고 등록 시 인재정보
- * 상세 열람이 가능합니다"). 인재 목록과 경력·직군·희망조건은 누구나 보되,
- * 연락처와 자기소개서는 채용을 실제로 하고 있는 곳에만 연다. 제안도 마찬가지다 —
- * 공고가 없으면 받는 사람이 근무지·급여를 볼 수 없어 판단할 것이 없고, 그런
- * 제안이 쌓이면 인재가 제안 알림을 아예 안 열게 된다.
+ * 인재 목록과 경력·직군·희망조건은 기업회원이면 누구나 보되, 개인정보는 유료
+ * 기간 안에 있는 곳에만 연다. 제안도 같은 문이다 — 개인정보를 못 보는 곳이
+ * 보내는 제안은 받는 사람이 판단할 것이 없고, 그런 제안이 쌓이면 인재가 제안
+ * 알림을 아예 안 열게 된다.
  *
- * 지금은 '진행중인 공고가 하나라도 있는가'로 본다. 결제(통신판매업 신고 뒤)를
- * 붙이면 이 함수만 '유료 공고가 있는가'로 바꾼다 — 부르는 쪽은 손대지 않는다.
+ * 등급을 따로 두지 않고 날짜 하나(companies.paid_until)로 본다. 기간이 지나면
+ * 저절로 무료로 떨어지고, 결제가 붙으면 이 날짜만 밀어 주면 된다. 결제 전에도
+ * 관리자가 기간을 넣어 유료/무료 동작을 그대로 확인할 수 있다.
  */
 export async function 인재열람가능(companyId: string): Promise<boolean> {
   const { rows } = await pool.query(
-    `SELECT 1 FROM job_postings
-     WHERE company_id = $1 AND status = 'ACTIVE'
-       AND (deadline IS NULL OR deadline >= CURRENT_DATE)
+    `SELECT 1 FROM companies
+     WHERE id = $1 AND paid_until IS NOT NULL AND paid_until >= CURRENT_DATE
      LIMIT 1`,
     [companyId]
   );

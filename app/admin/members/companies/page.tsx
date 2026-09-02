@@ -35,6 +35,10 @@ const STATUS_CHIP: Record<string, { bg: string; color: string }> = {
 };
 
 type Job = { id: string; title: string; status: string; created_at: string };
+
+/** 유료인가 — 기간이 오늘 이후면 유료다. 등급을 따로 두지 않는다. */
+const 유료인가 = (paidUntil: string | null) =>
+  !!paidUntil && new Date(String(paidUntil).slice(0, 10)) >= new Date(new Date().toDateString());
 type Company = {
   id: string;
   company_name: string;
@@ -55,6 +59,7 @@ type Company = {
   founded_year: number | null;
   business_license_url: string | null;
   status: string;
+  paid_until: string | null;
   created_at: string;
   job_count: number;
   jobs: Job[];
@@ -197,6 +202,17 @@ function AdminCompaniesContent() {
       body: JSON.stringify({ id, status: newStatus }),
     });
     setCompanies((prev) => prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
+  };
+
+  // 유료 기간 — 결제가 붙기 전에는 여기서 손으로 넣어 유료/무료 동작을 본다.
+  // 오늘 이후면 유료, 지나거나 비어 있으면 무료다.
+  const 유료기간저장 = async (id: string, v: string) => {
+    setCompanies((prev) => prev.map((c) => (c.id === id ? { ...c, paid_until: v || null } : c)));
+    await fetch("/api/admin/companies", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ id, paid_until: v }),
+    });
   };
 
   const handleBulkStatus = async (status: string) => {
@@ -427,14 +443,15 @@ function AdminCompaniesContent() {
                 <th>사업자번호</th>
                 <th>공고</th>
                 <th>가입일</th>
+                <th>유료 기간</th>
                 <th>상태</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : paginated.map((c) => (
                 <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#f7f7f8" : undefined }}>
                   <td style={{ textAlign: "center" }}>
@@ -502,6 +519,14 @@ function AdminCompaniesContent() {
                   </td>
                   {/* 가입일 */}
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
+                  {/* 유료 기간 — 오늘 이후면 유료. 비우면 무료로 되돌아간다. */}
+                  <td className="admin-td-date">
+                    <input type="date" value={(c.paid_until || "").slice(0, 10)}
+                      onChange={(e) => 유료기간저장(c.id, e.target.value)}
+                      style={{ border: "1px solid #e8e8ea", borderRadius: 6, padding: "3px 6px",
+                        fontSize: 12.5, fontFamily: "inherit",
+                        color: 유료인가(c.paid_until) ? "#0a7a3d" : "#999" }} />
+                  </td>
                   {/* 상태 */}
                   <td>
                     <span style={{ fontWeight: 500, color:

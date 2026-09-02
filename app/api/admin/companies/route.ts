@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
         c.company_type, c.email::text AS email, c.phone, c.industry,
         c.logo_url, c.cover_images, c.description, c.website_url, c.address,
         c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
-        c.status, c.is_member, c.business_license_path, c.created_at,
+        c.status, c.is_member, c.business_license_path, c.created_at, c.paid_until,
         COALESCE(j.cnt, 0) AS job_count,
         COALESCE(j.jobs, '[]'::json) AS jobs,
         -- 매장은 로고를 받지 않는다. 매장 배너 → 최근 공고 배너 첫 장 순으로 쓴다.
@@ -61,12 +61,22 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
-  const { id, status } = await req.json()
-  if (!id || !status) return err('BAD_REQUEST', 'id, status 필요', 400)
-  if (!['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED'].includes(status))
-    return err('BAD_REQUEST', '잘못된 status', 400)
+  const body = await req.json()
+  const { id, status } = body
+  if (!id) return err('BAD_REQUEST', 'id 필요', 400)
   const client = await pool.connect()
   try {
+    // 유료 기간 — 결제가 붙기 전에는 여기서 손으로 넣어 유료/무료 동작을
+    // 그대로 확인한다. 빈 값으로 보내면 무료로 되돌린다.
+    if ('paid_until' in body) {
+      const v = String(body.paid_until || '').trim()
+      if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return err('BAD_REQUEST', '날짜 꼴이 아닙니다(YYYY-MM-DD)', 400)
+      await client.query(`UPDATE companies SET paid_until = $1::date, updated_at = now() WHERE id = $2`, [v || null, id])
+      return ok({ success: true })
+    }
+    if (!status) return err('BAD_REQUEST', 'status 필요', 400)
+    if (!['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED'].includes(status))
+      return err('BAD_REQUEST', '잘못된 status', 400)
     await client.query(`UPDATE companies SET status = $1::company_status, updated_at = now() WHERE id = $2`, [status, id])
     return ok({ success: true })
   } finally {
