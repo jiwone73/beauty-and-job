@@ -1,7 +1,6 @@
 "use client";
 import { forwardRef, type ReactNode } from "react";
 import Link from "next/link";
-import { shortRegion } from "@/lib/regionShort";
 import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
@@ -100,21 +99,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     { key: "shift", label: isOfficeJob ? "근무시간" : "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
     { key: "salary", label: "급여", get: (p) => 급여펴기(p.salary) },
   ];
-  // 모집부문 첫 행의 급여 — 사이드 카드가 같은 값을 쓴다.
-  // 자리마다 급여가 다르면 카드 한 줄에 다 못 담으니, 표를 보라는 뜻으로 첫 값만 쓴다.
-  // 표에서는 "급여" 열 아래 있어 뜻이 통하지만, 카드에서는 홀로 떠 있어 무엇이
-  // 협의인지 알 수 없다. 금액이 없으면 무엇에 대한 말인지 붙여 준다.
-  const asideSalary = (() => {
-    const v = positions.length ? String(positions[0].salary || "").trim() : "";
-    // 표에서 회사가 고른 것과 카드가 다르게 읽히지 않게 그대로 따른다.
-    const negoState = positions.length ? positions[0].salaryNego : "";
-    const nego = negoState === "open" && !!v && v !== "협의";
-    const base = negoState === "hidden" ? "협의" : v ? v : String(job.salary || "").trim();
-    if (!base) return null;
-    // 금액이 적혀 있으면 그 자체로 읽힌다. 숫자가 없을 때만 무엇에 대한 말인지 붙인다.
-    const text = !/\d/.test(base) && !/^급여/.test(base) ? `급여 ${base}` : base;
-    return { text, nego };
-  })();
   // 값이 비어도 화면에는 "협의" 로 나가는 열(급여·근무요일/시간)은 숨기지 않는다.
   // 숨기면 등록 폼에는 있는 열이 미리보기에서 사라져, 무엇이 어떻게 보일지 대조할 수
   // 없게 된다. 나머지 열은 아무 행에도 값이 없으면 그대로 숨긴다.
@@ -597,38 +581,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
       {/* 오른쪽: 지원하기 사이드바 (PC) */}
       <aside className="job-detail-aside">
+        {/* 카드는 지원 버튼과 스크랩·공유만 든다. 매장명·공고명·모집분야·급여·
+            마감은 바로 왼쪽 본문 머리에 그대로 있다 — 한 화면에서 같은 말을 두 번
+            하면 카드만 길어지고 정작 누를 것이 아래로 밀린다. */}
         <div className="job-detail-aside-card">
-          <div className="job-detail-aside-brand">{job.brand}</div>
-          <h3 className="job-detail-aside-title">{job.title}</h3>
-          {/* 경력보다 무슨 자리인지가 먼저 궁금하다. 좁은 칸에 한 줄뿐이라 모집분야를 둔다
-              (경력은 아래 모집부문 표에 있다). 분야를 못 받은 옛 공고는 경력으로 물러선다. */}
-          {(() => {
-            const 분야 = (job.jobCategories?.length ? job.jobCategories.join(", ") : job.career) || "";
-            const 지역 = shortRegion(job.region || "");
-            if (!분야 && !지역) return null;
-            return (
-              <div className="job-detail-aside-meta">
-                {분야 && <span>{분야}</span>}
-                {분야 && 지역 && <span className="dot">·</span>}
-                {지역 && <span>{지역}</span>}
-              </div>
-            );
-          })()}
-          {/* 급여는 모집부문 표에 적힌 값을 그대로 쓴다. 예전엔 카드가 따로 계산한
-              범위("월 210만원 ~ 250만원")를 보여줘, 표의 "월 210만원 이상 (협의)"와
-              한 화면에서 서로 다른 말을 했다. 두 값이 다르면 구직자는 어느 쪽이
-              사실인지 알 수 없다. 모집부문이 뽑는 자리별로 적는 원문에 가깝다. */}
-          {asideSalary && (
-            <div className="job-detail-aside-salary">
-              {asideSalary.text}
-              {asideSalary.nego && <div>협의</div>}
-            </div>
-          )}
-          {job.deadline && (
-            <div className="job-detail-aside-deadline">
-              {job.deadline === "상시채용" ? <strong>상시채용</strong> : <>마감일: <strong>{job.deadline}</strong></>}
-            </div>
-          )}
           {asideAction}
         </div>
       </aside>

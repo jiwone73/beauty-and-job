@@ -215,7 +215,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
                   카드 생김새가 실제와 달라져, 무엇이 어디에 있는지 확인할 수가 없다.
                   같은 버튼을 두되 눌리지 않게 한다. */}
               <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
-                지원서 작성하기
+                지원하기
               </button>
               <div style={{ display: "flex", gap: 8 }}>
                 <button className="job-detail-aside-bookmark" disabled style={{ flex: 1, minWidth: 0, opacity: 0.7, cursor: "default" }}>
@@ -274,7 +274,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
                 disabled={alreadyApplied}
                 onClick={handleApplyClick}
               >
-                {alreadyApplied ? "✓ 지원완료" : isRedirect ? "기업 채용페이지에서 지원" : "지원서 작성하기"}
+                {alreadyApplied ? "✓ 지원완료" : isRedirect ? "기업 채용페이지에서 지원" : "지원하기"}
               </button>
               {/* 스크랩과 공유를 나란히 둔다. 위아래로 쌓으면 카드가 그만큼 길어져
                   지원 버튼이 화면 밖으로 밀린다. 공유는 모바일 하단 바에만 있어서

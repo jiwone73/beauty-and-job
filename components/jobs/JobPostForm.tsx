@@ -4056,7 +4056,7 @@ export default function JobPostForm({
                 asideAction={
                   <>
                     <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
-                      지원서 작성하기
+                      지원하기
                     </button>
                     {/* 구직자 화면에 있는 버튼이라 미리보기에도 있어야 한다. 누를 일은 없으니 꺼 둔다. */}
                     <button className="job-detail-aside-bookmark" disabled style={{ opacity: 0.7, cursor: "default" }}>
