@@ -107,7 +107,7 @@ export default function CompanyDashboard() {
   // 셀렉미 「활동정보」와 같은 줄. 제안은 보낸 것 → 관심 → 채팅으로 이어지는 한
   // 줄기라 나란히 두면 어디서 끊기는지가 보인다.
   const statCards = [
-    { label: "공고등록 수", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
+    { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
     { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=마감임박" },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
     { label: "제안 관심", value: stats?.proposal_interested ?? 0, href: "/company/dashboard/proposals" },
