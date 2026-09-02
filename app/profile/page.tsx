@@ -101,6 +101,8 @@ export default function ProfilePage() {
   // 공고와 같은 모양(원 단위 + 유형)이라 「희망 급여와 같아요」로 맞대어 볼 수 있다.
   const [salaryType, setSalaryType] = useState("MONTHLY");
   const [salaryMan, setSalaryMan] = useState("");
+  // 금액을 안 적었으면 협의다. 따로 저장하는 값이 아니라 금액에서 따라 나온다.
+  const [협의, set협의] = useState(false);
 
   // 카카오 재인증 이메일 변경 결과 처리
   useEffect(() => {
@@ -133,9 +135,12 @@ export default function ProfilePage() {
         if (typeof res?.data?.avatar_public === "boolean") setAvatarPublic(res.data.avatar_public);
         const pf = res?.data?.profile;
         if (pf?.salary_type) setSalaryType(pf.salary_type);
-        if (pf?.salary_min) {
+        if (pf?.salary_min !== null && pf?.salary_min !== undefined && Number(pf.salary_min) === 0) {
+          set협의(true);
+        } else if (pf?.salary_min) {
           const 배수 = pf.salary_type === "HOURLY" || pf.salary_type === "DAILY" ? 1 : 10000;
           setSalaryMan(String(Math.round(Number(pf.salary_min) / 배수)));
+          set협의(false);
         }
       })
       .catch(() => {});
@@ -340,11 +345,13 @@ export default function ProfilePage() {
 
   // 시술분야·희망근무형태 등 STORE 필수항목을 서버에 저장(하위 항목 미영향 PATCH).
   // 만원 단위로 적고 원 단위로 저장한다 — 공고와 같은 값이라야 맞대어 볼 수 있다.
-  const 급여저장 = async (type: string, man: string) => {
+  // 「협의」는 0원으로 적는다 — 0원을 희망할 리 없으니 그 자리를 빌려 쓴다.
+  // null(아직 안 정함)과 0(협의로 정함)이 갈라져야 체크가 다시 열 때도 남는다.
+  const 급여저장 = async (type: string, man: string, 협의로?: boolean) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
     const 배수 = type === "HOURLY" || type === "DAILY" ? 1 : 10000;
-    const won = man ? Number(man) * 배수 : null;
+    const won = 협의로 ? 0 : (man ? Number(man) * 배수 : null);
     try {
       await fetch("/api/users/me/profile", {
         method: "PATCH",
@@ -965,14 +972,27 @@ export default function ProfilePage() {
                   <span className="profile-info-label">{칸그림("희망급여")}희망급여</span>
                   <span className="pf-pay">
                     <select className="pf-pay-sel" value={salaryType}
-                      onChange={(e) => { setSalaryType(e.target.value); 급여저장(e.target.value, salaryMan); }}>
+                      onChange={(e) => { setSalaryType(e.target.value); 급여저장(e.target.value, salaryMan, 협의); }}>
                       {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                     </select>
                     <input className="pf-pay-in" inputMode="numeric" value={salaryMan}
-                      placeholder="숫자만 입력"
+                      placeholder="숫자만 입력" disabled={협의}
                       onChange={(e) => setSalaryMan(e.target.value.replace(/[^0-9]/g, ""))}
-                      onBlur={() => 급여저장(salaryType, salaryMan)} />
+                      onBlur={() => 급여저장(salaryType, salaryMan, false)} />
                     <span className="pf-pay-unit">{salaryType === "HOURLY" || salaryType === "DAILY" ? "원" : "만원"}</span>
+                    {/* 「협의」는 금액을 안 적은 것과 결과가 같다(이력서에 '협의'로
+                        나간다). 그래도 칸을 비워 두는 것과 협의로 정한 것은 마음이
+                        다르다 — 비워 두면 아직 안 정한 것처럼 읽힌다. */}
+                    <label className="pf-pay-nego">
+                      <input type="checkbox" checked={협의}
+                        onChange={(e) => {
+                          const 켬 = e.target.checked;
+                          set협의(켬);
+                          setSalaryMan("");
+                          급여저장(salaryType, "", 켬);
+                        }} />
+                      협의
+                    </label>
                   </span>
                 </div>
               </div>
