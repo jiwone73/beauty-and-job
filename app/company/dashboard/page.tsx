@@ -116,7 +116,8 @@ export default function CompanyDashboard() {
   return (
     <CompanyLayout activePage="dashboard">
 
-      <div style={{ maxWidth: "1440px" }}>
+      {/* 다른 갈래와 같은 폭(.co-cardw) — 홈만 내용만큼 잡혀 좁게 서 있었다. */}
+      <div className="co-cardw">
       {/* 오늘 할 일 — 0 인 칸은 조용하다. 넷 다 0 이면 오늘은 손댈 것이 없다는 뜻이다. */}
       <div className="co-counts">
         {statCards.map((stat) => (
