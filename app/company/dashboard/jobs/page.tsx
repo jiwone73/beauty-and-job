@@ -65,7 +65,7 @@ function CompanyJobsContent() {
   const [search, setSearch] = useState("");
   // 기본은 진행중 + 마감일순 — 이 화면에서 할 일은 대개 "곧 내려가는 진행 공고"를 손보는 것이다.
   const [statusFilter, setStatusFilter] = useState(
-    initialStatus && ["전체", "진행중", "마감임박", "마감"].includes(initialStatus) ? initialStatus : "진행중"
+    initialStatus && ["전체", "진행중", "마감임박", "마감", "미열람"].includes(initialStatus) ? initialStatus : "진행중"
   );
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [sortBy, setSortBy] = useState("마감일순");
@@ -168,6 +168,7 @@ function CompanyJobsContent() {
       statusFilter === "진행중" ? !isJobClosed(j) :
       statusFilter === "마감임박" ? (!isJobClosed(j) && dl !== null && dl <= 2) :
       statusFilter === "마감" ? isJobClosed(j) :
+      statusFilter === "미열람" ? (j.unviewed_count ?? 0) > 0 :
       statusFilter === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
       statusFilter === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
       STATUS_LABEL[j.status] === statusFilter;
@@ -258,12 +259,16 @@ function CompanyJobsContent() {
   // 카운터가 곧 진행상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
   // 총 지원자는 공고 상태가 아니라 사람 수라 이 줄에 섞지 않는다 — 지원자 관리의 '전체'가 같은 값을 센다.
   // 마감임박은 사흘 안. 하루만 세면 오늘 못 본 사람은 놓친다.
+  const cntUnviewed = jobs.filter(j => (j.unviewed_count ?? 0) > 0).length;
   const cntSoon = jobs.filter(j => { const d = daysLeft(j.deadline); return !isJobClosed(j) && d !== null && d <= 2; }).length;
   const statCardsData = [
     { label: "전체 공고", value: String(counts.전체), unit: "건", status: "전체" },
     { label: "진행중", value: String(counts.진행중), unit: "건", status: "진행중" },
     { label: "마감임박", value: String(cntSoon), unit: "건", status: "마감임박" },
     { label: "마감", value: String(counts.마감), unit: "건", status: "마감" },
+    // 지금 손이 가야 할 공고 — 아직 안 본 지원자가 있는 곳. 고르면 그 공고들의
+    // 미열람 지원자만 펼쳐진다.
+    { label: "미열람", value: String(cntUnviewed), unit: "건", status: "미열람" },
   ];
 
   // 모바일 상단 상태 통계 카드 (마감 임박 기준 필터)
@@ -273,6 +278,7 @@ function CompanyJobsContent() {
     { label: "진행중", value: String(counts.진행중), status: "진행중" },
     { label: "마감임박", value: String(cntSoon), status: "마감임박" },
     { label: "마감", value: String(counts.마감), status: "마감" },
+    { label: "미열람", value: String(cntUnviewed), status: "미열람" },
   ];
 
   return (
@@ -561,9 +567,12 @@ function CompanyJobsContent() {
                         </button>
                       </div>
 
-                      {열림 && (공고지원자[job.id] || []).length > 0 && (
+                      {열림 && (공고지원자[job.id] || [])
+                        .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED").length > 0 && (
                         <div className="co-jc-apps">
-                          {(공고지원자[job.id] || []).map((a) => (
+                          {(공고지원자[job.id] || [])
+                            .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
+                            .map((a) => (
                             <ApplicantCard key={a.id} a={a} showJob={false}
                               onOpen={(x) => set지원서(x.id)}
                               onToggleScrap={스크랩토글} />

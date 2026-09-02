@@ -47,12 +47,6 @@ function formatDate(dateStr: string): string {
 
 // 사람이 직접 고르는 상태만 버튼으로 둔다.
 // 미열람·열람은 이력서를 열면 자동으로 바뀌므로 손댈 이유가 없다.
-// 일괄로 옮길 만한 것은 진행 단계 둘뿐이다. 불합격은 매장이 따로 통보하는
-// 문화가 아니라 두지 않는다.
-const STATUS_ACTIONS: [ApplicationStatus, string][] = [
-  ["INTERVIEW", "면접"],
-  ["PASSED", "최종합격"],
-];
 
 function ApplicantsContent() {
   const searchParams = useSearchParams();
@@ -71,7 +65,6 @@ function ApplicantsContent() {
   const [resumeFileInfo, setResumeFileInfo] = useState<{ name: string | null; size: number | null; url: string | null }>({ name: null, size: null, url: null });
   const [detailInfo, setDetailInfo] = useState<{ gender: string | null; birth: string | null; sido: string | null; sigungu: string | null; road: string | null; detail: string | null }>({ gender: null, birth: null, sido: null, sigungu: null, road: null, detail: null });
   const [isMobile, setIsMobile] = useState(false);
-  const [selectMode, setSelectMode] = useState(false);
   const [jobSheetOpen, setJobSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -81,34 +74,11 @@ function ApplicantsContent() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const toggleSelectMode = () => {
-    setSelectMode((v) => {
-      if (v) setChecked([]);
-      return !v;
-    });
-  };
 
 // API 응답(snake_case) → ResumePreview props(camelCase) 변환
 
-  const [checked, setChecked] = useState<string[]>([]);
 
-  const toggleCheck = (id: string) =>
-    setChecked(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
-  const handleBulkStatus = async (status: ApplicationStatus) => {
-    if (!checked.length) return;
-    const ids = [...checked];
-    setApplicants(prev => prev.map(a => ids.includes(a.id) ? { ...a, status } : a));
-    setChecked([]);
-    setSelectMode(false);
-    try {
-      await Promise.all(ids.map(id => companyApplicationsApi.updateStatus(id, status)));
-    } catch (e) {
-      alert("상태 변경 중 오류가 발생했습니다.");
-      console.error("[handleBulkStatus]", e);
-      loadApplicants();
-    }
-  };
 
   const loadApplicants = async () => {
     setLoading(true);
@@ -154,18 +124,6 @@ function ApplicantsContent() {
   const [지원서, set지원서] = useState<string | null>(null);
   const 열기 = (a: CompanyApplication) => set지원서(a.id);
 
-  const toggleAll = () =>
-    setChecked(checked.length === filtered.length ? [] : filtered.map(a => a.id));
-
-  const handleStatusChange = async (id: string, status: ApplicationStatus) => {
-    try {
-      await companyApplicationsApi.updateStatus(id, status);
-      setApplicants(prev => prev.map(a => a.id === id ? { ...a, status } : a));
-    } catch (e) {
-      alert("상태 변경 중 오류가 발생했습니다.");
-      console.error("[handleStatusChange]", e);
-    }
-  };
 
   // 스크랩은 이력서가 아니라 사람에 대한 표시라 이름 옆에서 켜고 끈다. 인재검색·스크랩 인재와 같은 자리.
   const toggleScrap = async (a: CompanyApplication) => {
@@ -208,8 +166,6 @@ function ApplicantsContent() {
     // 색은 쓰지 않는다. 0 이면 흐리게, 숫자가 있으면 보라 — 홈과 같은 규칙이다.
     { label: "미열람", value: String(counts.미열람), status: "미열람" },
     { label: "열람", value: String(counts.열람), status: "열람" },
-    { label: "면접", value: String(counts.면접), status: "면접" },
-    { label: "최종합격", value: String(counts.합격), status: "최종합격" },
   ];
 
   // 사이드는 공고 목록이다. 마감 여부는 여기서 뱃지로 드러나고, 마감한 공고는
@@ -278,16 +234,6 @@ function ApplicantsContent() {
               value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
         </div>
-        {checked.length > 0 && (
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
-            <span style={{ fontSize: 13, color: "#888" }}>{checked.length}명 선택 · 상태변경</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              {(STATUS_ACTIONS).map(([sv, sl]) => (
-                <button key={sv} className="tal-btn" onClick={() => handleBulkStatus(sv)}>{sl}</button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
       )}
 
@@ -347,20 +293,8 @@ function ApplicantsContent() {
           <div className="co-mbar">
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>명</span>
             <div className="co-mbar-actions">
-              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-                {selectMode ? "취소" : "선택"}
-              </button>
             </div>
           </div>
-          {selectMode && checked.length > 0 && (
-            <div className="co-statbar">
-              <span className="co-statbar-label">{checked.length}명 상태변경</span>
-              {(STATUS_ACTIONS).map(([sv, sl]) => (
-                <button key={sv} className="co-statbtn" style={{ color: "#582681" }}
-                  onClick={() => handleBulkStatus(sv)}>{sl}</button>
-              ))}
-            </div>
-          )}
           {jobSheetOpen && (
             <div className="co-sheet-ov" onClick={() => setJobSheetOpen(false)}>
               <div className="co-sheet" onClick={(e) => e.stopPropagation()}>
@@ -433,7 +367,6 @@ function ApplicantsContent() {
             .co-li-date .lbl { color: #999; margin-right: 3px; }
           `}</style>
           {filtered.map((a) => {
-            const on = checked.includes(a.id);
             const st = a.status;
             const stColor = st === "APPLIED" ? "#0ea5e9" : st === "VIEWED" ? "#f59e0b" : st === "PASSED" ? "#10b981" : "#999";
             const age = calcAge((a as any).user_birth_date);
@@ -454,12 +387,8 @@ function ApplicantsContent() {
             );
             return (
               <div key={a.id} className="co-row">
-                {selectMode && (
-                  <input type="checkbox" className="co-row-check" checked={on}
-                    onChange={() => toggleCheck(a.id)} />
-                )}
-                <div className={`co-li ${on ? "on" : ""}`}
-                  onClick={() => selectMode ? toggleCheck(a.id) : router.push(`${base}/applicants/${a.id}`)}>
+                <div className="co-li"
+                  onClick={() => 열기(a)}>
                   <div className="co-li-r1">
                     <div className="co-li-avatar">
                       {(a as any).user_avatar_url
@@ -507,18 +436,11 @@ function ApplicantsContent() {
               할 일이 오른쪽에, 연락처가 아랫줄에. 지원자는 여기에 체크(일괄
               처리)와 상태가 더 붙는다. */}
           <div className="tal-listhead">
-            <label className="tal-all">
-              <input type="checkbox"
-                checked={checked.length === filtered.length && filtered.length > 0}
-                onChange={toggleAll} />
-              전체 선택
-            </label>
             <span>총 <strong>{filtered.length}</strong>명</span>
           </div>
           <div className="tal-list">
             {filtered.map((a) => (
               <ApplicantCard key={a.id} a={a}
-                checked={checked.includes(a.id)} onCheck={toggleCheck}
                 onOpen={열기} onToggleScrap={toggleScrap} />
             ))}
           </div>
@@ -528,14 +450,6 @@ function ApplicantsContent() {
       </div>
 
       {/* 선택 액션바 (모바일) */}
-      {isMobile && selectMode && checked.length > 0 && (
-        <div className="co-selbar">
-          <span className="co-selbar-count">{checked.length}개 선택됨</span>
-          {(STATUS_ACTIONS).map(([sv, sl]) => (
-            <button key={sv} className="tal-btn" onClick={() => handleBulkStatus(sv)}>{sl}</button>
-          ))}
-        </div>
-      )}
 
 
       {지원서 && (

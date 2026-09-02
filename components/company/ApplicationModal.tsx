@@ -9,12 +9,6 @@ import type { ApplicationStatus } from "@/lib/types/company";
 // 지원서. 공고 카드 안에서 지원자를 누르면 이 창이 뜬다 — 화면을 옮기면 어느
 // 공고를 보고 있었는지 잃고, 판 폭에 맞춰 이력서가 필요 이상으로 벌어진다.
 
-// 진행 단계 셋. 미열람은 지원서를 열면 저절로 넘어가니 고를 것이 아니고,
-// 불합격은 매장이 따로 통보하는 문화가 아니라 두지 않는다.
-const 상태들: [ApplicationStatus, string][] = [
-  ["VIEWED", "열람"], ["INTERVIEW", "면접"], ["PASSED", "최종합격"],
-];
-
 const 나이 = (birth: string | null) => {
   if (!birth) return null;
   const y = new Date(birth).getFullYear();
@@ -33,7 +27,6 @@ export default function ApplicationModal({
 }) {
   const [자료, set자료] = useState<any>(null);
   const [로딩, set로딩] = useState(true);
-  const [상태, set상태] = useState<ApplicationStatus | null>(null);
   const [내려받는중, set내려받는중] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -45,11 +38,11 @@ export default function ApplicationModal({
     }).then((x) => x.json()).catch(() => null);
     if (r?.success && r.data) {
       set자료(r.data);
-      set상태(r.data.status);
-      // 지원서를 열면 미열람 → 열람.
+      // 지원서를 열면 미열람 → 열람. 손으로 바꾸는 상태는 두지 않는다 — 매장은
+      // 마음에 들면 버튼을 누르는 게 아니라 바로 전화한다. 사람인도 「최종합격」
+      // 칸이 지원자 45명에 0 이다. 자동으로 쌓이지 않는 값은 만들지 않는다.
       if (r.data.status === "APPLIED") {
         companyApplicationsApi.updateStatus(applicationId, "VIEWED").catch(() => {});
-        set상태("VIEWED");
         onStatus?.(applicationId, "VIEWED");
       }
     }
@@ -63,19 +56,6 @@ export default function ApplicationModal({
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
-
-  const 상태바꾸기 = async (s: ApplicationStatus) => {
-    const 이전 = 상태;
-    set상태(s);
-    onStatus?.(applicationId, s);
-    try {
-      await companyApplicationsApi.updateStatus(applicationId, s);
-    } catch {
-      set상태(이전);
-      if (이전) onStatus?.(applicationId, 이전);
-      alert("상태를 바꾸지 못했어요.");
-    }
-  };
 
   const 이름 = 자료?.user_name || "";
 
@@ -122,11 +102,6 @@ export default function ApplicationModal({
         <div className="rp-modal-header">
           <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{이름}</h2>
           <div className="rp-modal-actions">
-            {/* 지원서를 읽고 나면 바로 다음 단계를 정한다. */}
-            <select className="jp-cond-sel" value={상태 || ""} style={{ fontSize: 13, padding: "5px 8px" }}
-              onChange={(e) => 상태바꾸기(e.target.value as ApplicationStatus)}>
-              {상태들.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </select>
             <button onClick={PDF받기} disabled={내려받는중 || 로딩} title="PDF 다운로드"
               style={{ display: "inline-flex", padding: 6, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>
               <Download size={20} />

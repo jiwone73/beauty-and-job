@@ -12,11 +12,6 @@ import { ArrowLeft, Download, Printer, FileText } from "lucide-react";
 // 자리는 제 주소를 가져야 한다(뒤로가기가 목록으로 가고, 링크로 건넬 수 있고,
 // 두 사람을 새 탭으로 나란히 볼 수 있다).
 
-const 상태들: [ApplicationStatus, string][] = [
-  ["APPLIED", "미열람"], ["VIEWED", "열람"], ["INTERVIEW", "면접"],
-  ["PASSED", "합격"], ["REJECTED", "불합격"],
-];
-
 const 나이 = (birth: string | null) => {
   if (!birth) return null;
   const y = new Date(birth).getFullYear();
@@ -34,7 +29,6 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
 
   const [자료, set자료] = useState<any>(null);
   const [로딩, set로딩] = useState(true);
-  const [상태, set상태] = useState<ApplicationStatus | null>(null);
   const [내려받는중, set내려받는중] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -46,27 +40,15 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
     }).then((x) => x.json()).catch(() => null);
     if (r?.success && r.data) {
       set자료(r.data);
-      set상태(r.data.status);
-      // 지원서를 열면 미열람 → 열람. 서버가 viewed_at 은 남기지만 상태는 여기서 옮긴다.
+      // 지원서를 열면 미열람 → 열람. 손으로 바꾸는 상태는 두지 않는다.
       if (r.data.status === "APPLIED") {
         companyApplicationsApi.updateStatus(params.id, "VIEWED").catch(() => {});
-        set상태("VIEWED");
       }
     }
     set로딩(false);
   }, [params.id]);
   useEffect(() => { 불러오기(); }, [불러오기]);
 
-  const 상태바꾸기 = async (s: ApplicationStatus) => {
-    const 이전 = 상태;
-    set상태(s);
-    try {
-      await companyApplicationsApi.updateStatus(params.id, s);
-    } catch {
-      set상태(이전);
-      alert("상태를 바꾸지 못했어요.");
-    }
-  };
 
   const PDF받기 = async () => {
     if (!previewRef.current) return;
@@ -113,13 +95,6 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
             <ArrowLeft size={15} /> 목록으로
           </button>
           <div className="tres-acts">
-            {/* 지원서를 읽고 나면 바로 다음 단계를 정한다 — 창을 닫고 목록에서
-                다시 찾게 하지 않는다. */}
-            <select className="jp-cond-sel" value={상태 || ""}
-              onChange={(e) => 상태바꾸기(e.target.value as ApplicationStatus)}
-              style={{ fontSize: 13, padding: "5px 8px" }}>
-              {상태들.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-            </select>
             <button type="button" className="tal-btn" onClick={PDF받기} disabled={내려받는중 || 로딩}>
               <Download size={14} /> PDF
             </button>
