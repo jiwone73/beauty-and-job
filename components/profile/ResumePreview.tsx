@@ -91,8 +91,10 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   ref
 ) {
   const [확대, set확대] = useState<number | null>(null);
-  // 매장은 skillAreas, 본사는 officeJobAreas 에 든다.
-  const 희망업종 = [...(skillAreas || []), ...(officeJobAreas || [])].join(", ");
+  // 매장은 skillAreas, 본사는 officeJobAreas 에 든다. 따로 서 있던 「직군 영역」
+  // 칸을 걷고 이리로 모았다 — 가진 것이 아니라 원하는 것이라, 희망 근무지·희망
+  // 급여와 같은 묶음이다. 본사 이력서에서는 같은 값이 두 번 나오기도 했다.
+  const 희망직군 = [...(skillAreas || []), ...(officeJobAreas || [])].join(", ");
   return (
     <div ref={ref} className="rp-wrap">
       {intro && (
@@ -139,16 +141,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           <p className="rp-text" style={{ whiteSpace: "pre-line" }}>
             {coreCompetencies}
           </p>
-        </div>
-      )}
-      {resumeType === "office" && officeJobAreas.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">직군 영역</h2>
-          <div className="rp-chips">
-            {officeJobAreas.map((area) => (
-              <span key={area} className="rp-chip">{area}</span>
-            ))}
-          </div>
         </div>
       )}
       {careers.length > 0 && (
@@ -302,7 +294,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
 
       {/* 희망 근무 조건 — 매장이 제안하기 전에 맞춰 보는 값들이라 한 자리에 모은다.
           자기소개서 바로 위, 경력·작업물을 다 훑고 난 자리다. */}
-      {(regionPrefer || workTypePrefer || 희망업종 || salaryMin) && (
+      {(regionPrefer || workTypePrefer || 희망직군 || salaryMin) && (
         <div className="rp-section">
           <h2 className="rp-section-title">희망 근무 조건</h2>
           <div className="rp-cond">
@@ -312,8 +304,8 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             {workTypePrefer && (
               <><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>
             )}
-            {희망업종 && (
-              <><span className="rp-cond-k">희망 업종</span><span className="rp-cond-v">{희망업종}</span></>
+            {희망직군 && (
+              <><span className="rp-cond-k">희망직군</span><span className="rp-cond-v">{희망직군}</span></>
             )}
             <span className="rp-cond-k">희망 급여</span>
             <span className="rp-cond-v">

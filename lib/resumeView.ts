@@ -44,7 +44,10 @@ export function mapResume(data: any) {
     })),
     skills: p.skills || [],
     skillAreas: p.skill_areas || [],
-    officeJobAreas: p.office_job_areas || [],
+    // 본사 직군의 원본은 users.office_job_areas 다. user_profiles 쪽은 거의
+    // 비어 있어, 그것만 보면 본사 인재의 희망직군 줄이 통째로 빠진다.
+    officeJobAreas: (p.office_job_areas?.length ? p.office_job_areas : null)
+      || data?.office_job_areas || data?.user?.office_job_areas || data?.resume?.office_job_areas || [],
     certificates: p.certificates || [],
     intro: p.intro || "",
     coreCompetencies: p.core_competencies || "",

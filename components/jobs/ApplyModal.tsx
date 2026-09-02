@@ -43,6 +43,11 @@ export default function ApplyModal({
      두면 폰에서 쓰다 만 것을 PC에서 이어 쓸 수 없다. 계정은 같은데 그릇이
      다르면 못 찾는다. */
   const [희망지역, set희망지역] = useState("");
+  // 희망직군의 원본이 둘로 갈려 있다 — 매장은 user_profiles.skill_areas,
+  // 본사는 users.office_job_areas. 가입 때 담아 둔 store 값만 보면 예전에
+  // 가입한 사람은 「희망 근무 조건」에서 직군 줄이 통째로 빠졌다.
+  const [직군매장, set직군매장] = useState<string[] | null>(null);
+  const [직군본사, set직군본사] = useState<string[] | null>(null);
   const [희망급여, set희망급여] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
   const [초안됨, set초안됨] = useState(false);   // 이번에 불러온 초안이 있나
   const [방금저장, set방금저장] = useState(false);
@@ -117,7 +122,11 @@ export default function ApplyModal({
       .then((r) => r.json())
       .then((res) => {
         const pf = res?.data?.profile;
-        if (pf) set희망급여({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+        if (pf) {
+          set희망급여({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+          if (Array.isArray(pf.skill_areas) && pf.skill_areas.length > 0) set직군매장(pf.skill_areas);
+          if (Array.isArray(pf.office_job_areas) && pf.office_job_areas.length > 0) set직군본사(pf.office_job_areas);
+        }
       })
       .catch(() => {});
 
@@ -128,6 +137,9 @@ export default function ApplyModal({
           if (res.data.email) setEmailLocal(res.data.email);
           setResumeType(res.data.job_type === "STORE" ? "salon" : "office");
           if (Array.isArray(res.data.portfolio_images)) setPortfolioImages(res.data.portfolio_images);
+          if (Array.isArray(res.data.office_job_areas) && res.data.office_job_areas.length > 0) {
+            set직군본사((prev) => (prev && prev.length ? prev : res.data.office_job_areas));
+          }
           if (res.data.avatar_url) setAvatarUrl(res.data.avatar_url);
           if (res.data.phone) setPhoneLocal(res.data.phone);
           setAddressDisplay(
@@ -580,8 +592,8 @@ export default function ApplyModal({
                     resumeFileName: null, // 첨부 이력서 숨김 처리(미리보기/전송 문서에서 제외)
                     avatarUrl,
                     resumeType,
-                    officeJobAreas,
-                    skillAreas,
+                    officeJobAreas: 직군본사 ?? officeJobAreas,
+                    skillAreas: 직군매장 ?? skillAreas,
                     certificates,
                     workTypePrefer,
                     regionPrefer: 희망지역 || regionPrefer,

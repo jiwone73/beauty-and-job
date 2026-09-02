@@ -17,7 +17,7 @@ export async function GET(
             a.user_id, u.name AS user_name, u.email::text AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.gender, u.birth_date,
             u.address_road, u.address_detail, u.region_sido, u.region_sigungu,
-            u.portfolio_images, u.preferred_regions, u.avatar_url AS user_avatar_url,
+            u.portfolio_images, u.preferred_regions, u.office_job_areas, u.avatar_url AS user_avatar_url,
             jp.title AS job_title, c.company_name
      FROM applications a
      JOIN users u ON u.id = a.user_id
@@ -41,6 +41,7 @@ export async function GET(
       resume: {
         // 옛 스냅샷에는 이 값이 없다 — 그때는 지금 값으로 물러선다.
         preferred_regions: snap.resume?.preferred_regions || row.preferred_regions || [],
+        office_job_areas: snap.resume?.office_job_areas || row.office_job_areas || [],
         profile: snap.profile || {},
         careers: snap.careers || [],
         educations: snap.educations || [],
@@ -69,6 +70,7 @@ export async function GET(
     is_snapshot: false,
     resume: {
       preferred_regions: row.preferred_regions || [],
+      office_job_areas: row.office_job_areas || [],
       profile: profile.rows[0] || {},
       careers: careers.rows,
       educations: educations.rows,

@@ -136,7 +136,7 @@ function ResumePageContent() {
               .map((r: any) => shortenRegion([r.sido, r.sigungu].filter(Boolean).join(" ")))
               .filter(Boolean).join(", "));
           }
-          if (d.job_type === "OFFICE" && (!Array.isArray(d.office_job_areas) || d.office_job_areas.length === 0)) missing.push("직군 영역");
+          if (d.job_type === "OFFICE" && (!Array.isArray(d.office_job_areas) || d.office_job_areas.length === 0)) missing.push("희망직군");
           // 예전에는 알림창을 띄우고 곧장 프로필로 튕겨 냈다. 이력서를 쓰러 온
           // 사람을 밀어내는 셈이라, 무엇이 비었는지 이 자리에서 보여주고
           // 채우러 갈지는 본인이 고르게 한다.
@@ -552,7 +552,7 @@ function ResumePageContent() {
                 {/* 위쪽 여백을 따로 주지 않는다. 제목 아래 간격은 다른 구역과 같이
                     .resume-section-title 이 맡고, 여기서 또 띄우면 이 칸만 벌어진다. */}
                 <h3 className="resume-name" style={{ fontSize: "15px", fontWeight: 400 }}>{name || "이름"}</h3>
-                {/* 직군은 여기 없다 — 아래 '직군 영역' 칸으로 옮겼다. 미리보기는
+                {/* 직군은 여기 없다 — 미리보기의 '희망 근무 조건'으로 옮겼다.
                     이미 그렇게 따로 갈라서 보여 주고 있었는데(office_job_areas
                     전부를 칩으로), 여기는 값 하나만 이 줄에 욱여넣고 있었다. */}
                 <p className="resume-job-line">{birthDisplay}</p>
@@ -569,19 +569,6 @@ function ResumePageContent() {
               )}
             </div>
           </section>
-
-          {/* 직군 영역 — 미리보기(ResumePreview)에는 이미 있었는데 폼에는
-              없고, 대신 '기본 정보'에 값 하나만 끼워 넣고 있었다. 본사
-              이력서에서 office_job_areas 전부를 여기로 옮긴다(경력 바로
-              위). 프로필에서 정하는 값이라 여기서는 보여만 준다. */}
-          {resumeType === "office" && effectiveOfficeAreas.length > 0 && (
-            <section id="section-job-area" className="resume-section">
-              <h2 className="resume-section-title"><Briefcase size={16} className="resume-section-icon" />직군 영역</h2>
-              <div className="resume-skill-chips">
-                {effectiveOfficeAreas.map((area) => <span key={area} className="resume-skill-chip">{area}</span>)}
-              </div>
-            </section>
-          )}
 
           <ResumeEditor
             resumeType={resumeType}

@@ -19,7 +19,7 @@ export async function GET(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note, a.resume_snapshot,
             a.position_title, a.work_location,
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
-            u.job_type AS user_job_type, u.portfolio_images, u.preferred_regions,
+            u.job_type AS user_job_type, u.portfolio_images, u.preferred_regions, u.office_job_areas,
             u.avatar_url AS user_avatar_url, u.notification_settings,
             u.gender AS user_gender, u.birth_date AS user_birth_date,
             u.region_sido AS user_region_sido, u.region_sigungu AS user_region_sigungu,
@@ -99,6 +99,7 @@ export async function GET(
       resume: {
         // 옛 스냅샷에는 이 값이 없다 — 그때는 지금 값으로 물러선다.
         preferred_regions: snap.resume?.preferred_regions || row.preferred_regions || [],
+        office_job_areas: snap.resume?.office_job_areas || row.office_job_areas || [],
         profile: snap.profile || {},
         careers: snap.careers || [],
         educations: snap.educations || [],
@@ -130,6 +131,7 @@ export async function GET(
       // 희망 근무지의 원본은 users.preferred_regions 다 — 이력서 카드가 이
       // 줄을 그리려면 프로필과 함께 실려 와야 한다.
       preferred_regions: row.preferred_regions || [],
+      office_job_areas: row.office_job_areas || [],
       profile: profile.rows[0] || {},
       careers: careers.rows,
       educations: educations.rows,
