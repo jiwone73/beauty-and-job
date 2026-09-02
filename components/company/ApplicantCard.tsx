@@ -80,7 +80,8 @@ export default function ApplicantCard({
   };
 
   const 태그 = [
-    (a as any).user_sub_job || (a as any).user_main_job_group,
+    (a as any).user_sub_job || (a as any).user_main_job_group
+      || (a as any).user_skill_areas?.[0] || (a as any).user_office_job_areas?.[0],
     (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
   ].filter(Boolean) as string[];
 

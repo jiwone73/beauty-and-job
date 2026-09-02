@@ -61,6 +61,10 @@ export async function GET(req: NextRequest) {
        up.main_job_group AS user_main_job_group,
        up.sub_job AS user_sub_job,
        up.work_type_prefer AS user_work_type_prefer,
+       -- 직군이 늘 main_job_group 에 있는 것은 아니다. 매장은 skill_areas 에만,
+       -- 본사는 office_job_areas 에만 든 사람이 있다.
+       up.skill_areas AS user_skill_areas,
+       up.office_job_areas AS user_office_job_areas,
         (
           SELECT ul.url FROM user_links ul
           WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''

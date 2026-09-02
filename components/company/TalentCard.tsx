@@ -53,7 +53,9 @@ export default function TalentCard({
   const 지역 = shortenRegion(t.regionPrefer);
   // 태그는 사람을 거르는 값 셋 — 무슨 일을, 얼마나 해 봤고, 어떻게 일하고 싶은가.
   const 태그 = [
-    t.subJob || t.mainJobGroup,
+    // 직군이 늘 mainJobGroup 에 있는 것은 아니다 — 매장은 skillAreas 에만,
+    // 본사는 officeJobAreas 에만 든 사람이 있다.
+    t.subJob || t.mainJobGroup || t.skillAreas?.[0] || t.officeJobAreas?.[0],
     careerLabel(t.careerYears, t.careerCount),
     t.workTypePrefer ? 고용형태[t.workTypePrefer] || null : null,
   ].filter(Boolean) as string[];
