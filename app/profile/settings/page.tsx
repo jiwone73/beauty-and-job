@@ -121,20 +121,13 @@ export default function AccountSettingsPage() {
             인재검색에서 통째로 사라진다. 셋을 같은 폭으로 한 줄에 세워
             가운데가 비공개와 대등하게 보이게 한다. */}
         <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "18px", marginBottom: 10 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px" }}>
-            이력서 공개
-            {openToOffers !== null && (
-              <span style={{ fontSize: 13, color: "#999", marginLeft: 6 }}>
-                ({openToOffers ? (상대 ? `${상대}으로부터 면접 제안을 받아볼게요` : "면접 제안을 받아볼게요") : "면접 제안 안 받을게요"})
-              </span>
-            )}
-          </h2>
+          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px" }}>이력서 공개</h2>
 
           <div className="pf-vis-opts" role="radiogroup" aria-label="이력서 공개">
             {([
-              { key: "open",   label: "전체공개", desc: "모든 기업이 검색·열람" },
-              { key: "except", label: "부분공개", desc: "지정한 기업만 제외" },
-              { key: "close",  label: "비공개",   desc: "지원한 곳만 열람" },
+              { key: "open",   label: "공개",     desc: `모든 ${상대 ?? "기업"}이 열람·제안` },
+              { key: "except", label: "부분공개", desc: `지정한 ${상대 ?? "기업"}만 제외` },
+              { key: "close",  label: "비공개",   desc: "제안 없음, 지원한 곳만 열람" },
             ] as const).map((o) => (
               <label key={o.key} className={`pf-vis-opt${공개칸 === o.key ? " on" : ""}`}>
                 <input type="radio" name="resume-visibility" checked={공개칸 === o.key}
@@ -146,7 +139,7 @@ export default function AccountSettingsPage() {
             ))}
           </div>
 
-          {/* 제한 목록은 그 칸을 골랐을 때만 나온다 — 전체 공개인데 제한 기업이
+          {/* 제한 목록은 그 칸을 골랐을 때만 나온다 — 공개인데 제한 기업이
               적혀 있으면 둘 중 어느 쪽이 사실인지 알 수 없다. */}
           {공개칸 === "except" && (
             <button type="button" className="pf-vis-row" onClick={() => setBlockOpen(true)}>
