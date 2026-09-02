@@ -1,10 +1,11 @@
 "use client";
 import ApplyReadyNotice from "@/components/jobs/ApplyReadyNotice";
+import ApplyPicker, { 부문근무지, 부문이름 } from "@/components/jobs/ApplyPicker";
 import LoginModal from "@/components/LoginModal";
 import { 공고모양 } from "@/lib/jobShape";
 import JobDetailView from "@/components/jobs/JobDetailView";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import ApplyModal from "@/components/jobs/ApplyModal";
@@ -110,6 +111,10 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
   const [isAdminPreview, setIsAdminPreview] = useState(false);
   const [logoHref, setLogoHref] = useState("/");
   const [showApplyModal, setShowApplyModal] = useState(false);
+  // 무엇에, 어디로 내는가. 창을 열기 전에 카드에서 고른다 — 창 안에서 물으면
+  // 공고 표를 보며 고르던 흐름이 끊긴다.
+  const [고른부문, set고른부문] = useState(0);
+  const [고른근무지, set고른근무지] = useState("");
   const [applyDone, setApplyDone] = useState(false);
   const [dbApplied, setDbApplied] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -122,6 +127,17 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
   const isCompany = ownerType === "company"; // 기업회원이면 지원·스크랩 불가
   const { apply, isApplied } = useApplicationStore();
   const alreadyApplied = job ? isApplied(String(job.id)) : false;
+  // 이 공고의 근무지들 — 공고에 적힌 주소 + 따로 등록한 지점 주소. 하나뿐이어도
+  // 목록에 그 하나를 둔다(있다가 없다가 하면 어디에 냈는지 화면마다 달라진다).
+  const 근무지들 = useMemo(() => {
+    if (!job) return [] as string[];
+    const 목록 = [job.companyAddress, ...((job as any).workLocations || [])
+      .map((l: any) => [l?.address, l?.detail].filter(Boolean).join(" "))]
+      .map((a: any) => String(a || "").trim()).filter(Boolean);
+    return Array.from(new Set(목록)) as string[];
+  }, [job]);
+  const 낼자리 = job?.positions?.[고른부문];
+  const 낼근무지 = (낼자리 ? 부문근무지(낼자리, 근무지들) : null) || 고른근무지 || 근무지들[0] || "";
 
   // 지원 모달 열릴 때 최근 자기소개서 1회 불러오기
   useEffect(() => {
@@ -270,6 +286,10 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
             </div>
           ) : (
             <>
+              {!isRedirect && !alreadyApplied && (
+                <ApplyPicker positions={job.positions || []} 근무지들={근무지들}
+                  부문={고른부문} set부문={set고른부문} 근무지={고른근무지 || 근무지들[0] || ""} set근무지={set고른근무지} />
+              )}
               <button
                 className={`job-detail-apply-btn ${alreadyApplied ? "applied" : ""}`}
                 disabled={alreadyApplied}
@@ -355,6 +375,8 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
       {showApplyModal && job && (
         <ApplyModal
           jobId={String(params.id)}
+          positionTitle={부문이름(낼자리)}
+          workLocation={낼근무지}
           isExternal={isExternal}
           jobBrand={job.brand}
           jobTitle={job.title}

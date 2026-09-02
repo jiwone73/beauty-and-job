@@ -16,6 +16,8 @@ export default function ApplyModal({
   jobBrand,
   jobTitle,
   isExternal,
+  positionTitle,
+  workLocation,
   onClose,
   onApplied,
 }: {
@@ -23,6 +25,9 @@ export default function ApplyModal({
   jobBrand?: string;
   jobTitle?: string;
   isExternal?: boolean;
+  /** 카드에서 고른 자리. 지원 건에 그대로 박힌다. */
+  positionTitle?: string;
+  workLocation?: string;
   onClose: () => void;
   onApplied: () => void;
 }) {
@@ -381,7 +386,8 @@ export default function ApplyModal({
       const res = await fetch(`/api/jobs/${jobId}/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ cover_letter: coverLetter.trim() || null, resume: 사본싸기() }),
+        body: JSON.stringify({ cover_letter: coverLetter.trim() || null, resume: 사본싸기(),
+          position_title: positionTitle || null, work_location: workLocation || null }),
       });
       const data = await res.json();
       if (!data.success) {
@@ -484,6 +490,9 @@ export default function ApplyModal({
                   <span>지원 정보</span>
                   <a href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
                 </div>
+                {(positionTitle || workLocation) && (
+                  <div className="apply-info-row"><span>지원 자리</span><b>{[positionTitle, workLocation].filter(Boolean).join(" · ")}</b></div>
+                )}
                 <div className="apply-info-row"><span>이름</span><b>{name}</b></div>
                 <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
                 <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>

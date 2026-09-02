@@ -15,7 +15,7 @@ export async function POST(
   if (authErr) return authErr
   const { id: jobPostingId } = params
   const body = await req.json().catch(() => ({}))
-  const { resume_id, cover_letter, third_party_consent, resume } = body
+  const { resume_id, cover_letter, third_party_consent, resume, position_title, work_location } = body
   const jobRes = await pool.query(
     `SELECT jp.id, jp.status, jp.deadline, jp.company_id, jp.title,
             jp.description, jp.location, jp.address, jp.work_type, jp.experience_level,
@@ -139,6 +139,11 @@ export async function POST(
     captured_at: new Date().toISOString(),
   }
 
+  // 어느 자리에 냈는가. 공고를 나중에 고쳐도 그때 보고 지원한 값이 남아야 해서
+  // 참조가 아니라 글자로 박는다.
+  const 낸자리 = String(position_title || '').trim().slice(0, 120) || null
+  const 낸근무지 = String(work_location || '').trim().slice(0, 200) || null
+
   const applyParams = [
     finalResumeId,
     cover_letter || null,
@@ -149,6 +154,8 @@ export async function POST(
     JSON.stringify(jobSnapshot),
     isExternal ? 'PENDING' : null,
     isExternal ? true : false,
+    낸자리,
+    낸근무지,
   ]
   const result = reactivateId
     ? await pool.query(
@@ -157,6 +164,7 @@ export async function POST(
            SET resume_id = $3, cover_letter = $4, resume_snapshot = $5,
                resume_file_url = $6, resume_file_name = $7, resume_file_size = $8,
                job_snapshot = $9, delivery_status = $10, third_party_consent = $11,
+               position_title = $12, work_location = $13,
                status = 'APPLIED', applied_at = now(), viewed_at = null,
                status_updated_at = now(), updated_at = now()
          WHERE id = $1 AND user_id = $2
@@ -166,8 +174,8 @@ export async function POST(
     : await pool.query(
         `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot,
                                     resume_file_url, resume_file_name, resume_file_size, job_snapshot,
-                                    delivery_status, third_party_consent, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'APPLIED')
+                                    delivery_status, third_party_consent, position_title, work_location, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'APPLIED')
          RETURNING id, status, applied_at`,
         [jobPostingId, auth!.sub, ...applyParams]
       )

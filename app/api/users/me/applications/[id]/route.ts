@@ -13,6 +13,7 @@ export async function GET(
 
   const result = await pool.query(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.resume_snapshot,
+            a.position_title, a.work_location,
             a.user_id, u.name AS user_name, u.email::text AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.gender, u.birth_date,
             u.address_road, u.address_detail, u.region_sido, u.region_sigungu,

@@ -113,7 +113,7 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
             <ApplicationDocument
               ref={previewRef}
               coverLetter={자료.cover_letter}
-              subtitle={자료.job_title}
+              subtitle={[자료.job_title, 자료.position_title, 자료.work_location].filter(Boolean).join(" · ")}
               resume={{
                 name: 이름,
                 birthDisplay: 자료.user_birth_date ? `${new Date(자료.user_birth_date).getFullYear()}년생` : "",

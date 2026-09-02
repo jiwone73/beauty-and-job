@@ -27,6 +27,8 @@ export function 공고모양(j: any) {
         genderPref: j.gender_preference || '',
         deadline: j.deadline ? String(j.deadline).slice(0, 10).replace(/-/g, '.') : '상시채용',
         positions: Array.isArray(j.positions) ? j.positions : [],
+        // 이 공고에 따로 등록한 근무지들(지점이 여럿인 매장). 본 주소 말고 더 있을 때만 찬다.
+        workLocations: Array.isArray(j.work_locations) ? j.work_locations : [],
         salary: j.salary_text || (((j.salary_max && j.salary_max > j.salary_min)
           ? `${formatSalaryWon(j.salary_min, j.salary_type)} ~ ${formatSalaryWon(j.salary_max, j.salary_type).replace(/^[^0-9]*/, '')}`
           : formatSalaryWon(j.salary_min, j.salary_type)) || ''),

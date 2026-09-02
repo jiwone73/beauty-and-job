@@ -17,6 +17,7 @@ export async function GET(
   if (authErr) return authErr;
   const result = await pool.query(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note, a.resume_snapshot,
+            a.position_title, a.work_location,
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.portfolio_images, u.preferred_regions,
             u.avatar_url AS user_avatar_url, u.notification_settings,

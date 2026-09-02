@@ -2528,6 +2528,19 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   display: inline-flex; align-items: center; gap: 1px; margin-left: auto;
   font-size: 13px; color: var(--color-primary); white-space: nowrap;
 }
+/* 지원 버튼 위 — 무엇에, 어디로 내는가. 고를 것이 하나여도 자리는 지킨다. */
+.apply-pick { display: flex; flex-direction: column; gap: 9px; margin: 0 0 12px; }
+.apply-pick-f { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.apply-pick-f > span { font-size: 12.5px; color: #8a8a90; }
+.apply-pick-f select {
+  width: 100%; height: 40px; padding: 0 30px 0 11px; border: 1px solid var(--color-border);
+  border-radius: 9px; background: #fff; font-family: inherit; font-size: 13.5px; color: #1a1a1a;
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat; background-position: right 10px center;
+  text-overflow: ellipsis;
+}
+.apply-pick-f select:disabled { background-color: #fafafb; color: #6b6b70; cursor: default; background-image: none; padding-right: 11px; }
 /* 지원 창 첫 화면의 「지원 정보」 — 매장이 연락하는 값을 내기 전에 한 번 본다. */
 .apply-info { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
 .apply-info-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
