@@ -108,7 +108,17 @@ export async function GET(req: NextRequest) {
     [companyId, String(제안유효일)]
   )
 
+  // 아직 안 본 지원자 — 홈에서 가장 급한 숫자다. 늦게 보면 그 사람은 다른 곳으로 간다.
+  const unviewedRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt
+       FROM applications a JOIN job_postings jp ON jp.id = a.job_posting_id
+      WHERE jp.company_id = $1 AND a.viewed_at IS NULL
+        AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'${jobTypeFilter}`,
+    [companyId]
+  )
+
   return ok({
+    unviewed_applications: unviewedRes.rows[0].cnt,
     scrapped_talents: scrapRes.rows[0].cnt,
     awaiting_reply: awaitingRes.rows[0].cnt,
     unanswered_chats: unansweredRes.rows[0].cnt,

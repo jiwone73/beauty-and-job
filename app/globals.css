@@ -14331,3 +14331,28 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 「제안 후 지원」·「대화 후 지원」 — 내가 먼저 찾아간 사람인지, 스스로 온 사람인지.
    지원 날짜 옆에 붙는 작은 표시지 상태값이 아니라, 뱃지처럼 굵게 세우지 않는다. */
 .tal-from { margin-left: 8px; color: var(--color-primary); }
+
+/* 활동정보 — 셀렉미와 같은 짜임. 한 판 안에 칸을 나누고, 라벨이 위 숫자가 아래,
+   사이는 얇은 세로선. 아이콘도 색도 없다. 칸마다 색을 칠하면 숫자가 아니라 색이
+   먼저 읽히고, 로고에 없는 색은 화면에서 겉돈다. */
+.co-counts {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid #ececf0; border-radius: 12px; background: #fff;
+  padding: 22px 0;
+}
+.co-count {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  border: none; border-left: 1px solid #f2f2f4; background: none;
+  padding: 4px 8px; font-family: inherit; cursor: pointer;
+}
+.co-count:first-child { border-left: none; }
+.co-count-label { font-size: 13.5px; color: #8a8a90; }
+/* 0 은 할 일이 없다는 뜻이라 조용해야 한다. 숫자가 있는 칸만 눈에 든다. */
+.co-count-value { font-size: 26px; color: #c8c8ce; line-height: 1.1; }
+.co-count.on .co-count-value { color: var(--color-primary); }
+.co-count:hover .co-count-label { color: #1a1a1a; }
+@media (max-width: 767px) {
+  .co-counts { grid-template-columns: repeat(2, 1fr); row-gap: 20px; padding: 18px 0; }
+  .co-count:nth-child(2n+1) { border-left: none; }
+  .co-count-value { font-size: 22px; }
+}

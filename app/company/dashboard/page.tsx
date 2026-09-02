@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Briefcase, FileText, Plus, Inbox, AlarmClock, MessageSquare, BookmarkCheck, Send } from "lucide-react";
+import { Briefcase, Plus, Inbox } from "lucide-react";
 
 interface Stats {
   active_jobs: number;
   deadline_today: number;
   scrapped_talents: number;
-  awaiting_reply: number;
+  unviewed_applications: number;
   unanswered_chats: number;
 }
 
@@ -98,15 +98,18 @@ export default function CompanyDashboard() {
   const 안본전체 = applicants.filter((a) => !a.viewed_at);
   const 안본지원자 = 안본전체.slice(0, 5);
 
+  // 셀렉미 「활동정보」의 모양(한 판 안에 칸, 라벨이 위 숫자가 아래, 아이콘도 색도
+  // 없음)은 가져오되 내용은 다르다. 거기는 마이페이지 요약이라 누적을 보여주지만
+  // 여기는 홈이고, 사장님이 홈을 여는 이유는 「지금 뭘 해야 하나」 하나다.
+  // 넷 다 0이면 좋은 숫자다 — 누적이 아니라 밀린 일이다.
+  // 이름은 화면 곳곳에서 이미 쓰는 말을 그대로 쓴다 — 지원자 카운터의 「미열람」,
+  // 인재풀 사이드의 「스크랩 인재」, 보낸 제안 머리줄의 「미답변 문의」.
+  // 홈에서만 다른 말을 지어내면 같은 것을 두 이름으로 부르게 된다.
   const statCards = [
-    { label: "진행중 공고", value: stats?.active_jobs ?? 0, unit: "건", color: "#582681", icon: FileText, href: "/company/dashboard/jobs" },
-    // 오늘 안에 손쓰지 않으면 내려가는 공고. 목록으로 넘어가면 같은 조건이 걸린 채로 보인다.
-    { label: "오늘 마감", value: stats?.deadline_today ?? 0, unit: "건", color: "#e05252", icon: AlarmClock, href: "/company/dashboard/jobs?status=오늘 마감" },
-    // 구직자가 말을 걸었는데 아직 답하지 않은 대화. 답하고 말고는 매장의 몫이지만,
-    // 몇 건이 기다리는지는 보여야 판단이 선다.
-    { label: "찜한 인재", value: stats?.scrapped_talents ?? 0, unit: "명", color: "#582681", icon: BookmarkCheck, href: "/company/dashboard/talent/scrapped" },
-    { label: "회신 대기", value: stats?.awaiting_reply ?? 0, unit: "건", color: "#8a8a90", icon: Send, href: "/company/dashboard/proposals" },
-    { label: "미답변 문의", value: stats?.unanswered_chats ?? 0, unit: "건", color: "#582681", icon: MessageSquare, href: "/company/dashboard/talent?interested=1" },
+    { label: "미열람", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants" },
+    { label: "오늘 마감", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=오늘 마감" },
+    { label: "미답변 문의", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals" },
+    { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/talent/scrapped" },
   ];
 
 
@@ -114,18 +117,15 @@ export default function CompanyDashboard() {
     <CompanyLayout activePage="dashboard">
 
       <div style={{ maxWidth: "1440px" }}>
-      {/* 통계 카드 */}
-      <div className="company-stat-grid">
+      {/* 오늘 할 일 — 0 인 칸은 조용하다. 넷 다 0 이면 오늘은 손댈 것이 없다는 뜻이다. */}
+      <div className="co-counts">
         {statCards.map((stat) => (
-          <div key={stat.label} className="company-stat-card" onClick={() => router.push(stat.href)} style={{ cursor: "pointer" }}>
-            <div className="company-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
-              <stat.icon size={22} />
-            </div>
-            <div className="company-stat-value">
-              {stat.value}<span className="company-stat-unit">{stat.unit}</span>
-            </div>
-            <div className="company-stat-label">{stat.label}</div>
-          </div>
+          <button key={stat.label} type="button"
+            className={`co-count${stat.value > 0 ? " on" : ""}`}
+            onClick={() => router.push(stat.href)}>
+            <span className="co-count-label">{stat.label}</span>
+            <span className="co-count-value">{stat.value}</span>
+          </button>
         ))}
       </div>
 
