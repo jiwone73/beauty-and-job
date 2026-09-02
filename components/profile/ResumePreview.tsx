@@ -19,7 +19,9 @@ interface Props {
   genderDisplay?: string;
   ageDisplay?: string;
   addressDisplay?: string;
-  jobDisplay: string;
+  /** 매장/본사 — 회원 유형이지 이력서에 적을 값이 아니다. 이력서 종류를 가르는
+   *  데만 쓰고 화면에는 내지 않는다(「본사」가 기본 정보에 서 있으면 뜬금없다). */
+  jobDisplay?: string;
   phone: string;
   email: string;
   intro: string;
@@ -88,12 +90,11 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
           {/* 폼(app/profile/resume/page.tsx 의 기본 정보 칸)과 줄바꿈을 맞춘다.
-              폼은 생년월일·직군·전화·이메일·주소를 각자 줄로 내린다 — 미리보기
-              에서 " · " 로 묶으면 폼에서 본 것과 다른 모양이 뽑혀 나온다. */}
+              폼은 생년월일·전화·이메일·주소를 각자 줄로 내린다 — 미리보기에서
+              " · " 로 묶으면 폼에서 본 것과 다른 모양이 뽑혀 나온다. */}
           <p className="rp-meta">
             {[birthDisplay, ageDisplay, genderDisplay].filter(Boolean).join(" · ")}
           </p>
-          {jobDisplay && <p className="rp-meta">{jobDisplay}</p>}
           <p className="rp-contact">{formatPhone(phone)}</p>
           {email && <p className="rp-contact">{email}</p>}
           {addressDisplay && <p className="rp-contact">{addressDisplay}</p>}
