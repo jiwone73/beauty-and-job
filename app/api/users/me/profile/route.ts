@@ -32,6 +32,8 @@ export async function GET(req: NextRequest) {
     intro: "",
     core_competencies: "",
     cover_letter: "",
+    salary_type: "",
+    salary_min: null,
     main_job_group: "",
     sub_job: "",
     is_career_verified: false,
@@ -115,6 +117,9 @@ export async function PATCH(req: NextRequest) {
   if (typeof b.region_prefer === "string") fields.push(["region_prefer", b.region_prefer]);
   if (Array.isArray(b.office_job_areas)) fields.push(["office_job_areas", b.office_job_areas]);
   if (typeof b.entry_experience === "string") fields.push(["entry_experience", b.entry_experience]);
+  // 희망급여 — 공고와 같은 모양(원 단위 + 유형). 비우면 「급여 협의」다.
+  if (typeof b.salary_type === "string") fields.push(["salary_type", b.salary_type]);
+  if (b.salary_min === null || typeof b.salary_min === "number") fields.push(["salary_min", b.salary_min]);
   // 공개 여부는 바꾼 시점이 곧 신선도라, 값과 갱신 시각을 항상 함께 저장한다.
   if (["SEEKING", "OPEN", "CLOSED"].includes(b.job_search_status)) {
     fields.push(["job_search_status", b.job_search_status]);

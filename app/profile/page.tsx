@@ -13,6 +13,7 @@ import { InlineText, InlinePick, InlineYMD } from "@/components/profile/inline/I
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { shortRegion } from "@/lib/regionShort";
+import { SALARY_TYPE_LABEL } from "@/lib/salary";
 import { useProfileStore } from "@/lib/store/profileStore";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
@@ -96,6 +97,10 @@ export default function ProfilePage() {
   const [prefSigungu, setPrefSigungu] = useState("");
   const [prefModalOpen, setPrefModalOpen] = useState(false);
   const [jobAreaModal, setJobAreaModal] = useState<null | "OFFICE" | "STORE">(null);
+  // 희망급여 — 매장이 제안할 때 가장 먼저 맞춰 보는 값인데 칸이 없었다.
+  // 공고와 같은 모양(원 단위 + 유형)이라 「희망 급여와 같아요」로 맞대어 볼 수 있다.
+  const [salaryType, setSalaryType] = useState("MONTHLY");
+  const [salaryMan, setSalaryMan] = useState("");
 
   // 카카오 재인증 이메일 변경 결과 처리
   useEffect(() => {
@@ -126,6 +131,12 @@ export default function ProfilePage() {
       .then((r) => r.json())
       .then((res) => {
         if (typeof res?.data?.avatar_public === "boolean") setAvatarPublic(res.data.avatar_public);
+        const pf = res?.data?.profile;
+        if (pf?.salary_type) setSalaryType(pf.salary_type);
+        if (pf?.salary_min) {
+          const 배수 = pf.salary_type === "HOURLY" || pf.salary_type === "DAILY" ? 1 : 10000;
+          setSalaryMan(String(Math.round(Number(pf.salary_min) / 배수)));
+        }
       })
       .catch(() => {});
 
@@ -328,6 +339,21 @@ export default function ProfilePage() {
   };
 
   // 시술분야·희망근무형태 등 STORE 필수항목을 서버에 저장(하위 항목 미영향 PATCH).
+  // 만원 단위로 적고 원 단위로 저장한다 — 공고와 같은 값이라야 맞대어 볼 수 있다.
+  const 급여저장 = async (type: string, man: string) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const 배수 = type === "HOURLY" || type === "DAILY" ? 1 : 10000;
+    const won = man ? Number(man) * 배수 : null;
+    try {
+      await fetch("/api/users/me/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ salary_type: type, salary_min: won }),
+      });
+    } catch (e) { console.error("[급여저장]", e); }
+  };
+
   const persistStoreProfile = async (patch: { skill_areas?: string[]; work_type_prefer?: string; region_prefer?: string; office_job_areas?: string[] }) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -933,8 +959,22 @@ export default function ProfilePage() {
                   isEmpty={preferredRegions.length === 0}
                   onClick={() => setPrefModalOpen(true)}
                   required
-                  isLast
                 />
+                {/* 원티드식 인라인 — 그 자리에서 고르고 적는다. 비우면 「급여 협의」다. */}
+                <div className="profile-info-row is-last" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">{칸그림("희망급여")}희망급여</span>
+                  <span className="pf-pay">
+                    <select className="pf-pay-sel" value={salaryType}
+                      onChange={(e) => { setSalaryType(e.target.value); 급여저장(e.target.value, salaryMan); }}>
+                      {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <input className="pf-pay-in" inputMode="numeric" value={salaryMan}
+                      placeholder="협의"
+                      onChange={(e) => setSalaryMan(e.target.value.replace(/[^0-9]/g, ""))}
+                      onBlur={() => 급여저장(salaryType, salaryMan)} />
+                    <span className="pf-pay-unit">{salaryType === "HOURLY" || salaryType === "DAILY" ? "원" : "만원"}</span>
+                  </span>
+                </div>
               </div>
             </section>
 

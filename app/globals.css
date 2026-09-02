@@ -14469,3 +14469,15 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-open.on { border-color: var(--color-primary); color: var(--color-primary); background: #faf7fd; }
 /* 메시지창 위에 얹히므로 아래와 선으로 가른다. */
 .pth-appt-form { border-bottom: 1px solid #f2f2f4; padding-bottom: 12px; }
+
+/* 희망급여 — 그 자리에서 고르고 적는다. 비우면 「협의」다. */
+.pf-pay { display: inline-flex; align-items: center; gap: 8px; padding-left: 22px; }
+.pf-pay-sel, .pf-pay-in {
+  font-family: inherit; font-size: 16px; color: #333;
+  border: 1px solid #e5e5ea; border-radius: 8px; padding: 6px 10px; background: #fff;
+}
+.pf-pay-sel { padding-right: 6px; }
+.pf-pay-in { width: 110px; text-align: right; }
+.pf-pay-in::placeholder { color: #cfcfcf; }
+.pf-pay-sel:focus, .pf-pay-in:focus { outline: none; border-color: var(--color-primary); }
+.pf-pay-unit { font-size: 15px; color: #8a8a90; }
