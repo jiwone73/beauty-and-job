@@ -129,7 +129,7 @@ export default function AccountSettingsPage() {
 
             <div className="pf-vis-opts" role="radiogroup" aria-label="이력서 공개">
               {([
-                { key: "open",   label: "공개",     desc: `모든 ${상대 ?? "기업"}이 열람·면접 제안` },
+                { key: "open",   label: "공개",     desc: `채용 중인 ${상대 ?? "기업"}이 열람·면접 제안` },
                 { key: "except", label: "부분공개", desc: `재직 중인 ${상대 ?? "기업"} 등 지정한 곳만 제외` },
                 { key: "close",  label: "비공개",   desc: "면접 제안 안 받음, 지원한 곳만 열람" },
               ] as const).map((o) => (
