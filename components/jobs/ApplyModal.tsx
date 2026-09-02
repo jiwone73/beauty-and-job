@@ -318,7 +318,11 @@ export default function ApplyModal({
   // 글이 있으면 건드리지 않는다.
   useEffect(() => {
     if (!coverLoaded || coverLetter) return;
-    if (기본자소서?.trim()) setCoverLetter(기본자소서);
+    if (!기본자소서?.trim()) return;
+    setCoverLetter(기본자소서);
+    // 밑글을 깐 것은 사람이 쓴 것이 아니다 — 이 값을 처음 값으로 삼아야, 손대지
+    // 않고 창을 닫았을 때 「고치던 자소서가 있어요」라는 초안이 생기지 않는다.
+    첫자소서.current = 기본자소서;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coverLoaded, 기본자소서]);
 
