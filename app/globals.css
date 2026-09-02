@@ -14564,6 +14564,25 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-form { border-bottom: 1px solid #f2f2f4; padding-bottom: 12px; }
 
 /* 희망급여 — 그 자리에서 고르고 적는다. 비우면 「협의」다. */
+/* 프로필 공개 — 공개·일부 제외·비공개 셋을 한 줄에 세운다. 가운데 칸이
+   「비공개 말고 이 길」을 눈으로 말한다. */
+.pf-vis-opts { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.pf-vis-opt { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; }
+.pf-vis-opt input { width: 18px; height: 18px; accent-color: var(--color-primary); flex-shrink: 0; margin: 1px 0 0; }
+.pf-vis-txt { min-width: 0; font-size: 15px; color: #333; line-height: 1.35; }
+.pf-vis-opt.on .pf-vis-txt { color: var(--color-primary); }
+.pf-vis-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; }
+.pf-vis-chip {
+  display: inline-flex; align-items: center; background: #f4f0f8; color: var(--color-primary);
+  font-size: 12.5px; padding: 4px 10px; border-radius: 14px; max-width: 220px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pf-vis-add {
+  display: inline-flex; align-items: center; gap: 3px; padding: 4px 10px;
+  border: 1px dashed var(--color-border); border-radius: 14px; background: none;
+  font-family: inherit; font-size: 12.5px; color: #8a8a90; cursor: pointer;
+}
+.pf-vis-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .pf-pay { display: inline-flex; align-items: center; gap: 4px; padding-left: 22px; }
 /* 테두리도 바탕도 없이 글자로만 선다. 적는 칸만 올렸을 때 옅게 든다. */
 .pf-pay-sel, .pf-pay-in {

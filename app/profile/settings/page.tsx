@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Plus } from "lucide-react";
 import NotificationModal from "@/components/profile/NotificationModal";
 import ProfileShell from "@/components/profile/ProfileShell";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
@@ -17,6 +17,9 @@ export default function AccountSettingsPage() {
   const [openToOffers, setOpenToOffers] = useState<boolean | null>(null);
   const [offerSaving, setOfferSaving] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
+  // 차단 목록은 「공개, 일부만 빼고」 칸 안에 그대로 펼친다 — 비공개 옆에
+  // 나란히 서야 「비공개 말고 이 길도 있다」로 읽힌다.
+  const [blocked, setBlocked] = useState<{ companyId: string; companyName: string }[]>([]);
   // 매장 회원인지 본사 회원인지. 미용실 원장에게 "기업"이라고 하면 남
   // 이야기처럼 들려 자기 설정으로 읽히지 않는다.
   const [jobType, setJobType] = useState<"STORE" | "OFFICE" | null>(null);
@@ -29,6 +32,10 @@ export default function AccountSettingsPage() {
         setOpenToOffers(isOpenToCompanies(res?.data?.profile?.job_search_status));
         if (res?.data?.job_type) setJobType(res.data.job_type);
       })
+      .catch(() => {});
+    fetch("/api/users/blocks", { headers: { Authorization: `Bearer ${t}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res?.success) setBlocked(res.data || []); })
       .catch(() => {});
   }, []);
 
@@ -74,10 +81,13 @@ export default function AccountSettingsPage() {
 
       <div className="pf-set-body">
         {/* 프로필 공개 — 원티드처럼 계정 설정에 둔다. 프로필 화면에도 두면
-            같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다. */}
-        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
-          {/* 지금 고른 것이 무슨 뜻인지는 제목 옆 괄호가 말한다. 아래에 또 한 줄을
-              깔면 켜냐 끄냐 하나뿐인 값에 설명만 두 줄이 붙는다. */}
+            같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다.
+
+            가운데 칸을 둔 까닭: 비공개를 누르는 사람의 이유는 대개 「아무한테도
+            보이기 싫다」가 아니라 「우리 원장만 보면 안 된다」다. 차단이 다른
+            카드에 따로 서 있으면 그 사람도 비공개까지 내려가고, 인재검색에서
+            통째로 사라진다. 셋을 한 줄에 세워 가운데를 고를 수 있게 한다. */}
+        <section className="pf-set-card pf-vis" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
             프로필 공개
             {openToOffers !== null && (
@@ -86,44 +96,48 @@ export default function AccountSettingsPage() {
               </span>
             )}
           </h2>
-          {/* 두 갈래뿐이라 한 행에 나란히 둔다. 카드 두 장으로 세우면 화면
-              절반을 먹는데, 정작 담긴 뜻은 켜냐 끄냐 하나다. */}
-          <div style={{ display: "flex", alignItems: "center", gap: 24, marginTop: 12 }}>
+
+          <div className="pf-vis-opts">
             {([
-              { on: true,  label: "공개" },
-              { on: false, label: "비공개" },
-            ]).map((o) => {
-              const 골랐나 = openToOffers === o.on;
+              { key: "open",   on: true,  label: "공개" },
+              { key: "except", on: true,  label: `공개, 일부 ${상대 ?? "매장"}만 빼고` },
+              { key: "close",  on: false, label: "비공개" },
+            ] as const).map((o) => {
+              const 골랐나 = openToOffers === null ? false
+                : o.key === "close" ? openToOffers === false
+                : o.key === "except" ? openToOffers === true && blocked.length > 0
+                : openToOffers === true && blocked.length === 0;
               return (
-                <label key={o.label}
-                  style={{ display: "flex", alignItems: "center", gap: 7,
-                    cursor: offerSaving || openToOffers === null ? "default" : "pointer" }}>
-                  <input type="radio" name="profile-visibility"
-                    checked={골랐나}
+                <label key={o.key} className={`pf-vis-opt${골랐나 ? " on" : ""}`}>
+                  <input type="radio" name="profile-visibility" checked={골랐나}
                     disabled={offerSaving || openToOffers === null}
-                    onChange={() => saveOpenToOffers(o.on)}
-                    style={{ width: 18, height: 18, accentColor: "#582681", flexShrink: 0, margin: 0 }} />
-                  <span style={{ fontSize: 15, color: 골랐나 ? "#582681" : "#333" }}>{o.label}</span>
+                    onChange={() => {
+                      if (o.key === "except") {
+                        // 뺄 곳이 없으면 고를 것도 없다 — 고르는 순간 찾는 판을 연다.
+                        if (openToOffers !== true) saveOpenToOffers(true);
+                        setBlockOpen(true);
+                        return;
+                      }
+                      saveOpenToOffers(o.on);
+                    }} />
+                  <span className="pf-vis-txt">
+                    {o.label}
+                    {o.key === "except" && (
+                      <span className="pf-vis-chips">
+                        {blocked.map((b) => (
+                          <span key={b.companyId} className="pf-vis-chip">{b.companyName}</span>
+                        ))}
+                        <button type="button" className="pf-vis-add"
+                          onClick={(e) => { e.preventDefault(); if (openToOffers !== true) saveOpenToOffers(true); setBlockOpen(true); }}>
+                          <Plus size={13} />{blocked.length > 0 ? "고치기" : `${상대 ?? "매장"} 고르기`}
+                        </button>
+                      </span>
+                    )}
+                  </span>
                 </label>
               );
             })}
           </div>
-        </section>
-
-        {/* 차단 매장·기업 — 공개와 얽혀 있지만 고르는 값이 아니라 목록을
-            관리하는 일이라, 나란한 선택지로 두지 않고 따로 뺀다. */}
-        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
-          <button type="button" onClick={() => setBlockOpen(true)}
-            style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
-            <span style={{ textAlign: "left" }}>
-              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a", visibility: 상대 ? "visible" : "hidden" }}>차단 {상대 ?? "기업"}</span>
-              {/* 자리글로만 남긴다 — 누르면 그 자리에서 검색해 고르는 판이
-                  뜨니, 설명 문장까지 따로 둘 일이 없다. */}
-              <span style={{ display: "block", fontSize: 13, color: "#c4c4c9", marginTop: 4 }}>
-                검색하여 설정하기
-              </span>
-            </span>
-          </button>
         </section>
 
         {/* 비밀번호 변경 — '차단 기업'과 같은 자리글 방식. 늘 펼쳐 두면
@@ -169,7 +183,7 @@ export default function AccountSettingsPage() {
         </div>
       </div>
 
-      <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} />
+      <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} onChange={setBlocked} />
       <PasswordChangeModal open={pwModalOpen} onClose={() => setPwModalOpen(false)} />
       <NotificationModal isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
     </ProfileShell>

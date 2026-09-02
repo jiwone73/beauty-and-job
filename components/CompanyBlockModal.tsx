@@ -7,10 +7,13 @@ import { X, Search, Ban } from "lucide-react";
 type Company = { companyId: string; companyName: string; brandName?: string | null; logoUrl?: string | null; address?: string | null };
 
 export default function CompanyBlockModal({
-  open, onClose, noun = "기업",
+  open, onClose, noun = "기업", onChange,
 }: {
   open: boolean;
   onClose: () => void;
+  /** 목록이 바뀌면 부른 쪽도 같이 바뀌어야 한다 — 설정 화면이 이 목록을
+   *  「일부 매장만 빼고」 칸 안에 그대로 펼쳐 두기 때문이다. */
+  onChange?: (blocked: { companyId: string; companyName: string }[]) => void;
   /** 매장 회원에게는 "매장", 본사 회원에게는 "기업"으로 부른다. 미용실을
    *  "기업"이라 부르면 남 이야기처럼 들려 자기 설정으로 읽히지 않는다.
    *  둘 다 받침으로 끝나 조사("으로부터"·"이")가 갈라지지 않는다. */
@@ -27,7 +30,7 @@ export default function CompanyBlockModal({
   const loadBlocked = useCallback(() => {
     fetch("/api/users/blocks", { headers })
       .then((r) => r.json())
-      .then((res) => { if (res.success) setBlocked(res.data || []); })
+      .then((res) => { if (res.success) { setBlocked(res.data || []); onChange?.(res.data || []); } })
       .catch((e) => console.error("[blocks load]", e));
   }, [token]);
 
@@ -48,7 +51,7 @@ export default function CompanyBlockModal({
 
   const addBlock = async (c: Company) => {
     if (blocked.some((b) => b.companyId === c.companyId)) return;
-    setBlocked((prev) => [c, ...prev]);
+    setBlocked((prev) => { const 다음 = [c, ...prev]; onChange?.(다음); return 다음; });
     setQuery(""); setResults([]);
     try {
       await fetch("/api/users/blocks", {
@@ -59,7 +62,7 @@ export default function CompanyBlockModal({
   };
 
   const removeBlock = async (companyId: string) => {
-    setBlocked((prev) => prev.filter((b) => b.companyId !== companyId));
+    setBlocked((prev) => { const 다음 = prev.filter((b) => b.companyId !== companyId); onChange?.(다음); return 다음; });
     try {
       await fetch(`/api/users/blocks/${companyId}`, { method: "DELETE", headers });
     } catch (e) { console.error("[block remove]", e); loadBlocked(); }
