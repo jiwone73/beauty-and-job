@@ -5100,7 +5100,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .prop-item.unread::before {
   content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--color-primary);
 }
-.prop-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+.prop-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 3px; }
 .prop-co { font-size: 13px; color: #888; }
 .prop-date { font-size: 12px; color: #b4b4b9; margin-left: auto; white-space: nowrap; }
 .prop-title {
@@ -14424,7 +14424,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 받은 제안 — 날짜 아래에 공고로 가는 길을 둔다. 오른쪽 위에 시간과 갈 곳이
    같이 있어 시선이 한 번만 움직인다. */
-.prop-when { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.prop-when { margin-left: auto; display: flex; flex-direction: column;
+  align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.prop-when .prop-date { margin-left: 0; }
 
 /* 거절. 예전 「치우기」(X)는 내 화면에서만 지우는 것이라 기업은 기약 없이
    기다렸다 — 거절은 상대에게 전해진다. */
