@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Eye, Lock, Bell, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, EyeOff, Lock, Bell, Settings } from "lucide-react";
 import NotificationModal from "@/components/profile/NotificationModal";
 import ProfileShell from "@/components/profile/ProfileShell";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
@@ -152,23 +152,23 @@ export default function AccountSettingsPage() {
                 </label>
               ))}
             </div>
-
-            {/* 제한 목록은 그 칸을 골랐을 때만 나온다 — 공개인데 제한 기업이
-                적혀 있으면 둘 중 어느 쪽이 사실인지 알 수 없다. */}
-            {공개칸 === "except" && (
-              <button type="button" className="pf-vis-row" onClick={() => setBlockOpen(true)}>
-                {/* 이름표가 윗줄, 값이 아랫줄 — 이 화면의 다른 칸들과 같은 짜임이다.
-                    한 줄에 밀어 넣으면 곳이 둘만 돼도 이름이 잘린다. */}
-                <span className="pf-vis-row-k">
-                  열람 제한 {상대 ?? "기업"}
-                  <ChevronRight size={16} className="pf-vis-row-go" />
-                </span>
-                <span className={`pf-vis-row-v${blocked.length === 0 ? " is-empty" : ""}`}>
-                  {blocked.length === 0 ? "고르기" : blocked.map((b) => b.companyName).join(", ")}
-                </span>
-              </button>
-            )}
           </div>
+
+          {/* 부분공개를 골랐을 때만 이 줄이 생긴다 — 공개인데 제한 기업이 적혀
+              있으면 둘 중 어느 쪽이 사실인지 알 수 없다. 공개 설정과는 다른
+              일(목록을 관리하는 일)이라 제 줄을 갖는다. 이름표가 윗줄, 기업
+              이름이 아랫줄 — 이 화면의 다른 칸들과 같은 짜임이다. */}
+          {공개칸 === "except" && (
+            <button type="button" className="pf-set-line is-col" onClick={() => setBlockOpen(true)}>
+              <span className="profile-info-label">
+                <EyeOff size={16} className="profile-info-icon" />열람 제한 {상대 ?? "기업"}
+                <ChevronRight size={16} className="pf-set-go" />
+              </span>
+              <span className={`pf-vis-row-v${blocked.length === 0 ? " is-empty" : ""}`}>
+                {blocked.length === 0 ? "고르기" : blocked.map((b) => b.companyName).join(", ")}
+              </span>
+            </button>
+          )}
 
           {/* 비밀번호와 알림은 늘 펼쳐 두면 화면 절반을 먹는데, 정작 손대는 일은
               몇 달에 한 번이다. 이름만 두고 판은 눌렀을 때 연다. */}

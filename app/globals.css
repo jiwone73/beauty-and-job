@@ -14604,15 +14604,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pf-vis-opt-go { color: #c4c4c9; flex-shrink: 0; }
 .pf-vis-opt.on .pf-vis-opt-go { color: var(--color-primary); }
 
-.pf-vis-row {
-  display: flex; flex-direction: column; align-items: stretch; gap: 6px; width: 100%;
-  margin-top: 14px; padding: 13px 0 0; border: none; border-top: 1px solid #f2f2f4;
-  background: none; font-family: inherit; cursor: pointer; text-align: left;
-}
-.pf-vis-row-k { display: flex; align-items: center; font-size: 16px; color: #1a1a1a; }
+.pf-set-line.is-col { display: flex; flex-direction: column; align-items: stretch; gap: 6px; cursor: pointer; }
+.pf-set-line.is-col .profile-info-label { display: flex; align-items: center; width: 100%; }
 .pf-vis-row-v { min-width: 0; font-size: 16px; color: #333; line-height: 1.45; overflow-wrap: anywhere; }
 .pf-vis-row-v.is-empty { color: #c4c4c9; }
-.pf-vis-row-go { color: #c4c4c9; flex-shrink: 0; margin-left: auto; }
 .pf-pay { display: inline-flex; align-items: center; gap: 4px; padding-left: 22px; }
 /* 테두리도 바탕도 없이 글자로만 선다. 적는 칸만 올렸을 때 옅게 든다. */
 .pf-pay-sel, .pf-pay-in {
