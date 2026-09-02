@@ -124,6 +124,17 @@ function ApplicantsContent() {
   const [지원서, set지원서] = useState<string | null>(null);
   const 열기 = (a: CompanyApplication) => set지원서(a.id);
 
+  const 메모저장 = async (a: CompanyApplication, note: string) => {
+    const 이전 = a.note || "";
+    setApplicants((prev) => prev.map((x) => x.id === a.id ? { ...x, note } : x));
+    try {
+      await companyApplicationsApi.updateNote(a.id, note);
+    } catch {
+      setApplicants((prev) => prev.map((x) => x.id === a.id ? { ...x, note: 이전 } : x));
+      alert("메모를 저장하지 못했어요.");
+    }
+  };
+
 
   // 스크랩은 이력서가 아니라 사람에 대한 표시라 이름 옆에서 켜고 끈다. 인재검색·스크랩 인재와 같은 자리.
   const toggleScrap = async (a: CompanyApplication) => {
@@ -441,7 +452,7 @@ function ApplicantsContent() {
           <div className="tal-list">
             {filtered.map((a) => (
               <ApplicantCard key={a.id} a={a}
-                onOpen={열기} onToggleScrap={toggleScrap} />
+                onOpen={열기} onToggleScrap={toggleScrap} onNote={메모저장} />
             ))}
           </div>
         </div>

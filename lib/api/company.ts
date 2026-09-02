@@ -55,6 +55,9 @@ export const companyApplicationsApi = {
   },
   updateStatus: (id: string, status: ApplicationStatus) =>
     api.patch<ApiResponse<CompanyApplication>>(`/api/company/applications/${id}`, { status }),
+  /** 매장만 보는 한 줄 메모. 구직자 쪽 응답에는 이 값이 없다. */
+  updateNote: (id: string, note: string) =>
+    api.patch<ApiResponse<CompanyApplication>>(`/api/company/applications/${id}`, { note }),
   hide: (id: string) =>
     api.patch<ApiResponse<{ id: string }>>(`/api/company/applications/${id}`, { hidden_by_company: true }),
   unhide: (id: string) =>

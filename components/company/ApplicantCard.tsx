@@ -1,5 +1,6 @@
 "use client";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bookmark, BookmarkCheck, Pencil } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import type { CompanyApplication } from "@/lib/types/company";
 
@@ -36,11 +37,14 @@ const 마감인가 = (a: CompanyApplication) => {
 };
 
 export default function ApplicantCard({
-  a, onOpen, onToggleScrap, checked, onCheck, showJob = true,
+  a, onOpen, onToggleScrap, onNote, checked, onCheck, showJob = true,
 }: {
   a: CompanyApplication;
   onOpen: (a: CompanyApplication) => void;
   onToggleScrap: (a: CompanyApplication) => void;
+  /** 매장만 보는 한 줄 메모. 「통화함」·「화요일 3시 면접」처럼 자기가 나중에 보려고
+   *  적는 것이라, 남을 위한 상태값과 달리 실제로 쓰인다. */
+  onNote?: (a: CompanyApplication, note: string) => void;
   /** 일괄 처리용 체크. 공고 카드 안에서는 쓰지 않는다. */
   checked?: boolean;
   onCheck?: (id: string) => void;
@@ -63,6 +67,18 @@ export default function ApplicantCard({
   const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
     : (a as any).proposed_at ? "제안 후 지원" : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
+  const [메모쓰기, set메모쓰기] = useState(false);
+  const [메모, set메모] = useState(a.note || "");
+  const 메모칸 = useRef<HTMLInputElement>(null);
+  useEffect(() => { set메모(a.note || ""); }, [a.note]);
+  useEffect(() => { if (메모쓰기) 메모칸.current?.focus(); }, [메모쓰기]);
+  const 메모저장 = () => {
+    set메모쓰기(false);
+    const v = 메모.trim();
+    if (v === (a.note || "")) return;
+    onNote?.(a, v);
+  };
+
   const 태그 = [
     (a as any).user_sub_job || (a as any).user_main_job_group,
     (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
@@ -107,6 +123,27 @@ export default function ApplicantCard({
           </span>
         </div>
       </div>
+
+      {/* 매장만 보는 한 줄. 안내 문구 없이 자리글만 둔다. */}
+      {onNote && (
+        <div className="tal-memo">
+          {메모쓰기 ? (
+            <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
+              placeholder="통화함 · 화요일 3시 면접 …"
+              onChange={(e) => set메모(e.target.value)}
+              onBlur={메모저장}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.currentTarget.blur(); }
+                if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
+              }} />
+          ) : (
+            <button type="button" className={`tal-memo-btn${메모 ? " has" : ""}`}
+              onClick={() => set메모쓰기(true)}>
+              <Pencil size={13} />{메모 || "메모 남기기"}
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="tal-foot">
         <span className="tal-tags">

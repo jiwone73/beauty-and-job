@@ -146,6 +146,17 @@ function CompanyJobsContent() {
       return out;
     });
 
+  const 메모저장 = async (a: CompanyApplication, note: string) => {
+    const 이전 = a.note || "";
+    지원자바꾸기(a.id, { note });
+    try {
+      await companyApplicationsApi.updateNote(a.id, note);
+    } catch {
+      지원자바꾸기(a.id, { note: 이전 });
+      alert("메모를 저장하지 못했어요.");
+    }
+  };
+
   const 스크랩토글 = async (a: CompanyApplication) => {
     const 다음 = !(a as any).scrapped;
     지원자바꾸기(a.id, { scrapped: 다음 } as any);
@@ -575,7 +586,7 @@ function CompanyJobsContent() {
                             .map((a) => (
                             <ApplicantCard key={a.id} a={a} showJob={false}
                               onOpen={(x) => set지원서(x.id)}
-                              onToggleScrap={스크랩토글} />
+                              onToggleScrap={스크랩토글} onNote={메모저장} />
                           ))}
                         </div>
                       )}
