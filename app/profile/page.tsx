@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2,
-  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase, Camera } from "lucide-react";
+  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase, Camera, Wallet } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import ImageCropModal from "@/components/ImageCropModal";
 import { useSignupStore } from "@/lib/store/signupStore";
@@ -1079,7 +1079,7 @@ function 칸그림(label: string) {
   const 표: Record<string, any> = {
     "이름": User, "구직유형": Store, "국적": Globe, "휴대전화": Phone,
     "생년월일": Cake, "성별": UsersIcon, "이메일": Mail,
-    "거주지 주소": Home, "직군": Briefcase, "희망 근무지역": MapPin,
+    "거주지 주소": Home, "직군": Briefcase, "희망 근무지역": MapPin, "희망급여": Wallet,
   };
   const G = 표[label];
   return G ? <G size={16} className="profile-info-icon" /> : null;

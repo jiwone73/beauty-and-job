@@ -14482,7 +14482,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-family: inherit; font-size: 16px; color: #333;
   border: 1px solid #e5e5ea; border-radius: 8px; padding: 6px 10px; background: #fff;
 }
-.pf-pay-sel { padding-right: 6px; }
+/* 브라우저 기본 고르개는 바탕이 회색이라 옆 입력칸과 결이 갈렸다. 화살표를 직접
+   그려 붙이고 바탕을 흰색으로 둔다. */
+.pf-pay-sel {
+  appearance: none; -webkit-appearance: none;
+  padding: 6px 28px 6px 10px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat; background-position: right 9px center;
+}
 .pf-pay-in { width: 110px; text-align: right; }
 .pf-pay-in::placeholder { color: #cfcfcf; }
 .pf-pay-sel:focus, .pf-pay-in:focus { outline: none; border-color: var(--color-primary); }
