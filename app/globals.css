@@ -14564,20 +14564,18 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-form { border-bottom: 1px solid #f2f2f4; padding-bottom: 12px; }
 
 /* 희망급여 — 그 자리에서 고르고 적는다. 비우면 「협의」다. */
-/* 이력서 공개 — 전체 공개·열람 제한·비공개 셋을 같은 폭으로 한 줄에 세운다.
-   가운데가 비공개와 대등하게 보여야 「비공개 말고 이 길」이 읽힌다. */
-.pf-vis-seg { display: inline-flex; border: 1px solid var(--color-border); border-radius: 9px; overflow: hidden; }
-.pf-vis-seg-b {
-  /* 판 폭을 다 먹으면 세 칸이 손바닥만 하게 벌어진다. 가장 긴 말에 맞춰
-     같은 폭으로 묶고, 남는 자리는 비워 둔다. */
-  flex: none; width: 84px; padding: 9px 4px; border: none; background: #fff;
-  font-family: inherit; font-size: 13.5px; color: #555; cursor: pointer;
-  border-left: 1px solid var(--color-border); transition: background .12s, color .12s;
+/* 이력서 공개 — 전체공개·부분공개·비공개 셋을 한 행에 나란히. 이름 아래
+   한 줄로 무슨 뜻인지 적는다. 세로로 쌓으면 카드만 길어지고 셋을 견주기
+   어렵다 — 견주라고 나란히 두는 것이다. */
+.pf-vis-opts { display: flex; gap: 8px; align-items: flex-start; }
+.pf-vis-opt {
+  flex: 1; min-width: 0; display: grid; gap: 0 8px; cursor: pointer;
+  grid-template-columns: 18px 1fr; grid-template-areas: "r t" ". d";
 }
-.pf-vis-seg-b:first-child { border-left: none; }
-.pf-vis-seg-b:hover:not(.on):not(:disabled) { background: #fafafb; }
-.pf-vis-seg-b.on { background: var(--color-primary); color: #fff; }
-.pf-vis-seg-b:disabled { cursor: default; color: #c4c4c9; }
+.pf-vis-opt input { grid-area: r; width: 18px; height: 18px; accent-color: var(--color-primary); margin: 0; cursor: pointer; }
+.pf-vis-opt-t { grid-area: t; font-size: 14.5px; color: #333; line-height: 18px; white-space: nowrap; }
+.pf-vis-opt-d { grid-area: d; margin-top: 4px; font-size: 12.5px; color: #a0a0a6; line-height: 1.45; }
+.pf-vis-opt.on .pf-vis-opt-t { color: var(--color-primary); }
 
 .pf-vis-row {
   display: flex; align-items: center; gap: 10px; width: 100%;

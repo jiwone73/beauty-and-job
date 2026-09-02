@@ -109,9 +109,11 @@ export default function AccountSettingsPage() {
       </div>
 
       <div className="pf-set-body">
-        {/* 이력서 공개 — 「이력서 공개」·「열람 제한 기업」은 사람인·원티드가
-            함께 쓰는 말이다. 우리끼리 부르던 「프로필 공개」·「차단 기업」은
-            같은 것을 다르게 불러 낯설게 만들 뿐이었다.
+        {/* 이력서 공개 — 「전체 공개 · 부분 공개 · 비공개」는 잡코리아가 쓰는
+            세 갈래 그대로다. 부분 공개는 특정 회사를 노출에서 제외하는 것을
+            뜻하니 우리 가운데 칸과 같은 말이다. 그 안에 담기는 목록은
+            사람인·원티드가 부르는 「열람 제한 기업」이다 — 하나는 상태의
+            이름이고 하나는 목록의 이름이라 층이 달라 같이 쓸 수 있다.
 
             가운데 칸을 둔 까닭: 비공개를 누르는 사람의 이유는 대개 「아무한테도
             보이기 싫다」가 아니라 「우리 원장만 보면 안 된다」다. 제한 목록이
@@ -128,18 +130,19 @@ export default function AccountSettingsPage() {
             )}
           </h2>
 
-          <div className="pf-vis-seg" role="radiogroup" aria-label="이력서 공개">
+          <div className="pf-vis-opts" role="radiogroup" aria-label="이력서 공개">
             {([
-              { key: "open",   label: "전체 공개" },
-              { key: "except", label: "열람 제한" },
-              { key: "close",  label: "비공개" },
+              { key: "open",   label: "전체공개", desc: "모든 기업이 검색·열람" },
+              { key: "except", label: "부분공개", desc: "지정한 기업만 제외" },
+              { key: "close",  label: "비공개",   desc: "지원한 곳만 열람" },
             ] as const).map((o) => (
-              <button key={o.key} type="button" role="radio" aria-checked={공개칸 === o.key}
-                className={`pf-vis-seg-b${공개칸 === o.key ? " on" : ""}`}
-                disabled={offerSaving || openToOffers === null}
-                onClick={() => 공개칸고르기(o.key)}>
-                {o.label}
-              </button>
+              <label key={o.key} className={`pf-vis-opt${공개칸 === o.key ? " on" : ""}`}>
+                <input type="radio" name="resume-visibility" checked={공개칸 === o.key}
+                  disabled={offerSaving || openToOffers === null}
+                  onChange={() => 공개칸고르기(o.key)} />
+                <span className="pf-vis-opt-t">{o.label}</span>
+                <span className="pf-vis-opt-d">{o.desc}</span>
+              </label>
             ))}
           </div>
 
