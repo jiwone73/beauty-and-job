@@ -553,9 +553,10 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
               const 고름 = checked.includes(a.id);
               const 나이 = calcAge((a as any).user_birth_date);
               const ct = (a as any).career_type;
+              // 연차를 모르면 「경력」이라는 말만 덩그러니 남는다 — 그럴 바엔 안 적는다.
               const 경력 = ct === "NEWCOMER"
                 ? "신입"
-                : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : "경력"; })();
+                : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : ""; })();
               const 나이성별 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
               const 지역 = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
               const 상태색 = a.status === "APPLIED" ? "#0ea5e9" : a.status === "VIEWED" ? "#f59e0b"
