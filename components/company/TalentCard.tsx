@@ -73,8 +73,12 @@ export default function TalentCard({
           title="이력서 보기"
           onClick={() => onOpenResume(t)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpenResume(t); } }}>
-          <div className="tal-name">{t.intro || `${t.name} 님의 이력서`}</div>
-          <div className="tal-who">{t.name}{나이성별 && ` (${나이성별})`}</div>
+          {/* 한줄소개를 안 쓴 사람은 이름이 맨 윗줄을 대신한다 — 「홍길동 님의 이력서」
+              같은 자리 채우기를 넣으면 바로 아랫줄에서 이름을 또 읽게 된다. */}
+          <div className="tal-name">{t.intro || t.name}</div>
+          <div className="tal-who">
+            {t.intro ? t.name : ""}{t.intro && 나이성별 ? " " : ""}{나이성별 && `(${나이성별})`}
+          </div>
           {지역 && <div className="tal-who">{지역}</div>}
         </div>
 
