@@ -13575,14 +13575,15 @@ button,
     border-right: 1px solid var(--color-border);
   }
   .pf-main .pf-grid .profile-info-row:nth-child(2n) { border-right: none; }
-  /* 격자 안이든 밖이든(주소 칸) 이름표는 한 옷을 입는다.
-     크기는 값과 같게 두고 색으로만 가른다 — 작게 만들면 둘이 따로 논다. */
-  .pf-main .profile-info-label { width: auto; font-size: 14.5px; color: #8a8a8f; }
+  /* 격자 안이든 밖이든(주소 칸) 이름표는 한 옷을 입는다. 기업 폼
+     (.admin-form-label 14px/#444)과 같은 값으로 — 두 화면의 칸 이름이 같은
+     무게로 읽혀야 한다. */
+  .pf-main .profile-info-label { width: auto; font-size: 14px; color: #444; }
   /* 값은 라벨 '글자'가 시작하는 자리에 맞춘다. 아이콘 왼쪽 끝에 맞추면 값만
      한 칸 왼쪽으로 튀어나와 두 줄의 시작점이 어긋난다(아이콘 16 + 사이 6). */
   .pf-main .pf-grid .profile-info-value {
     text-align: left; padding-left: 22px; padding-right: 22px;
-    font-size: 14.5px; color: #2b2b2b; width: 100%;
+    font-size: 14px; color: #1a1a1a; width: 100%;
   }
   .pf-main .pf-grid .profile-info-chevron { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
   .pf-main .profile-bottom-cta { max-width: none; }
