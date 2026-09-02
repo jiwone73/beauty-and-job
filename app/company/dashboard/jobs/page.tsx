@@ -8,7 +8,8 @@ import FilterDropdown from "@/components/company/FilterDropdown";
 import {
   Users, Search, Edit, X, Trash2, Copy, Ban, ChevronDown
 } from "lucide-react";
-import { companyJobsApi, companyApplicationsApi } from "@/lib/api/company";
+import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
+import ApplicantCard from "@/components/company/ApplicantCard";
 import type { CompanyJob, JobStatus, CompanyApplication } from "@/lib/types/company";
 import { genderLabel, calcAge } from "@/lib/memberFormat";
 
@@ -115,22 +116,42 @@ function CompanyJobsContent() {
 
   // 공고와 지원자는 한 덩어리다 — 공고를 올리는 이유가 지원자를 받는 것이라,
   // 그 공고에 누가 왔는지는 공고 카드 안에서 바로 열린다.
-  const [펼친공고, set펼친공고] = useState<string | null>(null);
+  const [접은공고, set접은공고] = useState<string[]>([]);
   const [공고지원자, set공고지원자] = useState<Record<string, CompanyApplication[]>>({});
-  const [불러오는중, set불러오는중] = useState<string | null>(null);
 
-  const 펼치기 = async (jobId: string) => {
-    if (펼친공고 === jobId) { set펼친공고(null); return; }
-    set펼친공고(jobId);
-    if (공고지원자[jobId]) return;
-    set불러오는중(jobId);
+  // 한 번에 받아 공고별로 나눈다 — 카드마다 부르면 공고 수만큼 왕복한다.
+  useEffect(() => {
+    companyApplicationsApi.list({ limit: 200 })
+      .then((res) => {
+        const 묶음: Record<string, CompanyApplication[]> = {};
+        (res.data || []).forEach((a) => {
+          const k = (a as any).job_id;
+          (묶음[k] = 묶음[k] || []).push(a);
+        });
+        set공고지원자(묶음);
+      })
+      .catch((e) => console.error("[job applicants]", e));
+  }, []);
+
+  // 기본은 펼침 — 공고를 여는 이유가 지원자다. 접은 것만 기억한다.
+  const 펼치기 = (jobId: string) =>
+    set접은공고((prev) => prev.includes(jobId) ? prev.filter((x) => x !== jobId) : [...prev, jobId]);
+
+  const 지원자바꾸기 = (id: string, 바꿈: Partial<CompanyApplication>) =>
+    set공고지원자((prev) => {
+      const out: Record<string, CompanyApplication[]> = {};
+      for (const k of Object.keys(prev)) out[k] = prev[k].map((a) => a.id === id ? { ...a, ...바꿈 } : a);
+      return out;
+    });
+
+  const 스크랩토글 = async (a: CompanyApplication) => {
+    const 다음 = !(a as any).scrapped;
+    지원자바꾸기(a.id, { scrapped: 다음 } as any);
     try {
-      const res = await companyApplicationsApi.list({ job_id: jobId, limit: 100 });
-      set공고지원자((prev) => ({ ...prev, [jobId]: res.data || [] }));
-    } catch (e) {
-      console.error("[job applicants]", e);
-    } finally {
-      set불러오는중(null);
+      if (다음) await companyTalentApi.scrap((a as any).user_id);
+      else await companyTalentApi.unscrap((a as any).user_id);
+    } catch {
+      지원자바꾸기(a.id, { scrapped: !다음 } as any);
     }
   };
 
@@ -520,7 +541,7 @@ function CompanyJobsContent() {
                 {!draft && (() => {
                   const 수 = job.application_count ?? 0;
                   const 안본 = job.unviewed_count ?? 0;
-                  const 열림 = 펼친공고 === job.id;
+                  const 열림 = !접은공고.includes(job.id);
                   return (
                     <>
                       <div className="co-jc-foot">
@@ -538,36 +559,13 @@ function CompanyJobsContent() {
                         </button>
                       </div>
 
-                      {열림 && (
+                      {열림 && (공고지원자[job.id] || []).length > 0 && (
                         <div className="co-jc-apps">
-                          {불러오는중 === job.id ? (
-                            <p className="co-jc-app-empty">불러오는 중…</p>
-                          ) : (공고지원자[job.id] || []).length === 0 ? (
-                            <p className="co-jc-app-empty">지원자가 없습니다.</p>
-                          ) : (
-                            (공고지원자[job.id] || []).map((a) => {
-                              const 나이 = calcAge((a as any).user_birth_date);
-                              const 곁 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
-                              return (
-                                <button key={a.id} type="button" className="co-jc-app"
-                                  onClick={() => router.push(`/company/dashboard/applicants/${a.id}`)}>
-                                  <span className="co-jc-app-av">
-                                    {(a as any).user_avatar_url
-                                      ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
-                                      : <span>{(a.user_name || "?").slice(0, 1)}</span>}
-                                  </span>
-                                  <span className="co-jc-app-main">
-                                    <span className="co-jc-app-name">{a.user_name}</span>
-                                    {곁 && <span className="co-jc-app-sub">{곁}</span>}
-                                  </span>
-                                  <span className={`co-jc-app-st${a.status === "APPLIED" ? " new" : ""}`}>
-                                    {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL_APP[a.status] || ""}
-                                  </span>
-                                  <span className="co-jc-app-when">{md(a.applied_at)}</span>
-                                </button>
-                              );
-                            })
-                          )}
+                          {(공고지원자[job.id] || []).map((a) => (
+                            <ApplicantCard key={a.id} a={a} showJob={false}
+                              onOpen={(x) => router.push(`/company/dashboard/applicants/${x.id}`)}
+                              onToggleScrap={스크랩토글} />
+                          ))}
                         </div>
                       )}
                     </>

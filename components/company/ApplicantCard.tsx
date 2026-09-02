@@ -1,0 +1,111 @@
+"use client";
+import { Bookmark, BookmarkCheck } from "lucide-react";
+import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
+import type { CompanyApplication } from "@/lib/types/company";
+
+// 지원자 카드. 지원자 목록과 공고 카드 안(펼치기)이 같은 카드를 쓴다 —
+// 같은 사람이 두 자리에서 다르게 보이면 안 된다.
+//
+// 인재 카드와 같은 얼굴이다. 맨 위는 본인이 고른 한 마디, 그 아래에 그 사람을
+// 특정하는 값. 아랫줄은 어느 공고로 어떻게 들어왔는지와 지원한 날.
+
+const STATUS_LABEL: Record<string, string> = {
+  APPLIED: "미열람", VIEWED: "열람", INTERVIEW: "면접", PASSED: "합격", REJECTED: "불합격",
+};
+
+const 날짜 = (s: string) => {
+  const d = new Date(s);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+};
+
+function shortenRegion(region: string): string {
+  if (!region) return "";
+  return region.replace(/특별자치도|특별자치시|특별시|광역시/g, "").replace(/\s+/g, " ").trim();
+}
+
+const 마감인가 = (a: CompanyApplication) => {
+  const st = (a as any).job_status;
+  const dl = (a as any).job_deadline;
+  return st === "CLOSED" || (dl && new Date(dl) < new Date());
+};
+
+export default function ApplicantCard({
+  a, onOpen, onToggleScrap, checked, onCheck, showJob = true,
+}: {
+  a: CompanyApplication;
+  onOpen: (a: CompanyApplication) => void;
+  onToggleScrap: (a: CompanyApplication) => void;
+  /** 일괄 처리용 체크. 공고 카드 안에서는 쓰지 않는다. */
+  checked?: boolean;
+  onCheck?: (id: string) => void;
+  /** 공고 카드 안에서는 그 공고 이름이 바로 위에 있어 다시 적지 않는다. */
+  showJob?: boolean;
+}) {
+  const 나이 = calcAge((a as any).user_birth_date);
+  const ct = (a as any).career_type;
+  // 연차를 모르면 「경력」이라는 말만 덩그러니 남는다 — 그럴 바엔 안 적는다.
+  const 경력 = ct === "NEWCOMER"
+    ? "신입"
+    : (() => { const y = calcCareerYears((a as any).recent_start_date); return y ? `경력 ${y}` : ""; })();
+  const 나이성별 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
+  const 지역 = shortenRegion([(a as any).user_region_sido, (a as any).user_region_sigungu].filter(Boolean).join(" "));
+  // 브랜드 보라 하나로 간다. 아직 안 본 사람만 보라(할 일이 남은 것),
+  // 끝난 것(불합격·지원취소)은 흐리게, 나머지는 먹색.
+  const 상태색 = a.status === "APPLIED" ? "#582681"
+    : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#1a1a1a";
+  const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
+    : (a as any).proposed_at ? "제안 후 지원" : null;
+
+  return (
+    <div className={`tal-card${checked ? " on" : ""}`}>
+      <div className="tal-top">
+        {onCheck && (
+          <input type="checkbox" className="tal-check" checked={!!checked} onChange={() => onCheck(a.id)} />
+        )}
+        <div className="tal-avatar" onClick={() => onOpen(a)} title="지원서 보기">
+          {(a as any).user_avatar_url
+            ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
+            : <span>{(a.user_name || "?").slice(0, 1)}</span>}
+        </div>
+
+        <div className="tal-main" role="button" tabIndex={0} title="지원서 보기"
+          onClick={() => onOpen(a)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
+          <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
+          <div className="tal-who">
+            {(a as any).user_intro ? a.user_name : ""}
+            {(a as any).user_intro && 나이성별 ? " " : ""}
+            {나이성별 && `(${나이성별})`}
+            {경력 && <>{((a as any).user_intro || 나이성별) ? " · " : ""}{경력}</>}
+          </div>
+          {지역 && <div className="tal-who">{지역}</div>}
+        </div>
+
+        <div className="tal-acts">
+          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+            className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
+            {(a as any).scrapped
+              ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+              : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+          </button>
+          <span style={{ fontSize: 12.5, color: 상태색 }}>
+            {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+          </span>
+        </div>
+      </div>
+
+      <div className="tal-foot">
+        <span className="tal-tags">
+          {showJob && (
+            <>
+              {a.job_title}
+              {마감인가(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
+            </>
+          )}
+          {유입 && <span className="tal-from" style={showJob ? undefined : { marginLeft: 0 }}>{유입}</span>}
+        </span>
+        <span className="tal-when">{날짜(a.applied_at)} 지원</span>
+      </div>
+    </div>
+  );
+}

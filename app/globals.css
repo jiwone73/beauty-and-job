@@ -13825,6 +13825,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc { border: 1px solid #ececf0; border-radius: 12px; padding: 14px 18px 0;
   margin-bottom: 10px; transition: border-color .15s; }
 .co-jc:not(:has(.co-jc-foot)) { padding-bottom: 14px; }
+/* 지원자 판이 붙으면 그 판이 바닥을 맡는다. */
+.co-jc:has(.co-jc-apps) { padding-bottom: 0; }
 .co-jc-top { display: flex; align-items: center; gap: 20px; }
 /* 마우스를 올린 카드는 뷰티워크 보라 테두리로 — 옅은 보라는 흰 바탕에서 안 보였다. */
 .co-jc:hover { border-color: var(--color-primary); }
@@ -14374,32 +14376,26 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jobitem-off { margin-left: 5px; font-size: 11px; color: #999;
   background: #f2f2f4; border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
 
-/* 공고 카드 안의 지원자 — 공고를 올리는 이유가 지원자를 받는 것이라, 그 공고에
-   누가 왔는지는 카드 안에서 바로 열린다. 숫자가 곧 문이다. */
+/* 공고 카드 안의 지원자. 공고를 올리는 이유가 지원자를 받는 것이라, 그 공고에
+   누가 왔는지는 카드 안에서 바로 보인다 — 기본은 펼침이고, 숫자가 곧 접는 단추다.
+   지원자 카드는 공고의 하위라는 것이 보여야 해서, 카드 안쪽 여백을 뚫고 바닥까지
+   옅은 판을 깔고 왼쪽을 한 번 더 들여 놓는다. */
 .co-jc-nums { display: inline-flex; align-items: center; gap: 2px; border: none;
   background: none; font: inherit; padding: 4px 2px; cursor: default; white-space: nowrap; }
 .co-jc-nums.open { cursor: pointer; }
 .co-jc-nums.open:hover { color: var(--color-primary); }
 .co-jc-chev { margin-left: 3px; transition: transform .15s; }
 .co-jc-chev.up { transform: rotate(180deg); }
-.co-jc-apps { border-top: 1px solid #f2f2f4; padding: 4px 0 2px; }
-.co-jc-app {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 9px 2px; border: none; background: none; font: inherit; cursor: pointer;
-  border-bottom: 1px solid #f7f7f8; text-align: left;
+.co-jc-apps {
+  position: relative;
+  margin: 0 -18px; padding: 12px 18px 14px 34px;
+  background: #fafafb; border-top: 1px solid #f0f0f3; border-radius: 0 0 11px 11px;
+  display: flex; flex-direction: column; gap: 8px;
 }
-.co-jc-app:last-child { border-bottom: none; }
-.co-jc-app:hover { background: #fafafb; }
-.co-jc-app-av {
-  width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
-  background: #f5f5f5; color: #582681; font-size: 14px;
-  display: flex; align-items: center; justify-content: center;
+/* 댓글처럼 — 들여쓴 자리에 세로선을 세워 이 카드들이 위 공고에 달린 것임을 보인다. */
+.co-jc-apps::before {
+  content: ""; position: absolute; left: 22px; top: 14px; bottom: 16px;
+  width: 2px; border-radius: 2px; background: #ececf0;
 }
-.co-jc-app-av img { width: 100%; height: 100%; object-fit: cover; }
-.co-jc-app-main { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 7px; }
-.co-jc-app-name { font-size: 14.5px; color: #1a1a1a; }
-.co-jc-app-sub { font-size: 12.5px; color: #999; }
-.co-jc-app-st { font-size: 12.5px; color: #8a8a90; flex-shrink: 0; }
-.co-jc-app-st.new { color: var(--color-primary); }
-.co-jc-app-when { font-size: 12.5px; color: #b0b0b6; flex-shrink: 0; width: 44px; text-align: right; }
-.co-jc-app-empty { padding: 16px 2px; font-size: 13px; color: #a0a0a6; margin: 0; }
+/* 판 위에 놓이므로 카드 테두리는 옅게, 바탕은 흰색으로 남긴다. */
+.co-jc-apps .tal-card { border-color: #ececf0; background: #fff; }
