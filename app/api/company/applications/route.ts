@@ -21,7 +21,12 @@ export async function GET(req: NextRequest) {
 
   const where: string[] = ['jp.company_id = $1', 'a.hidden_by_company = false', "a.status <> 'WITHDRAWN'"]
   const 지난공고 = "(jp.status = 'CLOSED' OR (jp.deadline IS NOT NULL AND jp.deadline < CURRENT_DATE))"
-  if (scope === 'past') where.push(지난공고)
+  // 마감일이 없이 내린 공고는 내린 때를, 마감일이 있으면 그날을 기준으로 센다.
+  const 마감날 = "COALESCE(jp.deadline, jp.closed_at::date, jp.updated_at::date)"
+  // 채용이 끝난 뒤에도 남의 이력서를 계속 들여다볼 수 있으면 안 된다. 사람인·잡코리아가
+  // 나란히 쓰는 90일을 따른다 — 뽑았다가 금방 그만두는 경우(수습 전후)가 그 안에 든다.
+  const 보관기한 = `${마감날} >= CURRENT_DATE - INTERVAL '90 days'`
+  if (scope === 'past') where.push(지난공고, 보관기한)
   else if (scope === 'active') where.push(`NOT ${지난공고}`)
   const params: any[] = [companyId]
   let idx = 2

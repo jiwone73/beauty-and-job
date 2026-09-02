@@ -433,7 +433,7 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
       {!loading && filtered.length === 0 && (
         <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
           {applicants.length === 0
-            ? "아직 지원자가 없어요."
+            ? (지난 ? "마감 후 90일 안에 받은 지원이 없어요." : "아직 지원자가 없어요.")
             : "조건에 맞는 지원자가 없어요."}
         </div>
       )}
@@ -623,6 +623,13 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
             })}
           </div>
         </div>
+      )}
+
+      {/* 기한은 목록 아래 한 줄로. 카드마다 붙이면 같은 말이 스무 번 선다. */}
+      {지난 && !loading && filtered.length > 0 && (
+        <p style={{ margin: "14px 2px 0", fontSize: 12.5, color: "#a0a0a6" }}>
+          마감 후 90일까지 볼 수 있어요.
+        </p>
       )}
       </div>
 
