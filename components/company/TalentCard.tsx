@@ -1,9 +1,7 @@
 "use client";
 import Link from "next/link";
-import { Bookmark, BookmarkCheck, Paperclip, Instagram, Lock } from "lucide-react";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 import type { TalentItem } from "@/lib/api/company";
-import LinkCell from "@/components/company/LinkCell";
-import { formatPhone } from "@/lib/phone";
 
 // 인재 카드. 인재 검색과 스크랩 인재가 같은 카드를 쓴다.
 //
@@ -30,24 +28,35 @@ function shortenRegion(region: string | null | undefined): string {
     .trim() || region;
 }
 
+const 고용형태: Record<string, string> = {
+  FULL_TIME: "정규직", PART_TIME: "아르바이트", CONTRACT: "계약직",
+  FREELANCE: "프리랜서", INTERN: "인턴", TEMPORARY: "일용직",
+};
+
+// 이력서를 마지막으로 손본 날. 오래 방치된 이력서인지가 여기서 드러난다.
+const 날짜 = (iso: string) => {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+};
+
 export default function TalentCard({
-  t, talentAccess, base, onOpenResume, onToggleScrap, onPropose,
+  t, base, onOpenResume, onToggleScrap, onPropose,
 }: {
   t: TalentItem;
-  /** 연락처를 열어 줄 수 있는가(공고를 올린 곳인가). */
-  talentAccess: boolean;
   /** 「보낸 제안」으로 가는 길. 회원 유형에 따라 앞자리가 갈린다. */
   base: string;
   onOpenResume: (t: TalentItem) => void;
   onToggleScrap: (t: TalentItem) => void;
   onPropose: (t: TalentItem) => void;
 }) {
-  const 나이성별 = [t.age ? `${t.age}세` : null, genderLabel(t.gender)].filter(Boolean).join(" · ");
-  const 직군 = [t.mainJobGroup, t.subJob].filter(Boolean).join(" · ");
+  const 나이성별 = [genderLabel(t.gender), t.age ? `만 ${t.age}세` : null].filter(Boolean).join(", ");
   const 지역 = shortenRegion(t.regionPrefer);
-  const 최근 = t.careerDetail
-    ? [t.careerDetail.company, t.careerDetail.position].filter(Boolean).join(" · ")
-    : null;
+  // 태그는 사람을 거르는 값 셋 — 무슨 일을, 얼마나 해 봤고, 어떻게 일하고 싶은가.
+  const 태그 = [
+    t.subJob || t.mainJobGroup,
+    careerLabel(t.careerYears, t.careerCount),
+    t.workTypePrefer ? 고용형태[t.workTypePrefer] || null : null,
+  ].filter(Boolean) as string[];
 
   return (
     <div className="tal-card">
@@ -58,37 +67,31 @@ export default function TalentCard({
             : <span>{t.name?.slice(0, 1) || "?"}</span>}
         </div>
 
-        <div className="tal-main">
-          <div className="tal-nameline">
-            <button type="button" className="tal-name" onClick={() => onOpenResume(t)}>{t.name}</button>
-            {/* 스크랩은 그 사람에 붙는 표시라 이름 옆이 제자리다. */}
-            <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
-              className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(t); }}>
-              {t.scrapped
-                ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
-                : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
-            </button>
-          </div>
-          {/* 나이·경력·지역은 사람을 고를 때 한눈에 같이 보는 값이라 한 줄로 세운다.
-              지역만 따로 내려가 있으면 줄만 늘고 읽는 순서가 끊긴다. */}
-          <div className="tal-head">
-            {나이성별 && <span className="tal-sub">{나이성별}</span>}
-            <span className="tal-sub">{careerLabel(t.careerYears, t.careerCount)}</span>
-            {지역 && <span className="tal-sub">{지역}</span>}
-          </div>
-          {t.intro && <div className="tal-intro">{t.intro}</div>}
-          {직군 && <div className="tal-meta"><span>{직군}</span></div>}
-          {최근 && <div className="tal-recent">최근 · {최근}</div>}
+        {/* 맨 위는 본인이 고른 한 마디다. 이름·나이는 그 사람을 특정하는 값일 뿐,
+            고를지 말지를 정하는 값이 아니라 아래로 내린다. */}
+        <div className="tal-main" role="button" tabIndex={0}
+          title="이력서 보기"
+          onClick={() => onOpenResume(t)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpenResume(t); } }}>
+          <div className="tal-name">{t.intro || `${t.name} 님의 이력서`}</div>
+          <div className="tal-who">{t.name}{나이성별 && ` (${나이성별})`}</div>
+          {지역 && <div className="tal-who">{지역}</div>}
         </div>
 
         {/* 이 화면의 일은 제안을 보내는 데서 끝난다 — 읽었는지, 대화를 수락했는지,
             며칠 남았는지는 보낸 제안이 맡는다. 다만 이미 보냈다는 표시는 여기 남긴다.
             같은 사람에게 또 보내는 실수가 일어나는 자리가 정확히 여기다. */}
         <div className="tal-acts">
+          <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
+            className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(t); }}>
+            {t.scrapped
+              ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+              : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+          </button>
           {t.proposedAt || t.interestedAt ? (
             <Link className="tal-sent" href={`${base}/proposals`}
               title={t.proposedAt
-                ? `${new Date(t.proposedAt).toLocaleDateString("ko-KR")}에 보냄 · 보낸 제안에서 보기`
+                ? `${날짜(t.proposedAt)}에 보냄 · 보낸 제안에서 보기`
                 : "보낸 제안에서 보기"}>
               제안완료
             </Link>
@@ -100,24 +103,10 @@ export default function TalentCard({
         </div>
       </div>
 
+      {/* 연락처는 카드에 두지 않는다 — 이력서를 열면 나오고, 공고를 올린 곳에만 열린다. */}
       <div className="tal-foot">
-        {/* 관심을 보낸 사람은 스스로 연 것이라 열람권과 무관하게 보인다.
-            잠겼을 때는 빈칸으로 두지 않는다 — 왜 비었는지 알아야 한다. */}
-        {(talentAccess || t.interestedAt) ? (
-          <span className="tal-contact">
-            {t.phone ? formatPhone(t.phone) : "전화번호 없음"}
-            {t.email && <><i>·</i>{t.email}</>}
-          </span>
-        ) : (
-          <span className="tal-locked">
-            <Lock size={12} />
-            공고를 올리면 연락처가 열려요
-          </span>
-        )}
-        <span className="tal-links">
-          <LinkCell url={t.portfolioImages?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
-          <LinkCell url={t.snsUrl} icon={<Instagram size={13} />} label="SNS" />
-        </span>
+        <span className="tal-tags">{태그.map((g) => `#${g}`).join(" ")}</span>
+        {t.resumeUpdatedAt && <span className="tal-when">{날짜(t.resumeUpdatedAt)}</span>}
       </div>
     </div>
   );

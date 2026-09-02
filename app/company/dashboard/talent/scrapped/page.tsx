@@ -20,7 +20,6 @@ export default function ScrappedTalentPage() {
     : `/${pathname.split("/").filter(Boolean)[0]}`;
 
   const [talents, setTalents] = useState<TalentItem[]>([]);
-  const [talentAccess, setTalentAccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<TalentItem | null>(null);
@@ -40,7 +39,6 @@ export default function ScrappedTalentPage() {
       const res: any = await companyTalentApi.list({ scrapped: true, limit: 200 });
       if (res?.success) {
         setTalents(res.data || []);
-        setTalentAccess(!!res.meta?.talentAccess);
       }
     } catch (e) {
       console.error("[scrapped]", e);
@@ -132,7 +130,7 @@ export default function ScrappedTalentPage() {
         ) : (
           <div className="tal-list">
             {filtered.map((t) => (
-              <TalentCard key={t.id} t={t} talentAccess={talentAccess} base={base}
+              <TalentCard key={t.id} t={t} base={base}
                 onOpenResume={setSelected}
                 onToggleScrap={스크랩풀기}
                 onPropose={(x) => router.push(`${base}/talent?propose=${x.id}`)} />

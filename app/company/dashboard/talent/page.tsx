@@ -85,7 +85,6 @@ export default function TalentPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [view, setView] = useState<"search" | "scrap">("search");
   // 공고가 곧 입장권(셀렉미와 같은 규칙). 없으면 연락처가 잠기고 제안도 못 보낸다.
-  const [talentAccess, setTalentAccess] = useState(true);
 
   // 제안하기 — 채팅 없이, 고른 공고 링크 + 메시지를 알림·이메일로만 보낸다.
   const [proposeTarget, setProposeTarget] = useState<TalentItem | null>(null);
@@ -222,7 +221,6 @@ export default function TalentPage() {
           set보낼사람(null);
         }
         setTotal(res.meta?.total ?? res.data.length);
-        setTalentAccess(((res.meta as any)?.talentAccess) !== false);
       }
     } catch (e) {
       console.error("[talent fetch]", e);
@@ -758,7 +756,7 @@ export default function TalentPage() {
               읽게 만들었다. 채용공고 관리 카드와 같은 구조로 맞춘다 — 위에 이름과
               사진, 오른쪽에 할 일, 아랫줄에 연락처. */}
           {talents.map((t) => (
-            <TalentCard key={t.id} t={t} talentAccess={talentAccess} base={base}
+            <TalentCard key={t.id} t={t} base={base}
               onOpenResume={setSelected} onToggleScrap={toggleScrap} onPropose={openPropose} />
           ))}
         </div>

@@ -14297,3 +14297,20 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    카드마다 빈 칸이 한 줄씩 더 있는 꼴이었다. 구분선을 본문 쪽으로 올린다. */
 .tal-foot { margin-top: 7px; padding: 8px 0 7px; }
 .tal-intro { margin: 1px 0 4px; }
+
+/* ── 인재 카드 다시 짜기 ──────────────────────────────────────
+   맨 위는 본인이 고른 한 마디(한줄소개)다. 이름·나이·지역은 그 사람을 특정하는
+   값이라 그 아래로 내린다. 연락처는 카드에서 뺐다 — 이력서를 열면 나오고,
+   공고를 올린 곳에만 열린다. 아랫줄은 사람을 거르는 태그 셋과 이력서 수정일. */
+.tal-avatar { width: 60px; height: 60px; border-radius: 50%; font-size: 20px; }
+.tal-main { cursor: pointer; }
+.tal-main:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 6px; }
+.tal-name { font-size: 15.5px; color: #1a1a1a; margin-bottom: 6px; text-decoration: none;
+  display: block; line-height: 1.45; }
+.tal-main:hover .tal-name { color: var(--color-primary); text-decoration: underline;
+  text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
+.tal-who { font-size: 13.5px; color: #666; line-height: 1.55; }
+.tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
+.tal-foot { justify-content: space-between; margin-top: 11px; padding: 9px 0 11px; }
+.tal-tags { font-size: 12.5px; color: #8a8a90; }
+.tal-when { margin-left: auto; font-size: 12.5px; color: #b0b0b6; }

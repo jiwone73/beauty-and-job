@@ -140,6 +140,8 @@ export async function GET(req: NextRequest) {
         up.work_type_prefer,
         up.job_search_status::text AS job_search_status,
         up.job_search_status_at,
+        -- 이력서를 마지막으로 손본 때. 오래 방치된 이력서인지가 카드에서 보여야 한다.
+        up.updated_at AS resume_updated_at,
         (
           SELECT CASE
             WHEN MIN(start_date) ~ '^[0-9]{4}'
@@ -240,8 +242,10 @@ export async function GET(req: NextRequest) {
       // 사진만 감춘 사람은 아예 내려보내지 않는다. 화면에서 가리면 응답에 남아
       // 개발자 도구로 볼 수 있다 — 가린 것이 가려진 것이 아니게 된다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,
-      portfolioImages: r.portfolio_images || null,
-      snsUrl: r.sns_url || null,
+      // 작업물은 자기소개서와 같은 잠금 — 미용은 인스타그램이 곧 포트폴리오라
+      // 사진만 막고 링크를 열어 두면 막은 것이 아니다.
+      portfolioImages: (열람가능 || r.interested_at) ? (r.portfolio_images || null) : null,
+      snsUrl: (열람가능 || r.interested_at) ? (r.sns_url || null) : null,
       gender: r.gender,
       age: r.age,
       // 한줄소개는 자기 PR 한 줄이라 열어 둔다 — 무료로도 판단할 수 있어야 목록이
@@ -268,6 +272,7 @@ export async function GET(req: NextRequest) {
       jobSearchStatusAt: r.job_search_status_at || null,
       scrapped: r.scrapped,
       proposedAt: r.proposed_at || null,
+      resumeUpdatedAt: r.resume_updated_at || null,
     }));
     return ok(data, 200, { total, page, limit, talentAccess: 열람가능 } as any);
   } catch (e: any) {
