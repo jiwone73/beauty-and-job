@@ -14593,10 +14593,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   grid-template-columns: 18px 1fr; grid-template-areas: "r t" ". d";
 }
 .pf-vis-opt input { grid-area: r; width: 18px; height: 18px; accent-color: var(--color-primary); margin: 0; cursor: pointer; }
-.pf-vis-opt-t { grid-area: t; font-size: 14.5px; color: #333; line-height: 18px; white-space: nowrap; }
+.pf-vis-opt-t {
+  grid-area: t; display: inline-flex; align-items: center; gap: 3px;
+  font-size: 14.5px; color: #333; line-height: 18px; white-space: nowrap;
+}
 .pf-vis-opt-d { grid-area: d; margin-top: 4px; font-size: 12.5px; color: #a0a0a6; line-height: 1.45; white-space: nowrap; }
 .pf-vis-opt.on .pf-vis-opt-t { color: var(--color-primary); }
-.pf-vis-opt-go { color: #c4c4c9; vertical-align: -2px; margin-left: 1px; }
+.pf-vis-opt-go { color: #c4c4c9; flex-shrink: 0; }
 .pf-vis-opt.on .pf-vis-opt-go { color: var(--color-primary); }
 
 .pf-vis-row {
