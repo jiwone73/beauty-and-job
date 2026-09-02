@@ -9,9 +9,10 @@ import type { ApplicationStatus } from "@/lib/types/company";
 // 지원서. 공고 카드 안에서 지원자를 누르면 이 창이 뜬다 — 화면을 옮기면 어느
 // 공고를 보고 있었는지 잃고, 판 폭에 맞춰 이력서가 필요 이상으로 벌어진다.
 
+// 진행 단계 셋. 미열람은 지원서를 열면 저절로 넘어가니 고를 것이 아니고,
+// 불합격은 매장이 따로 통보하는 문화가 아니라 두지 않는다.
 const 상태들: [ApplicationStatus, string][] = [
-  ["APPLIED", "미열람"], ["VIEWED", "열람"], ["INTERVIEW", "면접"],
-  ["PASSED", "합격"], ["REJECTED", "불합격"],
+  ["VIEWED", "열람"], ["INTERVIEW", "면접"], ["PASSED", "최종합격"],
 ];
 
 const 나이 = (birth: string | null) => {

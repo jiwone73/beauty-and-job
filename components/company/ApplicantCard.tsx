@@ -10,7 +10,7 @@ import type { CompanyApplication } from "@/lib/types/company";
 // 특정하는 값. 아랫줄은 어느 공고로 어떻게 들어왔는지와 지원한 날.
 
 const STATUS_LABEL: Record<string, string> = {
-  APPLIED: "미열람", VIEWED: "열람", INTERVIEW: "면접", PASSED: "합격", REJECTED: "불합격",
+  APPLIED: "미열람", VIEWED: "열람", INTERVIEW: "면접", PASSED: "최종합격", REJECTED: "불합격",
 };
 
 
@@ -59,6 +59,7 @@ export default function ApplicantCard({
   // 끝난 것(불합격·지원취소)은 흐리게, 나머지는 먹색.
   const 상태색 = a.status === "APPLIED" ? "#582681"
     : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#1a1a1a";
+
   const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
     : (a as any).proposed_at ? "제안 후 지원" : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.

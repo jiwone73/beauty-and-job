@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Search, Bookmark, BookmarkCheck, XCircle, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, Bookmark, BookmarkCheck } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -18,7 +18,7 @@ const STATUS_LABEL: Record<ApplicationStatus, string> = {
   APPLIED: "미열람",
   VIEWED: "열람",
   INTERVIEW: "면접",
-  PASSED: "합격",
+  PASSED: "최종합격",
   REJECTED: "불합격",
   WITHDRAWN: "지원취소",
 };
@@ -47,10 +47,11 @@ function formatDate(dateStr: string): string {
 
 // 사람이 직접 고르는 상태만 버튼으로 둔다.
 // 미열람·열람은 이력서를 열면 자동으로 바뀌므로 손댈 이유가 없다.
-const STATUS_ACTIONS: [ApplicationStatus, string, string][] = [
-  ["INTERVIEW", "면접", "#582681"],
-  ["PASSED", "합격", "#582681"],
-  ["REJECTED", "불합격", "#8a8a90"],
+// 일괄로 옮길 만한 것은 진행 단계 둘뿐이다. 불합격은 매장이 따로 통보하는
+// 문화가 아니라 두지 않는다.
+const STATUS_ACTIONS: [ApplicationStatus, string][] = [
+  ["INTERVIEW", "면접"],
+  ["PASSED", "최종합격"],
 ];
 
 function ApplicantsContent() {
@@ -93,24 +94,6 @@ function ApplicantsContent() {
 
   const toggleCheck = (id: string) =>
     setChecked(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-
-  // 예전에는 목록에서 숨겼다(hidden_by_company). 되돌릴 화면이 없어 사실상 삭제였고,
-  // 무엇보다 기업 화면만 치우고 구직자 쪽은 「지원함」에 멈춘 채 연락을 기다리게 뒀다.
-  // 불합격으로 처리하면 목록도 정리되고 결과도 상대에게 전달된다.
-  const handleBulkReject = async () => {
-    if (!checked.length) return;
-    if (!confirm(`선택한 ${checked.length}명을 불합격 처리할까요?`)) return;
-    const ids = [...checked];
-    setApplicants(prev => prev.map(a => ids.includes(a.id) ? { ...a, status: "REJECTED" as ApplicationStatus } : a));
-    setChecked([]);
-    setSelectMode(false);
-    try {
-      await Promise.all(ids.map(id => companyApplicationsApi.updateStatus(id, "REJECTED")));
-    } catch (e) {
-      alert("상태 변경 중 오류가 발생했습니다.");
-      console.error("[handleBulkReject]", e);
-    }
-  };
 
   const handleBulkStatus = async (status: ApplicationStatus) => {
     if (!checked.length) return;
@@ -226,7 +209,7 @@ function ApplicantsContent() {
     { label: "미열람", value: String(counts.미열람), status: "미열람" },
     { label: "열람", value: String(counts.열람), status: "열람" },
     { label: "면접", value: String(counts.면접), status: "면접" },
-    { label: "합격", value: String(counts.합격), status: "합격" },
+    { label: "최종합격", value: String(counts.합격), status: "최종합격" },
   ];
 
   // 사이드는 공고 목록이다. 마감 여부는 여기서 뱃지로 드러나고, 마감한 공고는
@@ -299,16 +282,10 @@ function ApplicantsContent() {
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 14 }}>
             <span style={{ fontSize: 13, color: "#888" }}>{checked.length}명 선택 · 상태변경</span>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              {(STATUS_ACTIONS).map(([sv, sl, c]) => (
-                <button key={sv} onClick={() => handleBulkStatus(sv)}
-                  style={{ padding: "6px 12px", borderRadius: 8, border: `1px solid ${c}`, background: "#fff", color: c, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
-                  {sl}
-                </button>
+              {(STATUS_ACTIONS).map(([sv, sl]) => (
+                <button key={sv} className="tal-btn" onClick={() => handleBulkStatus(sv)}>{sl}</button>
               ))}
             </div>
-            <button className="admin-danger-btn" onClick={handleBulkReject}>
-              <XCircle size={15} /> 불합격 처리
-            </button>
           </div>
         )}
       </div>
@@ -378,8 +355,8 @@ function ApplicantsContent() {
           {selectMode && checked.length > 0 && (
             <div className="co-statbar">
               <span className="co-statbar-label">{checked.length}명 상태변경</span>
-              {(STATUS_ACTIONS).map(([sv, sl, c]) => (
-                <button key={sv} className="co-statbtn" style={{ color: c }}
+              {(STATUS_ACTIONS).map(([sv, sl]) => (
+                <button key={sv} className="co-statbtn" style={{ color: "#582681" }}
                   onClick={() => handleBulkStatus(sv)}>{sl}</button>
               ))}
             </div>
@@ -554,9 +531,9 @@ function ApplicantsContent() {
       {isMobile && selectMode && checked.length > 0 && (
         <div className="co-selbar">
           <span className="co-selbar-count">{checked.length}개 선택됨</span>
-          <button className="co-selbar-del" onClick={handleBulkReject} aria-label="불합격 처리">
-            <XCircle size={20} />
-          </button>
+          {(STATUS_ACTIONS).map(([sv, sl]) => (
+            <button key={sv} className="tal-btn" onClick={() => handleBulkStatus(sv)}>{sl}</button>
+          ))}
         </div>
       )}
 
