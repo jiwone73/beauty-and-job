@@ -249,8 +249,9 @@ export async function GET(req: NextRequest) {
       gender: r.gender,
       age: r.age,
       // 한줄소개는 자기 PR 한 줄이라 열어 둔다 — 무료로도 판단할 수 있어야 목록이
-      // 뜻을 갖는다. 지원할 때 쓰는 자기소개서(applications.cover_letter)는
-      // 이 쿼리에 아예 없어 인재검색에 노출될 일이 없다.
+      // 뜻을 갖는다. 자기소개서는 — 이력서에 담아 둔 기본 자소서(cover_letter)든
+      // 지원할 때 쓴 것(applications.cover_letter)이든 — 이 쿼리에 아예 없어
+      // 인재검색에 노출될 일이 없다. 이력서를 열어야 보이고, 거기서 잠금이 걸린다.
       intro: r.intro,
       mainJobGroup: r.main_job_group,
       subJob: r.sub_job,

@@ -50,6 +50,7 @@ export async function GET(
     // 한줄소개는 목록에서 이미 열어 두는 값이라 여기서만 가리면 앞뒤가 안 맞는다.
     // 가리는 것은 자기소개서 성격인 핵심역량이다.
     p.core_competencies = null;
+    p.cover_letter = null;
     // 작업물(포트폴리오 사진·SNS)도 본인이 공들여 올린 것이라 자기소개서와 같이 잠근다.
     // 미용은 인스타그램이 곧 포트폴리오라, 사진만 막고 링크를 열어 두면 막은 것이 아니다.
     u.portfolio_images = [];

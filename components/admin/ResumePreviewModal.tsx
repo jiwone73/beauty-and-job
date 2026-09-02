@@ -32,6 +32,7 @@ const mapResume = (data: any) => {
     certificates: p.certificates || [],
     intro: p.intro || "",
     coreCompetencies: p.core_competencies || "",
+    coverLetter: p.cover_letter || "",
     workTypePrefer: p.work_type_prefer || "",
     regionPrefer: p.region_prefer || "",
   };

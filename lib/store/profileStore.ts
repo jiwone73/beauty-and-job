@@ -60,6 +60,8 @@ export interface ProfileState {
   certificates: CertificateEntry[];
   intro: string;
   coreCompetencies: string;
+  /** 기본 자기소개서 — 선택. 지원할 때 이 값을 불러다 고쳐 쓴다. */
+  coverLetter: string;
   email: string;
   isEntryLevel: boolean; // 신입(경력 없음) 여부
   entryExperience: string; // 신입: 직무와 연관된 경험
@@ -88,6 +90,7 @@ export interface ProfileState {
   updateCertificate: (id: string, entry: CertificateEntry) => void;
   removeCertificate: (id: string) => void;
   setIntro: (intro: string) => void;
+  setCoverLetter: (v: string) => void;
   setCoreCompetencies: (comp: string) => void;
   setEmail: (email: string) => void;
   setIsEntryLevel: (v: boolean) => void;
@@ -110,7 +113,7 @@ export interface ProfileState {
 export type 이력서한벌 = Pick<ProfileState,
   "isCareerVerified" | "verifiedDate" | "careers" | "educations" | "experiences" |
   "skills" | "languages" | "links" | "certificates" | "intro" | "coreCompetencies" |
-  "email" | "isEntryLevel" | "entryExperience">;
+  "coverLetter" | "email" | "isEntryLevel" | "entryExperience">;
 
 let counter = 0;
 export function genId(): string {
@@ -164,6 +167,7 @@ export const useProfileStore = create<ProfileState>()(
         certificates: [],
         intro: "",
         coreCompetencies: "",
+        coverLetter: "",
         email: "",
         isEntryLevel: false,
         entryExperience: "",
@@ -179,7 +183,7 @@ export const useProfileStore = create<ProfileState>()(
             isCareerVerified: s.isCareerVerified, verifiedDate: s.verifiedDate,
             careers: s.careers, educations: s.educations, experiences: s.experiences,
             skills: s.skills, languages: s.languages, links: s.links, certificates: s.certificates,
-            intro: s.intro, coreCompetencies: s.coreCompetencies, email: s.email,
+            intro: s.intro, coreCompetencies: s.coreCompetencies, coverLetter: s.coverLetter, email: s.email,
             isEntryLevel: s.isEntryLevel, entryExperience: s.entryExperience,
           }));
         },
@@ -197,6 +201,7 @@ export const useProfileStore = create<ProfileState>()(
           certificates: [],
           intro: "",
           coreCompetencies: "",
+          coverLetter: "",
           email: "",
           isEntryLevel: false,
           entryExperience: "",
@@ -297,6 +302,10 @@ export const useProfileStore = create<ProfileState>()(
           set({ coreCompetencies: comp });
           autoSync();
         },
+        setCoverLetter: (v) => {
+          set({ coverLetter: v });
+          autoSync();
+        },
         setEmail: (email) => set({ email }),
         setIsEntryLevel: (v) => { set({ isEntryLevel: v }); autoSync(); },
         setEntryExperience: (v) => { set({ entryExperience: v }); },
@@ -318,6 +327,7 @@ export const useProfileStore = create<ProfileState>()(
               set({
                 intro: profile?.intro || "",
                 coreCompetencies: profile?.core_competencies || "",
+                coverLetter: profile?.cover_letter || "",
                 isEntryLevel: profile?.is_entry_level || false,
                 entryExperience: profile?.entry_experience || "",
                 isCareerVerified: profile?.is_career_verified || false,
@@ -414,6 +424,7 @@ export const useProfileStore = create<ProfileState>()(
                 profile: {
                   intro: s.intro,
                   core_competencies: s.coreCompetencies,
+                  cover_letter: s.coverLetter,
                   entry_experience: s.entryExperience,
                   is_career_verified: s.isCareerVerified,
                   verified_date: s.verifiedDate,

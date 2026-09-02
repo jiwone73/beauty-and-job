@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
   const profileData = profile.rows[0] || {
     intro: "",
     core_competencies: "",
+    cover_letter: "",
     main_job_group: "",
     sub_job: "",
     is_career_verified: false,

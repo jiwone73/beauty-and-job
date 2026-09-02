@@ -27,7 +27,7 @@ export default function ApplyModal({
   const { userName } = useAuthStore();
   const { name: signupName, birth, gender, job, jobCustom, officeJobAreas, skillAreas, workTypePrefer, regionPrefer, phone } = useSignupStore();
   const {
-    intro, coreCompetencies, careers, educations, skills, languages, experiences, links, certificates, email,
+    intro, coreCompetencies, coverLetter: 기본자소서, careers, educations, skills, languages, experiences, links, certificates, email,
     isEntryLevel, entryExperience,
   } = useProfileStore();
 
@@ -271,6 +271,7 @@ export default function ApplyModal({
       certificates: 서버꼴?.certificates || [],
       intro: p.intro || "",
       coreCompetencies: p.core_competencies || "",
+      coverLetter: p.cover_letter || "",
       email: useProfileStore.getState().email,
       isEntryLevel: !!p.is_entry_level,
       entryExperience: p.entry_experience || "",
@@ -311,6 +312,15 @@ export default function ApplyModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intro, coreCompetencies, careers, educations, skills, languages, experiences,
       links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
+
+  // 이력서에 담아 둔 기본 자소서를 밑글로 깐다. 빈 칸에서 다시 쓰게 하면 대부분
+  // 빈칸으로 낸다 — 두세 줄 고쳐 내는 것이 실제로 쓰이는 방식이다. 초안이나 손대던
+  // 글이 있으면 건드리지 않는다.
+  useEffect(() => {
+    if (!coverLoaded || coverLetter) return;
+    if (기본자소서?.trim()) setCoverLetter(기본자소서);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coverLoaded, 기본자소서]);
 
   // 자소서가 다 차려진 뒤의 값을 처음 값으로 삼는다(템플릿·이전 자소서·초안).
   useEffect(() => {

@@ -24,10 +24,10 @@ function ResumePageContent() {
   const { userName } = useAuthStore();
   const name = signupName || userName || "";
   const {
-    intro, coreCompetencies, educations, careers,
+    intro, coreCompetencies, coverLetter, educations, careers,
     skills, languages, experiences, links, email,
     isEntryLevel,
-    setIntro, setCoreCompetencies, setEmail,
+    setIntro, setCoreCompetencies, setCoverLetter, setEmail,
     addLink, updateLink, removeLink,
     addSkill, removeSkill,
     addLanguage, updateLanguage, removeLanguage,
@@ -47,8 +47,10 @@ function ResumePageContent() {
   const 칸흠 = (어디: string) => 흠.filter((h) => h.어디 === 어디 && !h.누구).map((h) => h.말);
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
+  const [coverLocal, setCoverLocal] = useState(coverLetter);
   // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
   useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
+  useEffect(() => { setCoverLocal((prev) => prev || coverLetter); }, [coverLetter]);
   const [emailLocal, setEmailLocal] = useState(email);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [showPreview, setShowPreview] = useState(false);
@@ -215,6 +217,7 @@ function ResumePageContent() {
     }
     setIntro(introLocal);
     setCoreCompetencies(coreLocal);
+    setCoverLetter(coverLocal);
     setEmail(emailLocal);
     try {
       await useProfileStore.getState().syncToDb();
@@ -595,6 +598,22 @@ function ResumePageContent() {
             onResumeFileOpen={handleOpenResumeFile}
           />
 
+          {/* 자기소개서 — 선택. 미용은 자소서를 길게 쓰는 문화가 아니라 필수로 두면
+              여기서 이탈한다. 한줄소개가 이미 첫인상을 맡고 있고, 이 칸은 지원할 때
+              불러다 고쳐 쓰는 밑글이다. */}
+          <section id="section-cover" className="resume-section">
+            <h2 className="resume-section-title"><Quote size={16} className="resume-section-icon" />자기소개서</h2>
+            <textarea
+              value={coverLocal}
+              onChange={(e) => setCoverLocal(e.target.value)}
+              rows={7}
+              placeholder="지원할 때 이 글을 불러와 공고에 맞게 고쳐 쓸 수 있어요"
+              style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px",
+                fontSize: "14px", color: "#333", marginTop: "6px", lineHeight: 1.7, resize: "vertical",
+                fontFamily: "inherit" }}
+            />
+          </section>
+
           <div className="resume-bottom-save">
             <button className="resume-save-btn-full" onClick={handleSave}>작성 완료</button>
           </div>
@@ -639,6 +658,7 @@ function ResumePageContent() {
                   email: emailLocal || email,
                   intro: introLocal || intro,
                   coreCompetencies: "",
+                  coverLetter: coverLocal || coverLetter,
                   careers,
                   educations,
                   skills,

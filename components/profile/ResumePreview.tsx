@@ -24,6 +24,8 @@ interface Props {
   email: string;
   intro: string;
   coreCompetencies: string;
+  /** 기본 자기소개서 — 선택. 안 쓴 사람에겐 이 칸이 아예 없다. */
+  coverLetter?: string;
   careers: CareerEntry[];
   educations: EducationEntry[];
   skills: string[];
@@ -53,6 +55,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     email,
     intro,
     coreCompetencies,
+    coverLetter,
     careers,
     educations,
     skills,
@@ -275,6 +278,14 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div className="rp-section">
           <h2 className="rp-section-title">첨부 이력서</h2>
           <p className="rp-text">{resumeFileName}</p>
+        </div>
+      )}
+
+      {/* 자기소개서는 이력서의 맨 끝이다 — 경력·학력을 먼저 훑고 나서 읽는 글이다. */}
+      {coverLetter && coverLetter.trim() && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">자기소개서</h2>
+          <p className="rp-text" style={{ whiteSpace: "pre-line" }}>{coverLetter}</p>
         </div>
       )}
 
