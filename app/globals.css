@@ -1343,9 +1343,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-info-row:not(:disabled):hover { background: transparent; }
 .profile-info-row.is-last { border-bottom: none; }
 .profile-info-label {
-  /* 기업 폼(.admin-form-label)과 같은 값 — 두 화면의 칸 이름이 같은 무게로 읽혀야 한다. */
-  font-size: 14px;
-  color: #444;
+  /* 기업 설정 갈래(.co-set-settings .admin-form-label)와 같은 값. 기본값 14px 만
+     보고 맞췄다가 정작 그 화면은 16px 로 뜨고 있어 프로필만 작아 보였다. */
+  font-size: 16px;
+  color: #1a1a1a;
   width: 96px;
   flex-shrink: 0;
   white-space: nowrap;
@@ -1353,8 +1354,8 @@ input[type="range"].career-slider::-moz-range-thumb {
 .profile-info-value {
   flex: 1;
   min-width: 0;
-  font-size: 14px;
-  color: #1a1a1a;
+  font-size: 16px;
+  color: #333;
   font-weight: 400;
   text-align: right;
   padding-right: 10px;
@@ -1403,6 +1404,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .pf-notif-del:hover { color: var(--color-error, #e74c3c); }
 
 .profile-info-value.is-empty {
+  font-size: 15px;
   /* 아직 안 채운 칸 — 폼의 다른 자리글과 같은 회색으로 둔다(--color-text-mute 는
      '값'에 쓰는 색이라, 자리글까지 그 색이면 채운 것처럼 읽힌다). */
   color: #cfcfcf;
@@ -13578,12 +13580,12 @@ button,
   /* 격자 안이든 밖이든(주소 칸) 이름표는 한 옷을 입는다. 기업 폼
      (.admin-form-label 14px/#444)과 같은 값으로 — 두 화면의 칸 이름이 같은
      무게로 읽혀야 한다. */
-  .pf-main .profile-info-label { width: auto; font-size: 14px; color: #444; }
+  .pf-main .profile-info-label { width: auto; font-size: 16px; color: #1a1a1a; }
   /* 값은 라벨 '글자'가 시작하는 자리에 맞춘다. 아이콘 왼쪽 끝에 맞추면 값만
      한 칸 왼쪽으로 튀어나와 두 줄의 시작점이 어긋난다(아이콘 16 + 사이 6). */
   .pf-main .pf-grid .profile-info-value {
     text-align: left; padding-left: 22px; padding-right: 22px;
-    font-size: 14px; color: #1a1a1a; width: 100%;
+    font-size: 16px; color: #333; width: 100%;
   }
   .pf-main .pf-grid .profile-info-chevron { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
   .pf-main .profile-bottom-cta { max-width: none; }
