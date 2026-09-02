@@ -2515,6 +2515,21 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .job-detail-aside-bookmark { width: 100%; height: 44px; background: white; border: 1.5px solid var(--color-border); border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--color-text-sub); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; font-family: inherit; }
 .job-detail-aside-bookmark:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .job-detail-aside-bookmark.active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-pale); }
+/* 지원 버튼 아래 세 줄 — 제출까지의 길. 첫 줄만 내 상태를 달고 나머지는 회색. */
+.apply-steps { display: flex; flex-direction: column; gap: 9px; margin: 14px 0; padding-top: 12px; border-top: 1px solid var(--color-border); }
+.apply-step { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--color-text-mute); }
+.apply-step-no {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--color-border); font-size: 11.5px; color: #b0b0b6;
+}
+.apply-step-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apply-step-rate { margin-left: auto; font-size: 12px; color: var(--color-text-mute); }
+.apply-step.done { color: var(--color-text); }
+.apply-step.done .apply-step-no { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.apply-step.todo { color: var(--color-primary); cursor: pointer; }
+.apply-step.todo .apply-step-no { border-color: var(--color-primary); color: var(--color-primary); }
+.apply-step.todo .apply-step-txt { text-decoration: underline; text-underline-offset: 3px; }
 
 /* 모바일 CTA */
 .job-detail-mobile-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--color-border); padding: 12px 16px; gap: 10px; z-index: 50; }

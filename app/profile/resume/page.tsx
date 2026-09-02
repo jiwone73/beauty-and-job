@@ -6,6 +6,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import { shortenRegion } from "@/lib/memberFormat";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
+import { 이력서진행 } from "@/lib/resumeProgress";
 import { AlertCircle } from "lucide-react";
 import { Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
@@ -409,37 +410,14 @@ function ResumePageContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 포트폴리오는 링크와 파일을 한 칸으로 본다. 인스타만 걸어 둔 사람도, PDF 만
-  // 가진 사람도 "작업물을 보여줬다"는 점에서는 같다. 둘로 나눠 세면 한쪽만 채운
-  // 사람이 영영 미완성으로 남는다.
-  // 더하기만 누르고 비워 둔 항목은 채운 것으로 세지 않는다. 예전에는 배열
-  // 길이만 봐서, 빈 줄 하나만 있어도 그 칸이 완료로 잡히고 완성도가 100%가
-  // 됐다. 정작 자격증명도 수준도 비어 있는데 다 채운 것처럼 보였다.
-  const 있음 = (v?: string) => !!String(v ?? "").trim();
-  const 채운경력 = careers.some((c) => 있음(c.company)) || isEntryLevel;
-  const 채운학력 = educations.some((e) => 있음(e.school));
-  const 채운자격 = certificates.some((c) => 있음(c.name));
-  const 채운활동 = experiences.some((x) => 있음(x.title));
-  const 채운어학 = languages.some((l) => 있음(l.language) && 있음(l.level));
-  const 포트폴리오채움 = portfolioImages.length > 0 || links.some((l) => 있음(l.url));
-  // 매장 이력서에서 학력·활동수상·어학은 뒤로 접어 두는 칸이다. 살롱은 이 셋을
-  // 거의 보지 않는데, 비었다고 완성도를 깎으면 볼 일 없는 칸 때문에 아무리
-  // 채워도 100%가 안 된다. 그래서 매장은 '채웠으면 세고, 비었으면 아예 목록에서
-  // 뺀다'. 자격증은 뺄 수 없다 — 미용사 면허가 곧 자격이라 이 업계에서는 본다.
-  const 접는칸 = resumeType === "salon";
-  const 완성항목: { id: string; label: string; done: boolean }[] = [
-    { id: "basic", label: "기본 정보", done: true },
-    { id: "career", label: "경력", done: 채운경력 },
-    ...(접는칸 && !채운학력 ? [] : [{ id: "education", label: "학력", done: 채운학력 }]),
-    { id: "skill", label: "스킬", done: skills.length > 0 },
-    { id: "certificate", label: "자격증", done: 채운자격 },
-    ...(접는칸 && !채운활동 ? [] : [{ id: "experience", label: "활동/수상", done: 채운활동 }]),
-    ...(접는칸 && !채운어학 ? [] : [{ id: "language", label: "어학", done: 채운어학 }]),
-    { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
-  ];
-  const progressRate = Math.round(
-    (완성항목.filter((s) => s.done).length / 완성항목.length) * 100
-  );
+  // 완성도 계산은 lib/resumeProgress 한 곳에 있다 — 공고 상세의 지원 카드가
+  // 같은 숫자를 보여야 해서다.
+  const { 칸: 완성항목, 비율: progressRate } = 이력서진행({
+    살롱: resumeType === "salon",
+    isEntryLevel,
+    careers, educations, certificates, experiences, languages,
+    skills, portfolioImages, links,
+  });
 
   return (
     <div className="resume-page">
