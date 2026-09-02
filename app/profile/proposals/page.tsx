@@ -153,8 +153,16 @@ export default function ProposalsPage() {
                   return (
                     <div key={p.id} className={`prop-item${p.read_at ? "" : " unread"}`}
                       onClick={() => 열기(p)}>
+                      {/* 왼쪽에 누가 무엇을 보냈는지, 오른쪽에 언제와 갈 곳.
+                          제목을 머리줄 밖으로 내리면 오른쪽 두 줄만큼 빈 자리가 생긴다. */}
                       <div className="prop-head">
-                        <span className="prop-co">{p.brand_name || p.company_name}</span>
+                        <span className="prop-headl">
+                          <span className="prop-co">{p.brand_name || p.company_name}</span>
+                          <span className="prop-title">
+                            {p.job_title}
+                            {마감 && <span className="prop-closed">마감</span>}
+                          </span>
+                        </span>
                         <span className="prop-when">
                           <span className="prop-date">
                             {new Date(p.created_at).toLocaleDateString("ko-KR")}
@@ -162,10 +170,6 @@ export default function ProposalsPage() {
                           <span className="prop-cta">채용공고 보기</span>
                         </span>
                       </div>
-                      <p className="prop-title">
-                        {p.job_title}
-                        {마감 && <span className="prop-closed">마감</span>}
-                      </p>
 
                       <div className="prop-meta">
                         {p.location && <span><MapPin size={12} />{p.location}</span>}
@@ -179,18 +183,28 @@ export default function ProposalsPage() {
                         </div>
                       )}
 
-                      {p.message && <p className="prop-msg">{p.message}</p>}
+                      {/* 매장이 쓴 말과 그에 대한 답은 한 줄이다 — 버튼을 아래로
+                          따로 내리면 카드가 세로로 길어지고 눌 곳이 멀어진다. */}
+                      <div className="prop-say">
+                        {p.message ? <p className="prop-msg">{p.message}</p> : <span className="prop-msg" />}
+                        {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
+                        {p.interested_at ? (
+                          <button type="button" className="prop-interest"
+                            onClick={(e) => { e.stopPropagation(); set대화(p); }}>
+                            대화하기
+                          </button>
+                        ) : 마감 ? null : 만료 ? (
+                          <span className="prop-interest on">답변 기간이 지났어요</span>
+                        ) : 관심쓰는중 === p.id ? null : (
+                          <button type="button" className="prop-interest"
+                            onClick={(e) => 관심열기(p.id, e)}>
+                            관심 있어요
+                            {남은날 <= 3 && <span className="prop-interest-left">{남은날}일 남음</span>}
+                          </button>
+                        )}
+                      </div>
 
-                      {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
-                      {p.interested_at ? (
-                        <button type="button" className="prop-interest"
-                          onClick={(e) => { e.stopPropagation(); set대화(p); }}>
-                          대화하기
-                        </button>
-                      ) : 마감 ? null : 만료 ? (
-                        <div className="prop-interest on">답변 기간이 지났어요</div>
-                      ) : (
-                        관심쓰는중 === p.id ? (
+                      {관심쓰는중 === p.id && (
                         <div className="prop-interest-box" onClick={(e) => e.stopPropagation()}>
                           <textarea value={한마디} onChange={(e) => set한마디(e.target.value)} rows={2}
                             maxLength={300} autoFocus
@@ -200,13 +214,6 @@ export default function ProposalsPage() {
                             <button type="button" className="key" onClick={(e) => 관심보내기(p.id, e)}>보내기</button>
                           </div>
                         </div>
-                      ) : (
-                        <button type="button" className="prop-interest"
-                          onClick={(e) => 관심열기(p.id, e)}>
-                          관심 있어요
-                          {남은날 <= 3 && <span className="prop-interest-left">{남은날}일 남음</span>}
-                        </button>
-                        )
                       )}
 
                       <div className="prop-foot">
