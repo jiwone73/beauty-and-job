@@ -10,12 +10,15 @@ import { 이력서진행 } from "@/lib/resumeProgress";
 
 type 상태 = { 준비: boolean; 비율: number } | null;
 
-export default function ApplySteps({ loggedIn }: { loggedIn: boolean }) {
+/** 로그인 여부는 토큰으로 판단한다. 로그인 상태를 담아 둔 store 는 토큰이
+ *  만료돼도 그대로 남아 있어, 「준비됨」이라 적어 놓고 값은 못 가져오는 일이
+ *  생긴다. 부를 수 있으면 로그인한 것이다. */
+export default function ApplySteps({ 미리보기 = false }: { 미리보기?: boolean }) {
   const router = useRouter();
   const [내이력서, set내이력서] = useState<상태>(null);
 
   useEffect(() => {
-    if (!loggedIn) return;
+    if (미리보기) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     let 살아있음 = true;
@@ -43,7 +46,7 @@ export default function ApplySteps({ loggedIn }: { loggedIn: boolean }) {
       })
       .catch(() => {});
     return () => { 살아있음 = false; };
-  }, [loggedIn]);
+  }, [미리보기]);
 
   const 됨 = !!내이력서?.준비;
 

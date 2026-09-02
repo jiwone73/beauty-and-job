@@ -218,7 +218,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
               <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
                 지원하기
               </button>
-              <ApplySteps loggedIn={false} />
+              <ApplySteps 미리보기 />
               <div style={{ display: "flex", gap: 8 }}>
                 <button className="job-detail-aside-bookmark" disabled style={{ flex: 1, minWidth: 0, opacity: 0.7, cursor: "default" }}>
                   <Bookmark size={16} />
@@ -280,7 +280,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
               </button>
               {/* 외부 지원 공고는 우리 흐름이 아니고, 이미 낸 공고는 남은 단계가
                   없다 — 둘 다 세 줄을 걸지 않는다. */}
-              {!isRedirect && !alreadyApplied && <ApplySteps loggedIn={isLoggedIn} />}
+              {!isRedirect && !alreadyApplied && <ApplySteps />}
               {/* 스크랩과 공유를 나란히 둔다. 위아래로 쌓으면 카드가 그만큼 길어져
                   지원 버튼이 화면 밖으로 밀린다. 공유는 모바일 하단 바에만 있어서
                   PC 로 보는 사람은 링크를 주소창에서 긁어야 했다. */}
