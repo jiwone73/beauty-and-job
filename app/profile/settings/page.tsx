@@ -127,7 +127,7 @@ export default function AccountSettingsPage() {
             {([
               { key: "open",   label: "공개",     desc: `모든 ${상대 ?? "기업"}이 열람·제안` },
               { key: "except", label: "부분공개", desc: `지정한 ${상대 ?? "기업"}만 제외` },
-              { key: "close",  label: "비공개",   desc: "제안 없음, 지원한 곳만 열람" },
+              { key: "close",  label: "비공개",   desc: "제안 안 받음, 지원한 곳만 열람" },
             ] as const).map((o) => (
               <label key={o.key} className={`pf-vis-opt${공개칸 === o.key ? " on" : ""}`}>
                 <input type="radio" name="resume-visibility" checked={공개칸 === o.key}
