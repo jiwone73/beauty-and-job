@@ -50,6 +50,9 @@ function ResumePageContent() {
   const [coverLocal, setCoverLocal] = useState(coverLetter);
   // 희망급여는 프로필에서 정하는 값이라 여기서는 보여만 준다.
   const [pay, setPay] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
+  // 희망 근무지역은 users.preferred_regions(배열)에 있다. 미리보기가 보던
+  // user_profiles.region_prefer 는 비어 있어 그 줄이 통째로 빠졌다.
+  const [희망지역, set희망지역] = useState("");
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -126,6 +129,11 @@ function ResumePageContent() {
           if (!d.email) missing.push("이메일");
           if (!d.address_road) missing.push("거주지");
           if (!Array.isArray(d.preferred_regions) || d.preferred_regions.length === 0) missing.push("희망 근무지역");
+          if (Array.isArray(d.preferred_regions) && d.preferred_regions.length > 0) {
+            set희망지역(d.preferred_regions
+              .map((r: any) => [r.sido, r.sigungu].filter(Boolean).join(" "))
+              .filter(Boolean).join(", "));
+          }
           if (d.job_type === "OFFICE" && (!Array.isArray(d.office_job_areas) || d.office_job_areas.length === 0)) missing.push("직군 영역");
           // 예전에는 알림창을 띄우고 곧장 프로필로 튕겨 냈다. 이력서를 쓰러 온
           // 사람을 밀어내는 셈이라, 무엇이 비었는지 이 자리에서 보여주고
@@ -689,7 +697,7 @@ function ResumePageContent() {
                   workTypePrefer,
                   salaryType: pay.type,
                   salaryMin: pay.min,
-                  regionPrefer,
+                  regionPrefer: 희망지역 || regionPrefer,
                 }}
               />
             </div>

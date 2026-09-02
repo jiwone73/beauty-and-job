@@ -502,8 +502,8 @@ export default function ProfilePage() {
   if (!gender) missingRequired.push("성별");
   if (!emailInput) missingRequired.push("이메일");
   if (!addressRoad) missingRequired.push("거주지");
-  if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("직군");
-  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("직군");
+  if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("희망직군");
+  if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("희망직군");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
 
   // 직군/지역 한 줄 요약값
@@ -945,7 +945,7 @@ export default function ProfilePage() {
                   </div>
                 )}
                 <InfoRow
-                  label="직군"
+                  label="희망직군"
                   value={jobAreaSummary([...skillAreas, ...officeJobAreas])}
                   isEmpty={dbJobType === "STORE" ? skillAreas.length === 0 : officeJobAreas.length === 0}
                   onClick={() => setJobAreaModal(dbJobType === "STORE" ? "STORE" : "OFFICE")}
@@ -1079,7 +1079,7 @@ function 칸그림(label: string) {
   const 표: Record<string, any> = {
     "이름": User, "구직유형": Store, "국적": Globe, "휴대전화": Phone,
     "생년월일": Cake, "성별": UsersIcon, "이메일": Mail,
-    "거주지 주소": Home, "직군": Briefcase, "희망 근무지역": MapPin, "희망급여": Wallet,
+    "거주지 주소": Home, "희망직군": Briefcase, "희망 근무지역": MapPin, "희망급여": Wallet,
   };
   const G = 표[label];
   return G ? <G size={16} className="profile-info-icon" /> : null;
