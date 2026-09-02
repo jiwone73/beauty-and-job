@@ -3,40 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { Download, X, Printer } from "lucide-react";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { downloadApplicationPdf, printApplication } from "@/lib/applicationPdf";
+import { mapResume } from "@/lib/resumeView";
 
-const mapResume = (data: any) => {
-  const p = data?.profile || {};
-  return {
-    careers: (data?.careers || []).map((c: any) => ({
-      id: String(c.id), company: c.company || "", department: c.department || "",
-      position: c.position || "", startDate: c.start_date || "", endDate: c.end_date || "",
-      isVerified: c.is_verified || false, description: c.description || "",
-    })),
-    educations: (data?.educations || []).map((e: any) => ({
-      id: String(e.id), school: e.school || "", major: e.major || "",
-      status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
-      description: e.description || "",
-    })),
-    experiences: (data?.experiences || []).map((x: any) => ({
-      id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
-    })),
-    languages: (data?.languages || []).map((l: any) => ({
-      id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",
-    })),
-    links: (data?.links || []).map((lk: any) => ({
-      id: String(lk.id), category: lk.category || "", url: lk.url || "",
-    })),
-    skills: p.skills || [],
-    skillAreas: p.skill_areas || [],
-    officeJobAreas: p.office_job_areas || [],
-    certificates: p.certificates || [],
-    intro: p.intro || "",
-    coreCompetencies: p.core_competencies || "",
-    coverLetter: p.cover_letter || "",
-    workTypePrefer: p.work_type_prefer || "",
-    regionPrefer: p.region_prefer || "",
-  };
-};
 
 export default function ResumePreviewModal({
   resumeId,

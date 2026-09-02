@@ -16,6 +16,9 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
   ref
 ) {
   const hasCover = !!(coverLetter && coverLetter.trim());
+  // 지원서에 실리는 자소서는 이 공고에 낸 그것 하나다. 이력서에 딸려 온 기본
+  // 자소서까지 아래에 또 붙으면 한 문서에 자기소개서가 두 번 나온다.
+  const { coverLetter: _기본자소서, ...이력서 } = resume || {};
   return (
     <div ref={ref} className="app-doc" style={{ background: "#fff" }}>
       {hasCover && (
@@ -30,7 +33,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
       {hasCover && (
         <div style={{ borderTop: "1px solid #e0e0e0", paddingTop: 22 }} />
       )}
-      <ResumePreview {...resume} />
+      <ResumePreview {...이력서} />
       {children}
     </div>
   );

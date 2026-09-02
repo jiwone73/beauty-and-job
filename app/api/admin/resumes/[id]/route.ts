@@ -17,7 +17,7 @@ export async function GET(
             r.desired_location, r.desired_salary_min, r.desired_salary_max, r.desired_salary_type,
             r.career_type, r.created_at,
             u.name, u.email::text AS email, u.phone, u.gender, u.birth_date,
-            u.job_type, u.avatar_url, u.portfolio_images
+            u.job_type, u.avatar_url, u.portfolio_images, u.preferred_regions
      FROM resumes r
      JOIN users u ON u.id = r.user_id
      WHERE r.id = $1`,

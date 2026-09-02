@@ -18,7 +18,7 @@ export async function GET(
   const result = await pool.query(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note, a.resume_snapshot,
             a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
-            u.job_type AS user_job_type, u.portfolio_images,
+            u.job_type AS user_job_type, u.portfolio_images, u.preferred_regions,
             u.avatar_url AS user_avatar_url, u.notification_settings,
             u.gender AS user_gender, u.birth_date AS user_birth_date,
             u.region_sido AS user_region_sido, u.region_sigungu AS user_region_sigungu,
@@ -96,6 +96,8 @@ export async function GET(
       is_snapshot: true,
       resume_file_preview_url: resumeFilePreviewUrl,
       resume: {
+        // 옛 스냅샷에는 이 값이 없다 — 그때는 지금 값으로 물러선다.
+        preferred_regions: snap.resume?.preferred_regions || row.preferred_regions || [],
         profile: snap.profile || {},
         careers: snap.careers || [],
         educations: snap.educations || [],
@@ -124,6 +126,9 @@ export async function GET(
     is_snapshot: false,
     resume_file_preview_url: resumeFilePreviewUrl,
     resume: {
+      // 희망 근무지의 원본은 users.preferred_regions 다 — 이력서 카드가 이
+      // 줄을 그리려면 프로필과 함께 실려 와야 한다.
+      preferred_regions: row.preferred_regions || [],
       profile: profile.rows[0] || {},
       careers: careers.rows,
       educations: educations.rows,

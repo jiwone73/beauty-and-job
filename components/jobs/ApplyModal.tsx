@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useProfileStore, type 이력서한벌 } from "@/lib/store/profileStore";
+import { shortenRegion } from "@/lib/memberFormat";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
@@ -35,6 +36,8 @@ export default function ApplyModal({
      것을 어딘가 붙들어 둬야 한다. 서버(사람 + 공고 키)에 둔다 — 브라우저에
      두면 폰에서 쓰다 만 것을 PC에서 이어 쓸 수 없다. 계정은 같은데 그릇이
      다르면 못 찾는다. */
+  const [희망지역, set희망지역] = useState("");
+  const [희망급여, set희망급여] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
   const [초안됨, set초안됨] = useState(false);   // 이번에 불러온 초안이 있나
   const [방금저장, set방금저장] = useState(false);
   const 초안준비 = useRef(false);               // 원본을 뜨기 전에는 쓰지 않는다
@@ -104,6 +107,14 @@ export default function ApplyModal({
       초안준비.current = true;
     });
 
+    fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        const pf = res?.data?.profile;
+        if (pf) set희망급여({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+      })
+      .catch(() => {});
+
     fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((res) => {
@@ -117,6 +128,14 @@ export default function ApplyModal({
             [res.data.address_road, res.data.address_detail].filter(Boolean).join(" ") ||
             [res.data.region_sido, res.data.region_sigungu].filter(Boolean).join(" ")
           );
+          // 희망 근무지는 users.preferred_regions 가 원본이다. store 의
+          // regionPrefer(user_profiles.region_prefer)는 비어 있어, 미리보기에서
+          // 「희망 근무 조건」이 통째로 빠져 보였다.
+          if (Array.isArray(res.data.preferred_regions) && res.data.preferred_regions.length > 0) {
+            set희망지역(res.data.preferred_regions
+              .map((r: any) => shortenRegion([r?.sido, r?.sigungu].filter(Boolean).join(" ")))
+              .filter(Boolean).join(", "));
+          }
           if (res.data.resume_file_name) setResumeFileName(res.data.resume_file_name);
           if (res.data.resume_file_size) setResumeFileSize(res.data.resume_file_size);
         }
@@ -440,6 +459,20 @@ export default function ApplyModal({
           {/* ===== 화면 1: 작성 ===== */}
           {step === "write" && (
             <>
+              {/* 되살린 것이 무엇인지 첫 화면에서 밝힌다. 예전에는 이 알림이
+                  「지원서 수정하기」 화면에만 있어, 임시저장한 사람이 다시 열었을
+                  때 그것이 올라온 줄 모르고 처음부터 다시 썼다. */}
+              {초안됨 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap",
+                  margin: "0 0 14px", padding: "10px 12px", borderRadius: 8, background: "#f7f4fa" }}>
+                  <span style={{ fontSize: 13, color: "#6b6570" }}>임시저장해 둔 사본을 불러왔어요.</span>
+                  <button type="button" onClick={초안버리기}
+                    style={{ marginLeft: "auto", border: "none", background: "none", padding: 0,
+                      fontSize: 13, color: "#582681", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}>
+                    기본 이력서로 되돌리기
+                  </button>
+                </div>
+              )}
               <div style={{ padding: 0 }}>
               <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
                 자기소개서
@@ -526,7 +559,9 @@ export default function ApplyModal({
                     skillAreas,
                     certificates,
                     workTypePrefer,
-                    regionPrefer,
+                    regionPrefer: 희망지역 || regionPrefer,
+                    salaryType: 희망급여.type,
+                    salaryMin: 희망급여.min,
                   }}
                 />
               </div>
