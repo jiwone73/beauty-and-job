@@ -14343,17 +14343,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-count {
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   border: none; border-left: 1px solid #f2f2f4; background: none;
-  padding: 4px 8px; font-family: inherit; cursor: pointer;
+  padding: 4px 5px; font-family: inherit; cursor: pointer;
 }
 .co-count:first-child { border-left: none; }
-.co-count-label { font-size: 13.5px; color: #8a8a90; white-space: nowrap; }
+.co-count-label { font-size: 15.5px; color: #1a1a1a; white-space: nowrap; }
 /* 0 은 할 일이 없다는 뜻이라 조용해야 한다. 숫자가 있는 칸만 눈에 든다. */
 .co-count-value { font-size: 26px; color: #c8c8ce; line-height: 1.1; }
 .co-count.on .co-count-value { color: var(--color-primary); }
-.co-count:hover .co-count-label { color: #1a1a1a; }
+.co-count:hover .co-count-label { color: var(--color-primary); }
 /* 칸이 곧 필터인 화면(지원자)에서 고른 칸 */
 .co-count.sel { background: #f7f7f8; }
-.co-count.sel .co-count-label { color: #1a1a1a; }
+.co-count.sel .co-count-label { color: var(--color-primary); }
 @media (max-width: 767px) {
   .co-counts { grid-template-columns: repeat(3, 1fr); row-gap: 20px; padding: 18px 0; }
   .co-count:nth-child(3n+1) { border-left: none; }
