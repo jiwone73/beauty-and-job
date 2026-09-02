@@ -14575,10 +14575,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pf-set-line.is-go { display: flex; align-items: center; cursor: pointer; }
 .pf-set-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .pf-set-go-b {
-  display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0;
+  display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0;
   padding: 0; border: none; background: none; font-family: inherit; cursor: pointer; text-align: left;
 }
-.pf-set-go { color: #c4c4c9; flex-shrink: 0; margin-left: auto; }
+/* 화살표는 이름 바로 옆에 붙는다. 오른쪽 끝으로 밀면 반 칸을 건너 떠 있어
+   무엇에 딸린 표시인지 멀어진다. */
+.pf-set-go { color: #c4c4c9; flex-shrink: 0; }
 .pf-set-line .pf-vis-opts { margin-top: 12px; }
 @media (max-width: 560px) { .pf-set-two { grid-template-columns: 1fr; gap: 16px; } }
 
