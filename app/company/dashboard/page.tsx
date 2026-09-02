@@ -102,13 +102,13 @@ export default function CompanyDashboard() {
   // 없음)은 가져오되 내용은 다르다. 거기는 마이페이지 요약이라 누적을 보여주지만
   // 여기는 홈이고, 사장님이 홈을 여는 이유는 「지금 뭘 해야 하나」 하나다.
   // 넷 다 0이면 좋은 숫자다 — 누적이 아니라 밀린 일이다.
-  // 이름은 화면 곳곳에서 이미 쓰는 말을 그대로 쓴다 — 지원자 카운터의 「미열람」,
-  // 인재풀 사이드의 「스크랩 인재」, 보낸 제안 머리줄의 「미답변 문의」.
-  // 홈에서만 다른 말을 지어내면 같은 것을 두 이름으로 부르게 된다.
+  // 이름은 업계에서 이미 쓰는 말을 그대로 쓴다. 「미열람」은 사람인 공고 목록의
+  // 열 이름이고, 「오늘 마감」은 잡코리아·알바몬의 필터 이름, 「스크랩」은 사람인·
+  // 잡코리아가 함께 쓰는 말이다. 표준이 된 데는 이유가 있다 — 설명 없이 바로 읽힌다.
   const statCards = [
     { label: "미열람", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants" },
     { label: "오늘 마감", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=오늘 마감" },
-    { label: "미답변 문의", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals" },
+    { label: "새 메시지", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/talent/scrapped" },
   ];
 
