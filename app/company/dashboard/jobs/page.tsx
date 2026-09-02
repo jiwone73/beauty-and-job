@@ -50,7 +50,7 @@ function isJobClosed(job: { status: string; deadline: string | null }): boolean 
 
 function CompanyJobsContent() {
   const router = useRouter();
-  // 대시보드 '오늘 마감' 카운터에서 넘어오면 같은 조건이 걸린 채로 열린다.
+  // 대시보드 '마감임박' 카운터에서 넘어오면 같은 조건이 걸린 채로 열린다.
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get("status");
   const [jobs, setJobs] = useState<CompanyJob[]>([]);
@@ -58,7 +58,7 @@ function CompanyJobsContent() {
   const [search, setSearch] = useState("");
   // 기본은 진행중 + 마감일순 — 이 화면에서 할 일은 대개 "곧 내려가는 진행 공고"를 손보는 것이다.
   const [statusFilter, setStatusFilter] = useState(
-    initialStatus && ["전체", "진행중", "오늘 마감", "마감"].includes(initialStatus) ? initialStatus : "진행중"
+    initialStatus && ["전체", "진행중", "마감임박", "마감"].includes(initialStatus) ? initialStatus : "진행중"
   );
   const [jobGroupFilter, setJobGroupFilter] = useState("전체");
   const [sortBy, setSortBy] = useState("마감일순");
@@ -117,7 +117,7 @@ function CompanyJobsContent() {
     const matchStatus =
       statusFilter === "전체" ? true :
       statusFilter === "진행중" ? !isJobClosed(j) :
-      statusFilter === "오늘 마감" ? (!isJobClosed(j) && dl === 0) :
+      statusFilter === "마감임박" ? (!isJobClosed(j) && dl !== null && dl <= 2) :
       statusFilter === "마감" ? isJobClosed(j) :
       statusFilter === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
       statusFilter === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
@@ -208,22 +208,22 @@ function CompanyJobsContent() {
 
   // 카운터가 곧 진행상태 필터다(드롭다운과 같은 값을 두 번 두지 않는다).
   // 총 지원자는 공고 상태가 아니라 사람 수라 이 줄에 섞지 않는다 — 지원자 관리의 '전체'가 같은 값을 센다.
-  const cntToday = jobs.filter(j => !isJobClosed(j) && daysLeft(j.deadline) === 0).length;
+  // 마감임박은 사흘 안. 하루만 세면 오늘 못 본 사람은 놓친다.
+  const cntSoon = jobs.filter(j => { const d = daysLeft(j.deadline); return !isJobClosed(j) && d !== null && d <= 2; }).length;
   const statCardsData = [
-    { label: "전체 공고", value: String(counts.전체), unit: "건", color: "#582681", status: "전체" },
-    { label: "진행중", value: String(counts.진행중), unit: "건", color: "#10b981", status: "진행중" },
-    { label: "오늘 마감", value: String(cntToday), unit: "건", color: "#e05252", status: "오늘 마감" },
-    { label: "마감", value: String(counts.마감), unit: "건", color: "#888", status: "마감" },
+    { label: "전체 공고", value: String(counts.전체), unit: "건", status: "전체" },
+    { label: "진행중", value: String(counts.진행중), unit: "건", status: "진행중" },
+    { label: "마감임박", value: String(cntSoon), unit: "건", status: "마감임박" },
+    { label: "마감", value: String(counts.마감), unit: "건", status: "마감" },
   ];
 
   // 모바일 상단 상태 통계 카드 (마감 임박 기준 필터)
-  const cntImminent = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d !== null && d <= 7; })()).length;
-  const cntRelaxed = jobs.filter(j => !isJobClosed(j) && (() => { const d = daysLeft(j.deadline); return d === null || d > 7; })()).length;
+  // 모바일도 데스크톱과 같은 넷으로 — 「≤D-7 / >D-7」은 화면에 없는 말이었다.
   const statusCards = [
-    { label: "전체", value: String(counts.전체), color: "#582681", status: "전체" },
-    { label: "≤D-7", value: String(cntImminent), color: "#e74c3c", status: "<D-7" },
-    { label: ">D-7", value: String(cntRelaxed), color: "#10b981", status: ">D-7" },
-    { label: "마감", value: String(counts.마감), color: "#888", status: "마감" },
+    { label: "전체", value: String(counts.전체), status: "전체" },
+    { label: "진행중", value: String(counts.진행중), status: "진행중" },
+    { label: "마감임박", value: String(cntSoon), status: "마감임박" },
+    { label: "마감", value: String(counts.마감), status: "마감" },
   ];
 
   return (
@@ -282,8 +282,10 @@ function CompanyJobsContent() {
             .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; padding: 0 15px; flex-shrink: 0; border-radius: 9px; border: none; background: #582681; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
             .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
             .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
-            .co-stat .n { font-size: 16px; font-weight: 600 !important; line-height: 1; }
-            .co-stat .l { font-size: 11px; color: #666; white-space: nowrap; }
+            .co-stat .l { font-size: 11px; color: #888; white-space: nowrap; }
+            .co-stat .n { font-size: 17px; line-height: 1; color: #c8c8ce; }
+            .co-stat.has .n { color: #582681; }
+            .co-stat.on { border-color: #582681; background: #f7f7f8; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-left { display: flex; align-items: center; gap: 11px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
@@ -320,11 +322,10 @@ function CompanyJobsContent() {
             <div className="co-statrow">
               {statusCards.map((s) => (
                 <button key={s.label} type="button"
-                  className={`co-stat ${statusFilter === s.status ? "on" : ""}`}
-                  onClick={() => setStatusFilter(s.status)}
-                  style={statusFilter === s.status ? { borderColor: s.color, background: "#f7f7f8" } : undefined}>
-                  <span className="n" style={{ color: s.color }}>{s.value}</span>
+                  className={`co-stat${Number(s.value) > 0 ? " has" : ""}${statusFilter === s.status ? " on" : ""}`}
+                  onClick={() => setStatusFilter(s.status)}>
                   <span className="l">{s.label}</span>
+                  <span className="n">{s.value}</span>
                 </button>
               ))}
             </div>

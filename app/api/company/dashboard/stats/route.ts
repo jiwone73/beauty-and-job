@@ -72,12 +72,12 @@ export async function GET(req: NextRequest) {
     rate: r.view_count > 0 ? Math.round((r.application_count / r.view_count) * 1000) / 10 : null,
   }))
 
-  // 오늘 마감 — 오늘 안에 손쓰지 않으면 내려가는 공고. '3일 내'는 오늘 할 일과 섞여 급한 정도가 흐려진다.
+  // 마감임박 — 사흘 안에 내려가는 공고. 하루만 세면 오늘 못 본 사람은 놓친다.
   const deadlineTodayRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt
      FROM job_postings
      WHERE company_id = $1 AND status = 'ACTIVE' AND deadline IS NOT NULL
-       AND deadline::date = CURRENT_DATE${jobTypeFilterNoAlias}`,
+       AND deadline::date BETWEEN CURRENT_DATE AND CURRENT_DATE + 2${jobTypeFilterNoAlias}`,
     [companyId]
   )
 
