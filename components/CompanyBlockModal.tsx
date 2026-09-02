@@ -76,12 +76,12 @@ export default function CompanyBlockModal({
         <div className="cv-header">
           {/* 계정 설정에서 넘어오는 자리다. 부르는 이름이 같아야 같은
               이야기의 연장으로 읽힌다. */}
-          <h2 className="cv-title">차단 {noun}</h2>
+          <h2 className="cv-title">열람 제한 {noun}</h2>
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="cv-body">
           <p className="cv-desc">
-            여기 등록한 곳은 내 프로필을 볼 수 없어요.
+            여기 등록한 곳은 내 이력서를 검색할 수도, 열람할 수도 없어요.
           </p>
 
           <label className="cv-field-label">{noun} 검색</label>
@@ -90,7 +90,7 @@ export default function CompanyBlockModal({
             <input
               className="cv-input"
               style={{ paddingLeft: 36, width: "100%" }}
-              placeholder={`차단할 ${noun}명을 검색하세요`}
+              placeholder={`${noun}명을 검색하세요`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -106,7 +106,7 @@ export default function CompanyBlockModal({
                    막았다고 착각하게 되므로, 그 대신 사실을 알린다. */
                 <div style={{ padding: "14px 16px", color: "#888", fontSize: 12.5, lineHeight: 1.6 }}>
                   검색되지 않는 곳은 아직 뷰티워크에 없어요.
-                  <br />없는 곳은 내 프로필을 볼 수 없으니 막지 않아도 괜찮아요.
+                  <br />없는 곳은 내 이력서를 볼 수 없으니 등록하지 않아도 괜찮아요.
                 </div>
               ) : (
                 results.map((c) => (
@@ -122,16 +122,16 @@ export default function CompanyBlockModal({
                         {c.address || "주소 미등록"}
                       </span>
                     </span>
-                    <button className="cv-skill-add-btn" style={{ padding: "4px 12px", fontSize: 12, flexShrink: 0 }}>차단</button>
+                    <button className="cv-skill-add-btn" style={{ padding: "4px 12px", fontSize: 12, flexShrink: 0 }}>제한</button>
                   </div>
                 ))
               )}
             </div>
           )}
 
-          <label className="cv-field-label" style={{ marginTop: 20 }}>차단한 {noun} ({blocked.length})</label>
+          <label className="cv-field-label" style={{ marginTop: 20 }}>열람 제한 {noun} ({blocked.length})</label>
           {blocked.length === 0 ? (
-            <p style={{ fontSize: 13, color: "#aaa", padding: "12px 0" }}>아직 차단한 {noun}이 없어요.</p>
+            <p style={{ fontSize: 13, color: "#aaa", padding: "12px 0" }}>아직 등록한 {noun}이 없어요.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
               {blocked.map((b) => (

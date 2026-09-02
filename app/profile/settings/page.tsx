@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import NotificationModal from "@/components/profile/NotificationModal";
 import ProfileShell from "@/components/profile/ProfileShell";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
@@ -43,6 +43,35 @@ export default function AccountSettingsPage() {
   // 잘못된 말이 잠깐 스친다 — 자리만 비워 두고 값이 오면 채운다.
   const 상대 = jobType === "STORE" ? "매장" : jobType === "OFFICE" ? "기업" : null;
 
+  // 지금 어느 칸인가. 저장하는 값은 공개/비공개 하나뿐이고, 가운데 칸은
+  // 「공개인데 제한 목록이 있다」에서 따라 나온다.
+  const 공개칸: "open" | "except" | "close" | null =
+    openToOffers === null ? null
+      : openToOffers === false ? "close"
+      : blocked.length > 0 ? "except" : "open";
+
+  const 공개칸고르기 = (칸: "open" | "except" | "close") => {
+    if (칸 === 공개칸) { if (칸 === "except") setBlockOpen(true); return; }
+    if (칸 === "except") {
+      if (openToOffers !== true) saveOpenToOffers(true);
+      setBlockOpen(true);           // 뺄 곳이 없으면 고를 것도 없다
+      return;
+    }
+    // 전체 공개로 돌아가려면 제한 목록이 비어야 한다 — 목록을 둔 채 「전체
+    // 공개」라 적어 두면 둘 중 어느 쪽이 사실인지 알 수 없다. 남의 설정을
+    // 말없이 지우지는 않는다.
+    if (칸 === "open" && blocked.length > 0) {
+      if (!confirm(`열람 제한 ${상대 ?? "기업"} ${blocked.length}곳이 해제됩니다. 계속할까요?`)) return;
+      const t = localStorage.getItem("access_token");
+      const 지울것 = blocked;
+      setBlocked([]);
+      Promise.all(지울것.map((b) =>
+        fetch(`/api/users/blocks/${b.companyId}`, { method: "DELETE", headers: { Authorization: `Bearer ${t}` } })
+      )).catch(() => setBlocked(지울것));
+    }
+    saveOpenToOffers(칸 !== "close");
+  };
+
   const saveOpenToOffers = async (next: boolean) => {
     const before = openToOffers;
     setOpenToOffers(next);           // 먼저 칠하고, 실패하면 되돌린다
@@ -80,64 +109,46 @@ export default function AccountSettingsPage() {
       </div>
 
       <div className="pf-set-body">
-        {/* 프로필 공개 — 원티드처럼 계정 설정에 둔다. 프로필 화면에도 두면
-            같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다.
+        {/* 이력서 공개 — 「이력서 공개」·「열람 제한 기업」은 사람인·원티드가
+            함께 쓰는 말이다. 우리끼리 부르던 「프로필 공개」·「차단 기업」은
+            같은 것을 다르게 불러 낯설게 만들 뿐이었다.
 
             가운데 칸을 둔 까닭: 비공개를 누르는 사람의 이유는 대개 「아무한테도
-            보이기 싫다」가 아니라 「우리 원장만 보면 안 된다」다. 차단이 다른
-            카드에 따로 서 있으면 그 사람도 비공개까지 내려가고, 인재검색에서
-            통째로 사라진다. 셋을 한 줄에 세워 가운데를 고를 수 있게 한다. */}
-        <section className="pf-set-card pf-vis" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
-            프로필 공개
-            {openToOffers !== null && (
-              <span style={{ fontSize: 13, color: "#999", marginLeft: 6 }}>
-                ({openToOffers ? (상대 ? `${상대}으로부터 면접 제안을 받아볼게요` : "면접 제안을 받아볼게요") : "면접 제안 안 받을게요"})
-              </span>
-            )}
-          </h2>
+            보이기 싫다」가 아니라 「우리 원장만 보면 안 된다」다. 제한 목록이
+            다른 카드에 따로 서 있으면 그 사람도 비공개까지 내려가고,
+            인재검색에서 통째로 사라진다. 셋을 같은 폭으로 한 줄에 세워
+            가운데가 비공개와 대등하게 보이게 한다. */}
+        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "18px", marginBottom: 10 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px" }}>이력서 공개</h2>
 
-          <div className="pf-vis-opts">
+          <div className="pf-vis-seg" role="radiogroup" aria-label="이력서 공개">
             {([
-              { key: "open",   on: true,  label: "공개" },
-              { key: "except", on: true,  label: `공개, 일부 ${상대 ?? "매장"}만 빼고` },
-              { key: "close",  on: false, label: "비공개" },
-            ] as const).map((o) => {
-              const 골랐나 = openToOffers === null ? false
-                : o.key === "close" ? openToOffers === false
-                : o.key === "except" ? openToOffers === true && blocked.length > 0
-                : openToOffers === true && blocked.length === 0;
-              return (
-                <label key={o.key} className={`pf-vis-opt${골랐나 ? " on" : ""}`}>
-                  <input type="radio" name="profile-visibility" checked={골랐나}
-                    disabled={offerSaving || openToOffers === null}
-                    onChange={() => {
-                      if (o.key === "except") {
-                        // 뺄 곳이 없으면 고를 것도 없다 — 고르는 순간 찾는 판을 연다.
-                        if (openToOffers !== true) saveOpenToOffers(true);
-                        setBlockOpen(true);
-                        return;
-                      }
-                      saveOpenToOffers(o.on);
-                    }} />
-                  <span className="pf-vis-txt">
-                    {o.label}
-                    {o.key === "except" && (
-                      <span className="pf-vis-chips">
-                        {blocked.map((b) => (
-                          <span key={b.companyId} className="pf-vis-chip">{b.companyName}</span>
-                        ))}
-                        <button type="button" className="pf-vis-add"
-                          onClick={(e) => { e.preventDefault(); if (openToOffers !== true) saveOpenToOffers(true); setBlockOpen(true); }}>
-                          <Plus size={13} />{blocked.length > 0 ? "고치기" : `${상대 ?? "매장"} 고르기`}
-                        </button>
-                      </span>
-                    )}
-                  </span>
-                </label>
-              );
-            })}
+              { key: "open",   label: "전체 공개" },
+              { key: "except", label: "열람 제한" },
+              { key: "close",  label: "비공개" },
+            ] as const).map((o) => (
+              <button key={o.key} type="button" role="radio" aria-checked={공개칸 === o.key}
+                className={`pf-vis-seg-b${공개칸 === o.key ? " on" : ""}`}
+                disabled={offerSaving || openToOffers === null}
+                onClick={() => 공개칸고르기(o.key)}>
+                {o.label}
+              </button>
+            ))}
           </div>
+
+          {/* 제한 목록은 그 칸을 골랐을 때만 나온다 — 전체 공개인데 제한 기업이
+              적혀 있으면 둘 중 어느 쪽이 사실인지 알 수 없다. */}
+          {공개칸 === "except" && (
+            <button type="button" className="pf-vis-row" onClick={() => setBlockOpen(true)}>
+              <span className="pf-vis-row-k">열람 제한 {상대 ?? "기업"}</span>
+              <span className="pf-vis-row-v">
+                {blocked.length === 0 ? "고르기"
+                  : blocked.length === 1 ? blocked[0].companyName
+                  : `${blocked[0].companyName} 외 ${blocked.length - 1}곳`}
+              </span>
+              <ChevronRight size={16} className="pf-vis-row-go" />
+            </button>
+          )}
         </section>
 
         {/* 비밀번호 변경 — '차단 기업'과 같은 자리글 방식. 늘 펼쳐 두면
