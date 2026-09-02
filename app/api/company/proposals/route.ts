@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (res) return res;
   try {
     const { rows } = await pool.query(
-      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message,
+      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at,
               u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
       createdAt: r.created_at,
       readAt: r.read_at,
       interestedAt: r.interested_at,
+      declinedAt: r.declined_at || null,
       interestMessage: r.interest_message,
       userId: r.user_id,
       userName: r.user_name,

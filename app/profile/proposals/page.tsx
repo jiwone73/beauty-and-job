@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, MapPin, Wallet, Briefcase } from "lucide-react";
+import { MapPin, Wallet, Briefcase } from "lucide-react";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 제안만료, 제안남은날 } from "@/lib/proposal";
 import ProfileShell from "@/components/profile/ProfileShell";
@@ -98,14 +98,22 @@ export default function ProposalsPage() {
     }).catch(() => {});
   };
 
-  const 치우기 = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!confirm("이 제안을 목록에서 치울까요?")) return;
+  // 거절은 상대에게 전해져야 한다 — 예전의 「치우기」는 내 화면에서만 사라져서
+  // 기업 쪽에는 계속 「답변 대기」로 남아 기약 없이 기다리게 했다.
+  const [거절할것, set거절할것] = useState<Proposal | null>(null);
+  const [같이차단, set같이차단] = useState(false);
+  const 거절하기 = async () => {
+    const p = 거절할것;
+    if (!p) return;
+    set거절할것(null);
     const token = localStorage.getItem("access_token");
     if (!token) return;
-    await fetch(`/api/users/me/proposals/${id}`, {
-      method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+    await fetch(`/api/proposals/${p.id}/decline`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ block: 같이차단 }),
     }).catch(() => {});
+    set같이차단(false);
     불러오기();
   };
 
@@ -147,8 +155,11 @@ export default function ProposalsPage() {
                       onClick={() => 열기(p)}>
                       <div className="prop-head">
                         <span className="prop-co">{p.brand_name || p.company_name}</span>
-                        <span className="prop-date">
-                          {new Date(p.created_at).toLocaleDateString("ko-KR")}
+                        <span className="prop-when">
+                          <span className="prop-date">
+                            {new Date(p.created_at).toLocaleDateString("ko-KR")}
+                          </span>
+                          <span className="prop-cta">채용공고 보기</span>
                         </span>
                       </div>
                       <p className="prop-title">
@@ -199,18 +210,18 @@ export default function ProposalsPage() {
                       )}
 
                       <div className="prop-foot">
-                        <span className="prop-cta">채용공고 보기</span>
                         {/* 지원 방법은 공고에 적힌 대로 알려 준다 — 이 업계는
                             전화 한 통으로 끝나는 경우가 많다. */}
                         {p.contact_methods && p.contact_methods.length > 0 && (
                           <span className="prop-how">지원 방법 · {p.contact_methods.join(", ")}</span>
                         )}
+                        {!p.interested_at && (
+                          <button type="button" className="prop-decline"
+                            onClick={(e) => { e.stopPropagation(); set거절할것(p); set같이차단(false); }}>
+                            거절하기
+                          </button>
+                        )}
                       </div>
-
-                      <button type="button" className="prop-del" aria-label="치우기"
-                        onClick={(e) => 치우기(p.id, e)}>
-                        <X size={14} />
-                      </button>
                     </div>
                   );
                 })}
@@ -219,6 +230,23 @@ export default function ProposalsPage() {
           </div>
         </section>
       </div>
+      {거절할것 && (
+        <div className="rp-modal-overlay">
+          <div className="prop-dec">
+            <p className="prop-dec-t">{거절할것.brand_name || 거절할것.company_name}의 제안을 거절할까요?</p>
+            <label className="prop-dec-blk">
+              <input type="checkbox" checked={같이차단}
+                onChange={(e) => set같이차단(e.target.checked)} />
+              이 매장의 제안 다시 받지 않기
+            </label>
+            <div className="prop-dec-acts">
+              <button type="button" onClick={() => { set거절할것(null); set같이차단(false); }}>취소</button>
+              <button type="button" className="key" onClick={거절하기}>거절하기</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {대화 && (
         <ProposalThread
           proposalId={대화.id}

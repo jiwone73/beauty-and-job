@@ -13342,7 +13342,7 @@ button,
      폰은 사이드 대신 위 탭 줄이 지금 화면을 이미 말해 준다 — 여기 또
      세우면 같은 말이 두 번 된다. .pf-main-title 기본값(아래)에서 감춘 걸
      PC 에서만 되살린다. */
-  .pf-main-title { display: block; font-size: 19px; font-weight: 400; color: #1a1a1a; margin: 0 0 20px; }
+  .pf-main-title { display: block; font-size: 19px; font-weight: 400; color: #1a1a1a; margin: 0 0 20px; text-align: center; }
 
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의
@@ -14421,3 +14421,29 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   width: 100%; border: 1px solid var(--color-primary); border-radius: 8px;
   padding: 6px 10px; font-family: inherit; font-size: 13px; color: #1a1a1a;
 }
+
+/* 받은 제안 — 날짜 아래에 공고로 가는 길을 둔다. 오른쪽 위에 시간과 갈 곳이
+   같이 있어 시선이 한 번만 움직인다. */
+.prop-when { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+
+/* 거절. 예전 「치우기」(X)는 내 화면에서만 지우는 것이라 기업은 기약 없이
+   기다렸다 — 거절은 상대에게 전해진다. */
+.prop-decline {
+  margin-left: auto; border: 1px solid #e2e2e6; background: #fff; border-radius: 8px;
+  padding: 6px 12px; font-family: inherit; font-size: 13px; color: #8a8a90; cursor: pointer;
+}
+.prop-decline:hover { border-color: #b4b4b9; color: #555; }
+.prop-dec {
+  width: 100%; max-width: 380px; background: #fff; border-radius: 14px; padding: 22px 22px 16px;
+}
+.prop-dec-t { margin: 0 0 14px; font-size: 15.5px; color: #1a1a1a; line-height: 1.5; }
+/* 거절하는 순간이 「이 매장은 다시 안 받을래」를 정하는 순간이다 — 차단을 따로
+   두면 아무도 찾아가지 않는다. */
+.prop-dec-blk { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #555; cursor: pointer; }
+.prop-dec-blk input { width: 15px; height: 15px; margin: 0; accent-color: #582681; }
+.prop-dec-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.prop-dec-acts button {
+  border: 1px solid #e5e5ea; background: #fff; border-radius: 8px; padding: 8px 16px;
+  font-family: inherit; font-size: 14px; color: #555; cursor: pointer;
+}
+.prop-dec-acts button.key { border-color: var(--color-primary); color: var(--color-primary); }

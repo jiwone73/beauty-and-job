@@ -15,6 +15,7 @@ type 제안 = {
   createdAt: string;
   readAt: string | null;
   interestedAt: string | null;
+  declinedAt: string | null;
   interestMessage: string | null;
   userId: string;
   userName: string;
@@ -31,6 +32,8 @@ const 날짜 = (s: string) => new Date(s).toLocaleDateString("ko-KR", { month: "
 function 상태(p: 제안): { 글: string; 색: string; 급한가: boolean } {
   // 지원까지 왔으면 그것이 제안의 끝이다 — 차단·기한보다 먼저 말한다.
   if (p.appliedAt) return { 글: "지원함", 색: "#1f7a4d", 급한가: false };
+  // 거절도 끝이다. 이걸 안 보여 주면 기업은 기약 없이 기다린다.
+  if (p.declinedAt) return { 글: "거절", 색: "#b4b4b9", 급한가: false };
   if (p.blocked) return { 글: "차단됨", 색: "#b4b4b9", 급한가: false };
   if (p.interestedAt) {
     return p.lastSender === "USER"
