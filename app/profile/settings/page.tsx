@@ -76,11 +76,18 @@ export default function AccountSettingsPage() {
         {/* 프로필 공개 — 원티드처럼 계정 설정에 둔다. 프로필 화면에도 두면
             같은 값을 고치는 곳이 둘이 되어 어느 쪽이 맞는지 헷갈린다. */}
         <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px" }}>프로필 공개</h2>
-          <p style={{ fontSize: 13, color: "#999", margin: 0 }}>언제든 바꿀 수 있어요.</p>
+          {/* 지금 고른 것이 무슨 뜻인지는 제목 옆 괄호가 말한다. 아래에 또 한 줄을
+              깔면 켜냐 끄냐 하나뿐인 값에 설명만 두 줄이 붙는다. */}
+          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: 0 }}>
+            프로필 공개
+            {openToOffers !== null && (
+              <span style={{ fontSize: 13, color: "#999", marginLeft: 6 }}>
+                ({openToOffers ? (상대 ? `${상대}으로부터 면접 제안을 받아볼게요` : "면접 제안을 받아볼게요") : "면접 제안 안 받을게요"})
+              </span>
+            )}
+          </h2>
           {/* 두 갈래뿐이라 한 행에 나란히 둔다. 카드 두 장으로 세우면 화면
-              절반을 먹는데, 정작 담긴 뜻은 켜냐 끄냐 하나다.
-              설명은 지금 고른 쪽 것만 아래에 한 줄로 적는다. */}
+              절반을 먹는데, 정작 담긴 뜻은 켜냐 끄냐 하나다. */}
           <div style={{ display: "flex", alignItems: "center", gap: 24, marginTop: 12 }}>
             {([
               { on: true,  label: "공개" },
@@ -101,10 +108,6 @@ export default function AccountSettingsPage() {
               );
             })}
           </div>
-          {/* 값이 오기 전에도 줄 높이는 잡아 둔다 — 늦게 와도 아래가 밀리지 않는다. */}
-          <p style={{ fontSize: 12.5, color: "#999", lineHeight: 1.5, minHeight: 19, margin: "8px 0 0" }}>
-            {openToOffers === null ? "" : openToOffers ? (상대 ? `${상대}으로부터 면접 제안을 받아볼게요.` : "") : "면접 제안 안 받을게요."}
-          </p>
         </section>
 
         {/* 차단 매장·기업 — 공개와 얽혀 있지만 고르는 값이 아니라 목록을
