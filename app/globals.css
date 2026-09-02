@@ -14292,3 +14292,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    사이드가 없는 화면(지원자)도 같은 폭으로 세워야 카드 크기가 화면마다 달라지지
    않는다. 사이드가 있는 화면은 .co-set-main 이 이미 이 폭이다. */
 .co-cardw { width: 814px; max-width: 100%; }
+
+/* 카드 높이 줄이기 — 연락처 줄과 본문 사이가 34px(여백 12 + 안쪽 11+11)이나 벌어져
+   카드마다 빈 칸이 한 줄씩 더 있는 꼴이었다. 구분선을 본문 쪽으로 올린다. */
+.tal-foot { margin-top: 7px; padding: 8px 0 7px; }
+.tal-intro { margin: 1px 0 4px; }

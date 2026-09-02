@@ -69,15 +69,15 @@ export default function TalentCard({
                 : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
             </button>
           </div>
+          {/* 나이·경력·지역은 사람을 고를 때 한눈에 같이 보는 값이라 한 줄로 세운다.
+              지역만 따로 내려가 있으면 줄만 늘고 읽는 순서가 끊긴다. */}
           <div className="tal-head">
             {나이성별 && <span className="tal-sub">{나이성별}</span>}
             <span className="tal-sub">{careerLabel(t.careerYears, t.careerCount)}</span>
+            {지역 && <span className="tal-sub">{지역}</span>}
           </div>
           {t.intro && <div className="tal-intro">{t.intro}</div>}
-          <div className="tal-meta">
-            {직군 && <span>{직군}</span>}
-            {지역 && <span>{지역}</span>}
-          </div>
+          {직군 && <div className="tal-meta"><span>{직군}</span></div>}
           {최근 && <div className="tal-recent">최근 · {최근}</div>}
         </div>
 
