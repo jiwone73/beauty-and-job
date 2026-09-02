@@ -96,8 +96,8 @@ export default function ApplicationModal({
     || [자료?.user_region_sido, 자료?.user_region_sigungu].filter(Boolean).join(" ");
 
   return (
-    {/* 바깥을 눌러도 닫히지 않는다 — 이력서를 읽다가 스치는 클릭 한 번에 창이
-        사라지면 처음부터 다시 찾아 열어야 한다. 닫는 길은 오른쪽 위 단추와 Esc. */}
+    // 바깥을 눌러도 닫히지 않는다 — 이력서를 읽다가 스치는 클릭 한 번에 창이
+    // 사라지면 처음부터 다시 찾아 열어야 한다. 닫는 길은 오른쪽 위 단추와 Esc.
     <div className="rp-modal-overlay">
       <div className="rp-modal resume-modal-flat" style={{ maxWidth: 720, maxHeight: "90vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header">
