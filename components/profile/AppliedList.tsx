@@ -125,9 +125,11 @@ export default function AppliedList({ userName }: { userName: string }) {
   // 그대로 노출하면 매장이 목록을 정리한 것뿐인데 '불합격 통보'처럼 읽힌다.
   // 합격은 어차피 매장이 직접 연락하고, 떨어진 경우는 공고가 마감되면 알게 된다.
   // 지원자에게는 '접수됐는지 / 열어봤는지'까지만 보여준다.
+  // 상태는 먹색으로 적는다. 보라는 누를 것에만 쓴다 — 읽기만 하는 값에 브랜드
+  // 색을 입히면 눈이 그리로 먼저 가고, 정작 누를 것과 구분이 안 된다.
   const statusTextColor: Record<string, string> = {
-    APPLIED: "#582681", REVIEWING: "#582681", VIEWED: "#582681",
-    INTERVIEW: "#582681", PASSED: "#582681", REJECTED: "#582681", WITHDRAWN: "#999",
+    APPLIED: "#1a1a1a", REVIEWING: "#1a1a1a", VIEWED: "#1a1a1a",
+    INTERVIEW: "#1a1a1a", PASSED: "#1a1a1a", REJECTED: "#1a1a1a", WITHDRAWN: "#b4b4b9",
   };
   const statusLabel: Record<string, string> = {
     APPLIED: "지원완료", REVIEWING: "열람됨", VIEWED: "열람됨",
@@ -240,7 +242,7 @@ export default function AppliedList({ userName }: { userName: string }) {
                     </div>
                   )}
                 </div>
-                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#582681" }}>
+                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#1a1a1a" }}>
                   {statusLabel[app.status] || app.status}
                 </span>
               </div>
