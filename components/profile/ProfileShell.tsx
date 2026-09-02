@@ -2,10 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { X, User, Send, Bookmark, Settings, LogOut, Inbox } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -21,11 +19,11 @@ import { useApplicationStore } from "@/lib/store/applicationStore";
  * 같은 곳으로 가는 길이 둘이 되고 어느 메뉴가 켜져야 할지도 어긋난다.
  */
 const 메뉴 = [
-  { href: "/profile", 글: "프로필", 그림: User },
-  { href: "/profile/applied", 글: "지원현황", 그림: Send },
+  { href: "/profile", 글: "프로필" },
+  { href: "/profile/applied", 글: "지원현황" },
   // 지원현황이 '내가 움직인 것'이면 이건 '상대가 움직인 것'이라 바로 옆에 둔다.
-  { href: "/profile/proposals", 글: "받은 제안", 그림: Inbox },
-  { href: "/profile/bookmarks", 글: "관심공고", 그림: Bookmark },
+  { href: "/profile/proposals", 글: "받은 제안" },
+  { href: "/profile/bookmarks", 글: "관심공고" },
 ];
 
 // 사이드에서 고른 메뉴 이름. PC 는 사이드가 늘 옆에 있어 뭘 보고 있는지
@@ -66,6 +64,7 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
       )}
 
       <div className="pf-body">
+        <div className="pf-wrap">
         {/* PC — 왼쪽 사이드 메뉴. 계정 설정과 로그아웃은 선 아래에 둔다.
             보는 화면을 고르는 일과 계정을 다루는 일은 성격이 다르다. */}
         <nav className="pf-side">
@@ -84,12 +83,12 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
               /profile/notifications 자체는 그대로 둔다 — 종에서 '전체 보기'로 온다. */}
           {메뉴.map((m) => (
             <Link key={m.href} href={m.href} className={pathname === m.href ? "on" : undefined}>
-              <m.그림 size={17} />{m.글}
+              {m.글}
             </Link>
           ))}
           <span className="pf-side-sep" />
           <Link href="/profile/settings" className={pathname === "/profile/settings" ? "on" : undefined}>
-            <Settings size={17} />설정
+            설정
           </Link>
           <button type="button" className="pf-side-out" onClick={() => {
             useSignupStore.getState().reset();
@@ -98,7 +97,7 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
             useApplicationStore.getState().reset();
             logout();
             router.push("/");
-          }}><LogOut size={17} />로그아웃</button>
+          }}>로그아웃</button>
         </nav>
 
         <div className="pf-main">
@@ -106,6 +105,7 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
               본문 왼쪽 위에도 그대로 보여야 지금 무엇을 보는지 안 놓친다. */}
           {현재제목 && <h1 className="pf-main-title">{현재제목}</h1>}
           {children}
+        </div>
         </div>
       </div>
     </main>
