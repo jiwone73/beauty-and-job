@@ -14449,3 +14449,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-family: inherit; font-size: 14px; color: #555; cursor: pointer;
 }
 .prop-dec-acts button.key { border-color: var(--color-primary); color: var(--color-primary); }
+
+/* 약속 폼이 열린 동안 달력 단추가 켜져 있음을 보인다 — 다시 누르면 접힌다. */
+.pth-appt-open.on { border-color: var(--color-primary); color: var(--color-primary); background: #faf7fd; }
+/* 메시지창 위에 얹히므로 아래와 선으로 가른다. */
+.pth-appt-form { border-bottom: 1px solid #f2f2f4; padding-bottom: 12px; }

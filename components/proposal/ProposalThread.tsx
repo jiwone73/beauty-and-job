@@ -216,28 +216,38 @@ export default function ProposalThread({
           <p className="pth-closed">
             {차단됨 ? "차단된 대화예요." : `답변 기간(${제안유효일}일)이 지나 닫힌 대화예요.`}
           </p>
-        ) : 약속열림 ? (
-          <div className="pth-appt-form">
-            <input type="datetime-local" value={약속값} onChange={(e) => set약속값(e.target.value)} />
-            <input type="text" value={장소} placeholder={기본장소 || "만날 곳"}
-              onChange={(e) => set장소(e.target.value)} />
-            <div className="pth-appt-form-acts">
-              <button type="button" onClick={() => { set약속열림(false); set약속값(""); set장소(""); }}>취소</button>
-              <button type="button" className="key" disabled={!약속값 || 보내는중} onClick={약속보내기}>약속 보내기</button>
-            </div>
-          </div>
         ) : (
-          <div className="pth-send">
-            <button type="button" className="pth-appt-open" title="면접 약속 잡기"
-              onClick={() => set약속열림(true)}>
-              <CalendarPlus size={18} />
-            </button>
-            <textarea value={글} rows={1} placeholder="메시지를 입력하세요"
-              onChange={(e) => set글(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); 보내기(); } }} />
-            <button type="button" className="pth-send-btn" disabled={!글.trim() || 보내는중}
-              onClick={보내기} aria-label="보내기"><Send size={17} /></button>
-          </div>
+          <>
+            {/* 약속 폼은 메시지창을 덮지 않고 그 위에 얹는다. 덮어 버리면 달력을
+                누른 걸 잊었을 때 「대화는 어디서 하지」가 된다. */}
+            {약속열림 && (
+              <div className="pth-appt-form">
+                <input type="datetime-local" value={약속값} onChange={(e) => set약속값(e.target.value)} />
+                <input type="text" value={장소} placeholder={기본장소 || "만날 곳"}
+                  onChange={(e) => set장소(e.target.value)} />
+                <div className="pth-appt-form-acts">
+                  <button type="button" onClick={() => { set약속열림(false); set약속값(""); set장소(""); }}>취소</button>
+                  <button type="button" className="key" disabled={!약속값 || 보내는중} onClick={약속보내기}>약속 보내기</button>
+                </div>
+              </div>
+            )}
+            <div className="pth-send">
+              {/* 최종 일정은 매장이 정한다 — 그날 예약이 몇 개인지는 매장만 알고,
+                  장소도 그 공고의 근무지라 구직자가 고칠 값이 아니다. 구직자는
+                  메시지로 묻고 「좋아요·어려워요」로 답한다. */}
+              {나 === "COMPANY" && (
+                <button type="button" className={`pth-appt-open${약속열림 ? " on" : ""}`} title="면접 약속 잡기"
+                  onClick={() => set약속열림((v) => !v)}>
+                  <CalendarPlus size={18} />
+                </button>
+              )}
+              <textarea value={글} rows={1} placeholder="메시지를 입력하세요"
+                onChange={(e) => set글(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); 보내기(); } }} />
+              <button type="button" className="pth-send-btn" disabled={!글.trim() || 보내는중}
+                onClick={보내기} aria-label="보내기"><Send size={17} /></button>
+            </div>
+          </>
         )}
         {번호있나(글) && (
           <p className="pth-warn">전화번호는 서로 믿을 만할 때 주고받는 게 좋아요.</p>

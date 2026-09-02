@@ -80,6 +80,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     if (kind === "TEXT" && !body) return err("PROP_MSG_003", "보낼 내용을 적어주세요.", 400);
     if (kind === "APPOINTMENT") {
+      // 최종 일정은 매장이 정한다 — 그날 예약이 몇 개인지, 누가 나오는지는 매장만
+      // 안다. 장소도 그 공고의 근무지라 구직자가 고칠 값이 아니다. 구직자는 묻고
+      // (메시지) 답한다(좋아요·어려워요). 화면에서만 감추면 API 를 직접 부르면
+      // 그대로 들어오므로 여기서 막는다.
+      if (쪽 !== "COMPANY") return err("PROP_MSG_007", "면접 일정은 매장이 보냅니다.", 403);
       if (!at || isNaN(at.getTime())) return err("PROP_MSG_003", "약속 시간을 골라주세요.", 400);
       if (at.getTime() < Date.now()) return err("PROP_MSG_003", "지난 시간으로는 잡을 수 없어요.", 400);
     }
