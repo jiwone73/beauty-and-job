@@ -12,8 +12,6 @@ import { companyApplicationsApi, companyJobsApi, companyTalentApi } from "@/lib/
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 
 // 지원자 첨부 이력서 파일 배너 노출 여부 (개인회원 첨부 기능 숨김에 따라 비활성화, 추후 재사용 대비 코드 유지)
-const SHOW_RESUME_FILE_BANNER = false;
-
 const STATUS_LABEL: Record<ApplicationStatus, string> = {
   APPLIED: "미열람",
   VIEWED: "열람",
@@ -62,7 +60,6 @@ function ApplicantsContent() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("전체");
-  const [resumeFileInfo, setResumeFileInfo] = useState<{ name: string | null; size: number | null; url: string | null }>({ name: null, size: null, url: null });
   const [detailInfo, setDetailInfo] = useState<{ gender: string | null; birth: string | null; sido: string | null; sigungu: string | null; road: string | null; detail: string | null }>({ gender: null, birth: null, sido: null, sigungu: null, road: null, detail: null });
   const [isMobile, setIsMobile] = useState(false);
   const [jobSheetOpen, setJobSheetOpen] = useState(false);
