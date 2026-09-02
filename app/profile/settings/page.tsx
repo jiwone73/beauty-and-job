@@ -119,7 +119,14 @@ export default function AccountSettingsPage() {
             인재검색에서 통째로 사라진다. 셋을 같은 폭으로 한 줄에 세워
             가운데가 비공개와 대등하게 보이게 한다. */}
         <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "18px", marginBottom: 10 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px" }}>이력서 공개</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px" }}>
+            이력서 공개
+            {openToOffers !== null && (
+              <span style={{ fontSize: 13, color: "#999", marginLeft: 6 }}>
+                ({openToOffers ? (상대 ? `${상대}으로부터 면접 제안을 받아볼게요` : "면접 제안을 받아볼게요") : "면접 제안 안 받을게요"})
+              </span>
+            )}
+          </h2>
 
           <div className="pf-vis-seg" role="radiogroup" aria-label="이력서 공개">
             {([
