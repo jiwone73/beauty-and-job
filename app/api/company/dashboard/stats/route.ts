@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
     [companyId, String(제안유효일)]
   )
 
-  // 아직 안 본 지원자 — 홈에서 가장 급한 숫자다. 늦게 보면 그 사람은 다른 곳으로 간다.
+  // 아직 안 본 지원자 — 「미열람 지원자」 카드 제목에 쓴다.
   const unviewedRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt
        FROM applications a JOIN job_postings jp ON jp.id = a.job_posting_id
@@ -117,8 +117,33 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
+  // 보낸제안 — 누적. 제안 관심 — 그중 「관심 있어요」를 누른 것. 채팅 — 그중 실제로
+  // 말이 오간 것. 셋이 한 줄기라 나란히 두면 어디서 끊기는지가 보인다.
+  const sentRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt FROM proposals WHERE company_id = $1`,
+    [companyId]
+  )
+  const interestedRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt FROM proposals p
+      WHERE p.company_id = $1 AND p.interested_at IS NOT NULL
+        AND NOT EXISTS (SELECT 1 FROM user_company_blocks b
+                         WHERE b.user_id = p.user_id AND b.company_id = p.company_id)`,
+    [companyId]
+  )
+  const chatRes = await pool.query(
+    `SELECT COUNT(*)::int AS cnt FROM proposals p
+      WHERE p.company_id = $1
+        AND EXISTS (SELECT 1 FROM proposal_messages m WHERE m.proposal_id = p.id)
+        AND NOT EXISTS (SELECT 1 FROM user_company_blocks b
+                         WHERE b.user_id = p.user_id AND b.company_id = p.company_id)`,
+    [companyId]
+  )
+
   return ok({
     unviewed_applications: unviewedRes.rows[0].cnt,
+    sent_proposals: sentRes.rows[0].cnt,
+    proposal_interested: interestedRes.rows[0].cnt,
+    chats: chatRes.rows[0].cnt,
     scrapped_talents: scrapRes.rows[0].cnt,
     awaiting_reply: awaitingRes.rows[0].cnt,
     unanswered_chats: unansweredRes.rows[0].cnt,

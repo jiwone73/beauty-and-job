@@ -10,7 +10,9 @@ interface Stats {
   deadline_today: number;
   scrapped_talents: number;
   unviewed_applications: number;
-  unanswered_chats: number;
+  sent_proposals: number;
+  proposal_interested: number;
+  chats: number;
 }
 
 interface JobItem {
@@ -102,13 +104,14 @@ export default function CompanyDashboard() {
   // 없음)은 가져오되 내용은 다르다. 거기는 마이페이지 요약이라 누적을 보여주지만
   // 여기는 홈이고, 사장님이 홈을 여는 이유는 「지금 뭘 해야 하나」 하나다.
   // 넷 다 0이면 좋은 숫자다 — 누적이 아니라 밀린 일이다.
-  // 이름은 업계에서 이미 쓰는 말을 그대로 쓴다. 「미열람」은 사람인 공고 목록의
-  // 열 이름이고, 「오늘 마감」은 잡코리아·알바몬의 필터 이름, 「스크랩」은 사람인·
-  // 잡코리아가 함께 쓰는 말이다. 표준이 된 데는 이유가 있다 — 설명 없이 바로 읽힌다.
+  // 셀렉미 「활동정보」와 같은 줄. 제안은 보낸 것 → 관심 → 채팅으로 이어지는 한
+  // 줄기라 나란히 두면 어디서 끊기는지가 보인다.
   const statCards = [
-    { label: "미열람", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants" },
-    { label: "오늘 마감", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=오늘 마감" },
-    { label: "새 메시지", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals" },
+    { label: "공고등록 수", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
+    { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=오늘 마감" },
+    { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
+    { label: "제안 관심", value: stats?.proposal_interested ?? 0, href: "/company/dashboard/proposals" },
+    { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/talent/scrapped" },
   ];
 
@@ -118,8 +121,8 @@ export default function CompanyDashboard() {
 
       {/* 다른 갈래와 같은 폭(.co-cardw) — 홈만 내용만큼 잡혀 좁게 서 있었다. */}
       <div className="co-cardw">
-      {/* 오늘 할 일 — 0 인 칸은 조용하다. 넷 다 0 이면 오늘은 손댈 것이 없다는 뜻이다. */}
-      <div className="co-counts">
+      {/* 활동정보 */}
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: statCards.length }}>
         {statCards.map((stat) => (
           <button key={stat.label} type="button"
             className={`co-count${stat.value > 0 ? " on" : ""}`}

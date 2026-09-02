@@ -14336,7 +14336,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    사이는 얇은 세로선. 아이콘도 색도 없다. 칸마다 색을 칠하면 숫자가 아니라 색이
    먼저 읽히고, 로고에 없는 색은 화면에서 겉돈다. */
 .co-counts {
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(var(--co-counts-n, 4), 1fr);
   border: 1px solid #ececf0; border-radius: 12px; background: #fff;
   padding: 22px 0;
 }
@@ -14355,8 +14355,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-count.sel { background: #f7f7f8; }
 .co-count.sel .co-count-label { color: #1a1a1a; }
 @media (max-width: 767px) {
-  .co-counts { grid-template-columns: repeat(2, 1fr); row-gap: 20px; padding: 18px 0; }
-  .co-count:nth-child(2n+1) { border-left: none; }
+  .co-counts { grid-template-columns: repeat(3, 1fr); row-gap: 20px; padding: 18px 0; }
+  .co-count:nth-child(3n+1) { border-left: none; }
   .co-count-value { font-size: 22px; }
 }
 
