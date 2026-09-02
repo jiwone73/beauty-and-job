@@ -6,10 +6,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Search, Edit, X, Trash2, Copy, Ban
+  Users, Search, Edit, X, Trash2, Copy, Ban, ChevronDown
 } from "lucide-react";
-import { companyJobsApi } from "@/lib/api/company";
-import type { CompanyJob, JobStatus } from "@/lib/types/company";
+import { companyJobsApi, companyApplicationsApi } from "@/lib/api/company";
+import type { CompanyJob, JobStatus, CompanyApplication } from "@/lib/types/company";
+import { genderLabel, calcAge } from "@/lib/memberFormat";
 
 // === 매핑 헬퍼 ===
 const STATUS_LABEL: Record<JobStatus, string> = {
@@ -17,6 +18,10 @@ const STATUS_LABEL: Record<JobStatus, string> = {
   CLOSED: "마감",
   DRAFT: "임시저장",
   PAUSED: "일시중지",
+};
+
+const STATUS_LABEL_APP: Record<string, string> = {
+  APPLIED: "미열람", VIEWED: "열람", INTERVIEW: "면접", PASSED: "합격", REJECTED: "불합격",
 };
 
 const md = (d: string) => { const x = new Date(d); return `${String(x.getMonth() + 1).padStart(2, "0")}.${String(x.getDate()).padStart(2, "0")}`; };
@@ -107,6 +112,27 @@ function CompanyJobsContent() {
   useEffect(() => {
     loadJobs();
   }, []);
+
+  // 공고와 지원자는 한 덩어리다 — 공고를 올리는 이유가 지원자를 받는 것이라,
+  // 그 공고에 누가 왔는지는 공고 카드 안에서 바로 열린다.
+  const [펼친공고, set펼친공고] = useState<string | null>(null);
+  const [공고지원자, set공고지원자] = useState<Record<string, CompanyApplication[]>>({});
+  const [불러오는중, set불러오는중] = useState<string | null>(null);
+
+  const 펼치기 = async (jobId: string) => {
+    if (펼친공고 === jobId) { set펼친공고(null); return; }
+    set펼친공고(jobId);
+    if (공고지원자[jobId]) return;
+    set불러오는중(jobId);
+    try {
+      const res = await companyApplicationsApi.list({ job_id: jobId, limit: 100 });
+      set공고지원자((prev) => ({ ...prev, [jobId]: res.data || [] }));
+    } catch (e) {
+      console.error("[job applicants]", e);
+    } finally {
+      set불러오는중(null);
+    }
+  };
 
   const filtered = jobs.filter(j => {
     const matchGroup = jobGroupFilter === "전체" ||
@@ -491,26 +517,62 @@ function CompanyJobsContent() {
                 </div>
                 {/* 아랫줄 — 선 아래 왼쪽에 다시 올리기, 오른쪽 끝에 성적.
                     임시저장은 아직 올린 적이 없어 복사할 것도 셀 것도 없다. */}
-                {!draft && (
-                  <div className="co-jc-foot">
-                    <button className="co-jc-act key"
-                      onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                      {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
-                    </button>
-                    <span className="co-jc-nums">
-                      지원자 <b className={(job.application_count ?? 0) === 0 ? "zero" : ""}>{job.application_count ?? 0}</b>
-                      {(job.unviewed_count ?? 0) > 0 && (
-                        <>
-                          <i>·</i>
-                          <button type="button" className="co-jc-unread"
-                            onClick={(e) => { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); }}>
-                            미열람 <b>{job.unviewed_count}</b>
-                          </button>
-                        </>
+                {!draft && (() => {
+                  const 수 = job.application_count ?? 0;
+                  const 안본 = job.unviewed_count ?? 0;
+                  const 열림 = 펼친공고 === job.id;
+                  return (
+                    <>
+                      <div className="co-jc-foot">
+                        <button className="co-jc-act key"
+                          onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                          {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
+                        </button>
+                        {/* 숫자가 곧 문이다 — 눌러서 그 자리에서 펼친다. */}
+                        <button type="button" className={`co-jc-nums${수 > 0 ? " open" : ""}`}
+                          disabled={수 === 0}
+                          onClick={() => 수 > 0 && 펼치기(job.id)}>
+                          지원자 <b className={수 === 0 ? "zero" : ""}>{수}</b>
+                          {안본 > 0 && <><i>·</i>미열람 <b>{안본}</b></>}
+                          {수 > 0 && <ChevronDown size={15} className={`co-jc-chev${열림 ? " up" : ""}`} />}
+                        </button>
+                      </div>
+
+                      {열림 && (
+                        <div className="co-jc-apps">
+                          {불러오는중 === job.id ? (
+                            <p className="co-jc-app-empty">불러오는 중…</p>
+                          ) : (공고지원자[job.id] || []).length === 0 ? (
+                            <p className="co-jc-app-empty">지원자가 없습니다.</p>
+                          ) : (
+                            (공고지원자[job.id] || []).map((a) => {
+                              const 나이 = calcAge((a as any).user_birth_date);
+                              const 곁 = [나이 != null ? `${나이}세` : null, genderLabel((a as any).user_gender)].filter(Boolean).join(" · ");
+                              return (
+                                <button key={a.id} type="button" className="co-jc-app"
+                                  onClick={() => router.push(`/company/dashboard/applicants/${a.id}`)}>
+                                  <span className="co-jc-app-av">
+                                    {(a as any).user_avatar_url
+                                      ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
+                                      : <span>{(a.user_name || "?").slice(0, 1)}</span>}
+                                  </span>
+                                  <span className="co-jc-app-main">
+                                    <span className="co-jc-app-name">{a.user_name}</span>
+                                    {곁 && <span className="co-jc-app-sub">{곁}</span>}
+                                  </span>
+                                  <span className={`co-jc-app-st${a.status === "APPLIED" ? " new" : ""}`}>
+                                    {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL_APP[a.status] || ""}
+                                  </span>
+                                  <span className="co-jc-app-when">{md(a.applied_at)}</span>
+                                </button>
+                              );
+                            })
+                          )}
+                        </div>
                       )}
-                    </span>
-                  </div>
-                )}
+                    </>
+                  );
+                })()}
               </div>
             );
           })}

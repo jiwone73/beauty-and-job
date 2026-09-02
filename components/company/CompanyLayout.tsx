@@ -167,9 +167,10 @@ export default function CompanyLayout({ children, activePage, title, side }: {
     // 이 갈래에 든 넷 중 프로필은 매장정보 하나뿐이고 나머지는 계정·보안·알림이다.
     // 넷을 다 덮는 말은 '설정'이라 그렇게 부른다.
     { id: "settings",   label: "설정",         href: `${base}/settings` },
-    { id: "jobs",       label: "채용공고",     href: `${base}/jobs` },
+    // 공고와 지원자는 한 덩어리다 — 공고를 올리는 이유가 지원자를 받는 것이다.
+    // 잡코리아도 「공고·지원자 관리」로 묶어 부른다.
+    { id: "jobs",       label: "공고·지원자",  href: `${base}/jobs` },
     { id: "talent",     label: "인재풀",       href: `${base}/talent` },
-    { id: "applicants", label: "지원자",       href: `${base}/applicants` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
@@ -209,7 +210,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
   // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
-    id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
+    id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new" || activePage === "applicants")
     : id === "talent" ? (activePage === "talent" || activePage === "scrapped" || activePage === "proposals")
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
