@@ -531,13 +531,15 @@ function ResumePageContent() {
               <h1 className="resume-top-title">기본 이력서</h1>
               <p className="resume-top-desc">공고에 지원할 때 이 이력서를 불러와, 그 자리에 맞게 고쳐서 냅니다.</p>
             </div>
-            <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
-              <Eye size={15} /><span>미리보기</span>
-            </button>
-            <button className="resume-side-download" onClick={handleDownload} disabled={isDownloading}>
-              <Download size={15} />
-              <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
-            </button>
+            <div className="resume-top-btns">
+              <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
+                <Eye size={15} /><span>미리보기</span>
+              </button>
+              <button className="resume-side-download" onClick={handleDownload} disabled={isDownloading}>
+                <Download size={15} />
+                <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
+              </button>
+            </div>
           </div>
           <section id="section-headline" className="resume-section">
             <h2 className="resume-section-title"><Quote size={16} className="resume-section-icon" />한줄소개<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
