@@ -34,6 +34,8 @@ export function mapResume(data: any) {
     coverLetter: p.cover_letter || "",
     workTypePrefer: p.work_type_prefer || "",
     regionPrefer: p.region_prefer || "",
+    salaryType: p.salary_type || null,
+    salaryMin: p.salary_min ? Number(p.salary_min) : null,
   };
 }
 

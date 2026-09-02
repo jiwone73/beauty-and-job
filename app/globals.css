@@ -14481,3 +14481,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pf-pay-in::placeholder { color: #cfcfcf; }
 .pf-pay-sel:focus, .pf-pay-in:focus { outline: none; border-color: var(--color-primary); }
 .pf-pay-unit { font-size: 15px; color: #8a8a90; }
+
+/* 희망 근무 조건 — 이름표와 값이 두 칸으로 선다. 급여의 앞말(월·연·시급)만
+   색을 주어 어느 단위인지 먼저 읽히게 한다. */
+.rp-cond { display: grid; grid-template-columns: 96px minmax(0, 1fr); row-gap: 10px; column-gap: 12px; }
+.rp-cond-k { font-size: 14px; color: #8a8a90; }
+.rp-cond-v { font-size: 14px; color: #1a1a1a; }
+.rp-cond-unit { color: var(--color-primary); font-weight: 400; }

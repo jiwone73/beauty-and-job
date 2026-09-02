@@ -48,6 +48,19 @@ function ResumePageContent() {
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
   const [coverLocal, setCoverLocal] = useState(coverLetter);
+  // 희망급여는 프로필에서 정하는 값이라 여기서는 보여만 준다.
+  const [pay, setPay] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        const pf = res?.data?.profile;
+        if (pf) setPay({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+      })
+      .catch(() => {});
+  }, []);
   // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
   useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
   useEffect(() => { setCoverLocal((prev) => prev || coverLetter); }, [coverLetter]);
@@ -672,6 +685,8 @@ function ResumePageContent() {
                   skillAreas,
                   certificates,
                   workTypePrefer,
+                  salaryType: pay.type,
+                  salaryMin: pay.min,
                   regionPrefer,
                 }}
               />

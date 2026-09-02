@@ -42,8 +42,20 @@ interface Props {
   certificates: CertificateEntry[];
   workTypePrefer: string;
   regionPrefer: string;
+  /** 희망급여 — 공고와 같은 모양(원 단위 + 유형). 없으면 「협의」. */
+  salaryType?: string | null;
+  salaryMin?: number | null;
   avatarUrl?: string | null;
 }
+
+// 「월 260만원~」처럼 앞말과 숫자를 갈라 놓는다 — 앞말만 색을 주면 어느 단위인지
+// 먼저 읽힌다.
+const 급여앞말 = (t?: string | null) =>
+  t === "ANNUAL" ? "연" : t === "WEEKLY" ? "주" : t === "DAILY" ? "일급" : t === "HOURLY" ? "시급" : "월";
+const 급여숫자 = (won: number, t?: string | null) =>
+  (t === "HOURLY" || t === "DAILY")
+    ? `${Number(won).toLocaleString()}원`
+    : `${Math.round(Number(won) / 10000).toLocaleString()}만원`;
 
 const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   {
@@ -72,11 +84,15 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     certificates,
     workTypePrefer,
     regionPrefer,
+    salaryType,
+    salaryMin,
     avatarUrl,
   },
   ref
 ) {
   const [확대, set확대] = useState<number | null>(null);
+  // 매장은 skillAreas, 본사는 officeJobAreas 에 든다.
+  const 희망업종 = [...(skillAreas || []), ...(officeJobAreas || [])].join(", ");
   return (
     <div ref={ref} className="rp-wrap">
       {intro && (
@@ -133,17 +149,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               <span key={area} className="rp-chip">{area}</span>
             ))}
           </div>
-        </div>
-      )}
-      {resumeType === "salon" && (workTypePrefer || regionPrefer) && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">희망 근무 조건</h2>
-          {workTypePrefer && (
-            <p className="rp-text"><strong>근무 형태:</strong> {workTypePrefer}</p>
-          )}
-          {regionPrefer && (
-            <p className="rp-text"><strong>근무 지역:</strong> {regionPrefer}</p>
-          )}
         </div>
       )}
       {careers.length > 0 && (
@@ -292,6 +297,31 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               ))}
             </>
           )}
+        </div>
+      )}
+
+      {/* 희망 근무 조건 — 매장이 제안하기 전에 맞춰 보는 값들이라 한 자리에 모은다.
+          자기소개서 바로 위, 경력·작업물을 다 훑고 난 자리다. */}
+      {(regionPrefer || workTypePrefer || 희망업종 || salaryMin) && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">희망 근무 조건</h2>
+          <div className="rp-cond">
+            {regionPrefer && (
+              <><span className="rp-cond-k">희망 근무지</span><span className="rp-cond-v">{regionPrefer}</span></>
+            )}
+            {workTypePrefer && (
+              <><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>
+            )}
+            {희망업종 && (
+              <><span className="rp-cond-k">희망 업종</span><span className="rp-cond-v">{희망업종}</span></>
+            )}
+            <span className="rp-cond-k">희망 급여</span>
+            <span className="rp-cond-v">
+              {salaryMin ? (
+                <><b className="rp-cond-unit">{급여앞말(salaryType)}</b> {급여숫자(salaryMin, salaryType)}~</>
+              ) : "협의"}
+            </span>
+          </div>
         </div>
       )}
 
