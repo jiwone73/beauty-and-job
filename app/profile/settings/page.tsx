@@ -157,13 +157,15 @@ export default function AccountSettingsPage() {
                 적혀 있으면 둘 중 어느 쪽이 사실인지 알 수 없다. */}
             {공개칸 === "except" && (
               <button type="button" className="pf-vis-row" onClick={() => setBlockOpen(true)}>
-                <span className="pf-vis-row-k">열람 제한 {상대 ?? "기업"}</span>
-                <span className="pf-vis-row-v">
-                  {blocked.length === 0 ? "고르기"
-                    : blocked.length === 1 ? blocked[0].companyName
-                    : `${blocked[0].companyName} 외 ${blocked.length - 1}곳`}
+                {/* 이름표가 윗줄, 값이 아랫줄 — 이 화면의 다른 칸들과 같은 짜임이다.
+                    한 줄에 밀어 넣으면 곳이 둘만 돼도 이름이 잘린다. */}
+                <span className="pf-vis-row-k">
+                  열람 제한 {상대 ?? "기업"}
+                  <ChevronRight size={16} className="pf-vis-row-go" />
                 </span>
-                <ChevronRight size={16} className="pf-vis-row-go" />
+                <span className={`pf-vis-row-v${blocked.length === 0 ? " is-empty" : ""}`}>
+                  {blocked.length === 0 ? "고르기" : blocked.map((b) => b.companyName).join(", ")}
+                </span>
               </button>
             )}
           </div>
