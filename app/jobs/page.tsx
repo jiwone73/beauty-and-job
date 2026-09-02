@@ -137,6 +137,9 @@ function JobsPageInner() {
   const bookmarks = useBookmarkStore((s) => s.bookmarks);
   const toggleBookmarkStore = useBookmarkStore((s) => s.toggle);
   const loadBookmarks = useBookmarkStore((s) => s.loadFromServer);
+  // 첫 응답이 오기 전에는 「없어요」를 띄우지 않는다 — 목록이 비어 있는 것과
+  // 아직 안 온 것은 다른 일인데, 화면에는 똑같이 빈 목록으로 보인다.
+  const [불러왔나, set불러왔나] = useState(false);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
   // 복리후생 필터 후보는 공고등록 폼과 같은 마스터(benefit_tags, 검수됨)에서 받는다.
   // 화면마다 목록을 따로 적어 두면 등록 어휘와 필터 어휘가 갈라진다.
@@ -186,7 +189,8 @@ function JobsPageInner() {
           setApiJobs(mapped);
         }
       })
-      .catch(e => console.error('[load jobs]', e));
+      .catch(e => console.error('[load jobs]', e))
+      .finally(() => set불러왔나(true));
   }, [searchParams, selectedRegions]);
 
   useEffect(() => {
@@ -511,7 +515,7 @@ function JobsPageInner() {
               }} variant="grid" />
             ))}
           </div>
-        ) : (
+        ) : !불러왔나 ? null : (
           <div className="jobs-empty">
             <div className="jobs-empty-icon">🔍</div>
             <p className="jobs-empty-title">조건에 맞는 포지션이 없어요.</p>
