@@ -55,8 +55,18 @@ export async function GET(
     u.portfolio_images = [];
   }
 
+  // 이력서를 페이지로 열면 그 자리에서 스크랩하고 제안까지 해야 한다 — 지금 어떤
+  // 상태인지 알아야 버튼을 그릴 수 있다.
+  const 상태 = await pool.query(
+    `SELECT EXISTS(SELECT 1 FROM company_talent_scraps WHERE company_id = $1 AND user_id = $2) AS scrapped,
+            (SELECT MAX(created_at) FROM proposals WHERE company_id = $1 AND user_id = $2) AS proposed_at`,
+    [auth!.sub, userId]
+  );
+
   return ok({
     talentAccess: 열람가능,
+    scrapped: 상태.rows[0]?.scrapped ?? false,
+    proposedAt: 상태.rows[0]?.proposed_at ?? null,
     user: u,
     profile: p,
     careers: careers.rows,

@@ -1,11 +1,10 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
-import ResumePreview from "@/components/profile/ResumePreview";
-import { mapResume, calcAgeFromBirth } from "@/lib/resumeView";
 import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
-import { Send, X } from "lucide-react";
+import { Send } from "lucide-react";
 
 // 보낸 제안. 인재 검색은 끝까지 검색이라 제안을 보내는 데서 끝나고, 보낸 뒤의
 // 시간축 — 읽었는지, 대화를 수락했는지, 며칠 남았는지 — 은 전부 여기서 본다.
@@ -45,11 +44,13 @@ export default function CompanyProposalsPage() {
   const [목록, set목록] = useState<제안[]>([]);
   const [로딩, set로딩] = useState(true);
   const [대화, set대화] = useState<제안 | null>(null);
-  // 이력서는 인재 검색에서만 열리던 것이라, 여기서 사람을 보고도 다시 검색으로
-  // 돌아가야 했다. 이름과 사진을 누르면 그 자리에서 열린다.
-  const [이력서, set이력서] = useState<제안 | null>(null);
-  const [이력서값, set이력서값] = useState<any>(null);
-  const [이력서로딩, set이력서로딩] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const base = pathname.split("/").filter(Boolean)[0] === "company"
+    ? "/company/dashboard"
+    : `/${pathname.split("/").filter(Boolean)[0]}`;
+  // 이력서는 제 주소를 가진 페이지다 — 여기서는 그리로 보내기만 한다.
+  const 이력서열기 = (p: 제안) => router.push(`${base}/talent/${p.userId}`);
 
   const 불러오기 = useCallback(async () => {
     const token = localStorage.getItem("access_token");
@@ -61,16 +62,6 @@ export default function CompanyProposalsPage() {
   }, []);
   useEffect(() => { 불러오기(); }, [불러오기]);
 
-  useEffect(() => {
-    if (!이력서) { set이력서값(null); return; }
-    const token = localStorage.getItem("access_token");
-    set이력서로딩(true);
-    fetch(`/api/company/talent/${이력서.userId}/resume`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((d) => set이력서값(d.data || d))
-      .catch(() => set이력서값(null))
-      .finally(() => set이력서로딩(false));
-  }, [이력서]);
 
   // 답장을 기다리게 둔 것이 맨 위. 그다음 회신 대기, 끝난 것은 아래로.
   const 정렬 = [...목록].sort((a, b) => {
@@ -110,7 +101,7 @@ export default function CompanyProposalsPage() {
               return (
                 <div key={p.id} className="tal-card prop">
                   <div className="tal-top">
-                    <div className="tal-avatar" onClick={() => set이력서(p)} title="이력서 보기">
+                    <div className="tal-avatar" onClick={() => 이력서열기(p)} title="이력서 보기">
                       {p.avatarUrl
                         ? <img src={p.avatarUrl} alt={p.userName} loading="lazy" />
                         : <span>{(p.userName || "?").slice(0, 1)}</span>}
@@ -118,7 +109,7 @@ export default function CompanyProposalsPage() {
 
                     <div className="tal-main">
                       <div className="tal-nameline">
-                        <button type="button" className="tal-name" onClick={() => set이력서(p)}>{p.userName}</button>
+                        <button type="button" className="tal-name" onClick={() => 이력서열기(p)}>{p.userName}</button>
                       </div>
                       <div className="tal-head">
                         <span style={{ fontSize: 12.5, color: st.색 }}>{st.글}</span>
@@ -170,44 +161,6 @@ export default function CompanyProposalsPage() {
         />
       )}
 
-      {이력서 && (
-        <div className="rp-modal-overlay" onClick={() => set이력서(null)}>
-          <div className="rp-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="rp-modal-header">
-              <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0 }}>{이력서.userName}</h2>
-              <div className="rp-modal-actions">
-                <button onClick={() => set이력서(null)} title="닫기"
-                  style={{ display: "inline-flex", padding: 4, border: "none", background: "none", color: "#888", cursor: "pointer" }}>
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-            <div className="rp-modal-body">
-              {이력서로딩 ? (
-                <div className="admin-empty">이력서 불러오는 중...</div>
-              ) : 이력서값 ? (
-                <ResumePreview
-                  name={이력서값.user?.name || 이력서.userName}
-                  birthDisplay={
-                    이력서값.user?.birth_date
-                      ? `${String(이력서값.user.birth_date).slice(0, 4)}년 (${calcAgeFromBirth(이력서값.user.birth_date)}세, ${이력서값.user.gender === "FEMALE" ? "여" : 이력서값.user.gender === "MALE" ? "남" : ""})`
-                      : ""
-                  }
-                  jobDisplay={이력서값.user?.job_type === "STORE" ? "매장" : "본사"}
-                  phone={이력서값.user?.phone || ""}
-                  email={이력서값.user?.email || ""}
-                  portfolioImages={이력서값.user?.portfolio_images || []}
-                  avatarUrl={이력서값.user?.avatar_url || null}
-                  resumeType={이력서값.user?.job_type === "STORE" ? "salon" : "office"}
-                  {...mapResume(이력서값)}
-                />
-              ) : (
-                <div className="admin-empty">이력서 데이터를 불러올 수 없습니다.</div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </CompanyLayout>
   );
 }

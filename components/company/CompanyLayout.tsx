@@ -25,9 +25,11 @@ const PAGE_TITLES: Record<string, string> = {
   notifications: "알림 설정",
 };
 
-export default function CompanyLayout({ children, activePage }: {
+export default function CompanyLayout({ children, activePage, title }: {
   children: React.ReactNode;
   activePage: string;
+  /** 화면 제목을 갈아 끼운다 — 한 사람의 이력서처럼 제목이 내용마다 달라지는 곳. */
+  title?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -314,7 +316,7 @@ export default function CompanyLayout({ children, activePage }: {
           </>
         )}
 
-        <div className="co-m-title">{activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드")}</div>
+        <div className="co-m-title">{title || (activePage === "settings" ? infoLabel(companyInfo.type) : (PAGE_TITLES[activePage] || "대시보드"))}</div>
         <div className="co-m-content">{children}</div>
 
         <nav className="co-m-tabs">
@@ -494,7 +496,7 @@ export default function CompanyLayout({ children, activePage }: {
         {/* 설정 계열은 제목을 여기 두지 않는다 — 왼쪽 사이드에서 고른 것이 무엇인지는
             그 옆 본문 위에서 말하는 게 맞다(아래 .co-set-title). */}
         {!사이드 && (
-          <h1 className="co-top-title">{PAGE_TITLES[activePage] || "대시보드"}</h1>
+          <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
         {사이드 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
@@ -510,7 +512,7 @@ export default function CompanyLayout({ children, activePage }: {
             <main className="company-content co-set-main">
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
               <h1 className="co-set-title">
-                {사이드.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
+                {title || 사이드.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type))}
               </h1>
               {children}
             </main>

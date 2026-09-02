@@ -1,15 +1,13 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { mapResume } from "@/lib/resumeView";
 import {
-  Search, BookmarkCheck, Bookmark, X, FileText,
-  Download, Printer, MapPin, ChevronDown, SlidersHorizontal, Send, Lock, Briefcase, Wallet,
+  Search, BookmarkCheck, Bookmark, X,
+  MapPin, ChevronDown, SlidersHorizontal, Send, Lock, Briefcase, Wallet,
 } from "lucide-react";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
-import ResumePreview from "@/components/profile/ResumePreview";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
@@ -76,11 +74,6 @@ export default function TalentPage() {
   const [ageFilter, setAgeFilter]                 = useState("전체");
   const [genderFilter, setGenderFilter]           = useState("무관");
 
-  const [selected, setSelected]           = useState<TalentItem | null>(null);
-  const [resumeData, setResumeData]       = useState<any>(null);
-  const [resumeLoading, setResumeLoading] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [view, setView] = useState<"search" | "scrap">("search");
@@ -115,69 +108,8 @@ export default function TalentPage() {
     setGenderFilter("무관");
   };
 
-  const handleDownloadPdf = async () => {
-    if (!previewRef.current) return;
-    setIsDownloading(true);
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const jsPDF = (await import("jspdf")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = (canvas.height * pdfW) / canvas.width;
-      const pageH = pdf.internal.pageSize.getHeight();
-      let left = pdfH, pos = 0;
-      pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
-      left -= pageH;
-      while (left > 0) {
-        pos = left - pdfH;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, pos, pdfW, pdfH);
-        left -= pageH;
-      }
-      pdf.save(selected?.name ? `${selected.name}_이력서.pdf` : "이력서.pdf");
-    } catch {
-      alert("다운로드 중 오류가 발생했습니다.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
 
-  const handlePrint = async () => {
-    if (!previewRef.current) return;
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      await new Promise((r) => setTimeout(r, 300));
-      const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      const w = window.open("", "_blank");
-      if (!w) return;
-      w.document.write(`<html><body style="margin:0"><img src="${canvas.toDataURL("image/png")}" style="width:100%" onload="window.print();window.close()"/></body></html>`);
-      w.document.close();
-    } catch {
-      alert("인쇄 준비 중 오류가 발생했습니다.");
-    }
-  };
 
-  useEffect(() => {
-    if (!selected) { setResumeData(null); return; }
-    const token = localStorage.getItem("access_token");
-    setResumeLoading(true);
-    fetch(`/api/company/talent/${selected.id}/resume`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((res) => { if (res.success) setResumeData(res.data); })
-      .catch((e) => console.error("[talent resume]", e))
-      .finally(() => setResumeLoading(false));
-  }, [selected]);
-
-  const calcAge = (birth: string | null) => {
-    if (!birth) return null;
-    const y = Number(String(birth).slice(0, 4));
-    return y ? new Date().getFullYear() - y : null;
-  };
 
 
   // 알림에서 「관심 있어요」를 눌러 넘어오면 그 사람들만 추려 본다 —
@@ -310,7 +242,6 @@ export default function TalentPage() {
     const next = !item.scrapped;
     const update = (on: boolean) => {
       setTalents((prev) => prev.map((t) => t.id === item.id ? { ...t, scrapped: on } : t));
-      if (selected?.id === item.id) setSelected((prev) => prev ? { ...prev, scrapped: on } : null);
     };
     update(next);
     try {
@@ -708,7 +639,7 @@ export default function TalentPage() {
             return (
               <div key={t.id} className="co-row">
                 <div className="co-li"
-                  onClick={() => setSelected(t)}>
+                  onClick={() => router.push(`${base}/talent/${t.id}`)}>
                   <div className="co-li-r1">
                     <div className="co-li-avatar">
                       {t.avatarUrl
@@ -757,7 +688,7 @@ export default function TalentPage() {
               사진, 오른쪽에 할 일, 아랫줄에 연락처. */}
           {talents.map((t) => (
             <TalentCard key={t.id} t={t} base={base}
-              onOpenResume={setSelected} onToggleScrap={toggleScrap} onPropose={openPropose} />
+              onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)} onToggleScrap={toggleScrap} onPropose={openPropose} />
           ))}
         </div>
       )}
@@ -780,60 +711,6 @@ export default function TalentPage() {
         initial={selectedRegions}
         onApply={(regions: string[]) => { setSelectedRegions(regions); setRegionOpen(false); }}
       />
-
-      {/* 이력서 모달 */}
-      {selected && (
-        <div className="rp-modal-overlay">
-          <div className="rp-modal resume-modal-flat" onClick={(e) => e.stopPropagation()}>
-            <div className="rp-modal-header">
-              <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected.name}</h2>
-              <div className="rp-modal-actions">
-                {/* 이력서를 읽다가 "이 사람이다" 싶을 때가 제안할 때다. 창을 닫고
-                    목록에서 버튼을 다시 찾게 하지 않는다. */}
-                <button onClick={() => { const t = selected; setSelected(null); openPropose(t); }} title="제안하기"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8,
-                    border: "1px solid #e2d9ee", background: "#fff", color: "#582681", fontSize: 13, cursor: "pointer", marginRight: 4 }}>
-                  <Send size={14} />제안하기
-                </button>
-                <button onClick={handleDownloadPdf} disabled={isDownloading || resumeLoading} title="PDF 다운로드"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: (isDownloading || resumeLoading) ? "not-allowed" : "pointer", opacity: (isDownloading || resumeLoading) ? 0.5 : 1 }}>
-                  <Download size={20} />
-                </button>
-                <button onClick={handlePrint} title="인쇄"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 6, borderRadius: 8, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>
-                  <Printer size={20} />
-                </button>
-                <button onClick={() => setSelected(null)} title="닫기"
-                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: 4, borderRadius: 6, border: "none", background: "none", color: "#888", cursor: "pointer" }}>
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-            <div className="rp-modal-body">
-              {resumeLoading ? (
-                <div style={{ padding: 60, textAlign: "center", color: "#888" }}>불러오는 중...</div>
-              ) : resumeData ? (
-                <ResumePreview
-                  ref={previewRef}
-                  name={resumeData.user?.name || selected.name}
-                  birthDisplay={resumeData.user?.birth_date
-                    ? `${String(resumeData.user.birth_date).slice(0, 4)}년 (${calcAge(resumeData.user.birth_date)}세, ${resumeData.user.gender === "FEMALE" ? "여" : resumeData.user.gender === "MALE" ? "남" : ""})`
-                    : ""}
-                  jobDisplay={resumeData.user?.job_type === "STORE" ? "매장" : "본사"}
-                  phone={resumeData.user?.phone || ""}
-                  email={resumeData.user?.email || ""}
-                  portfolioImages={resumeData.user?.portfolio_images || []}
-                  avatarUrl={resumeData.user?.avatar_url || null}
-                  resumeType={resumeData.user?.job_type === "STORE" ? "salon" : "office"}
-                  {...mapResume(resumeData)}
-                />
-              ) : (
-                <div style={{ padding: 60, textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 제안하기 모달 — 채팅이 아니라 공고 하나를 골라 메시지와 함께 알림·이메일로 보낸다 */}
       {proposeTarget && (
