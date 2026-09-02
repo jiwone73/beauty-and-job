@@ -14601,7 +14601,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 「재직 중인 기업 등…」처럼 길어지는 줄이 있어 한 줄로 묶지 않는다. 대신
    폭에 상한을 두어 두 줄에서 멈추게 한다. */
-.pf-vis-opt-d { grid-area: d; margin-top: 4px; max-width: 15em; font-size: 12.5px; color: #a0a0a6; line-height: 1.45; }
+.pf-vis-opt-d { grid-area: d; margin-top: 4px; max-width: 17em; font-size: 12.5px; color: #a0a0a6; line-height: 1.45; }
 .pf-vis-opt.on .pf-vis-opt-t { color: var(--color-primary); }
 .pf-vis-opt-go { color: #c4c4c9; flex-shrink: 0; }
 .pf-vis-opt.on .pf-vis-opt-go { color: var(--color-primary); }
