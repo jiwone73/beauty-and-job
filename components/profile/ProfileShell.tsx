@@ -37,6 +37,23 @@ const 메뉴제목: Record<string, string> = {
 };
 
 export default function ProfileShell({ children }: { children: React.ReactNode }) {
+  // 사이드 맨 위는 「누구의 화면인가」를 말하는 자리다. 이름만 있으면 그 말이
+  // 반만 된다 — 사진을 같이 둔다. 비공개로 둔 사진은 여기서도 기본 그림으로
+  // 바꾼다(프로필 화면과 같은 규칙).
+  const [아바타, set아바타] = useState<string | null>(null);
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res?.success && res.data?.avatar_url && res.data?.avatar_public !== false) {
+          set아바타(res.data.avatar_url);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const router = useRouter();
   const pathname = usePathname();
   const { logout, userName } = useAuthStore();
@@ -74,6 +91,9 @@ export default function ProfileShell({ children }: { children: React.ReactNode }
               통째로 어긋난다). 아래 '직군' 이 무엇을 뜻하는지 이 값이 정한다. */}
           {userName && (
             <div className="pf-side-me">
+              <span className="pf-side-me-av">
+                {아바타 ? <img src={아바타} alt={userName} /> : <span>👤</span>}
+              </span>
               <span className="pf-side-me-name">{userName}</span>
             </div>
           )}

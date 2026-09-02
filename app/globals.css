@@ -13369,6 +13369,12 @@ button,
   }
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
+  .pf-side-me-av {
+    width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    background: #f5f5f7; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #a8a8ad;
+  }
+  .pf-side-me-av img { width: 100%; height: 100%; object-fit: cover; }
   .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #8a8a8f; }
   /* 본문 왼쪽 위 제목 — 이력서 페이지의 '기본 이력서' 제목과 같은 글자
      (.resume-top-title: 19px/700/#1a1a1a). 페이지 제목끼리는 사이트
