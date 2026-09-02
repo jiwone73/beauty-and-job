@@ -13347,7 +13347,7 @@ button,
     background: var(--color-error, #e74c3c); color: #fff; border-radius: 999px; padding: 3px 6px;
   }
   /* 사이드 맨 위 — 누구의 화면인지, 어떤 구직유형인지. 기업 사이드와 같은 짜임. */
-  .pf-side-me { display: flex; align-items: center; gap: 10px; padding: 2px 10px 12px; }
+  .pf-side-me { display: flex; align-items: center; gap: 9px; padding: 2px 12px 12px; min-width: 0; }
   .pf-side-avatar {
     width: 40px; height: 40px; border-radius: 50%; overflow: hidden; position: relative;
     border: 1px solid #f2f2f2; background: #f7f7f8; padding: 0; cursor: pointer;
@@ -13368,11 +13368,14 @@ button,
     padding: 8px 10px; border-radius: 6px; font: inherit; font-size: 13px; color: #333; cursor: pointer;
   }
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
-  .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b; }
+  /* 사이드는 176px 이다 — 긴 이름이 사진을 밀어내지 않게 이름만 줄인다. */
+  .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b;
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 아래 메뉴 줄 높이(10px 여백 + 글자)와 어깨를 맞춘다 — 34px 은 이 줄만 키운다. */
   .pf-side-me-av {
-    width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
     background: #f5f5f7; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; color: #a8a8ad;
+    font-size: 14px; color: #a8a8ad; line-height: 1;
   }
   .pf-side-me-av img { width: 100%; height: 100%; object-fit: cover; }
   .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #8a8a8f; }
