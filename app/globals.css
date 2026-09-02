@@ -13490,7 +13490,9 @@ button,
   /* 좌우로 넓어야 하는 것만 두 칸을 다 쓴다. 한줄소개는 입력 한 줄이라
      길어야 하고, 기본 정보는 오른쪽에 사진이 붙으며, 저장은 맨 아래 띠다. */
   /* 좌우로 넓어야 하는 것은 단을 가로지른다. */
-  #section-headline, #section-basic, .resume-bottom-save {
+  /* 자기소개서도 한 단이 아니라 통줄이다 — 여러 줄 글이라 좁은 단에 들어가면
+     줄이 잘게 끊긴다. */
+  #section-headline, #section-basic, #section-cover, .resume-bottom-save {
     column-span: all;
     -webkit-column-span: all;
   }
