@@ -258,19 +258,39 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           ))}
         </div>
       )}
-      {portfolioImages.length > 0 && (
+      {/* 포트폴리오는 사진과 SNS 두 줄이다 — 편집 화면(ResumeEditor)이 그렇게 짜여
+          있는데 여기서만 SNS 를 「링크」라는 딴 구역으로 빼 놓아, 같은 이력서가
+          쓸 때와 읽을 때 다르게 보였다. 미용은 인스타그램이 곧 작업물이라 사진과
+          한 자리에 있는 것이 맞다. */}
+      {(portfolioImages.length > 0 || links.length > 0) && (
         <div className="rp-section">
           <h2 className="rp-section-title">포트폴리오</h2>
-          {/* 읽는 화면도 편집 화면과 같은 정사각 격자로 보여준다. */}
-          {/* 매장이 잘린 자리를 봐야 실력을 판단할 수 있다. 눌러서 크게 연다.
-              새 탭으로 원본을 띄우면 폰에서 앱을 벗어나 돌아오기 번거롭다. */}
-          <div className="portfolio-grid">
-            {portfolioImages.map((img, idx) => (
-              <button type="button" key={img.url} className="portfolio-cell" onClick={() => set확대(idx)} style={{ border: "none", padding: 0, cursor: "zoom-in" }}>
-                <img src={img.url} alt="" loading="lazy" />
-              </button>
-            ))}
-          </div>
+          {portfolioImages.length > 0 && (
+            <>
+              {links.length > 0 && <p className="rp-sub">사진</p>}
+              {/* 읽는 화면도 편집 화면과 같은 정사각 격자로 보여준다. */}
+              {/* 매장이 잘린 자리를 봐야 실력을 판단할 수 있다. 눌러서 크게 연다.
+                  새 탭으로 원본을 띄우면 폰에서 앱을 벗어나 돌아오기 번거롭다. */}
+              <div className="portfolio-grid">
+                {portfolioImages.map((img, idx) => (
+                  <button type="button" key={img.url} className="portfolio-cell" onClick={() => set확대(idx)} style={{ border: "none", padding: 0, cursor: "zoom-in" }}>
+                    <img src={img.url} alt="" loading="lazy" />
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          {links.length > 0 && (
+            <>
+              {portfolioImages.length > 0 && <p className="rp-sub" style={{ marginTop: 14 }}>SNS</p>}
+              {links.map((link) => (
+                <div key={link.id} className="rp-item">
+                  <span className="rp-badge">{link.category}</span>
+                  <a href={link.url} className="rp-link">{link.url}</a>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       )}
       {/* 첨부 이력서 — 현재 숨김 처리 */}
@@ -281,6 +301,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         </div>
       )}
 
+
       {/* 자기소개서는 이력서의 맨 끝이다 — 경력·학력을 먼저 훑고 나서 읽는 글이다. */}
       {coverLetter && coverLetter.trim() && (
         <div className="rp-section">
@@ -289,19 +310,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         </div>
       )}
 
-      {links.length > 0 && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">링크</h2>
-          {links.map((link) => (
-            <div key={link.id} className="rp-item">
-              <span className="rp-badge">{link.category}</span>
-              <a href={link.url} className="rp-link">
-                {link.url}
-              </a>
-            </div>
-          ))}
-        </div>
-      )}
       {확대 !== null && (
         <PhotoLightbox images={portfolioImages} startAt={확대} onClose={() => set확대(null)} />
       )}
