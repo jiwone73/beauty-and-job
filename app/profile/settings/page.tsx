@@ -134,9 +134,13 @@ export default function AccountSettingsPage() {
                 { key: "close",  label: "비공개",   desc: "면접 제안 안 받음, 지원한 곳만 열람" },
               ] as const).map((o) => (
                 <label key={o.key} className={`pf-vis-opt${공개칸 === o.key ? " on" : ""}`}>
+                  {/* onChange 는 이미 골라 둔 칸을 다시 눌렀을 때 오지 않는다.
+                      부분공개를 눌러 지금 지정된 곳을 확인하고 다시 고르려는
+                      사람에게는 아무 일도 일어나지 않았다. 클릭으로 받는다. */}
                   <input type="radio" name="resume-visibility" checked={공개칸 === o.key}
                     disabled={offerSaving || openToOffers === null}
-                    onChange={() => 공개칸고르기(o.key)} />
+                    onChange={() => {}}
+                    onClick={() => 공개칸고르기(o.key)} />
                   <span className="pf-vis-opt-t">{o.label}</span>
                   <span className="pf-vis-opt-d">{o.desc}</span>
                 </label>
