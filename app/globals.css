@@ -1592,6 +1592,9 @@ input[type="range"].career-slider::-moz-range-thumb {
   max-width: 600px;
   margin: 0 auto;
   padding: 24px 0 40px;
+  /* 이력서 저장 단추와 같은 규칙 — 글자를 감쌀 만큼만, 오른쪽 끝에.
+     폰은 누르기 쉽게 통줄 그대로. */
+  display: flex; justify-content: flex-end;
 }
 /* 좁은 화면에서는 좌우 0 이면 버튼이 화면 끝까지 붙는다. 이력서 저장 버튼
    (.resume-bottom-save)과 같은 16px 을 준다 — 위 완성도 카드와도 같은 값이다. */
@@ -1920,6 +1923,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 @media (max-width: 768px) { .resume-bottom-save { padding: 20px 16px; } }
 .resume-save-btn-full { width: 100%; height: 52px; background: var(--color-primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
 .resume-save-btn-full:hover { background: var(--color-primary-hover); }
+@media (min-width: 769px) {
+  .profile-bottom-cta .resume-save-btn-full { width: auto; height: 44px; padding: 0 24px; }
+}
 
 @media (max-width: 768px) {
   .resume-layout { grid-template-columns: minmax(0, 1fr); }
@@ -13368,7 +13374,7 @@ button,
      폰은 사이드 대신 위 탭 줄이 지금 화면을 이미 말해 준다 — 여기 또
      세우면 같은 말이 두 번 된다. .pf-main-title 기본값(아래)에서 감춘 걸
      PC 에서만 되살린다. */
-  .pf-main-title { display: block; font-size: 19px; font-weight: 400; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+  .pf-main-title { display: block; font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
 
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의

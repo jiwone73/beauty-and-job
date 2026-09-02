@@ -386,7 +386,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
           display: grid; grid-template-columns: fit-content(100%); justify-content: center; }
         /* 제목은 본문 한가운데. 사이드가 있는 화면(.co-set-title)과 같은 자리다 —
            한쪽만 왼쪽에 붙어 있으면 머리줄에서 갈래를 옮길 때마다 제목이 튄다. */
-        .co-top-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+        .co-top-title { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
         /* 설정 계열 사이드 — 개인회원 프로필 사이드(.pf-side)와 같은 결로 맞춘다. */
         /* 폭을 못박는다(176 + 28 + 800). 판이 가운데 정렬이라, 화면마다 본문 폭이
            다르면 사이드까지 따라 움직여 메뉴를 누를 때마다 화면이 흔들린다. 기준은
@@ -405,7 +405,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
            28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
         .co-set-main { flex: 1; min-width: 0;
           border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
-        .co-set-title { font-size: 19px; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+        .co-set-title { font-size: 19px; font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.
