@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
-import type { CompanyJob, JobStatus, CompanyApplication } from "@/lib/types/company";
+import type { CompanyJob, JobStatus, CompanyApplication, ApplicationStatus } from "@/lib/types/company";
 import { genderLabel, calcAge } from "@/lib/memberFormat";
 
 // === 매핑 헬퍼 ===
@@ -143,6 +143,17 @@ function CompanyJobsContent() {
       for (const k of Object.keys(prev)) out[k] = prev[k].map((a) => a.id === id ? { ...a, ...바꿈 } : a);
       return out;
     });
+
+  const 상태바꾸기 = async (a: CompanyApplication, st: ApplicationStatus) => {
+    const 이전 = a.status;
+    지원자바꾸기(a.id, { status: st });
+    try {
+      await companyApplicationsApi.updateStatus(a.id, st);
+    } catch {
+      지원자바꾸기(a.id, { status: 이전 });
+      alert("상태를 바꾸지 못했어요.");
+    }
+  };
 
   const 스크랩토글 = async (a: CompanyApplication) => {
     const 다음 = !(a as any).scrapped;
@@ -564,7 +575,7 @@ function CompanyJobsContent() {
                           {(공고지원자[job.id] || []).map((a) => (
                             <ApplicantCard key={a.id} a={a} showJob={false}
                               onOpen={(x) => router.push(`/company/dashboard/applicants/${x.id}`)}
-                              onToggleScrap={스크랩토글} />
+                              onToggleScrap={스크랩토글} onStatus={상태바꾸기} />
                           ))}
                         </div>
                       )}

@@ -540,7 +540,8 @@ function ApplicantsContent() {
             {filtered.map((a) => (
               <ApplicantCard key={a.id} a={a}
                 checked={checked.includes(a.id)} onCheck={toggleCheck}
-                onOpen={열기} onToggleScrap={toggleScrap} />
+                onOpen={열기} onToggleScrap={toggleScrap}
+                onStatus={(x, st) => handleStatusChange(x.id, st)} />
             ))}
           </div>
         </div>
