@@ -57,6 +57,8 @@ export async function GET(req: NextRequest) {
        u.region_sido AS user_region_sido,
        u.region_sigungu AS user_region_sigungu,
        u.portfolio_images,
+       -- 인재 카드와 같은 얼굴을 쓴다 — 맨 윗줄은 본인이 고른 한 마디다.
+       up.intro AS user_intro,
         (
           SELECT ul.url FROM user_links ul
           WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
@@ -82,6 +84,7 @@ export async function GET(req: NextRequest) {
      FROM applications a
      JOIN job_postings jp ON jp.id = a.job_posting_id
      JOIN users u ON u.id = a.user_id
+     LEFT JOIN user_profiles up ON up.user_id = u.id
      WHERE ${whereClause}
      ORDER BY a.applied_at DESC
      LIMIT $${idx++} OFFSET $${idx++}`,

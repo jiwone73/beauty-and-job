@@ -1,10 +1,8 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Search, Bookmark, BookmarkCheck, Paperclip, XCircle, ChevronDown, Instagram } from "lucide-react";
+import { Search, Bookmark, BookmarkCheck, XCircle, ChevronDown } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
-import { formatPhone } from "@/lib/phone";
-import LinkCell from "@/components/company/LinkCell";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
@@ -169,6 +167,8 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
     const matchStatus = statusFilter === "전체" || STATUS_LABEL[a.status] === statusFilter;
     return matchSearch && matchStatus;
   });
+
+  const 열기 = (a: CompanyApplication) => router.push(`${base}/applicants/${a.id}`);
 
   const toggleAll = () =>
     setChecked(checked.length === filtered.length ? [] : filtered.map(a => a.id));
@@ -564,38 +564,25 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
                 <div key={a.id} className={`tal-card${고름 ? " on" : ""}`}>
                   <div className="tal-top">
                     <input type="checkbox" className="tal-check" checked={고름} onChange={() => toggleCheck(a.id)} />
-                    <div className="tal-avatar" onClick={() => router.push(`${base}/applicants/${a.id}`)} title="지원서 보기">
+                    <div className="tal-avatar" onClick={() => 열기(a)} title="지원서 보기">
                       {(a as any).user_avatar_url
                         ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
                         : <span>{(a.user_name || "?").slice(0, 1)}</span>}
                     </div>
 
-                    <div className="tal-main">
-                      <button type="button" className="tal-name" onClick={() => router.push(`${base}/applicants/${a.id}`)}>{a.user_name}</button>
-                      <div className="tal-head">
-                        <span style={{ fontSize: 12.5, color: 상태색 }}>
-                          {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
-                        </span>
-                        {나이성별 && <span className="tal-sub">{나이성별}</span>}
-                        <span className="tal-sub">{경력}</span>
+                    {/* 인재 카드와 같은 얼굴 — 맨 위는 본인이 고른 한 마디, 그 아래에
+                        그 사람을 특정하는 값. 한줄소개를 안 쓴 사람은 이름이 대신한다. */}
+                    <div className="tal-main" role="button" tabIndex={0} title="지원서 보기"
+                      onClick={() => 열기(a)}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); 열기(a); } }}>
+                      <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
+                      <div className="tal-who">
+                        {(a as any).user_intro ? a.user_name : ""}
+                        {(a as any).user_intro && 나이성별 ? " " : ""}
+                        {나이성별 && `(${나이성별})`}
+                        {경력 && <>{((a as any).user_intro || 나이성별) ? " · " : ""}{경력}</>}
                       </div>
-                      <div className="tal-meta">
-                        <span>
-                          {a.job_title}
-                          {isJobClosed(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
-                        </span>
-                        {지역 && <span>{지역}</span>}
-                      </div>
-                      <div className="tal-recent">
-                        {formatDate(a.applied_at)} 지원
-                        {/* 내가 먼저 찾아간 사람인지, 스스로 온 사람인지. 지원서를 읽는
-                            눈이 달라진다 — 대화까지 나눈 사이면 더 그렇다. */}
-                        {(a as any).proposal_interested_at
-                          ? <span className="tal-from">대화 후 지원</span>
-                          : (a as any).proposed_at
-                            ? <span className="tal-from">제안 후 지원</span>
-                            : null}
-                      </div>
+                      {지역 && <div className="tal-who">{지역}</div>}
                     </div>
 
                     <div className="tal-acts">
@@ -605,18 +592,25 @@ function ApplicantsContent({ scope = "active" }: { scope?: "active" | "past" }) 
                           ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
                           : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
                       </button>
+                      <span style={{ fontSize: 12.5, color: 상태색 }}>
+                        {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+                      </span>
                     </div>
                   </div>
 
+                  {/* 아랫줄은 인재 카드의 태그·날짜 자리 — 여기서는 어느 공고로 어떻게
+                      들어왔는지와 지원한 날. 연락처는 지원서를 열면 나온다. */}
                   <div className="tal-foot">
-                    <span className="tal-contact">
-                      {a.user_phone ? formatPhone(a.user_phone) : "전화번호 없음"}
-                      {a.user_email && <><i>·</i>{a.user_email}</>}
+                    <span className="tal-tags">
+                      {a.job_title}
+                      {isJobClosed(a) && <span style={{ marginLeft: 5, fontSize: 11, color: "#999", background: "#f2f2f4", borderRadius: 4, padding: "1px 5px" }}>마감</span>}
+                      {(a as any).proposal_interested_at
+                        ? <span className="tal-from">대화 후 지원</span>
+                        : (a as any).proposed_at
+                          ? <span className="tal-from">제안 후 지원</span>
+                          : null}
                     </span>
-                    <span className="tal-links">
-                      <LinkCell url={(a as any).portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="사진" />
-                      <LinkCell url={(a as any).sns_url} icon={<Instagram size={13} />} label="SNS" />
-                    </span>
+                    <span className="tal-when">{formatDate(a.applied_at)} 지원</span>
                   </div>
                 </div>
               );
