@@ -13,7 +13,7 @@ import {
 
 const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
-  jobs: "채용공고",
+  jobs: "공고·지원자 관리",
   "jobs-new": "채용공고 등록",
   applicants: "지원자",
   talent: "인재 검색",
@@ -182,8 +182,8 @@ export default function CompanyLayout({ children, activePage, title, side }: {
     // 채용공고 — 셀렉미가 '채용 정보 등록 / 관리·수정'을 나눠 둔 것과 같은 짜임.
     //   목록이 들어오는 문이라 위에 두고, 등록을 아래에 둔다.
     jobs: [
-      { id: "jobs",     label: () => "공고 관리", title: () => "채용공고 관리", href: `${base}/jobs` },
-      { id: "jobs-new", label: () => "공고 등록", title: () => "채용공고 등록", href: `${base}/jobs/new` },
+      { id: "jobs",     label: () => "공고·지원자 관리", title: () => "공고·지원자 관리", href: `${base}/jobs` },
+      { id: "jobs-new", label: () => "공고 등록",        title: () => "공고 등록",        href: `${base}/jobs/new` },
     ],
     // 인재풀 — 찾는 곳과 보낸 뒤를 보는 곳을 나눈다. 인재 검색은 끝까지 검색이라
     //   제안을 보내는 데서 끝나고, 보낸 뒤의 상태(읽음·대화 수락·기한)는 보낸 제안이
