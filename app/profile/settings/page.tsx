@@ -152,21 +152,18 @@ export default function AccountSettingsPage() {
           </button>
         </section>
 
-        {/* 회원 탈퇴 — 모달이 아니라 페이지로 보낸다. 되돌릴 수 없는 일이라
-            읽을 것이 많고, 주소가 남아야 빠져나가는 길도 분명하다. 자세한
-            주의사항은 그 페이지에서 읽힌다 — 여기서 다 늘어놓으면 정작
-            읽어야 할 때는 이미 지나친 글이 된다. */}
-        <section className="pf-set-card" style={{ background: "#fff", borderRadius: 12, padding: "16px 16px" }}>
+        {/* 탈퇴는 이 화면에서 유일하게 되돌릴 수 없는 일이라, 고치는 칸들과 같은
+            줄에 세우지 않는다. 카드 밖 오른쪽 아래에 작은 링크로만 둔다 —
+            기업회원 계정 설정과 같은 자리, 같은 모양이다.
+            모달이 아니라 페이지로 보낸다. 읽을 것이 많고, 주소가 남아야
+            빠져나가는 길도 분명하다. */}
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
           <button type="button" onClick={() => router.push("/profile/settings/withdraw")}
-            style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}>
-            <span style={{ textAlign: "left" }}>
-              <span style={{ display: "block", fontSize: 15, color: "#1a1a1a" }}>회원 탈퇴</span>
-              <span style={{ display: "block", fontSize: 13, color: "#c4c4c9", marginTop: 4 }}>
-                탈퇴 페이지로 이동하기
-              </span>
-            </span>
+            style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
+              fontSize: 15, color: "#a0a0a6", textDecoration: "underline", textUnderlineOffset: 3 }}>
+            회원 탈퇴
           </button>
-        </section>
+        </div>
       </div>
 
       <CompanyBlockModal open={blockOpen} onClose={() => setBlockOpen(false)} noun={상대 ?? "기업"} />
