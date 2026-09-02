@@ -14406,10 +14406,3 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-job { color: #666; }
 .tal-foot .tal-from { margin-left: 0; }
 
-/* 카드에서 바로 바꾸는 지원 상태. 평소엔 글씨처럼 있다가 올리면 고를 수 있다는 게
-   드러난다 — 상태가 있던 자리가 그대로 바꾸는 자리다. */
-.tal-st {
-  font-family: inherit; font-size: 12.5px; border: 1px solid transparent; background: none;
-  border-radius: 6px; padding: 2px 4px; cursor: pointer; text-align: right;
-}
-.tal-st:hover, .tal-st:focus { border-color: #e2e2e6; background: #fff; }

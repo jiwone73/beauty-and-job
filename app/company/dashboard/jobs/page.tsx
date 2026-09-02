@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
-import type { CompanyJob, JobStatus, CompanyApplication, ApplicationStatus } from "@/lib/types/company";
+import ApplicationModal from "@/components/company/ApplicationModal";
+import type { CompanyJob, JobStatus, CompanyApplication } from "@/lib/types/company";
 import { genderLabel, calcAge } from "@/lib/memberFormat";
 
 // === 매핑 헬퍼 ===
@@ -117,6 +118,7 @@ function CompanyJobsContent() {
   // 공고와 지원자는 한 덩어리다 — 공고를 올리는 이유가 지원자를 받는 것이라,
   // 그 공고에 누가 왔는지는 공고 카드 안에서 바로 열린다.
   const [접은공고, set접은공고] = useState<string[]>([]);
+  const [지원서, set지원서] = useState<string | null>(null);
   const [공고지원자, set공고지원자] = useState<Record<string, CompanyApplication[]>>({});
 
   // 한 번에 받아 공고별로 나눈다 — 카드마다 부르면 공고 수만큼 왕복한다.
@@ -143,17 +145,6 @@ function CompanyJobsContent() {
       for (const k of Object.keys(prev)) out[k] = prev[k].map((a) => a.id === id ? { ...a, ...바꿈 } : a);
       return out;
     });
-
-  const 상태바꾸기 = async (a: CompanyApplication, st: ApplicationStatus) => {
-    const 이전 = a.status;
-    지원자바꾸기(a.id, { status: st });
-    try {
-      await companyApplicationsApi.updateStatus(a.id, st);
-    } catch {
-      지원자바꾸기(a.id, { status: 이전 });
-      alert("상태를 바꾸지 못했어요.");
-    }
-  };
 
   const 스크랩토글 = async (a: CompanyApplication) => {
     const 다음 = !(a as any).scrapped;
@@ -574,8 +565,8 @@ function CompanyJobsContent() {
                         <div className="co-jc-apps">
                           {(공고지원자[job.id] || []).map((a) => (
                             <ApplicantCard key={a.id} a={a} showJob={false}
-                              onOpen={(x) => router.push(`/company/dashboard/applicants/${x.id}`)}
-                              onToggleScrap={스크랩토글} onStatus={상태바꾸기} />
+                              onOpen={(x) => set지원서(x.id)}
+                              onToggleScrap={스크랩토글} />
                           ))}
                         </div>
                       )}
@@ -639,6 +630,11 @@ function CompanyJobsContent() {
             </div>
           </div>
         </div>
+      )}
+
+      {지원서 && (
+        <ApplicationModal applicationId={지원서} onClose={() => set지원서(null)}
+          onStatus={(id, st) => 지원자바꾸기(id, { status: st })} />
       )}
     </CompanyLayout>
   );

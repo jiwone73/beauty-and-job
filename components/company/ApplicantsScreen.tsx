@@ -6,6 +6,7 @@ import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ApplicantCard from "@/components/company/ApplicantCard";
+import ApplicationModal from "@/components/company/ApplicationModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import { companyApplicationsApi, companyJobsApi, companyTalentApi } from "@/lib/api/company";
 import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
@@ -167,7 +168,8 @@ function ApplicantsContent() {
     return matchSearch && matchStatus;
   });
 
-  const 열기 = (a: CompanyApplication) => router.push(`${base}/applicants/${a.id}`);
+  const [지원서, set지원서] = useState<string | null>(null);
+  const 열기 = (a: CompanyApplication) => set지원서(a.id);
 
   const toggleAll = () =>
     setChecked(checked.length === filtered.length ? [] : filtered.map(a => a.id));
@@ -540,8 +542,7 @@ function ApplicantsContent() {
             {filtered.map((a) => (
               <ApplicantCard key={a.id} a={a}
                 checked={checked.includes(a.id)} onCheck={toggleCheck}
-                onOpen={열기} onToggleScrap={toggleScrap}
-                onStatus={(x, st) => handleStatusChange(x.id, st)} />
+                onOpen={열기} onToggleScrap={toggleScrap} />
             ))}
           </div>
         </div>
@@ -559,6 +560,11 @@ function ApplicantsContent() {
         </div>
       )}
 
+
+      {지원서 && (
+        <ApplicationModal applicationId={지원서} onClose={() => set지원서(null)}
+          onStatus={(id, st) => setApplicants((prev) => prev.map((x) => x.id === id ? { ...x, status: st } : x))} />
+      )}
     </CompanyLayout>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
-import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company";
+import type { CompanyApplication } from "@/lib/types/company";
 
 // 지원자 카드. 지원자 목록과 공고 카드 안(펼치기)이 같은 카드를 쓴다 —
 // 같은 사람이 두 자리에서 다르게 보이면 안 된다.
@@ -12,7 +12,7 @@ import type { CompanyApplication, ApplicationStatus } from "@/lib/types/company"
 const STATUS_LABEL: Record<string, string> = {
   APPLIED: "미열람", VIEWED: "열람", INTERVIEW: "면접", PASSED: "합격", REJECTED: "불합격",
 };
-const 고를수있는상태: ApplicationStatus[] = ["APPLIED", "VIEWED", "INTERVIEW", "PASSED", "REJECTED"];
+
 
 const 날짜 = (s: string) => {
   const d = new Date(s);
@@ -36,13 +36,11 @@ const 마감인가 = (a: CompanyApplication) => {
 };
 
 export default function ApplicantCard({
-  a, onOpen, onToggleScrap, onStatus, checked, onCheck, showJob = true,
+  a, onOpen, onToggleScrap, checked, onCheck, showJob = true,
 }: {
   a: CompanyApplication;
   onOpen: (a: CompanyApplication) => void;
   onToggleScrap: (a: CompanyApplication) => void;
-  /** 상태를 그 자리에서 바꾼다. 지원서를 열어야만 바꿀 수 있으면 열 번 들어갔다 나온다. */
-  onStatus?: (a: CompanyApplication, s: ApplicationStatus) => void;
   /** 일괄 처리용 체크. 공고 카드 안에서는 쓰지 않는다. */
   checked?: boolean;
   onCheck?: (id: string) => void;
@@ -101,19 +99,11 @@ export default function ApplicantCard({
               ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
               : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
           </button>
-          {/* 상태가 있던 자리가 그대로 상태를 바꾸는 자리다 — 글씨처럼 조용히 있다가
-              누르면 열린다. 지원 취소는 상대가 정한 것이라 바꿀 수 없다. */}
-          {onStatus && a.status !== "WITHDRAWN" ? (
-            <select className="tal-st" value={a.status} style={{ color: 상태색 }}
-              onClick={(e) => e.stopPropagation()}
-              onChange={(e) => onStatus(a, e.target.value as ApplicationStatus)}>
-              {고를수있는상태.map((v) => <option key={v} value={v}>{STATUS_LABEL[v]}</option>)}
-            </select>
-          ) : (
-            <span style={{ fontSize: 12.5, color: 상태색 }}>
-              {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
-            </span>
-          )}
+          {/* 상태는 여기서 읽기만 한다. 면접·합격은 지원서를 읽고 나서 정하는 것이라
+              그 창에서 바꾼다 — 카드마다 고르개가 붙으면 목록이 시끄러워진다. */}
+          <span style={{ fontSize: 12.5, color: 상태색 }}>
+            {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+          </span>
         </div>
       </div>
 
