@@ -14376,10 +14376,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 공고 카드 안의 지원자 — 공고를 올리는 이유가 지원자를 받는 것이라, 그 공고에
    누가 왔는지는 카드 안에서 바로 열린다. 숫자가 곧 문이다. */
-.co-jc-nums { border: none; background: none; font: inherit; padding: 4px 2px; cursor: default; }
+.co-jc-nums { display: inline-flex; align-items: center; gap: 2px; border: none;
+  background: none; font: inherit; padding: 4px 2px; cursor: default; white-space: nowrap; }
 .co-jc-nums.open { cursor: pointer; }
 .co-jc-nums.open:hover { color: var(--color-primary); }
-.co-jc-chev { margin-left: 5px; vertical-align: -3px; transition: transform .15s; }
+.co-jc-chev { margin-left: 3px; transition: transform .15s; }
 .co-jc-chev.up { transform: rotate(180deg); }
 .co-jc-apps { border-top: 1px solid #f2f2f4; padding: 4px 0 2px; }
 .co-jc-app {
