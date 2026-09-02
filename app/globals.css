@@ -32,6 +32,8 @@
   --card-sub: 13.5px;        /* 곁줄(이름·조건·회사명) */
   --card-meta: 12.5px;       /* 태그·부가정보 */
   --card-badge: 11.5px;      /* 뱃지 */
+  /* 화면 제목 — 머리줄로 들어오든 사이드로 들어오든 한 값이다. */
+  --page-title: 20px;
   --card-title-c: #1a1a1a;
   --card-sub-c: #666;
   --card-meta-c: #8a8a90;
@@ -11957,7 +11959,7 @@ div:has(> table.admin-table),
 /* 사이트 헤더 아래에 오는 페이지 제목. 헤더가 이미 어디에 있는지 말하므로
    크게 외치지 않는다. */
 .nb-head { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 16px 12px; }
-.nb-head h1 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0; letter-spacing: -.3px; }
+.nb-head h1 { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0; letter-spacing: -.3px; }
 .nb-area { margin-left: auto; font-size: 12.5px; color: #888; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap; max-width: 45%; }
 .nearby-map-wrap { height: 320px; }
@@ -13137,7 +13139,7 @@ button,
 .jobs-main { min-width: 0; }
 /* 머리줄로 들어오는 화면들은 제목을 본문 가운데에 굵게 세운다. 건수는 그 아래. */
 .jobs-head { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 0 6px; }
-.jobs-head b { font-size: 20px; font-weight: 700; color: #1a1a1a; letter-spacing: -.4px; }
+.jobs-head b { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; letter-spacing: -.4px; }
 .jobs-head span { font-size: 13.5px; color: #9a94a4; }
 
 /* 사이드바가 들어온 만큼 카드는 다섯 줄에서 네 줄로. */
@@ -13374,7 +13376,7 @@ button,
      폰은 사이드 대신 위 탭 줄이 지금 화면을 이미 말해 준다 — 여기 또
      세우면 같은 말이 두 번 된다. .pf-main-title 기본값(아래)에서 감춘 걸
      PC 에서만 되살린다. */
-  .pf-main-title { display: block; font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+  .pf-main-title { display: block; font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
 
   .pf-side .pf-side-out { color: #a9a2b2; }
   /* 사이드가 생기면서 안쪽 칸이 가운데로 몰릴 이유가 없어졌다. 폰 시절의
@@ -13545,7 +13547,7 @@ button,
   }
   .resume-top-head { margin: 0; display: flex; flex-direction: column; gap: 3px; min-width: 0; text-align: center; }
   /* 머리줄로 들어오는 화면(채용공고·내 주변 공고·이력서)은 제목을 굵게 세운다. */
-  .resume-top-title { margin: 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+  .resume-top-title { margin: 0; font-size: var(--page-title); font-weight: 700; color: #1a1a1a; }
   .resume-top-btns { display: flex; justify-content: flex-end; gap: 8px; }
   .resume-top-desc { margin: 0; font-size: 13px; color: #9a9aa0; line-height: 1.5; }
   .resume-top-actions button {
@@ -14542,3 +14544,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .prop-item:hover .prop-titletxt { color: var(--color-primary); text-decoration-color: var(--color-primary); }
+
+/* 화면 제목 공용 — 새 화면은 이 class 만 쓰면 된다. */
+.page-title { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 8px; }

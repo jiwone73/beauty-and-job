@@ -53,7 +53,7 @@ export default function StoriesPage() {
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#582681", marginBottom: 8, whiteSpace: "nowrap" }}>현장이야기</h1>
+          <h1 className="page-title">현장이야기</h1>
           <p style={{ fontSize: 14, color: "#6f6f75", lineHeight: 1.6 }}>
             진상 손님부터 독립 고민까지,<br />
             공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
