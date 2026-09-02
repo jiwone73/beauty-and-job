@@ -14558,24 +14558,28 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-form { border-bottom: 1px solid #f2f2f4; padding-bottom: 12px; }
 
 /* 희망급여 — 그 자리에서 고르고 적는다. 비우면 「협의」다. */
-.pf-pay { display: inline-flex; align-items: center; gap: 8px; padding-left: 22px; }
-/* 다른 칸(.if-slot)처럼 테두리 없이 글자로만 있다가, 올리면 바탕이 옅게 든다. */
+.pf-pay { display: inline-flex; align-items: center; gap: 4px; padding-left: 22px; }
+/* 테두리도 바탕도 없이 글자로만 선다. 적는 칸만 올렸을 때 옅게 든다. */
 .pf-pay-sel, .pf-pay-in {
   font-family: inherit; font-size: 16px; color: #333;
   border: none; border-radius: 6px; padding: 4px 6px; background: none;
 }
-.pf-pay-sel:hover, .pf-pay-in:hover { background: #f2f2f4; }
-/* 브라우저 기본 고르개는 바탕이 회색이라 옆 입력칸과 결이 갈렸다. 화살표를 직접
-   그려 붙이고 바탕을 흰색으로 둔다. */
+/* 고르개는 바탕 없이 화살표만 둔다. 적는 칸만 올렸을 때 옅게 든다. */
+.pf-pay-in:hover { background: #f2f2f4; }
+/* 브라우저 기본 고르개는 바탕이 회색이라 옆 입력칸과 결이 갈렸다. 바탕을 지우고
+   아래 화살표만 그려 붙인다. */
 .pf-pay-sel {
   appearance: none; -webkit-appearance: none; cursor: pointer;
   padding: 4px 22px 4px 6px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat; background-position: right 4px center;
 }
-.pf-pay-in { width: 120px; text-align: right; }
+.pf-pay-in { width: 70px; text-align: left; }
 .pf-pay-in::placeholder { color: #cfcfcf; }
-.pf-pay-sel:focus, .pf-pay-in:focus { outline: none; background: #f4f0f8; }
+/* 고르개는 눌러도 바탕을 남기지 않는다 — 고르고 나면 색만 남아 무슨 표시인지
+   알 수 없다. 적는 칸만 어디를 치고 있는지 옅은 회색으로 알린다. */
+.pf-pay-sel:focus { outline: none; background-color: transparent; }
+.pf-pay-in:focus { outline: none; background: #f2f2f4; }
 .pf-pay-unit { font-size: 15px; color: #8a8a90; }
 .pf-pay-nego { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; font-size: 15px; color: #555; cursor: pointer; user-select: none; }
 .pf-pay-nego input { width: 16px; height: 16px; accent-color: var(--color-primary); cursor: pointer; margin: 0; }
