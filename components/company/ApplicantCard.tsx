@@ -102,7 +102,7 @@ export default function ApplicantCard({
           </button>
           {/* 상태는 여기서 읽기만 한다. 면접·합격은 지원서를 읽고 나서 정하는 것이라
               그 창에서 바꾼다 — 카드마다 고르개가 붙으면 목록이 시끄러워진다. */}
-          <span style={{ fontSize: 12.5, color: 상태색 }}>
+          <span style={{ fontSize: 13.5, color: 상태색 }}>
             {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
           </span>
         </div>

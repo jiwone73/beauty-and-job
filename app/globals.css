@@ -14267,7 +14267,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
 .tal-acts-top { display: flex; align-items: center; gap: 6px; }
 /* 「제안함」은 상태다. 버튼 모양이면 눌러야 하는 줄 알고 또 보낸다. */
-.tal-sent { font-size: 12.5px; color: #a0a0a6; white-space: nowrap; padding: 6px 2px; }
+.tal-sent { font-size: 13.5px; color: #a0a0a6; white-space: nowrap; padding: 6px 2px; }
 /* 뱃지는 이름에 붙는 표시라 한 줄로 묶는다 — 아랫줄로 내리면 나이·경력과 섞여
    무엇에 붙은 표시인지 흐려진다. */
 .tal-nameline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
