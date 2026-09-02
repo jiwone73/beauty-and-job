@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Eye, Lock, Bell } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Lock, Bell, Settings } from "lucide-react";
 import NotificationModal from "@/components/profile/NotificationModal";
 import ProfileShell from "@/components/profile/ProfileShell";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
@@ -143,10 +143,10 @@ export default function AccountSettingsPage() {
                     onClick={() => 공개칸고르기(o.key)} />
                   <span className="pf-vis-opt-t">
                     {o.label}
-                    {/* 이 칸만 누르면 창이 열린다. 화살표는 이 화면이 이미 쓰는
-                        「누르면 열림」 표시(열람 제한 기업 줄·비밀번호 변경 줄)와
-                        같은 것으로 둔다. */}
-                    {o.key === "except" && <ChevronRight size={13} className="pf-vis-opt-go" />}
+                    {/* 이 칸만 누르면 창이 열린다 — 지정할 것이 있다는 뜻이라
+                        톱니를 붙인다. 화살표는 「다음으로 넘어간다」로 읽혀
+                        여기 뜻과 어긋났다. */}
+                    {o.key === "except" && <Settings size={13} className="pf-vis-opt-go" />}
                   </span>
                   <span className="pf-vis-opt-d">{o.desc}</span>
                 </label>
