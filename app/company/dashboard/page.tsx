@@ -109,6 +109,8 @@ export default function CompanyDashboard() {
   const statCards = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
     { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=마감임박" },
+    // 공고 → 지원 → 제안 순으로 세운다. 아래 카드 제목과 같은 이름을 쓴다.
+    { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants" },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
     { label: "제안 관심", value: stats?.proposal_interested ?? 0, href: "/company/dashboard/proposals" },
     { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals" },
