@@ -13369,7 +13369,7 @@ button,
   }
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   /* 사이드는 176px 이다 — 긴 이름이 사진을 밀어내지 않게 이름만 줄인다. */
-  .pf-side-me-name { font-size: 15px; font-weight: 700; color: #2b2b2b;
+  .pf-side-me-name { font-size: 15px; font-weight: 500; color: #2b2b2b;
     min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* 아래 메뉴 줄 높이(10px 여백 + 글자)와 어깨를 맞춘다 — 34px 은 이 줄만 키운다. */
   .pf-side-me-av {
