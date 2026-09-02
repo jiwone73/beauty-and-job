@@ -14533,8 +14533,3 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .rp-cond-k { font-size: 14px; color: #8a8a90; }
 .rp-cond-v { font-size: 14px; color: #1a1a1a; }
 .rp-cond-unit { color: var(--color-primary); font-weight: 400; }
-
-/* 공고명 옆 「(채용공고 보기)」 — 카드 자체가 공고로 가는 문이라 단추를 따로
-   세우지 않는다. 갈 곳이 있다는 것만 글자로 알린다. */
-.prop-golink { font-size: var(--card-meta); color: var(--color-primary);
-  text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }

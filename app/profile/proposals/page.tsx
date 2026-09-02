@@ -161,9 +161,6 @@ export default function ProposalsPage() {
                           <span className="prop-title">
                             {p.job_title}
                             {마감 && <span className="prop-closed">마감</span>}
-                            {/* 카드를 누르면 공고로 가는데, 단추를 따로 세우면 갈 곳이
-                                둘로 보인다. 공고명 옆에 글자로만 알려 준다. */}
-                            <span className="prop-golink">(채용공고 보기)</span>
                           </span>
                         </span>
                         <span className="prop-when">
