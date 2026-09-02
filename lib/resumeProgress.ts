@@ -11,7 +11,7 @@ export type 진행입력 = {
   /** 매장(살롱) 이력서냐. 본사는 학력·어학을 반드시 본다. */
   살롱: boolean;
   isEntryLevel: boolean;
-  careers: { company?: string | null }[];
+  careers: { company?: string | null; startDate?: string | null }[];
   educations: { school?: string | null }[];
   certificates: { name?: string | null }[];
   experiences: { title?: string | null }[];
@@ -25,7 +25,7 @@ export function 이력서진행(입력: 진행입력): { 칸: 진행칸[]; 비�
   const 있음 = (v?: string | null) => !!String(v ?? "").trim();
   // 더하기만 누르고 비워 둔 줄은 채운 것으로 세지 않는다. 길이만 보면 빈 줄
   // 하나에 그 칸이 완료로 잡혀, 정작 아무것도 안 적혔는데 100%가 된다.
-  const 채운경력 = 입력.careers.some((c) => 있음(c.company)) || 입력.isEntryLevel;
+  const 채운경력 = 입력.careers.some((c) => 있음(c.company) || 있음(c.startDate)) || 입력.isEntryLevel;
   const 채운학력 = 입력.educations.some((e) => 있음(e.school));
   const 채운자격 = 입력.certificates.some((c) => 있음(c.name));
   const 채운활동 = 입력.experiences.some((x) => 있음(x.title));

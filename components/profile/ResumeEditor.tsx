@@ -293,7 +293,7 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
-                <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} required wide
+                <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} wide
                   onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
               </div>
               <div className="if-line">

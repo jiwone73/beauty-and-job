@@ -28,7 +28,9 @@ export function 이력서흠찾기(입력: {
   if (!isEntryLevel) {
     if (careers.length === 0) 흠들.push({ 어디: "career", 말: "경력을 넣거나 '신입'을 골라 주세요." });
     careers.forEach((c) => {
-      if (빔(c.company)) 흠들.push({ 어디: "career", 누구: c.id, 말: 본사냐 ? "회사명이 비었어요." : "매장명이 비었어요." });
+      // 매장명은 안 적어도 된다. 뷰티업계는 좁아서, 지금 다니는 곳이 드러나는
+      // 것이 무서워 이력서를 아예 안 여는 사람이 있다. 이름 없이도 기간과 맡은
+      // 일은 남으니 경력으로 읽힌다.
       if (빔(c.startDate)) 흠들.push({ 어디: "career", 누구: c.id, 말: "근무 기간을 골라 주세요." });
       if (본사냐 && 빔(c.department)) 흠들.push({ 어디: "career", 누구: c.id, 말: "근무 형태를 골라 주세요." });
       if (본사냐 && 빔(c.description)) 흠들.push({ 어디: "career", 누구: c.id, 말: "주요 성과를 한 줄이라도 적어 주세요." });

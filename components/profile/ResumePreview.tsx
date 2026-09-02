@@ -148,13 +148,15 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           <h2 className="rp-section-title">경력</h2>
           {careers.map((c) => (
             <div key={c.id} className="rp-item">
+              {/* 매장명은 안 적어도 된다. 기술직은 어디서 했느냐보다 무엇을
+                  맡았느냐가 경력이라, 이름이 비면 맡은 일이 그 자리에 선다. */}
               <div className="rp-item-head">
-                <strong>{c.company}</strong>
+                <strong>{c.company || [c.department, c.position].filter(Boolean).join(" · ")}</strong>
                 <span className="rp-period">
                   {c.startDate} - {c.endDate}
                 </span>
               </div>
-              {c.department && (
+              {c.company && c.department && (
                 <p className="rp-item-sub">
                   {c.department} · {c.position}
                 </p>
