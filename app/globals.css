@@ -14327,3 +14327,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 포트폴리오 안의 「사진」·「SNS」 줄 이름. 편집 화면(resume-career-head)과 같은
    무게로 — 구역 제목이 아니라 그 안을 가르는 작은 이름이다. */
 .rp-sub { font-size: 13px; color: #888; margin: 0 0 8px; }
+
+/* 「제안 후 지원」·「대화 후 지원」 — 내가 먼저 찾아간 사람인지, 스스로 온 사람인지.
+   지원 날짜 옆에 붙는 작은 표시지 상태값이 아니라, 뱃지처럼 굵게 세우지 않는다. */
+.tal-from { margin-left: 8px; color: var(--color-primary); }

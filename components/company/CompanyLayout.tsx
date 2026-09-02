@@ -15,7 +15,8 @@ const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
   jobs: "채용공고",
   "jobs-new": "채용공고 등록",
-  applicants: "지원자 관리",
+  applicants: "지원자 목록",
+  "applicants-past": "지난 지원자",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
   proposals: "보낸 제안",
@@ -190,6 +191,12 @@ export default function CompanyLayout({ children, activePage, title }: {
       { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재", href: `${base}/talent/scrapped` },
       { id: "proposals", label: () => "보낸 제안",   title: () => "보낸 제안",   href: `${base}/proposals` },
     ],
+    // 지원자 — 마감된 공고의 지원자를 갈라 둔다. 한 목록에 섞여 있으면 오늘 답해야
+    //   할 사람이 이미 끝난 건에 묻힌다. 사람인도 마감 후 90일로 시간을 끊는다.
+    applicants: [
+      { id: "applicants",      label: () => "지원자 목록", title: () => "지원자 목록", href: `${base}/applicants` },
+      { id: "applicants-past", label: () => "지난 지원자", title: () => "지난 지원자", href: `${base}/applicants/past` },
+    ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
     settings: [
@@ -207,6 +214,7 @@ export default function CompanyLayout({ children, activePage, title }: {
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new")
     : id === "talent" ? (activePage === "talent" || activePage === "scrapped" || activePage === "proposals")
+    : id === "applicants" ? 묶음 === "applicants"
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의

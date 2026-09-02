@@ -22,12 +22,15 @@ type 제안 = {
   jobTitle: string | null;
   lastSender: "USER" | "COMPANY" | null;
   blocked: boolean;
+  appliedAt: string | null;
 };
 
 const 날짜 = (s: string) => new Date(s).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" });
 
 // 지금 어떤 상태인지 한 마디로. 매장이 다음에 뭘 해야 하는지가 여기서 갈린다.
 function 상태(p: 제안): { 글: string; 색: string; 급한가: boolean } {
+  // 지원까지 왔으면 그것이 제안의 끝이다 — 차단·기한보다 먼저 말한다.
+  if (p.appliedAt) return { 글: "지원함", 색: "#1f7a4d", 급한가: false };
   if (p.blocked) return { 글: "차단됨", 색: "#b4b4b9", 급한가: false };
   if (p.interestedAt) {
     return p.lastSender === "USER"

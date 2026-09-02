@@ -12,11 +12,17 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const jobId = searchParams.get('job_id')
   const status = searchParams.get('status')
+  // 마감된 공고의 지원자는 「지난 지원자」로 갈라 본다. 한 목록에 섞여 있으면
+  // 오늘 답해야 할 사람이 이미 끝난 건에 묻힌다.
+  const scope = searchParams.get('scope') || 'active'   // active | past | all
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '100')
   const offset = (page - 1) * limit
 
   const where: string[] = ['jp.company_id = $1', 'a.hidden_by_company = false', "a.status <> 'WITHDRAWN'"]
+  const 지난공고 = "(jp.status = 'CLOSED' OR (jp.deadline IS NOT NULL AND jp.deadline < CURRENT_DATE))"
+  if (scope === 'past') where.push(지난공고)
+  else if (scope === 'active') where.push(`NOT ${지난공고}`)
   const params: any[] = [companyId]
   let idx = 2
 
@@ -58,6 +64,14 @@ export async function GET(req: NextRequest) {
           WHERE r.user_id = u.id
           ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_start_date,
        EXISTS(SELECT 1 FROM company_talent_scraps s WHERE s.company_id = $1 AND s.user_id = u.id) AS scrapped,
+       -- 이 사람이 스스로 온 사람인지, 내가 먼저 제안해서 온 사람인지. 같은 공고로
+       -- 보낸 제안이 있으면 내가 찾아간 사람이고, 대화까지 수락했으면 얘기를 나누고
+       -- 온 것이다. 지원서를 읽는 눈이 달라진다.
+       (SELECT MIN(pr.created_at) FROM proposals pr
+         WHERE pr.company_id = $1 AND pr.user_id = u.id AND pr.job_posting_id = a.job_posting_id) AS proposed_at,
+       (SELECT MIN(pr.interested_at) FROM proposals pr
+         WHERE pr.company_id = $1 AND pr.user_id = u.id AND pr.job_posting_id = a.job_posting_id
+           AND pr.interested_at IS NOT NULL) AS proposal_interested_at,
        jp.id AS job_id, jp.title AS job_title,
        jp.experience_level, jp.status AS job_status, jp.deadline AS job_deadline
      FROM applications a

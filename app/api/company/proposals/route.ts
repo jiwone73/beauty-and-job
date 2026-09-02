@@ -20,7 +20,12 @@ export async function GET(req: NextRequest) {
               (SELECT sender FROM proposal_messages m
                 WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_sender,
               EXISTS (SELECT 1 FROM user_company_blocks b
-                       WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked
+                       WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked,
+              -- 제안의 끝. 대화까지 갔는데 지원을 했는지 안 했는지가 이 화면에
+              -- 없어서, 보낸 제안이 채용으로 이어졌는지를 볼 데가 없었다.
+              (SELECT MIN(ap.applied_at) FROM applications ap
+                WHERE ap.user_id = p.user_id AND ap.job_posting_id = p.job_posting_id
+                  AND ap.status <> 'WITHDRAWN') AS applied_at
          FROM proposals p
          JOIN users u ON u.id = p.user_id
          LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
@@ -42,6 +47,7 @@ export async function GET(req: NextRequest) {
       jobTitle: r.job_title,
       lastSender: r.last_sender,
       blocked: r.blocked,
+      appliedAt: r.applied_at || null,
     })));
   } catch (e: any) {
     console.error("[company proposals]", e);
