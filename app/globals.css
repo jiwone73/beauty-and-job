@@ -14533,3 +14533,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .rp-cond-k { font-size: 14px; color: #8a8a90; }
 .rp-cond-v { font-size: 14px; color: #1a1a1a; }
 .rp-cond-unit { color: var(--color-primary); font-weight: 400; }
+
+/* 공고명이 곧 공고로 가는 문이다. 인재 카드의 이름(.tal-name)과 같은 결 —
+   옅은 밑줄을 늘 두고, 올리면 보라로 짙어진다. */
+.prop-titletxt {
+  text-decoration: underline; text-decoration-color: #d8d3de;
+  text-decoration-thickness: 1px; text-underline-offset: 3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.prop-item:hover .prop-titletxt { color: var(--color-primary); text-decoration-color: var(--color-primary); }

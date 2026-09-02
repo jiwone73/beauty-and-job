@@ -159,7 +159,8 @@ export default function ProposalsPage() {
                         <span className="prop-headl">
                           <span className="prop-co">{p.brand_name || p.company_name}</span>
                           <span className="prop-title">
-                            {p.job_title}
+                            {/* 누르면 공고로 간다 — 밑줄이 그 길을 말한다. */}
+                            <span className="prop-titletxt">{p.job_title}</span>
                             {마감 && <span className="prop-closed">마감</span>}
                           </span>
                         </span>
