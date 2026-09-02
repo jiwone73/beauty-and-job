@@ -80,3 +80,13 @@ export function formatPhone(phone: string | null | undefined): string {
   if (d.length === 9 && d.startsWith("02")) return `${d.slice(0, 2)}-${d.slice(2, 5)}-${d.slice(5)}`;
   return phone;
 }
+
+// 「서울특별시 금천구」가 아니라 「서울 금천구」. 카드에서 쓰던 줄임을 이력서
+// 미리보기도 같이 쓴다 — 같은 값이 화면마다 달리 적히면 안 된다.
+export function shortenRegion(region: string | null | undefined): string {
+  if (!region) return "";
+  return region
+    .replace(/특별자치도|특별자치시|특별시|광역시/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}

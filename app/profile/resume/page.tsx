@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
+import { shortenRegion } from "@/lib/memberFormat";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import { AlertCircle } from "lucide-react";
 import { Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
@@ -131,7 +132,7 @@ function ResumePageContent() {
           if (!Array.isArray(d.preferred_regions) || d.preferred_regions.length === 0) missing.push("희망 근무지역");
           if (Array.isArray(d.preferred_regions) && d.preferred_regions.length > 0) {
             set희망지역(d.preferred_regions
-              .map((r: any) => [r.sido, r.sigungu].filter(Boolean).join(" "))
+              .map((r: any) => shortenRegion([r.sido, r.sigungu].filter(Boolean).join(" ")))
               .filter(Boolean).join(", "));
           }
           if (d.job_type === "OFFICE" && (!Array.isArray(d.office_job_areas) || d.office_job_areas.length === 0)) missing.push("직군 영역");
