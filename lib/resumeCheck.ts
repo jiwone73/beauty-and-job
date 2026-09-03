@@ -47,7 +47,8 @@ export function 이력서흠찾기(입력: {
 
   // ── 스킬·어학 ── 살롱만 필수. 어떤 시술을 하고 손님 응대가 되느냐가 채용 조건이다.
   if (!본사냐 && skills.length === 0) 흠들.push({ 어디: "skill", 말: "할 수 있는 시술을 넣어 주세요." });
-  if (!본사냐 && languages.length === 0) 흠들.push({ 어디: "language", 말: "쓸 수 있는 언어를 넣어 주세요." });
+  // 어학은 선택이다. 애견미용·미용 강사처럼 언어를 물을 일이 없는 자리가
+  // 매장직에 들어오면서, 필수로 두면 그 사람들은 영영 100%가 안 된다.
   languages.forEach((l) => {
     if (빔(l.language)) 흠들.push({ 어디: "language", 누구: l.id, 말: "언어를 골라 주세요." });
     if (빔(l.level)) 흠들.push({ 어디: "language", 누구: l.id, 말: "수준을 골라 주세요." });
