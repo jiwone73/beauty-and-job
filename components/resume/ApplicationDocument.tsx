@@ -1,6 +1,7 @@
 "use client";
 import { forwardRef } from "react";
 import ResumePreview from "@/components/profile/ResumePreview";
+import { Quote } from "lucide-react";
 
 // 제출한 지원서 공용 문서: 자기소개서 + 이력서 본문
 // 구직자/기업/관리자 화면에서 동일하게 사용 (PDF/인쇄는 lib/applicationPdf 유틸)
@@ -29,7 +30,11 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
         <>
           <div style={{ borderTop: "1px solid #e0e0e0", marginTop: 22, paddingTop: 22 }} />
           <div style={{ background: "#fff" }}>
-            <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px", lineHeight: 1.5 }}>자기소개서</h2>
+            {/* 칸 이름은 이 문서의 다른 칸들과 같은 규칙을 쓴다 — 여기만 제
+                스타일을 들고 있어 아이콘도 굵기도 어긋나 있었다. */}
+            <h2 className="rp-section-title" style={{ margin: "0 0 12px" }}>
+              <Quote size={16} className="resume-section-icon" />자기소개서
+            </h2>
             {subtitle && (
               <p style={{ fontSize: 12.5, color: "#888", margin: "-6px 0 14px" }}>{subtitle}</p>
             )}
