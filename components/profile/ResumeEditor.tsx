@@ -548,13 +548,18 @@ export default function ResumeEditor({
                 <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{portfolioImages.length}장</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
-                {portfolioReadOnly ? null : portfolioImages.length === 0 ? (
+                {/* 지원 창에서는 읽기 전용이다 — 사진은 이 공고에 낼 사본이 아니라
+                    한 곳(users.portfolio_images)에 있어, 여기서 지우면 기본
+                    이력서에서도 진짜로 사라진다. 대신 고치러 갈 길을 놓는다. */}
+                {portfolioReadOnly ? (
+                  <a className="pf-goto" href="/profile/resume" target="_blank" rel="noopener">이력서에서 수정</a>
+                ) : portfolioImages.length === 0 ? (
                   <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                     <Plus size={18} />
                   </button>
                 ) : (
                   <>
-                    {portfolioImages.length < 9 && (
+                    {portfolioImages.length < MAX_PHOTOS && (
                       <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                         <Plus size={18} />
                       </button>
