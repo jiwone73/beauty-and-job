@@ -14583,7 +14583,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 화살표는 이름 바로 옆에 붙는다. 오른쪽 끝으로 밀면 반 칸을 건너 떠 있어
    무엇에 딸린 표시인지 멀어진다. */
 .pf-set-go { color: #c4c4c9; flex-shrink: 0; }
-.pf-set-line .pf-vis-opts { margin-top: 12px; }
+/* 값은 이름표 '글자'가 시작하는 자리에 맞춘다(아이콘 16 + 사이 6). 이 화면의
+   다른 값 칸과 같은 규칙이다. */
+.pf-set-line .pf-vis-opts { margin-top: 12px; padding-left: 22px; }
 @media (max-width: 560px) { .pf-set-two { grid-template-columns: 1fr; gap: 16px; } }
 
 /* 이력서 공개 — 전체공개·부분공개·비공개 셋을 한 행에 나란히. 이름 아래
