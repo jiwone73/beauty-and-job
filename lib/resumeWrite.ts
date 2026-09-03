@@ -27,8 +27,8 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
     `INSERT INTO user_profiles (
       user_id, intro, core_competencies, main_job_group, sub_job,
       is_career_verified, verified_date, skills,
-      skill_areas, work_type_prefer, region_prefer, office_job_areas, is_entry_level, entry_experience, job_search_status, job_search_status_at, cover_letter, updated_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, NOW())
+      skill_areas, work_type_prefer, region_prefer, office_job_areas, is_entry_level, entry_experience, job_search_status, job_search_status_at, cover_letter, salary_type, salary_min, updated_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, NOW())
     ON CONFLICT (user_id) DO UPDATE SET
       intro = EXCLUDED.intro,
       core_competencies = EXCLUDED.core_competencies,
@@ -46,6 +46,11 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
       is_entry_level = EXCLUDED.is_entry_level,
       entry_experience = EXCLUDED.entry_experience,
       cover_letter = EXCLUDED.cover_letter,
+      -- 급여는 이 함수를 부르는 쪽이 값을 실었을 때만 바꾼다. 지원 창의
+      -- 사본은 급여를 싣고(그 지원에만 적용), 이력서 저장은 안 싣는다 —
+      -- 안 실었는데 덮어쓰면 프로필에서 고른 급여가 지워진다.
+      salary_type = COALESCE(EXCLUDED.salary_type, user_profiles.salary_type),
+      salary_min = COALESCE(EXCLUDED.salary_min, user_profiles.salary_min),
       updated_at = NOW()`,
     [
       userId,
@@ -67,6 +72,9 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
       profile.job_search_status_at || new Date(),
       // 기본 자기소개서. 선택이라 안 쓴 사람은 빈 값이다.
       profile.cover_letter || "",
+      // 급여는 실은 쪽만 바꾼다(위 COALESCE). 안 실으면 null 로 가고 그대로 남는다.
+      profile.salary_type ?? null,
+      profile.salary_min === null || profile.salary_min === undefined ? null : profile.salary_min,
     ]
   );
   // resumes upsert (관리자 이력서 관리 노출용) - ON CONFLICT 한 방 처리

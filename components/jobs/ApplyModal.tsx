@@ -9,6 +9,7 @@ import CoverLetterTools from "@/components/profile/CoverLetterTools";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
+import { SALARY_TYPE_LABEL } from "@/lib/salary";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { compressPhoto, MAX_PHOTOS } from "@/lib/compressImage";
 
@@ -55,7 +56,19 @@ export default function ApplyModal({
   // 가입한 사람은 「희망 근무 조건」에서 직군 줄이 통째로 빠졌다.
   const [직군매장, set직군매장] = useState<string[] | null>(null);
   const [직군본사, set직군본사] = useState<string[] | null>(null);
-  const [희망급여, set희망급여] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
+  // 희망 급여만은 이 창에서 그 자리에서 고친다. 이력서에 박힌 사실이 아니라
+  // 이 매장에 내는 조건이라, 공고를 보고 올리고 내리는 값이다. 고친 값은 이
+  // 지원서에만 실리고 프로필의 희망급여는 그대로 둔다.
+  const [급여유형, set급여유형] = useState("MONTHLY");
+  const [급여만, set급여만] = useState("");
+  const [급여협의, set급여협의] = useState(false);
+  const 급여배수 = 급여유형 === "HOURLY" || 급여유형 === "DAILY" ? 1 : 10000;
+  // 「협의」는 0원으로 적는다(프로필과 같은 규칙). 비워 둔 것(아직 안 정함)과
+  // 협의로 정한 것이 갈라져야 다시 열 때도 그대로 선다.
+  const 희망급여 = {
+    type: 급여유형,
+    min: 급여협의 ? 0 : (급여만 ? Number(급여만) * 급여배수 : null),
+  };
   const [초안됨, set초안됨] = useState(false);   // 이번에 불러온 초안이 있나
   const [방금저장, set방금저장] = useState(false);
   const 초안준비 = useRef(false);               // 원본을 뜨기 전에는 쓰지 않는다
@@ -105,6 +118,8 @@ export default function ApplyModal({
      그래서 창이 열려 있는 동안 저장을 잠그고, 열 때 한 벌 떠 두었다가 닫을 때
      되돌린다. 회사에 가는 것은 지원할 때 보내는 사본으로 서버가 뜬 스냅샷이다. */
   const 뜬이력서 = useRef<이력서한벌 | null>(null);
+  // 프로필에서 온 처음 급여. 이것과 같으면 붙들어 둘 것이 없다.
+  const 첫급여 = useRef<string | null>(null);
   useEffect(() => {
     useProfileStore.getState().자동저장잠금(true);
     return () => {
@@ -124,7 +139,18 @@ export default function ApplyModal({
       .then((res) => {
         const pf = res?.data?.profile;
         if (!pf) return;
-        set희망급여({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+        if (pf.salary_type) set급여유형(pf.salary_type);
+        if (pf.salary_min !== null && pf.salary_min !== undefined && Number(pf.salary_min) === 0) {
+          set급여협의(true);
+        } else if (pf.salary_min) {
+          const 배수 = pf.salary_type === "HOURLY" || pf.salary_type === "DAILY" ? 1 : 10000;
+          set급여만(String(Math.round(Number(pf.salary_min) / 배수)));
+          set급여협의(false);
+        }
+        첫급여.current = JSON.stringify({
+          type: pf.salary_type || "MONTHLY",
+          min: pf.salary_min === null || pf.salary_min === undefined ? null : Number(pf.salary_min),
+        });
         if (Array.isArray(pf.skill_areas)) set직군매장(pf.skill_areas);
         if (Array.isArray(pf.office_job_areas) && pf.office_job_areas.length > 0) set직군본사(pf.office_job_areas);
       })
@@ -173,6 +199,14 @@ export default function ApplyModal({
           // 다시 열었을 때 뺐던 사진이 도로 나오면 매번 다시 빼야 한다.
           if (Array.isArray(초안.resume.뺀사진)) set뺀사진(초안.resume.뺀사진);
           if (Array.isArray(초안.resume.뺀줄)) set뺀줄(초안.resume.뺀줄);
+          const 초안급여 = 초안.resume?.profile || {};
+          if (초안급여.salary_type) set급여유형(초안급여.salary_type);
+          if (초안급여.salary_min !== null && 초안급여.salary_min !== undefined) {
+            const 값 = Number(초안급여.salary_min);
+            set급여협의(값 === 0);
+            const 배수 = 초안급여.salary_type === "HOURLY" || 초안급여.salary_type === "DAILY" ? 1 : 10000;
+            set급여만(값 > 0 ? String(Math.round(값 / 배수)) : "");
+          }
           set초안됨(true);
         }
         if (초안?.cover_letter) { setCoverLetter(초안.cover_letter); setCoverLoaded(true); }
@@ -350,6 +384,8 @@ export default function ApplyModal({
         work_type_prefer: sg.workTypePrefer || "",
         region_prefer: sg.regionPrefer || "",
         office_job_areas: sg.officeJobAreas || [],
+        salary_type: 급여유형,
+        salary_min: 희망급여.min,
       },
       careers: 안뺀것("career", s.careers).filter((c) => 알맹이(c.company)),
       educations: 안뺀것("education", s.educations).filter((e) => 알맹이(e.school)),
@@ -392,7 +428,8 @@ export default function ApplyModal({
     // 기본 이력서와 한 글자도 다르지 않고 자소서도 그대로면 붙들어 둘 것이
     // 없다. 남겨 두면 다음에 열 때 '임시저장한 사본' 이라며 기본 이력서와
     // 똑같은 것을 되살려 놓고, 무엇이 사본인지 알 수 없게 된다.
-    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current) && 뺀사진.length === 0 && 뺀줄.length === 0;
+    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current) && 뺀사진.length === 0 && 뺀줄.length === 0
+      && (첫급여.current === null || 첫급여.current === JSON.stringify(희망급여));
     const 같은자소서 = 첫자소서.current === null || 첫자소서.current === coverLetter;
     try {
       if (같은이력서 && 같은자소서) {
@@ -415,7 +452,7 @@ export default function ApplyModal({
     const t = setTimeout(초안쓰기, 800);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [뺀사진, 뺀줄, intro, coreCompetencies, careers, educations, skills, languages, experiences,
+  }, [뺀사진, 뺀줄, 급여유형, 급여만, 급여협의, intro, coreCompetencies, careers, educations, skills, languages, experiences,
       links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
 
   // 이력서에 담아 둔 기본 자소서를 밑글로 깐다. 빈 칸에서 다시 쓰게 하면 대부분
@@ -704,7 +741,26 @@ export default function ApplyModal({
                 </div>
                 <div className="apply-info-row"><span>희망직군</span><b>{[...(직군매장 ?? skillAreas), ...(직군본사 ?? officeJobAreas)].join(", ") || "—"}</b></div>
                 {workTypePrefer && <div className="apply-info-row"><span>근무형태</span><b>{workTypePrefer}</b></div>}
-                <div className="apply-info-row"><span>희망 급여</span><b>{희망급여표시}</b></div>
+                {/* 프로필 화면과 같은 인라인 — 고르고, 적고, 협의를 켠다.
+                    여기서 고친 값은 이 지원서에만 실린다. */}
+                <div className="apply-info-row">
+                  <span>희망 급여</span>
+                  <b className="pf-pay" style={{ paddingLeft: 0, overflow: "visible" }}>
+                    <select className="pf-pay-sel" value={급여유형}
+                      onChange={(e) => set급여유형(e.target.value)}>
+                      {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <input className="pf-pay-in" inputMode="numeric" value={급여만}
+                      placeholder="숫자만 입력" disabled={급여협의}
+                      onChange={(e) => set급여만(e.target.value.replace(/[^0-9]/g, ""))} />
+                    <span className="pf-pay-unit">{급여유형 === "HOURLY" || 급여유형 === "DAILY" ? "원" : "만원"}</span>
+                    <label className="pf-pay-nego">
+                      <input type="checkbox" checked={급여협의}
+                        onChange={(e) => { set급여협의(e.target.checked); set급여만(""); }} />
+                      협의
+                    </label>
+                  </b>
+                </div>
               </div>
 
               {/* 되살린 것이 무엇인지 밝힌다. 말없이 채워 두면 기본 이력서가
