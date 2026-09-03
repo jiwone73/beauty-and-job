@@ -33,10 +33,22 @@ export default function KakaoMap({
         const marker = new window.kakao.maps.Marker({ position: center });
         marker.setMap(map);
         if (name) {
-          const iw = new window.kakao.maps.InfoWindow({
-            content: `<div style="padding:6px 10px;font-size:13px;font-weight:600;white-space:nowrap;">${name}</div>`,
+          // 카카오 기본 InfoWindow 는 제 테두리와 최소 너비를 들고 있어 짧은
+          // 이름에도 상자가 크게 남는다. 직접 그려 글자만큼만 차지하게 한다.
+          const 안전한이름 = String(name)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+          const 라벨 = new window.kakao.maps.CustomOverlay({
+            position: center,
+            yAnchor: 2.1,          // 마커 머리 위
+            content:
+              `<div style="display:inline-block;max-width:220px;padding:5px 10px;` +
+              `border-radius:8px;background:#fff;border:1px solid #e2e2e6;` +
+              `box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:13px;font-weight:600;` +
+              `color:#1a1a1a;line-height:1.4;white-space:nowrap;overflow:hidden;` +
+              `text-overflow:ellipsis;">${안전한이름}</div>`,
           });
-          iw.open(map, marker);
+          라벨.setMap(map);
         }
         // 확대/축소해도 목적지(마커)가 항상 지도 중앙에 오도록 재정렬
         window.kakao.maps.event.addListener(map, "zoom_changed", () => map.setCenter(center));
