@@ -29,11 +29,17 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
         <>
           <div style={{ borderTop: "1px solid #e0e0e0", marginTop: 22, paddingTop: 22 }} />
           <div style={{ background: "#fff" }}>
-            <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
+            <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: "0 0 12px", lineHeight: 1.5 }}>자기소개서</h2>
             {subtitle && (
-              <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>{subtitle}</p>
+              <p style={{ fontSize: 12.5, color: "#888", margin: "-6px 0 14px" }}>{subtitle}</p>
             )}
-            <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+            {/* 빈 줄을 그대로 흘리면 줄 높이(1.85)만큼 통째로 벌어져, 문단 사이가
+                제목과 첫 줄 사이보다 훨씬 넓어진다. 빈 줄로 끊어 문단으로 세우고
+                사이 여백은 우리가 정한다. */}
+            {String(coverLetter).split(/\n{2,}/).map((단락, i) => (
+              <p key={i} style={{ fontSize: 14, color: "#333", lineHeight: 1.85,
+                margin: i === 0 ? 0 : "10px 0 0", whiteSpace: "pre-wrap" }}>{단락}</p>
+            ))}
           </div>
         </>
       )}
