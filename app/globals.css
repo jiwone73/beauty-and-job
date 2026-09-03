@@ -1816,7 +1816,15 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-section-title { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #1a1a1a; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
 /* 프로필 항목 앞 아이콘(.profile-info-icon)과 같은 값 — 옅은 회색, 채우지 않는다. */
 .resume-section-icon { flex-shrink: 0; color: #b7b0c0; }
-.apply-resume-wrap .resume-section { padding: 16px 0; background: transparent; margin-bottom: 0; }
+/* 지원 창 안에서는 칸을 카드로 세우지 않는다 — 위쪽 지원 정보·희망 근무 조건이
+   가는 선으로만 나뉘어 있어, 여기부터 테두리가 생기면 다른 화면처럼 보인다.
+   이력서 화면(.resume-page)의 카드 테두리를 여기서만 걷는다. */
+.apply-resume-wrap .resume-section {
+  padding: 18px 0; background: transparent; margin-bottom: 0;
+  box-shadow: none !important; border-radius: 0 !important;
+  border-top: 1px solid #f2f2f4;
+}
+.apply-resume-wrap .resume-editor > .resume-section:first-child { border-top: none; padding-top: 4px; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
 .apply-cover-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
