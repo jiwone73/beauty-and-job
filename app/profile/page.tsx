@@ -1092,6 +1092,7 @@ export default function ProfilePage() {
            양쪽에 쓰여서, 비율이 흔들리면 어느 한쪽이 늘 잘린다. 가장 크게 보이는
            곳이 이력서 100x128 이라 2배 화면까지 500px 이면 넉넉하다. */
         <ImageCropModal file={avatarCropFile} aspect={1} minLongEdge={500}
+          주의="매장은 이 사진으로 면접 자리에서 본인을 알아봅니다. 마스크·옆모습·AI로 만든 얼굴은 확인이 안 돼 지원이 반려될 수 있어요."
           onCancel={() => setAvatarCropFile(null)}
           onCropped={handleAvatarCropped} />
       )}
