@@ -73,6 +73,12 @@ export default function ApplyModal({
   // 이 지원서에만 안 싣는 사진. 파일은 그대로 둔다 — 지우면 지난 지원서의
   // 스냅샷까지 깨지므로, 진짜 삭제는 기본 이력서에서만 한다.
   const [뺀사진, set뺀사진] = useState<string[]>([]);
+  // 이 지원서에만 안 싣는 줄(경력·학력·자격증·활동·어학·SNS). 「경력:id」 꼴로
+  // 담는다. 여기서는 더하지 못하게 했으니 지우기도 두지 않는다 — 빼고,
+  // 되돌리는 것까지가 이 창이 할 수 있는 전부다.
+  const [뺀줄, set뺀줄] = useState<string[]>([]);
+  const 안뺀것 = <T extends { id: string }>(종류: string, arr: T[]) =>
+    arr.filter((x) => !뺀줄.includes(`${종류}:${x.id}`));
   const 실을사진 = portfolioImages.filter((i) => !뺀사진.includes(i.url));
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [phoneLocal, setPhoneLocal] = useState("");
@@ -166,6 +172,7 @@ export default function ApplyModal({
           // 「이 지원서에서 뺀 사진」도 붙들어 둔 것에 함께 담긴다 — 창을 닫았다
           // 다시 열었을 때 뺐던 사진이 도로 나오면 매번 다시 빼야 한다.
           if (Array.isArray(초안.resume.뺀사진)) set뺀사진(초안.resume.뺀사진);
+          if (Array.isArray(초안.resume.뺀줄)) set뺀줄(초안.resume.뺀줄);
           set초안됨(true);
         }
         if (초안?.cover_letter) { setCoverLetter(초안.cover_letter); setCoverLoaded(true); }
@@ -344,12 +351,12 @@ export default function ApplyModal({
         region_prefer: sg.regionPrefer || "",
         office_job_areas: sg.officeJobAreas || [],
       },
-      careers: s.careers.filter((c) => 알맹이(c.company)),
-      educations: s.educations.filter((e) => 알맹이(e.school)),
-      experiences: s.experiences.filter((x) => 알맹이(x.title)),
-      languages: s.languages.filter((l) => 알맹이(l.language)),
-      links: s.links.filter((l) => 알맹이(l.url)),
-      certificates: s.certificates.filter((c) => 알맹이(c.name)),
+      careers: 안뺀것("career", s.careers).filter((c) => 알맹이(c.company)),
+      educations: 안뺀것("education", s.educations).filter((e) => 알맹이(e.school)),
+      experiences: 안뺀것("experience", s.experiences).filter((x) => 알맹이(x.title)),
+      languages: 안뺀것("language", s.languages).filter((l) => 알맹이(l.language)),
+      links: 안뺀것("link", s.links).filter((l) => 알맹이(l.url)),
+      certificates: 안뺀것("certificate", s.certificates).filter((c) => 알맹이(c.name)),
     };
   };
   /** 사본싸기() 의 반대 방향. 서버에 둔 초안을 store 가 쓰는 모양으로 되돌린다.
@@ -385,7 +392,7 @@ export default function ApplyModal({
     // 기본 이력서와 한 글자도 다르지 않고 자소서도 그대로면 붙들어 둘 것이
     // 없다. 남겨 두면 다음에 열 때 '임시저장한 사본' 이라며 기본 이력서와
     // 똑같은 것을 되살려 놓고, 무엇이 사본인지 알 수 없게 된다.
-    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current) && 뺀사진.length === 0;
+    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current) && 뺀사진.length === 0 && 뺀줄.length === 0;
     const 같은자소서 = 첫자소서.current === null || 첫자소서.current === coverLetter;
     try {
       if (같은이력서 && 같은자소서) {
@@ -395,7 +402,7 @@ export default function ApplyModal({
       await fetch(`/api/jobs/${jobId}/apply-draft`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ resume: { ...사본싸기(), 뺀사진 }, cover_letter: coverLetter }),
+        body: JSON.stringify({ resume: { ...사본싸기(), 뺀사진, 뺀줄 }, cover_letter: coverLetter }),
       });
     } catch (e) {
       console.error("[apply-draft]", e);
@@ -408,7 +415,7 @@ export default function ApplyModal({
     const t = setTimeout(초안쓰기, 800);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [뺀사진, intro, coreCompetencies, careers, educations, skills, languages, experiences,
+  }, [뺀사진, 뺀줄, intro, coreCompetencies, careers, educations, skills, languages, experiences,
       links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
 
   // 이력서에 담아 둔 기본 자소서를 밑글로 깐다. 빈 칸에서 다시 쓰게 하면 대부분
@@ -608,19 +615,19 @@ export default function ApplyModal({
                     email: emailLocal || email,
                     intro,
                     coreCompetencies: "",
-                    careers,
-                    educations,
+                    careers: 안뺀것("career", careers),
+                    educations: 안뺀것("education", educations),
                     skills,
-                    languages,
-                    experiences,
-                    links,
+                    languages: 안뺀것("language", languages),
+                    experiences: 안뺀것("experience", experiences),
+                    links: 안뺀것("link", links),
                     portfolioImages: 실을사진,
                     resumeFileName: null, // 첨부 이력서 숨김 처리(미리보기/전송 문서에서 제외)
                     avatarUrl,
                     resumeType,
                     officeJobAreas: 직군본사 ?? officeJobAreas,
                     skillAreas: 직군매장 ?? skillAreas,
-                    certificates,
+                    certificates: 안뺀것("certificate", certificates),
                     workTypePrefer,
                     regionPrefer: 희망지역 || regionPrefer,
                     salaryType: 희망급여.type,
@@ -724,6 +731,10 @@ export default function ApplyModal({
                   onResumeFileDelete={handleDeleteResumeFile}
                   onResumeFileOpen={handleOpenResumeFile}
                   resumeFileReadOnly
+                  빼기전용
+                  뺀줄={뺀줄}
+                  on빼기={(열쇠) => set뺀줄((p) => Array.from(new Set([...p, 열쇠])))}
+                  on되돌리기={(열쇠) => set뺀줄((p) => p.filter((k) => k !== 열쇠))}
                   portfolioReadOnly
                   portfolioExcludeOnly
                 />

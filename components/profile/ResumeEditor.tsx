@@ -34,6 +34,13 @@ type Props = {
   onResumeFileDelete: () => void;
   onResumeFileOpen: () => void;
   resumeFileReadOnly?: boolean;
+  /** 지원 창(사본을 고치는 자리)에서 켠다. 새로 더하는 자리를 없애고,
+   *  줄을 지우는 대신 「이 지원서에서만 빼기」로 바꾼다. 여기서 더해 봐야
+   *  이 공고에만 남고 기본 이력서에는 안 남아, 다음 공고에서 또 없다. */
+  빼기전용?: boolean;
+  뺀줄?: string[];
+  on빼기?: (열쇠: string) => void;
+  on되돌리기?: (열쇠: string) => void;
   /** 사진을 바꿀 수 없는 화면(지원서 사본)에서 켠다. 사진은 바로 서버로
       올라가 기본 이력서를 바꾸므로, 사본을 고치는 자리에서는 손대지 않는다. */
   portfolioReadOnly?: boolean;
@@ -80,6 +87,10 @@ export default function ResumeEditor({
   onResumeFileDelete,
   onResumeFileOpen,
   resumeFileReadOnly = false,
+  빼기전용 = false,
+  뺀줄 = [],
+  on빼기,
+  on되돌리기,
   portfolioReadOnly = false,
   흠 = [],
 }: Props) {
@@ -96,6 +107,31 @@ export default function ResumeEditor({
     isEntryLevel, setIsEntryLevel,
     entryExperience, setEntryExperience,
   } = useProfileStore();
+
+  // 지원 창에서는 줄을 지우지 않고 이 지원서에서만 뺀다. 되살릴 자리(＋)를
+  // 없앤 만큼, 뺀 줄은 흐리게 그대로 남고 언제든 되돌릴 수 있어야 한다.
+  const 뺐나 = (열쇠: string) => 빼기전용 && 뺀줄.includes(열쇠);
+  const 줄단추 = (열쇠: string, 물음: string, 지우기: () => void) => {
+    if (!빼기전용) {
+      return (
+        <button className="if-row-del" aria-label="삭제"
+          onClick={() => { if (confirm(물음)) 지우기(); }}>
+          <Trash2 size={15} />
+        </button>
+      );
+    }
+    if (뺀줄.includes(열쇠)) {
+      return (
+        <button className="if-row-back" onClick={() => on되돌리기?.(열쇠)}>되돌리기</button>
+      );
+    }
+    return (
+      <button className="if-row-del" aria-label="이 지원서에서 빼기" title="이 지원서에서 빼기"
+        onClick={() => on빼기?.(열쇠)}>
+        <X size={15} />
+      </button>
+    );
+  };
 
   // 신입 전환 확인 모달(경력이 있는 상태에서 신입으로 바꿀 때)
   const [entryConfirmOpen, setEntryConfirmOpen] = useState(false);
@@ -265,14 +301,14 @@ export default function ResumeEditor({
                 style={{ accentColor: "#582681", width: 15, height: 15 }} />
               신입
             </label>
-            <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
+            {!빼기전용 && <button className="resume-icon-btn" aria-label="경력 추가" disabled={isEntryLevel}
               onClick={() => { if (isEntryLevel) return; addCareer({
                   id: genId(), company: "", department: "", position: "",
                   startDate: "", endDate: "", isVerified: false, description: "",
                 }); }}
               style={{ opacity: isEntryLevel ? 0.4 : 1, cursor: isEntryLevel ? "not-allowed" : "pointer" }}>
               <Plus size={18} />
-            </button>
+            </button>}
           </div>
         </div>
         <흠줄 말들={칸흠("career")} />
@@ -294,7 +330,7 @@ export default function ResumeEditor({
         {/* 칸마다 무엇을 적는지 회색으로 적어 둔다. 누르면 그 칸 하나만 열린다 —
             매장명 하나 고치자고 기간·직급까지 다시 마주할 이유가 없다. */}
         {!isEntryLevel && careers.map((c, i) => (
-          <div key={c.id} className="if-row if-row-plain">
+          <div key={c.id} className={"if-row if-row-plain" + (뺐나("career:" + c.id) ? " is-out" : "")}>
             <div className="if-row-body">
               <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
@@ -345,10 +381,7 @@ export default function ResumeEditor({
                   onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
               </div>
             </div>
-            <button className="if-row-del" aria-label="삭제"
-              onClick={() => { if (confirm("이 경력을 삭제할까요?")) removeCareer(c.id); }}>
-              <Trash2 size={15} />
-            </button>
+            {줄단추("career:" + c.id, "이 경력을 삭제할까요?", () => removeCareer(c.id))}
           </div>
         ))}
       </section>
@@ -366,13 +399,13 @@ export default function ResumeEditor({
               <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             )}
           </h2>
-          <button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
+          {!빼기전용 && (<button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
             <Plus size={18} />
-          </button>
+          </button>)}
         </div>
         <흠줄 말들={칸흠("education")} />
         {educations.map((e) => (
-          <div key={e.id} className="if-row if-row-plain">
+          <div key={e.id} className={"if-row if-row-plain" + (뺐나("education:" + e.id) ? " is-out" : "")}>
             <div className="if-row-body">
               <흠줄 말들={항목흠("education", e.id)} />
               <div className="if-line if-line-head">
@@ -391,10 +424,7 @@ export default function ResumeEditor({
                   onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
               </div>
             </div>
-            <button className="if-row-del" aria-label="삭제"
-              onClick={() => { if (confirm("이 학력을 삭제할까요?")) removeEducation(e.id); }}>
-              <Trash2 size={15} />
-            </button>
+            {줄단추("education:" + e.id, "이 학력을 삭제할까요?", () => removeEducation(e.id))}
           </div>
         ))}
       </section>
@@ -403,9 +433,9 @@ export default function ResumeEditor({
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
             <h2 className="resume-section-title"><Sparkles size={16} className="resume-section-icon" />스킬{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
-            <button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
+            {!빼기전용 && (<button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
               <Plus size={18} />
-            </button>
+            </button>)}
           </div>
         <흠줄 말들={칸흠("skill")} />
           {/* 폼을 열면 그 안에도 담은 스킬이 (지우기와 함께) 서 있다. 둘 다
@@ -425,12 +455,12 @@ export default function ResumeEditor({
       <section id="section-certificate" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title"><Award size={16} className="resume-section-icon" />자격증</h2>
-          <button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => addCertificate({ id: genId(), name: "", issuer: "", issued_ym: "" })}>
+          {!빼기전용 && (<button className="resume-icon-btn" aria-label="자격증 추가" onClick={() => addCertificate({ id: genId(), name: "", issuer: "", issued_ym: "" })}>
             <Plus size={18} />
-          </button>
+          </button>)}
         </div>
         {certificates.map((c) => (
-          <div key={c.id} className="if-row if-row-plain">
+          <div key={c.id} className={"if-row if-row-plain" + (뺐나("certificate:" + c.id) ? " is-out" : "")}>
             <div className="if-row-body">
               <div className="if-line if-line-head">
                 <InlineText value={c.name} placeholder="자격증명" required wide
@@ -441,10 +471,7 @@ export default function ResumeEditor({
                   onSave={(v) => updateCertificate(c.id, { ...c, issued_ym: v })} />
               </div>
             </div>
-            <button className="if-row-del" aria-label="삭제"
-              onClick={() => { if (confirm("이 자격증을 삭제할까요?")) removeCertificate(c.id); }}>
-              <Trash2 size={15} />
-            </button>
+            {줄단추("certificate:" + c.id, "이 자격증을 삭제할까요?", () => removeCertificate(c.id))}
           </div>
         ))}
       </section>
@@ -453,12 +480,12 @@ export default function ResumeEditor({
       <section id="section-experience" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title"><Trophy size={16} className="resume-section-icon" />활동/수상</h2>
-          <button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
+          {!빼기전용 && (<button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
             <Plus size={18} />
-          </button>
+          </button>)}
         </div>
         {experiences.map((x) => (
-          <div key={x.id} className="if-row if-row-plain">
+          <div key={x.id} className={"if-row if-row-plain" + (뺐나("experience:" + x.id) ? " is-out" : "")}>
             <div className="if-row-body">
               <div className="if-line if-line-head">
                 <InlineText value={x.title} placeholder="무엇을 했는지" required wide
@@ -472,10 +499,7 @@ export default function ResumeEditor({
                   onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
               </div>
             </div>
-            <button className="if-row-del" aria-label="삭제"
-              onClick={() => { if (confirm("이 활동을 삭제할까요?")) removeExperience(x.id); }}>
-              <Trash2 size={15} />
-            </button>
+            {줄단추("experience:" + x.id, "이 활동을 삭제할까요?", () => removeExperience(x.id))}
           </div>
         ))}
       </section>
@@ -488,7 +512,7 @@ export default function ResumeEditor({
               학력과 같은 이유다 — 볼 일 없는 칸에 별표를 붙이면 채우지 못한
               사람이 제 이력서를 미완성으로 여기고 만다. */}
           <h2 className="resume-section-title"><Globe size={16} className="resume-section-icon" />어학</h2>
-          {(
+          {!빼기전용 && (
             <button className="resume-icon-btn" aria-label="어학 추가" onClick={() => addLanguage({ id: genId(), language: "", level: "", test: "" })}>
               <Plus size={18} />
             </button>
@@ -499,7 +523,7 @@ export default function ResumeEditor({
           const t = 시험읽기(l.test);
           const 담기 = (v: Partial<typeof t>) => updateLanguage(l.id, { ...l, test: 시험쓰기({ ...t, ...v }) });
           return (
-            <div key={l.id} className="if-row if-row-plain">
+            <div key={l.id} className={"if-row if-row-plain" + (뺐나("language:" + l.id) ? " is-out" : "")}>
               <div className="if-row-body">
                 <흠줄 말들={항목흠("language", l.id)} />
                 <div className="if-line">
@@ -520,10 +544,7 @@ export default function ResumeEditor({
                   </div>
                 )}
               </div>
-              <button className="if-row-del" aria-label="삭제"
-                onClick={() => { if (confirm("이 어학을 삭제할까요?")) removeLanguage(l.id); }}>
-                <Trash2 size={15} />
-              </button>
+              {줄단추("language:" + l.id, "이 어학을 삭제할까요?", () => removeLanguage(l.id))}
             </div>
           );
         })}
@@ -613,16 +634,16 @@ export default function ResumeEditor({
                 <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{links.length}개</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
-                <button className="resume-icon-btn" aria-label="SNS 추가"
+                {!빼기전용 && (<button className="resume-icon-btn" aria-label="SNS 추가"
                   onClick={() => addLink({ id: genId(), category: "", url: "" })}>
                   <Plus size={18} />
-                </button>
+                </button>)}
               </span>
             </div>
             {/* 항목이 곧 입력칸이다. 링크명과 주소를 그 자리에서 친다 —
                 주소만 넣으면 이름은 주소에서 알아낸다(instagram.com → 인스타그램). */}
             {links.map((l) => (
-              <div key={l.id} className="if-row if-row-plain">
+              <div key={l.id} className={"if-row if-row-plain" + (뺐나("link:" + l.id) ? " is-out" : "")}>
                 <div className="if-row-body">
                   <div className="if-line">
                     {/* 이름을 고르면 주소 앞부분까지 채워 준다 — 유튜브를 고르면
@@ -637,10 +658,7 @@ export default function ResumeEditor({
                       onSave={(v) => updateLink(l.id, { ...l, url: v, category: l.category || (v ? linkLabel(v) : "") })} />
                   </div>
                 </div>
-                <button className="if-row-del" aria-label="삭제"
-                  onClick={() => { if (confirm("이 링크를 삭제할까요?")) removeLink(l.id); }}>
-                  <Trash2 size={15} />
-                </button>
+                {줄단추("link:" + l.id, "이 링크를 삭제할까요?", () => removeLink(l.id))}
               </div>
             ))}
           </>

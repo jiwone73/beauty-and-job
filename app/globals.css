@@ -13868,6 +13868,15 @@ button,
   border-radius: 6px; opacity: 0; transition: opacity .12s, color .12s; }
 .if-row:hover .if-row-del { opacity: 1; }
 .if-row-del:hover { color: var(--color-error); }
+/* 손가락에는 hover 가 없다. 화면을 만지는 사람에게는 늘 보여야 뺄 수 있다. */
+@media (hover: none) { .if-row-del { opacity: 1; } }
+
+/* 지원 창에서 뺀 줄. 지운 것이 아니라 이번에만 안 싣는 것이라, 자리에
+   흐리게 남겨 두고 되돌릴 길을 옆에 둔다. */
+.if-row.is-out .if-row-body { opacity: .4; pointer-events: none; }
+.if-row-back { background: none; border: none; cursor: pointer; padding: 4px;
+  font-size: 13px; color: var(--color-primary); text-decoration: underline;
+  text-underline-offset: 3px; white-space: nowrap; flex-shrink: 0; }
 
 /* 값이 없으면 회색 안내, 있으면 제 색. 누르면 열린다. */
 .if-slot { background: none; border: none; padding: 2px 4px; border-radius: 5px; cursor: pointer;
