@@ -7,7 +7,9 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { shrinkImage } from "@/lib/imageShrink";
 
 const BUCKET = "avatars";
-const MAX_SIZE = 3 * 1024 * 1024; // 3MB
+// 화면이 고를 때 막는 크기와 같은 값. 브라우저 압축이 실패해 원본이 그대로
+// 올라오는 길이 있어서, 서버도 같은 자리에서 막는다.
+const MAX_SIZE = 8 * 1024 * 1024; // 8MB
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 // 프로필 사진 업로드
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
       return err("FILE_002", "JPG, PNG, WebP 이미지만 업로드 가능합니다.");
     }
     if (file.size > MAX_SIZE) {
-      return err("FILE_003", "파일 크기는 3MB 이하여야 합니다.");
+      return err("FILE_003", "파일 크기는 8MB 이하여야 합니다.");
     }
 
     const client = await pool.connect();

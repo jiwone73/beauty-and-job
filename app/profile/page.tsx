@@ -443,7 +443,10 @@ export default function ProfilePage() {
     if (!["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
       alert("JPG, PNG, WebP 이미지만 업로드 가능합니다."); e.target.value = ""; return;
     }
-    if (file.size > 10 * 1024 * 1024) { alert("이미지가 너무 커요. 10MB 이하로 올려주세요."); e.target.value = ""; return; }
+    // 상한은 「압축해도 되는 크기냐」를 묻는 것이지 저장 용량 얘기가 아니다.
+    // 압축은 이 사람 폰에서 일어난다 — 원본을 통째로 메모리에 올려 캔버스에
+    // 그려야 줄일 수 있어서, 너무 크면 줄이려다 탭이 죽는다.
+    if (file.size > 8 * 1024 * 1024) { alert("이미지가 너무 커요. 8MB 이하로 올려주세요."); e.target.value = ""; return; }
     e.target.value = "";
     setAvatarCropFile(file);
   };
@@ -456,8 +459,9 @@ export default function ProfilePage() {
     if (!token) return;
     setAvatarUploading(true);
     try {
+      // 줄인 뒤에 다시 재지 않는다 — 1600px 로 줄이면 3MB 를 넘을 일이 없고,
+      // 걸린다 해도 사용자는 압축된 것을 모르니 무엇을 어쩌라는 말인지 알 수 없다.
       const compressed = await compressImage(file);
-      if (compressed.size > 3 * 1024 * 1024) { alert("사진 용량이 커요. 3MB 이하 이미지로 올려주세요."); return; }
       const uploadName = (file.name.replace(/\.[^.]+$/, "") || "avatar") + ".jpg";
       const formData = new FormData();
       formData.append("file", new File([compressed], uploadName, { type: "image/jpeg" }));
@@ -677,7 +681,7 @@ export default function ProfilePage() {
                             <div style={{ height: 1, background: "#f7f7f8", margin: "1px 6px 5px" }} />
                           </>
                         )}
-                        <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG/PNG/WebP · 자동 최적화 (최대 3MB)</div>
+                        <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG · PNG · WebP</div>
                       </div>
                     )}
                     <input ref={avatarFileRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />
