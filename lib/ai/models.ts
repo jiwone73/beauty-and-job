@@ -13,3 +13,7 @@ export const PARSE_MODEL = process.env.PARSE_MODEL || "claude-haiku-4-5";
 
 /** 글을 짓거나 다듬는 곳 — 큐레이션·뉴스레터·현장이야기. */
 export const WRITING_MODEL = process.env.WRITING_MODEL || "claude-haiku-4-5";
+
+/** 구직자가 직접 누르는 곳 — 자기소개서 초안·맞춤법. 사람 손에 호출 수가
+ *  달려 있어 값싼 쪽으로 못 박아 둔다(글 짓는 다른 곳과 따로 고를 수 있게). */
+export const ASSIST_MODEL = process.env.ASSIST_MODEL || "claude-haiku-4-5";

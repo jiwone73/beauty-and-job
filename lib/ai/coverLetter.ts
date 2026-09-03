@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { WRITING_MODEL } from "@/lib/ai/models";
+import { ASSIST_MODEL } from "@/lib/ai/models";
 
 /**
  * 자기소개서 초안과 맞춤법 검사.
@@ -106,7 +106,7 @@ const 글꺼내기 = (msg: any) =>
 /** 자기소개서 초안. 출력 분량을 못 박아 요금을 묶는다. */
 export async function 자소서짓기(자료: 이력자료): Promise<string> {
   const msg = await 클라이언트().messages.create({
-    model: WRITING_MODEL,
+    model: ASSIST_MODEL,
     max_tokens: 600,
     system: 자소서지시,
     messages: [{ role: "user", content: 자료글(자료) }],
@@ -119,7 +119,7 @@ export type 교정 = { before: string; after: string; why: string };
 /** 맞춤법 — 고친 전문이 아니라 틀린 곳만 받는다(출력이 5분의 1로 준다). */
 export async function 맞춤법보기(글: string): Promise<교정[]> {
   const msg = await 클라이언트().messages.create({
-    model: WRITING_MODEL,
+    model: ASSIST_MODEL,
     max_tokens: 700,
     system: 맞춤법지시,
     messages: [{ role: "user", content: 글.slice(0, 2000) }],
