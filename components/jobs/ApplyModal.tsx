@@ -367,7 +367,8 @@ export default function ApplyModal({
    *  서버가 같은 코드로 스냅샷을 뜰 수 있다. 더하기만 누르고 비워 둔 줄은
    *  빼고 보낸다 — 남의 화면에 빈 줄로 나가면 안 된다. 임시저장도 같은
    *  모양을 그대로 쓴다 — 저장 API 를 두 벌 두지 않으려는 것이다. */
-  const 사본싸기 = () => {
+  const 사본싸기 = (뺀것도빼고 = true) => {
+    const 빼기 = <T extends { id: string }>(종류: string, arr: T[]) => (뺀것도빼고 ? 안뺀것(종류, arr) : arr);
     const s = useProfileStore.getState();
     const sg = useSignupStore.getState();
     const 알맹이 = (v: unknown) => String(v ?? "").trim().length > 0;
@@ -379,7 +380,7 @@ export default function ApplyModal({
         is_career_verified: s.isCareerVerified,
         verified_date: s.verifiedDate,
         is_entry_level: s.isEntryLevel,
-        skills: s.skills.filter((k) => !뺀줄.includes(`skill:${k}`)),
+        skills: 뺀것도빼고 ? s.skills.filter((k) => !뺀줄.includes(`skill:${k}`)) : s.skills,
         skill_areas: sg.skillAreas || [],
         work_type_prefer: sg.workTypePrefer || "",
         region_prefer: sg.regionPrefer || "",
@@ -387,12 +388,12 @@ export default function ApplyModal({
         salary_type: 급여유형,
         salary_min: 희망급여.min,
       },
-      careers: 안뺀것("career", s.careers).filter((c) => 알맹이(c.company)),
-      educations: 안뺀것("education", s.educations).filter((e) => 알맹이(e.school)),
-      experiences: 안뺀것("experience", s.experiences).filter((x) => 알맹이(x.title)),
-      languages: 안뺀것("language", s.languages).filter((l) => 알맹이(l.language)),
-      links: 안뺀것("link", s.links).filter((l) => 알맹이(l.url)),
-      certificates: 안뺀것("certificate", s.certificates).filter((c) => 알맹이(c.name)),
+      careers: 빼기("career", s.careers).filter((c) => 알맹이(c.company)),
+      educations: 빼기("education", s.educations).filter((e) => 알맹이(e.school)),
+      experiences: 빼기("experience", s.experiences).filter((x) => 알맹이(x.title)),
+      languages: 빼기("language", s.languages).filter((l) => 알맹이(l.language)),
+      links: 빼기("link", s.links).filter((l) => 알맹이(l.url)),
+      certificates: 빼기("certificate", s.certificates).filter((c) => 알맹이(c.name)),
     };
   };
   /** 사본싸기() 의 반대 방향. 서버에 둔 초안을 store 가 쓰는 모양으로 되돌린다.
@@ -439,7 +440,7 @@ export default function ApplyModal({
       await fetch(`/api/jobs/${jobId}/apply-draft`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ resume: { ...사본싸기(), 뺀사진, 뺀줄 }, cover_letter: coverLetter }),
+        body: JSON.stringify({ resume: { ...사본싸기(false), 뺀사진, 뺀줄 }, cover_letter: coverLetter }),
       });
     } catch (e) {
       console.error("[apply-draft]", e);
