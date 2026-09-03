@@ -607,7 +607,10 @@ export default function ApplyModal({
                 />
               </div>
 
-              <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
+              {/* 문서가 끝나는 자리 — 선과 여백이 없으면 이 알림이 자기소개서의
+                  마지막 문단처럼 붙어 읽힌다. */}
+              <p style={{ fontSize: 12, color: "#888", margin: "24px 0 14px", paddingTop: 18,
+                borderTop: "1px solid #ececee", lineHeight: 1.6 }}>
                 지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
               </p>
               <div style={{ display: "flex", gap: 8 }}>
