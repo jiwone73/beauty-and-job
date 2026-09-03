@@ -109,7 +109,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
 
               <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 문의 내용" />
 
-              <button className="cv-btn-primary" style={{ marginTop: 16, ...(!agreed || submitting ? { opacity: 0.5, cursor: "not-allowed" } : {}) }} disabled={submitting || !agreed} onClick={handleSubmit}>
+              <button className="cv-btn-primary" style={{ marginTop: 16, width: "100%", ...(!agreed || submitting ? { opacity: 0.5, cursor: "not-allowed" } : {}) }} disabled={submitting || !agreed} onClick={handleSubmit}>
                 {submitting ? "접수 중..." : "문의 보내기"}
               </button>
               <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 10 }}>
