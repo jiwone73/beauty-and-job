@@ -13818,6 +13818,12 @@ button,
 /* 주요성과처럼 길어지는 칸 — 한 줄을 넘기면 다음 줄로 흐른다. */
 .if-slot-multi { white-space: normal; text-align: left; line-height: 1.6; }
 .if-multi { resize: none; overflow: hidden; line-height: 1.6; }
+/* 지금 다니는 곳만 이름을 가릴 수 있다 — 회사명 옆 작은 켜기/끄기. */
+.career-open {
+  display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; flex-shrink: 0;
+  font-size: 12.5px; color: #8a8a90; cursor: pointer; user-select: none; white-space: nowrap;
+}
+.career-open input { width: 14px; height: 14px; margin: 0; accent-color: var(--color-primary); cursor: pointer; }
 .if-line-head .if-slot { font-size: 15px; }
 .if-line-head .if-slot.on { font-weight: 700; }
 .if-req { font-style: normal; color: #e24b4a; margin-left: 2px; }

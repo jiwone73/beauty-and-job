@@ -12,6 +12,9 @@ export interface CareerEntry {
   endDate: string;
   isVerified: boolean;
   description: string;
+  /** 매장 이름을 남에게 보일지. 끄면 미리보기·인재검색에서 ○○○ 으로 나간다.
+   *  지원한 곳에는 그대로 보인다 — 거기는 내가 스스로 문을 연 자리다. */
+  companyPublic?: boolean;
 }
 export interface EducationEntry {
   id: string;
@@ -341,6 +344,8 @@ export const useProfileStore = create<ProfileState>()(
                   startDate: c.start_date || "",
                   endDate: c.end_date || "",
                   isVerified: c.is_verified || false,
+                  description: c.description || "",
+                  companyPublic: c.company_public !== false,
                 })),
                 educations: (educations || []).map((e: any) => ({
                   id: e.id,

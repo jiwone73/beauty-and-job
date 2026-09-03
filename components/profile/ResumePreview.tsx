@@ -190,7 +190,11 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               {/* 매장명은 안 적어도 된다. 기술직은 어디서 했느냐보다 무엇을
                   맡았느냐가 경력이라, 이름이 비면 맡은 일이 그 자리에 선다. */}
               <div className="rp-item-head">
-                <strong>{c.company || [c.department, c.position].filter(Boolean).join(" · ")}</strong>
+                {/* 가려 둔 매장은 이름 대신 ○ 으로 나간다 — 몇 글자인지까지는
+                    남겨 이력서가 비어 보이지 않게 한다. */}
+                <strong>{c.companyPublic === false
+                  ? (c.company ? "○".repeat(Math.min(c.company.length, 6)) : "비공개")
+                  : (c.company || [c.department, c.position].filter(Boolean).join(" · "))}</strong>
                 <span className="rp-period">
                   {c.startDate} - {c.endDate}
                 </span>

@@ -288,13 +288,24 @@ export default function ResumeEditor({
         )}
         {/* 칸마다 무엇을 적는지 회색으로 적어 둔다. 누르면 그 칸 하나만 열린다 —
             매장명 하나 고치자고 기간·직급까지 다시 마주할 이유가 없다. */}
-        {!isEntryLevel && careers.map((c) => (
+        {!isEntryLevel && careers.map((c, i) => (
           <div key={c.id} className="if-row if-row-plain">
             <div className="if-row-body">
               <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
                 <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} wide
                   onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
+                {/* 지금 다니는 곳(가장 최근 경력)만 가릴 수 있게 한다. 이 판은
+                    좁아서 원장이 인재검색에서 보는 것이 실제 공포다. 끄면
+                    미리보기·인재검색에 ○○○ 으로 나가고, 지원한 곳에는 그대로
+                    보인다 — 거기는 내가 스스로 문을 연 자리다. */}
+                {i === 0 && (
+                  <label className="career-open" title={c.companyPublic === false ? "매장 이름을 가리는 중" : "매장 이름을 보이는 중"}>
+                    <input type="checkbox" checked={c.companyPublic !== false}
+                      onChange={(e) => updateCareer(c.id, { ...c, companyPublic: e.target.checked })} />
+                    {c.companyPublic === false ? "비공개" : "공개"}
+                  </label>
+                )}
               </div>
               <div className="if-line">
                 <InlineYM value={c.startDate} required

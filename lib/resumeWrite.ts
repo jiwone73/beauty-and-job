@@ -119,9 +119,9 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
 
   await bulkInsert(
     "user_careers",
-    ["company", "department", "position", "start_date", "end_date", "is_verified", "description"],
+    ["company", "department", "position", "start_date", "end_date", "is_verified", "description", "company_public"],
     careers,
-    (c) => [c.company || "", c.department || "", c.position || "", c.start_date || c.startDate || "", c.end_date || c.endDate || "", c.is_verified || c.isVerified || false, c.description || ""]
+    (c) => [c.company || "", c.department || "", c.position || "", c.start_date || c.startDate || "", c.end_date || c.endDate || "", c.is_verified || c.isVerified || false, c.description || "", (c.company_public ?? c.companyPublic) !== false]
   );
   await bulkInsert(
     "user_educations",
