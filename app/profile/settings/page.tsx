@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Eye, EyeOff, Lock, Bell, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, EyeOff, Lock, Bell } from "lucide-react";
 import NotificationModal from "@/components/profile/NotificationModal";
 import ProfileShell from "@/components/profile/ProfileShell";
 import CompanyBlockModal from "@/components/CompanyBlockModal";
@@ -129,8 +129,8 @@ export default function AccountSettingsPage() {
 
             <div className="pf-vis-opts" role="radiogroup" aria-label="이력서 공개">
               {([
-                { key: "open",   label: "공개",     desc: `이력서 노출, 유료 ${상대 ?? "기업"}회원만 개인정보 열람·면접 제안` },
-                { key: "except", label: "부분공개", desc: `재직 중인 ${상대 ?? "기업"} 등 지정한 곳만 제외` },
+                { key: "open",   label: "공개",     desc: `공개해야 면접 제안을 받을 수 있어요 (개인정보는 유료 ${상대 ?? "기업"}회원만 열람)` },
+                { key: "except", label: "부분공개", desc: `재직 중인 ${상대 ?? "기업"} 등 지정한 곳만 제외 (열람 제한 ${상대 ?? "기업"} 설정)` },
                 { key: "close",  label: "비공개",   desc: "면접 제안 안 받음, 지원한 곳만 열람" },
               ] as const).map((o) => (
                 <label key={o.key} className={`pf-vis-opt${공개칸 === o.key ? " on" : ""}`}>
@@ -143,10 +143,6 @@ export default function AccountSettingsPage() {
                     onClick={() => 공개칸고르기(o.key)} />
                   <span className="pf-vis-opt-t">
                     {o.label}
-                    {/* 이 칸만 누르면 창이 열린다 — 지정할 것이 있다는 뜻이라
-                        톱니를 붙인다. 화살표는 「다음으로 넘어간다」로 읽혀
-                        여기 뜻과 어긋났다. */}
-                    {o.key === "except" && <Settings size={13} className="pf-vis-opt-go" />}
                   </span>
                   <span className="pf-vis-opt-d">{o.desc}</span>
                 </label>
