@@ -1829,14 +1829,15 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-top: 1px solid #f2f2f4;
 }
 .apply-resume-wrap .resume-editor > .resume-section:first-child { border-top: none; padding-top: 4px; }
-/* 칸 이름과 첫 줄 사이 — 스킬 칸(목록이 없어 16px)에 맞춘다. 목록이 있는 칸은
-   첫 줄이 제 위 여백(12px)을 하나 더 얹어 혼자 벌어져 있었다. */
-.apply-resume-wrap .resume-career-item:first-child,
-.apply-resume-wrap .resume-edu-item:first-child,
-.apply-resume-wrap .resume-exp-item:first-child,
-.apply-resume-wrap .resume-lang-item:first-child,
-.apply-resume-wrap .resume-link-item:first-child,
-.apply-resume-wrap .if-row:first-child { padding-top: 0; }
+/* 칸 이름과 첫 줄 사이 — 스킬 칸(목록이 없어 제목 여백 그대로)에 맞춘다.
+   목록이 있는 칸은 첫 줄이 제 위 여백(12px)을 하나 더 얹어 혼자 벌어져 있었다.
+   이력서 화면과 지원 창이 같은 칸을 쓰므로 .resume-section 안쪽에 건다. */
+.resume-section .resume-career-item:first-child,
+.resume-section .resume-edu-item:first-child,
+.resume-section .resume-exp-item:first-child,
+.resume-section .resume-lang-item:first-child,
+.resume-section .resume-link-item:first-child,
+.resume-section .if-row:first-child { padding-top: 0; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
 .apply-cover-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
@@ -14666,6 +14667,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .rp-cond-k { font-size: 14px; color: #1a1a1a; }
 .rp-cond-v { font-size: 14px; color: #1a1a1a; }
 .rp-cond-unit { color: #1a1a1a; font-weight: 400; }
+/* 이력서 폼의 희망 근무 조건 — 값은 프로필에서 오므로 고치러 가는 길만 둔다. */
+.resume-cond-edit { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
 /* 공고명이 곧 공고로 가는 문이다. 인재 카드의 이름(.tal-name)과 같은 결 —
    옅은 밑줄을 늘 두고, 올리면 보라로 짙어진다. */

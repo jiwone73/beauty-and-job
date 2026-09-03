@@ -8,7 +8,7 @@ import { shortenRegion } from "@/lib/memberFormat";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import { 이력서진행 } from "@/lib/resumeProgress";
 import { AlertCircle } from "lucide-react";
-import { Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
+import { Target, Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -164,6 +164,15 @@ function ResumePageContent() {
 
   // 프로필에서 설정한 직군은 서버(officeAreas)에 저장됨 → 우선 사용
   const effectiveOfficeAreas = officeAreas.length ? officeAreas : officeJobAreas;
+  // 희망 급여 — 미리보기와 같은 꼴(「월 400만원~」·「협의」).
+  const 희망급여글 = (() => {
+    if (!pay.min) return "협의";
+    const 앞말 = pay.type === "ANNUAL" ? "연" : pay.type === "WEEKLY" ? "주" : pay.type === "DAILY" ? "일급" : pay.type === "HOURLY" ? "시급" : "월";
+    const 숫자 = (pay.type === "HOURLY" || pay.type === "DAILY")
+      ? `${Number(pay.min).toLocaleString()}원`
+      : `${Math.round(Number(pay.min) / 10000).toLocaleString()}만원`;
+    return `${앞말} ${숫자}~`;
+  })();
   // 이력서엔 주 트랙(잡타입) 직군만 노출 — 겸업으로 담은 다른 트랙 직군은 표시 안 함
   const primaryArea = resumeType === "salon" ? skillAreas[0] : effectiveOfficeAreas[0];
   const jobDisplay =
@@ -568,6 +577,22 @@ function ResumePageContent() {
                 </div>
               )}
             </div>
+          </section>
+
+          {/* 희망 근무 조건 — 미리보기와 지원서에는 실려 나가는데 이 화면에만
+              없었다. 프로필에서 오는 값이라 여기서 고치지 않고 보여만 준다. */}
+          <section id="section-cond" className="resume-section">
+            <h2 className="resume-section-title"><Target size={16} className="resume-section-icon" />희망 근무 조건</h2>
+            <div className="rp-cond">
+              <span className="rp-cond-k">희망 근무지</span>
+              <span className="rp-cond-v">{희망지역 || regionPrefer || "—"}</span>
+              {workTypePrefer && (<><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>)}
+              <span className="rp-cond-k">희망직군</span>
+              <span className="rp-cond-v">{[...(resumeType === "salon" ? skillAreas : effectiveOfficeAreas)].join(", ") || "—"}</span>
+              <span className="rp-cond-k">희망 급여</span>
+              <span className="rp-cond-v">{희망급여글}</span>
+            </div>
+            <a className="resume-cond-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
           </section>
 
           <ResumeEditor
