@@ -1825,6 +1825,14 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-top: 1px solid #f2f2f4;
 }
 .apply-resume-wrap .resume-editor > .resume-section:first-child { border-top: none; padding-top: 4px; }
+/* 칸 이름과 첫 줄 사이 — 스킬 칸(목록이 없어 16px)에 맞춘다. 목록이 있는 칸은
+   첫 줄이 제 위 여백(12px)을 하나 더 얹어 혼자 벌어져 있었다. */
+.apply-resume-wrap .resume-career-item:first-child,
+.apply-resume-wrap .resume-edu-item:first-child,
+.apply-resume-wrap .resume-exp-item:first-child,
+.apply-resume-wrap .resume-lang-item:first-child,
+.apply-resume-wrap .resume-link-item:first-child,
+.apply-resume-wrap .if-row:first-child { padding-top: 0; }
 .apply-cover-block { padding: 20px 0 0; }
 @media (max-width: 640px) { .apply-cover-block { padding: 18px 0 0; } }
 .apply-cover-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
@@ -2560,8 +2568,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 /* 지원 모달 */
 .apply-modal-job { background: transparent; border-radius: 8px; padding: 0 0 14px; margin-bottom: 16px; }
-.apply-modal-job strong { display: block; font-size: 13px; font-weight: 400; color: #7c3aed; margin-bottom: 4px; }
-.apply-modal-job p { font-size: 15px; font-weight: 400; color: #582681; }
+.apply-modal-job strong { display: block; font-size: 13px; font-weight: 400; color: #8a8a90; margin-bottom: 4px; }
+.apply-modal-job p { font-size: 15px; font-weight: 400; color: #1a1a1a; }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }
 .apply-modal-profile-btn:hover { background: var(--color-primary-soft); }
 
