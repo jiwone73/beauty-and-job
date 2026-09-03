@@ -129,8 +129,8 @@ export default function AccountSettingsPage() {
 
             <div className="pf-vis-opts" role="radiogroup" aria-label="이력서 공개">
               {([
-                { key: "open",   label: "공개",     desc: `공개해야 면접 제안을 받을 수 있어요 (개인정보는 유료 ${상대 ?? "기업"}회원만 열람)` },
-                { key: "except", label: "부분공개", desc: `재직 중인 ${상대 ?? "기업"} 등 지정한 곳만 제외 (열람 제한 ${상대 ?? "기업"} 설정)` },
+                { key: "open",   label: "공개",     desc: `${상대 ?? "기업"}으로부터 면접 제안을 받을 수 있어요 (개인정보는 유료 ${상대 ?? "기업"}회원만 열람)` },
+                { key: "except", label: "부분공개", desc: `재직 중인 ${상대 ?? "기업"} 등 지정한 곳만 제외하고 공개 (열람 제한 ${상대 ?? "기업"} 설정 가능)` },
                 { key: "close",  label: "비공개",   desc: "면접 제안 안 받음, 지원한 곳만 열람" },
               ] as const).map((o) => (
                 <label key={o.key} className={`pf-vis-opt${공개칸 === o.key ? " on" : ""}`}>
