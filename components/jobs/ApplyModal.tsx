@@ -568,9 +568,11 @@ export default function ApplyModal({
               </div>
 
               <div style={{ padding: 0 }}>
-              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
-                자기소개서
-              </label>
+              {/* 위 지원 정보·희망 근무 조건과 같은 옷 — 이 칸만 제 스타일을
+                  들고 있어 아이콘도 크기도 어긋나 있었다. */}
+              <h2 className="resume-section-title" style={{ marginBottom: 12 }}>
+                <Quote size={16} className="resume-section-icon" />자기소개서
+              </h2>
               {/* 추천 문구 칩 넉 장을 지웠다 — 같은 자리에 글 만드는 방법이 둘이면
                   어느 것을 눌러야 하는지부터 고르게 된다. AI 초안 하나로 모은다. */}
               <CoverLetterTools value={coverLetter} onChange={setCoverLetter}
