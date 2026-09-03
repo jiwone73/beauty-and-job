@@ -5,6 +5,7 @@ import { shortenRegion } from "@/lib/memberFormat";
 import { addressRegion } from "@/lib/regionShort";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { IdCard, Target, Quote } from "lucide-react";
+import CoverLetterTools from "@/components/profile/CoverLetterTools";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
@@ -61,7 +62,6 @@ export default function ApplyModal({
 
   const [step, setStep] = useState<Step>("write");
   const [coverLetter, setCoverLetter] = useState("");
-  const [lastCoverLetter, setLastCoverLetter] = useState("");
   const [coverLoaded, setCoverLoaded] = useState(false);
   const [applying, setApplying] = useState(false);
   const [consent, setConsent] = useState(false);
@@ -205,13 +205,7 @@ export default function ApplyModal({
       document.removeEventListener("visibilitychange", 돌아옴);
     };
 
-    if (!coverLoaded) {
-      fetch("/api/users/me/last-cover-letter", { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json())
-        .then((d) => { if (d.success && d.data?.cover_letter) setLastCoverLetter(d.data.cover_letter); })
-        .catch(() => {})
-        .finally(() => setCoverLoaded(true));
-    }
+    if (!coverLoaded) setCoverLoaded(true);
   }, []);
 
   const jobDisplay = (job === "직접입력" ? jobCustom : job) || officeJobAreas[0] || skillAreas[0] || "직군 미설정";
@@ -574,40 +568,10 @@ export default function ApplyModal({
               <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>
                 자기소개서
               </label>
-              {(
-                <div style={{ marginBottom: 10 }}>
-                  <p style={{ fontSize: 12, color: "#999", margin: "0 0 6px" }}>💡 추천 문구를 눌러 이어쓸 수 있어요</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    <button type="button" className="cv-chip"
-                      onClick={() => setCoverLetter((prev) => prev + `${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.\n`)}
-                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#f7f7f8", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                      <span className="cv-chip-full">{`${jobBrand ? jobBrand + "의 " : ""}${jobTitle || "이 포지션"} 채용 공고를 보고 지원하게 된 ${userName || ""}입니다.`}</span>
-                      <span className="cv-chip-short">✏️ 첫인사</span>
-                    </button>
-                    {coreCompetencies && coreCompetencies.trim() && (
-                      <button type="button" className="cv-chip"
-                        onClick={() => setCoverLetter((prev) => prev + `저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.\n`)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#f7f7f8", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                        <span className="cv-chip-full">{`저의 핵심 역량인 ${coreCompetencies.trim()}을(를) 바탕으로 ${jobTitle || "해당"} 직무에서 기여하고 싶습니다.`}</span>
-                        <span className="cv-chip-short">⭐ 핵심역량</span>
-                      </button>
-                    )}
-                    <button type="button" className="cv-chip"
-                      onClick={() => setCoverLetter((prev) => prev + `면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.\n`)}
-                      style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#f7f7f8", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                      <span className="cv-chip-full">면접에서 제 경험과 역량을 더 구체적으로 말씀드릴 기회를 주시면 감사하겠습니다.</span>
-                      <span className="cv-chip-short">🙌 맺음말</span>
-                    </button>
-                    {lastCoverLetter && (
-                      <button type="button"
-                        onClick={() => setCoverLetter(lastCoverLetter)}
-                        style={{ fontSize: 12, padding: "6px 12px", borderRadius: 16, border: "none", background: "#f7f7f8", color: "#582681", cursor: "pointer", textAlign: "left", lineHeight: 1.4 }}>
-                        📋 이전 자소서 불러오기
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
+              {/* 추천 문구 칩 넉 장을 지웠다 — 같은 자리에 글 만드는 방법이 둘이면
+                  어느 것을 눌러야 하는지부터 고르게 된다. AI 초안 하나로 모은다. */}
+              <CoverLetterTools value={coverLetter} onChange={setCoverLetter}
+                jobId={jobId} positionTitle={positionTitle} workLocation={workLocation} />
               <textarea className="apply-textarea"
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
@@ -774,6 +738,8 @@ export default function ApplyModal({
                 <h2 className="resume-section-title" style={{ marginBottom: 12 }}>
                   <Quote size={16} className="resume-section-icon" />자기소개서
                 </h2>
+                <CoverLetterTools value={coverLetter} onChange={setCoverLetter}
+                  jobId={jobId} positionTitle={positionTitle} workLocation={workLocation} />
                 <textarea className="apply-textarea"
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}

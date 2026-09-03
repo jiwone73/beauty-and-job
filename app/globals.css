@@ -1830,6 +1830,28 @@ input[type="range"].career-slider::-moz-range-thumb {
   overflow: hidden; vertical-align: middle;
 }
 .badge-up svg { flex-shrink: 0; }
+/* 자기소개서 칸 위의 두 단추와 맞춤법 결과 */
+.cl-tools { margin-bottom: 10px; }
+.cl-tools-btns { display: flex; gap: 6px; }
+.cl-tool {
+  display: inline-flex; align-items: center; gap: 4px; padding: 6px 11px;
+  border: 1px solid var(--color-border); border-radius: 999px; background: #fff;
+  font-family: inherit; font-size: 12.5px; color: #555; cursor: pointer; white-space: nowrap;
+}
+.cl-tool:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.cl-tool:disabled { color: #c4c4c9; cursor: default; }
+.cl-tools-say { margin: 8px 0 0; font-size: 12.5px; color: #8a8a90; line-height: 1.5; }
+.cl-fix { margin-top: 10px; border-top: 1px solid #f2f2f4; }
+.cl-fix-row { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid #f7f7f8; }
+.cl-fix-why { flex-shrink: 0; font-size: 11.5px; color: #8a8a90; width: 46px; }
+.cl-fix-txt { flex: 1; min-width: 0; font-size: 13.5px; color: #1a1a1a; overflow-wrap: anywhere; }
+.cl-fix-txt s { color: #b0b0b6; }
+.cl-fix-txt b { font-weight: 400; color: var(--color-primary); }
+.cl-fix-go {
+  flex-shrink: 0; padding: 4px 10px; border: 1px solid var(--color-primary); border-radius: 6px;
+  background: #fff; color: var(--color-primary); font-family: inherit; font-size: 12.5px; cursor: pointer;
+}
+.cl-fix-x { flex-shrink: 0; border: none; background: none; color: #c4c4c9; cursor: pointer; padding: 2px; display: inline-flex; }
 .badge-up::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(100deg, transparent 35%, rgba(88, 38, 129, .22) 50%, transparent 65%);

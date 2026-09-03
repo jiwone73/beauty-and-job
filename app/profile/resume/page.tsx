@@ -6,6 +6,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import { shortenRegion } from "@/lib/memberFormat";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
+import CoverLetterTools from "@/components/profile/CoverLetterTools";
 import { 이력서진행 } from "@/lib/resumeProgress";
 import { AlertCircle } from "lucide-react";
 import { Target, Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
@@ -617,6 +618,9 @@ function ResumePageContent() {
               불러다 고쳐 쓰는 밑글이다. */}
           <section id="section-cover" className="resume-section">
             <h2 className="resume-section-title"><Quote size={16} className="resume-section-icon" />자기소개서</h2>
+            {/* 공고 없이 쓰는 밑글이라 공고 정보는 넘기지 않는다 — 지원할 때
+                그 공고에 맞춰 다시 쓸 수 있다. */}
+            <CoverLetterTools value={coverLocal} onChange={setCoverLocal} />
             <textarea
               value={coverLocal}
               onChange={(e) => setCoverLocal(e.target.value)}
