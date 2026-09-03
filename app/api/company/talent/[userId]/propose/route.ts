@@ -23,19 +23,25 @@ export async function POST(
   if (message.length > MAX_MESSAGE) return err("VALIDATION_003", `메시지는 ${MAX_MESSAGE}자 이내로 입력해주세요.`, 400);
 
   // 화면에서 막는 것만으로는 이 API 를 직접 부르면 그대로 넘어간다.
-  // 공고가 곧 입장권이라는 규칙을 여기서도 지킨다.
+  //
+  // 문이 둘이다. 유료 상품에 가입했는가(개인정보를 볼 수 있는가), 그리고
+  // 이 제안에 붙일 공고가 실제로 열려 있는가. 앞은 값을 낸 사람인지고,
+  // 뒤는 받는 사람이 근무지·급여를 보고 판단할 것이 있는지다 — 마감된 공고로
+  // 제안이 오면 받은 사람은 확인할 길이 없다.
   if (!(await 인재열람가능(auth!.sub))) {
-    return err("PROPOSAL_005", "진행중인 공고가 있어야 제안할 수 있습니다.", 403);
+    return err("PROPOSAL_005", "유료 상품에 가입해야 제안할 수 있습니다.", 403);
   }
 
   const client = await pool.connect();
   try {
     const jobRes = await client.query(
-      `SELECT title FROM job_postings WHERE id = $1 AND company_id = $2`,
+      `SELECT title FROM job_postings
+        WHERE id = $1 AND company_id = $2 AND status = 'ACTIVE'
+          AND (deadline IS NULL OR deadline >= CURRENT_DATE)`,
       [jobPostingId, auth!.sub]
     );
     if (jobRes.rowCount === 0) {
-      return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);
+      return err("JOB_001", "진행 중인 공고에만 제안할 수 있어요. 공고가 마감되었는지 확인해 주세요.", 404);
     }
     const jobTitle = jobRes.rows[0].title;
 
