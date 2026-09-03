@@ -688,7 +688,12 @@ export default function ApplyModal({
                   프로필은 그대로라, 다음 공고에 또 같은 것을 고쳐야 한다.
                   고치는 자리로 보내고, 돌아오면 새로 읽어 온다. */}
               <div className="apply-info" style={{ marginTop: 8 }}>
-                <div className="apply-info-head"><span>기본 정보</span></div>
+                <div className="apply-info-head"><span>지원 정보</span></div>
+                {/* 어느 자리에 내는 것인지가 이 화면에도 있어야 한다 — 공고에
+                    모집분야가 여럿이면 고치는 내내 무엇에 맞추는지 잊는다. */}
+                {(positionTitle || workLocation) && (
+                  <div className="apply-info-row is-post"><span>포지션</span><b>{[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}</b></div>
+                )}
                 <div className="apply-info-row">
                   <span>이름</span><b>{name}</b>
                   <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
