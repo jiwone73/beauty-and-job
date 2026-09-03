@@ -501,7 +501,9 @@ export default function ApplyModal({
         <div className="cv-body" style={{ overflowY: "auto", flex: 1 }}>
           {/* 진행 단계 안내 (작성 → 미리보기 → 지원) */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "2px 0 16px", flexWrap: "wrap" }}>
-            {["자기소개서 작성", "미리보기", "지원 완료"].map((label, i) => {
+            {/* 단계 이름은 그 자리에서 실제로 하는 일과 같아야 한다 — 마지막에 누르는
+                단추가 「제출」인데 여기만 「지원 완료」면 다른 화면처럼 읽힌다. */}
+            {["자기소개서 작성", "미리보기", "제출"].map((label, i) => {
               const current = step === "preview" ? 1 : 0;
               const active = i <= current;
               return (
