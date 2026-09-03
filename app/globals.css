@@ -2469,7 +2469,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
 .jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f7f7f8; }
-.job-detail-subtitle { font-size: 16px; color: var(--color-text); margin: 0 0 12px; letter-spacing: -0.3px; }
+/* 이력서 칸 이름(.resume-section-title)과 같은 무게로 — 두 화면의 칸 이름이
+   같은 크기인데 굵기만 갈리면 한 서비스로 안 읽힌다. */
+.job-detail-subtitle { font-size: 16px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px; letter-spacing: -0.3px; }
 .jd-sublabel { font-size: 15px; color: var(--color-text-mute); margin: 0 0 8px; }
 /* 지원 안내: 라벨 + 값 한 줄 */
 .jd-guide-row { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0; font-size: 15px; color: var(--color-text); }
@@ -5960,7 +5962,7 @@ div:has(> table.admin-table),
 .admin-form-header { width: 100%; max-width: 1216px; margin-left: auto; margin-right: auto; }
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
 /* 섹션 타이틀을 카드 밖(위)으로 — 프로필 기본정보와 동일 */
-.jobpost-section-title { color: #1a1a1a; font-size: 16px; font-weight: 400; margin: 4px 0 0 4px; }
+.jobpost-section-title { color: #1a1a1a; font-size: 16px; font-weight: 600; margin: 4px 0 0 4px; }
 .jobpost-form .admin-form-label { color: #555; font-size: 14px; }
 /* 공고 헤더(회사명·제목) — 화면 폭에 따라 크기를 줄인다(인라인 style 대신 여기서 관리) */
 .jobpost-brand-input { font-size: 14px; }
