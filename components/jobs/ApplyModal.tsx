@@ -45,6 +45,10 @@ export default function ApplyModal({
      두면 폰에서 쓰다 만 것을 PC에서 이어 쓸 수 없다. 계정은 같은데 그릇이
      다르면 못 찾는다. */
   const [희망지역, set희망지역] = useState("");
+  // 생년월일·성별은 가입 store 에만 있어 예전에 가입한 사람은 비어 있었다.
+  // 미리보기에 빈 줄이 생기고 수정 화면에는 아예 안 보였다.
+  const [생년, set생년] = useState("");
+  const [성별, set성별] = useState("");
   // 희망직군의 원본이 둘로 갈려 있다 — 매장은 user_profiles.skill_areas,
   // 본사는 users.office_job_areas. 가입 때 담아 둔 store 값만 보면 예전에
   // 가입한 사람은 「희망 근무 조건」에서 직군 줄이 통째로 빠졌다.
@@ -122,6 +126,8 @@ export default function ApplyModal({
         const d = res.data;
         if (d.phone) setPhoneLocal(d.phone);
         if (d.email) setEmailLocal(d.email);
+        if (d.birth_date) set생년(String(d.birth_date).slice(0, 10));
+        if (d.gender) set성별(d.gender);
         setAddressDisplay(
           [d.address_road, d.address_detail].filter(Boolean).join(" ") ||
           [d.region_sido, d.region_sigungu].filter(Boolean).join(" ")
@@ -219,8 +225,10 @@ export default function ApplyModal({
       : `${Math.round(Number(min) / 10000).toLocaleString()}만원`;
     return `${앞말} ${숫자}~`;
   })();
-  const birthDisplay = birth
-    ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
+  const 생년월일 = 생년 || birth;
+  const 성별값 = 성별 || gender;
+  const birthDisplay = 생년월일
+    ? `${생년월일.slice(0, 4)}년 (${new Date().getFullYear() - Number(생년월일.slice(0, 4))}세, ${성별값 === "남성" || 성별값 === "MALE" ? "남" : "여"})`
     : "";
 
   // 포트폴리오 사진 업로드/삭제 (수정 화면용) — 이력서 화면과 같은 규칙을 쓴다.
@@ -698,6 +706,14 @@ export default function ApplyModal({
                 {(positionTitle || workLocation) && (
                   <div className="apply-info-row is-post"><span>지원분야</span><b>{[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}</b></div>
                 )}
+                {/* 한 줄 소개는 미리보기 맨 위에 나가는 글이다 — 경력처럼 이
+                    공고에 맞춰 고칠 수 있어야 한다. */}
+                <div className="apply-info-row">
+                  <span>한 줄 소개</span>
+                  <input className="apply-info-in" value={intro} maxLength={60}
+                    placeholder="나를 한 줄로 소개해 주세요"
+                    onChange={(e) => useProfileStore.getState().setIntro(e.target.value)} />
+                </div>
                 <div className="apply-info-row">
                   <span>이름</span><b>{name}</b>
                   <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>

@@ -2562,6 +2562,13 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .apply-info-row.is-post { padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid #f2f2f4; }
 /* 고치러 가는 길은 개인정보 묶음의 첫 줄에만 건다. 머리줄에 두면 포지션까지
    고칠 수 있는 것처럼 읽힌다. */
+.apply-info-in {
+  flex: 1; min-width: 0; border: none; border-bottom: 1px solid transparent; background: none;
+  font-family: inherit; font-size: 15px; color: #1a1a1a; padding: 2px 0;
+}
+.apply-info-in:hover { border-bottom-color: #e8e8ea; }
+.apply-info-in:focus { outline: none; border-bottom-color: var(--color-primary); }
+.apply-info-in::placeholder { color: #c4c4c9; }
 .apply-info-edit { margin-left: auto; flex-shrink: 0; font-size: 13px; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
 /* 모바일 CTA */
