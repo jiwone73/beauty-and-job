@@ -2,6 +2,7 @@
 import { 시험한줄 } from "@/lib/languageTest";
 
 import { forwardRef, useState } from "react";
+import { IdCard, Target, Star, Building2, GraduationCap, Sparkles, Award, Trophy, Globe, Image as ImageIcon, Quote } from "lucide-react";
 import PhotoLightbox from "@/components/profile/PhotoLightbox";
 import { formatPhone } from "@/lib/memberFormat";
 import type {
@@ -103,7 +104,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         </div>
       )}
       <div style={{ paddingTop: "20px" }}>
-      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}>기본 정보</h2>
+      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}><IdCard size={16} className="resume-section-icon" />기본 정보</h2>
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
@@ -141,7 +142,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           지원서 수정 화면도 같은 차례로 세워 둔다. */}
       {(regionPrefer || workTypePrefer || 희망직군 || salaryMin) && (
         <div className="rp-section">
-          <h2 className="rp-section-title">희망 근무 조건</h2>
+          <h2 className="rp-section-title"><Target size={16} className="resume-section-icon" />희망 근무 조건</h2>
           <div className="rp-cond">
             {regionPrefer && (
               <><span className="rp-cond-k">희망 근무지</span><span className="rp-cond-v">{regionPrefer}</span></>
@@ -164,7 +165,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
 
       {coreCompetencies && (
         <div className="rp-section">
-          <h2 className="rp-section-title">핵심 역량</h2>
+          <h2 className="rp-section-title"><Star size={16} className="resume-section-icon" />핵심 역량</h2>
           <p className="rp-text" style={{ whiteSpace: "pre-line" }}>
             {coreCompetencies}
           </p>
@@ -172,7 +173,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {careers.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">경력</h2>
+          <h2 className="rp-section-title"><Building2 size={16} className="resume-section-icon" />경력</h2>
           {careers.map((c) => (
             <div key={c.id} className="rp-item">
               {/* 매장명은 안 적어도 된다. 기술직은 어디서 했느냐보다 무엇을
@@ -199,7 +200,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {educations.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">학력</h2>
+          <h2 className="rp-section-title"><GraduationCap size={16} className="resume-section-icon" />학력</h2>
           {educations.map((edu) => (
             <div key={edu.id} className="rp-item">
               <div className="rp-item-head">
@@ -219,7 +220,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {skills.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">스킬</h2>
+          <h2 className="rp-section-title"><Sparkles size={16} className="resume-section-icon" />스킬</h2>
           <div className="rp-chips">
             {skills.map((sk) => (
               <span key={sk} className="rp-chip">
@@ -231,7 +232,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {certificates.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">자격증</h2>
+          <h2 className="rp-section-title"><Award size={16} className="resume-section-icon" />자격증</h2>
           {certificates.map((cert) => (
             <div key={cert.id} className="rp-item">
               <div className="rp-item-head">
@@ -247,7 +248,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {experiences.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">활동/수상</h2>
+          <h2 className="rp-section-title"><Trophy size={16} className="resume-section-icon" />활동/수상</h2>
           {experiences.map((x) => (
             <div key={x.id} className="rp-item">
               <div className="rp-item-head">
@@ -267,7 +268,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {languages.length > 0 && (
         <div className="rp-section">
-          <h2 className="rp-section-title">어학</h2>
+          <h2 className="rp-section-title"><Globe size={16} className="resume-section-icon" />어학</h2>
           {languages.map((lang) => (
             <div key={lang.id} className="rp-item">
               <p className="rp-text" style={{ fontWeight: 400, fontSize: "13px", color: "#666" }}>
@@ -291,7 +292,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           한 자리에 있는 것이 맞다. */}
       {(portfolioImages.length > 0 || links.length > 0) && (
         <div className="rp-section">
-          <h2 className="rp-section-title">포트폴리오</h2>
+          <h2 className="rp-section-title"><ImageIcon size={16} className="resume-section-icon" />포트폴리오</h2>
           {portfolioImages.length > 0 && (
             <>
               {links.length > 0 && <p className="rp-sub">사진</p>}
@@ -324,7 +325,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       {/* 자기소개서는 이력서의 맨 끝이다 — 경력·학력을 먼저 훑고 나서 읽는 글이다. */}
       {coverLetter && coverLetter.trim() && (
         <div className="rp-section">
-          <h2 className="rp-section-title">자기소개서</h2>
+          <h2 className="rp-section-title"><Quote size={16} className="resume-section-icon" />자기소개서</h2>
           <p className="rp-text" style={{ whiteSpace: "pre-line" }}>{coverLetter}</p>
         </div>
       )}

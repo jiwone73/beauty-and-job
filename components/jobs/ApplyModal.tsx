@@ -4,7 +4,7 @@ import { useProfileStore, type 이력서한벌 } from "@/lib/store/profileStore"
 import { shortenRegion } from "@/lib/memberFormat";
 import { addressRegion } from "@/lib/regionShort";
 import { 전화꼴 } from "@/lib/phoneFormat";
-import { IdCard, Target } from "lucide-react";
+import { IdCard, Target, Quote } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
@@ -753,9 +753,9 @@ export default function ApplyModal({
 
               {/* 자기소개서는 맨 끝 — 이력서·미리보기와 같은 차례다. */}
               <div style={{ marginTop: 20, borderTop: "1px solid #eee", paddingTop: 16 }}>
-                <label style={{ display: "block", fontSize: 15, fontWeight: 400, color: "#1a1a1a", marginBottom: 12 }}>
-                  자기소개서
-                </label>
+                <h2 className="resume-section-title" style={{ marginBottom: 12 }}>
+                  <Quote size={16} className="resume-section-icon" />자기소개서
+                </h2>
                 <textarea className="apply-textarea"
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}

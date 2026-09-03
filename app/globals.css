@@ -1813,7 +1813,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 /* 칸 이름은 먹색이다 — 프로필·매장정보의 칸 이름(16px/#1a1a1a)과 같은 값.
    보라는 지금 손이 가야 할 것에만 쓴다. */
-.resume-section-title { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #1a1a1a; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
+/* 칸 이름 한 벌 — 이력서 작성·지원 창·미리보기(문서)가 같은 규칙을 쓴다.
+   따로 두었더니 한쪽을 고칠 때마다 다른 쪽이 남아 매번 어긋났다. */
+.resume-section-title,
+.rp-section-title,
+.apply-info-head span { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; color: #1a1a1a; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
 /* 프로필 항목 앞 아이콘(.profile-info-icon)과 같은 값 — 옅은 회색, 채우지 않는다. */
 .resume-section-icon { flex-shrink: 0; color: #b7b0c0; }
 /* 지원 창 안에서는 칸을 카드로 세우지 않는다 — 위쪽 지원 정보·희망 근무 조건이
@@ -2548,9 +2552,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 지원 창 첫 화면의 「지원 정보」 — 매장이 연락하는 값을 내기 전에 한 번 본다. */
 .apply-info { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
 .apply-info-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
-/* 아래 이력서 칸들(.resume-section-title)과 같은 옷 — 아이콘 + 16px 먹색.
-   여기만 굵고 아이콘이 없어 다른 규칙처럼 보였다. */
-.apply-info-head span { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #1a1a1a; }
+
 .apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; }
 .apply-info-row span { flex: 0 0 62px; font-size: 13px; color: #8a8a90; }
 /* 길면 줄바꿈 대신 말줄임 — 한 줄에 하나씩 읽히는 자리라 두 줄이 되면 이름표와
@@ -3586,16 +3588,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .rp-section:last-child {
   border-bottom: none;
 }
-.rp-section-title {
-  font-size: 15px;
-  font-weight: 400;
-  /* 항목 이름은 먹색으로 통일한다. 보라는 누를 것에만 쓴다 — 읽기만 하는
-     문서에서 제목마다 브랜드 색이 들면 눈이 그리로만 끌린다. */
-  color: #1a1a1a;
-  text-transform: none;
-  letter-spacing: normal;
-  margin: 0 0 12px;
-}
+.rp-section-title { margin: 0 0 12px; }
 /* 폼(이력서 작성 화면)에서 항목 내용을 제목 글자와 맞추려고 22px 들여썼다
    ("기본이력서 항목 별 내용 시작점을 제목과 맞춰줘"). 미리보기·다운로드
    ·인쇄에 쓰는 이 문서에는 그 들여쓰기가 안 옮겨져 있었다("미리보기에는
@@ -12144,7 +12137,7 @@ div:has(> table.admin-table),
   .salary-insight-card strong { font-size: 16px; }
   .salary-cta-btn { font-size: 16px; }
   .resume-gnb-item { font-size: 16px; }
-  .rp-section-title { font-size: 16px; }
+
   .login-phone-btn { font-size: 16px; }
   .newsletter-input-wrap input { font-size: 16px; }
   .info-section p { font-size: 16px; }
