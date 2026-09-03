@@ -2548,7 +2548,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 지원 창 첫 화면의 「지원 정보」 — 매장이 연락하는 값을 내기 전에 한 번 본다. */
 .apply-info { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
 .apply-info-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
-.apply-info-head span { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+/* 아래 이력서 칸들(.resume-section-title)과 같은 옷 — 아이콘 + 16px 먹색.
+   여기만 굵고 아이콘이 없어 다른 규칙처럼 보였다. */
+.apply-info-head span { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 400; color: #1a1a1a; }
 .apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; }
 .apply-info-row span { flex: 0 0 62px; font-size: 13px; color: #8a8a90; }
 /* 길면 줄바꿈 대신 말줄임 — 한 줄에 하나씩 읽히는 자리라 두 줄이 되면 이름표와
