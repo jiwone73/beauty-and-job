@@ -614,13 +614,13 @@ export default function ApplyModal({
                 {/* 둘이 같은 폭으로 선다 — 되돌아가는 길과 내는 길은 무게가 같다. */}
                 <button
                   onClick={() => setStep("edit")}
-                  style={{ flex: 1, padding: "13px 18px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
+                  style={{ flex: "1 1 0", minWidth: 0, padding: "13px 0", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
                   수정하기
                 </button>
                 <button
                   className="cv-btn-primary"
-                  style={{ flex: 1, marginTop: 0 }}
+                  style={{ flex: "1 1 0", minWidth: 0, width: "auto", marginTop: 0 }}
                   disabled={applying}
                   onClick={handleApply}
                 >
