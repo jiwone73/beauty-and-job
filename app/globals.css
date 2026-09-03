@@ -13674,14 +13674,14 @@ button,
   /* 그 자리에서 고치는 칸(성별·국적·생년월일 등)도 본문 값과 같은 크기로.
      13.5px 로 두니 옆줄의 값보다 작아 혼자 눌려 보였다. 기업 설정 갈래도
      같은 방식으로 .if-slot 을 16px 로 올린다. */
-  .pf-main .if-slot, .pf-main .if-input { font-size: 16px; }
+  .pf-main .if-slot, .pf-main .if-input { font-size: 15px; }
   .pf-main .if-slot.on { color: #333; }
 
   /* 값이 길면 두 줄까지 보이고 그 뒤에 …. 한 줄로 자르면 직군이 여럿일 때
      둘째 것부터 통째로 날아가 무슨 일을 하는 사람인지 알 수 없다. */
   .pf-main .pf-grid .profile-info-value {
     text-align: left; padding-left: 22px; padding-right: 0;
-    font-size: 16px; color: #333; width: 100%;
+    font-size: 15px; color: #333; width: 100%;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     white-space: normal; overflow: hidden; line-height: 1.45;
   }
@@ -14088,7 +14088,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* ── 설정 갈래(매장정보·계정정보·비밀번호·알림) 본문 글자 크기 ──
    같은 판을 쓰는 채용공고 갈래는 그대로 두려고 .co-set-settings 안으로만 건다. */
-.co-set-settings .co-set-main .admin-form-label,
+/* 이름표 16, 값 15 — 사이트 전체가 쓰는 한 벌이다. 둘이 같은 크기면 어느 쪽이
+   묻는 말이고 어느 쪽이 답인지 눈이 못 가른다. */
+.co-set-settings .co-set-main .admin-form-label { font-size: 16px; }
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input,
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-select,
 .co-set-settings .co-set-main .admin-form-input,
@@ -14097,16 +14099,16 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-set-settings .co-set-main .if-slot,
 .co-set-settings .co-set-main .if-input,
 .co-set-settings .co-set-main .if-line-head .if-slot,
-.co-set-settings .co-set-main .if-sep { font-size: 16px; }
+.co-set-settings .co-set-main .if-sep { font-size: 15px; }
 /* 아직 안 채운 칸의 자리글은 한 단 낮춘다 — 적어 넣은 값과 같은 크기면 이미 채운
-   것처럼 보인다. 값이 들어오는 순간 17px 로 커진다. */
+   것처럼 보인다. 값이 들어오는 순간 15px 로 커진다. */
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input:placeholder-shown,
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-select[data-empty="true"],
 .co-set-settings .co-set-main .admin-form-input:placeholder-shown,
 .co-set-settings .co-set-main .admin-form-textarea:placeholder-shown,
 .co-set-settings .co-set-main .admin-form-select[data-empty="true"],
 .co-set-settings .co-set-main .if-slot:not(.on),
-.co-set-settings .co-set-main .if-input:placeholder-shown { font-size: 15px; }
+.co-set-settings .co-set-main .if-input:placeholder-shown { font-size: 14px; }
 
 /* 전형절차 — 고른 것만 차례로 늘어놓고 사이를 화살표로 잇는다.
    몇 단계인지, 어느 차례인지가 한눈에 보인다. */
@@ -14614,7 +14616,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pf-pay { display: inline-flex; align-items: center; gap: 4px; padding-left: 22px; }
 /* 테두리도 바탕도 없이 글자로만 선다. 적는 칸만 올렸을 때 옅게 든다. */
 .pf-pay-sel, .pf-pay-in {
-  font-family: inherit; font-size: 16px; color: #333;
+  font-family: inherit; font-size: 15px; color: #333;
   border: none; border-radius: 6px; padding: 4px 6px; background: none;
 }
 /* 고르개는 바탕 없이 화살표만 둔다. 적는 칸만 올렸을 때 옅게 든다. */
