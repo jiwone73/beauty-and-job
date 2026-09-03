@@ -7,9 +7,12 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { shrinkImage } from "@/lib/imageShrink";
 
 const BUCKET = "avatars";
-// 화면이 고를 때 막는 크기와 같은 값. 브라우저 압축이 실패해 원본이 그대로
-// 올라오는 길이 있어서, 서버도 같은 자리에서 막는다.
-const MAX_SIZE = 8 * 1024 * 1024; // 8MB
+// 여기 오는 것은 브라우저가 이미 줄인 사진이다(1000px·JPEG, 보통 100~200KB).
+// 그러니 문은 화면의 8MB 와 같을 이유가 없다 — 오히려 낮아야 한다.
+// 압축이 실패하면(HEIC·손상 파일·메모리 부족) 원본이 그대로 올라오는데,
+// 이 문이 8MB 면 그 원본이 그대로 저장된다. 2MB 면 줄인 사진은 넉넉히 지나가고
+// 줄이지 못한 원본은 걸린다.
+const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 // 프로필 사진 업로드
@@ -36,7 +39,7 @@ export async function POST(req: NextRequest) {
       return err("FILE_002", "JPG, PNG, WebP 이미지만 업로드 가능합니다.");
     }
     if (file.size > MAX_SIZE) {
-      return err("FILE_003", "파일 크기는 8MB 이하여야 합니다.");
+      return err("FILE_003", "사진을 줄이지 못했어요. 다른 사진으로 올려 주세요.");
     }
 
     const client = await pool.connect();
