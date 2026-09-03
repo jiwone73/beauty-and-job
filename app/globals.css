@@ -1594,9 +1594,6 @@ input[type="range"].career-slider::-moz-range-thumb {
   max-width: 600px;
   margin: 0 auto;
   padding: 24px 0 40px;
-  /* 이력서 저장 단추와 같은 규칙 — 글자를 감쌀 만큼만, 오른쪽 끝에.
-     폰은 누르기 쉽게 통줄 그대로. */
-  display: flex; justify-content: flex-end;
 }
 /* 좁은 화면에서는 좌우 0 이면 버튼이 화면 끝까지 붙는다. 이력서 저장 버튼
    (.resume-bottom-save)과 같은 16px 을 준다 — 위 완성도 카드와도 같은 값이다. */
@@ -1916,19 +1913,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 저장 버튼은 카드가 아니라 낱개 버튼이라, 바깥 여백에 기대고 있었다. 좁은 화면에서
    카드를 화면 끝까지 펴며 그 여백을 없앴더니 버튼까지 끝까지 퍼졌다. 자기 여백을 준다. */
-/* 저장 단추는 글자를 감쌀 만큼만, 오른쪽 끝에. 판을 가로지르는 띠로 두면
-   다 채우지도 않았는데 끝난 것처럼 보인다. 폰은 누르기 쉽게 통줄로 둔다. */
-.resume-bottom-save { padding: 24px 0; display: flex; justify-content: flex-end; }
-@media (min-width: 769px) {
-  .resume-bottom-save .resume-save-btn-full { width: auto; height: 44px; padding: 0 24px; }
-}
+.resume-bottom-save { padding: 24px 0; }
 @media (max-width: 768px) { .resume-bottom-save { padding: 20px 16px; } }
 .resume-save-btn-full { width: 100%; height: 52px; background: var(--color-primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; }
 .resume-save-btn-full:hover { background: var(--color-primary-hover); }
-@media (min-width: 769px) {
-  .profile-bottom-cta .resume-save-btn-full { width: auto; height: 44px; padding: 0 24px; }
-}
-
 @media (max-width: 768px) {
   .resume-layout { grid-template-columns: minmax(0, 1fr); }
   .resume-sidebar { display: none; }
