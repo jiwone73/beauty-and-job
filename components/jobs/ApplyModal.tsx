@@ -499,12 +499,13 @@ export default function ApplyModal({
         </div>
 
         <div className="cv-body" style={{ overflowY: "auto", flex: 1 }}>
-          {/* 진행 단계 안내 (작성 → 미리보기 → 지원) */}
+          {/* 진행 단계 — 이름은 그 자리에서 실제로 하는 일과 같아야 한다.
+              지원정보 확인은 자기소개서와 한 화면에 있다(위쪽 묶음). 화면을
+              나누면 확인만 하고 한 번 더 누르게 되어, 같은 화면에 두고 1번을
+              지나온 것으로 둔다. */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "2px 0 16px", flexWrap: "wrap" }}>
-            {/* 단계 이름은 그 자리에서 실제로 하는 일과 같아야 한다 — 마지막에 누르는
-                단추가 「제출」인데 여기만 「지원 완료」면 다른 화면처럼 읽힌다. */}
-            {["자기소개서 작성", "미리보기", "제출"].map((label, i) => {
-              const current = step === "preview" ? 1 : 0;
+            {["지원정보 확인", "자기소개서 작성", "미리보기/수정", "제출"].map((label, i) => {
+              const current = step === "write" ? 1 : 2;
               const active = i <= current;
               return (
                 <Fragment key={label}>
