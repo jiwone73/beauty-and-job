@@ -94,6 +94,7 @@ export default function ResumePreviewModal({
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
             <ApplicationDocument
+                제출본
               ref={previewRef}
               coverLetter={coverLetter}
               resume={{

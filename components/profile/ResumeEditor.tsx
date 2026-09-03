@@ -617,7 +617,7 @@ export default function ResumeEditor({
                   <div className="if-line">
                     {/* 이름을 고르면 주소 앞부분까지 채워 준다 — 유튜브를 고르면
                         아래 칸이 https://youtube.com/@ 로 시작한 채 기다린다. */}
-                    <InlineSuggest value={l.category} placeholder="SNS명 (예: 유튜브)" wide
+                    <InlineSuggest value={l.category} placeholder="SNS명 (예: 인스타)" wide
                       찾기={SNS찾기}
                       onPick={(k) => updateLink(l.id, { ...l, category: k.이름, url: l.url || k.앞부분 })}
                       onSave={(v) => updateLink(l.id, { ...l, category: v })} />

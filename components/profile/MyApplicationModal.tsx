@@ -81,6 +81,7 @@ export default function MyApplicationModal({
             <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
           ) : data ? (
             <ApplicationDocument
+                제출본
               ref={captureRef}
               coverLetter={data.cover_letter}
               subtitle={`${data.company_name} · ${data.job_title}`}

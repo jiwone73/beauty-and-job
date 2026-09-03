@@ -124,6 +124,7 @@ export default function ApplicationModal({
             <div className="admin-empty">지원서를 불러오지 못했어요.</div>
           ) : (
             <ApplicationDocument
+                제출본
                 ref={previewRef}
                 coverLetter={자료.cover_letter}
                 subtitle={자료.job_title}

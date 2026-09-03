@@ -111,6 +111,7 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
         ) : (
           <div className="tres-sheet">
             <ApplicationDocument
+                제출본
               ref={previewRef}
               coverLetter={자료.cover_letter}
               subtitle={자료.job_title}

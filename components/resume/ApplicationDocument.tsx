@@ -10,12 +10,15 @@ type Props = {
   subtitle?: string;      // 예: "beautyLab · 네일보조"
   /** 어느 자리에 냈는가 — 「헤어 디자이너 · 신입 · 서울 강동구」. */
   지원분야?: string;
+  /** 실제로 낸(낼) 지원서인가. 그때는 가려 둔 재직 매장도 그대로 나간다 —
+   *  내가 스스로 문을 연 자리다. 이력서 미리보기는 남이 보는 모습이라 가린다. */
+  제출본?: boolean;
   resume: any;            // ResumePreview에 전달할 props 묶음
   children?: React.ReactNode; // 이력서 뒤 추가 요소(첨부 이력서 파일 등)
 };
 
 const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function ApplicationDocument(
-  { coverLetter, subtitle, resume, 지원분야, children },
+  { coverLetter, subtitle, resume, 지원분야, 제출본, children },
   ref
 ) {
   const hasCover = !!(coverLetter && coverLetter.trim());
@@ -27,7 +30,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
       {/* 자기소개서는 맨 끝, 희망 근무 조건 다음이다 — 기본 이력서 미리보기와
           같은 차례다. 읽는 사람은 누구인지·무엇을 해왔는지를 먼저 훑고,
           하고 싶은 말은 마지막에 읽는다. */}
-      <ResumePreview {...이력서} 지원분야={지원분야} 재직매장그대로 />
+      <ResumePreview {...이력서} 지원분야={지원분야} 재직매장그대로={제출본} />
       {hasCover && (
         <>
           <div style={{ borderTop: "1px solid #e0e0e0", marginTop: 22, paddingTop: 22 }} />
