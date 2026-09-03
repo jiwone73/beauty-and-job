@@ -22,6 +22,10 @@ type Props = {
   isUploading: boolean;
   onPortfolioFiles: (files: File[]) => void;
   onPortfolioDelete: (urls: string[]) => Promise<void>;
+  /** 지원 창에서 쓰는 모드. X 가 「지우기」가 아니라 「이 지원서에서 빼기」다 —
+   *  파일은 그대로 두고 이번 지원에만 안 싣는다. 지우면 지난 지원서의 스냅샷까지
+   *  깨지므로, 진짜 삭제는 기본 이력서에서만 한다. */
+  portfolioExcludeOnly?: boolean;
   // 첨부 이력서 상태/핸들러 (페이지에서 관리, 주입)
   resumeFileName: string | null;
   resumeFileSize: number | null;
@@ -68,6 +72,7 @@ export default function ResumeEditor({
   isUploading,
   onPortfolioFiles,
   onPortfolioDelete,
+  portfolioExcludeOnly,
   resumeFileName,
   resumeFileSize,
   isResumeFileUploading,
@@ -548,11 +553,10 @@ export default function ResumeEditor({
                 <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{portfolioImages.length}장</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
-                {/* 지원 창에서는 읽기 전용이다 — 사진은 이 공고에 낼 사본이 아니라
-                    한 곳(users.portfolio_images)에 있어, 여기서 지우면 기본
-                    이력서에서도 진짜로 사라진다. 대신 고치러 갈 길을 놓는다. */}
+                {/* 지원 창에서는 사진을 더하거나 지우지 않는다 — 빼는 것만 한다.
+                    새로 올리는 일은 이력서에서. */}
                 {portfolioReadOnly ? (
-                  <a className="pf-goto" href="/profile/resume" target="_blank" rel="noopener">이력서에서 수정</a>
+                  <a className="pf-goto" href="/profile/resume" target="_blank" rel="noopener">사진 올리기</a>
                 ) : portfolioImages.length === 0 ? (
                   <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                     <Plus size={18} />
@@ -581,8 +585,10 @@ export default function ResumeEditor({
                           onClick={() => set확대(idx)} style={{ cursor: "zoom-in" }} />
                         {/* 한 장 빼는 일은 사진 위에서 끝난다. 쓰레기통은 전부
                             지우는 것이라 뜻이 다르다. */}
-                        {!portfolioReadOnly && (
-                          <button type="button" className="pf-del-one" aria-label="이 사진 삭제"
+                        {(!portfolioReadOnly || portfolioExcludeOnly) && (
+                          <button type="button" className="pf-del-one"
+                            aria-label={portfolioExcludeOnly ? "이 지원서에서 빼기" : "이 사진 삭제"}
+                            title={portfolioExcludeOnly ? "이 지원서에서 빼기" : "이 사진 삭제"}
                             onClick={(e) => { e.stopPropagation(); onPortfolioDelete([img.url]); }}>
                             <X size={13} strokeWidth={2.6} />
                           </button>

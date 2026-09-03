@@ -70,6 +70,10 @@ export default function ApplyModal({
   const [emailLocal, setEmailLocal] = useState(email);
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
   const [portfolioImages, setPortfolioImages] = useState<{ url: string; w?: number; h?: number }[]>([]);
+  // 이 지원서에만 안 싣는 사진. 파일은 그대로 둔다 — 지우면 지난 지원서의
+  // 스냅샷까지 깨지므로, 진짜 삭제는 기본 이력서에서만 한다.
+  const [뺀사진, set뺀사진] = useState<string[]>([]);
+  const 실을사진 = portfolioImages.filter((i) => !뺀사진.includes(i.url));
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [addressDisplay, setAddressDisplay] = useState("");
@@ -450,6 +454,7 @@ export default function ApplyModal({
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ cover_letter: coverLetter.trim() || null, resume: 사본싸기(),
+          portfolio_images: 실을사진,
           position_title: positionTitle || null, work_location: workLocation || null }),
       });
       const data = await res.json();
@@ -619,7 +624,7 @@ export default function ApplyModal({
                     languages,
                     experiences,
                     links,
-                    portfolioImages,
+                    portfolioImages: 실을사진,
                     resumeFileName: null, // 첨부 이력서 숨김 처리(미리보기/전송 문서에서 제외)
                     avatarUrl,
                     resumeType,
@@ -723,10 +728,10 @@ export default function ApplyModal({
                   resumeType={resumeType}
                   emailLocal={emailLocal}
                   setEmailLocal={setEmailLocal}
-                  portfolioImages={portfolioImages}
+                  portfolioImages={실을사진}
                   isUploading={isUploading}
                   onPortfolioFiles={processPhotos}
-                  onPortfolioDelete={handleDeletePhotos}
+                  onPortfolioDelete={async (urls) => set뺀사진((p) => Array.from(new Set([...p, ...urls])))}
                   resumeFileName={resumeFileName}
                   resumeFileSize={resumeFileSize}
                   isResumeFileUploading={isResumeFileUploading}
@@ -735,6 +740,7 @@ export default function ApplyModal({
                   onResumeFileOpen={handleOpenResumeFile}
                   resumeFileReadOnly
                   portfolioReadOnly
+                  portfolioExcludeOnly
                 />
               </div>
 

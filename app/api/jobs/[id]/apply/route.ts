@@ -15,7 +15,7 @@ export async function POST(
   if (authErr) return authErr
   const { id: jobPostingId } = params
   const body = await req.json().catch(() => ({}))
-  const { resume_id, cover_letter, third_party_consent, resume, position_title, work_location } = body
+  const { resume_id, cover_letter, third_party_consent, resume, position_title, work_location, portfolio_images } = body
   const jobRes = await pool.query(
     `SELECT jp.id, jp.status, jp.deadline, jp.company_id, jp.title,
             jp.description, jp.location, jp.address, jp.work_type, jp.experience_level,
@@ -115,6 +115,15 @@ export async function POST(
     } catch (e) {
       console.error('[apply] 이력서 스냅샷 생성 실패', e)
     }
+  }
+  // 이 공고에 실을 사진만 박제한다. 스냅샷은 users.portfolio_images 를 통째로
+  // 뜨는데, 지원 창에서 뺀 사진이 있으면 그것까지 실려 나간다. 파일은 그대로
+  // 두고 목록만 좁힌다 — 지우면 지난 지원서의 사진까지 깨진다.
+  if (snapshot && Array.isArray(portfolio_images)) {
+    const 실을것 = portfolio_images
+      .map((x: any) => (typeof x === 'string' ? { url: x } : x))
+      .filter((x: any) => x && typeof x.url === 'string')
+    ;(snapshot as any).resume = { ...(snapshot as any).resume, portfolio_images: 실을것 }
   }
 
   // 지원 시점 채용공고 박제 (스냅샷) — 이후 공고가 수정·마감·삭제돼도 증빙 가능

@@ -37,6 +37,9 @@ export async function GET(
   if (snap && (snap.profile || snap.careers)) {
     return ok({
       ...row,
+      // 지원 창에서 뺀 사진은 이 지원서에 실리지 않았다. 스냅샷이 그때 실은
+      // 목록을 갖고 있으면 그것을 쓴다 — users 의 지금 목록은 그 뒤로 바뀐다.
+      portfolio_images: snap.resume?.portfolio_images ?? row.portfolio_images,
       is_snapshot: true,
       resume: {
         // 옛 스냅샷에는 이 값이 없다 — 그때는 지금 값으로 물러선다.
