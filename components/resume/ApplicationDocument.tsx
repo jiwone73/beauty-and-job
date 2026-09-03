@@ -21,19 +21,22 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
   const { coverLetter: _기본자소서, ...이력서 } = resume || {};
   return (
     <div ref={ref} className="app-doc" style={{ background: "#fff" }}>
-      {hasCover && (
-        <div style={{ background: "#fff", padding: "0 0 22px" }}>
-          <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
-          {subtitle && (
-            <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>{subtitle}</p>
-          )}
-          <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
-        </div>
-      )}
-      {hasCover && (
-        <div style={{ borderTop: "1px solid #e0e0e0", paddingTop: 22 }} />
-      )}
+      {/* 자기소개서는 맨 끝, 희망 근무 조건 다음이다 — 기본 이력서 미리보기와
+          같은 차례다. 읽는 사람은 누구인지·무엇을 해왔는지를 먼저 훑고,
+          하고 싶은 말은 마지막에 읽는다. */}
       <ResumePreview {...이력서} />
+      {hasCover && (
+        <>
+          <div style={{ borderTop: "1px solid #e0e0e0", marginTop: 22, paddingTop: 22 }} />
+          <div style={{ background: "#fff" }}>
+            <h2 style={{ fontSize: 17, fontWeight: 400, color: "#1a1a1a", margin: "0 0 4px", lineHeight: 1.5 }}>자기소개서</h2>
+            {subtitle && (
+              <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 14px" }}>{subtitle}</p>
+            )}
+            <p style={{ fontSize: 14, color: "#333", lineHeight: 1.85, margin: 0, whiteSpace: "pre-wrap" }}>{coverLetter}</p>
+          </div>
+        </>
+      )}
       {children}
     </div>
   );
