@@ -12623,16 +12623,18 @@ button,
   scroll-snap-stop: always;  /* 세게 밀어도 한 번에 한 쪽씩만 넘어간다 */
 }
 
+/* 24px 은 사진 위에 얹히면 눈에 안 띄었다 — 배경이 밝으면 흰 동그라미가 사진에
+   묻힌다. 크기를 키우고 바탕을 완전히 흰색으로 올려 가장자리를 세운다. */
 .bstrip-arrow {
   position: absolute; top: 50%; transform: translateY(-50%);
-  width: 24px; height: 24px; border-radius: 50%; border: none;
-  background: rgba(255,255,255,0.9); color: #333;
-  cursor: pointer; z-index: 3; box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: #fff; color: #1a1a1a;
+  cursor: pointer; z-index: 3; box-shadow: 0 2px 8px rgba(0,0,0,0.22);
   display: flex; align-items: center; justify-content: center;
 }
 .bstrip-arrow:disabled { opacity: 0.35; cursor: default; }
-.bstrip-prev { left: 6px; }
-.bstrip-next { right: 6px; }
+.bstrip-prev { left: 10px; }
+.bstrip-next { right: 10px; }
 
 .bstrip-dots { display: none; }
 

@@ -237,9 +237,9 @@ export default function BannerStrip({
         <>
           {/* 마우스 화면에만 낸다 — 폰에서는 손으로 민다. */}
           <button type="button" aria-label="이전 이미지" className="bstrip-arrow bstrip-prev"
-            onClick={() => 옮기기(쪽 - 1)} disabled={쪽 === 0}><ChevronLeft size={15} /></button>
+            onClick={() => 옮기기(쪽 - 1)} disabled={쪽 === 0}><ChevronLeft size={22} /></button>
           <button type="button" aria-label="다음 이미지" className="bstrip-arrow bstrip-next"
-            onClick={() => 옮기기(쪽 + 1)} disabled={쪽 >= 쪽수 - 1}><ChevronRight size={15} /></button>
+            onClick={() => 옮기기(쪽 + 1)} disabled={쪽 >= 쪽수 - 1}><ChevronRight size={22} /></button>
 
           {/* 폰에만 낸다 — 몇 쪽 중 몇 번째인지 알려 준다. 눌러서도 옮길 수 있다. */}
           <div className="bstrip-dots" role="tablist" aria-label="배너 쪽 넘기기">
