@@ -40,6 +40,8 @@ interface Props {
   resumeType: "office" | "salon";
   officeJobAreas: string[];
   skillAreas: string[];
+  /** 지원서로 쓸 때만 온다 — 「헤어 디자이너 · 신입 · 서울 강동구」. */
+  지원분야?: string;
   certificates: CertificateEntry[];
   workTypePrefer: string;
   regionPrefer: string;
@@ -82,6 +84,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     resumeType,
     officeJobAreas,
     skillAreas,
+    지원분야,
     certificates,
     workTypePrefer,
     regionPrefer,
@@ -104,7 +107,15 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         </div>
       )}
       <div style={{ paddingTop: "20px" }}>
-      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}><IdCard size={16} className="resume-section-icon" />기본 정보</h2>
+      {/* 지원서로 쓸 때는 「지원 정보」이고 어느 자리에 내는지가 맨 위에 온다 —
+          지원 창의 수정 화면과 같은 이름·같은 차례여야 한다. */}
+      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}><IdCard size={16} className="resume-section-icon" />{지원분야 ? "지원 정보" : "기본 정보"}</h2>
+      {지원분야 && (
+        <div className="rp-cond" style={{ marginBottom: 14 }}>
+          <span className="rp-cond-k">지원분야</span>
+          <span className="rp-cond-v">{지원분야}</span>
+        </div>
+      )}
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>

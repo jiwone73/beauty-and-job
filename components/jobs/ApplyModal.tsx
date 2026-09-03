@@ -625,6 +625,7 @@ export default function ApplyModal({
               <div className="apply-preview-doc" style={{ marginBottom: 4 }}>
                 <ApplicationDocument
                   coverLetter={coverLetter}
+                  지원분야={[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}
                   resume={{
                     name,
                     birthDisplay,
