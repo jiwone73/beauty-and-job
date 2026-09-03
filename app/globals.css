@@ -13874,6 +13874,12 @@ button,
 /* 지원 창에서 뺀 줄. 지운 것이 아니라 이번에만 안 싣는 것이라, 자리에
    흐리게 남겨 두고 되돌릴 길을 옆에 둔다. */
 .if-row.is-out .if-row-body { opacity: .4; pointer-events: none; }
+/* 지원 창에서 뺀 스킬. 눌러서 되돌린다. */
+.resume-skill-chip .chip-x { background: none; border: none; padding: 0 0 0 5px; margin: 0;
+  cursor: pointer; color: #b9b9c0; display: inline-flex; align-items: center; }
+.resume-skill-chip .chip-x:hover { color: var(--color-error); }
+.resume-skill-chip.is-out { opacity: .4; text-decoration: line-through; cursor: pointer;
+  font-family: inherit; }
 .if-row-back { background: none; border: none; cursor: pointer; padding: 4px;
   font-size: 13px; color: var(--color-primary); text-decoration: underline;
   text-underline-offset: 3px; white-space: nowrap; flex-shrink: 0; }

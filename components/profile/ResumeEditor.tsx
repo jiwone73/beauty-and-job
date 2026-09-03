@@ -442,7 +442,22 @@ export default function ResumeEditor({
               두면 같은 것이 한 화면에 두 번 나온다. */}
           {skills.length > 0 && !skillModalOpen && (
             <div className="resume-skill-chips">
-              {skills.map((sk) => <span key={sk} className="resume-skill-chip">{sk}</span>)}
+              {skills.map((sk) => (
+                빼기전용 ? (
+                  뺐나("skill:" + sk) ? (
+                    <button key={sk} type="button" className="resume-skill-chip is-out"
+                      title="되돌리기" onClick={() => on되돌리기?.("skill:" + sk)}>{sk}</button>
+                  ) : (
+                    <span key={sk} className="resume-skill-chip">
+                      {sk}
+                      <button type="button" className="chip-x" aria-label="이 지원서에서 빼기"
+                        title="이 지원서에서 빼기" onClick={() => on빼기?.("skill:" + sk)}>
+                        <X size={12} strokeWidth={2.6} />
+                      </button>
+                    </span>
+                  )
+                ) : <span key={sk} className="resume-skill-chip">{sk}</span>
+              ))}
             </div>
           )}
           {skillModalOpen && (
