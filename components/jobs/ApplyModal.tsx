@@ -519,7 +519,7 @@ export default function ApplyModal({
                     }}>{i + 1}</span>
                     <span style={{ fontSize: 13, fontWeight: 400, color: active ? "#582681" : "#aaa" }}>{label}</span>
                   </div>
-                  {i < 2 && <span style={{ width: 20, height: 1, background: "#ddd", flexShrink: 0 }} />}
+                  {i < 3 && <span style={{ width: 20, height: 1, background: "#ddd", flexShrink: 0 }} />}
                 </Fragment>
               );
             })}
