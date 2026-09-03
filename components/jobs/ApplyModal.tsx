@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 import { useProfileStore, type 이력서한벌 } from "@/lib/store/profileStore";
 import { shortenRegion } from "@/lib/memberFormat";
 import { addressRegion } from "@/lib/regionShort";
@@ -99,6 +99,43 @@ export default function ApplyModal({
     };
   }, []);
 
+  /** 프로필에서 오는 값(희망 급여·희망직군)을 다시 읽는다. 프로필 창에서
+   *  고치고 돌아왔을 때도 부른다. */
+  const 프로필읽기 = useCallback(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        const pf = res?.data?.profile;
+        if (!pf) return;
+        set희망급여({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+        if (Array.isArray(pf.skill_areas)) set직군매장(pf.skill_areas);
+        if (Array.isArray(pf.office_job_areas) && pf.office_job_areas.length > 0) set직군본사(pf.office_job_areas);
+      })
+      .catch(() => {});
+    fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res?.success) return;
+        const d = res.data;
+        if (d.phone) setPhoneLocal(d.phone);
+        if (d.email) setEmailLocal(d.email);
+        setAddressDisplay(
+          [d.address_road, d.address_detail].filter(Boolean).join(" ") ||
+          [d.region_sido, d.region_sigungu].filter(Boolean).join(" ")
+        );
+        if (Array.isArray(d.preferred_regions) && d.preferred_regions.length > 0) {
+          set희망지역(d.preferred_regions
+            .map((r: any) => shortenRegion([r?.sido, r?.sigungu].filter(Boolean).join(" ")))
+            .filter(Boolean).join(", "));
+        }
+      })
+      .catch(() => {});
+  }, []);
+  const 돌아올때 = useRef<null | (() => void)>(null);
+  useEffect(() => () => { 돌아올때.current?.(); }, []);
+
   // 모달 열릴 때: store 로드 + 기본정보 + 최근 자소서
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -119,17 +156,7 @@ export default function ApplyModal({
       초안준비.current = true;
     });
 
-    fetch("/api/users/me/profile", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => {
-        const pf = res?.data?.profile;
-        if (pf) {
-          set희망급여({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
-          if (Array.isArray(pf.skill_areas) && pf.skill_areas.length > 0) set직군매장(pf.skill_areas);
-          if (Array.isArray(pf.office_job_areas) && pf.office_job_areas.length > 0) set직군본사(pf.office_job_areas);
-        }
-      })
-      .catch(() => {});
+    프로필읽기();
 
     fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
@@ -161,6 +188,16 @@ export default function ApplyModal({
       })
       .catch(console.error);
 
+    // 프로필을 새 창에서 고치고 돌아오면 새로 읽는다 — 여기서는 못 고치게 해
+    // 두었으니, 고치고 온 값이 그대로 남아 있으면 고쳐지지 않은 줄 안다.
+    const 돌아옴 = () => { if (!document.hidden) 프로필읽기(); };
+    window.addEventListener("focus", 돌아옴);
+    document.addEventListener("visibilitychange", 돌아옴);
+    돌아올때.current = () => {
+      window.removeEventListener("focus", 돌아옴);
+      document.removeEventListener("visibilitychange", 돌아옴);
+    };
+
     if (!coverLoaded) {
       fetch("/api/users/me/last-cover-letter", { headers: { Authorization: `Bearer ${token}` } })
         .then((r) => r.json())
@@ -171,6 +208,16 @@ export default function ApplyModal({
   }, []);
 
   const jobDisplay = (job === "직접입력" ? jobCustom : job) || officeJobAreas[0] || skillAreas[0] || "직군 미설정";
+  // 희망 급여 — 이력서 미리보기와 같은 꼴로 적는다(「월 400만원~」·「협의」).
+  const 희망급여표시 = (() => {
+    const { type, min } = 희망급여;
+    if (!min) return "협의";
+    const 앞말 = type === "ANNUAL" ? "연" : type === "WEEKLY" ? "주" : type === "DAILY" ? "일급" : type === "HOURLY" ? "시급" : "월";
+    const 숫자 = (type === "HOURLY" || type === "DAILY")
+      ? `${Number(min).toLocaleString()}원`
+      : `${Math.round(Number(min) / 10000).toLocaleString()}만원`;
+    return `${앞말} ${숫자}~`;
+  })();
   const birthDisplay = birth
     ? `${birth.slice(0, 4)}년 (${new Date().getFullYear() - Number(birth.slice(0, 4))}세, ${gender === "남성" ? "남" : "여"})`
     : "";
@@ -636,16 +683,31 @@ export default function ApplyModal({
           {/* ===== 화면 3: 이력서 수정 ===== */}
           {step === "edit" && (
             <>
-              <div style={{ marginTop: 8 }}>
-                <label style={{ display: "block", fontSize: 15, fontWeight: 400, color: "#1a1a1a", marginBottom: 12 }}>
-                  자기소개서
-                </label>
-                <textarea className="apply-textarea"
-                  value={coverLetter}
-                  onChange={(e) => setCoverLetter(e.target.value)}
-                  maxLength={2000}
-                  style={{ width: "100%", minHeight: 120, padding: 12, borderRadius: 8, border: "1px solid #ddd", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20 }}
-                />
+              {/* 기본 정보와 희망 근무 조건은 프로필에서 오는 값이라 여기서
+                  고치지 않는다 — 이 창에서 고치면 이 공고에 낼 사본에만 남고
+                  프로필은 그대로라, 다음 공고에 또 같은 것을 고쳐야 한다.
+                  고치는 자리로 보내고, 돌아오면 새로 읽어 온다. */}
+              <div className="apply-info" style={{ marginTop: 8 }}>
+                <div className="apply-info-head"><span>기본 정보</span></div>
+                <div className="apply-info-row">
+                  <span>이름</span><b>{name}</b>
+                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
+                </div>
+                {birthDisplay && <div className="apply-info-row"><span>생년월일</span><b>{birthDisplay}</b></div>}
+                <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
+                <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>
+                {addressDisplay && <div className="apply-info-row"><span>거주지</span><b>{addressDisplay}</b></div>}
+              </div>
+
+              <div className="apply-info">
+                <div className="apply-info-head"><span>희망 근무 조건</span></div>
+                <div className="apply-info-row">
+                  <span>희망 근무지</span><b>{희망지역 || regionPrefer || "—"}</b>
+                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
+                </div>
+                <div className="apply-info-row"><span>희망직군</span><b>{[...(직군매장 ?? skillAreas), ...(직군본사 ?? officeJobAreas)].join(", ") || "—"}</b></div>
+                {workTypePrefer && <div className="apply-info-row"><span>근무형태</span><b>{workTypePrefer}</b></div>}
+                <div className="apply-info-row"><span>희망 급여</span><b>{희망급여표시}</b></div>
               </div>
 
               {/* 되살린 것이 무엇인지 밝힌다. 말없이 채워 두면 기본 이력서가
@@ -678,6 +740,19 @@ export default function ApplyModal({
                   onResumeFileOpen={handleOpenResumeFile}
                   resumeFileReadOnly
                   portfolioReadOnly
+                />
+              </div>
+
+              {/* 자기소개서는 맨 끝 — 이력서·미리보기와 같은 차례다. */}
+              <div style={{ marginTop: 20, borderTop: "1px solid #eee", paddingTop: 16 }}>
+                <label style={{ display: "block", fontSize: 15, fontWeight: 400, color: "#1a1a1a", marginBottom: 12 }}>
+                  자기소개서
+                </label>
+                <textarea className="apply-textarea"
+                  value={coverLetter}
+                  onChange={(e) => setCoverLetter(e.target.value)}
+                  maxLength={2000}
+                  style={{ width: "100%", minHeight: 160, padding: 12, borderRadius: 8, border: "1px solid #ddd", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
                 />
               </div>
 
