@@ -39,8 +39,9 @@ export default function CoverLetterTools({
       });
       const d = await r.json();
       if (!d.success) { set말(d.error?.message || "초안을 만들지 못했어요."); return; }
+      // 글이 칸에 들어찬 것이 곧 알림이다. 「고쳐 쓰세요」 같은 말은 붙이지
+      // 않는다 — 있는 정보로 만들어 줄 뿐, 무엇을 더 하라고 시키지 않는다.
       onChange(d.data.text);
-      set말(`초안을 만들었어요. 그대로 두지 말고 내 말로 고쳐 주세요. (오늘 ${d.data.left}번 남음)`);
     } catch { set말("초안을 만들지 못했어요."); }
     finally { set짓는중(false); }
   };
