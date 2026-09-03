@@ -611,9 +611,10 @@ export default function ApplyModal({
                 지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
               </p>
               <div style={{ display: "flex", gap: 8 }}>
+                {/* 둘이 같은 폭으로 선다 — 되돌아가는 길과 내는 길은 무게가 같다. */}
                 <button
                   onClick={() => setStep("edit")}
-                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
+                  style={{ flex: 1, padding: "13px 18px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
                   수정하기
                 </button>
@@ -623,7 +624,7 @@ export default function ApplyModal({
                   disabled={applying}
                   onClick={handleApply}
                 >
-                  {applying ? "지원 중..." : "지원하기"}
+                  {applying ? "제출 중..." : "제출"}
                 </button>
               </div>
             </>
