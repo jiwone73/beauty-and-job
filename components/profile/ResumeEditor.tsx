@@ -553,11 +553,10 @@ export default function ResumeEditor({
                 <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{portfolioImages.length}장</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
-                {/* 지원 창에서는 사진을 더하거나 지우지 않는다 — 빼는 것만 한다.
-                    새로 올리는 일은 이력서에서. */}
-                {portfolioReadOnly ? (
-                  <a className="pf-goto" href="/profile/resume" target="_blank" rel="noopener">사진 올리기</a>
-                ) : portfolioImages.length === 0 ? (
+                {/* 지원 창에서는 사진을 더하지도 지우지도 않는다 — 빼는 것만 한다.
+                    올리러 가는 길은 두지 않았다: 지원하다 말고 사진을 올리러
+                    가는 사람은 드물고, 링크 하나가 줄만 차지한다. */}
+                {portfolioReadOnly ? null : portfolioImages.length === 0 ? (
                   <button className="resume-icon-btn" aria-label="사진 추가" onClick={() => set모달((v) => (v === "photo" ? null : "photo"))}>
                     <Plus size={18} />
                   </button>
