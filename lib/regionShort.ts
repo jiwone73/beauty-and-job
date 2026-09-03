@@ -17,3 +17,12 @@ export function shortRegion(full: string): string {
   }
   return full;
 }
+
+/** 주소에서 시·구까지만. "서울 강동구 고덕로 390 고덕아르테온 2층" → "서울 강동구".
+ *  어느 동네인지만 알면 되는 자리(지원 창의 포지션 줄 등)에 쓴다 — 전체 주소는
+ *  공고 본문에 그대로 있다. */
+export function addressRegion(full: string): string {
+  const s = shortRegion(String(full || "").trim());
+  const m = s.match(/^(\S+)\s+(\S*[시군구])(?:\s|$)/);
+  return m ? `${m[1]} ${m[2]}` : s;
+}

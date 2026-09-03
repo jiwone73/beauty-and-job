@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { useProfileStore, type 이력서한벌 } from "@/lib/store/profileStore";
 import { shortenRegion } from "@/lib/memberFormat";
+import { addressRegion } from "@/lib/regionShort";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -503,7 +504,7 @@ export default function ApplyModal({
                     아래 세 줄(내 프로필에서 오는 값)과 선으로 갈라, 고치러 가는
                     길이 포지션에까지 걸리지 않게 한다. */}
                 {(positionTitle || workLocation) && (
-                  <div className="apply-info-row is-post"><span>포지션</span><b>{[positionTitle, workLocation].filter(Boolean).join(" · ")}</b></div>
+                  <div className="apply-info-row is-post"><span>포지션</span><b>{[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}</b></div>
                 )}
                 <div className="apply-info-row">
                   <span>이름</span><b>{name}</b>

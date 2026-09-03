@@ -2547,7 +2547,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .apply-info-head span { font-size: 15px; font-weight: 700; color: #1a1a1a; }
 .apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; }
 .apply-info-row span { flex: 0 0 62px; font-size: 13px; color: #8a8a90; }
-.apply-info-row b { font-size: 15px; font-weight: 400; color: #1a1a1a; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* 길면 줄바꿈 대신 말줄임 — 한 줄에 하나씩 읽히는 자리라 두 줄이 되면 이름표와
+   값의 짝이 흐트러진다. */
+.apply-info-row b { font-size: 15px; font-weight: 400; color: #1a1a1a; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 포지션은 매장이 정한 값, 아래 셋은 내 프로필에서 오는 값 — 선으로 가른다. */
 .apply-info-row.is-post { padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid #f2f2f4; }
 /* 고치러 가는 길은 개인정보 묶음의 첫 줄에만 건다. 머리줄에 두면 포지션까지
