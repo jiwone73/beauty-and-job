@@ -135,6 +135,33 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       </div>
       </div>
 
+      {/* 희망 근무 조건 — 기본 정보 바로 다음이다. 이력서 양식의 표준 차례이자
+          (사람인·잡코리아 모두 인적사항 다음에 둔다) 읽는 차례이기도 하다:
+          누구인가 → 무엇을 원하는가 → 무엇을 해왔는가 → 하고 싶은 말.
+          지원서 수정 화면도 같은 차례로 세워 둔다. */}
+      {(regionPrefer || workTypePrefer || 희망직군 || salaryMin) && (
+        <div className="rp-section">
+          <h2 className="rp-section-title">희망 근무 조건</h2>
+          <div className="rp-cond">
+            {regionPrefer && (
+              <><span className="rp-cond-k">희망 근무지</span><span className="rp-cond-v">{regionPrefer}</span></>
+            )}
+            {workTypePrefer && (
+              <><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>
+            )}
+            {희망직군 && (
+              <><span className="rp-cond-k">희망직군</span><span className="rp-cond-v">{희망직군}</span></>
+            )}
+            <span className="rp-cond-k">희망 급여</span>
+            <span className="rp-cond-v">
+              {salaryMin ? (
+                <><b className="rp-cond-unit">{급여앞말(salaryType)}</b> {급여숫자(salaryMin, salaryType)}~</>
+              ) : "협의"}
+            </span>
+          </div>
+        </div>
+      )}
+
       {coreCompetencies && (
         <div className="rp-section">
           <h2 className="rp-section-title">핵심 역량</h2>
@@ -291,31 +318,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               ))}
             </>
           )}
-        </div>
-      )}
-
-      {/* 희망 근무 조건 — 매장이 제안하기 전에 맞춰 보는 값들이라 한 자리에 모은다.
-          자기소개서 바로 위, 경력·작업물을 다 훑고 난 자리다. */}
-      {(regionPrefer || workTypePrefer || 희망직군 || salaryMin) && (
-        <div className="rp-section">
-          <h2 className="rp-section-title">희망 근무 조건</h2>
-          <div className="rp-cond">
-            {regionPrefer && (
-              <><span className="rp-cond-k">희망 근무지</span><span className="rp-cond-v">{regionPrefer}</span></>
-            )}
-            {workTypePrefer && (
-              <><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>
-            )}
-            {희망직군 && (
-              <><span className="rp-cond-k">희망직군</span><span className="rp-cond-v">{희망직군}</span></>
-            )}
-            <span className="rp-cond-k">희망 급여</span>
-            <span className="rp-cond-v">
-              {salaryMin ? (
-                <><b className="rp-cond-unit">{급여앞말(salaryType)}</b> {급여숫자(salaryMin, salaryType)}~</>
-              ) : "협의"}
-            </span>
-          </div>
         </div>
       )}
 
