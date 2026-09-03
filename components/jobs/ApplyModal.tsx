@@ -161,7 +161,13 @@ export default function ApplyModal({
         const dr = await fetch(`/api/jobs/${jobId}/apply-draft`, { headers: { Authorization: `Bearer ${token}` } });
         const dd = await dr.json();
         const 초안 = dd?.data?.draft;
-        if (초안?.resume) { useProfileStore.getState().이력서되돌리기(사본풀기(초안.resume)); set초안됨(true); }
+        if (초안?.resume) {
+          useProfileStore.getState().이력서되돌리기(사본풀기(초안.resume));
+          // 「이 지원서에서 뺀 사진」도 붙들어 둔 것에 함께 담긴다 — 창을 닫았다
+          // 다시 열었을 때 뺐던 사진이 도로 나오면 매번 다시 빼야 한다.
+          if (Array.isArray(초안.resume.뺀사진)) set뺀사진(초안.resume.뺀사진);
+          set초안됨(true);
+        }
         if (초안?.cover_letter) { setCoverLetter(초안.cover_letter); setCoverLoaded(true); }
       } catch {}
       초안준비.current = true;
@@ -379,7 +385,7 @@ export default function ApplyModal({
     // 기본 이력서와 한 글자도 다르지 않고 자소서도 그대로면 붙들어 둘 것이
     // 없다. 남겨 두면 다음에 열 때 '임시저장한 사본' 이라며 기본 이력서와
     // 똑같은 것을 되살려 놓고, 무엇이 사본인지 알 수 없게 된다.
-    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current);
+    const 같은이력서 = JSON.stringify(지금) === JSON.stringify(뜬이력서.current) && 뺀사진.length === 0;
     const 같은자소서 = 첫자소서.current === null || 첫자소서.current === coverLetter;
     try {
       if (같은이력서 && 같은자소서) {
@@ -389,7 +395,7 @@ export default function ApplyModal({
       await fetch(`/api/jobs/${jobId}/apply-draft`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ resume: 사본싸기(), cover_letter: coverLetter }),
+        body: JSON.stringify({ resume: { ...사본싸기(), 뺀사진 }, cover_letter: coverLetter }),
       });
     } catch (e) {
       console.error("[apply-draft]", e);
@@ -402,7 +408,7 @@ export default function ApplyModal({
     const t = setTimeout(초안쓰기, 800);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [intro, coreCompetencies, careers, educations, skills, languages, experiences,
+  }, [뺀사진, intro, coreCompetencies, careers, educations, skills, languages, experiences,
       links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
 
   // 이력서에 담아 둔 기본 자소서를 밑글로 깐다. 빈 칸에서 다시 쓰게 하면 대부분
