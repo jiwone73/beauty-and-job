@@ -2486,6 +2486,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-layout, .job-detail-layout * { font-weight: 400 !important; }
 /* 등록폼도 동일하게 볼드 없이 평체 */
 .jobpost-form, .jobpost-form * { font-weight: 400 !important; }
+/* 위 두 줄이 안쪽을 전부 400 으로 눌러(!important), 칸 이름에 준 굵기가 먹지
+   않았다. 칸 이름만 되살린다 — 이력서 칸 이름과 같은 무게로 읽혀야 한다. */
+.job-detail-layout .job-detail-subtitle,
+.jobpost-form .jobpost-section-title { font-weight: 600 !important; }
 /* 등록폼 기본정보: 필드 글자 크기 통일(공고 제목·회사명·섹션 제목 제외) */
 .jobpost-form .job-detail-meta-item, .jobpost-form .job-detail-meta-item *,
 .jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,

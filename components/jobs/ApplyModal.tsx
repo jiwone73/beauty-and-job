@@ -435,17 +435,6 @@ export default function ApplyModal({
     set방금저장(true);
     setTimeout(() => set방금저장(false), 2000);
   };
-  const 초안버리기 = async () => {
-    if (!confirm("임시저장한 내용을 버리고 기본 이력서로 되돌릴까요?")) return;
-    const token = localStorage.getItem("access_token");
-    try {
-      if (token) await fetch(`/api/jobs/${jobId}/apply-draft`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
-    } catch {}
-    const 원본 = 뜬이력서.current;
-    if (원본) useProfileStore.getState().이력서되돌리기(원본);
-    첫자소서.current = coverLetter;
-    set초안됨(false);
-  };
 
   // 지원하기 = 이력서 저장(syncToDb) → 지원 API(스냅샷 박제)
   const handleApply = async () => {
@@ -547,14 +536,9 @@ export default function ApplyModal({
                   「지원서 수정하기」 화면에만 있어, 임시저장한 사람이 다시 열었을
                   때 그것이 올라온 줄 모르고 처음부터 다시 썼다. */}
               {초안됨 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap",
-                  margin: "0 0 14px", padding: "10px 12px", borderRadius: 8, background: "#f7f4fa" }}>
-                  <span style={{ fontSize: 13, color: "#6b6570" }}>임시저장해 둔 사본을 불러왔어요.</span>
-                  <button type="button" onClick={초안버리기}
-                    style={{ marginLeft: "auto", border: "none", background: "none", padding: 0,
-                      fontSize: 13, color: "#582681", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}>
-                    기본 이력서로 되돌리기
-                  </button>
+                <div style={{ margin: "0 0 14px", padding: "10px 12px", borderRadius: 8,
+                  background: "#f7f4fa", fontSize: 13, color: "#6b6570" }}>
+                  임시저장해 둔 사본을 불러왔어요.
                 </div>
               )}
               {/* 지원 정보 — 매장이 실제로 연락하는 값이다. 옛 번호가 그대로면
@@ -572,7 +556,7 @@ export default function ApplyModal({
                 )}
                 <div className="apply-info-row">
                   <span>이름</span><b>{name}</b>
-                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 개인정보 수정</a>
+                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
                 </div>
                 <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
                 <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>
@@ -719,14 +703,9 @@ export default function ApplyModal({
               {/* 되살린 것이 무엇인지 밝힌다. 말없이 채워 두면 기본 이력서가
                   이런 줄 알고, 여기서 고친 것이 저쪽에도 남은 줄 안다. */}
               {초안됨 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap",
-                  margin: "0 0 12px", padding: "10px 12px", borderRadius: 8, background: "#f7f4fa" }}>
-                  <span style={{ fontSize: 13, color: "#6b6570" }}>임시저장해 둔 사본을 불러왔어요.</span>
-                  <button type="button" onClick={초안버리기}
-                    style={{ marginLeft: "auto", border: "none", background: "none", padding: 0,
-                      fontSize: 13, color: "#582681", cursor: "pointer", fontFamily: "inherit", textDecoration: "underline" }}>
-                    기본 이력서로 되돌리기
-                  </button>
+                <div style={{ margin: "0 0 14px", padding: "10px 12px", borderRadius: 8,
+                  background: "#f7f4fa", fontSize: 13, color: "#6b6570" }}>
+                  임시저장해 둔 사본을 불러왔어요.
                 </div>
               )}
               <div className="apply-resume-wrap" style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
