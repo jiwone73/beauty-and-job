@@ -306,6 +306,9 @@ export default function ResumeEditor({
                     {c.companyPublic === false ? "비공개" : "공개"}
                   </label>
                 )}
+                {i === 0 && c.companyPublic === false && (
+                  <span className="career-open-note">(지원 시에만 공개)</span>
+                )}
               </div>
               <div className="if-line">
                 <InlineYM value={c.startDate} required

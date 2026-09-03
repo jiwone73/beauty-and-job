@@ -27,7 +27,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
       {/* 자기소개서는 맨 끝, 희망 근무 조건 다음이다 — 기본 이력서 미리보기와
           같은 차례다. 읽는 사람은 누구인지·무엇을 해왔는지를 먼저 훑고,
           하고 싶은 말은 마지막에 읽는다. */}
-      <ResumePreview {...이력서} 지원분야={지원분야} />
+      <ResumePreview {...이력서} 지원분야={지원분야} 재직매장그대로 />
       {hasCover && (
         <>
           <div style={{ borderTop: "1px solid #e0e0e0", marginTop: 22, paddingTop: 22 }} />

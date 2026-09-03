@@ -42,6 +42,8 @@ interface Props {
   skillAreas: string[];
   /** 지원서로 쓸 때만 온다 — 「헤어 디자이너 · 신입 · 서울 강동구」. */
   지원분야?: string;
+  /** 지원서에는 가려 둔 재직 매장도 그대로 나간다 — 내가 스스로 문을 연 자리다. */
+  재직매장그대로?: boolean;
   certificates: CertificateEntry[];
   workTypePrefer: string;
   regionPrefer: string;
@@ -85,6 +87,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     officeJobAreas,
     skillAreas,
     지원분야,
+    재직매장그대로,
     certificates,
     workTypePrefer,
     regionPrefer,
@@ -192,7 +195,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               <div className="rp-item-head">
                 {/* 가려 둔 매장은 이름 대신 ○ 으로 나간다 — 몇 글자인지까지는
                     남겨 이력서가 비어 보이지 않게 한다. */}
-                <strong>{c.companyPublic === false
+                <strong>{c.companyPublic === false && !재직매장그대로
                   ? (c.company ? "○".repeat(Math.min(c.company.length, 6)) : "비공개")
                   : (c.company || [c.department, c.position].filter(Boolean).join(" · "))}</strong>
                 <span className="rp-period">
