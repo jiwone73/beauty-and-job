@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     return err("AI_LIMIT", `자기소개서 작성은 하루 ${하루한도.cover_letter}번까지예요. 내일 다시 눌러 주세요.`, 429);
   }
 
-  const { job_id, position_title, work_location } = await req.json().catch(() => ({} as any));
+  const { job_id, position_title, work_location, emphasis } = await req.json().catch(() => ({} as any));
 
   const [me, prof, careers, certs, langs] = await Promise.all([
     pool.query(`SELECT name, job_type, preferred_regions, office_job_areas FROM users WHERE id = $1`, [userId]),
@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
       ? u.preferred_regions.map((r: any) => shortenRegion([r?.sido, r?.sigungu].filter(Boolean).join(" "))).filter(Boolean).join(", ")
       : null,
     희망급여: 급여,
+    강조: String(emphasis || "").trim().slice(0, 40) || null,
     공고,
   };
 

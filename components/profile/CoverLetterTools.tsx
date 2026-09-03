@@ -24,6 +24,9 @@ export default function CoverLetterTools({
   const [보는중, set보는중] = useState(false);
   const [고칠것, set고칠것] = useState<교정[] | null>(null);
   const [말, set말] = useState("");
+  // 우리가 가진 것은 스킬·경력이지 「강조하고 싶은 것」이 아니다. 칩을 열두 개
+  // 늘어놓으면 다들 같은 것을 골라 자소서가 똑같아지므로, 한 줄만 받는다.
+  const [강조, set강조] = useState("");
 
   const 토큰 = () => (typeof window === "undefined" ? "" : localStorage.getItem("access_token") || "");
 
@@ -35,7 +38,7 @@ export default function CoverLetterTools({
       const r = await fetch("/api/ai/cover-letter", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${토큰()}` },
-        body: JSON.stringify({ job_id: jobId || null, position_title: positionTitle || null, work_location: workLocation || null }),
+        body: JSON.stringify({ job_id: jobId || null, position_title: positionTitle || null, work_location: workLocation || null, emphasis: 강조.trim() || null }),
       });
       const d = await r.json();
       if (!d.success) { set말(d.error?.message || "초안을 만들지 못했어요."); return; }
@@ -73,11 +76,14 @@ export default function CoverLetterTools({
   return (
     <div className="cl-tools">
       <div className="cl-tools-btns">
+        <input className="cl-key" value={강조} maxLength={40}
+          placeholder="강조하고 싶은 것 (예: 재방문 손님, 후배 교육)"
+          onChange={(e) => set강조(e.target.value)} />
         <button type="button" className="cl-tool" onClick={초안받기} disabled={짓는중}>
-          <Sparkles size={14} />{짓는중 ? "쓰는 중…" : "AI 초안"}
+          <Sparkles size={14} />{짓는중 ? "쓰는 중…" : "AI로 초안작성하기"}
         </button>
         <button type="button" className="cl-tool" onClick={검사하기} disabled={보는중 || value.trim().length < 10}>
-          <SpellCheck2 size={14} />{보는중 ? "보는 중…" : "맞춤법"}
+          <SpellCheck2 size={14} />{보는중 ? "보는 중…" : "맞춤법 검사하기"}
         </button>
       </div>
 
