@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Sparkles, SpellCheck2, X } from "lucide-react";
+import CoverLetterModal, { type 고른것 } from "@/components/profile/CoverLetterModal";
 
 // 자기소개서 칸 위의 두 단추 — AI 초안, 맞춤법.
 //
@@ -24,27 +25,41 @@ export default function CoverLetterTools({
   const [보는중, set보는중] = useState(false);
   const [고칠것, set고칠것] = useState<교정[] | null>(null);
   const [말, set말] = useState("");
-  // 우리가 가진 것은 스킬·경력이지 「강조하고 싶은 것」이 아니다. 칩을 열두 개
-  // 늘어놓으면 다들 같은 것을 골라 자소서가 똑같아지므로, 한 줄만 받는다.
-  const [강조, set강조] = useState("");
+  const [창열림, set창열림] = useState(false);
+  // 저장값에서 뽑은 조각 — 창에서 보여주고 빼고 싶은 것만 끄게 한다.
+  const [내정보, set내정보] = useState<string[]>([]);
 
   const 토큰 = () => (typeof window === "undefined" ? "" : localStorage.getItem("access_token") || "");
 
-  const 초안받기 = async () => {
-    if (짓는중) return;
+  /** 창을 열 때 저장값을 한 번 읽어 온다 — 무엇으로 쓰는지 보여주려고. */
+  const 창열기 = async () => {
     if (value.trim() && !confirm("지금 쓴 글을 새 초안으로 바꿀까요?")) return;
-    set짓는중(true); set말(""); set고칠것(null);
+    set말(""); set고칠것(null); set창열림(true);
+    try {
+      const r = await fetch("/api/ai/cover-letter/pieces", { headers: { Authorization: `Bearer ${토큰()}` } });
+      const d = await r.json();
+      if (d.success) set내정보(d.data.items || []);
+    } catch {}
+  };
+
+  const 초안받기 = async (고른: 고른것) => {
+    if (짓는중) return;
+    set짓는중(true); set말("");
     try {
       const r = await fetch("/api/ai/cover-letter", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${토큰()}` },
-        body: JSON.stringify({ job_id: jobId || null, position_title: positionTitle || null, work_location: workLocation || null, emphasis: 강조.trim() || null }),
+        body: JSON.stringify({
+          job_id: jobId || null, position_title: positionTitle || null, work_location: workLocation || null,
+          strengths: 고른.strengths, goals: 고른.goals, emphasis: 고른.emphasis || null, drop: 고른.drop,
+        }),
       });
       const d = await r.json();
       if (!d.success) { set말(d.error?.message || "초안을 만들지 못했어요."); return; }
       // 글이 칸에 들어찬 것이 곧 알림이다. 「고쳐 쓰세요」 같은 말은 붙이지
       // 않는다 — 있는 정보로 만들어 줄 뿐, 무엇을 더 하라고 시키지 않는다.
       onChange(d.data.text);
+      set창열림(false);
     } catch { set말("초안을 만들지 못했어요."); }
     finally { set짓는중(false); }
   };
@@ -76,11 +91,8 @@ export default function CoverLetterTools({
   return (
     <div className="cl-tools">
       <div className="cl-tools-btns">
-        <input className="cl-key" value={강조} maxLength={40}
-          placeholder="강조하고 싶은 것 (예: 재방문 손님, 후배 교육)"
-          onChange={(e) => set강조(e.target.value)} />
-        <button type="button" className="cl-tool" onClick={초안받기} disabled={짓는중}>
-          <Sparkles size={14} />{짓는중 ? "쓰는 중…" : "AI로 초안작성하기"}
+        <button type="button" className="cl-tool" onClick={창열기} disabled={짓는중}>
+          <Sparkles size={14} />AI로 초안작성하기
         </button>
         <button type="button" className="cl-tool" onClick={검사하기} disabled={보는중 || value.trim().length < 10}>
           <SpellCheck2 size={14} />{보는중 ? "보는 중…" : "맞춤법 검사하기"}
@@ -88,6 +100,11 @@ export default function CoverLetterTools({
       </div>
 
       {말 && <p className="cl-tools-say">{말}</p>}
+
+      {창열림 && (
+        <CoverLetterModal 내정보={내정보} 만드는중={짓는중}
+          onClose={() => { if (!짓는중) set창열림(false); }} onRun={초안받기} />
+      )}
 
       {!!고칠것?.length && (
         <div className="cl-fix">

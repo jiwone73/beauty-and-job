@@ -22,7 +22,15 @@ export async function POST(req: NextRequest) {
     return err("AI_LIMIT", `자기소개서 작성은 하루 ${하루한도.cover_letter}번까지예요. 내일 다시 눌러 주세요.`, 429);
   }
 
-  const { job_id, position_title, work_location, emphasis } = await req.json().catch(() => ({} as any));
+  const body = await req.json().catch(() => ({} as any));
+  const { job_id, position_title, work_location, emphasis } = body;
+  const 목록 = (v: any, n: number) => (Array.isArray(v) ? v : []).map((x) => String(x).slice(0, 20)).filter(Boolean).slice(0, n);
+  const 장점 = 목록(body.strengths, 3);
+  const 포부 = 목록(body.goals, 2);
+  const 뺀것 = new Set(목록(body.drop, 12));
+  if (!장점.length || !포부.length) {
+    return err("AI_PICK", "장점과 하고 싶은 것을 골라 주세요.", 400);
+  }
 
   const [me, prof, careers, certs, langs] = await Promise.all([
     pool.query(`SELECT name, job_type, preferred_regions, office_job_areas FROM users WHERE id = $1`, [userId]),
@@ -60,11 +68,12 @@ export async function POST(req: NextRequest) {
 
   const 자료: 이력자료 = {
     이름: u.name,
-    한줄소개: p.intro,
+    한줄소개: 뺀것.has(String(p.intro || "").trim()) ? null : p.intro,
     구직유형: u.job_type,
-    희망직군: [...(p.skill_areas || []), ...((p.office_job_areas?.length ? p.office_job_areas : u.office_job_areas) || [])],
-    스킬: p.skills || [],
-    자격증: (certs.rows || []).map((c: any) => c.name).filter(Boolean),
+    // 창에서 끈 것은 여기서 뺀다 — 보여만 주고 그대로 넣으면 끈 뜻이 없다.
+    희망직군: [...(p.skill_areas || []), ...((p.office_job_areas?.length ? p.office_job_areas : u.office_job_areas) || [])].filter((v: string) => !뺀것.has(v)),
+    스킬: (p.skills || []).filter((v: string) => !뺀것.has(v)),
+    자격증: (certs.rows || []).map((c: any) => c.name).filter((v: string) => v && !뺀것.has(v)),
     어학: langs.rows || [],
     신입: !!p.is_entry_level,
     경력: (careers.rows || []).map((c: any) => ({
@@ -79,6 +88,8 @@ export async function POST(req: NextRequest) {
       ? u.preferred_regions.map((r: any) => shortenRegion([r?.sido, r?.sigungu].filter(Boolean).join(" "))).filter(Boolean).join(", ")
       : null,
     희망급여: 급여,
+    장점,
+    포부,
     강조: String(emphasis || "").trim().slice(0, 40) || null,
     공고,
   };
