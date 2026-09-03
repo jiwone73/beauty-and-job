@@ -563,11 +563,8 @@ export default function ApplyModal({
                 {coverLetter.length}/2000자
               </div>
               </div>
-              {/* 판을 가로지르는 단추는 「여기서 끝」이라는 뜻이 되어, 아직 고칠 것이
-                  남았는데도 눌러야 할 것처럼 보인다. 글자만큼만 두고 오른쪽 끝에
-                  세운다 — 개인회원 이력서·프로필 화면과 같은 규칙이다. */}
-              <div className="cv-foot">
-                <button className="cv-btn-primary" onClick={() => setStep("preview")}>
+              <div style={{ padding: 0 }}>
+                <button className="cv-btn-primary" style={{ width: "100%" }} onClick={() => setStep("preview")}>
                   미리보기 후 지원하기
                 </button>
               </div>
@@ -613,9 +610,19 @@ export default function ApplyModal({
               <p style={{ fontSize: 12, color: "#888", marginBottom: 12, lineHeight: 1.6 }}>
                 지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
               </p>
-              <div className="cv-foot">
-                <button className="cv-btn-ghost" onClick={() => setStep("edit")}>수정하기</button>
-                <button className="cv-btn-primary" disabled={applying} onClick={handleApply}>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => setStep("edit")}
+                  style={{ flex: "0 0 auto", padding: "13px 18px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
+                >
+                  수정하기
+                </button>
+                <button
+                  className="cv-btn-primary"
+                  style={{ flex: 1, marginTop: 0 }}
+                  disabled={applying}
+                  onClick={handleApply}
+                >
                   {applying ? "지원 중..." : "지원하기"}
                 </button>
               </div>
@@ -674,11 +681,18 @@ export default function ApplyModal({
                   이력서가 아니라 이 공고에 낼 사본이고, 이 브라우저에 둔다.
                   손을 멈추면 알아서 붙들어 두므로 이 단추는 그것을 눈으로
                   확인하는 자리다. */}
-              <div className="cv-foot" style={{ paddingBottom: 16 }}>
-                <button className="cv-btn-ghost" onClick={손으로임시저장}>
+              <div style={{ display: "flex", gap: 8, marginTop: 16, paddingBottom: 16 }}>
+                <button
+                  onClick={손으로임시저장}
+                  style={{ flex: 1, padding: "13px 0", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
+                >
                   {방금저장 ? "임시저장했어요" : "임시저장"}
                 </button>
-                <button className="cv-btn-primary" onClick={() => setStep("preview")}>
+                <button
+                  className="cv-btn-primary"
+                  style={{ flex: 1, marginTop: 0 }}
+                  onClick={() => setStep("preview")}
+                >
                   미리보기 후 지원하기
                 </button>
               </div>
