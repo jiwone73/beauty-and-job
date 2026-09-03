@@ -13608,7 +13608,9 @@ button,
        내려앉아, 같은 22px 여백을 주고도 두 기둥의 어깨가 어긋난다. */
     border-top: 0;
   }
-  .resume-top-head { margin: 0; display: flex; flex-direction: column; gap: 3px; min-width: 0; text-align: center; }
+  /* 제목 위아래로 숨 쉴 자리 — 머리줄 바로 밑에 붙어 있고 아래로도 단추 줄이
+     바짝 따라와 눌려 보였다. */
+  .resume-top-head { margin: 10px 0 8px; display: flex; flex-direction: column; gap: 5px; min-width: 0; text-align: center; }
   /* 머리줄로 들어오는 화면(채용공고·내 주변 공고·이력서)은 제목을 굵게 세운다. */
   .resume-top-title { margin: 0; font-size: var(--page-title); font-weight: 700; color: #1a1a1a; }
   .resume-top-btns { display: flex; justify-content: flex-end; gap: 8px; }
