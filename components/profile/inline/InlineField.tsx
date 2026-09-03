@@ -30,25 +30,48 @@ function 칸폭(글: string, 자리글: string, 처음폭: number | null) {
 
 /** 눌러서 그 자리에서 치는 칸. */
 export function InlineText({
-  value, placeholder, required, onSave, wide,
+  value, placeholder, required, onSave, wide, 여러줄,
 }: {
   value: string;
   placeholder: string;
   required?: boolean;
   onSave: (v: string) => void;
   wide?: boolean;
+  /** 한 줄을 넘기면 다음 줄이 저절로 생긴다. 주요성과처럼 길어지는 칸에 쓴다. */
+  여러줄?: boolean;
 }) {
   const [고치는중, set고치는중] = useState(false);
   const [초안, set초안] = useState(value);
   const 칸 = useRef<HTMLInputElement>(null);
+  const 여러줄칸 = useRef<HTMLTextAreaElement>(null);
+  // 내용만큼만 키운다 — 미리 크게 열어 두면 빈 상자가 화면을 먹는다.
+  const 높이맞추기 = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
   const 자리 = useRef<HTMLButtonElement>(null);
   const [처음폭, set처음폭] = useState<number | null>(null);
   const 열기 = () => { set처음폭(자리.current?.getBoundingClientRect().width ?? null); set고치는중(true); };
 
   useEffect(() => { set초안(value); }, [value]);
-  useEffect(() => { if (고치는중) 칸.current?.focus(); }, [고치는중]);
+  useEffect(() => {
+    if (!고치는중) return;
+    if (여러줄) { 여러줄칸.current?.focus(); 높이맞추기(여러줄칸.current); }
+    else 칸.current?.focus();
+  }, [고치는중, 여러줄]);
 
   const 마치기 = () => { set고치는중(false); if (초안.trim() !== value) onSave(초안.trim()); };
+
+  if (고치는중 && 여러줄) {
+    return (
+      <textarea ref={여러줄칸} className={`if-input if-multi ${wide ? "if-wide" : ""}`} value={초안}
+        rows={1} placeholder={placeholder}
+        onChange={(e) => { set초안(e.target.value); 높이맞추기(e.currentTarget); }}
+        onBlur={마치기}
+        onKeyDown={(e) => { if (e.key === "Escape") { set초안(value); set고치는중(false); } }} />
+    );
+  }
 
   if (고치는중) {
     return (
@@ -64,7 +87,7 @@ export function InlineText({
     );
   }
   return (
-    <button ref={자리} type="button" className={`if-slot ${value ? "on" : ""}`} onClick={열기}>
+    <button ref={자리} type="button" className={`if-slot ${value ? "on" : ""} ${여러줄 ? "if-slot-multi" : ""}`} onClick={열기}>
       {value || placeholder}{!value && 별표(required)}
     </button>
   );

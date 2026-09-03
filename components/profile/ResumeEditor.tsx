@@ -321,8 +321,8 @@ export default function ResumeEditor({
               <div className="if-line">
                 {/* 본사 지원서는 성과를 적는 자리가 곧 심사 대상이라 필수다.
                     살롱은 시술 스킬과 사진이 그 몫을 해서 선택으로 둔다. */}
-                <InlineText value={c.description} wide required={본사냐}
-                  placeholder={본사냐 ? "무엇을 해냈는지 한 줄로" : "어떤 시술을 맡았는지 적어 보세요"}
+                <InlineText value={c.description} wide 여러줄 required={본사냐}
+                  placeholder={본사냐 ? "주요성과" : "어떤 시술을 맡았는지 적어 보세요"}
                   onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
               </div>
             </div>
