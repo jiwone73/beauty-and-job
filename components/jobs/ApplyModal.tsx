@@ -120,6 +120,10 @@ export default function ApplyModal({
   const 뜬이력서 = useRef<이력서한벌 | null>(null);
   // 프로필에서 온 처음 급여. 이것과 같으면 붙들어 둘 것이 없다.
   const 첫급여 = useRef<string | null>(null);
+  // 초안이 되살렸거나 사람이 손댄 급여는 프로필 값으로 덮지 않는다. 둘은 따로
+  // 오므로(초안은 초안대로, 프로필은 프로필대로) 늦게 온 쪽이 이기면 이 공고에
+  // 맞춰 적어 둔 값이 소리 없이 사라진다.
+  const 급여잠금 = useRef(false);
   useEffect(() => {
     useProfileStore.getState().자동저장잠금(true);
     return () => {
@@ -139,13 +143,15 @@ export default function ApplyModal({
       .then((res) => {
         const pf = res?.data?.profile;
         if (!pf) return;
-        if (pf.salary_type) set급여유형(pf.salary_type);
-        if (pf.salary_min !== null && pf.salary_min !== undefined && Number(pf.salary_min) === 0) {
-          set급여협의(true);
-        } else if (pf.salary_min) {
-          const 배수 = pf.salary_type === "HOURLY" || pf.salary_type === "DAILY" ? 1 : 10000;
-          set급여만(String(Math.round(Number(pf.salary_min) / 배수)));
-          set급여협의(false);
+        if (!급여잠금.current) {
+          if (pf.salary_type) set급여유형(pf.salary_type);
+          if (pf.salary_min !== null && pf.salary_min !== undefined && Number(pf.salary_min) === 0) {
+            set급여협의(true);
+          } else if (pf.salary_min) {
+            const 배수 = pf.salary_type === "HOURLY" || pf.salary_type === "DAILY" ? 1 : 10000;
+            set급여만(String(Math.round(Number(pf.salary_min) / 배수)));
+            set급여협의(false);
+          }
         }
         첫급여.current = JSON.stringify({
           type: pf.salary_type || "MONTHLY",
@@ -201,6 +207,7 @@ export default function ApplyModal({
           if (Array.isArray(초안.resume.뺀줄)) set뺀줄(초안.resume.뺀줄);
           const 초안급여 = 초안.resume?.profile || {};
           if (초안급여.salary_type) set급여유형(초안급여.salary_type);
+          if (초안급여.salary_type || 초안급여.salary_min !== null && 초안급여.salary_min !== undefined) 급여잠금.current = true;
           if (초안급여.salary_min !== null && 초안급여.salary_min !== undefined) {
             const 값 = Number(초안급여.salary_min);
             set급여협의(값 === 0);
@@ -748,16 +755,16 @@ export default function ApplyModal({
                   <span>희망 급여</span>
                   <b className="pf-pay" style={{ paddingLeft: 0, overflow: "visible" }}>
                     <select className="pf-pay-sel" value={급여유형}
-                      onChange={(e) => set급여유형(e.target.value)}>
+                      onChange={(e) => { 급여잠금.current = true; set급여유형(e.target.value); }}>
                       {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                     </select>
                     <input className="pf-pay-in" inputMode="numeric" value={급여만}
                       placeholder="숫자만 입력" disabled={급여협의}
-                      onChange={(e) => set급여만(e.target.value.replace(/[^0-9]/g, ""))} />
+                      onChange={(e) => { 급여잠금.current = true; set급여만(e.target.value.replace(/[^0-9]/g, "")); }} />
                     <span className="pf-pay-unit">{급여유형 === "HOURLY" || 급여유형 === "DAILY" ? "원" : "만원"}</span>
                     <label className="pf-pay-nego">
                       <input type="checkbox" checked={급여협의}
-                        onChange={(e) => { set급여협의(e.target.checked); set급여만(""); }} />
+                        onChange={(e) => { 급여잠금.current = true; set급여협의(e.target.checked); set급여만(""); }} />
                       협의
                     </label>
                   </b>
