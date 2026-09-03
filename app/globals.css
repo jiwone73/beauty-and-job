@@ -2531,7 +2531,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 지원 버튼 위 — 무엇에, 어디로 내는가. 고를 것이 하나여도 자리는 지킨다. */
 .apply-pick { display: flex; flex-direction: column; gap: 9px; margin: 0 0 12px; }
 .apply-pick-f { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-.apply-pick-f > span { font-size: 12.5px; color: #8a8a90; }
+.apply-pick-f > span { font-size: 13px; color: #1a1a1a; }
 .apply-pick-f select {
   width: 100%; height: 40px; padding: 0 30px 0 11px; border: 1px solid var(--color-border);
   border-radius: 9px; background: #fff; font-family: inherit; font-size: 13.5px; color: #1a1a1a;
@@ -2545,10 +2545,14 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .apply-info { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
 .apply-info-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
 .apply-info-head span { font-size: 15px; font-weight: 700; color: #1a1a1a; }
-.apply-info-head a { margin-left: auto; font-size: 13px; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 .apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; }
 .apply-info-row span { flex: 0 0 62px; font-size: 13px; color: #8a8a90; }
-.apply-info-row b { font-size: 14px; font-weight: 400; color: #1a1a1a; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.apply-info-row b { font-size: 15px; font-weight: 400; color: #1a1a1a; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* 포지션은 매장이 정한 값, 아래 셋은 내 프로필에서 오는 값 — 선으로 가른다. */
+.apply-info-row.is-post { padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid #f2f2f4; }
+/* 고치러 가는 길은 개인정보 묶음의 첫 줄에만 건다. 머리줄에 두면 포지션까지
+   고칠 수 있는 것처럼 읽힌다. */
+.apply-info-edit { margin-left: auto; flex-shrink: 0; font-size: 13px; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
 /* 모바일 CTA */
 .job-detail-mobile-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--color-border); padding: 12px 16px; gap: 10px; z-index: 50; }

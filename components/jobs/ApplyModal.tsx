@@ -498,14 +498,17 @@ export default function ApplyModal({
                   번호와 메일은 여기서 못 고친다 — 둘 다 본인 확인을 거쳐야
                   바뀌는 값이라, 고치는 자리로 보내는 것이 맞다. */}
               <div className="apply-info">
-                <div className="apply-info-head">
-                  <span>지원 정보</span>
-                  <a href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
-                </div>
+                <div className="apply-info-head"><span>지원 정보</span></div>
+                {/* 포지션은 매장이 공고에 적어 둔 값이라 내가 고치는 것이 아니다.
+                    아래 세 줄(내 프로필에서 오는 값)과 선으로 갈라, 고치러 가는
+                    길이 포지션에까지 걸리지 않게 한다. */}
                 {(positionTitle || workLocation) && (
-                  <div className="apply-info-row"><span>지원 자리</span><b>{[positionTitle, workLocation].filter(Boolean).join(" · ")}</b></div>
+                  <div className="apply-info-row is-post"><span>포지션</span><b>{[positionTitle, workLocation].filter(Boolean).join(" · ")}</b></div>
                 )}
-                <div className="apply-info-row"><span>이름</span><b>{name}</b></div>
+                <div className="apply-info-row">
+                  <span>이름</span><b>{name}</b>
+                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 개인정보 수정</a>
+                </div>
                 <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
                 <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>
               </div>
