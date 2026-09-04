@@ -377,7 +377,7 @@ export default function ResumeEditor({
                 {/* 본사 지원서는 성과를 적는 자리가 곧 심사 대상이라 필수다.
                     살롱은 시술 스킬과 사진이 그 몫을 해서 선택으로 둔다. */}
                 <InlineText value={c.description} wide 여러줄 required={본사냐}
-                  placeholder={본사냐 ? "주요성과" : "주요 시술 · 성과"}
+                  placeholder={본사냐 ? "주요성과" : "주요 업무 · 성과"}
                   onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
               </div>
             </div>
