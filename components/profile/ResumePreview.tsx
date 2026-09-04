@@ -44,6 +44,9 @@ interface Props {
   지원분야?: string;
   /** 지원서에는 가려 둔 재직 매장도 그대로 나간다 — 내가 스스로 문을 연 자리다. */
   재직매장그대로?: boolean;
+  /** 기업·관리자가 보는 화면에서 켠다. 첫 칸 이름이 「지원자 정보」가 된다 —
+   *  「내 정보」는 내가 내 이력서를 볼 때의 말이다. */
+  기업이봄?: boolean;
   certificates: CertificateEntry[];
   workTypePrefer: string;
   regionPrefer: string;
@@ -87,6 +90,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     officeJobAreas,
     skillAreas,
     지원분야,
+    기업이봄,
     재직매장그대로,
     certificates,
     workTypePrefer,
@@ -110,9 +114,10 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         </div>
       )}
       <div style={{ paddingTop: "20px" }}>
-      {/* 지원서로 쓸 때는 「지원 정보」이고 어느 자리에 내는지가 맨 위에 온다 —
-          지원 창의 수정 화면과 같은 이름·같은 차례여야 한다. */}
-      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}><IdCard size={16} className="resume-section-icon" />{지원분야 ? "지원 정보" : "기본 정보"}</h2>
+      {/* 이름은 읽는 사람을 따른다. 내가 보는 내 이력서는 「내 정보」,
+          기업이 보는 서류는 「지원자 정보」다. 지원 창의 수정 화면과는 같은
+          이름·같은 차례여야 한다. */}
+      <h2 className="rp-section-title" style={{ marginBottom: "12px" }}><IdCard size={16} className="resume-section-icon" />{지원분야 || 기업이봄 ? "지원자 정보" : "내 정보"}</h2>
       {지원분야 && (
         <div className="rp-cond" style={{ marginBottom: 14 }}>
           <span className="rp-cond-k">지원분야</span>

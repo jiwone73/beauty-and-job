@@ -601,7 +601,7 @@ export default function ApplyModal({
                   번호와 메일은 여기서 못 고친다 — 둘 다 본인 확인을 거쳐야
                   바뀌는 값이라, 고치는 자리로 보내는 것이 맞다. */}
               <div className="apply-info">
-                <div className="apply-info-head"><span><IdCard size={16} className="resume-section-icon" />지원 정보</span></div>
+                <div className="apply-info-head"><span><IdCard size={16} className="resume-section-icon" />지원자 정보</span></div>
                 {/* 포지션은 매장이 공고에 적어 둔 값이라 내가 고치는 것이 아니다.
                     아래 세 줄(내 프로필에서 오는 값)과 선으로 갈라, 고치러 가는
                     길이 포지션에까지 걸리지 않게 한다. */}
@@ -729,7 +729,7 @@ export default function ApplyModal({
               </div>
 
               <div className="apply-info">
-                <div className="apply-info-head"><span><IdCard size={16} className="resume-section-icon" />지원 정보</span></div>
+                <div className="apply-info-head"><span><IdCard size={16} className="resume-section-icon" />지원자 정보</span></div>
                 {/* 어느 자리에 내는 것인지가 이 화면에도 있어야 한다 — 공고에
                     분야가 여럿이면 고치는 내내 무엇에 맞추는지 잊는다.
                     공고 화면에서는 「모집분야」다 — 거기는 매장이 쓴 글이고

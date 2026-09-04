@@ -556,7 +556,7 @@ function ResumePageContent() {
           </section>
 
           <section id="section-basic" className="resume-section">
-            <h2 className="resume-section-title"><IdCard size={16} className="resume-section-icon" />기본 정보</h2>
+            <h2 className="resume-section-title"><IdCard size={16} className="resume-section-icon" />내 정보</h2>
             <div className="resume-basic-info" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
               <div className="resume-name-block" style={{ flex: 1, minWidth: 0 }}>
                 {/* 위쪽 여백을 따로 주지 않는다. 제목 아래 간격은 다른 구역과 같이

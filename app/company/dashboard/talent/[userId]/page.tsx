@@ -126,6 +126,7 @@ export default function TalentResumePage({ params }: { params: { userId: string 
         ) : (
           <div className="tres-sheet">
             <ResumePreview
+              기업이봄
               ref={previewRef}
               name={이름}
               birthDisplay={
