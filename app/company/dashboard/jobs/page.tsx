@@ -635,12 +635,12 @@ function CompanyJobsContent() {
                               </span>
                               <select className="apl-sel" value={지원자상태[job.id] || "전체"}
                                 onChange={(e) => set지원자상태((p) => ({ ...p, [job.id]: e.target.value }))}>
+                                {/* 쌓이는 상태는 둘뿐이다 — 지원서를 열면 미열람이
+                                    열람으로 바뀌고, 손으로 바꾸는 값은 두지 않았다.
+                                    면접·합격을 넣어 봐야 영원히 0건이다. */}
                                 <option value="전체">전체 상태</option>
                                 <option value="미열람">미열람</option>
                                 <option value="VIEWED">열람</option>
-                                <option value="INTERVIEW">면접</option>
-                                <option value="PASSED">최종합격</option>
-                                <option value="REJECTED">불합격</option>
                               </select>
                             </span>
                           </div>
