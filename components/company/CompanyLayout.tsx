@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings, UserCog,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Plus, Send
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Send
 } from "lucide-react";
 
 
@@ -437,7 +437,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
           </nav>
           <div className="co-top-right">
             <Link href={`${base}/jobs/new`} className="co-top-post">
-              <Plus size={15} />공고 등록
+              공고 등록
             </Link>
             <div style={{ position: "relative" }}>
               <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">

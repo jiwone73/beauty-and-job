@@ -3794,7 +3794,12 @@ export default function JobPostForm({
                   { k: "kakao", 이름: "카카오톡 ID", v: nmKakaoId, set: (v: string) => setNmKakaoId(v), ph: "아이디", im: undefined },
                 ] as { k: string; 이름: string; v: string; set: (v: string) => void; ph: string; im?: "numeric" | "email" }[]).map((f) => (
                   <div key={f.k} style={{ padding: "4px 0", minWidth: 0 }}>
-                    <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>{f.이름}</div>
+                    <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>
+                      {f.이름}
+                      {/* 넷 중 하나만 선택이다. 별표를 셋에 붙이는 것보다
+                          하나에 「선택」을 다는 쪽이 눈에 덜 걸린다. */}
+                      {f.k === "kakao" && <span style={{ marginLeft: 4, fontSize: 13, color: "#b4b4b9" }}>선택</span>}
+                    </div>
                     {/* 크롬은 자리글·name 에 든 낱말로 칸을 알아보고 연락처 아이콘을 띄운다.
                         그래서 자리글을 속성에서 빼고 우리가 그린다. */}
                     <span style={{ position: "relative", display: "flex", minWidth: 0 }}>
