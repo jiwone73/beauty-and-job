@@ -38,7 +38,7 @@ interface ApplicantItem {
 const EXP_LABEL: Record<string, string> = {
   NEW: "신입",
   EXPERIENCED: "경력",
-  ANY: "경력 무관",
+  ANY: "경력무관",
 };
 
 function formatDate(iso: string) {

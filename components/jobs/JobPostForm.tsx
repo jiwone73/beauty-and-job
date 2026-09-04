@@ -26,10 +26,9 @@ const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.s
 const WORK_DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
 const WEEKDAY_DAYS = ["월", "화", "수", "목", "금"]; // 평일(미입력 시 기본값)
 // 근무시간 풀다운 옵션: 오전/오후 구분 없이 24시간 표기, 1시간 간격, 오전 9시~밤 11시(자정~오전 8시 제외)
-const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
+const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력무관"];
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 모집부문 표용 간결 옵션(여백 확보, 직접입력 없음)
-const POS_CAREER = ["무관", "신입", "경력", "1년~", "3년~", "5년~", "10년~", "매니저", "실장", "부원장", "원장"];
 // 급여: 지급 주기를 고르면 앞머리(시·주·월·연)가 자동으로 붙고 금액만 적으면 된다. 협의는 단독 값.
 const SALARY_UNITS: { label: string; prefix: string }[] = [
   { label: "시급", prefix: "시" },
@@ -1049,7 +1048,7 @@ export default function JobPostForm({
     loadEditData(editId).then((j) => {
       if (!j) return;
       const career = j.experience_level === "NEW" ? "신입"
-        : j.experience_level === "EXPERIENCED" ? "2년 이상" : "경력 무관";
+        : j.experience_level === "EXPERIENCED" ? "2년 이상" : "경력무관";
       const rawType = j.employment_type
         || (j.work_type === "PART_TIME" ? "파트타임"
           : j.work_type === "CONTRACT" ? "계약직" : "정규직");

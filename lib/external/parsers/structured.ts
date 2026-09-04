@@ -94,7 +94,7 @@ function parseHairinjob(html: string): StructuredResult | null {
   // 그냥 [경력]이면 "경력자를 찾는다"는 말일 뿐 몇 년인지는 어디에도 없다.
   // 예전엔 여기에 1년 이상을 붙였는데, 원문에 없는 조건을 지어내는 것이라 비워 둔다.
   let career = "";
-  if (/신입.*경력|경력.*신입|신입및경력/.test(careerMark)) career = "경력 무관";
+  if (/신입.*경력|경력.*신입|신입및경력/.test(careerMark)) career = "경력무관";
   else if (/^신입$/.test(careerMark)) career = "신입";
   else if (/경력/.test(careerMark)) {
     const y = Number((careerMark.match(/(\d+)\s*년/) || [])[1] || 0);
@@ -315,7 +315,7 @@ function getJobPostingLd(html: string): any | null {
 }
 function mapCareer(exp: string): string {
   const e = (exp || "").replace(/\s/g, "");
-  if (/무관/.test(e)) return "경력 무관";
+  if (/무관/.test(e)) return "경력무관";
   if (/^신입$/.test(e)) return "신입";
   const n = (e.match(/(\d+)년/) || [])[1];
   if (n) {
@@ -554,7 +554,7 @@ function parseAlbamon(html: string): StructuredResult | null {
     const jobFieldStr = typeof vd.jobField === "string" ? vd.jobField : "";
     const sug = suggestCats(`${jobFieldStr} ${title}`);
     // 경력: JSON-LD 우선, 없으면 초보가능 → 경력 무관
-    const career = mapCareer(stripTags(jp?.experienceRequirements || "")) || (vd.beginnerAvailableStatus ? "경력 무관" : "");
+    const career = mapCareer(stripTags(jp?.experienceRequirements || "")) || (vd.beginnerAvailableStatus ? "경력무관" : "");
     const description = stripTags(String(vd.simpleRecruitContents || "")).replace(/\s+/g, " ").trim().slice(0, 8000);
     // 칩에 안 담기는 근무요일 부가설명·급여옵션은 비고로 보존
     const extra_notes = [
@@ -720,7 +720,7 @@ function parseSaramin(html: string): StructuredResult | null {
   // 경력: "신입/경력"·"신입·경력"처럼 둘 다면 경력 무관으로.
   let career = mapCareer(careerRaw);
   if (!career) {
-    if (/신입/.test(careerRaw) && /경력/.test(careerRaw)) career = "경력 무관";
+    if (/신입/.test(careerRaw) && /경력/.test(careerRaw)) career = "경력무관";
     else if (/신입/.test(careerRaw)) career = "신입";
     else if (/경력/.test(careerRaw)) career = "1년 이상";
   }

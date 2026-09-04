@@ -11,5 +11,5 @@ export function formatDeadline(deadline: string | null): string {
 export function expLevelLabel(level: string | null): string {
   if (level === "NEW") return "신입";
   if (level === "EXPERIENCED") return "경력";
-  return "경력 무관";
+  return "경력무관";
 }

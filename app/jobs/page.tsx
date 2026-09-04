@@ -168,7 +168,7 @@ function JobsPageInner() {
             title: j.title,
             jobType: (j.categories || []).join(' · '),
             categories: j.categories || [],
-            career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력 무관',
+            career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력무관',
             region: j.location || '국내',
             type: j.company_type === 'OFFICE' ? '본사' : j.company_type === 'STORE' ? '매장' : '본사',
             // 목록 카드는 '이 매장이 어디인가'를 먼저 말해야 한다. 그래서 매장이

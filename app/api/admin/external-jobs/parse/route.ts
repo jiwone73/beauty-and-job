@@ -70,7 +70,7 @@ function classifyImageOrigin(url: string): "company" | "site_upload" | "site_tem
 }
 
 // ── 뷰티워크 폼과 100% 일치시켜야 하는 선택지 (드롭다운·칩) ──
-const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력 무관"];
+const CAREER_OPTIONS = ["신입", "1년 이상", "2년 이상", "3년 이상", "5년 이상", "경력무관"];
 // 학력 선택지 — 등록 폼(JobPostForm)과 같은 목록이어야 값이 버려지지 않는다.
 const EDUCATION_OPTIONS = ["학력무관", "고졸 이상", "초대졸 이상", "대졸 이상", "석사 이상"];
 // 직군 목록은 단일 출처(jobGroups.ts)에서 가져온다 — 직군 재편 시 자동 반영(드리프트 방지)
@@ -700,7 +700,7 @@ export async function POST(req: NextRequest) {
     위 목록에 맞는 게 없어도 반드시 채울 것 — 비면 그 공고는 모집분야 없이 올라간다. 지역·매장명·급여는 빼고 직무만.
     · STORE 직군: ${STORE_CATEGORIES.join(" / ")}
     · OFFICE 직군: ${OFFICE_CATEGORIES.join(" / ")}
-- career: 아래 중 "정확히 하나"만 고르기 → ${CAREER_OPTIONS.join(" / ")}. "경력무관/무관/경력 사항 없음"은 "경력 무관", "신입"만이면 "신입", "N년 이상/N년차"는 가장 가까운 값. 불명확하면 "".
+- career: 아래 중 "정확히 하나"만 고르기 → ${CAREER_OPTIONS.join(" / ")}. "경력무관/무관/경력 사항 없음"은 "경력무관", "신입"만이면 "신입", "N년 이상/N년차"는 가장 가까운 값. 불명확하면 "".
 - region: 근무지의 시·도와 시·군·구를 "시도전체명 시군구" 형식으로(예: "경기도 수원시 영통구", "서울특별시 강남구"). 시도명은 축약하지 말고 전체명(경기도/서울특별시/부산광역시 등). 상세 도로명·번지는 빼고 시군구까지만. 없으면 "".
 - deadline: 특정 마감일이 "YYYY-MM-DD"로 명시된 경우만 그 날짜. 상시/수시/미상이면 "".
 - always_open: 상시채용·수시채용·채용시 마감·충원시 마감 등 마감일이 없는 상시 공고면 true, 아니면 false.
