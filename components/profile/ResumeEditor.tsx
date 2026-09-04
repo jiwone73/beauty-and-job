@@ -377,7 +377,7 @@ export default function ResumeEditor({
                 {/* 본사 지원서는 성과를 적는 자리가 곧 심사 대상이라 필수다.
                     살롱은 시술 스킬과 사진이 그 몫을 해서 선택으로 둔다. */}
                 <InlineText value={c.description} wide 여러줄 required={본사냐}
-                  placeholder={본사냐 ? "주요성과" : "어떤 시술을 맡았는지 적어 보세요"}
+                  placeholder={본사냐 ? "주요성과" : "주요 시술 · 성과"}
                   onSave={(v) => updateCareer(c.id, { ...c, description: v })} />
               </div>
             </div>
@@ -507,14 +507,14 @@ export default function ResumeEditor({
           <div key={x.id} className={"if-row if-row-plain" + (뺐나("experience:" + x.id) ? " is-out" : "")}>
             <div className="if-row-body">
               <div className="if-line if-line-head">
-                <InlineText value={x.title} placeholder="무엇을 했는지" required wide
+                <InlineText value={x.title} placeholder="활동명 · 수상명" required wide
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
               </div>
               <div className="if-line">
                 <InlinePick value={x.category} placeholder="종류" options={활동종류}
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
                 <span className="if-bar">│</span>
-                <InlineText value={x.description} placeholder="어디서 무엇을 얻었는지" wide
+                <InlineText value={x.description} placeholder="내용 · 성과" wide
                   onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
               </div>
             </div>
