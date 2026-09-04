@@ -24,8 +24,10 @@ type JobTab = "OFFICE" | "STORE";
 // 매장은 자리(인턴·신입·경력·실장), 본사는 연차. 공고 모집부문과 같은 말이다.
 const 단계차례 = ["인턴", "신입", "경력", "실장", "매니저급", "점장급",
                   "1~2년", "3~5년", "5~10년", "10년+"];
-const AGE_FILTERS    = ["전체", "20대", "30대", "40+"];
-const GENDER_FILTERS = ["무관", "여성", "남성"];
+const AGE_FILTERS    = ["전체", "20대", "30대", "40대 이상"];
+// 다른 필터와 같은 말을 쓴다. 「무관」은 공고에서 쓰는 말이고(성별 무관
+// 우대), 여기서는 가리지 않고 다 보는 것이라 「전체」다.
+const GENDER_FILTERS = ["전체", "여성", "남성"];
 
 function shortenRegion(region: string | null | undefined): string {
   if (!region) return "—";
@@ -78,7 +80,7 @@ export default function TalentPage() {
   const [regionOpen, setRegionOpen]               = useState(false);
   const [selectedRegions, setSelectedRegions]     = useState<string[]>([]);
   const [ageFilter, setAgeFilter]                 = useState("전체");
-  const [genderFilter, setGenderFilter]           = useState("무관");
+  const [genderFilter, setGenderFilter]           = useState("전체");
 
   const [isMobile, setIsMobile] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -111,7 +113,7 @@ export default function TalentPage() {
     setSelectedRegions([]);
     setCareerFilter("전체");
     setAgeFilter("전체");
-    setGenderFilter("무관");
+    setGenderFilter("전체");
   };
 
 
@@ -148,7 +150,7 @@ export default function TalentPage() {
       if (activeTab === "STORE") {
         if (selectedRegions.length > 0) params.regions = selectedRegions.join(",");
         if (ageFilter !== "전체") params.ageGroup = ageFilter;
-        if (genderFilter !== "무관") params.gender = genderFilter;
+        if (genderFilter !== "전체") params.gender = genderFilter;
       }
       const res = await companyTalentApi.list(params);
       if (res.success && res.data) {
@@ -329,7 +331,7 @@ export default function TalentPage() {
     setSelectedRegions([]);
     setCareerFilter("전체");
     setAgeFilter("전체");
-    setGenderFilter("무관");
+    setGenderFilter("전체");
   };
 
   // 고른 직군이 있으면 그 직군의 사다리만, 없으면 이 탭에 있는 단계를 모은다.

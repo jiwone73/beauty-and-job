@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
   let ageClause = "";
   if (ageGroup === "20대")  ageClause = "AND age BETWEEN 20 AND 29";
   else if (ageGroup === "30대") ageClause = "AND age BETWEEN 30 AND 39";
-  else if (ageGroup === "40+")  ageClause = "AND age >= 40";
+  else if (ageGroup === "40대 이상") ageClause = "AND age >= 40";
 
   const query = `
     WITH talent AS (
