@@ -713,7 +713,19 @@ export default function ApplyModal({
                   고치지 않는다 — 이 창에서 고치면 이 공고에 낼 사본에만 남고
                   프로필은 그대로라, 다음 공고에 또 같은 것을 고쳐야 한다.
                   고치는 자리로 보내고, 돌아오면 새로 읽어 온다. */}
+              {/* 한 줄 소개는 미리보기 맨 위에 나가는 글이라 이 공고에 맞춰
+                  고치는 값이다. 개인정보 묶음 안에 두면 이름·연락처처럼
+                  확인만 하는 줄로 읽힌다. 이력서 화면과 같은 차례로 세운다. */}
               <div className="apply-info" style={{ marginTop: 8 }}>
+                <div className="apply-info-head"><span><Quote size={16} className="resume-section-icon" />한 줄 소개</span></div>
+                <div className="apply-info-row">
+                  <input className="apply-info-in" value={intro} maxLength={60}
+                    placeholder="나를 한 줄로 소개해 주세요"
+                    onChange={(e) => useProfileStore.getState().setIntro(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="apply-info">
                 <div className="apply-info-head"><span><IdCard size={16} className="resume-section-icon" />지원 정보</span></div>
                 {/* 어느 자리에 내는 것인지가 이 화면에도 있어야 한다 — 공고에
                     분야가 여럿이면 고치는 내내 무엇에 맞추는지 잊는다.
@@ -722,14 +734,6 @@ export default function ApplyModal({
                 {(positionTitle || workLocation) && (
                   <div className="apply-info-row is-post"><span>지원분야</span><b>{[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}</b></div>
                 )}
-                {/* 한 줄 소개는 미리보기 맨 위에 나가는 글이다 — 경력처럼 이
-                    공고에 맞춰 고칠 수 있어야 한다. */}
-                <div className="apply-info-row">
-                  <span>한 줄 소개</span>
-                  <input className="apply-info-in" value={intro} maxLength={60}
-                    placeholder="나를 한 줄로 소개해 주세요"
-                    onChange={(e) => useProfileStore.getState().setIntro(e.target.value)} />
-                </div>
                 <div className="apply-info-row"><span>이름</span><b>{name}</b></div>
                 {birthDisplay && <div className="apply-info-row"><span>생년월일</span><b>{birthDisplay}</b></div>}
                 <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
