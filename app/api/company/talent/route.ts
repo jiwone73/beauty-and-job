@@ -94,12 +94,19 @@ export async function GET(req: NextRequest) {
   // 그 사람이 문을 닫았다는 사실 자체가 알아야 할 정보다.
   const jsClause = onlyScrapped ? "" : "AND up.job_search_status <> 'CLOSED'";
 
-  // 경력 (CTE 이후)
+  // 경력 (CTE 이후) — 공고 모집부문과 같은 사다리다(lib/data/jobGroups 의 단계표).
+  // 신입·경력은 근무 기간으로, 인턴·실장 같은 자리는 이력서에 적힌 직급으로 가른다.
+  // 예전에는 화면이 「5-10년」·「10년+」을 보내는데 여기에 그 둘이 없어, 골라도
+  // 아무것도 걸러지지 않고 전체가 그대로 나왔다.
+  const 직급으로 = (말: string) => `AND career_position ILIKE '%${말}%'`;
   let careerClause = "";
   if (careerFilter === "신입")  careerClause = "AND (career_years IS NULL OR career_years = 0)";
-  else if (careerFilter === "1-3년") careerClause = "AND career_years BETWEEN 1 AND 3";
-  else if (careerFilter === "3-5년") careerClause = "AND career_years BETWEEN 3 AND 5";
-  else if (careerFilter === "5년+")  careerClause = "AND career_years >= 5";
+  else if (careerFilter === "경력") careerClause = "AND career_years >= 1";
+  else if (careerFilter === "인턴") careerClause = 직급으로("인턴");
+  else if (careerFilter === "실장") careerClause = 직급으로("실장");
+  else if (careerFilter === "매니저급") careerClause = 직급으로("매니저");
+  else if (careerFilter === "점장급") careerClause = 직급으로("점장");
+  else if (careerFilter === "리드") careerClause = "AND (career_position ILIKE '%리드%' OR career_position ILIKE '%팀장%')";
 
   // 연령 (CTE 이후, 매장직)
   let ageClause = "";
@@ -150,6 +157,11 @@ export async function GET(req: NextRequest) {
           FROM user_careers WHERE user_id = u.id
         ) AS career_years,
         (SELECT COUNT(*)::int FROM user_careers WHERE user_id = u.id) AS career_count,
+        -- 가장 최근 경력의 직급. 인턴·실장 같은 자리로 거를 때 쓴다.
+        (
+          SELECT position FROM user_careers WHERE user_id = u.id
+          ORDER BY start_date DESC LIMIT 1
+        ) AS career_position,
         (
           SELECT json_build_object(
             'school', school, 'major', major, 'status', status,

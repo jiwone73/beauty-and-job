@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -12,12 +12,16 @@ import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { 지역비교 } from "@/lib/regionMatch";
+import { getJobGroups, 경력단계, 직군의경력단계 } from "@/lib/data/jobGroups";
 import { formatSalaryWon } from "@/lib/salary";
 import TalentCard from "@/components/company/TalentCard";
 
 type JobTab = "OFFICE" | "STORE";
 
-const CAREER_OPTIONS = ["전체", "신입", "1-3년", "3-5년", "5-10년", "10년+"];
+// 경력은 공고 모집부문과 같은 사다리를 쓴다. 매장은 연차로 뽑지 않는다 —
+// 인턴·신입·경력·실장이지 「3년차」가 아니다. 두 화면이 다른 말을 쓰면
+// 같은 사람을 두고 매장과 우리가 다른 것을 세게 된다.
+const 단계차례 = ["인턴", "신입", "경력", "실장", "매니저급", "점장급", "리드"];
 const AGE_FILTERS    = ["전체", "20대", "30대", "40+"];
 const GENDER_FILTERS = ["무관", "여성", "남성"];
 
@@ -326,6 +330,21 @@ export default function TalentPage() {
     setGenderFilter("무관");
   };
 
+  // 고른 직군이 있으면 그 직군의 사다리만, 없으면 이 탭에 있는 단계를 모은다.
+  const 경력선택지 = useMemo(() => {
+    const 모음 = new Set<string>();
+    if (selectedJobGroups.length > 0) {
+      selectedJobGroups.forEach((g) => 직군의경력단계(g).forEach((s) => 모음.add(s)));
+    } else {
+      getJobGroups(activeTab).forEach((g) => 경력단계(g.group).forEach((s) => 모음.add(s)));
+    }
+    return ["전체", ...단계차례.filter((s) => 모음.has(s))];
+  }, [selectedJobGroups, activeTab]);
+  // 직군을 바꾸면 없던 단계가 골라져 있을 수 있다. 그때는 전체로 되돌린다.
+  useEffect(() => {
+    if (!경력선택지.includes(careerFilter)) setCareerFilter("전체");
+  }, [경력선택지, careerFilter]);
+
   const jobGroupLabel = selectedJobGroups.length > 0
     ? selectedJobGroups.slice(0, 2).join(", ") + (selectedJobGroups.length > 2 ? ` 외 ${selectedJobGroups.length - 2}` : "")
     : "직군 선택";
@@ -490,7 +509,7 @@ export default function TalentPage() {
           )}
 
           <FilterDropdown label="경력" value={careerFilter}
-            options={CAREER_OPTIONS as unknown as string[]} onChange={setCareerFilter} />
+            options={경력선택지} onChange={setCareerFilter} />
 
 
           {activeTab === "STORE" && (
@@ -549,7 +568,7 @@ export default function TalentPage() {
               <div>
                 <div className="co-fseg-label">경력</div>
                 <div className="co-fseg-opts">
-                  {CAREER_OPTIONS.map((o) => (
+                  {경력선택지.map((o) => (
                     <button key={o} className={`co-fseg-btn ${careerFilter === o ? "on" : ""}`}
                       onClick={() => setCareerFilter(o)}>{o}</button>
                   ))}
