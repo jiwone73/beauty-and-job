@@ -589,7 +589,7 @@ function CompanyJobsContent() {
                           {(공고지원자[job.id] || [])
                             .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
                             .map((a) => (
-                            <ApplicantCard key={a.id} a={a} showJob={false} 줄모드
+                            <ApplicantCard key={a.id} a={a} showJob={false}
                               onOpen={(x) => set지원서(x.id)}
                               onToggleScrap={스크랩토글} onNote={메모저장} />
                           ))}
