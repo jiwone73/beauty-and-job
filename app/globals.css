@@ -14640,17 +14640,26 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-chev.up { transform: rotate(180deg); }
 .co-jc-apps {
   position: relative;
-  margin: 0 -18px; padding: 12px 18px 14px 34px;
+  /* 들여쓰기가 35px 이던 때는 지원자 카드가 공고 제목보다 16px 안쪽에서 시작해
+     한 층 아래로 읽히지 않았다. 제목보다 확실히 안으로 들어와야 딸린 것이 된다. */
+  margin: 0 -18px; padding: 12px 18px 14px 58px;
   background: #fafafb; border-top: 1px solid #f0f0f3; border-radius: 0 0 11px 11px;
   display: flex; flex-direction: column; gap: 8px;
 }
 /* 댓글처럼 — 들여쓴 자리에 세로선을 세워 이 카드들이 위 공고에 달린 것임을 보인다. */
 .co-jc-apps::before {
-  content: ""; position: absolute; left: 22px; top: 14px; bottom: 16px;
-  width: 2px; border-radius: 2px; background: #ececf0;
+  content: ""; position: absolute; left: 34px; top: 0; bottom: 20px;
+  width: 2px; border-radius: 0 0 2px 2px; background: #dcdce2;
 }
-/* 판 위에 놓이므로 카드 테두리는 옅게, 바탕은 흰색으로 남긴다. */
-.co-jc-apps .tal-card { border-color: #ececf0; background: #fff; }
+/* 줄기에서 카드로 뻗는 가지. 어느 줄이 어디서 나왔는지가 눈으로 이어진다. */
+.co-jc-apps > * { position: relative; }
+.co-jc-apps > *::before {
+  content: ""; position: absolute; left: -22px; top: 26px;
+  width: 16px; height: 2px; border-radius: 2px; background: #dcdce2;
+}
+/* 판 위에 놓인 카드는 무게를 낮춘다 — 공고 카드와 같은 테두리를 두르면
+   둘이 나란한 것으로 보인다. */
+.co-jc-apps .tal-card { border-color: #f0f0f3; background: #fff; border-radius: 10px; }
 
 /* 지원자 카드 아랫줄 — 직군 태그 · 지원한 공고 · 어떻게 들어왔는지. 값이 여럿이라
    가운뎃점 대신 여백으로 가른다(가운뎃점은 태그의 「·」와 섞인다). */
