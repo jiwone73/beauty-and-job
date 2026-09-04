@@ -11,6 +11,16 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
  * 이유가 없다.
  */
 
+/** 못 고치는 칸. 지원 창처럼 사실은 그대로 두고 서술형만 여는 자리에 쓴다.
+ *  누를 수 없다는 것이 보여야 하므로 단추가 아니라 글자로 선다. */
+function 잠긴칸(value: string, placeholder: string, 여러줄?: boolean) {
+  return (
+    <span className={`if-slot if-lock ${value ? "on" : ""} ${여러줄 ? "if-slot-multi" : ""}`}>
+      {value || placeholder}
+    </span>
+  );
+}
+
 function 별표(필수?: boolean) {
   return 필수 ? <i className="if-req">*</i> : null;
 }
@@ -30,13 +40,14 @@ function 칸폭(글: string, 자리글: string, 처음폭: number | null) {
 
 /** 눌러서 그 자리에서 치는 칸. */
 export function InlineText({
-  value, placeholder, required, onSave, wide, 여러줄,
+  value, placeholder, required, onSave, wide, 여러줄, 잠금,
 }: {
   value: string;
   placeholder: string;
   required?: boolean;
   onSave: (v: string) => void;
   wide?: boolean;
+  잠금?: boolean;
   /** 한 줄을 넘기면 다음 줄이 저절로 생긴다. 주요성과처럼 길어지는 칸에 쓴다. */
   여러줄?: boolean;
 }) {
@@ -62,6 +73,8 @@ export function InlineText({
   }, [고치는중, 여러줄]);
 
   const 마치기 = () => { set고치는중(false); if (초안.trim() !== value) onSave(초안.trim()); };
+
+  if (잠금) return 잠긴칸(value, placeholder, 여러줄);
 
   if (고치는중 && 여러줄) {
     return (
@@ -100,7 +113,7 @@ export function InlineText({
  * 알 수 없다.
  */
 export function InlineSuggest<T extends { 이름: string }>({
-  value, placeholder, required, wide, 찾기, onPick, onSave,
+  value, placeholder, required, wide, 찾기, onPick, onSave, 잠금,
 }: {
   value: string;
   placeholder: string;
@@ -109,6 +122,7 @@ export function InlineSuggest<T extends { 이름: string }>({
   찾기: (q: string) => T[];
   onPick: (고른것: T) => void;
   onSave: (v: string) => void;
+  잠금?: boolean;
 }) {
   const [고치는중, set고치는중] = useState(false);
   const [초안, set초안] = useState(value);
@@ -130,6 +144,8 @@ export function InlineSuggest<T extends { 이름: string }>({
     document.addEventListener("mousedown", 밖);
     return () => document.removeEventListener("mousedown", 밖);
   });
+
+  if (잠금) return 잠긴칸(value, placeholder);
 
   if (!고치는중) {
     return (
@@ -164,13 +180,14 @@ export function InlineSuggest<T extends { 이름: string }>({
 
 /** 눌러서 목록에서 고르는 칸. 고를 것이 정해져 있으면 치는 것보다 빠르다. */
 export function InlinePick({
-  value, placeholder, required, options, onSave,
+  value, placeholder, required, options, onSave, 잠금,
 }: {
   value: string;
   placeholder: string;
   required?: boolean;
   options: string[];
   onSave: (v: string) => void;
+  잠금?: boolean;
 }) {
   const [열림, set열림] = useState(false);
   const 감싸개 = useRef<HTMLSpanElement>(null);
@@ -183,6 +200,8 @@ export function InlinePick({
     window.addEventListener("keydown", 키);
     return () => { document.removeEventListener("mousedown", 밖); window.removeEventListener("keydown", 키); };
   }, [열림]);
+
+  if (잠금) return 잠긴칸(value, placeholder);
 
   return (
     <span className="if-wrap" ref={감싸개}>
@@ -292,13 +311,14 @@ export function InlineYMD({
 }
 
 export function InlineYM({
-  value, placeholder = "YYYY.MM", required, onSave, 올해 = 2026,
+  value, placeholder = "YYYY.MM", required, onSave, 올해 = 2026, 잠금,
 }: {
   value: string;
   placeholder?: string;
   required?: boolean;
   onSave: (v: string) => void;
   올해?: number;
+  잠금?: boolean;
 }) {
   const [열림, set열림] = useState(false);
   const [연, set연] = useState<number | null>(null);
@@ -320,6 +340,8 @@ export function InlineYM({
   }, [열림]);
 
   const 연들 = Array.from({ length: 40 }, (_, i) => 올해 - i);
+
+  if (잠금) return 잠긴칸(value, placeholder);
 
   return (
     <span className="if-wrap" ref={감싸개}>

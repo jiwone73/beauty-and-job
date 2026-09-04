@@ -335,16 +335,16 @@ export default function ResumeEditor({
               <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
                 <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} wide
-                  onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
+                  잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
                 {/* 지금 다니는 곳(가장 최근 경력)만 가릴 수 있게 한다. 이 판은
                     좁아서 원장이 인재검색에서 보는 것이 실제 공포다. 끄면
                     미리보기·인재검색에 ○○○ 으로 나가고, 지원한 곳에는 그대로
                     보인다 — 거기는 내가 스스로 문을 연 자리다. */}
                 {i === 0 && (
-                  <label className="career-open" title={c.companyPublic === false ? "매장 이름을 가리는 중" : "매장 이름을 보이는 중"}>
-                    <input type="checkbox" checked={c.companyPublic !== false}
-                      onChange={(e) => updateCareer(c.id, { ...c, companyPublic: e.target.checked })} />
-                    {c.companyPublic === false ? "비공개" : "공개"}
+                  <label className="career-open" title={c.companyPublic === false ? "매장 이름을 가리는 중" : "켜면 매장 이름을 가린다"}>
+                    <input type="checkbox" checked={c.companyPublic === false}
+                      onChange={(e) => updateCareer(c.id, { ...c, companyPublic: !e.target.checked })} />
+                    비공개
                   </label>
                 )}
                 {i === 0 && c.companyPublic === false && (
@@ -353,24 +353,24 @@ export default function ResumeEditor({
               </div>
               <div className="if-line">
                 <InlineYM value={c.startDate} required
-                  onSave={(v) => updateCareer(c.id, { ...c, startDate: v })} />
+                  잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, startDate: v })} />
                 <span className="if-sep">–</span>
                 <InlineYM value={c.endDate} placeholder="재직 중"
-                  onSave={(v) => updateCareer(c.id, { ...c, endDate: v })} />
+                  잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, endDate: v })} />
                 <span className="if-bar">│</span>
                 {/* 살롱 직급은 정해져 있어 고르게 하고, 본사 직책은 회사마다
                     달라 적게 둔다. */}
                 {본사냐 ? (
                   <>
                     <InlinePick value={c.department} placeholder="근무 형태" required options={재직형태}
-                      onSave={(v) => updateCareer(c.id, { ...c, department: v })} />
+                      잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, department: v })} />
                     <span className="if-bar">│</span>
                     <InlineText value={c.position} placeholder="맡은 일 · 직책"
-                      onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+                      잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
                   </>
                 ) : (
                   <InlinePick value={c.position} placeholder="직급" options={살롱직급}
-                    onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+                    잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
                 )}
               </div>
               <div className="if-line">
@@ -410,18 +410,18 @@ export default function ResumeEditor({
               <흠줄 말들={항목흠("education", e.id)} />
               <div className="if-line if-line-head">
                 <InlineText value={e.school} placeholder="학교명" required wide
-                  onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
+                  잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
               </div>
               <div className="if-line">
-                <InlineYM value={e.startDate} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
+                <InlineYM value={e.startDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
                 <span className="if-sep">–</span>
-                <InlineYM value={e.endDate} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
+                <InlineYM value={e.endDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
                 <span className="if-bar">│</span>
                 <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
-                  onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
+                  잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
                 <span className="if-bar">│</span>
                 <InlineText value={e.major} placeholder={본사냐 ? "전공 · 학위" : "전공"} required={본사냐}
-                  onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
+                  잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
               </div>
             </div>
             {줄단추("education:" + e.id, "이 학력을 삭제할까요?", () => removeEducation(e.id))}
@@ -433,9 +433,13 @@ export default function ResumeEditor({
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
             <h2 className="resume-section-title"><Sparkles size={16} className="resume-section-icon" />스킬{!본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}</h2>
-            {!빼기전용 && (<button className="resume-icon-btn" aria-label="스킬 추가" onClick={() => setSkillModalOpen(true)}>
-              <Plus size={18} />
-            </button>)}
+            {/* 스킬은 공고마다 어필할 것이 달라 그때그때 고른다. 여기서 고른
+                것은 이 지원서에만 실리고 기본 이력서는 그대로다. 그래서 더하는
+                ＋가 아니라 고치는 연필이다. */}
+            <button className="resume-icon-btn" aria-label={빼기전용 ? "스킬 고르기" : "스킬 추가"}
+              onClick={() => setSkillModalOpen(true)}>
+              {빼기전용 ? <Pencil size={16} /> : <Plus size={18} />}
+            </button>
           </div>
         <흠줄 말들={칸흠("skill")} />
           {/* 폼을 열면 그 안에도 담은 스킬이 (지우기와 함께) 서 있다. 둘 다
@@ -479,11 +483,11 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <div className="if-line if-line-head">
                 <InlineText value={c.name} placeholder="자격증명" required wide
-                  onSave={(v) => updateCertificate(c.id, { ...c, name: v })} />
+                  잠금={빼기전용} onSave={(v) => updateCertificate(c.id, { ...c, name: v })} />
               </div>
               <div className="if-line">
                 <InlineYM value={c.issued_ym} placeholder="취득 년월"
-                  onSave={(v) => updateCertificate(c.id, { ...c, issued_ym: v })} />
+                  잠금={빼기전용} onSave={(v) => updateCertificate(c.id, { ...c, issued_ym: v })} />
               </div>
             </div>
             {줄단추("certificate:" + c.id, "이 자격증을 삭제할까요?", () => removeCertificate(c.id))}
@@ -504,11 +508,11 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <div className="if-line if-line-head">
                 <InlineText value={x.title} placeholder="무엇을 했는지" required wide
-                  onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
               </div>
               <div className="if-line">
                 <InlinePick value={x.category} placeholder="종류" options={활동종류}
-                  onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, category: v })} />
                 <span className="if-bar">│</span>
                 <InlineText value={x.description} placeholder="어디서 무엇을 얻었는지" wide
                   onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
@@ -543,19 +547,19 @@ export default function ResumeEditor({
                 <흠줄 말들={항목흠("language", l.id)} />
                 <div className="if-line">
                   <InlinePick value={l.language} placeholder="언어" required options={언어들}
-                    onSave={(v) => updateLanguage(l.id, { ...l, language: v })} />
+                    잠금={빼기전용} onSave={(v) => updateLanguage(l.id, { ...l, language: v })} />
                   <span className="if-bar">│</span>
                   <InlinePick value={l.level} placeholder="수준" required options={수준들}
-                    onSave={(v) => updateLanguage(l.id, { ...l, level: v })} />
+                    잠금={빼기전용} onSave={(v) => updateLanguage(l.id, { ...l, level: v })} />
                 </div>
                 {/* 시험 점수는 본사 지원서에만 쓰인다. 살롱은 상·중·하면 끝난다. */}
                 {resumeType === "office" && (
                   <div className="if-line">
-                    <InlineText value={t.name} placeholder="시험명" onSave={(v) => 담기({ name: v })} />
+                    <InlineText value={t.name} placeholder="시험명" 잠금={빼기전용} onSave={(v) => 담기({ name: v })} />
                     <span className="if-bar">│</span>
-                    <InlineText value={t.score} placeholder="점수/등급" onSave={(v) => 담기({ score: v })} />
+                    <InlineText value={t.score} placeholder="점수/등급" 잠금={빼기전용} onSave={(v) => 담기({ score: v })} />
                     <span className="if-bar">│</span>
-                    <InlineYM value={t.ym} placeholder="취득 년월" onSave={(v) => 담기({ ym: v })} />
+                    <InlineYM value={t.ym} placeholder="취득 년월" 잠금={빼기전용} onSave={(v) => 담기({ ym: v })} />
                   </div>
                 )}
               </div>
@@ -666,11 +670,11 @@ export default function ResumeEditor({
                     <InlineSuggest value={l.category} placeholder="SNS명 (예: 인스타)" wide
                       찾기={SNS찾기}
                       onPick={(k) => updateLink(l.id, { ...l, category: k.이름, url: l.url || k.앞부분 })}
-                      onSave={(v) => updateLink(l.id, { ...l, category: v })} />
+                      잠금={빼기전용} onSave={(v) => updateLink(l.id, { ...l, category: v })} />
                   </div>
                   <div className="if-line">
                     <InlineText value={l.url} placeholder="https:// 로 시작하는 주소" required wide
-                      onSave={(v) => updateLink(l.id, { ...l, url: v, category: l.category || (v ? linkLabel(v) : "") })} />
+                      잠금={빼기전용} onSave={(v) => updateLink(l.id, { ...l, url: v, category: l.category || (v ? linkLabel(v) : "") })} />
                   </div>
                 </div>
                 {줄단추("link:" + l.id, "이 링크를 삭제할까요?", () => removeLink(l.id))}

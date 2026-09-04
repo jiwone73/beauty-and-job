@@ -2656,7 +2656,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .job-detail-mobile-apply { flex: 1; height: 48px; background: var(--color-primary); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
 
 /* 지원 모달 */
-.apply-modal-job { background: transparent; border-radius: 8px; padding: 0 0 14px; margin-bottom: 16px; }
+.apply-modal-job { background: transparent; border-radius: 8px; padding: 0 0 6px; margin-bottom: 8px; }
 .apply-modal-job strong { display: block; font-size: 13px; font-weight: 400; color: #8a8a90; margin-bottom: 4px; }
 .apply-modal-job p { font-size: 15px; font-weight: 400; color: #1a1a1a; }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }
@@ -12168,6 +12168,9 @@ div:has(> table.admin-table),
 /* 지원서 미리보기(ApplyModal): cv-body 좌우 패딩 상쇄 → 다른 미리보기와 동일 여백(.app-doc 40px) */
 .apply-preview-doc { margin-left: -48px; margin-right: -48px; }
 .apply-preview-doc .app-doc { padding-bottom: 8px; } /* 미리보기 하단 여백 축소(동의 문구와 간격 줄임) */
+/* 공고 제목과 이력서 첫 줄 사이가 52px 이나 비어 있었다 — 스크롤을 내려야
+   문서가 시작되는 것처럼 보인다. 위로 당긴다. */
+.apply-preview-doc .rp-wrap { padding-top: 0; }
 @media (max-width: 640px) { .apply-preview-doc { margin-left: -18px; margin-right: -18px; } }
 .app-doc .rp-header { border-bottom: 1px solid #ececec; }         /* 기본정보 선 흐리게(자소서↔이력서 구분 강조) */
 /* 이력서 모달 흰색 배경 변형 — 구직자 본인 지원서(내 지원현황)만 쓰다가, 회색 배경
@@ -13834,6 +13837,9 @@ button,
 .if-row { display: grid; grid-template-columns: 30px 1fr 26px; gap: 10px; align-items: start;
   padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .if-row:last-of-type { border-bottom: none; }
+/* 칸 이름과 첫 줄 사이는 어디서나 같아야 한다. 줄마다 위아래 12px 을 두는데
+   첫 줄에도 그대로 붙어, 스킬(칩이라 여백이 없다)만 붙고 나머지는 벌어졌다. */
+.if-row:first-of-type { padding-top: 0; }
 /* 아이콘 없는 줄. 첫 칸(30px)은 아이콘 자리라, 안 쓰면 본문이 거기로 밀려 들어간다. */
 .if-row-plain { grid-template-columns: minmax(0, 1fr) 26px; }
 /* 좁은 칸(2열 한 칸)에 서는 줄. 고칠 때 입력칸이 최소 120px 을 요구해 줄이 접히고
@@ -13890,6 +13896,9 @@ button,
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   transition: background .12s; }
 .if-slot:hover { background: #f2f2f4; }
+/* 못 고치는 칸 — 누를 수 없다는 것이 손에 먼저 닿아야 한다. */
+.if-slot.if-lock { display: inline-block; cursor: default; }
+.if-slot.if-lock:hover { background: none; }
 .if-slot.on { color: #2b2b2b; }
 /* 주요성과처럼 길어지는 칸 — 한 줄을 넘기면 다음 줄로 흐른다. */
 .if-slot-multi { white-space: normal; text-align: left; line-height: 1.6; }
@@ -14751,12 +14760,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    아래 화살표만 그려 붙인다. */
 .pf-pay-sel {
   appearance: none; -webkit-appearance: none; cursor: pointer;
-  padding: 4px 22px 4px 6px;
+  padding: 4px 18px 4px 6px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat: no-repeat; background-position: right 4px center;
+  background-repeat: no-repeat; background-position: right 2px center;
 }
 /* 오른쪽 정렬 — 왼쪽에 붙이면 「400」과 「만원」 사이가 칸 너비만큼 벌어진다. */
-.pf-pay-in { width: 76px; text-align: right; }
+.pf-pay-in { width: 52px; text-align: right; padding-left: 2px; padding-right: 4px; }
 .pf-pay-in::placeholder { color: #cfcfcf; font-size: 12.5px; }
 /* 고르개는 눌러도 바탕을 남기지 않는다 — 고르고 나면 색만 남아 무슨 표시인지
    알 수 없다. 적는 칸만 어디를 치고 있는지 옅은 회색으로 알린다. */
