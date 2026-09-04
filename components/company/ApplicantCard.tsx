@@ -34,7 +34,7 @@ const 고용형태: Record<string, string> = {
 const 마감 = (a: CompanyApplication) => 마감인가((a as any).job_status, (a as any).job_deadline);
 
 export default function ApplicantCard({
-  a, onOpen, onToggleScrap, onNote, checked, onCheck, showJob = true,
+  a, onOpen, onToggleScrap, onNote, checked, onCheck, showJob = true, 줄모드 = false,
 }: {
   a: CompanyApplication;
   onOpen: (a: CompanyApplication) => void;
@@ -47,6 +47,9 @@ export default function ApplicantCard({
   onCheck?: (id: string) => void;
   /** 공고 카드 안에서는 그 공고 이름이 바로 위에 있어 다시 적지 않는다. */
   showJob?: boolean;
+  /** 공고 카드 안에서는 한 줄로 선다. 카드 안에 카드를 두면 층이 안 읽히고,
+   *  지원자가 다섯이면 화면이 카드로 꽉 찬다. 자세한 것은 눌러서 지원서로. */
+  줄모드?: boolean;
 }) {
   const 나이 = calcAge((a as any).user_birth_date);
   const ct = (a as any).career_type;
@@ -81,6 +84,38 @@ export default function ApplicantCard({
       || (a as any).user_skill_areas?.[0] || (a as any).user_office_job_areas?.[0],
     (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
   ].filter(Boolean) as string[];
+
+  if (줄모드) {
+    return (
+      <div className="tal-line" role="button" tabIndex={0} title="지원서 보기"
+        onClick={() => onOpen(a)}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
+        <span className="tal-line-av">
+          {(a as any).user_avatar_url
+            ? <img src={(a as any).user_avatar_url} alt="" loading="lazy" />
+            : <span>{(a.user_name || "?").slice(0, 1)}</span>}
+        </span>
+        {/* 한 줄 소개가 앞에 선다 — 이름보다 이 줄이 사람을 고르게 한다. */}
+        {(a as any).user_intro && <span className="tal-line-intro">{(a as any).user_intro}</span>}
+        <span className="tal-line-name">{a.user_name}</span>
+        <span className="tal-line-meta">
+          {[나이성별, 경력, 지역].filter(Boolean).join(" · ")}
+        </span>
+        <span className="tal-line-right">
+          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+            className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
+            {(a as any).scrapped
+              ? <BookmarkCheck size={16} style={{ color: "#582681" }} />
+              : <Bookmark size={16} style={{ color: "#c8c8c8" }} />}
+          </button>
+          <span style={{ fontSize: 13, color: 상태색 }}>
+            {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+          </span>
+          <span className="tal-line-when">{날짜(a.applied_at)}</span>
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className={`tal-card${checked ? " on" : ""}`}>
