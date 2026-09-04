@@ -713,16 +713,19 @@ export default function ApplyModal({
                   고치지 않는다 — 이 창에서 고치면 이 공고에 낼 사본에만 남고
                   프로필은 그대로라, 다음 공고에 또 같은 것을 고쳐야 한다.
                   고치는 자리로 보내고, 돌아오면 새로 읽어 온다. */}
-              {/* 한 줄 소개는 미리보기 맨 위에 나가는 글이라 이 공고에 맞춰
-                  고치는 값이다. 개인정보 묶음 안에 두면 이름·연락처처럼
-                  확인만 하는 줄로 읽힌다. 이력서 화면과 같은 차례로 세운다. */}
+              {/* 이력서 화면의 한줄소개와 같은 옷 — 같은 제목, 같은 아이콘,
+                  같은 입력칸. 두 화면이 다르면 어느 것이 진짜인지 헷갈린다. */}
               <div className="apply-info" style={{ marginTop: 8 }}>
-                <div className="apply-info-head"><span><Quote size={16} className="resume-section-icon" />한 줄 소개</span></div>
-                <div className="apply-info-row">
-                  <input className="apply-info-in" value={intro} maxLength={60}
-                    placeholder="나를 한 줄로 소개해 주세요"
-                    onChange={(e) => useProfileStore.getState().setIntro(e.target.value)} />
+                <div className="apply-info-head">
+                  <span><Quote size={16} className="resume-section-icon" />한줄소개
+                    <i style={{ color: "#e74c3c", marginLeft: 3, fontStyle: "normal" }}>*</i>
+                  </span>
                 </div>
+                <input className="apply-intro-in" value={intro} maxLength={60}
+                  placeholder={resumeType === "office"
+                    ? "몇 년차에 무엇을 잘하는지 (예: 7년차 뷰티 MD · 신제품 기획)"
+                    : "몇 년차에 어떤 시술을 하는지 (예: 5년차 네일 아티스트 · 젤·아트)"}
+                  onChange={(e) => useProfileStore.getState().setIntro(e.target.value)} />
               </div>
 
               <div className="apply-info">
