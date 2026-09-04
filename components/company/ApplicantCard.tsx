@@ -104,7 +104,9 @@ export default function ApplicantCard({
         {/* 사람을 고르게 하는 건 이름이 아니라 이 줄이다. */}
         <span className="apl-mid">
           <b>{(a as any).user_intro || 경력 || "\u2014"}</b>
-          {태그.length > 0 && <i>{태그.map((g) => `#${g}`).join(" ")}</i>}
+          {태그.length > 0 && (
+            <i>{태그.slice(0, 3).map((g) => `#${g}`).join(" ")}{태그.length > 3 ? ` +${태그.length - 3}` : ""}</i>
+          )}
         </span>
         <span className="apl-when">{날짜(a.applied_at)} 지원</span>
         <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
@@ -113,12 +115,13 @@ export default function ApplicantCard({
             ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
             : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
         </button>
+        <button type="button" className="apl-view"
+          onClick={(e) => { e.stopPropagation(); onOpen(a); }}>열람</button>
         {/* 상태는 여기서 바꾸지 않는다 — 지원서를 읽고 그 창에서 정한다.
             이 단추는 그 창을 여는 문이고, 아직 안 본 사람만 채워 눈에 건다. */}
-        <span className="apl-st">{안봄 ? "" : (a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status])}</span>
         <button type="button" className={`apl-go${안봄 ? " key" : ""}`}
           onClick={(e) => { e.stopPropagation(); onOpen(a); }}>
-          {안봄 ? "검토하기" : "다시 보기"}
+          {안봄 ? "검토하기" : (a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status])}
         </button>
       </div>
     );

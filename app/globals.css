@@ -14667,9 +14667,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .apl-mid i { font-style: normal; font-size: 12.5px; color: #a0a0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apl-when { flex-shrink: 0; color: #b4b4b9; font-size: 12.5px; white-space: nowrap; }
 .apl-scrap { flex-shrink: 0; background: none; border: none; padding: 2px; cursor: pointer; display: flex; }
-.apl-st { flex-shrink: 0; font-size: 13px; color: #8a8a90; white-space: nowrap; }
+.apl-view { flex-shrink: 0; background: none; border: none; padding: 2px 4px; font: inherit;
+  font-size: 13px; color: #8a8a90; cursor: pointer; white-space: nowrap; }
+.apl-view:hover { color: var(--color-primary); }
 .apl-go {
-  flex-shrink: 0; padding: 6px 12px; border-radius: 7px; font-size: 13px; font-family: inherit;
+  flex-shrink: 0; min-width: 78px; padding: 6px 12px; border-radius: 7px; font-size: 13px; font-family: inherit;
   border: 1px solid #e0dced; background: #fff; color: var(--color-primary); cursor: pointer;
 }
 .apl-go:hover { background: #f7f4fa; }
