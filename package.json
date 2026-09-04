@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/직군검사.mjs && next build",
+    "직군검사": "node scripts/직군검사.mjs",
     "start": "next start",
     "lint": "next lint"
   },
