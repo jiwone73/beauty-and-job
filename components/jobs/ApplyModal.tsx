@@ -692,7 +692,7 @@ export default function ApplyModal({
                   onClick={() => setStep("edit")}
                   style={{ flex: "1 1 0", minWidth: 0, padding: "13px 0", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, cursor: "pointer" }}
                 >
-                  수정하기
+                  공고에 맞게 수정하기
                 </button>
                 <button
                   className="cv-btn-primary"
