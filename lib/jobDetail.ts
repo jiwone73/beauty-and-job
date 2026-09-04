@@ -73,10 +73,17 @@ export async function 공고읽기(id: string) {
     categories: job.categories || [],
     detail_images: job.detail_images || [],
     hiring_process: job.hiring_process || [],
-    external_contact_name: job.external_contact_name || '',
-    external_contact_phone: job.external_contact_phone || '',
-    external_contact_email: job.external_contact_email || '',
-    external_contact_kakao: job.external_contact_kakao || '',
+    // 가린 칸은 아예 실어 보내지 않는다. 화면에서만 감추면 개발자 도구로 다
+    // 보인다 — 기업이 「비공개」로 둔 번호가 그렇게 새면 안 된다.
+    external_contact_name: job.contact_name_hidden ? '' : (job.external_contact_name || ''),
+    external_contact_phone: job.contact_phone_hidden ? '' : (job.external_contact_phone || ''),
+    external_contact_email: job.contact_email_hidden ? '' : (job.external_contact_email || ''),
+    external_contact_kakao: job.contact_kakao_hidden ? '' : (job.external_contact_kakao || ''),
+    // 등록 화면이 되읽을 때는 어느 칸을 가렸는지 알아야 체크가 그대로 선다.
+    contact_name_hidden: !!job.contact_name_hidden,
+    contact_phone_hidden: !!job.contact_phone_hidden,
+    contact_email_hidden: !!job.contact_email_hidden,
+    contact_kakao_hidden: !!job.contact_kakao_hidden,
     contact_methods: job.contact_methods || [],
     notes: job.notes || '',
     responsibilities: job.responsibilities || '',

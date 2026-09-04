@@ -384,6 +384,9 @@ export default function JobPostForm({
   const [bannerGenPreset, setBannerGenPreset] = useState(0);
   const [bannerGenBusy, setBannerGenBusy] = useState(false);
   const [nmManagerName, setNmManagerName] = useState("");
+  // 칸마다 가릴지. 적어 두되 구직자에게 보일지는 따로 고른다 — 연락처가 그대로
+  // 나가면 지원이 뷰티워크 밖에서 끝난다. 기본은 가림.
+  const [숨김, set숨김] = useState<Record<string, boolean>>({ name: true, phone: true, mail: true, kakao: true });
   const [nmManagerPhone, setNmManagerPhone] = useState("");
   const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·뷰티워크 온라인지원(복수)
   const toggleContactMethod = (m: string) =>
@@ -1147,6 +1150,12 @@ export default function JobPostForm({
         setNmManagerPhone(j.external_contact_phone || "");
         setNmContactEmail(j.external_contact_email || "");
         setNmKakaoId(j.external_contact_kakao || "");
+        set숨김({
+          name: j.contact_name_hidden !== false,
+          phone: j.contact_phone_hidden !== false,
+          mail: j.contact_email_hidden !== false,
+          kakao: j.contact_kakao_hidden !== false,
+        });
         setContactMethods(Array.isArray(j.contact_methods) ? j.contact_methods : []);
         if (["MANAGED", "EMAIL", "REDIRECT"].includes(j.apply_method)) {
           setApplyMethod(j.apply_method === "EMAIL" ? "MANAGED" : j.apply_method);
@@ -1985,6 +1994,12 @@ export default function JobPostForm({
         // 아래 둘도 제목에 별표를 달았다 — 화면과 같은 기준으로 막는다.
         if (bannerImages.length === 0) { alert("공고배너 이미지를 1장 이상 넣어주세요."); return; }
         if (contactMethods.length === 0) { alert("지원방법을 1개 이상 선택해주세요."); return; }
+        // 담당자 정보는 필수다. 가려 두더라도 우리는 알아야 한다 — 지원이
+        // 들어왔는데 매장에 닿을 길이 없으면 그 지원은 사라진 것과 같다.
+        if (!nmManagerName.trim()) { alert("담당자 이름을 입력해주세요."); return; }
+        if (!nmManagerPhone.trim() && !nmContactEmail.trim()) {
+          alert("담당자 전화번호나 이메일 중 하나는 입력해주세요."); return;
+        }
       }
       // 마감일: 날짜 선택 또는 상시채용 필수
       if (status === "publish" && !alwaysOpen && !form.deadline) {
@@ -2087,6 +2102,10 @@ export default function JobPostForm({
       external_contact_name: 낼담당.이름 || null,
       external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
       external_contact_kakao: 낼담당.카톡 || null,
+      contact_name_hidden: 숨김.name !== false,
+      contact_phone_hidden: 숨김.phone !== false,
+      contact_email_hidden: 숨김.mail !== false,
+      contact_kakao_hidden: 숨김.kakao !== false,
       contact_methods: contactMethods,
       // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
@@ -3764,7 +3783,7 @@ export default function JobPostForm({
 
           {/* 담당자 정보 — 지원방법과 묶지 않는다. 매장정보에 적어 둔 연락처를
               그대로 가져오고, 이 공고만 다르면 여기서 고친다. */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>담당자 정보</h2>
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>담당자 정보{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))", gap: isMobile ? "0" : "6px 28px" }}>
@@ -3788,6 +3807,14 @@ export default function JobPostForm({
                         <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
                           fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
                       )}
+                      {/* 사람인과 같은 자리 — 칸 오른쪽에서 그 칸만 가린다. */}
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: 5, flexShrink: 0,
+                        marginLeft: 10, fontSize: 13, color: "#666", cursor: "pointer", userSelect: "none" }}>
+                        <input type="checkbox" checked={숨김[f.k] !== false}
+                          onChange={(e) => set숨김((p) => ({ ...p, [f.k]: e.target.checked }))}
+                          style={{ width: 15, height: 15, accentColor: "#582681", margin: 0, cursor: "pointer" }} />
+                        비공개
+                      </label>
                     </span>
                   </div>
                 ))}

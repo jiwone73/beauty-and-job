@@ -69,7 +69,8 @@ export async function POST(req: NextRequest) {
     work_days, work_time, work_time_slots, responsibilities, headcount,
     work_period, contact_methods, education, gender_preference, positions, cover_images, status: reqStatus,
     // 접수담당자 — 여태 받지 않아 기업회원이 적어도 저장되지 않고 사라졌다.
-    external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao
+    external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao,
+    contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden
   } = body
 
   if (!title || !job_type) {
@@ -87,9 +88,10 @@ export async function POST(req: NextRequest) {
        deadline, categories, detail_images, hiring_process, notes,
        benefits, employment_type, benefit_tags,
        work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images,
-       external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao, status
+       external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao,
+       contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, '${jobStatus}'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -117,7 +119,12 @@ export async function POST(req: NextRequest) {
       (external_contact_name || '').trim() || null,
       (external_contact_phone || '').replace(/\D/g, '') || null,
       (external_contact_email || '').trim() || null,
-      (external_contact_kakao || '').trim() || null
+      (external_contact_kakao || '').trim() || null,
+      // 가리는 쪽이 기본이다 — 값을 안 보내면 가린 것으로 본다.
+      contact_name_hidden !== false,
+      contact_phone_hidden !== false,
+      contact_email_hidden !== false,
+      contact_kakao_hidden !== false
     ]
   )
   return ok(result.rows[0], 201)

@@ -45,6 +45,8 @@ export async function PATCH(
     // 접수담당자
     "external_contact_name", "external_contact_phone", "external_contact_email",
     "external_contact_kakao",
+    // 칸마다 가릴지 — 적어는 두되 구직자에게 보일지는 따로 고른다.
+    "contact_name_hidden", "contact_phone_hidden", "contact_email_hidden", "contact_kakao_hidden",
   ];
 
   const updates: string[] = [];
