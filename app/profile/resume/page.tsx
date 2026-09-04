@@ -593,7 +593,6 @@ function ResumePageContent() {
               <span className="rp-cond-k">희망 급여</span>
               <span className="rp-cond-v">{희망급여글}</span>
             </div>
-            <a className="resume-cond-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
           </section>
 
           <ResumeEditor

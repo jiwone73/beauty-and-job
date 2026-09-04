@@ -606,10 +606,7 @@ export default function ApplyModal({
                 {(positionTitle || workLocation) && (
                   <div className="apply-info-row is-post"><span>지원분야</span><b>{[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}</b></div>
                 )}
-                <div className="apply-info-row">
-                  <span>이름</span><b>{name}</b>
-                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
-                </div>
+                <div className="apply-info-row"><span>이름</span><b>{name}</b></div>
                 <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
                 <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>
               </div>
@@ -731,10 +728,7 @@ export default function ApplyModal({
                     placeholder="나를 한 줄로 소개해 주세요"
                     onChange={(e) => useProfileStore.getState().setIntro(e.target.value)} />
                 </div>
-                <div className="apply-info-row">
-                  <span>이름</span><b>{name}</b>
-                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
-                </div>
+                <div className="apply-info-row"><span>이름</span><b>{name}</b></div>
                 {birthDisplay && <div className="apply-info-row"><span>생년월일</span><b>{birthDisplay}</b></div>}
                 <div className="apply-info-row"><span>연락처</span><b>{전화꼴(phoneLocal || phone) || "—"}</b></div>
                 <div className="apply-info-row"><span>이메일</span><b>{emailLocal || email || "—"}</b></div>
@@ -743,10 +737,7 @@ export default function ApplyModal({
 
               <div className="apply-info">
                 <div className="apply-info-head"><span><Target size={16} className="resume-section-icon" />희망 근무 조건</span></div>
-                <div className="apply-info-row">
-                  <span>희망 근무지</span><b>{희망지역 || regionPrefer || "—"}</b>
-                  <a className="apply-info-edit" href="/profile" target="_blank" rel="noopener">프로필에서 수정</a>
-                </div>
+                <div className="apply-info-row"><span>희망 근무지</span><b>{희망지역 || regionPrefer || "—"}</b></div>
                 <div className="apply-info-row"><span>희망직군</span><b>{[...(직군매장 ?? skillAreas), ...(직군본사 ?? officeJobAreas)].join(", ") || "—"}</b></div>
                 {workTypePrefer && <div className="apply-info-row"><span>근무형태</span><b>{workTypePrefer}</b></div>}
                 {/* 프로필 화면과 같은 인라인 — 고르고, 적고, 협의를 켠다.

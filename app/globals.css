@@ -2631,8 +2631,11 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .apply-info { margin: 0 0 18px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
 .apply-info-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
 
-.apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; }
-.apply-info-row span { flex: 0 0 62px; font-size: 13px; color: #8a8a90; }
+/* 칸 이름은 제목 글자에 줄을 맞춘다(아이콘 16 + 사이 6 = 22). 제목만 들여쓰고
+   아래가 왼쪽에 붙어 있으면 두 덩어리가 어긋나 보인다. */
+.apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; padding-left: 22px; }
+/* 62px 은 「희망 근무지」를 못 담아 글자가 값 쪽으로 넘쳤다. */
+.apply-info-row span { flex: 0 0 78px; font-size: 13px; color: #8a8a90; }
 /* 길면 줄바꿈 대신 말줄임 — 한 줄에 하나씩 읽히는 자리라 두 줄이 되면 이름표와
    값의 짝이 흐트러진다. */
 .apply-info-row b { font-size: 15px; font-weight: 400; color: #1a1a1a; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2647,7 +2650,6 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .apply-info-in:hover { border-bottom-color: #e8e8ea; }
 .apply-info-in:focus { outline: none; border-bottom-color: var(--color-primary); }
 .apply-info-in::placeholder { color: #c4c4c9; }
-.apply-info-edit { margin-left: auto; flex-shrink: 0; font-size: 13px; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
 /* 모바일 CTA */
 .job-detail-mobile-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--color-border); padding: 12px 16px; gap: 10px; z-index: 50; }
@@ -14784,7 +14786,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .rp-cond-v { font-size: 14px; color: #1a1a1a; }
 .rp-cond-unit { color: #1a1a1a; font-weight: 400; }
 /* 이력서 폼의 희망 근무 조건 — 값은 프로필에서 오므로 고치러 가는 길만 둔다. */
-.resume-cond-edit { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 
 /* 공고명이 곧 공고로 가는 문이다. 인재 카드의 이름(.tal-name)과 같은 결 —
    옅은 밑줄을 늘 두고, 올리면 보라로 짙어진다. */
