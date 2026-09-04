@@ -3677,7 +3677,8 @@ export default function JobPostForm({
                 const canName = canPhone || canEmail || canKakao;
                 const canUrl = isOffice && contactMethods.includes("회사 홈페이지 지원");
                 // 담당자 칸이 생기면 URL은 지원방법 밑(좌)에, 우측이 비면 URL을 우측에 둔다.
-                const urlOnLeft = canUrl && canName;
+                // 담당자가 제 칸으로 나가면서 오른쪽은 마감일이 쓴다. URL 은 늘 왼쪽 아래.
+                const urlOnLeft = canUrl;
                 const isNmAdminJob = mode === "admin" && nonMember;
                 const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#999", fontSize: 15, paddingTop: 4 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
@@ -3726,41 +3727,32 @@ export default function JobPostForm({
                        </div>
                      )}
                     </div>
-                    {/* 담당자 정보는 아래 제 칸으로 나갔다. 여기에는 지원방법이
-                        부르는 홈페이지 URL 만 남는다. */}
-                    {canUrl && !urlOnLeft ? (
-                      <div style={{ padding: "4px 0", minWidth: 0 }}>
-                        <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>홈페이지 URL</div>
-                        <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
-                          placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
-                      </div>
-                    ) : <div />}
+                    {/* 마감일 (우) — 언제까지 받는지는 어떻게 받는지 옆에 선다. */}
+                    <div id="jp-deadline" ref={deadlineRef} style={{ position: "relative", padding: "4px 0" }}>
+                      <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>마감일</div>
+                      <button type="button"
+                        onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                        {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
+                      </button>
+                      {deadlineModalOpen && popAt && (
+                        /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
+                        <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                          <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
+                            style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                          <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+                            <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
+                          </label>
+                          <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
+                            <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
+                            <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })()}
-              {/* 마감일 — 언제까지 받는지는 어떻게 받는지 다음에 온다. */}
-              <div id="jp-deadline" ref={deadlineRef} style={{ position: "relative", padding: "4px 0", marginTop: 10 }}>
-                <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>마감일</div>
-                <button type="button"
-                  onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                  style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
-                  {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
-                </button>
-                {deadlineModalOpen && popAt && (
-                  /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
-                  <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                    <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
-                      style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
-                      <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
-                    </label>
-                    <div style={{ display: "flex", gap: "6px", marginTop: "12px", justifyContent: "flex-end" }}>
-                      <button type="button" className="admin-secondary-btn" style={{ padding: "6px 12px", fontSize: "13px" }} onClick={() => setDeadlineModalOpen(false)}>취소</button>
-                      <button type="button" className="company-primary-btn" style={{ padding: "6px 14px", fontSize: "13px" }} onClick={applyDeadline}>적용</button>
-                    </div>
-                  </div>
-                )}
-              </div>
 
 
 
