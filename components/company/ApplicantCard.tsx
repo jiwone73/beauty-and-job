@@ -88,7 +88,7 @@ export default function ApplicantCard({
   if (순번 !== undefined) {
     const 안봄 = a.status === "APPLIED";
     return (
-      <div className="apl-row" role="button" tabIndex={0} title="지원서 보기"
+      <div className={`apl-row${안봄 ? " new" : ""}`} role="button" tabIndex={0} title="지원서 보기"
         onClick={() => onOpen(a)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
         <span className={`apl-no${안봄 ? " key" : ""}`}>{순번}</span>

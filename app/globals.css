@@ -14668,7 +14668,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 머리줄 — 몇 명인지, 어떤 차례인지, 찾는 자리. 띠로 깔려 목록과 갈린다. */
 .apl-bar {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 18px; background: #f7f7f9; border-bottom: 1px solid #ececf0;
+  padding: 10px 18px; background: #fff; border-bottom: 1px solid #ececf0;
 }
 .apl-bar-tag { font-size: 13px; color: var(--color-primary); background: #f0ecf6; border-radius: 6px; padding: 3px 9px; }
 .apl-bar-n { font-size: 13px; color: #555; }
@@ -14696,6 +14696,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .apl-row:last-child { border-bottom: none; }
 .apl-row:hover { background: #fafafb; }
+/* 아직 안 본 사람의 줄만 옅게 든다 — 시안이 그렇다. 줄이 여럿일 때 손이
+   가야 할 곳이 색으로 먼저 잡히고, 다 본 뒤에는 목록이 조용해진다. */
+.apl-row.new { background: #f8f5fc; }
+.apl-row.new:hover { background: #f3eefa; }
 /* 순번은 동그라미 배지다 — 맨 숫자는 줄 사이에 묻힌다. 아직 안 본 사람은
    채워서, 지금 손이 가야 할 곳이 위에서부터 세어진다. */
 .apl-no {
