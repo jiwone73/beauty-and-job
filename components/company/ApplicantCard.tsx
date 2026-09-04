@@ -91,7 +91,7 @@ export default function ApplicantCard({
       <div className="apl-row" role="button" tabIndex={0} title="지원서 보기"
         onClick={() => onOpen(a)}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
-        <span className="apl-no">{순번}</span>
+        <span className={`apl-no${안봄 ? " key" : ""}`}>{순번}</span>
         <span className="apl-av">
           {(a as any).user_avatar_url
             ? <img src={(a as any).user_avatar_url} alt="" loading="lazy" />
