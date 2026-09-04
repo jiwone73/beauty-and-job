@@ -101,9 +101,10 @@ export default function ApplicantCard({
           <b>{a.user_name}{나이성별 && ` (${나이성별})`}</b>
           {지역 && <i>{지역}</i>}
         </span>
-        {/* 사람을 고르게 하는 건 이름이 아니라 이 줄이다. */}
+        {/* 사람을 고르게 하는 건 이름이 아니라 이 줄이다. 한 줄 소개는
+            이력서 필수라 비는 일이 없다 — 실제로 지원 168건 모두 들어 있다. */}
         <span className="apl-mid">
-          <b>{(a as any).user_intro || 경력 || "\u2014"}</b>
+          <b>{(a as any).user_intro}</b>
           {태그.length > 0 && (
             <i>{태그.slice(0, 3).map((g) => `#${g}`).join(" ")}{태그.length > 3 ? ` +${태그.length - 3}` : ""}</i>
           )}
