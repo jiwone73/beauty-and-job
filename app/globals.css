@@ -14638,19 +14638,46 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-nums.open:hover { color: var(--color-primary); }
 .co-jc-chev { margin-left: 3px; transition: transform .15s; }
 .co-jc-chev.up { transform: rotate(180deg); }
+/* 공고를 펼치면 그 공고에 온 사람이 표로 선다. 카드 안에 카드를 두면 층이
+   안 읽히고 다섯 명이면 화면이 꽉 찬다 — 공고는 카드, 지원자는 그 안의 줄이다. */
 .co-jc-apps {
-  position: relative;
-  margin: 0 -18px; padding: 12px 18px 14px 34px;
+  margin: 0 -18px; padding: 0 14px 8px;
   background: #fafafb; border-top: 1px solid #f0f0f3; border-radius: 0 0 11px 11px;
-  display: flex; flex-direction: column; gap: 8px;
 }
-/* 댓글처럼 — 들여쓴 자리에 세로선을 세워 이 카드들이 위 공고에 달린 것임을 보인다. */
-.co-jc-apps::before {
-  content: ""; position: absolute; left: 22px; top: 14px; bottom: 16px;
-  width: 2px; border-radius: 2px; background: #ececf0;
+.apl-row {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+  padding: 11px 6px; cursor: pointer; font-size: 13.5px;
+  border-bottom: 1px solid #f0f0f3;
 }
-/* 판 위에 놓이므로 카드 테두리는 옅게, 바탕은 흰색으로 남긴다. */
-.co-jc-apps .tal-card { border-color: #ececf0; background: #fff; }
+.apl-row:last-child { border-bottom: none; }
+.apl-row:hover { background: #f4f4f6; border-radius: 8px; }
+.apl-no { width: 14px; flex-shrink: 0; text-align: center; color: #b4b4b9; font-size: 12.5px; }
+.apl-av {
+  width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: #efeff1; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #8a8a90;
+}
+.apl-av img { width: 100%; height: 100%; object-fit: cover; }
+.apl-who { width: 148px; flex-shrink: 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.apl-who b { font-weight: 400; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apl-who i { font-style: normal; font-size: 12.5px; color: #a0a0a6; }
+/* 한 줄 소개가 이 줄의 주인공이다. 남는 자리를 다 쓰고, 길면 여기서 줄인다. */
+.apl-mid { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.apl-mid b { font-weight: 400; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apl-mid i { font-style: normal; font-size: 12.5px; color: #a0a0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apl-when { flex-shrink: 0; color: #b4b4b9; font-size: 12.5px; white-space: nowrap; }
+.apl-scrap { flex-shrink: 0; background: none; border: none; padding: 2px; cursor: pointer; display: flex; }
+.apl-st { flex-shrink: 0; font-size: 13px; color: #8a8a90; white-space: nowrap; }
+.apl-go {
+  flex-shrink: 0; padding: 6px 12px; border-radius: 7px; font-size: 13px; font-family: inherit;
+  border: 1px solid #e0dced; background: #fff; color: var(--color-primary); cursor: pointer;
+}
+.apl-go:hover { background: #f7f4fa; }
+/* 아직 안 본 사람만 채워 둔다 — 지금 손이 가야 할 곳이 하나면 눈이 안 흩어진다. */
+.apl-go.key { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.apl-go.key:hover { background: #4a1f6d; }
+@media (max-width: 1100px) { .apl-when { display: none; } }
+@media (max-width: 900px) { .apl-who { width: 120px; } .apl-mid i { display: none; } }
 
 /* 지원자 카드 아랫줄 — 직군 태그 · 지원한 공고 · 어떻게 들어왔는지. 값이 여럿이라
    가운뎃점 대신 여백으로 가른다(가운뎃점은 태그의 「·」와 섞인다). */

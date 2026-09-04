@@ -34,7 +34,7 @@ const 고용형태: Record<string, string> = {
 const 마감 = (a: CompanyApplication) => 마감인가((a as any).job_status, (a as any).job_deadline);
 
 export default function ApplicantCard({
-  a, onOpen, onToggleScrap, onNote, checked, onCheck, showJob = true,
+  a, onOpen, onToggleScrap, onNote, checked, onCheck, showJob = true, 순번,
 }: {
   a: CompanyApplication;
   onOpen: (a: CompanyApplication) => void;
@@ -47,6 +47,9 @@ export default function ApplicantCard({
   onCheck?: (id: string) => void;
   /** 공고 카드 안에서는 그 공고 이름이 바로 위에 있어 다시 적지 않는다. */
   showJob?: boolean;
+  /** 공고를 펼쳤을 때의 줄 번호. 있으면 카드가 아니라 한 줄로 선다 —
+   *  카드 안에 카드를 두면 층이 안 읽히고 다섯 명이면 화면이 꽉 찬다. */
+  순번?: number;
 }) {
   const 나이 = calcAge((a as any).user_birth_date);
   const ct = (a as any).career_type;
@@ -81,6 +84,45 @@ export default function ApplicantCard({
       || (a as any).user_skill_areas?.[0] || (a as any).user_office_job_areas?.[0],
     (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
   ].filter(Boolean) as string[];
+
+  if (순번 !== undefined) {
+    const 안봄 = a.status === "APPLIED";
+    return (
+      <div className="apl-row" role="button" tabIndex={0} title="지원서 보기"
+        onClick={() => onOpen(a)}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
+        <span className="apl-no">{순번}</span>
+        <span className="apl-av">
+          {(a as any).user_avatar_url
+            ? <img src={(a as any).user_avatar_url} alt="" loading="lazy" />
+            : <span>{(a.user_name || "?").slice(0, 1)}</span>}
+        </span>
+        <span className="apl-who">
+          <b>{a.user_name}{나이성별 && ` (${나이성별})`}</b>
+          {지역 && <i>{지역}</i>}
+        </span>
+        {/* 사람을 고르게 하는 건 이름이 아니라 이 줄이다. */}
+        <span className="apl-mid">
+          <b>{(a as any).user_intro || 경력 || "\u2014"}</b>
+          {태그.length > 0 && <i>{태그.map((g) => `#${g}`).join(" ")}</i>}
+        </span>
+        <span className="apl-when">{날짜(a.applied_at)} 지원</span>
+        <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+          className="apl-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
+          {(a as any).scrapped
+            ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
+            : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
+        </button>
+        {/* 상태는 여기서 바꾸지 않는다 — 지원서를 읽고 그 창에서 정한다.
+            이 단추는 그 창을 여는 문이고, 아직 안 본 사람만 채워 눈에 건다. */}
+        <span className="apl-st">{안봄 ? "" : (a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status])}</span>
+        <button type="button" className={`apl-go${안봄 ? " key" : ""}`}
+          onClick={(e) => { e.stopPropagation(); onOpen(a); }}>
+          {안봄 ? "검토하기" : "다시 보기"}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={`tal-card${checked ? " on" : ""}`}>

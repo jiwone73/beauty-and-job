@@ -588,8 +588,8 @@ function CompanyJobsContent() {
                         <div className="co-jc-apps">
                           {(공고지원자[job.id] || [])
                             .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
-                            .map((a) => (
-                            <ApplicantCard key={a.id} a={a} showJob={false}
+                            .map((a, i) => (
+                            <ApplicantCard key={a.id} a={a} showJob={false} 순번={i + 1}
                               onOpen={(x) => set지원서(x.id)}
                               onToggleScrap={스크랩토글} onNote={메모저장} />
                           ))}
