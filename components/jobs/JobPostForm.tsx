@@ -958,6 +958,16 @@ export default function JobPostForm({
       .catch(() => {});
   }, [mode, companyProfile]);
 
+  // 담당자 정보는 매장정보에 있는 값을 그대로 가져온다. 비어 있을 때만 채운다 —
+  // 이 공고에 맞춰 다르게 적어 둔 것을 덮으면 안 된다.
+  useEffect(() => {
+    const c: any = companyProfile;
+    if (!c) return;
+    if (c.manager_name) setNmManagerName((v) => v || c.manager_name);
+    if (c.phone) setNmManagerPhone((v) => v || 전화꼴(String(c.phone)));
+    if (c.email) setNmContactEmail((v) => v || String(c.email));
+  }, [companyProfile]);
+
   // 매장정보를 새 탭에서 고치고 돌아왔을 때 그 자리가 옛 값이면 고친 보람이 없다.
   // 탭이 다시 보이면 한 번 더 읽는다.
   useEffect(() => {
@@ -2430,10 +2440,12 @@ export default function JobPostForm({
   const 쓸전화 = contactMethods.includes("문자") || contactMethods.includes("전화");
   const 쓸메일 = contactMethods.includes("이메일");
   const 쓸카톡 = contactMethods.includes("카카오톡");
-  const 낼담당 = { 이름: (쓸전화 || 쓸메일 || 쓸카톡) ? nmManagerName.trim() : "",
-                  전화: 쓸전화 ? nmManagerPhone.trim() : "",
-                  메일: 쓸메일 ? nmContactEmail.trim() : "",
-                  카톡: 쓸카톡 ? nmKakaoId.trim() : "" };
+  // 담당자 정보는 지원방법과 묶지 않는다. 전화로 받지 않아도 번호는 공고에
+  // 실린다 — 적어 둔 대로 나가는 것이 기업에게도 예측 가능하다.
+  const 낼담당 = { 이름: nmManagerName.trim(),
+                  전화: nmManagerPhone.trim(),
+                  메일: nmContactEmail.trim(),
+                  카톡: nmKakaoId.trim() };
   // 매장은 '회사'가 아니라 '매장' 기준으로 부른다. 기업회원 설정 화면
   // (company/dashboard/settings)과 같은 말을 쓴다 — 같은 값을 두 화면에서
   // 다르게 부르면 관리자도 매장도 헷갈린다.
@@ -3714,68 +3726,13 @@ export default function JobPostForm({
                        </div>
                      )}
                     </div>
-                    {/* 담당자 (우) — 고른 방법에 필요한 칸만 생성. 우측이 빌 때는 홈페이지 URL을 여기에 둔다 */}
-                    {(canName || canUrl) ? (
+                    {/* 담당자 정보는 아래 제 칸으로 나갔다. 여기에는 지원방법이
+                        부르는 홈페이지 URL 만 남는다. */}
+                    {canUrl && !urlOnLeft ? (
                       <div style={{ padding: "4px 0", minWidth: 0 }}>
-                        <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>
-                          {canName ? "담당자" : "홈페이지 URL"}
-                          {isNmAdminJob && canName && <span style={{ fontSize: 10, color: "#e3e3e6", marginLeft: 5 }}>관리자용</span>}
-                        </div>
-                        <div style={{ minWidth: 0 }}>
-                          {canUrl && !urlOnLeft && (
-                            <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
-                              placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
-                          )}
-                          {/* 이름·전화·메일을 한 줄에 세로바로 나눈다. 칸 이름은 자리글로 들어가
-                              제목 세 줄이 사라진다. 고른 방법에 따라 나오는 칸만 사이에 바를 넣는다. */}
-                          {canName && (() => {
-                            const 칸 = [
-                              { k: "name", ph: "이름", v: nmManagerName, set: setNmManagerName, im: undefined as ("numeric" | "email" | undefined), 폭: 66 },
-                              canPhone ? { k: "phone", ph: "전화", v: nmManagerPhone, set: (v: string) => setNmManagerPhone(전화꼴(v)), im: "numeric" as const, 폭: 122 } : null,
-                              canEmail ? { k: "mail", ph: "메일", v: nmContactEmail, set: setNmContactEmail, im: "email" as const, 폭: 168 } : null,
-                              canKakao ? { k: "kakao", ph: "카카오톡 ID", v: nmKakaoId, set: setNmKakaoId, im: undefined as ("numeric" | "email" | undefined), 폭: 150 } : null,
-                            ].filter(Boolean) as { k: string; ph: string; v: string; set: (v: string) => void; im?: "numeric" | "email"; 폭: number }[];
-                            // 이름·전화와 한 줄을 나눠 쓰면 메일에 200px도 안 남는다 —
-                            // 주소가 조금만 길어도 끝이 잘려 무엇을 적었는지 못 본다.
-                            // 셋 다 있을 때는 메일을 아랫줄로 내려 칸 폭을 다 준다.
-                            const 메일따로 = canPhone && (canEmail || canKakao);
-                            return (
-                              // 두 칸짜리 격자 — 첫 칸은 이름(제 폭만), 둘째 칸이 남는 자리를 다 쓴다.
-                              // 메일은 둘째 칸으로 내려 전화와 왼쪽 끝이 맞는다(칸 폭을 어림해
-                              // 들여쓰면 화면 폭에 따라 어긋난다). 칸 이름은 자리글로 들어가
-                              // 제목 세 줄이 사라진다.
-                              <div style={{ display: "grid", gridTemplateColumns: `${칸[0].폭}px minmax(0, 1fr)`,
-                                alignItems: "center", gap: "6px", padding: "3px 0", minWidth: 0 }}>
-                                {칸.map((f, i) => (
-                                  <span key={f.k} style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0,
-                                    ...((f.k === "mail" || f.k === "kakao") && 메일따로 ? { gridColumn: 2 } : null) }}>
-                                    {i > 0 && (
-                                      <span aria-hidden style={{ flexShrink: 0,
-                                        color: 메일따로 && (f.k === "mail" || f.k === "kakao") ? "transparent" : "#dcdce0" }}>|</span>
-                                    )}
-                                    {/* 크롬은 placeholder·name 에 든 낱말('전화'·'메일')로 칸을 알아보고
-                                        연락처 아이콘을 띄운다. 그래서 자리글을 속성에서 빼고 우리가 그린다.
-                                        name·autocomplete 도 뜻 없는 값으로 둔다. */}
-                                    <span style={{ position: "relative", display: "flex", flex: 1, minWidth: 0 }}>
-                                      <input value={f.v} inputMode={f.im} aria-label={`담당자 ${f.ph}`}
-                                        autoComplete={`bw-${i}`} name={`bw-${i}`} data-lpignore="true" data-1p-ignore
-                                        onChange={(e) => f.set(e.target.value)}
-                                        style={{ flex: 1, minWidth: 0, height: 22, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
-                                          background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
-                                      {!f.v && (
-                                        <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
-                                          fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
-                                      )}
-                                    </span>
-                                  </span>
-                                ))}
-                              </div>
-                            );
-                          })()}
-                          {isNmAdminJob && canName && (
-                            <div style={{ fontSize: 11, color: "#a8a8ad", marginTop: 3 }}>구직자에게는 노출되지 않아요 · 회원가입 유도용 내부 연락처</div>
-                          )}
-                        </div>
+                        <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>홈페이지 URL</div>
+                        <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
+                          placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
                       </div>
                     ) : <div />}
                   </div>
@@ -3807,6 +3764,40 @@ export default function JobPostForm({
 
 
 
+              </div>
+            </div>
+          </div>
+
+
+          {/* 담당자 정보 — 지원방법과 묶지 않는다. 매장정보에 적어 둔 연락처를
+              그대로 가져오고, 이 공고만 다르면 여기서 고친다. */}
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>담당자 정보</h2>
+          <div className="company-card" style={{ overflow: "visible" }}>
+            <div className="admin-form-body">
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))", gap: isMobile ? "0" : "6px 28px" }}>
+                {([
+                  { k: "name", 이름: "담당자", v: nmManagerName, set: (v: string) => setNmManagerName(v), ph: "이름", im: undefined },
+                  { k: "phone", 이름: "전화번호", v: nmManagerPhone, set: (v: string) => setNmManagerPhone(전화꼴(v)), ph: "010-0000-0000", im: "numeric" as const },
+                  { k: "mail", 이름: "이메일", v: nmContactEmail, set: (v: string) => setNmContactEmail(v), ph: "name@example.com", im: "email" as const },
+                  { k: "kakao", 이름: "카카오톡 ID", v: nmKakaoId, set: (v: string) => setNmKakaoId(v), ph: "아이디", im: undefined },
+                ] as { k: string; 이름: string; v: string; set: (v: string) => void; ph: string; im?: "numeric" | "email" }[]).map((f) => (
+                  <div key={f.k} style={{ padding: "4px 0", minWidth: 0 }}>
+                    <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>{f.이름}</div>
+                    {/* 크롬은 자리글·name 에 든 낱말로 칸을 알아보고 연락처 아이콘을 띄운다.
+                        그래서 자리글을 속성에서 빼고 우리가 그린다. */}
+                    <span style={{ position: "relative", display: "flex", minWidth: 0 }}>
+                      <input value={f.v} inputMode={f.im} aria-label={`담당자 ${f.이름}`}
+                        autoComplete={`bw-${f.k}`} name={`bw-${f.k}`} data-lpignore="true" data-1p-ignore
+                        onChange={(e) => f.set(e.target.value)}
+                        style={{ flex: 1, minWidth: 0, height: 24, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
+                          background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
+                      {!f.v && (
+                        <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
+                          fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
+                      )}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
