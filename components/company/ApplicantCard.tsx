@@ -109,12 +109,8 @@ export default function ApplicantCard({
           )}
         </span>
         <span className="apl-when">{날짜(a.applied_at)} 지원</span>
-        <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
-          className="apl-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
-          {(a as any).scrapped
-            ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
-            : <Bookmark size={17} style={{ color: "#c8c8c8" }} />}
-        </button>
+        {/* 스크랩은 두지 않는다 — 이미 우리 공고에 지원한 사람이라 담아 둘
+            이유가 없다. 담는 일은 인재검색에서 하는 것이다. */}
         <button type="button" className="apl-view"
           onClick={(e) => { e.stopPropagation(); onOpen(a); }}>열람</button>
         {/* 상태는 여기서 바꾸지 않는다 — 지원서를 읽고 그 창에서 정한다.

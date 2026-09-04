@@ -14666,7 +14666,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .apl-mid b { font-weight: 400; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apl-mid i { font-style: normal; font-size: 12.5px; color: #a0a0a6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apl-when { flex-shrink: 0; color: #b4b4b9; font-size: 12.5px; white-space: nowrap; }
-.apl-scrap { flex-shrink: 0; background: none; border: none; padding: 2px; cursor: pointer; display: flex; }
 .apl-view { flex-shrink: 0; background: none; border: none; padding: 2px 4px; font: inherit;
   font-size: 13px; color: #8a8a90; cursor: pointer; white-space: nowrap; }
 .apl-view:hover { color: var(--color-primary); }
