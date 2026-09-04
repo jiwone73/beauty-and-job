@@ -37,8 +37,8 @@ export function 이력서흠찾기(입력: {
     });
   }
 
-  // ── 학력 ── 본사만 필수. 살롱은 학교를 묻지 않는다.
-  if (본사냐 && educations.length === 0) 흠들.push({ 어디: "education", 말: "학력을 넣어 주세요." });
+  // ── 학력 ── 매장도 필수다. 전공만 본사에서 묻는다(고졸에게는 적을 것이 없다).
+  if (educations.length === 0) 흠들.push({ 어디: "education", 말: "학력을 넣어 주세요." });
   educations.forEach((e) => {
     if (빔(e.school)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학교명이 비었어요." });
     if (빔(e.status)) 흠들.push({ 어디: "education", 누구: e.id, 말: "졸업 상태를 골라 주세요." });

@@ -392,12 +392,7 @@ export default function ResumeEditor({
           <h2 className="resume-section-title">
             <GraduationCap size={16} className="resume-section-icon" />
             학력
-            {/* 매장 이력서에서는 학력을 묻지 않는다 — 미용실·네일숍이 보는 것은
-                학교가 아니라 경력과 작업물이고, 별표를 붙여 두면 채우지 못한
-                사람이 이력서를 미완성으로 여기고 만다. */}
-            {resumeType === "office" && (
-              <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
-            )}
+            <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
           </h2>
           {!빼기전용 && (<button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
             <Plus size={18} />
