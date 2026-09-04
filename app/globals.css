@@ -14644,6 +14644,19 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   margin: 0 -18px; padding: 0 14px 8px;
   background: #fafafb; border-top: 1px solid #f0f0f3; border-radius: 0 0 11px 11px;
 }
+/* 접는 띠 — 카드 폭을 다 쓰고 가운데에 화살표만. */
+.apl-fold {
+  display: flex; align-items: center; justify-content: center;
+  width: calc(100% + 36px); margin: 0 -18px; padding: 5px 0;
+  border: none; border-top: 1px solid #f0f0f3; background: #fcfcfd;
+  color: #a0a0a6; cursor: pointer;
+}
+.apl-fold:hover { background: #f4f4f6; color: #6b6570; }
+.apl-fold svg { transition: transform .15s; }
+.apl-fold.open svg { transform: rotate(180deg); }
+/* 접혀 있으면 카드의 마지막 줄이라 아래 모서리를 따라 둥글다. */
+.co-jc:not(:has(.co-jc-apps)) .apl-fold { border-radius: 0 0 11px 11px; }
+
 /* 지원자 목록 머리줄 — 몇 명인지, 어떤 차례인지, 찾는 자리. */
 .apl-bar { display: flex; align-items: center; gap: 8px; padding: 10px 6px 9px; border-bottom: 1px solid #ececf0; }
 .apl-bar-tag { font-size: 13px; color: #1a1a1a; background: #f0ecf6; border-radius: 6px; padding: 3px 9px; }

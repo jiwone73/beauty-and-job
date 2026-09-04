@@ -601,15 +601,21 @@ function CompanyJobsContent() {
                           onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
                           {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
                         </button>
-                        {/* 숫자가 곧 문이다 — 눌러서 그 자리에서 펼친다. */}
-                        <button type="button" className={`co-jc-nums${수 > 0 ? " open" : ""}`}
-                          disabled={수 === 0}
-                          onClick={() => 수 > 0 && 펼치기(job.id)}>
+                        <span className="co-jc-nums">
                           지원자 <b className={수 === 0 ? "zero" : ""}>{수}</b>
                           {안본 > 0 && <><i>·</i>미열람 <b>{안본}</b></>}
-                          {수 > 0 && <ChevronDown size={15} className={`co-jc-chev${열림 ? " up" : ""}`} />}
-                        </button>
+                        </span>
                       </div>
+
+                      {/* 카드 폭을 다 쓰는 띠 하나에 화살표만. 접는 자리는 넓어야
+                          누르기 쉽고, 가운데 화살표는 그 자체로 「여기가 접힌다」다. */}
+                      {수 > 0 && (
+                        <button type="button" className={`apl-fold${열림 ? " open" : ""}`}
+                          aria-label={열림 ? "지원자 접기" : "지원자 펼치기"}
+                          onClick={() => 펼치기(job.id)}>
+                          <ChevronDown size={17} />
+                        </button>
+                      )}
 
                       {열림 && (공고지원자[job.id] || []).length > 0 && (() => {
                         const 목록 = 지원자고르기(job.id);
