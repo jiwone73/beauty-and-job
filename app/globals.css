@@ -14644,6 +14644,26 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   margin: 0 -18px; padding: 0 14px 8px;
   background: #fafafb; border-top: 1px solid #f0f0f3; border-radius: 0 0 11px 11px;
 }
+/* 지원자 목록 머리줄 — 몇 명인지, 어떤 차례인지, 찾는 자리. */
+.apl-bar { display: flex; align-items: center; gap: 8px; padding: 10px 6px 9px; border-bottom: 1px solid #ececf0; }
+.apl-bar-tag { font-size: 13px; color: #1a1a1a; background: #f0ecf6; border-radius: 6px; padding: 3px 9px; }
+.apl-bar-n { font-size: 13px; color: #555; }
+.apl-bar-sep { color: #dcdce2; }
+.apl-bar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.apl-sel {
+  appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 13px; color: #555;
+  border: none; background: none; padding: 4px 18px 4px 2px; cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat; background-position: right 2px center;
+}
+.apl-sel:focus { outline: none; }
+.apl-find { display: flex; align-items: center; gap: 6px; min-width: 0; color: #b4b4b9;
+  background: #fff; border: 1px solid #ececf0; border-radius: 8px; padding: 5px 10px; }
+.apl-find input { border: none; outline: none; background: none; font-family: inherit; font-size: 13px;
+  color: #333; width: 190px; min-width: 0; }
+.apl-find input::placeholder { color: #c4c4c9; }
+@media (max-width: 1000px) { .apl-find input { width: 110px; } }
+.apl-none { padding: 18px 6px; font-size: 13px; color: #a0a0a6; }
 .apl-row {
   display: flex; align-items: center; gap: 12px; min-width: 0;
   padding: 11px 6px; cursor: pointer; font-size: 13.5px;

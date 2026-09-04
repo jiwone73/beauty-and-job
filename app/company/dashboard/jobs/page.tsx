@@ -139,6 +139,34 @@ function CompanyJobsContent() {
   const 펼치기 = (jobId: string) =>
     set접은공고((prev) => prev.includes(jobId) ? prev.filter((x) => x !== jobId) : [...prev, jobId]);
 
+  // 펼친 지원자 목록의 검색·정렬·상태. 공고마다 따로 기억한다 — 한 공고에서
+  // 걸어 둔 조건이 다른 공고에 따라가면 왜 안 보이는지 알 수 없다.
+  const [지원자찾기, set지원자찾기] = useState<Record<string, string>>({});
+  const [지원자정렬, set지원자정렬] = useState<Record<string, string>>({});
+  const [지원자상태, set지원자상태] = useState<Record<string, string>>({});
+  const 지원자고르기 = (jobId: string) => {
+    const 말 = (지원자찾기[jobId] || "").trim();
+    const 상태 = 지원자상태[jobId] || "전체";
+    const 차례 = 지원자정렬[jobId] || "최신";
+    let 목록 = (공고지원자[jobId] || [])
+      .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
+      .filter((a) => 상태 === "전체" || (상태 === "미열람" ? a.status === "APPLIED" : a.status === 상태));
+    if (말) {
+      const q = 말.toLowerCase();
+      목록 = 목록.filter((a) => [
+        a.user_name, (a as any).user_intro, (a as any).user_sub_job,
+        (a as any).user_main_job_group, ...((a as any).user_skill_areas || []),
+        ...((a as any).user_office_job_areas || []),
+      ].filter(Boolean).some((v: string) => String(v).toLowerCase().includes(q)));
+    }
+    return [...목록].sort((x, y) => {
+      const a1 = new Date(x.applied_at).getTime(), b1 = new Date(y.applied_at).getTime();
+      if (차례 === "오래된") return a1 - b1;
+      if (차례 === "미열람") return (x.status === "APPLIED" ? 0 : 1) - (y.status === "APPLIED" ? 0 : 1) || b1 - a1;
+      return b1 - a1;
+    });
+  };
+
   const 지원자바꾸기 = (id: string, 바꿈: Partial<CompanyApplication>) =>
     set공고지원자((prev) => {
       const out: Record<string, CompanyApplication[]> = {};
@@ -583,18 +611,48 @@ function CompanyJobsContent() {
                         </button>
                       </div>
 
-                      {열림 && (공고지원자[job.id] || [])
-                        .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED").length > 0 && (
+                      {열림 && (공고지원자[job.id] || []).length > 0 && (() => {
+                        const 목록 = 지원자고르기(job.id);
+                        return (
                         <div className="co-jc-apps">
-                          {(공고지원자[job.id] || [])
-                            .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
-                            .map((a, i) => (
+                          {/* 지원자가 여럿이면 훑는 것만으로는 못 찾는다 — 세는 자리,
+                              차례를 바꾸는 자리, 찾는 자리를 한 줄에 둔다. */}
+                          <div className="apl-bar">
+                            <span className="apl-bar-tag">지원자</span>
+                            <span className="apl-bar-n">총 {목록.length}명</span>
+                            <span className="apl-bar-sep">|</span>
+                            <select className="apl-sel" value={지원자정렬[job.id] || "최신"}
+                              onChange={(e) => set지원자정렬((p) => ({ ...p, [job.id]: e.target.value }))}>
+                              <option value="최신">최신 지원 순</option>
+                              <option value="오래된">오래된 순</option>
+                              <option value="미열람">미열람 먼저</option>
+                            </select>
+                            <span className="apl-bar-right">
+                              <span className="apl-find">
+                                <Search size={14} />
+                                <input value={지원자찾기[job.id] || ""} placeholder="지원자 검색 (이름, 경력, 키워드)"
+                                  onChange={(e) => set지원자찾기((p) => ({ ...p, [job.id]: e.target.value }))} />
+                              </span>
+                              <select className="apl-sel" value={지원자상태[job.id] || "전체"}
+                                onChange={(e) => set지원자상태((p) => ({ ...p, [job.id]: e.target.value }))}>
+                                <option value="전체">전체 상태</option>
+                                <option value="미열람">미열람</option>
+                                <option value="VIEWED">열람</option>
+                                <option value="INTERVIEW">면접</option>
+                                <option value="PASSED">최종합격</option>
+                                <option value="REJECTED">불합격</option>
+                              </select>
+                            </span>
+                          </div>
+                          {목록.map((a, i) => (
                             <ApplicantCard key={a.id} a={a} showJob={false} 순번={i + 1}
                               onOpen={(x) => set지원서(x.id)}
                               onToggleScrap={스크랩토글} onNote={메모저장} />
                           ))}
+                          {목록.length === 0 && <div className="apl-none">찾는 지원자가 없어요.</div>}
                         </div>
-                      )}
+                        );
+                      })()}
                     </>
                   );
                 })()}
