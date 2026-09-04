@@ -3245,7 +3245,9 @@ export default function JobPostForm({
               <div style={{ margin: "4px 0 20px" }}>
                 {[...new Set(categories.map(baseCat))].map((item) => {
                   // 맨 끝에 '무관' — 직급을 가리지 않고 뽑는 자리가 흔하다.
-                  const 단계들 = [...직군의경력단계(item), "경력무관"];
+                  // 매장·본사에 같은 이름의 대분류가 있다(리테일·의료미용·교육).
+                  // 어느 쪽 공고인지 함께 넘겨야 매장 공고에 본사 단계가 뜨지 않는다.
+                  const 단계들 = [...직군의경력단계(item, isOffice ? "OFFICE" : "STORE"), "경력무관"];
                   const 내행 = categories.filter((c) => baseCat(c) === item);
                   const 켜진단계 = 내행.map((c) => 행읽기(c).career).filter(Boolean);
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);

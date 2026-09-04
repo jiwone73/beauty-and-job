@@ -444,7 +444,10 @@ export function searchJobItems(
 export const 시술단계 = ["인턴", "신입", "경력"] as const;
 export const 헤어단계 = ["인턴", "신입", "경력", "실장"] as const;
 export const 관리단계 = ["신입", "매니저급", "점장급"] as const;
-export const 사무단계 = ["신입", "경력", "리드"] as const;
+// 본사는 자리가 아니라 연차로 뽑는다. 뷰티 본사 채용을 다루는 코공고도
+// 전부 「경력 3-5년」·「신입 ~ 경력 5년」으로 적지 직급으로 적지 않는다.
+// 「리드」는 IT 말이라 우리 공고 325건에서 한 번도 안 골렸다.
+export const 사무단계 = ["신입", "1~2년", "3~5년", "5~10년", "10년+"] as const;
 
 const 단계표: Record<string, readonly string[]> = {
   "헤어 & 바버": 헤어단계,
@@ -454,19 +457,31 @@ const 단계표: Record<string, readonly string[]> = {
   "두피 & 탈모": 시술단계,
   // 웨딩·이벤트는 수련 과정(인턴)이 따로 없다 — 바로 실무로 들어간다.
   "웨딩 & 이벤트": ["신입", "경력"],
-  "뷰티 리테일(매장)": 관리단계,
+  // 이름은 STORE_JOB_GROUPS 의 대분류와 한 글자도 다르면 안 된다 — 예전에는
+  // 「뷰티 리테일(매장)」·「의료미용(현장)」으로 적혀 있어 아무것도 못 찾고
+  // 매장 공고에 본사 단계(리드)가 떴다.
+  "뷰티 리테일 & 커머스": 관리단계,
   // 의료미용 현장은 소분류에 '상담실장·코디네이터'가 이미 있어 실장을 단계로 두지 않는다.
-  "의료미용(현장)": ["신입", "경력"],
+  "의료미용": ["신입", "경력"],
+  // 강사 자리에는 수련 과정(인턴)이 없다.
+  "교육·아카데미": ["신입", "경력"],
+  "반려동물 미용": 시술단계,
 };
 
-/** 대분류의 경력 단계. */
-export function 경력단계(대분류: string): readonly string[] {
+/** 대분류의 경력 단계. 본사는 직군을 가리지 않고 한 사다리를 쓴다.
+ *  대분류 이름이 매장·본사에 겹치는 것들이 있어(리테일·의료미용·교육) 어느
+ *  쪽을 묻는지 함께 받아야 한다. */
+export function 경력단계(대분류: string, jobType: JobType = "STORE"): readonly string[] {
+  if (jobType === "OFFICE") return 사무단계;
   return 단계표[대분류] || 사무단계;
 }
 
 /** 소분류 이름으로 찾을 때. */
-export function 직군의경력단계(item: string): readonly string[] {
-  const g = getGroupOfItem("STORE", item) || getGroupOfItem("OFFICE", item);
+export function 직군의경력단계(item: string, jobType?: JobType): readonly string[] {
+  if (jobType === "OFFICE") return 사무단계;
+  const g = jobType === "STORE"
+    ? getGroupOfItem("STORE", item)
+    : (getGroupOfItem("STORE", item) || getGroupOfItem("OFFICE", item));
   return (g && 단계표[g]) || 사무단계;
 }
 

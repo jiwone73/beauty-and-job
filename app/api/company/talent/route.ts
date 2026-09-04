@@ -106,7 +106,12 @@ export async function GET(req: NextRequest) {
   else if (careerFilter === "실장") careerClause = 직급으로("실장");
   else if (careerFilter === "매니저급") careerClause = 직급으로("매니저");
   else if (careerFilter === "점장급") careerClause = 직급으로("점장");
-  else if (careerFilter === "리드") careerClause = "AND (career_position ILIKE '%리드%' OR career_position ILIKE '%팀장%')";
+  // 본사는 연차로 뽑는다 — 근무 기간에서 셈한 값으로 가른다. 구간은 겹치지
+  // 않는다(예전 「1-3년」·「3-5년」은 3년에서 겹쳤다).
+  else if (careerFilter === "1~2년") careerClause = "AND career_years BETWEEN 1 AND 2";
+  else if (careerFilter === "3~5년") careerClause = "AND career_years BETWEEN 3 AND 5";
+  else if (careerFilter === "5~10년") careerClause = "AND career_years BETWEEN 6 AND 10";
+  else if (careerFilter === "10년+") careerClause = "AND career_years > 10";
 
   // 연령 (CTE 이후, 매장직)
   let ageClause = "";
