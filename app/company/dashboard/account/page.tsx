@@ -154,14 +154,14 @@ export default function CompanyAccountPage() {
                   </span>
                 </div>
                 <div className="admin-form-row" style={row}>
-                  <label className="admin-form-label" style={label}><UserRound size={15} className="admin-form-icon" />담당자</label>
+                  <label className="admin-form-label" style={label}><UserRound size={15} className="admin-form-icon" />담당자<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <div style={content}><InlineText value={managerName} placeholder="담당자명" onSave={saveManagerName} /></div>
                 </div>
               </div>
 
               <div className="admin-form-row-2col">
                 <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
-                  <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰</label>
+                  <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                     <span style={{ fontSize: 16, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
                     <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
@@ -171,7 +171,7 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row"
                   onClick={() => { setShowEmailModal(true); setEmailStep(1); setNewEmail(""); setEmailCode(""); setEmailMsg(""); }}
                   style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
-                  <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일</label>
+                  <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                     <span style={{ fontSize: 16, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
                     <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
