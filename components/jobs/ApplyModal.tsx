@@ -545,9 +545,9 @@ export default function ApplyModal({
         <div className="cv-header">
           <div style={{ width: 36 }} />
           <h2 className="cv-title">
-            {/* 「지원서 수정하기」로는 무엇을 고치는 자리인지 알 수 없었다.
-                여기서 고친 것은 이 공고에만 실린다는 것을 이름으로 알린다. */}
-            {step === "write" ? "지원하기" : step === "preview" ? "지원서 미리보기" : "이 공고에 맞게 수정"}
+            {/* 무엇을 고치는 자리인지는 여기로 오는 단추(공고에 맞게 수정하기)가
+                이미 말한다. 제목까지 같은 말을 되풀이하지 않는다. */}
+            {step === "write" ? "지원하기" : step === "preview" ? "지원서 미리보기" : "지원서 수정"}
           </h2>
           <button className="cv-close" onClick={onClose}>✕</button>
         </div>
