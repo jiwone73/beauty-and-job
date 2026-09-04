@@ -38,7 +38,7 @@ export function 이력서진행(입력: 진행입력): { 칸: 진행칸[]; 비�
   // 자격증과 학력은 뺄 수 없다 — 면허와 학교는 이 업계에서도 본다.
   const 접는칸 = 입력.살롱;
   const 칸: 진행칸[] = [
-    { id: "basic", label: "기본 정보", done: true },
+    { id: "basic", label: "내 정보", done: true },
     { id: "career", label: "경력", done: 채운경력 },
     { id: "education", label: "학력", done: 채운학력 },
     { id: "skill", label: "스킬", done: 입력.skills.length > 0 },

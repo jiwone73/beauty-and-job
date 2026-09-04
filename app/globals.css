@@ -1801,11 +1801,10 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-sidebar-title { width: 100%; font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin: 0; padding: 0; }
 .resume-sidebar-item { background: #f7f7f8; border: 1px solid var(--color-border); border-radius: 100px; padding: 6px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .resume-sidebar-item:hover { background: #efeff1; color: var(--color-text); }
-/* "이력서에서 완성된 건 흐린 그레이로 표시해줘" — "내말은 사이드메뉴에
-   완성도" 로 다시 짚었다. 다 채운 칸은 옅게 물러나고, 아직 안 채운
-   칸(○)만 또렷하게 남아야 뭘 더 채워야 하는지 한눈에 보인다. */
-.resume-sidebar-item.done { color: #b4b4b9; }
-.resume-sidebar-item.done .resume-sidebar-check { color: #b4b4b9; }
+/* 다 채운 칸이 보라로 든다(사람인과 같은 방식). 표시는 ✓ 하나로 두고 색만
+   가르는 것이라, 아직 안 한 칸은 같은 자리에 옅은 체크로 남는다. */
+.resume-sidebar-item.done { color: var(--color-text); }
+.resume-sidebar-item.done .resume-sidebar-check { color: var(--color-primary); }
 .resume-sidebar-item.active { background: var(--color-primary-soft); color: var(--color-primary); font-weight: 600; }
 .resume-nav { padding: 0 24px; }
 @media (max-width: 768px) { .resume-layout { padding: 0; } }
@@ -11729,11 +11728,10 @@ div:has(> table.admin-table),
   margin-top: 8px;
 }
 .resume-sidebar-check {
-  display: inline-block;
+  display: inline-flex; align-items: center;
   width: 16px;
   margin-right: 6px;
   color: #582681;
-  font-weight: 700;
 }
 /* 모바일에서 프로필/이력서 페이지 좌우 여백 축소 */
 @media (max-width: 768px) {

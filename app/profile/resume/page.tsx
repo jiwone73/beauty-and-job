@@ -9,7 +9,7 @@ import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import CoverLetterTools from "@/components/profile/CoverLetterTools";
 import { 이력서진행 } from "@/lib/resumeProgress";
 import { AlertCircle } from "lucide-react";
-import { Target, Briefcase, ChevronDown, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
+import { Target, Briefcase, ChevronDown, CheckCircle2, Circle, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -495,7 +495,11 @@ function ResumePageContent() {
                       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
                   >
-                    <span className="resume-sidebar-check">{sec.done ? "✓" : "○"}</span>
+                    {/* 한 칸과 안 한 칸이 같은 동그라미 위에 선다. 글자 ✓ 와
+                        동그라미는 크기도 굵기도 달라 두 줄이 서로 어긋났다. */}
+                    <span className="resume-sidebar-check">
+                      {sec.done ? <CheckCircle2 size={15} /> : <Circle size={15} />}
+                    </span>
                     {sec.label}
                   </button>
                 ))}
