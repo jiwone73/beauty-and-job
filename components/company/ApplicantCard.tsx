@@ -112,13 +112,11 @@ export default function ApplicantCard({
         <span className="apl-when">{날짜(a.applied_at)} 지원</span>
         {/* 스크랩은 두지 않는다 — 이미 우리 공고에 지원한 사람이라 담아 둘
             이유가 없다. 담는 일은 인재검색에서 하는 것이다. */}
-        <button type="button" className="apl-view"
-          onClick={(e) => { e.stopPropagation(); onOpen(a); }}>열람</button>
         {/* 상태는 여기서 바꾸지 않는다 — 지원서를 읽고 그 창에서 정한다.
             이 단추는 그 창을 여는 문이고, 아직 안 본 사람만 채워 눈에 건다. */}
         <button type="button" className={`apl-go${안봄 ? " key" : ""}`}
           onClick={(e) => { e.stopPropagation(); onOpen(a); }}>
-          {안봄 ? "검토하기" : (a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status])}
+          {안봄 ? "검토하기" : a.status === "WITHDRAWN" ? "지원취소" : "지원서 보기"}
         </button>
       </div>
     );

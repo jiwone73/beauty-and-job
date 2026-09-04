@@ -14652,8 +14652,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   color: #a0a0a6; cursor: pointer;
 }
 .apl-fold:hover { background: #f4f4f6; color: #6b6570; }
-.apl-fold svg { transition: transform .15s; }
-.apl-fold.open svg { transform: rotate(180deg); }
+/* 펼쳐져 있으면 아래를 가리킨다 — 화살표가 내용이 있는 쪽을 가리키는 것이
+   시안의 규칙이다. 접혀 있으면 위를 가리켜 「여기 뭔가 있다」를 알린다. */
+.apl-fold svg { transition: transform .15s; transform: rotate(180deg); }
+.apl-fold.open svg { transform: none; }
 /* 접혀 있으면 카드의 마지막 줄이라 아래 모서리를 따라 둥글다. */
 .co-jc:not(:has(.co-jc-apps)) .apl-fold { border-radius: 0 0 11px 11px; }
 
