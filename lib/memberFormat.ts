@@ -37,7 +37,12 @@ export function careerLabel(careerType: string | null) {
 
 export function calcCareerYears(startDate: string | null): string | null {
   if (!startDate) return null;
-  const start = new Date(startDate);
+  // 이력서는 「2023.04」로 적는다 — new Date() 가 못 읽어 NaN 년이 나갔다.
+  const m = String(startDate).match(/(\d{4})[.\-/]?\s*(\d{1,2})?/);
+  const start = m
+    ? new Date(Number(m[1]), m[2] ? Number(m[2]) - 1 : 0, 1)
+    : new Date(startDate);
+  if (isNaN(start.getTime())) return null;
   const now = new Date();
   const months =
     (now.getFullYear() - start.getFullYear()) * 12 +

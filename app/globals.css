@@ -14647,8 +14647,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 접는 띠 — 카드 폭을 다 쓰고 가운데에 화살표만. */
 /* 공고 관리 — 왼쪽에 이름만, 오른쪽에 고른 공고와 그 지원자. */
-.co-side { display: flex; flex-direction: column; gap: 10px; }
-.co-side .admin-search-wrap { border-color: #ececf0; }
+.co-side { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* 검색칸이 사이드 폭을 넘어 세로 구분선을 밀고 나갔다. */
+.co-side .admin-search-wrap { width: 100%; min-width: 0; box-sizing: border-box; border-color: #ececf0; }
+.co-side .admin-search-input { width: 100%; min-width: 0; }
 .co-side-find { margin: 0; }
 .co-side-sort { display: flex; gap: 10px; padding: 0 2px; }
 .co-side-tabs { display: flex; border-bottom: 1px solid #ececf0; margin-top: 2px; }
@@ -14673,12 +14675,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 아직 안 본 지원자가 있는 공고에만 점 하나. */
 .co-side-dot { position: absolute; right: 9px; top: 14px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
 
-.co-pane { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.co-pane { min-width: 0; display: flex; flex-direction: column; gap: 0; }
 /* 테두리를 두르지 않는다 — 카드가 셋(공고·머리줄·지원자)이면 상자가 겹쳐
    보인다. 흰 바탕과 여백만으로 갈린다. */
-.co-pane-card { background: #fff; border-radius: 12px; padding: 20px 22px; }
+/* 카드 밑에 진한 선 하나 — 여기서 공고가 끝나고 지원자가 시작한다. */
+.co-pane-card { background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 16px;
+  border-bottom: 1px solid #1a1a1a; }
 .co-pane-head { display: flex; align-items: flex-start; gap: 14px; }
-.co-pane-term { font-size: 13px; color: #a0a0a6; }
+.co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #a0a0a6; }
 .co-pane-title { margin: 4px 0 0; font-size: 21px; font-weight: 400; color: #1a1a1a; line-height: 1.35; }
 .co-pane-head .co-jc-acts { margin-left: auto; flex-shrink: 0; }
 .co-pane-pos { display: flex; align-items: baseline; gap: 14px; margin-top: 8px; }
@@ -14691,7 +14695,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .co-pane-view:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 지원자 목록 — 머리줄과 카드가 한 판으로 붙는다. */
-.co-pane .apl-bar { background: #fff; border: none; border-radius: 12px 12px 0 0; margin: 0; }
+.co-pane .apl-bar { background: #fff; border: none; border-radius: 0; margin: 0; padding: 12px 22px; }
 .co-pane-apps { background: #fff; border-radius: 0 0 12px 12px;
   padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 

@@ -217,12 +217,7 @@ function CompanyJobsContent() {
       STATUS_LABEL[j.status] === statusFilter;
     return matchGroup && matchSearch && matchStatus;
   }).sort((a, b) => {
-    // 마감일순: 임박한 것이 먼저. 상시(마감일 없음)는 급할 게 없어 맨 뒤로 보낸다.
-    if (sortBy === "마감일순") {
-      const av = a.deadline ? new Date(a.deadline).getTime() : Infinity;
-      const bv = b.deadline ? new Date(b.deadline).getTime() : Infinity;
-      if (av !== bv) return av - bv;
-    }
+    // 늘 최신이 위다 — 진행중이든 마감이든 방금 올린 것부터 본다.
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
@@ -345,22 +340,6 @@ function CompanyJobsContent() {
         <input className="admin-search-input" placeholder="공고명 검색"
           value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
-      {(isBoth || true) && (
-        <div className="co-side-sort">
-          {isBoth && (
-            <select className="apl-sel" value={jobGroupFilter}
-              onChange={(e) => setJobGroupFilter(e.target.value)}>
-              <option value="전체">전체 유형</option>
-              <option value="매장">매장</option>
-              <option value="본사">본사</option>
-            </select>
-          )}
-          <select className="apl-sel" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="등록일순">등록일순</option>
-            <option value="마감일순">마감일순</option>
-          </select>
-        </div>
-      )}
       <div className="co-side-tabs">
         {(["진행중", "마감"] as const).map((t) => (
           <button key={t} type="button"
@@ -581,6 +560,13 @@ function CompanyJobsContent() {
               const job = 지금공고;
               const closed = isJobClosed(job);
               const draft = job.status === "DRAFT";
+              const dl = daysLeft(job.deadline);
+              const 임박 = !closed && !draft && dl !== null && dl <= 7;
+              const 상태 =
+                draft ? { 글: "임시저장", 결: "draft" }
+                : closed ? { 글: "마감", 결: "closed" }
+                : 임박 ? { 글: dl === 0 ? "오늘 마감" : `D-${dl}`, 결: "soon" }
+                : { 글: "진행중", 결: "live" };
               const 수 = job.application_count ?? 0;
               const 안본 = job.unviewed_count ?? 0;
               const 기간 = job.deadline
@@ -593,7 +579,10 @@ function CompanyJobsContent() {
                   <div className="co-pane-card">
                     <div className="co-pane-head">
                       <div style={{ minWidth: 0 }}>
-                        <div className="co-pane-term">{기간}</div>
+                        <div className="co-pane-term">
+                          <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
+                          {기간}
+                        </div>
                         <h2 className="co-pane-title">{job.title}</h2>
                       </div>
                       <div className="co-jc-acts">
@@ -630,12 +619,20 @@ function CompanyJobsContent() {
                           // 그런 공고가 더 많다.
                           const 경력글 = (v: string) =>
                             v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
+                          // 공고 미리보기의 모집부문 표와 같은 차례로 적는다 —
+                          // 모집분야 · 인원 · 근무지 · 고용형태 · 성별 · 경력/직책 ·
+                          // 학력 · 근무요일/시간 · 급여.
                           const 줄들 = 부문.length > 0
                             ? 부문.map((p: any) => [
                                 p.category || p.group,
+                                p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : null,
+                                p.location,
                                 p.employment || (job as any).employment_type,
+                                p.gender,
                                 p.career,
-                                p.headcount ? `${p.headcount}명` : null,
+                                p.education,
+                                [p.workDays, p.workTime].filter(Boolean).join(" "),
+                                p.salary,
                               ].filter(Boolean).join("  |  "))
                             : [[
                                 ((job as any).categories || []).join(" · "),
