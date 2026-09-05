@@ -15081,3 +15081,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane .apl-bar { padding: 16px 22px 8px; }
 /* 판 안의 지원자는 카드가 아니라 줄이다 — 카드 안에 카드를 두지 않는다. */
 .co-pane-apps .tal-card { background: transparent; box-shadow: none; border-color: var(--card-line); }
+/* 판 안에서도 고른 것이 보여야 한다 — 더 센 규칙이 보라 테두리를 덮고 있었다. */
+.co-pane-apps .tal-card:hover { border-color: var(--color-primary); }
+/* 여는 자리는 글자뿐. 상자도 밑줄도 없이 제 글자 그대로 선다. */
+.tal-open {
+  border: none; background: none; padding: 0; margin: 0; font: inherit; color: inherit;
+  text-align: left; cursor: pointer; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tal-open:hover { color: var(--color-primary); }

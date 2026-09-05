@@ -135,18 +135,19 @@ export default function ApplicantCard({
             : <span>{(a.user_name || "?").slice(0, 1)}</span>}
         </div>
 
-        <div className="tal-main" role="button" tabIndex={0} title="지원서 보기"
-          onClick={() => onOpen(a)}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
-          <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
+        {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
+            지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다. */}
+        <div className="tal-main">
+          <button type="button" className="tal-name tal-open" title="지원서 보기"
+            onClick={() => onOpen(a)}>{(a as any).user_intro || a.user_name}</button>
           {/* 이름 줄 오른쪽에 상태값, 지역 줄 오른쪽에 지원일. 둘 다 태그와
               같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들이다. */}
           <div className="tal-who tal-line2">
-            <span>
+            <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               {(a as any).user_intro ? a.user_name : ""}
               {(a as any).user_intro && 나이성별 ? " " : ""}
               {나이성별 && `(${나이성별})`}
-            </span>
+            </button>
             <span className="tal-st-r">
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
             </span>
