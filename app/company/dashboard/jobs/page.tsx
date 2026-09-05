@@ -336,8 +336,44 @@ function CompanyJobsContent() {
     { label: "미열람 지원자", value: String(cntUnviewed), status: "미열람" },
   ];
 
+  // 왼쪽 사이드는 이 화면이 직접 그린다 — 고정 메뉴(공고·지원자 관리 / 공고 등록)는
+  // 등록이 머리줄에 이미 있고, 관리 화면은 지금 보고 있는 이 화면이라 같은 말이었다.
+  const 사이드 = isMobile ? null : (
+    <div className="co-side">
+      <div className="admin-search-wrap co-side-find">
+        <Search size={16} className="admin-search-icon" />
+        <input className="admin-search-input" placeholder="공고명 검색"
+          value={search} onChange={(e) => setSearch(e.target.value)} />
+      </div>
+      <div className="co-side-tabs">
+        {(["진행중", "마감"] as const).map((t) => (
+          <button key={t} type="button"
+            className={`co-side-tab${statusFilter === t ? " on" : ""}`}
+            onClick={() => setStatusFilter(t)}>
+            {t}<span>{t === "진행중" ? counts.진행중 : counts.마감}</span>
+          </button>
+        ))}
+      </div>
+      <div className="co-side-list">
+        {filtered.length === 0 && <p className="co-side-none">공고가 없어요.</p>}
+        {filtered.map((job) => {
+          const 안본 = job.unviewed_count ?? 0;
+          return (
+            <button key={job.id} type="button"
+              className={`co-side-item${고른공고 === job.id ? " on" : ""}`}
+              onClick={() => set고른공고(job.id)}>
+              {/* 이름만 둔다 — 조건과 성적은 오른쪽 카드가 말한다. */}
+              <span className="co-side-t">{job.title}</span>
+              {안본 > 0 && <span className="co-side-dot" title={`미열람 ${안본}`} />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
-    <CompanyLayout activePage="jobs">
+    <CompanyLayout activePage="jobs" side={사이드}>
       <div className="co-joblist" style={{ width: isMobile ? "100%" : "100%", maxWidth: "100%" }}>
       {/* 상태 고르개 (데스크톱만).
           누르면 걸리는 필터인데 네모 상자 넷으로 그려 두니 그냥 숫자판처럼 보였다.
@@ -541,35 +577,6 @@ function CompanyJobsContent() {
           여럿이면 접었다 폈다 하며 오르내려야 했고, 위 탭이 왼쪽 목록과 같은
           말을 두 번 했다. */}
       {!loading && !isMobile && (
-        <div className="co-two">
-          <aside className="co-side">
-            <div className="co-side-tabs">
-              {(["진행중", "마감"] as const).map((t) => (
-                <button key={t} type="button"
-                  className={`co-side-tab${statusFilter === t ? " on" : ""}`}
-                  onClick={() => setStatusFilter(t)}>
-                  {t}<span>{t === "진행중" ? counts.진행중 : counts.마감}</span>
-                </button>
-              ))}
-            </div>
-            <div className="co-side-list">
-              {filtered.length === 0 && <p className="co-side-none">공고가 없어요.</p>}
-              {filtered.map((job) => {
-                const 안본 = job.unviewed_count ?? 0;
-                return (
-                  <button key={job.id} type="button"
-                    className={`co-side-item${고른공고 === job.id ? " on" : ""}`}
-                    onClick={() => set고른공고(job.id)}>
-                    {/* 이름만 둔다 — 조건과 성적은 오른쪽 카드가 말한다. 두 줄까지
-                        보이고 넘치면 줄인다. */}
-                    <span className="co-side-t">{job.title}</span>
-                    {안본 > 0 && <span className="co-side-dot" title={`미열람 ${안본}`} />}
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
-
           <section className="co-pane">
             {!지금공고 ? (
               <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
@@ -582,8 +589,8 @@ function CompanyJobsContent() {
               const 수 = job.application_count ?? 0;
               const 안본 = job.unviewed_count ?? 0;
               const 기간 = job.deadline
-                ? `${md(job.created_at)} 등록 ~ ${md(job.deadline)} 마감`
-                : `${md(job.created_at)} 등록 ~ 상시`;
+                ? `${md(job.created_at)} ~ ${md(job.deadline)}`
+                : `${md(job.created_at)} ~ 상시`;
               const 부문 = ((job as any).positions || []) as any[];
               const 목록 = 지원자고르기(job.id);
               return (
@@ -634,8 +641,8 @@ function CompanyJobsContent() {
                       </div>
                       {!draft && (
                         <button type="button" className="co-pane-view"
-                          onClick={() => window.open(`/jobs/${job.id}`, "_blank", "noopener")}>
-                          공고 보기 <ChevronRight size={15} />
+                          onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                          재등록 <ChevronRight size={15} />
                         </button>
                       )}
                     </div>
@@ -681,7 +688,6 @@ function CompanyJobsContent() {
               );
             })()}
           </section>
-        </div>
       )}
       </div>
 
