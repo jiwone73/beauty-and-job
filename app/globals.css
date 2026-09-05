@@ -14481,7 +14481,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .tal-sub { font-size: 12.5px; color: #a0a0a6; }
 .tal-name {
-  display: block; background: none; border: none; padding: 0; font-family: inherit;
+  display: inline-block; background: none; border: none; padding: 0; font-family: inherit;
   font-size: 17px; color: var(--color-text-strong); cursor: pointer; margin-bottom: 4px; text-align: left;
   text-decoration: underline; text-decoration-color: #d8d3de;
   text-decoration-thickness: 1px; text-underline-offset: 3px;
@@ -14571,7 +14571,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-main { cursor: pointer; }
 .tal-main:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 6px; }
 .tal-name { font-size: var(--card-title); color: var(--color-text-strong); margin-bottom: 6px; text-decoration: none;
-  display: block; line-height: 1.45; }
+  display: inline-block; max-width: 100%; line-height: 1.45; }
 /* 여는 자리는 글자뿐이라, 글자에 손이 닿았을 때만 색이 든다. 예전에는 줄
    전체(.tal-main)에 손만 올려도 이름이 보라로 들어 눌리는 자리로 보였다. */
 .tal-name:hover, .tal-open:hover { color: var(--color-primary); text-decoration: underline;
@@ -15085,12 +15085,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane-apps .tal-card { background: var(--card-bg); box-shadow: var(--card-shadow); border-color: var(--card-line); }
 /* 판 안에서도 고른 것이 보여야 한다 — 더 센 규칙이 보라 테두리를 덮고 있었다. */
 .co-pane-apps .tal-card:hover { border-color: var(--color-primary); }
-/* 여는 자리는 글자뿐. 상자도 밑줄도 없이 제 글자 그대로 선다. */
+/* 여는 자리는 글자뿐. 상자도 밑줄도 없이 제 글자 그대로 선다.
+   inline-block 이라야 글자 너비만 차지한다 — block 이면 줄 전체가 단추가 되어
+   글자 오른쪽 빈자리를 눌러도 열렸다. */
 .tal-open {
+  display: inline-block; width: auto; max-width: 100%;
   border: none; background: none; padding: 0; margin: 0; font: inherit; color: inherit;
-  text-align: left; cursor: pointer; max-width: 100%;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-align: left; cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top;
 }
+/* 누를 수 없는 자리에는 손가락을 띄우지 않는다. */
+.tal-main, .tal-who, .tal-card { cursor: default; }
 .tal-open:hover { color: var(--color-primary); }
 
 
