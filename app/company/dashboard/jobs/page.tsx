@@ -581,43 +581,24 @@ function CompanyJobsContent() {
                         </div>
                         <h2 className="co-pane-title">{job.title}</h2>
                       </div>
-                      <div className="co-jc-acts">
-                        {draft ? (
-                          <>
-                            <button className="co-jc-act key"
-                              onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
-                            <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
-                          </>
-                        ) : closed ? (
-                          <>
-                            <button className="co-jc-act key"
-                              onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>복사해서 다시 올리기</button>
-                            <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
-                          </>
-                        ) : (
-                          <>
-                            <button className="co-jc-act"
-                              onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
-                            <button className="co-jc-act" onClick={() => handleClose(job.id)}>마감</button>
-                          </>
-                        )}
-                      </div>
+                      {/* 재등록은 공고 이름과 같은 줄 — 이 공고를 다시 쓰는 일이라
+                          이름 옆이 제 자리다. */}
+                      {!draft && (
+                        <button type="button" className="co-pane-view"
+                          onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                          재등록 <ChevronRight size={15} />
+                        </button>
+                      )}
                     </div>
 
-                    {/* 공고명 밑 한 줄 — 모집분야 · 고용형태 · 경력/직급. 여럿이면
-                        한 줄씩. 주소는 빼고(왼쪽에서 고른 공고라 어디인지는 이미
-                        안다) 오른쪽 끝에 재등록만 둔다. */}
+                    {/* 조건 줄 — 공고 미리보기의 모집부문 표와 같은 차례.
+                        오른쪽 끝에 고치고 마감하는 길을 글자로 둔다(단추 상자를
+                        두면 카드 안에 상자가 셋이 된다). */}
                     <div className="co-pane-pos">
                       <div style={{ minWidth: 0 }}>
                         {(() => {
-                          // 모집부문 표를 쓴 공고는 부문마다 한 줄. 표 없이 올린
-                          // 옛 공고는 공고 전체의 값으로 한 줄을 만든다 — 아직
-                          // 그런 공고가 더 많다.
                           const 경력글 = (v: string) =>
                             v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
-                          // 공고 미리보기의 모집부문 표와 같은 차례로 적는다 —
-                          // 모집분야 · 인원 · 근무지 · 고용형태 · 성별 · 경력/직책 ·
-                          // 학력 · 근무요일/시간 · 급여.
                           const 줄들 = 부문.length > 0
                             ? 부문.map((p: any) => [
                                 p.category || p.group,
@@ -641,12 +622,23 @@ function CompanyJobsContent() {
                           ));
                         })()}
                       </div>
-                      {!draft && (
-                        <button type="button" className="co-pane-view"
-                          onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                          재등록 <ChevronRight size={15} />
-                        </button>
-                      )}
+                      <span className="co-pane-acts">
+                        {draft ? (
+                          <>
+                            <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
+                            <i>|</i>
+                            <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
+                          </>
+                        ) : closed ? (
+                          <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
+                        ) : (
+                          <>
+                            <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
+                            <i>|</i>
+                            <button type="button" onClick={() => handleClose(job.id)}>마감</button>
+                          </>
+                        )}
+                      </span>
                     </div>
                   </div>
 
@@ -654,7 +646,7 @@ function CompanyJobsContent() {
                       뺀다: 한 공고의 지원자는 몇 명뿐이라 훑는 것이 빠르고,
                       차례는 늘 최근 지원이 위다. */}
                   <div className="apl-bar">
-                    <span className="apl-bar-n">지원자 총 {목록.length}명</span>
+                    <span className="apl-bar-n"><em>지원자</em> 총 {목록.length}명</span>
                     {안본 > 0 && <><span className="apl-bar-sep">|</span><span className="apl-bar-n">미열람 {안본}</span></>}
                     <span className="apl-bar-right">
                       <select className="apl-state" value={지원자상태[job.id] || "전체"}

@@ -14679,12 +14679,18 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 테두리를 두르지 않는다 — 카드가 셋(공고·머리줄·지원자)이면 상자가 겹쳐
    보인다. 흰 바탕과 여백만으로 갈린다. */
 /* 카드 밑에 진한 선 하나 — 여기서 공고가 끝나고 지원자가 시작한다. */
-.co-pane-card { background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 26px;
+.co-pane-card { background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 22px;
   border-bottom: 1px solid #1a1a1a; }
 .co-pane-head { display: flex; align-items: flex-start; gap: 14px; }
 .co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #a0a0a6; }
 .co-pane-title { margin: 4px 0 0; font-size: 21px; font-weight: 400; color: #1a1a1a; line-height: 1.35; }
-.co-pane-head .co-jc-acts { margin-left: auto; flex-shrink: 0; }
+.co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
+/* 고치고 마감하는 길 — 상자 없이 글자로. */
+.co-pane-acts { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }
+.co-pane-acts button { border: none; background: none; padding: 2px; font-family: inherit;
+  font-size: 13.5px; color: #555; cursor: pointer; }
+.co-pane-acts button:hover { color: var(--color-primary); }
+.co-pane-acts i { font-style: normal; color: #dcdce2; }
 .co-pane-pos { display: flex; align-items: baseline; gap: 14px; margin-top: 8px; }
 .co-pane-posline { font-size: 14px; color: #555; line-height: 1.8; }
 /* 테두리 없이 글자만 — 카드 안에 단추가 셋(수정·마감·재등록)이면 시끄럽다. */
@@ -14695,7 +14701,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .co-pane-view:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 지원자 목록 — 머리줄과 카드가 한 판으로 붙는다. */
-.co-pane .apl-bar { background: #fff; border: none; border-radius: 0; margin: 0; padding: 14px 22px 6px; }
+/* 선 아래가 위보다 넓어야 지원자 쪽이 새로 시작하는 판으로 읽힌다. */
+.co-pane .apl-bar { background: #fff; border: none; border-radius: 0; margin: 0; padding: 32px 22px 8px; }
 .co-pane-apps { background: #fff; border-radius: 0 0 12px 12px;
   padding: 0 10px 10px; display: flex; flex-direction: column; gap: 8px; }
 
@@ -14738,6 +14745,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 10px 18px; background: #fff; border-bottom: 1px solid #ececf0;
 }
 .apl-bar-n { font-size: 13.5px; color: #1a1a1a; }
+.apl-bar-n em { font-style: normal; color: #8a8a90; }
 .apl-bar-sep { color: #dcdce2; }
 .apl-bar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .apl-sel {
