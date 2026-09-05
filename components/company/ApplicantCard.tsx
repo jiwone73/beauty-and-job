@@ -139,17 +139,16 @@ export default function ApplicantCard({
           onClick={() => onOpen(a)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
           <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
-          <div className="tal-who">
-            {(a as any).user_intro ? a.user_name : ""}
-            {(a as any).user_intro && 나이성별 ? " " : ""}
-            {나이성별 && `(${나이성별})`}
-            {경력 && <>{((a as any).user_intro || 나이성별) ? " · " : ""}{경력}</>}
-          </div>
-          {/* 지역과 지원일을 한 줄에 — 왼쪽은 어디 사는지, 오른쪽은 언제 냈는지. */}
+          {/* 이름 줄 오른쪽 끝에 지원일 — 언제 왔는지는 누구인지 바로 옆이다. */}
           <div className="tal-who tal-line2">
-            <span>{지역}</span>
+            <span>
+              {(a as any).user_intro ? a.user_name : ""}
+              {(a as any).user_intro && 나이성별 ? " " : ""}
+              {나이성별 && `(${나이성별})`}
+            </span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
+          <div className="tal-who">{지역}</div>
         </div>
 
         <div className="tal-acts">
@@ -171,7 +170,9 @@ export default function ApplicantCard({
 
       <div className="tal-foot">
         <span className="tal-tags">
+          {/* 직군과 경력 — 훑으면서 고르는 값이라 구분선 아래 왼쪽에 둔다. */}
           {태그.length > 0 && <span>{태그.map((g) => `#${g}`).join(" ")}</span>}
+          {경력 && <span>#{경력}</span>}
           {showJob && (
             <span className="tal-job">
               {a.job_title}
