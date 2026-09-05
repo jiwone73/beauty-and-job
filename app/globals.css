@@ -20,6 +20,11 @@
   --color-border: #ececec;
   --color-border-input: #e5e5e5;
   --color-bg: #ffffff;
+  /* 카드는 바탕보다 아주 조금 따뜻하다. 흰 종이 위에 놓인 크림빛 종이처럼 —
+     테두리를 진하게 긋지 않고도 카드가 떠 보인다. 그림자는 그 위에 얹는다. */
+  --card-bg: #fffefc;
+  --card-line: #efefef;
+  --card-shadow: 0 1px 2px rgba(30, 25, 20, .05), 0 4px 14px rgba(30, 25, 20, .06);
   --color-bg-soft: #f7f7f8;
   --color-dark: #1f2024;
   --color-error: #d4537e;
@@ -14985,3 +14990,31 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 화면 제목 공용 — 새 화면은 이 class 만 쓰면 된다. */
 .page-title { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 8px; }
+
+
+/* ── 카드의 결 ──────────────────────────────────────────────────────────
+   바탕은 흰색, 카드는 크림빛에 옅은 그림자. 화면마다 따로 정하지 않고
+   여기 한 곳에서 준다 — 새 카드를 만들면 이 목록에 이름만 더하면 된다. */
+.company-card,
+.co-jc,
+.tal-card,
+.jobcard,
+.resume-section,
+.pf-set-one,
+.jobs-side-box,
+.tres-sheet,
+.cs-ad,
+.cs-why-c,
+.co-pane {
+  background: var(--card-bg);
+  border-color: var(--card-line);
+  box-shadow: var(--card-shadow);
+}
+/* 공고 관리의 오른쪽 판은 셋(공고·머리줄·목록)이 이어 붙어 한 카드다.
+   그림자는 바깥 한 겹만 지고, 안쪽은 바탕을 물려받는다. */
+.co-pane { border-radius: 12px; overflow: hidden; }
+.co-pane-card,
+.co-pane .apl-bar,
+.co-pane-apps { background: transparent; }
+/* 판 안의 지원자는 카드가 아니라 줄이다 — 카드 안에 카드를 두지 않는다. */
+.co-pane-apps .tal-card { background: transparent; box-shadow: none; border-color: var(--card-line); }
