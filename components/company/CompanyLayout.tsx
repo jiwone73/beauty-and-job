@@ -405,7 +405,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
            28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
         .co-set-main { flex: 1; min-width: 0;
           border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
-        .co-set-title { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+        .co-set-title { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 12px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.

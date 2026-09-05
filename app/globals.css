@@ -14679,12 +14679,21 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 테두리를 두르지 않는다 — 카드가 셋(공고·머리줄·지원자)이면 상자가 겹쳐
    보인다. 흰 바탕과 여백만으로 갈린다. */
 /* 카드 밑에 진한 선 하나 — 여기서 공고가 끝나고 지원자가 시작한다. */
-.co-pane-card { background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 22px;
-  border-bottom: 1px solid #1a1a1a; }
+.co-pane-card { position: relative; background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 22px; }
+/* 선은 카드 테두리가 아니라 지원자 카드와 같은 폭으로 — 좌우 22px 안쪽. */
+.co-pane-card::after {
+  content: ""; position: absolute; left: 22px; right: 22px; bottom: 0;
+  height: 1px; background: #1a1a1a;
+}
 .co-pane-head { display: flex; align-items: flex-start; gap: 14px; }
 /* 이 화면의 회색은 한 색으로 간다(#555) — 두 단계로 나누니 어느 것이 옅은지
    화면마다 달라 보였다. */
-.co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; }
+.co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #555; }
+/* 상태는 상자 없이 글자만 — 카드 안에 상자를 더 두지 않는다. */
+.co-pane-term .co-jc-badge {
+  padding: 0; background: none; border: none; border-radius: 0;
+  font-size: 13.5px; color: var(--color-primary);
+}
 .co-pane-title { margin: 4px 0 0; font-size: 21px; font-weight: 400; color: #1a1a1a; line-height: 1.35; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
@@ -14707,7 +14716,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 선 아래가 위보다 넓어야 지원자 쪽이 새로 시작하는 판으로 읽힌다. */
 .co-pane .apl-bar { background: #fff; border: none; border-radius: 0; margin: 0; padding: 32px 22px 8px; }
 .co-pane-apps { background: #fff; border-radius: 0 0 12px 12px;
-  padding: 0 10px 10px; display: flex; flex-direction: column; gap: 8px; }
+  padding: 0 22px 22px; display: flex; flex-direction: column; gap: 8px; }
 
 /* 공고 조건 한 줄 — 근무지·경력·고용형태·인원. 여러 공고를 가려내는 값이다. */
 .co-jc-cond { margin-top: 5px; font-size: 13px; color: #8a8a90;
