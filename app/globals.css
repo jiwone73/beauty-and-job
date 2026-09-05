@@ -2462,7 +2462,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-brand-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .job-detail-brand { font-size: 15px; font-weight: 600; color: var(--color-text-sub); }
 .job-detail-tag { font-size: 13px; color: var(--color-text-mute); }
-.job-detail-title { font-size: 24px; font-weight: 800; color: var(--color-text); letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 16px; }
+.job-detail-title { font-size: 24px; font-weight: 800; color: var(--color-text-strong); letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 16px; }
 .job-detail-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
 .job-detail-meta-item { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--color-text-sub); }
 .job-detail-meta-icon { color: var(--color-primary-light); flex-shrink: 0; }
@@ -11933,7 +11933,7 @@ div:has(> table.admin-table),
 .jobcard-bookmark { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #bbb; box-shadow: 0 2px 6px rgba(0,0,0,.12); transition: color .15s; z-index: 1; }
 .jobcard-bookmark:hover, .jobcard-bookmark.on { color: var(--color-primary); }
 .jobcard-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: flex-start; padding: 6px 14px 7px; overflow: hidden; }
-.jobcard-title { margin: 0 0 3px; font-size: 13px; font-weight: 600; color: #222; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.jobcard-title { margin: 0 0 3px; font-size: 13px; font-weight: 600; color: var(--color-text-strong); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .jobcard-company { margin: 0 0 2px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobcard-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 1px; }
 .jobcard-meta { margin: 0; flex: 1; min-width: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -14101,7 +14101,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 제목이 곧 공고를 여는 문이다 — 표에서는 줄 아무 데나 눌러야 열려 눌리는 곳이 안 보였다. */
 /* 공고 이름이 이 카드의 주인공이다 — 밑의 지원자 줄보다 확실히 커야 층이 선다. */
 .co-jc-title { display: block; background: none; border: none; padding: 0; font-family: inherit;
-  font-size: 18px; color: var(--card-title-c); text-align: left; cursor: pointer; line-height: 1.4;
+  font-size: 18px; color: var(--color-text-strong); text-align: left; cursor: pointer; line-height: 1.4;
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .co-jc-title:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
 .co-jc.off .co-jc-title { color: #8a8a90; }
@@ -14707,7 +14707,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13.5px; color: var(--color-primary);
 }
 /* 화면 제목(.co-set-title)과 같은 크기 — 이 판의 주인이 무엇인지 한눈에. */
-.co-pane-title { margin: 4px 0 0; font-size: var(--page-title); font-weight: 400; color: #555; line-height: 1.35; }
+/* 공고명은 이 판의 주인이다 — 한 줄 소개와 함께 진한 먹색으로 남는다. */
+.co-pane-title { margin: 4px 0 0; font-size: var(--page-title); font-weight: 400; color: var(--color-text-strong); line-height: 1.35; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
 .co-pane-acts { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }
@@ -15096,6 +15097,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 누를 수 없는 자리에는 손가락을 띄우지 않는다. */
 .tal-main, .tal-who, .tal-card { cursor: default; }
+/* 한 줄 소개는 색을 물려받지 않는다 — 이 카드에서 유일하게 진한 글자다. */
+.tal-name.tal-open { color: var(--color-text-strong); }
 .tal-open:hover { color: var(--color-primary); }
 
 
