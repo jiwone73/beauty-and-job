@@ -34,6 +34,10 @@ export async function GET(req: NextRequest) {
            (SELECT COUNT(*)::int FROM applications a
               WHERE a.job_posting_id = job_postings.id AND a.hidden_by_company = false AND a.status <> 'WITHDRAWN'
                 AND a.viewed_at IS NULL) AS unviewed_count,
+           experience_level, education, headcount, headcount_text,
+           -- 우리 공고를 담아 둔 사람. 지원까지는 안 왔어도 보고 있다는 뜻이라
+           -- 매장이 알 값이다(잡코리아의 「관심인재」가 이 자리다).
+           (SELECT COUNT(*)::int FROM bookmarks b WHERE b.job_posting_id = job_postings.id) AS bookmark_count,
            deadline, is_featured, created_at, closed_at
     FROM job_postings
     WHERE ${whereClause}

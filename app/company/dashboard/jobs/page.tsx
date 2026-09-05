@@ -569,6 +569,19 @@ function CompanyJobsContent() {
                         : window.open(`/jobs/${job.id}`, "_blank", "noopener")}>
                       {job.title}
                     </button>
+                    {/* 공고 카드가 얇으면 밑의 지원자 줄과 무게가 같아 층이 안
+                        보인다. 소개 글로 채우지는 않는다 — 제가 쓴 글을 제가
+                        다시 읽을 일은 없다. 여러 공고를 가려내는 값만 적는다. */}
+                    {!draft && (() => {
+                      const 조건 = [
+                        (job as any).location || (job as any).address,
+                        (job as any).experience_level === "NEW" ? "신입"
+                          : (job as any).experience_level === "EXPERIENCED" ? "경력" : "경력무관",
+                        (job as any).employment_type,
+                        (job as any).headcount_text || ((job as any).headcount ? `${(job as any).headcount}명 모집` : null),
+                      ].filter(Boolean) as string[];
+                      return 조건.length > 0 ? <div className="co-jc-cond">{조건.join(" · ")}</div> : null;
+                    })()}
                   </div>
                   <div className="co-jc-acts">
                     {draft ? (
@@ -604,6 +617,10 @@ function CompanyJobsContent() {
                         <span className="co-jc-nums">
                           지원자 <b className={수 === 0 ? "zero" : ""}>{수}</b>
                           {안본 > 0 && <><i>·</i>미열람 <b>{안본}</b></>}
+                          {/* 담아 둔 사람 — 지원까지는 안 왔어도 보고 있다는 뜻이다. */}
+                          {((job as any).bookmark_count ?? 0) > 0 && (
+                            <><i>·</i>관심 <b>{(job as any).bookmark_count}</b></>
+                          )}
                         </span>
                       </div>
 
