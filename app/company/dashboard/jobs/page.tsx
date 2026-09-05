@@ -619,20 +619,34 @@ function CompanyJobsContent() {
                       </div>
                     </div>
 
-                    {/* 모집분야 — 여럿이면 한 줄씩. 어느 자리에 누가 왔는지를
-                        지원자 카드가 적으므로, 여기서는 무엇을 걸었는지만 본다. */}
+                    {/* 공고명 밑 한 줄 — 모집분야 · 고용형태 · 경력/직급. 여럿이면
+                        한 줄씩. 주소는 빼고(왼쪽에서 고른 공고라 어디인지는 이미
+                        안다) 오른쪽 끝에 재등록만 둔다. */}
                     <div className="co-pane-pos">
                       <div style={{ minWidth: 0 }}>
-                        {부문.length > 0 ? 부문.map((p: any, i: number) => (
-                          <div key={i} className="co-pane-posline">
-                            <b>{p.group || p.category || "모집분야"}</b>
-                            {p.category && p.group && <span> · {p.category}</span>}
-                            {p.career && <span> · {p.career}</span>}
-                            {p.headcount && <span> · {p.headcount}명</span>}
-                          </div>
-                        )) : (
-                          <div className="co-pane-posline"><b>{(job as any).location || "모집분야 미등록"}</b></div>
-                        )}
+                        {(() => {
+                          // 모집부문 표를 쓴 공고는 부문마다 한 줄. 표 없이 올린
+                          // 옛 공고는 공고 전체의 값으로 한 줄을 만든다 — 아직
+                          // 그런 공고가 더 많다.
+                          const 경력글 = (v: string) =>
+                            v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
+                          const 줄들 = 부문.length > 0
+                            ? 부문.map((p: any) => [
+                                p.category || p.group,
+                                p.employment || (job as any).employment_type,
+                                p.career,
+                                p.headcount ? `${p.headcount}명` : null,
+                              ].filter(Boolean).join("  |  "))
+                            : [[
+                                ((job as any).categories || []).join(" · "),
+                                (job as any).employment_type,
+                                경력글((job as any).experience_level),
+                                (job as any).headcount ? `${(job as any).headcount}명` : null,
+                              ].filter(Boolean).join("  |  ")];
+                          return 줄들.filter(Boolean).map((줄: string, i: number) => (
+                            <div key={i} className="co-pane-posline">{줄}</div>
+                          ));
+                        })()}
                       </div>
                       {!draft && (
                         <button type="button" className="co-pane-view"
