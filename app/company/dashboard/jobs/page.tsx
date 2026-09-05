@@ -145,14 +145,12 @@ function CompanyJobsContent() {
   // 빈 오른쪽 판은 「뭘 눌러야 하지」로 읽힌다.
   const [고른공고, set고른공고] = useState<string | null>(null);
   const [지원자찾기, set지원자찾기] = useState<Record<string, string>>({});
-  const [지원자상태, set지원자상태] = useState<Record<string, string>>({});
   const 지원자고르기 = (jobId: string) => {
     const 말 = (지원자찾기[jobId] || "").trim();
-    const 상태 = 지원자상태[jobId] || "전체";
 
     let 목록 = (공고지원자[jobId] || [])
       .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
-      .filter((a) => 상태 === "전체" || (상태 === "미열람" ? a.status === "APPLIED" : a.status === 상태));
+;
     if (말) {
       const q = 말.toLowerCase();
       목록 = 목록.filter((a) => [
@@ -648,14 +646,6 @@ function CompanyJobsContent() {
                   <div className="apl-bar">
                     <span className="apl-bar-n"><em>지원자</em> 총 {목록.length}명</span>
                     {안본 > 0 && <><span className="apl-bar-sep">|</span><span className="apl-bar-n">미열람 {안본}</span></>}
-                    <span className="apl-bar-right">
-                      <select className="apl-state" value={지원자상태[job.id] || "전체"}
-                        onChange={(e) => set지원자상태((p) => ({ ...p, [job.id]: e.target.value }))}>
-                        <option value="전체">상태 · 전체</option>
-                        <option value="미열람">상태 · 미열람</option>
-                        <option value="VIEWED">상태 · 열람</option>
-                      </select>
-                    </span>
                   </div>
 
                   <div className="co-pane-apps">

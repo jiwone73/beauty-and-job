@@ -139,21 +139,21 @@ export default function ApplicantCard({
           onClick={() => onOpen(a)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
           <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
-          {/* 이름 줄 오른쪽 끝에 지원일 — 누구인지 바로 옆에 언제 왔는지. */}
+          {/* 이름 줄 오른쪽에 상태값, 지역 줄 오른쪽에 지원일. 둘 다 태그와
+              같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들이다. */}
           <div className="tal-who tal-line2">
             <span>
               {(a as any).user_intro ? a.user_name : ""}
               {(a as any).user_intro && 나이성별 ? " " : ""}
               {나이성별 && `(${나이성별})`}
             </span>
-            <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
-          </div>
-          {/* 지역 줄 오른쪽 끝에 상태값 — 참고 카드의 「제안완료」 자리다. */}
-          <div className="tal-who tal-line2">
-            <span>{지역}</span>
-            <span className="tal-st-r" style={{ color: 상태색 }}>
+            <span className="tal-st-r">
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
             </span>
+          </div>
+          <div className="tal-who tal-line2">
+            <span>{지역}</span>
+            <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
         </div>
 
