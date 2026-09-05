@@ -14646,6 +14646,52 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: #fafafb; border-top: 1px solid #f0f0f3; border-radius: 0 0 11px 11px;
 }
 /* 접는 띠 — 카드 폭을 다 쓰고 가운데에 화살표만. */
+/* 공고 관리 — 왼쪽에 이름만, 오른쪽에 고른 공고와 그 지원자. */
+.co-two { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 16px; align-items: start; }
+.co-side { background: #fff; border: 1px solid #ececf0; border-radius: 12px; overflow: hidden; position: sticky; top: 16px; }
+.co-side-tabs { display: flex; border-bottom: 1px solid #ececf0; }
+.co-side-tab {
+  flex: 1; padding: 12px 0; border: none; background: none; font-family: inherit;
+  font-size: 14px; color: #8a8a90; cursor: pointer; border-bottom: 2px solid transparent;
+}
+.co-side-tab span { margin-left: 5px; font-size: 12.5px; color: #b4b4b9; }
+.co-side-tab.on { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.co-side-tab.on span { color: var(--color-primary); }
+.co-side-list { max-height: calc(100vh - 190px); overflow-y: auto; padding: 6px; }
+.co-side-none { padding: 22px 10px; font-size: 13px; color: #a0a0a6; text-align: center; }
+.co-side-item {
+  position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
+  border: none; background: none; font-family: inherit; padding: 10px 22px 10px 10px;
+  border-radius: 8px; color: #444; font-size: 14px; line-height: 1.45;
+}
+.co-side-item:hover { background: #f7f7f9; }
+.co-side-item.on { background: #f3eefa; color: var(--color-primary); }
+/* 이름은 두 줄까지. 넘치면 줄인다 — 목록이 들쭉날쭉하면 훑기가 어렵다. */
+.co-side-t { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* 아직 안 본 지원자가 있는 공고에만 점 하나. */
+.co-side-dot { position: absolute; right: 9px; top: 14px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
+
+.co-pane { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.co-pane-card { background: #fff; border: 1px solid #ececf0; border-radius: 12px; padding: 20px 22px; }
+.co-pane-head { display: flex; align-items: flex-start; gap: 14px; }
+.co-pane-term { font-size: 13px; color: #a0a0a6; }
+.co-pane-title { margin: 4px 0 0; font-size: 21px; font-weight: 400; color: #1a1a1a; line-height: 1.35; }
+.co-pane-head .co-jc-acts { margin-left: auto; flex-shrink: 0; }
+.co-pane-pos { display: flex; align-items: flex-end; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #f2f2f4; }
+.co-pane-posline { font-size: 14px; color: #8a8a90; line-height: 1.7; }
+.co-pane-posline b { font-weight: 400; color: #1a1a1a; }
+.co-pane-view {
+  margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px;
+  border: 1px solid #e0dced; background: #fff; color: var(--color-primary);
+  border-radius: 8px; padding: 8px 14px; font-family: inherit; font-size: 13.5px; cursor: pointer;
+}
+.co-pane-view:hover { background: #f7f4fa; }
+/* 지원자 목록 — 머리줄과 카드가 한 판으로 붙는다. */
+.co-pane .apl-bar { background: #fff; border: 1px solid #ececf0; border-radius: 12px 12px 0 0; border-bottom: none; margin: 0; }
+.co-pane-apps { background: #fff; border: 1px solid #ececf0; border-top: 1px solid #f2f2f4; border-radius: 0 0 12px 12px;
+  padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+@media (max-width: 1100px) { .co-two { grid-template-columns: 190px minmax(0, 1fr); } }
+
 /* 공고 조건 한 줄 — 근무지·경력·고용형태·인원. 여러 공고를 가려내는 값이다. */
 .co-jc-cond { margin-top: 5px; font-size: 13px; color: #8a8a90;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

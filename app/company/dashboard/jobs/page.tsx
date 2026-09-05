@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Search, Edit, X, Trash2, Copy, Ban, ChevronDown
+  Users, Search, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
@@ -141,6 +141,9 @@ function CompanyJobsContent() {
 
   // 펼친 지원자 목록의 검색·정렬·상태. 공고마다 따로 기억한다 — 한 공고에서
   // 걸어 둔 조건이 다른 공고에 따라가면 왜 안 보이는지 알 수 없다.
+  // 왼쪽에서 고른 공고. 화면을 열면 첫 공고가 골라져 있다 — 아무것도 안 고른
+  // 빈 오른쪽 판은 「뭘 눌러야 하지」로 읽힌다.
+  const [고른공고, set고른공고] = useState<string | null>(null);
   const [지원자찾기, set지원자찾기] = useState<Record<string, string>>({});
   const [지원자정렬, set지원자정렬] = useState<Record<string, string>>({});
   const [지원자상태, set지원자상태] = useState<Record<string, string>>({});
@@ -222,6 +225,14 @@ function CompanyJobsContent() {
     }
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
+
+  // 고른 공고가 목록에서 사라졌으면(탭·검색을 바꿨다) 맨 위 것으로 옮긴다.
+  useEffect(() => {
+    if (isMobile || filtered.length === 0) return;
+    if (!고른공고 || !filtered.some((j) => j.id === 고른공고)) set고른공고(filtered[0].id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile, filtered.map((j) => j.id).join(","), 고른공고]);
+  const 지금공고 = filtered.find((j) => j.id === 고른공고) || null;
 
   const toggleCheck = (id: string) => setChecked(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id]);
   const toggleAll = () => setChecked(checked.length === filtered.length ? [] : filtered.map(j => j.id));
@@ -332,17 +343,6 @@ function CompanyJobsContent() {
           누르면 걸리는 필터인데 네모 상자 넷으로 그려 두니 그냥 숫자판처럼 보였다.
           사람인 공고 관리처럼 이름과 수를 한 줄에 늘어놓은 탭으로 바꾼다 — 무엇이
           켜져 있는지가 밑줄로 바로 보이고, 상자가 사라져 아래 줄과 안 붙는다. */}
-      {!isMobile && (
-        <div className="co-jobtabs">
-          {statCardsData.map((s) => (
-            <button key={s.label} type="button"
-              className={`co-jobtab ${statusFilter === s.status ? "on" : ""}`}
-              onClick={() => setStatusFilter(s.status)}>
-              {s.label}<span className="co-jobtab-n">{s.value}</span>
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* 툴바 (데스크톱) */}
       {!isMobile && (
@@ -536,152 +536,151 @@ function CompanyJobsContent() {
           표에는 그 할 일이 없었다. 체크칸을 정확히 하나 켜야 툴바 단추가 살아나서,
           있는 줄도 모르고 지나치기 쉬웠다. 카드마다 그 자리에 붙인다.
           할 일은 상태마다 다르다 — 마감된 공고에 '수정'은 뜻이 없고, 대신 다시 올리는 것이 할 일이다. */}
-      {!loading && filtered.length > 0 && !isMobile && (
-        <div>
-          <div className="co-jc-count">총 <strong>{filtered.length}</strong>건</div>
-          {filtered.map((job) => {
-            const closed = isJobClosed(job);
-            const draft = job.status === "DRAFT";
-            const dl = daysLeft(job.deadline);
-            const 임박 = !closed && !draft && dl !== null && dl <= 7;
-            const 상태 =
-              draft ? { 글: "임시저장", 결: "draft" }
-              : closed ? { 글: "마감", 결: "closed" }
-              : 임박 ? { 글: dl === 0 ? "오늘 마감" : `D-${dl}`, 결: "soon" }
-              : { 글: "진행중", 결: "live" };
-            const 기간 = job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`;
-            return (
-              <div key={job.id} className={`co-jc ${closed || draft ? "off" : ""}`}>
-                {/* 윗줄 — 왼쪽에 상태와 제목, 오른쪽에 자주 쓰는 할 일.
-                    공고명은 공고를 보러 가는 자리다(고치는 건 옆의 '수정'이 맡는다).
-                    임시저장은 아직 공개된 화면이 없어 이어서 쓰러 간다. 새 탭으로
-                    여는 건 목록을 잃지 않기 위해서다 — 공고 화면의 되돌아가기는
-                    구직자용 목록으로 가서, 여기서 넘어가면 돌아올 데가 없어진다. */}
-                <div className="co-jc-top">
-                  <div className="co-jc-main">
-                    <div className="co-jc-head">
-                      <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
-                      <span className="co-jc-term">{기간}</span>
-                    </div>
-                    <button type="button" className="co-jc-title" title={job.title}
-                      onClick={() => draft
-                        ? router.push(`/company/dashboard/jobs/new?id=${job.id}`)
-                        : window.open(`/jobs/${job.id}`, "_blank", "noopener")}>
-                      {job.title}
-                    </button>
-                    {/* 공고 카드가 얇으면 밑의 지원자 줄과 무게가 같아 층이 안
-                        보인다. 소개 글로 채우지는 않는다 — 제가 쓴 글을 제가
-                        다시 읽을 일은 없다. 여러 공고를 가려내는 값만 적는다. */}
-                    {!draft && (() => {
-                      const 조건 = [
-                        (job as any).location || (job as any).address,
-                        (job as any).experience_level === "NEW" ? "신입"
-                          : (job as any).experience_level === "EXPERIENCED" ? "경력" : "경력무관",
-                        (job as any).employment_type,
-                        (job as any).headcount_text || ((job as any).headcount ? `${(job as any).headcount}명 모집` : null),
-                      ].filter(Boolean) as string[];
-                      return 조건.length > 0 ? <div className="co-jc-cond">{조건.join(" · ")}</div> : null;
-                    })()}
-                  </div>
-                  <div className="co-jc-acts">
-                    {draft ? (
-                      <>
-                        <button className="co-jc-act key"
-                          onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
-                        <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
-                      </>
-                    ) : closed ? (
-                      <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
-                    ) : (
-                      <>
-                        <button className="co-jc-act"
-                          onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
-                        <button className="co-jc-act" onClick={() => handleClose(job.id)}>마감</button>
-                      </>
-                    )}
-                  </div>
-                </div>
-                {/* 아랫줄 — 선 아래 왼쪽에 다시 올리기, 오른쪽 끝에 성적.
-                    임시저장은 아직 올린 적이 없어 복사할 것도 셀 것도 없다. */}
-                {!draft && (() => {
-                  const 수 = job.application_count ?? 0;
-                  const 안본 = job.unviewed_count ?? 0;
-                  const 열림 = !접은공고.includes(job.id);
-                  return (
-                    <>
-                      <div className="co-jc-foot">
-                        <button className="co-jc-act key"
-                          onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                          {closed ? "복사해서 다시 올리기" : "복사해서 등록"}
-                        </button>
-                        <span className="co-jc-nums">
-                          지원자 <b className={수 === 0 ? "zero" : ""}>{수}</b>
-                          {안본 > 0 && <><i>·</i>미열람 <b>{안본}</b></>}
-                          {/* 담아 둔 사람 — 지원까지는 안 왔어도 보고 있다는 뜻이다. */}
-                          {((job as any).bookmark_count ?? 0) > 0 && (
-                            <><i>·</i>관심 <b>{(job as any).bookmark_count}</b></>
-                          )}
-                        </span>
-                      </div>
+      {/* 데스크톱 — 왼쪽에 공고 이름만, 오른쪽에 고른 공고와 그 지원자.
+          예전에는 공고 카드를 세로로 쌓고 그 안에서 지원자를 펼쳤다. 공고가
+          여럿이면 접었다 폈다 하며 오르내려야 했고, 위 탭이 왼쪽 목록과 같은
+          말을 두 번 했다. */}
+      {!loading && !isMobile && (
+        <div className="co-two">
+          <aside className="co-side">
+            <div className="co-side-tabs">
+              {(["진행중", "마감"] as const).map((t) => (
+                <button key={t} type="button"
+                  className={`co-side-tab${statusFilter === t ? " on" : ""}`}
+                  onClick={() => setStatusFilter(t)}>
+                  {t}<span>{t === "진행중" ? counts.진행중 : counts.마감}</span>
+                </button>
+              ))}
+            </div>
+            <div className="co-side-list">
+              {filtered.length === 0 && <p className="co-side-none">공고가 없어요.</p>}
+              {filtered.map((job) => {
+                const 안본 = job.unviewed_count ?? 0;
+                return (
+                  <button key={job.id} type="button"
+                    className={`co-side-item${고른공고 === job.id ? " on" : ""}`}
+                    onClick={() => set고른공고(job.id)}>
+                    {/* 이름만 둔다 — 조건과 성적은 오른쪽 카드가 말한다. 두 줄까지
+                        보이고 넘치면 줄인다. */}
+                    <span className="co-side-t">{job.title}</span>
+                    {안본 > 0 && <span className="co-side-dot" title={`미열람 ${안본}`} />}
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
 
-                      {/* 카드 폭을 다 쓰는 띠 하나에 화살표만. 접는 자리는 넓어야
-                          누르기 쉽고, 가운데 화살표는 그 자체로 「여기가 접힌다」다. */}
-                      {수 > 0 && (
-                        <button type="button" className={`apl-fold${열림 ? " open" : ""}`}
-                          aria-label={열림 ? "지원자 접기" : "지원자 펼치기"}
-                          onClick={() => 펼치기(job.id)}>
-                          <ChevronDown size={17} />
+          <section className="co-pane">
+            {!지금공고 ? (
+              <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
+                왼쪽에서 공고를 골라 주세요.
+              </div>
+            ) : (() => {
+              const job = 지금공고;
+              const closed = isJobClosed(job);
+              const draft = job.status === "DRAFT";
+              const 수 = job.application_count ?? 0;
+              const 안본 = job.unviewed_count ?? 0;
+              const 기간 = job.deadline
+                ? `${md(job.created_at)} 등록 ~ ${md(job.deadline)} 마감`
+                : `${md(job.created_at)} 등록 ~ 상시`;
+              const 부문 = ((job as any).positions || []) as any[];
+              const 목록 = 지원자고르기(job.id);
+              return (
+                <>
+                  <div className="co-pane-card">
+                    <div className="co-pane-head">
+                      <div style={{ minWidth: 0 }}>
+                        <div className="co-pane-term">{기간}</div>
+                        <h2 className="co-pane-title">{job.title}</h2>
+                      </div>
+                      <div className="co-jc-acts">
+                        {draft ? (
+                          <>
+                            <button className="co-jc-act key"
+                              onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
+                            <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
+                          </>
+                        ) : closed ? (
+                          <>
+                            <button className="co-jc-act key"
+                              onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>복사해서 다시 올리기</button>
+                            <button className="co-jc-act" onClick={() => handleDelete(job.id)}>삭제</button>
+                          </>
+                        ) : (
+                          <>
+                            <button className="co-jc-act"
+                              onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
+                            <button className="co-jc-act" onClick={() => handleClose(job.id)}>마감</button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 모집분야 — 여럿이면 한 줄씩. 어느 자리에 누가 왔는지를
+                        지원자 카드가 적으므로, 여기서는 무엇을 걸었는지만 본다. */}
+                    <div className="co-pane-pos">
+                      <div style={{ minWidth: 0 }}>
+                        {부문.length > 0 ? 부문.map((p: any, i: number) => (
+                          <div key={i} className="co-pane-posline">
+                            <b>{p.group || p.category || "모집분야"}</b>
+                            {p.category && p.group && <span> · {p.category}</span>}
+                            {p.career && <span> · {p.career}</span>}
+                            {p.headcount && <span> · {p.headcount}명</span>}
+                          </div>
+                        )) : (
+                          <div className="co-pane-posline"><b>{(job as any).location || "모집분야 미등록"}</b></div>
+                        )}
+                      </div>
+                      {!draft && (
+                        <button type="button" className="co-pane-view"
+                          onClick={() => window.open(`/jobs/${job.id}`, "_blank", "noopener")}>
+                          공고 보기 <ChevronRight size={15} />
                         </button>
                       )}
+                    </div>
+                  </div>
 
-                      {열림 && (공고지원자[job.id] || []).length > 0 && (() => {
-                        const 목록 = 지원자고르기(job.id);
-                        return (
-                        <div className="co-jc-apps">
-                          {/* 지원자가 여럿이면 훑는 것만으로는 못 찾는다 — 세는 자리,
-                              차례를 바꾸는 자리, 찾는 자리를 한 줄에 둔다. */}
-                          <div className="apl-bar">
-                            <span className="apl-bar-tag">지원자</span>
-                            <span className="apl-bar-n">총 {목록.length}명</span>
-                            <span className="apl-bar-sep">|</span>
-                            <select className="apl-sel" value={지원자정렬[job.id] || "최신"}
-                              onChange={(e) => set지원자정렬((p) => ({ ...p, [job.id]: e.target.value }))}>
-                              <option value="최신">최신 지원 순</option>
-                              <option value="오래된">오래된 순</option>
-                              <option value="미열람">미열람 먼저</option>
-                            </select>
-                            <span className="apl-bar-right">
-                              <span className="apl-find">
-                                <Search size={14} />
-                                <input value={지원자찾기[job.id] || ""} placeholder="지원자 검색 (이름, 경력, 키워드)"
-                                  onChange={(e) => set지원자찾기((p) => ({ ...p, [job.id]: e.target.value }))} />
-                              </span>
-                              <select className="apl-sel" value={지원자상태[job.id] || "전체"}
-                                onChange={(e) => set지원자상태((p) => ({ ...p, [job.id]: e.target.value }))}>
-                                {/* 쌓이는 상태는 둘뿐이다 — 지원서를 열면 미열람이
-                                    열람으로 바뀌고, 손으로 바꾸는 값은 두지 않았다.
-                                    면접·합격을 넣어 봐야 영원히 0건이다. */}
-                                <option value="전체">전체 상태</option>
-                                <option value="미열람">미열람</option>
-                                <option value="VIEWED">열람</option>
-                              </select>
-                            </span>
-                          </div>
-                          {목록.map((a, i) => (
-                            <ApplicantCard key={a.id} a={a} showJob={false} 순번={i + 1}
-                              onOpen={(x) => set지원서(x.id)}
-                              onToggleScrap={스크랩토글} onNote={메모저장} />
-                          ))}
-                          {목록.length === 0 && <div className="apl-none">찾는 지원자가 없어요.</div>}
-                        </div>
-                        );
-                      })()}
-                    </>
-                  );
-                })()}
-              </div>
-            );
-          })}
+                  <div className="apl-bar">
+                    <span className="apl-bar-tag">지원자</span>
+                    <span className="apl-bar-n">총 {목록.length}명</span>
+                    {안본 > 0 && <><span className="apl-bar-sep">|</span><span className="apl-bar-n">미열람 {안본}</span></>}
+                    <span className="apl-bar-sep">|</span>
+                    <select className="apl-sel" value={지원자정렬[job.id] || "최신"}
+                      onChange={(e) => set지원자정렬((p) => ({ ...p, [job.id]: e.target.value }))}>
+                      <option value="최신">최신 지원 순</option>
+                      <option value="오래된">오래된 순</option>
+                      <option value="미열람">미열람 먼저</option>
+                    </select>
+                    <span className="apl-bar-right">
+                      <span className="apl-find">
+                        <Search size={14} />
+                        <input value={지원자찾기[job.id] || ""} placeholder="지원자 검색 (이름, 경력, 키워드)"
+                          onChange={(e) => set지원자찾기((p) => ({ ...p, [job.id]: e.target.value }))} />
+                      </span>
+                      <select className="apl-sel" value={지원자상태[job.id] || "전체"}
+                        onChange={(e) => set지원자상태((p) => ({ ...p, [job.id]: e.target.value }))}>
+                        <option value="전체">전체 상태</option>
+                        <option value="미열람">미열람</option>
+                        <option value="VIEWED">열람</option>
+                      </select>
+                    </span>
+                  </div>
+
+                  <div className="co-pane-apps">
+                    {수 === 0
+                      ? <p className="apl-none">아직 지원자가 없어요.</p>
+                      : 목록.length === 0
+                        ? <p className="apl-none">찾는 지원자가 없어요.</p>
+                        : 목록.map((a) => (
+                          <ApplicantCard key={a.id} a={a} showJob={false}
+                            onOpen={(x) => set지원서(x.id)} onNote={메모저장} />
+                        ))}
+                  </div>
+                </>
+              );
+            })()}
+          </section>
         </div>
       )}
       </div>
