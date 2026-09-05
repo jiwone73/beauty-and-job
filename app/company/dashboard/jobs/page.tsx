@@ -145,12 +145,11 @@ function CompanyJobsContent() {
   // 빈 오른쪽 판은 「뭘 눌러야 하지」로 읽힌다.
   const [고른공고, set고른공고] = useState<string | null>(null);
   const [지원자찾기, set지원자찾기] = useState<Record<string, string>>({});
-  const [지원자정렬, set지원자정렬] = useState<Record<string, string>>({});
   const [지원자상태, set지원자상태] = useState<Record<string, string>>({});
   const 지원자고르기 = (jobId: string) => {
     const 말 = (지원자찾기[jobId] || "").trim();
     const 상태 = 지원자상태[jobId] || "전체";
-    const 차례 = 지원자정렬[jobId] || "최신";
+
     let 목록 = (공고지원자[jobId] || [])
       .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
       .filter((a) => 상태 === "전체" || (상태 === "미열람" ? a.status === "APPLIED" : a.status === 상태));
@@ -162,12 +161,9 @@ function CompanyJobsContent() {
         ...((a as any).user_office_job_areas || []),
       ].filter(Boolean).some((v: string) => String(v).toLowerCase().includes(q)));
     }
-    return [...목록].sort((x, y) => {
-      const a1 = new Date(x.applied_at).getTime(), b1 = new Date(y.applied_at).getTime();
-      if (차례 === "오래된") return a1 - b1;
-      if (차례 === "미열람") return (x.status === "APPLIED" ? 0 : 1) - (y.status === "APPLIED" ? 0 : 1) || b1 - a1;
-      return b1 - a1;
-    });
+    // 늘 최근 지원이 위다 — 차례를 고르게 두어 봐야 한 공고의 지원자는 몇 명뿐이다.
+    return [...목록].sort((x, y) =>
+      new Date(y.applied_at).getTime() - new Date(x.applied_at).getTime());
   };
 
   const 지원자바꾸기 = (id: string, 바꿈: Partial<CompanyApplication>) =>
@@ -654,28 +650,18 @@ function CompanyJobsContent() {
                     </div>
                   </div>
 
+                  {/* 지원자 머리줄 — 몇 명인지와 상태 고르개만. 검색과 정렬은
+                      뺀다: 한 공고의 지원자는 몇 명뿐이라 훑는 것이 빠르고,
+                      차례는 늘 최근 지원이 위다. */}
                   <div className="apl-bar">
-                    <span className="apl-bar-tag">지원자</span>
-                    <span className="apl-bar-n">총 {목록.length}명</span>
+                    <span className="apl-bar-n">지원자 총 {목록.length}명</span>
                     {안본 > 0 && <><span className="apl-bar-sep">|</span><span className="apl-bar-n">미열람 {안본}</span></>}
-                    <span className="apl-bar-sep">|</span>
-                    <select className="apl-sel" value={지원자정렬[job.id] || "최신"}
-                      onChange={(e) => set지원자정렬((p) => ({ ...p, [job.id]: e.target.value }))}>
-                      <option value="최신">최신 지원 순</option>
-                      <option value="오래된">오래된 순</option>
-                      <option value="미열람">미열람 먼저</option>
-                    </select>
                     <span className="apl-bar-right">
-                      <span className="apl-find">
-                        <Search size={14} />
-                        <input value={지원자찾기[job.id] || ""} placeholder="지원자 검색 (이름, 경력, 키워드)"
-                          onChange={(e) => set지원자찾기((p) => ({ ...p, [job.id]: e.target.value }))} />
-                      </span>
-                      <select className="apl-sel" value={지원자상태[job.id] || "전체"}
+                      <select className="apl-state" value={지원자상태[job.id] || "전체"}
                         onChange={(e) => set지원자상태((p) => ({ ...p, [job.id]: e.target.value }))}>
-                        <option value="전체">전체 상태</option>
-                        <option value="미열람">미열람</option>
-                        <option value="VIEWED">열람</option>
+                        <option value="전체">상태 · 전체</option>
+                        <option value="미열람">상태 · 미열람</option>
+                        <option value="VIEWED">상태 · 열람</option>
                       </select>
                     </span>
                   </div>
