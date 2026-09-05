@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, BookmarkCheck, Pencil } from "lucide-react";
+import { Bookmark, BookmarkCheck, ChevronDown, Pencil } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { 마감인가 } from "@/lib/jobClosed";
 import type { CompanyApplication } from "@/lib/types/company";
@@ -38,7 +38,8 @@ export default function ApplicantCard({
 }: {
   a: CompanyApplication;
   onOpen: (a: CompanyApplication) => void;
-  onToggleScrap: (a: CompanyApplication) => void;
+  /** 넘기지 않으면 스크랩 단추를 그리지 않는다 — 이미 지원한 사람은 담아 둘 이유가 없다. */
+  onToggleScrap?: (a: CompanyApplication) => void;
   /** 매장만 보는 한 줄 메모. 「통화함」·「화요일 3시 면접」처럼 자기가 나중에 보려고
    *  적는 것이라, 남을 위한 상태값과 달리 실제로 쓰인다. */
   onNote?: (a: CompanyApplication, note: string) => void;
@@ -144,16 +145,22 @@ export default function ApplicantCard({
             {나이성별 && `(${나이성별})`}
             {경력 && <>{((a as any).user_intro || 나이성별) ? " · " : ""}{경력}</>}
           </div>
-          {지역 && <div className="tal-who">{지역}</div>}
+          {/* 지역과 지원일을 한 줄에 — 왼쪽은 어디 사는지, 오른쪽은 언제 냈는지. */}
+          <div className="tal-who tal-line2">
+            <span>{지역}</span>
+            <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
+          </div>
         </div>
 
         <div className="tal-acts">
-          <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
-            className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
-            {(a as any).scrapped
-              ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-              : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
-          </button>
+          {onToggleScrap && (
+            <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
+              className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
+              {(a as any).scrapped
+                ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+                : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+            </button>
+          )}
           {/* 상태는 여기서 읽기만 한다. 면접·합격은 지원서를 읽고 나서 정하는 것이라
               그 창에서 바꾼다 — 카드마다 고르개가 붙으면 목록이 시끄러워진다. */}
           <span style={{ fontSize: 13.5, color: 상태색 }}>
@@ -161,27 +168,6 @@ export default function ApplicantCard({
           </span>
         </div>
       </div>
-
-      {/* 매장만 보는 한 줄. 안내 문구 없이 자리글만 둔다. */}
-      {onNote && (
-        <div className="tal-memo">
-          {메모쓰기 ? (
-            <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
-              placeholder="통화함 · 화요일 3시 면접 …"
-              onChange={(e) => set메모(e.target.value)}
-              onBlur={메모저장}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") { e.currentTarget.blur(); }
-                if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
-              }} />
-          ) : (
-            <button type="button" className={`tal-memo-btn${메모 ? " has" : ""}`}
-              onClick={() => set메모쓰기(true)}>
-              <Pencil size={13} />{메모 || "메모 남기기"}
-            </button>
-          )}
-        </div>
-      )}
 
       <div className="tal-foot">
         <span className="tal-tags">
@@ -197,8 +183,29 @@ export default function ApplicantCard({
           )}
           {유입 && <span className="tal-from">{유입}</span>}
         </span>
-        <span className="tal-when">{날짜(a.applied_at)} 지원</span>
+        {/* 메모는 직군 줄 오른쪽에. 화살표를 누르면 한 줄이 열린다 —
+            늘 열어 두면 안 쓰는 사람에게도 빈 칸이 한 줄 남는다. */}
+        {onNote && (
+          <button type="button" className={`tal-memo-btn${메모 ? " has" : ""}`}
+            onClick={() => set메모쓰기((v) => !v)}>
+            <Pencil size={13} />{메모 || "메모"}
+            <ChevronDown size={13} className={메모쓰기 ? "up" : ""} />
+          </button>
+        )}
       </div>
+
+      {onNote && 메모쓰기 && (
+        <div className="tal-memo">
+          <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
+            placeholder="통화함 · 화요일 3시 면접 · 경력 확인 필요 …"
+            onChange={(e) => set메모(e.target.value)}
+            onBlur={메모저장}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") { e.currentTarget.blur(); }
+              if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
+            }} />
+        </div>
+      )}
     </div>
   );
 }

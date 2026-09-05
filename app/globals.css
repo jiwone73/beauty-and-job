@@ -14650,6 +14650,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-cond { margin-top: 5px; font-size: 13px; color: #8a8a90;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* 지역 줄 — 왼쪽에 사는 곳, 오른쪽 끝에 지원일. */
+.tal-line2 { display: flex; align-items: baseline; gap: 10px; }
+.tal-line2 .tal-when-r { margin-left: auto; color: #b4b4b9; font-size: 12.5px; white-space: nowrap; }
+/* 메모 단추의 화살표 — 열려 있으면 뒤집힌다. */
+.tal-memo-btn svg.up { transform: rotate(180deg); }
+
 .apl-fold {
   display: flex; align-items: center; justify-content: center;
   width: calc(100% + 36px); margin: 0 -18px; padding: 5px 0;
