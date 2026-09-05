@@ -345,6 +345,22 @@ function CompanyJobsContent() {
         <input className="admin-search-input" placeholder="공고명 검색"
           value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
+      {(isBoth || true) && (
+        <div className="co-side-sort">
+          {isBoth && (
+            <select className="apl-sel" value={jobGroupFilter}
+              onChange={(e) => setJobGroupFilter(e.target.value)}>
+              <option value="전체">전체 유형</option>
+              <option value="매장">매장</option>
+              <option value="본사">본사</option>
+            </select>
+          )}
+          <select className="apl-sel" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="등록일순">등록일순</option>
+            <option value="마감일순">마감일순</option>
+          </select>
+        </div>
+      )}
       <div className="co-side-tabs">
         {(["진행중", "마감"] as const).map((t) => (
           <button key={t} type="button"
@@ -380,27 +396,6 @@ function CompanyJobsContent() {
           사람인 공고 관리처럼 이름과 수를 한 줄에 늘어놓은 탭으로 바꾼다 — 무엇이
           켜져 있는지가 밑줄로 바로 보이고, 상자가 사라져 아래 줄과 안 붙는다. */}
 
-      {/* 툴바 (데스크톱) */}
-      {!isMobile && (
-      <div className="company-toolbar">
-        <div className="company-toolbar-left">
-          <div className="admin-search-wrap">
-            <Search size={16} className="admin-search-icon" />
-            <input className="admin-search-input" placeholder="공고명 검색"
-              value={search} onChange={(e) => setSearch(e.target.value)} />
-          </div>
-          {isBoth && (
-            <FilterDropdown label="채용유형" value={jobGroupFilter}
-              options={["전체", "매장", "본사"]} onChange={setJobGroupFilter} />
-          )}
-          <FilterDropdown label="정렬" value={sortBy}
-            options={["등록일순", "마감일순"]} onChange={setSortBy} />
-        </div>
-        {/* 마감·복사·삭제는 이제 카드마다 붙어 있다. 여기 또 두면 체크칸을 켜야만
-            살아나는 단추가 되어(무엇을 고르라는 건지 알기 어려웠다) 같은 일을 하는 길이
-            둘이 된다. 등록도 머리줄 단추와 사이드에 이미 있어 뺀다. */}
-      </div>
-      )}
 
       {/* 컨트롤 바 (모바일) */}
       {isMobile && (

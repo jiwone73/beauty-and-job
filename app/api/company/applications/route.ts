@@ -65,7 +65,10 @@ export async function GET(req: NextRequest) {
        -- 직군이 늘 main_job_group 에 있는 것은 아니다. 매장은 skill_areas 에만,
        -- 본사는 office_job_areas 에만 든 사람이 있다.
        up.skill_areas AS user_skill_areas,
-       up.office_job_areas AS user_office_job_areas,
+       -- 본사 직군의 원본은 users.office_job_areas 다. user_profiles 쪽은 거의
+       -- 비어 있어, 그것만 보면 본사 지원자의 직군 태그가 통째로 빠진다.
+       CASE WHEN COALESCE(array_length(up.office_job_areas, 1), 0) > 0
+            THEN up.office_job_areas ELSE u.office_job_areas END AS user_office_job_areas,
         (
           SELECT ul.url FROM user_links ul
           WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
@@ -73,10 +76,11 @@ export async function GET(req: NextRequest) {
           LIMIT 1
         ) AS sns_url,
        (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
-       (SELECT rc.start_date FROM resume_careers rc
-          JOIN resumes r ON r.id = rc.resume_id
-          WHERE r.user_id = u.id
-          ORDER BY rc.is_current DESC, rc.start_date DESC LIMIT 1) AS recent_start_date,
+       -- 경력은 user_careers 에 쌓인다. resume_careers 는 비어 있는 테이블이라
+       -- 여기를 보면 연차가 늘 빈 채로 나갔다(카드에 「경력 N년」이 안 떴다).
+       (SELECT uc.start_date FROM user_careers uc
+          WHERE uc.user_id = u.id AND COALESCE(uc.start_date, '') <> ''
+          ORDER BY uc.start_date LIMIT 1) AS recent_start_date,
        EXISTS(SELECT 1 FROM company_talent_scraps s WHERE s.company_id = $1 AND s.user_id = u.id) AS scrapped,
        -- 이 사람이 스스로 온 사람인지, 내가 먼저 제안해서 온 사람인지. 같은 공고로
        -- 보낸 제안이 있으면 내가 찾아간 사람이고, 대화까지 수락했으면 얘기를 나누고

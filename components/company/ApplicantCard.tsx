@@ -139,7 +139,7 @@ export default function ApplicantCard({
           onClick={() => onOpen(a)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(a); } }}>
           <div className="tal-name">{(a as any).user_intro || a.user_name}</div>
-          {/* 이름 줄 오른쪽 끝에 지원일 — 언제 왔는지는 누구인지 바로 옆이다. */}
+          {/* 이름 줄 오른쪽 끝에 지원일 — 누구인지 바로 옆에 언제 왔는지. */}
           <div className="tal-who tal-line2">
             <span>
               {(a as any).user_intro ? a.user_name : ""}
@@ -148,24 +148,25 @@ export default function ApplicantCard({
             </span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
-          <div className="tal-who">{지역}</div>
+          {/* 지역 줄 오른쪽 끝에 상태값 — 참고 카드의 「제안완료」 자리다. */}
+          <div className="tal-who tal-line2">
+            <span>{지역}</span>
+            <span className="tal-st-r" style={{ color: 상태색 }}>
+              {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+            </span>
+          </div>
         </div>
 
-        <div className="tal-acts">
-          {onToggleScrap && (
+        {onToggleScrap && (
+          <div className="tal-acts">
             <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
               className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
               {(a as any).scrapped
                 ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
                 : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
             </button>
-          )}
-          {/* 상태는 여기서 읽기만 한다. 면접·합격은 지원서를 읽고 나서 정하는 것이라
-              그 창에서 바꾼다 — 카드마다 고르개가 붙으면 목록이 시끄러워진다. */}
-          <span style={{ fontSize: 13.5, color: 상태색 }}>
-            {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
-          </span>
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="tal-foot">

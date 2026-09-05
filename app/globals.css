@@ -14649,6 +14649,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 공고 관리 — 왼쪽에 이름만, 오른쪽에 고른 공고와 그 지원자. */
 .co-side { display: flex; flex-direction: column; gap: 10px; }
 .co-side-find { margin: 0; }
+.co-side-sort { display: flex; gap: 10px; padding: 0 2px; }
 .co-side-tabs { display: flex; border-bottom: 1px solid #ececf0; margin-top: 2px; }
 .co-side-tab {
   flex: 1; padding: 12px 0; border: none; background: none; font-family: inherit;
@@ -14696,9 +14697,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-cond { margin-top: 5px; font-size: 13px; color: #8a8a90;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* 이름 줄 — 왼쪽에 이름과 나이, 오른쪽 끝에 지원일. */
+/* 이름 줄 오른쪽 끝에 지원일, 지역 줄 오른쪽 끝에 상태값. 오른쪽 끝은
+   카드 끝이라야 세로줄이 맞는다 — 스크랩 칸이 없을 때 본문이 끝까지 간다. */
 .tal-line2 { display: flex; align-items: baseline; gap: 10px; }
+.tal-line2 > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tal-line2 .tal-when-r { margin-left: auto; color: #b4b4b9; font-size: 12.5px; white-space: nowrap; }
+.tal-line2 .tal-st-r { margin-left: auto; font-size: 13.5px; white-space: nowrap; }
 /* 메모 단추의 화살표 — 열려 있으면 뒤집힌다. */
 .tal-memo-btn svg.up { transform: rotate(180deg); }
 

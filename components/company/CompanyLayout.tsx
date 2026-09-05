@@ -508,13 +508,15 @@ export default function CompanyLayout({ children, activePage, title, side }: {
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
             <nav className="co-set-side">
-              {사이드
-                ? 사이드.map((m) => (
+              {/* 화면이 제 사이드를 주면 그것이 먼저다 — 고정 메뉴를 우선하면
+                  넘겨준 사이드가 조용히 무시된다. */}
+              {side
+                ? side
+                : 사이드?.map((m) => (
                     <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>
-                  ))
-                : side}
+                  ))}
             </nav>
             <main className="company-content co-set-main">
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
