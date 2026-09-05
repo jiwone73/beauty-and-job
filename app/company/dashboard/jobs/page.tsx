@@ -640,6 +640,7 @@ function CompanyJobsContent() {
                     </div>
                   </div>
 
+                  <div className="co-pane-list">
                   {/* 지원자 머리줄 — 몇 명인지와 상태 고르개만. 검색과 정렬은
                       뺀다: 한 공고의 지원자는 몇 명뿐이라 훑는 것이 빠르고,
                       차례는 늘 최근 지원이 위다. */}
@@ -657,6 +658,7 @@ function CompanyJobsContent() {
                           <ApplicantCard key={a.id} a={a} showJob={false}
                             onOpen={(x) => set지원서(x.id)} onNote={메모저장} />
                         ))}
+                  </div>
                   </div>
                 </>
               );

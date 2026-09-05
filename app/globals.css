@@ -14997,7 +14997,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    여기 한 곳에서 준다 — 새 카드를 만들면 이 목록에 이름만 더하면 된다. */
 .company-card,
 .co-jc,
-.co-pane,
 .tal-card,
 .talent-card,
 .company-talent-card,
@@ -15061,11 +15060,15 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border-color: var(--card-line);
   box-shadow: var(--card-shadow);
 }
-/* 공고 관리의 오른쪽 판은 셋(공고·머리줄·목록)이 이어 붙어 한 카드다.
-   그림자는 바깥 한 겹만 지고, 안쪽은 바탕을 물려받는다. */
-.co-pane { border-radius: 12px; overflow: hidden; }
+/* 공고 쪽은 카드가 아니라 그냥 바탕이다 — 이 판의 주인은 지원자 목록이다.
+   카드는 그 아래 하나만 선다. */
+.co-pane-list {
+  background: var(--card-bg); border: 1px solid var(--card-line);
+  border-radius: 12px; box-shadow: var(--card-shadow); overflow: hidden;
+}
 .co-pane-card,
 .co-pane .apl-bar,
 .co-pane-apps { background: transparent; }
+.co-pane .apl-bar { padding: 16px 22px 8px; }
 /* 판 안의 지원자는 카드가 아니라 줄이다 — 카드 안에 카드를 두지 않는다. */
 .co-pane-apps .tal-card { background: transparent; box-shadow: none; border-color: var(--card-line); }
