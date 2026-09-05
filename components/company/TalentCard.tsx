@@ -71,15 +71,18 @@ export default function TalentCard({
 
         {/* 맨 위는 본인이 고른 한 마디다. 이름·나이는 그 사람을 특정하는 값일 뿐,
             고를지 말지를 정하는 값이 아니라 아래로 내린다. */}
-        <div className="tal-main" role="button" tabIndex={0}
-          title="이력서 보기"
-          onClick={() => onOpenResume(t)}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpenResume(t); } }}>
+        {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리를
+            눌러도 이력서가 열려, 눌렀는지 아닌지 헷갈린다. */}
+        <div className="tal-main">
           {/* 한줄소개를 안 쓴 사람은 이름이 맨 윗줄을 대신한다 — 「홍길동 님의 이력서」
               같은 자리 채우기를 넣으면 바로 아랫줄에서 이름을 또 읽게 된다. */}
-          <div className="tal-name">{t.intro || t.name}</div>
+          <button type="button" className="tal-name tal-open" title="이력서 보기"
+            onClick={() => onOpenResume(t)}>{t.intro || t.name}</button>
           <div className="tal-who">
-            {t.intro ? t.name : ""}{t.intro && 나이성별 ? " " : ""}{나이성별 && `(${나이성별})`}
+            <button type="button" className="tal-open" title="이력서 보기"
+              onClick={() => onOpenResume(t)}>
+              {t.intro ? t.name : ""}{t.intro && 나이성별 ? " " : ""}{나이성별 && `(${나이성별})`}
+            </button>
           </div>
           {지역 && <div className="tal-who">{지역}</div>}
         </div>

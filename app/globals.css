@@ -14572,7 +14572,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-main:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 6px; }
 .tal-name { font-size: var(--card-title); color: var(--color-text-strong); margin-bottom: 6px; text-decoration: none;
   display: block; line-height: 1.45; }
-.tal-main:hover .tal-name { color: var(--color-primary); text-decoration: underline;
+/* 여는 자리는 글자뿐이라, 글자에 손이 닿았을 때만 색이 든다. 예전에는 줄
+   전체(.tal-main)에 손만 올려도 이름이 보라로 들어 눌리는 자리로 보였다. */
+.tal-name:hover, .tal-open:hover { color: var(--color-primary); text-decoration: underline;
   text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
 .tal-who { font-size: var(--card-sub); color: var(--card-sub-c); line-height: 1.55; }
 .tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
