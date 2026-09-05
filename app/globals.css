@@ -14694,7 +14694,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 0; background: none; border: none; border-radius: 0;
   font-size: 13.5px; color: var(--color-primary);
 }
-.co-pane-title { margin: 4px 0 0; font-size: 21px; font-weight: 400; color: #1a1a1a; line-height: 1.35; }
+/* 화면 제목(.co-set-title)과 같은 크기 — 이 판의 주인이 무엇인지 한눈에. */
+.co-pane-title { margin: 4px 0 0; font-size: var(--page-title); font-weight: 400; color: #555; line-height: 1.35; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
 .co-pane-acts { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }
