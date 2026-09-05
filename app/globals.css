@@ -15073,19 +15073,16 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 공고 쪽은 카드가 아니라 그냥 바탕이다 — 이 판의 주인은 지원자 목록이다.
    카드는 그 아래 하나만 선다. */
-.co-pane-list {
-  /* 선 위에 둔 만큼 아래에도 둔다 — 카드가 선에 붙으면 선이 카드 테두리처럼 보인다.
-     좌우는 공고 글과 구분선에 맞춘다(22px) — 카드만 넓으면 튀어나와 보인다. */
-  margin: 22px 22px 0;
-  background: var(--card-bg); border: 1px solid var(--card-line);
-  border-radius: 12px; box-shadow: var(--card-shadow); overflow: hidden;
-}
+/* 지원자 쪽을 다시 상자로 감싸지 않는다 — 카드는 사람 하나마다 하나다.
+   여기서는 자리만 잡고, 왼쪽 끝은 공고 글과 같은 22px 에 선다. */
+.co-pane-list { margin-top: 22px; }
 .co-pane-card,
 .co-pane .apl-bar,
 .co-pane-apps { background: transparent; }
-.co-pane .apl-bar { padding: 16px 22px 8px; }
+.co-pane .apl-bar { padding: 0 22px 10px; }
 /* 판 안의 지원자는 카드가 아니라 줄이다 — 카드 안에 카드를 두지 않는다. */
-.co-pane-apps .tal-card { background: transparent; box-shadow: none; border-color: var(--card-line); }
+/* 사람 하나가 카드 하나다. */
+.co-pane-apps .tal-card { background: var(--card-bg); box-shadow: var(--card-shadow); border-color: var(--card-line); }
 /* 판 안에서도 고른 것이 보여야 한다 — 더 센 규칙이 보라 테두리를 덮고 있었다. */
 .co-pane-apps .tal-card:hover { border-color: var(--color-primary); }
 /* 여는 자리는 글자뿐. 상자도 밑줄도 없이 제 글자 그대로 선다. */
