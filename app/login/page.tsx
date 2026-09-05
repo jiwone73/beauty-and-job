@@ -53,7 +53,7 @@ function LoginStartContent() {
       <div className="flex-1 flex justify-center px-5 pt-10 md:pt-14 pb-16">
       <div className="w-full max-w-[400px]">
         {/* 슬로건 */}
-        <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
+        <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-3">
           뷰티 커리어의 시작과 성장
         </h1>
         {/* 여기 온 사람이 궁금한 건 '내 일자리가 있느냐'다 —
@@ -83,7 +83,7 @@ function LoginStartContent() {
             기업은 아래 링크로 보내고, 탭으로 먼저 고르게 하지 않는다. */}
         <button
           onClick={handleKakao}
-          className="w-full h-[52px] bg-[#FEE500] text-[#1a1a1a] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition"
+          className="w-full h-[52px] bg-[#FEE500] text-[#555] rounded-lg font-normal text-[15px] flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition"
         >
           <span>💬</span>
           <span>카카오로 계속하기</span>
@@ -99,7 +99,7 @@ function LoginStartContent() {
           </button>
         )}
         <Link href="/login/email">
-          <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#1a1a1a] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
+          <button className="w-full h-[52px] bg-white border border-[#c0c0c0] text-[#555] rounded-lg font-normal text-[15px] hover:border-[#582681] hover:bg-[#fafafa] transition flex items-center justify-center gap-2">
             <Mail size={18} />
             <span>이메일로 계속하기</span>
           </button>

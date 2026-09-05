@@ -51,7 +51,7 @@ export default function NoticeDetailPage() {
           <p style={{ fontSize: 13, color: "#aaa", margin: "0 0 20px", borderBottom: "1px solid #eee", paddingBottom: 20 }}>
             {fmtDate(notice.published_at || notice.created_at)}
           </p>
-          <div style={{ fontSize: 15, lineHeight: 1.8, color: "#333", whiteSpace: "pre-wrap" }}>{notice.body}</div>
+          <div style={{ fontSize: 15, lineHeight: 1.8, color: "#555", whiteSpace: "pre-wrap" }}>{notice.body}</div>
         </>
       )}
     </div>

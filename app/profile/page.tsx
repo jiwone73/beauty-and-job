@@ -649,7 +649,7 @@ export default function ProfilePage() {
                         style={{ position: "absolute", top: "100%", right: 0, marginTop: "6px", zIndex: 30, background: "#fff", border: "1px solid #efeff1", borderRadius: "10px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", padding: "6px", minWidth: "196px" }}>
                         <button
                           onClick={() => { avatarFileRef.current?.click(); setAvatarMenu(false); }}
-                          style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#333", cursor: "pointer", borderRadius: "6px" }}>
+                          style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 10px", border: "none", background: "transparent", fontSize: "13px", color: "#555", cursor: "pointer", borderRadius: "6px" }}>
                           {avatarUrl ? "사진 변경" : "사진 추가"}
                         </button>
                         {avatarUrl && (
@@ -669,7 +669,7 @@ export default function ProfilePage() {
                               <input type="checkbox" className="applied-check"
                                 checked={!avatarPublic}
                                 onChange={(e) => saveAvatarPublic(!e.target.checked)} />
-                              <span style={{ fontSize: "13px", color: "#333" }}>사진 비공개</span>
+                              <span style={{ fontSize: "13px", color: "#555" }}>사진 비공개</span>
                             </label>
                             {/* avatar_public 은 인재검색 쪽만 막는다. 지원한 곳은 그대로 본다.
                                 사진이 화면에서 사라지므로 지워진 것으로 오해하지 않게 적는다. */}
@@ -734,7 +734,7 @@ export default function ProfilePage() {
                       <span className="profile-info-label">{칸그림("휴대전화")}휴대전화<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button onClick={() => { setEditField(null); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); }}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#555", cursor: "pointer" }}>취소</button>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#582681" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
                           disabled={!phoneVerified}
@@ -885,7 +885,7 @@ export default function ProfilePage() {
                       <span className="profile-info-label">{칸그림("이메일")}이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button onClick={() => setEditField(null)}
-                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#333", cursor: "pointer" }}>취소</button>
+                          style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#555", cursor: "pointer" }}>취소</button>
                         <button
                           style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: "#582681", color: "#fff", cursor: "pointer" }}
                           onClick={async () => {
@@ -1074,7 +1074,7 @@ export default function ProfilePage() {
             {emailMsg && <p style={{ fontSize: 12, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => { setShowEmailModal(false); setEmailCode(""); setEmailCodeSent(false); setEmailMsg(""); }} disabled={emailBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>취소</button>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>취소</button>
               {isKakao ? (
                 <button onClick={startKakaoReauth} disabled={emailBusy}
                   style={{ flex: 1, height: 46, borderRadius: 8, border: "none", background: "#FEE500", color: "#191600", fontSize: 15, fontWeight: 700, cursor: emailBusy ? "not-allowed" : "pointer", opacity: emailBusy ? 0.7 : 1 }}>{emailBusy ? "이동 중..." : "카카오로 동기화"}</button>

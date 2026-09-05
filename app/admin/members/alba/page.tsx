@@ -104,7 +104,7 @@ export default function AlbaPage() {
     background: "#fff", border: "1px solid #eee", borderRadius: 12, padding: 18,
   };
   const label: React.CSSProperties = { fontSize: 12, color: "#888", marginBottom: 6 };
-  const big: React.CSSProperties = { fontSize: 24, color: "#1a1a1a" };
+  const big: React.CSSProperties = { fontSize: 24, color: "#555" };
 
   return (
     <AdminLayout activeMenu="members-alba">
@@ -141,7 +141,7 @@ export default function AlbaPage() {
 
         <div style={card}>
           <p style={label}>이번 주 근무시간 ({cw ? `${fmtDate(cw.start)}~${fmtDate(cw.end)}` : "-"})</p>
-          <p style={{ ...big, color: cw && cw.minutes >= weeklyTargetMin ? "#0f6e56" : "#1a1a1a" }}>
+          <p style={{ ...big, color: cw && cw.minutes >= weeklyTargetMin ? "#0f6e56" : "#555" }}>
             {formatMinutes(cw?.minutes || 0)}
           </p>
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
@@ -176,7 +176,7 @@ export default function AlbaPage() {
       </div>
 
       {/* 주차별 */}
-      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#1a1a1a" }}>주차별 진행</h3>
+      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#555" }}>주차별 진행</h3>
       <div style={{ ...card, padding: 0, overflowX: "auto", marginBottom: 24 }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 560 }}>
           <thead>
@@ -219,7 +219,7 @@ export default function AlbaPage() {
 
       {/* 근무 기록 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "0 0 10px" }}>
-        <h3 style={{ fontSize: 15, margin: 0, color: "#1a1a1a" }}>근무 기록</h3>
+        <h3 style={{ fontSize: 15, margin: 0, color: "#555" }}>근무 기록</h3>
         {canEdit && (
           <button onClick={() => setAdding(!adding)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
             <Plus size={14} /> 직접 추가
@@ -288,7 +288,7 @@ export default function AlbaPage() {
       </div>
 
       {/* 등록한 공고 */}
-      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#1a1a1a" }}>등록한 비회원 공고 ({data.postings.length}건)</h3>
+      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#555" }}>등록한 비회원 공고 ({data.postings.length}건)</h3>
       <div style={{ ...card, padding: 0, overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 620 }}>
           <thead>

@@ -72,7 +72,7 @@ export default function SmsModal({
             </div>
             <div style={{ maxHeight: 120, overflowY: "auto", background: "#f7f7f8", borderRadius: 10, padding: "10px 14px", fontSize: 13, lineHeight: 1.9 }}>
               {targets.map((t) => (
-                <div key={t.id} style={{ color: t.phone ? "#333" : "#bbb" }}>
+                <div key={t.id} style={{ color: t.phone ? "#555" : "#bbb" }}>
                   {t.name} · {t.phone || "번호 없음"}
                 </div>
               ))}

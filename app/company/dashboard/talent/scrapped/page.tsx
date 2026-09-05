@@ -65,7 +65,7 @@ export default function ScrappedTalentPage() {
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
 
-        <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{filtered.length}</strong>명</div>
+        <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#555" }}>{filtered.length}</strong>명</div>
 
         {loading ? (
           <div className="admin-empty">불러오는 중...</div>

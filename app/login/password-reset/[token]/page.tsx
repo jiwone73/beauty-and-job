@@ -58,7 +58,7 @@ export default function PasswordResetTokenPage() {
                 <CheckCircle size={32} className="text-[#582681]" />
               </div>
             </div>
-            <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] mb-3">
+            <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] mb-3">
               비밀번호 변경 완료
             </h1>
             <p className="text-[14px] md:text-[15px] text-[#6b6b6b] mb-10">
@@ -91,14 +91,14 @@ export default function PasswordResetTokenPage() {
           onClick={() => router.push("/login/email")}
           aria-label="뒤로"
           title="뒤로"
-          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#555] transition"
         >
           <ArrowLeft size={26} />
         </button>
       </div>
       <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-3">
             새 비밀번호 입력
           </h1>
           <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-10">

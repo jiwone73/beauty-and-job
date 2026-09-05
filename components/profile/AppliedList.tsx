@@ -129,8 +129,8 @@ export default function AppliedList({ userName }: { userName: string }) {
   // 상태는 먹색으로 적는다. 보라는 누를 것에만 쓴다 — 읽기만 하는 값에 브랜드
   // 색을 입히면 눈이 그리로 먼저 가고, 정작 누를 것과 구분이 안 된다.
   const statusTextColor: Record<string, string> = {
-    APPLIED: "#1a1a1a", REVIEWING: "#1a1a1a", VIEWED: "#1a1a1a",
-    INTERVIEW: "#1a1a1a", PASSED: "#1a1a1a", REJECTED: "#1a1a1a", WITHDRAWN: "#b4b4b9",
+    APPLIED: "#555", REVIEWING: "#555", VIEWED: "#555",
+    INTERVIEW: "#555", PASSED: "#555", REJECTED: "#555", WITHDRAWN: "#b4b4b9",
   };
   const statusLabel: Record<string, string> = {
     APPLIED: "지원완료", REVIEWING: "열람됨", VIEWED: "열람됨",
@@ -250,7 +250,7 @@ export default function AppliedList({ userName }: { userName: string }) {
                     </div>
                   )}
                 </div>
-                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#1a1a1a" }}>
+                <span className="applied-status-text" style={{ color: statusTextColor[app.status] || "#555" }}>
                   {statusLabel[app.status] || app.status}
                 </span>
               </div>

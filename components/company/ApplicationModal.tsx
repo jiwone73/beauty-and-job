@@ -101,7 +101,7 @@ export default function ApplicationModal({
     <div className="rp-modal-overlay">
       <div className="rp-modal resume-modal-flat" style={{ maxWidth: 720, maxHeight: "90vh", display: "flex", flexDirection: "column" }}>
         <div className="rp-modal-header">
-          <h2 style={{ fontSize: 18, color: "#1a1a1a", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{이름}</h2>
+          <h2 style={{ fontSize: 18, color: "#555", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{이름}</h2>
           <div className="rp-modal-actions">
             <button onClick={PDF받기} disabled={내려받는중 || 로딩} title="PDF 다운로드"
               style={{ display: "inline-flex", padding: 6, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>

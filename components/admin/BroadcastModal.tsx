@@ -105,7 +105,7 @@ export default function BroadcastModal({
             <div style={{ maxHeight: 96, overflowY: "auto", border: "1px solid #eee", borderRadius: 8, padding: "6px 10px", marginBottom: 10 }}>
               {valid.map((t) => (
                 <div key={t.id} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 13, padding: "2px 0" }}>
-                  <span style={{ color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name || "이름 없음"}</span>
+                  <span style={{ color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name || "이름 없음"}</span>
                   <span style={{ color: "#999", flexShrink: 0 }}>
                     {channel === "email" ? t.email : fmtPhone(t.phone)}
                   </span>

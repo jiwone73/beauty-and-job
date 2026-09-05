@@ -215,7 +215,7 @@ function SignupEmailContent() {
           onClick={() => router.back()}
           aria-label="뒤로"
           title="뒤로"
-          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#555] transition"
         >
           <ArrowLeft size={26} />
         </button>
@@ -223,7 +223,7 @@ function SignupEmailContent() {
 
       <div className="flex-1 flex justify-center px-5 py-8">
         <div className="w-full max-w-[420px]">
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-2">
             개인회원 가입
           </h1>
           <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-8">
@@ -248,7 +248,7 @@ function SignupEmailContent() {
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                 <StoreIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
-                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">매장</span>
+                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
                     살롱 · 샵 등 매장
                   </span>
@@ -273,7 +273,7 @@ function SignupEmailContent() {
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                 <OfficeIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
-                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">본사</span>
+                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">본사</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
                     브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳
                   </span>

@@ -239,7 +239,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                       ? salaryTxt
                       : (c.get(p) || "-");
                   return (
-                    <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#333" : "#555" }}>
+                    <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#555" : "#555" }}>
                       {content}
                     </td>
                   );

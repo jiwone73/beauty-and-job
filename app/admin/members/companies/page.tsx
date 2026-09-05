@@ -472,7 +472,7 @@ function AdminCompaniesContent() {
                         })()}
                       </div>
                       <span onClick={() => setCompanyDetail(c)}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#1a1a1a", cursor: "pointer", fontWeight: 400 }}>
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", cursor: "pointer", fontWeight: 400 }}>
                         {c.company_name}
                         <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {TYPE_LABEL[c.company_type] || c.company_type}
@@ -600,7 +600,7 @@ function AdminCompaniesContent() {
               {/* 이름 + 배지 */}
               <div style={{ padding: "18px 22px 0" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 19, fontWeight: 700, color: "#1a1a1a" }}>{companyDetail.company_name}</span>
+                  <span style={{ fontSize: 19, fontWeight: 700, color: "#555" }}>{companyDetail.company_name}</span>
                   <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#582681" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
                   <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#777" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
                 </div>
@@ -628,7 +628,7 @@ function AdminCompaniesContent() {
               {companyDetail.description && (
                 <div style={{ padding: "20px 22px 0" }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#582681", marginBottom: 7 }}>기업 소개</div>
-                  <p style={{ fontSize: 14, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{companyDetail.description}</p>
+                  <p style={{ fontSize: 14, color: "#555", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{companyDetail.description}</p>
                 </div>
               )}
 
@@ -641,7 +641,7 @@ function AdminCompaniesContent() {
                       const closed = j.status === "CLOSED" || j.status === "EXPIRED" || j.status === "HIDDEN";
                       const row = (
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f7f7f8", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
-                          <span style={{ fontSize: 14, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
+                          <span style={{ fontSize: 14, color: closed ? "#888" : "#555" }}>{j.title}</span>
                           <span style={{ fontSize: 12, color: closed ? "#aaa" : "#582681", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
                         </div>
                       );

@@ -374,7 +374,7 @@ function CompanyJobsContent() {
       {isMobile && (
         <>
           <style>{`
-            .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #333; cursor: pointer; }
+            .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #555; cursor: pointer; }
             .co-sumtog .chev { transition: transform .2s; color: #999; }
             .co-sumtog .chev.open { transform: rotate(180deg); }
             .company-stat-grid.co-4 { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 12px; }
@@ -394,7 +394,7 @@ function CompanyJobsContent() {
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
             .co-mbar-count strong { color: #582681; }
             .co-mbar-actions { display: flex; gap: 8px; }
-            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
+            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
             .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f7f7f8; }
             .co-mbar-btn.primary { border: none; background: #582681; color: #fff; }
             .co-mbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -403,16 +403,16 @@ function CompanyJobsContent() {
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
             .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
             .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
-            .co-sheet-title { font-size: 17px; font-weight: 400; color: #1a1a1a; }
+            .co-sheet-title { font-size: 17px; font-weight: 400; color: #555; }
             .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; font-weight: 400; cursor: pointer; }
             .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; font-weight: 400; cursor: pointer; }
             .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
             .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
-            .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+            .co-selbar-count { font-size: 14px; font-weight: 600; color: #555; }
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
           <div className="co-topbar">
@@ -488,7 +488,7 @@ function CompanyJobsContent() {
             .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #582681; background: #fff; color: #582681; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
             .co-closebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ddd; background: #fff; color: #666; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
             .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
-            .co-li-r2 b { color: #444; font-weight: 500; }
+            .co-li-r2 b { color: #555; font-weight: 500; }
           `}</style>
           {filtered.map((job) => {
             const on = checked.includes(job.id);

@@ -127,14 +127,14 @@ export default function StoryDetailPage() {
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 40px" }}>
       <header style={{ display: "flex", alignItems: "center", gap: 8, padding: "16px 0" }}>
-        <button onClick={() => router.back()} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "#333", lineHeight: 1 }}>‹</button>
+        <button onClick={() => router.back()} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer", color: "#555", lineHeight: 1 }}>‹</button>
         <Link href="/stories" style={{ fontSize: 15, fontWeight: 600, color: "#582681", textDecoration: "none" }}>현장이야기</Link>
       </header>
 
       <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f7f8", marginBottom: 20 }}>
         <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 12 }}>{post.category}</span>
-        {post.title && <h1 style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h1>}
-        <p style={{ fontSize: 16, color: "#333", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>
+        {post.title && <h1 style={{ fontSize: 16, fontWeight: 700, color: "#555", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h1>}
+        <p style={{ fontSize: 16, color: "#555", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 18 }}>
           <button onClick={handleLike}
             style={{
@@ -151,7 +151,7 @@ export default function StoryDetailPage() {
       </article>
 
       <section>
-        <h2 style={{ fontSize: 15, fontWeight: 700, color: "#333", marginBottom: 14 }}>댓글 {comments.length}</h2>
+        <h2 style={{ fontSize: 15, fontWeight: 700, color: "#555", marginBottom: 14 }}>댓글 {comments.length}</h2>
 
         <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
           <input
@@ -176,7 +176,7 @@ export default function StoryDetailPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#582681" }}>{c.anon_label || "익명"}</span>
                 </div>
-                <p style={{ fontSize: 14, color: "#333", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.body}</p>
+                <p style={{ fontSize: 14, color: "#555", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.body}</p>
                 <span style={{ fontSize: 12, color: "#bbb" }}>{fmtDate(c.created_at)}</span>
               </div>
             ))}

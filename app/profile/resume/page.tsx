@@ -555,7 +555,7 @@ function ResumePageContent() {
                 ? "몇 년차에 무엇을 잘하는지 (예: 7년차 뷰티 MD · 신제품 기획)"
                 : "몇 년차에 어떤 시술을 하는지 (예: 5년차 네일 아티스트 · 젤·아트)"}
               maxLength={60}
-              style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", color: "#333" }}
+              style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px", fontSize: "14px", color: "#555" }}
             />
           </section>
 
@@ -630,7 +630,7 @@ function ResumePageContent() {
               rows={7}
               placeholder="지원할 때 이 글을 불러와 공고에 맞게 고쳐 쓸 수 있어요"
               style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px",
-                fontSize: "14px", color: "#333", lineHeight: 1.7, resize: "vertical",
+                fontSize: "14px", color: "#555", lineHeight: 1.7, resize: "vertical",
                 fontFamily: "inherit" }}
             />
           </section>

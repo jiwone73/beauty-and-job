@@ -63,7 +63,7 @@ export default function ApplicantCard({
   // 브랜드 보라 하나로 간다. 아직 안 본 사람만 보라(할 일이 남은 것),
   // 끝난 것(불합격·지원취소)은 흐리게, 나머지는 먹색.
   const 상태색 = a.status === "APPLIED" ? "#582681"
-    : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#1a1a1a";
+    : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#555";
 
   const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
     : (a as any).proposed_at ? "제안 후 지원" : null;

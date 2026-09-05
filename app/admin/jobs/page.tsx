@@ -319,7 +319,7 @@ function AdminJobsPageInner() {
                   <td>
                     <span className="adm-td2 adm-w-lg"
                       title={job.title}
-                      style={{ color: "#333", cursor: "pointer", fontWeight: 400 }}
+                      style={{ color: "#555", cursor: "pointer", fontWeight: 400 }}
                       onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
                       {job.title}
                     </span>
@@ -343,7 +343,7 @@ function AdminJobsPageInner() {
                         </div>
                       )}
                       <div className="admin-td-brand"
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#1a1a1a", cursor: "pointer", fontWeight: 400 }}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", cursor: "pointer", fontWeight: 400 }}
                         onClick={() => job.company_id && openCompany(job.company_id)}>
                         {job.company_name}
                       </div>

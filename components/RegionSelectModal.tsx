@@ -67,7 +67,7 @@ export default function RegionSelectModal({ open, initial, onClose, onApply, all
 
         {allowAny && (
           <button type="button" onClick={toggleAny}
-            style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "13px 16px", borderTop: "1px solid #f0f0f0", borderBottom: "1px solid #f0f0f0", borderLeft: "none", borderRight: "none", background: isAny ? "#f7f7f8" : "#fff", cursor: "pointer", fontSize: 14, color: "#333", fontFamily: "inherit" }}>
+            style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "13px 16px", borderTop: "1px solid #f0f0f0", borderBottom: "1px solid #f0f0f0", borderLeft: "none", borderRight: "none", background: isAny ? "#f7f7f8" : "#fff", cursor: "pointer", fontSize: 14, color: "#555", fontFamily: "inherit" }}>
             <span className={`region-check ${isAny ? "on" : ""}`}>{isAny && <Check size={13} />}</span>
             지역 무관 (전국 어디든 좋아요)
           </button>

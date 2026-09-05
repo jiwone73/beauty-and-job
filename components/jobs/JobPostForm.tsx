@@ -1464,7 +1464,7 @@ export default function JobPostForm({
     } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
-  const lbl: React.CSSProperties = { fontSize: 14, fontWeight: 500, color: "#444", marginBottom: 6 };
+  const lbl: React.CSSProperties = { fontSize: 14, fontWeight: 500, color: "#555", marginBottom: 6 };
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
@@ -2324,7 +2324,7 @@ export default function JobPostForm({
             적으면 머리줄과 같은 말이 위아래로 겹친다. 채우면 둘 다 사라지고 값만 남는다. */}
         <button type="button"
           onClick={(e) => { if (open) { setCellOpen(null); return; } setCellFree(false); openPopAt(e.currentTarget, width, height); setCellOpen(key); }}
-          style={{ ...cellSelect, background: "transparent", textAlign: "center", color: v ? "#333" : "#b4b4b9",
+          style={{ ...cellSelect, background: "transparent", textAlign: "center", color: v ? "#555" : "#b4b4b9",
             display: "flex", alignItems: wrap ? "flex-start" : "center", justifyContent: "center", gap: 4,
             border: "none", borderRadius: 0 }}>
           {/* 값을 잘라내지(...) 않고 접는다("말줄임은 절대 나오면 안됨") — 표가
@@ -2350,7 +2350,7 @@ export default function JobPostForm({
                 {options.map((o) => (
                   <button key={o} type="button" onClick={() => { setPos(cat, field, o); setCellOpen(null); }}
                     style={{ display: "block", width: "100%", textAlign: "left", border: "none", borderRadius: 5, padding: "6px 8px", fontSize: 12.5, lineHeight: 1.2, cursor: "pointer",
-                      background: o === v ? "#f7f7f8" : "transparent", color: o === v ? "#582681" : "#333" }}>{o}</button>
+                      background: o === v ? "#f7f7f8" : "transparent", color: o === v ? "#582681" : "#555" }}>{o}</button>
                 ))}
                 {allowFi && nonMember && (
                   <button type="button" onClick={() => setCellFree(true)}
@@ -2436,7 +2436,7 @@ export default function JobPostForm({
         {fiOpen === key
           ? <span style={{ fontSize: 12, color: "#b0a7bf", whiteSpace: "nowrap" }}>입력 중…</span>
           : (val.trim()
-              ? <span onClick={() => setFiOpen(key)} title="클릭해 수정" style={{ fontSize: 15, color: "#333", cursor: "pointer", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
+              ? <span onClick={() => setFiOpen(key)} title="클릭해 수정" style={{ fontSize: 15, color: "#555", cursor: "pointer", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{val}</span>
               : (showLink
                   ? <button type="button" onClick={() => setFiOpen(key)} style={{ border: "none", background: "none", padding: 0, fontSize: 12, color: "#b0a7bf", cursor: "pointer", textDecoration: "underline", whiteSpace: "nowrap" }}>직접입력</button>
                   : null))}
@@ -2738,7 +2738,7 @@ export default function JobPostForm({
       {/* 관리자 화면 제목 — 기업 폼은 위 헤더 줄로 옮겼다(목록으로 링크가 있던 자리). */}
       {mode === "admin" && !isMobile && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 10px`, boxSizing: "border-box" }}>
-          <h2 style={{ fontSize: 18, fontWeight: 400, color: "#1a1a1a", margin: "0 0 0 2px" }}>
+          <h2 style={{ fontSize: 18, fontWeight: 400, color: "#555", margin: "0 0 0 2px" }}>
             {editId ? "채용공고 수정" : "채용공고 등록"}
           </h2>
         </div>
@@ -2755,7 +2755,7 @@ export default function JobPostForm({
             {([["매장", "매장"], ["기업", "본사"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
-                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: on ? "#1a1a1a" : "#666" }}>
+                <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: on ? "#555" : "#666" }}>
                   <span style={{ width: 16, height: 16, borderRadius: "50%", border: on ? "1.5px solid #555" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {on && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#555" }} />}
                   </span>
@@ -2811,7 +2811,7 @@ export default function JobPostForm({
             <span style={{ fontWeight: 400, fontSize: 16, color: "#582681" }}>{mode === "admin" ? "외부 공고 불러오기" : "타 사이트 공고 불러오기"}</span>
             <div style={{ display: "flex", gap: 20 }}>
               {([["url", "회사명 / URL"], ["paste", "글 붙여넣기"]] as ["url" | "paste" | "ocr", string][]).map(([v, l]) => (
-                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: importMode === v ? "#1a1a1a" : "#666" }}>
+                <label key={v} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: importMode === v ? "#555" : "#666" }}>
                   <span style={{ width: 16, height: 16, borderRadius: "50%", border: importMode === v ? "1.5px solid #555" : "1.5px solid #cfcfcf", boxSizing: "border-box", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {importMode === v && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#555" }} />}
                   </span>
@@ -2893,7 +2893,7 @@ export default function JobPostForm({
                       {on && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#582681" }} />}
                     </span>
                     <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#582681", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
                     <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} title="원문 공고 새 탭으로 열기"
                       style={{ flexShrink: 0, color: "#bbb", fontSize: 13, textDecoration: "none", padding: "0 2px" }}>↗</a>
                   </div>
@@ -3186,7 +3186,7 @@ export default function JobPostForm({
                     onFocus={() => set제목쓰는중(true)}
                     onBlur={() => set제목쓰는중(false)}
                     className="jobpost-title-input"
-                    style={{ width: "100%", fontWeight: 400, color: "#1a1a1a", lineHeight: 1.3, fontFamily: "inherit", position: "relative", zIndex: 1, background: "transparent" }}
+                    style={{ width: "100%", fontWeight: 400, color: "#555", lineHeight: 1.3, fontFamily: "inherit", position: "relative", zIndex: 1, background: "transparent" }}
                   />
                   {!!남은자리글 && (
                     <div aria-hidden className="jobpost-title-input jp-title-eg">
@@ -3497,7 +3497,7 @@ export default function JobPostForm({
                         팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
-                      style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#333" : "#cfcfcf") }}>
+                      style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#555" : "#cfcfcf") }}>
                       {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "목록에서 선택하기")}
                     </button>
                     )}
@@ -3706,8 +3706,8 @@ export default function JobPostForm({
                 // 값은 라벨(제목)보다 커지지 않게 한다 — 라벨이 15 이므로 값은 14.
                 // 값이 더 크면 라벨이 부제처럼 보여 어느 쪽이 항목 이름인지 헷갈린다.
                 const fld = (filled: boolean): CSSProperties => filled
-                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#333", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
-                  : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#333", outline: "none", padding: 0, boxSizing: "border-box" };
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#555", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
+                  : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#555", outline: "none", padding: 0, boxSizing: "border-box" };
                 return (
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
@@ -3752,14 +3752,14 @@ export default function JobPostForm({
                       <div style={{ fontSize: 15, color: "#999", marginBottom: 3 }}>마감일</div>
                       <button type="button"
                         onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#333" : "#cfcfcf", cursor: "pointer" }}>
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#cfcfcf", cursor: "pointer" }}>
                         {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
                       </button>
                       {deadlineModalOpen && popAt && (
                         /* 절대위치 240px이라 좁은 화면에서 오른쪽으로 넘쳐 잘렸다 → 표 팝오버와 같은 화면 고정 좌표로. */
                         <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: "12px", width: 240, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
                           <input type="date" min={new Date().toISOString().slice(0, 10)} value={alwaysOpenDraft ? "" : deadlineDraft} disabled={alwaysOpenDraft} onChange={(e) => setDeadlineDraft(e.target.value)}
-                            style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#333" }} />
+                            style={{ width: "100%", height: 40, boxSizing: "border-box", border: "1px solid #ddd", borderRadius: "8px", padding: "0 12px", fontSize: "14px", background: alwaysOpenDraft ? "#f5f5f5" : "#fff", color: alwaysOpenDraft ? "#aaa" : "#555" }} />
                           <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
                             <input type="checkbox" checked={alwaysOpenDraft} onChange={(e) => setAlwaysOpenDraft(e.target.checked)} /> 상시채용 (마감일 없음)
                           </label>
@@ -3806,7 +3806,7 @@ export default function JobPostForm({
                       <input value={f.v} inputMode={f.im} aria-label={`담당자 ${f.이름}`}
                         autoComplete={`bw-${f.k}`} name={`bw-${f.k}`} data-lpignore="true" data-1p-ignore
                         onChange={(e) => f.set(e.target.value)}
-                        style={{ flex: 1, minWidth: 0, height: 24, border: "none", borderRadius: 5, fontSize: 14, color: "#333", outline: "none",
+                        style={{ flex: 1, minWidth: 0, height: 24, border: "none", borderRadius: 5, fontSize: 14, color: "#555", outline: "none",
                           background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
                       {!f.v && (
                         <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
@@ -3852,7 +3852,7 @@ export default function JobPostForm({
                       value={content}
                       placeholder="담당업무 · 자격요건 · 우대사항 등 공고 내용을 그대로 붙여넣으세요"
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
-                      style={{ width: "100%", fontSize: 16, color: "#333", lineHeight: 1.5, fontFamily: "inherit" }} />
+                      style={{ width: "100%", fontSize: 16, color: "#555", lineHeight: 1.5, fontFamily: "inherit" }} />
                   </div>
                 );
               })}
@@ -3873,7 +3873,7 @@ export default function JobPostForm({
                   관리자 직접등록만 점선 상자를 남긴다: 외부 공고를 옮길 때 스크린샷을
                   Ctrl+V 로 바로 붙이고 여러 장을 끌어다 놓는 일이 실제 작업이다. */}
               <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10, paddingTop: 14, borderTop: "1px solid var(--color-border)" }}>
-                <label style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, height: 34, padding: "0 14px", border: "1px solid #d8d8de", borderRadius: 8, background: "#fff", fontSize: 13.5, color: uploading ? "#b4b4b9" : "#444", cursor: uploading ? "wait" : "pointer" }}>
+                <label style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, height: 34, padding: "0 14px", border: "1px solid #d8d8de", borderRadius: 8, background: "#fff", fontSize: 13.5, color: uploading ? "#b4b4b9" : "#555", cursor: uploading ? "wait" : "pointer" }}>
                   {uploading ? "올리는 중…" : "파일 첨부하기"}
                   <input type="file" accept="image/*" multiple disabled={uploading || detailImages.length >= 12} onChange={handleImageUpload} style={{ display: "none" }} />
                 </label>
@@ -3953,7 +3953,7 @@ export default function JobPostForm({
               {(() => {
                 const row: CSSProperties = { display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" };
                 const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#999", fontSize: 15, paddingTop: 1 };
-                const val: CSSProperties = { fontSize: 15, color: "#333", lineHeight: 1.5 };
+                const val: CSSProperties = { fontSize: 15, color: "#555", lineHeight: 1.5 };
                 const location = composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address);
                 const rows: [string, string][] = isOffice
                   ? [["회사명", cp.company_name], ["업종", cp.industry], ["직원수", cp.company_size], ["홈페이지", cp.website_url], ["주소", location]]
@@ -3981,8 +3981,8 @@ export default function JobPostForm({
                 const req: CSSProperties = { color: "var(--color-primary)" };
                 // 모집요강과 동일: 빈 값이면 텍스트 없는 연보라 하이라이트 블록, 입력하면 확장(플레이스홀더 없음)
                 const inpHl = (filled: boolean): CSSProperties => filled
-                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, fontWeight: 400, color: "#333", outline: "none", padding: "6px 2px", height: 32, lineHeight: "20px", boxSizing: "border-box" }
-                  : { flexShrink: 0, border: "none", background: PH_BG, borderRadius: 5, width: 56, height: 20, padding: 0, fontSize: 15, color: "#333", outline: "none", boxSizing: "border-box" };
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", fontSize: 15, fontWeight: 400, color: "#555", outline: "none", padding: "6px 2px", height: 32, lineHeight: "20px", boxSizing: "border-box" }
+                  : { flexShrink: 0, border: "none", background: PH_BG, borderRadius: 5, width: 56, height: 20, padding: 0, fontSize: 15, color: "#555", outline: "none", boxSizing: "border-box" };
                 const sel3 = (filled: boolean): CSSProperties => ({ ...inpHl(filled), appearance: "none", WebkitAppearance: "none", MozAppearance: "none", cursor: "pointer" });
                 const full: CSSProperties = { gridColumn: "1 / -1" };
                 return (
@@ -3998,7 +3998,7 @@ export default function JobPostForm({
                     {isOffice && (
                       <div style={{ ...row, alignItems: "flex-start" }}><span style={{ ...lbl2, paddingTop: 6 }}>{L.site}</span>
                         {/* 인스타 주소는 한 줄에 안 들어간다. input 은 줄바꿈이 안 되므로 늘어나는 칸을 쓴다. */}
-                        <AutoTextarea style={nmHomepage ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.5 } : { ...inpHl(false), marginTop: 6 }}
+                        <AutoTextarea style={nmHomepage ? { flex: 1, minWidth: 0, fontSize: 15, color: "#555", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.5 } : { ...inpHl(false), marginTop: 6 }}
                           value={nmHomepage} onChange={(e) => setNmHomepage(e.target.value)} /></div>
                     )}
                     {/* 주소는 한 줄로 본다 — 기업회원 폼도 합쳐진 주소 한 줄이다.
@@ -4012,7 +4012,7 @@ export default function JobPostForm({
                     {!isOffice && (
                       <div style={{ ...row, alignItems: "flex-start" }}>
                         <span style={{ ...lbl2, paddingTop: 6 }}>{L.intro}</span>
-                        <AutoTextarea style={nmDescription ? { flex: 1, minWidth: 0, fontSize: 15, color: "#333", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.6 } : { ...inpHl(false), marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
+                        <AutoTextarea style={nmDescription ? { flex: 1, minWidth: 0, fontSize: 15, color: "#555", padding: "6px 2px", fontFamily: "inherit", lineHeight: 1.6 } : { ...inpHl(false), marginTop: 6 }} value={nmDescription} onChange={(e) => setNmDescription(e.target.value)} />
                       </div>
                     )}
                   </div>

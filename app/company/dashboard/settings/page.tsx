@@ -294,7 +294,7 @@ export default function CompanySettingsPage() {
   const 사업자번호칸 = (
     <div className="admin-form-row">
       <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
-      <span style={{ fontSize: 16, color: info?.business_number ? "#333" : "#bbb" }}>{info?.business_number || "미등록"}</span>
+      <span style={{ fontSize: 16, color: info?.business_number ? "#555" : "#bbb" }}>{info?.business_number || "미등록"}</span>
     </div>
   );
   const 링크목록 = (

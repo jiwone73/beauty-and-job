@@ -449,7 +449,7 @@ function AdminMembersPageInner() {
                           {/* 1행: 이름 + 성별 */}
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                             {m.resume_id ? (
-                              <button onClick={() => setSelected(m)} style={{ color: "#1a1a1a", fontWeight: 400, background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}>{m.name}</button>
+                              <button onClick={() => setSelected(m)} style={{ color: "#555", fontWeight: 400, background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}>{m.name}</button>
                             ) : (
                               <span style={{ fontWeight: 600 }}>{m.name}</span>
                             )}

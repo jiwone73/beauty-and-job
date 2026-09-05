@@ -321,7 +321,7 @@ export default function ResumeEditor({
             rows={2}
             style={{
               width: "100%", display: "block", marginTop: 8, padding: "12px 14px", borderRadius: 10,
-              border: "1px solid #e5e5e5", fontSize: 14, lineHeight: 1.6, color: "#1a1a1a",
+              border: "1px solid #e5e5e5", fontSize: 14, lineHeight: 1.6, color: "#555",
               resize: "none", overflow: "hidden", minHeight: 72,
               boxSizing: "border-box", fontFamily: "inherit",
             }}
@@ -698,7 +698,7 @@ export default function ResumeEditor({
             onClick={(e) => e.stopPropagation()}
             style={{ width: "100%", maxWidth: 380, background: "#fff", borderRadius: 20, padding: "28px 24px 20px", boxShadow: "0 12px 40px rgba(0,0,0,0.18)", textAlign: "center" }}
           >
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", margin: "0 0 12px" }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "#555", margin: "0 0 12px" }}>
               신입으로 전환할까요?
             </h3>
             <p style={{ fontSize: 14, lineHeight: 1.65, color: "#555", margin: "0 0 22px" }}>

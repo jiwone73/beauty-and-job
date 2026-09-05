@@ -295,7 +295,7 @@ export default function CompanySignupPage() {
                 <path d="M5 13l4 4L19 7" stroke="#582681" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h1 className="text-[16px] font-normal text-[#1a1a1a] mb-3">회원가입 신청이 완료되었습니다</h1>
+            <h1 className="text-[16px] font-normal text-[#555] mb-3">회원가입 신청이 완료되었습니다</h1>
             <p className="text-[15px] text-[#6b6b6b] leading-relaxed mb-8">
               입력하신 기업 정보를 확인한 뒤 승인해 드립니다.<br />
               승인이 완료되면 로그인하여 채용공고를 등록하실 수 있습니다.<br />
@@ -330,7 +330,7 @@ export default function CompanySignupPage() {
             <Link href="/" className="logo auth-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
 
-          <h1 className="text-[20px] md:text-[24px] font-normal text-[#1a1a1a] text-center mb-2">
+          <h1 className="text-[20px] md:text-[24px] font-normal text-[#555] text-center mb-2">
             기업회원 가입
           </h1>
           <p className="text-[14px] md:text-[16px] text-[#6b6b6b] text-center mb-8">
@@ -355,7 +355,7 @@ export default function CompanySignupPage() {
                   {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                   <t.Icon size={30} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                   <span className="jt-text flex flex-col min-w-0">
-                    <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#1a1a1a]">{t.label}</span>
+                    <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">{t.label}</span>
                     <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">{t.desc}</span>
                   </span>
                   {form.company_type === t.value && (

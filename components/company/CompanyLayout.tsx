@@ -241,7 +241,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
         <style>{`
           .co-m { min-height: 100vh; background: #fff; padding-bottom: 68px; }
           .co-m-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 14px; background: #fff; border-bottom: 1px solid #eee; }
-          .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a; min-width: 0; }
+          .co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #555; min-width: 0; }
           .co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #582681; flex-shrink: 0; }
           .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
           .co-m-nametype { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
@@ -249,12 +249,12 @@ export default function CompanyLayout({ children, activePage, title, side }: {
           .co-m-type { font-size: 11px; color: #999; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
           .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
-          .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #333; cursor: pointer; }
+          .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #555; cursor: pointer; }
           .co-m-logomenu button:active { background: #f7f7f8; }
           .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
           .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
           .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
-          .co-m-title { padding: 14px 16px 4px; font-size: 18px; font-weight: 400; color: #1a1a1a; }
+          .co-m-title { padding: 14px 16px 4px; font-size: 18px; font-weight: 400; color: #555; }
           .co-m-content { padding: 6px 14px 20px; }
           .co-m-content .company-content { padding: 0 !important; }
           .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
@@ -311,7 +311,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
               ) : (
                 notifs.map((n) => (
                   <button key={n.id} className={`co-m-notif-item ${n.is_read ? "" : "unread"}`} onClick={() => handleNotifClick(n)}>
-                    <span style={{ fontSize: 13.5, fontWeight: 400, color: "#1a1a1a" }}>{n.title}</span>
+                    <span style={{ fontSize: 13.5, fontWeight: 400, color: "#555" }}>{n.title}</span>
                     <span style={{ fontSize: 12.5, color: "#777" }}>{n.message}</span>
                     <span style={{ fontSize: 11, color: "#aaa" }}>{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
                   </button>
@@ -366,7 +366,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
           background: #f2f2f4; display: flex; align-items: center; justify-content: center;
           font-size: 14px; font-weight: 700; color: var(--color-primary); }
         .co-top-ava img { width: 100%; height: 100%; object-fit: cover; }
-        .co-top-mename { font-size: 14px; color: #333; max-width: 120px; overflow: hidden;
+        .co-top-mename { font-size: 14px; color: #555; max-width: 120px; overflow: hidden;
           text-overflow: ellipsis; white-space: nowrap; }
         .co-top-mewrap { position: relative; }
         .co-top-me { background: none; border: none; padding: 0; cursor: pointer; }
@@ -375,7 +375,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
           background: #fff; border: 1px solid #eee; border-radius: 10px; overflow: hidden;
           box-shadow: 0 8px 22px rgba(0,0,0,0.14); }
         .co-top-memenu button { display: flex; align-items: center; gap: 8px; width: 100%;
-          padding: 11px 14px; background: none; border: none; font-size: 14px; color: #333;
+          padding: 11px 14px; background: none; border: none; font-size: 14px; color: #555;
           cursor: pointer; white-space: nowrap; }
         .co-top-memenu button:hover { background: #f7f7f8; }
         /* 왼쪽 사이드가 빠지면서 판이 넓어졌다. 좁게 짜인 화면(공고 관리·인재풀·프로필)이
@@ -386,7 +386,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
           display: grid; grid-template-columns: fit-content(100%); justify-content: center; }
         /* 제목은 본문 한가운데. 사이드가 있는 화면(.co-set-title)과 같은 자리다 —
            한쪽만 왼쪽에 붙어 있으면 머리줄에서 갈래를 옮길 때마다 제목이 튄다. */
-        .co-top-title { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 18px; text-align: center; }
+        .co-top-title { font-size: var(--page-title); font-weight: 700; color: #555; margin: 0 0 18px; text-align: center; }
         /* 설정 계열 사이드 — 개인회원 프로필 사이드(.pf-side)와 같은 결로 맞춘다. */
         /* 폭을 못박는다(176 + 28 + 800). 판이 가운데 정렬이라, 화면마다 본문 폭이
            다르면 사이드까지 따라 움직여 메뉴를 누를 때마다 화면이 흔들린다. 기준은
@@ -405,7 +405,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
            28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
         .co-set-main { flex: 1; min-width: 0;
           border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
-        .co-set-title { font-size: var(--page-title); font-weight: 700; color: #1a1a1a; margin: 0 0 12px; text-align: center; }
+        .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.
@@ -414,7 +414,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
         .co-set-item { display: block; padding: 10px 12px;
           border-radius: 8px; font-size: 16px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
-        .co-set-item:hover { background: #f7f7f8; color: #1a1a1a; }
+        .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }

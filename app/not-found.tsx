@@ -25,7 +25,7 @@ export default function NotFound() {
       <h1 style={{
         fontSize: "24px",
         fontWeight: 700,
-        color: "#1a1a1a",
+        color: "#555",
         marginBottom: "12px",
         textAlign: "center",
       }}>

@@ -144,7 +144,7 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row" style={row}>
                   <label className="admin-form-label" style={label}><Building2 size={15} className="admin-form-icon" />가입 유형</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 7 }}>
-                    <span style={{ fontSize: 16, color: 유형이름 ? "#333" : "#bbb" }}>{유형이름 || "미등록"}</span>
+                    <span style={{ fontSize: 16, color: 유형이름 ? "#555" : "#bbb" }}>{유형이름 || "미등록"}</span>
                     {/* 반 칸짜리 자리라 한마디만 — 긴 설명은 가입 화면에서 이미 읽었다. */}
                     {유형이름 && (
                       <span style={{ fontSize: 15, color: "#b0b0b6" }}>
@@ -163,7 +163,7 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ fontSize: 16, color: phone ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
+                    <span style={{ fontSize: 16, color: phone ? "#555" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
                     <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
                   </span>
                 </div>
@@ -173,7 +173,7 @@ export default function CompanyAccountPage() {
                   style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ fontSize: 16, color: email ? "#333" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
+                    <span style={{ fontSize: 16, color: email ? "#555" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
                     <span style={{ color: "#ccc", fontSize: 16, flexShrink: 0 }}>›</span>
                   </span>
                 </div>
@@ -212,7 +212,7 @@ export default function CompanyAccountPage() {
             {phoneMsg && <p style={{ fontSize: 15, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{phoneMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowPhoneModal(false)} disabled={phoneSending || phoneVerifying}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
                 취소
               </button>
               {!phoneCodeSent ? (
@@ -248,7 +248,7 @@ export default function CompanyAccountPage() {
             {emailMsg && <p style={{ fontSize: 15, color: "#582681", margin: "6px 0 0", lineHeight: 1.5 }}>{emailMsg}</p>}
             <div style={{ display: "flex", gap: 8, marginTop: 18 }}>
               <button onClick={() => setShowEmailModal(false)} disabled={emailBusy}
-                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#333", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
+                style={{ flex: 1, height: 46, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 16, fontWeight: 400, cursor: "pointer" }}>
                 취소
               </button>
               {emailStep === 1 ? (

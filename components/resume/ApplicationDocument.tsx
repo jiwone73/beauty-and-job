@@ -47,7 +47,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
                 제목과 첫 줄 사이보다 훨씬 넓어진다. 빈 줄로 끊어 문단으로 세우고
                 사이 여백은 우리가 정한다. */}
             {String(coverLetter).split(/\n{2,}/).map((단락, i) => (
-              <p key={i} style={{ fontSize: 14, color: "#333", lineHeight: 1.85,
+              <p key={i} style={{ fontSize: 14, color: "#555", lineHeight: 1.85,
                 margin: i === 0 ? 0 : "10px 0 0", whiteSpace: "pre-wrap" }}>{단락}</p>
             ))}
           </div>

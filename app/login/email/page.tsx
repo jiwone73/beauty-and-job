@@ -103,7 +103,7 @@ export default function LoginEmailPage() {
           onClick={() => router.back()}
           aria-label="뒤로"
           title="뒤로"
-          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#555] transition"
         >
           <ArrowLeft size={26} />
         </button>
@@ -111,7 +111,7 @@ export default function LoginEmailPage() {
 
       <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-10">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-10">
             이메일로 로그인
           </h1>
 
@@ -173,7 +173,7 @@ export default function LoginEmailPage() {
               {notice.providers.includes("kakao") && (
                 <button
                   onClick={() => { window.location.href = "/api/auth/kakao"; }}
-                  className="w-full h-[44px] bg-[#FEE500] text-[#1a1a1a] rounded-lg text-[14px] mb-2"
+                  className="w-full h-[44px] bg-[#FEE500] text-[#555] rounded-lg text-[14px] mb-2"
                 >
                   카카오로 계속하기
                 </button>

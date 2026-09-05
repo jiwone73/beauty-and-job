@@ -444,27 +444,27 @@ export default function TalentPage() {
           <style>{`
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
-            .co-mbar-count strong { color: #1a1a1a; }
+            .co-mbar-count strong { color: #555; }
             .co-mbar-actions { display: flex; gap: 8px; }
-            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; }
             .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f7f7f8; }
             .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
             .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 84vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
             @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
             .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
             .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
-            .co-sheet-title { font-size: 17px; font-weight: 400; color: #1a1a1a; }
+            .co-sheet-title { font-size: 17px; font-weight: 400; color: #555; }
             .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; font-weight: 400; cursor: pointer; }
             .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #444; font-size: 14px; font-weight: 400; cursor: pointer; }
+            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; font-weight: 400; cursor: pointer; }
             .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
-            .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #333; font-size: 14px; font-weight: 400; cursor: pointer; text-align: left; }
+            .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; font-weight: 400; cursor: pointer; text-align: left; }
             .co-fsel-btn .ph { color: #aaa; }
             .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
-            .co-selbar-count { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+            .co-selbar-count { font-size: 14px; font-weight: 600; color: #555; }
             .co-selbar-act { display: inline-flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; color: #582681; font-size: 14px; font-weight: 600; padding: 6px; }
           `}</style>
           <div className="co-mbar">
@@ -494,7 +494,7 @@ export default function TalentPage() {
           <button
             onClick={() => setJobGroupOpen(true)}
             className="filter-dd-btn"
-            style={{ gap: 6, minWidth: 130, color: selectedJobGroups.length > 0 ? "#333" : "#999" }}
+            style={{ gap: 6, minWidth: 130, color: selectedJobGroups.length > 0 ? "#555" : "#999" }}
           >
             <span style={{ flex: 1, textAlign: "left" }}>{jobGroupLabel}</span>
             <ChevronDown size={14} />
@@ -504,7 +504,7 @@ export default function TalentPage() {
             <button
               onClick={() => setRegionOpen(true)}
               className="filter-dd-btn"
-              style={{ gap: 6, minWidth: 130, color: selectedRegions.length > 0 ? "#333" : "#999" }}
+              style={{ gap: 6, minWidth: 130, color: selectedRegions.length > 0 ? "#555" : "#999" }}
             >
               <MapPin size={14} style={{ flexShrink: 0 }} />
               <span style={{ flex: 1, textAlign: "left" }}>{regionLabel}</span>
@@ -625,7 +625,7 @@ export default function TalentPage() {
 
       {/* 결과 수 (데스크톱 — 모바일은 컨트롤 바에 표시) */}
       {!isMobile && (
-        <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#1a1a1a" }}>{total}</strong>명</div>
+        <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#555" }}>{total}</strong>명</div>
       )}
 
       {/* 리스트 */}
@@ -649,7 +649,7 @@ export default function TalentPage() {
             .co-li-avatar { width: 44px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-            .co-li-name { font-size: 15.5px; color: #1a1a1a; flex-shrink: 0; }
+            .co-li-name { font-size: 15.5px; color: #555; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
             .co-li-job { font-size: 15.5px; color: #582681; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

@@ -71,7 +71,7 @@ export default function CompanyNotificationsPage() {
   const 칸 = (key: string, title: string, 켜짐: boolean, 누름: () => void) => (
     <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "15px 16px",
       display: "flex", alignItems: "center", gap: 12 }}>
-      <div style={{ flex: 1, minWidth: 0, fontSize: 16, color: "#1a1a1a" }}>{title}</div>
+      <div style={{ flex: 1, minWidth: 0, fontSize: 16, color: "#555" }}>{title}</div>
       <button type="button" role="switch" aria-checked={켜짐} aria-label={title} onClick={누름}
         style={{ width: 42, height: 24, borderRadius: 12, border: "none", flexShrink: 0,
           cursor: "pointer", padding: 2, display: "flex",
@@ -83,7 +83,7 @@ export default function CompanyNotificationsPage() {
     </div>
   );
 
-  const 묶음제목 = { fontSize: 16, color: "#1a1a1a", margin: "0 0 4px" } as const;
+  const 묶음제목 = { fontSize: 16, color: "#555", margin: "0 0 4px" } as const;
   const 묶음설명 = { fontSize: 15, color: "#8a8a90", margin: "0 0 12px", lineHeight: 1.6 } as const;
   const 두칸 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } as const;
 

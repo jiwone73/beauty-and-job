@@ -255,7 +255,7 @@ export default function AdminAdsPage() {
               </div>
               <div style={{ marginBottom: 18 }}>
                 <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
-                <div style={{ background: "#f7f7f8", borderRadius: 10, padding: 14, fontSize: 15, lineHeight: 1.7, color: "#333", whiteSpace: "pre-wrap" }}>{selected.message}</div>
+                <div style={{ background: "#f7f7f8", borderRadius: 10, padding: 14, fontSize: 15, lineHeight: 1.7, color: "#555", whiteSpace: "pre-wrap" }}>{selected.message}</div>
               </div>
 
               </div>{/* 왼쪽 끝 */}

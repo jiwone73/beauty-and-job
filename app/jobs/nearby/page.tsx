@@ -478,7 +478,7 @@ export default function NearbyJobsPage() {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 12.5, color: "#888", margin: 0 }}>{jobCompanyName(j.job_type, j.company_name, j.brand_name)}</p>
-                <p style={{ fontSize: 14.5, fontWeight: 600, margin: "2px 0", color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.title}</p>
+                <p style={{ fontSize: 14.5, fontWeight: 600, margin: "2px 0", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.title}</p>
                 <p style={{ fontSize: 12.5, color: "#666", margin: 0 }}>
                   <span style={{ color: "#582681", fontWeight: 700 }}>{fmtDist(j.distance_km)}</span>
                   {" · "}{fmtExp(j.experience_level)}{" · "}{fmtSalary(j.salary_min)}

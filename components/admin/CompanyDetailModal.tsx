@@ -125,7 +125,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
 
             <div style={{ padding: "18px 22px 0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a" }}>{company.company_name}</span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#555" }}>{company.company_name}</span>
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#582681" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: chip.bg, color: chip.color }}>{STATUS_TO_LABEL[company.status] || company.status}</span>
               </div>
@@ -151,7 +151,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
             {company.description && (
               <div style={{ padding: "20px 22px 0" }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: "#582681", marginBottom: 7 }}>기업 소개</div>
-                <p style={{ fontSize: 13, color: "#333", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{company.description}</p>
+                <p style={{ fontSize: 13, color: "#555", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{company.description}</p>
               </div>
             )}
 
@@ -163,7 +163,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                     const closed = j.status === "CLOSED" || j.status === "EXPIRED" || j.status === "HIDDEN";
                     const row = (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", background: closed ? "#f5f5f5" : "#f7f7f8", borderRadius: 6, cursor: j.id ? "pointer" : "default" }}>
-                        <span style={{ fontSize: 13, color: closed ? "#888" : "#1a1a1a" }}>{j.title}</span>
+                        <span style={{ fontSize: 13, color: closed ? "#888" : "#555" }}>{j.title}</span>
                         <span style={{ fontSize: 11, color: closed ? "#aaa" : "#582681", flexShrink: 0, marginLeft: 8 }}>{JOB_STATUS_LABEL[j.status] || j.status} · {fmtDate(j.created_at)}</span>
                       </div>
                     );

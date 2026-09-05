@@ -60,7 +60,7 @@ function PasswordResetRequestForm() {
             onClick={() => router.push(loginPath)}
             aria-label="뒤로"
             title="뒤로"
-            className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+            className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#555] transition"
           >
             <ArrowLeft size={26} />
           </button>
@@ -72,11 +72,11 @@ function PasswordResetRequestForm() {
                 <CheckCircle size={32} className="text-[#582681]" />
               </div>
             </div>
-            <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] mb-3">
+            <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] mb-3">
               이메일을 확인해주세요
             </h1>
             <p className="text-[14px] md:text-[15px] text-[#6b6b6b] leading-relaxed mb-2">
-              <strong className="text-[#1a1a1a]">{email}</strong>으로<br />
+              <strong className="text-[#555]">{email}</strong>으로<br />
               비밀번호 재설정 링크를 보냈어요
             </p>
             <p className="text-[13px] md:text-[14px] text-[#9a9a9a] mb-8">
@@ -110,14 +110,14 @@ function PasswordResetRequestForm() {
           onClick={() => router.back()}
           aria-label="뒤로"
           title="뒤로"
-          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#555] transition"
         >
           <ArrowLeft size={26} />
         </button>
       </div>
       <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-3">
             {isCompany ? "기업 비밀번호 재설정" : "비밀번호 재설정"}
           </h1>
           <p className="text-[13px] md:text-[14px] text-[#6b6b6b] text-center mb-10">

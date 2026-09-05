@@ -114,7 +114,7 @@ export default function CompanyBlockModal({
                     style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}
                     onClick={() => addBlock(c)}>
                     <span style={{ minWidth: 0, marginRight: 10 }}>
-                      <span style={{ display: "block", fontSize: 14, color: "#333" }}>
+                      <span style={{ display: "block", fontSize: 14, color: "#555" }}>
                         {c.companyName}{c.brandName ? ` (${c.brandName})` : ""}
                       </span>
                       {/* 주소가 있어야 '홍대점'이 여럿일 때 내 가게를 고른다. */}
@@ -138,7 +138,7 @@ export default function CompanyBlockModal({
                 <div key={b.companyId}
                   style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "10px 14px", background: "#f7f7f8", borderRadius: 8 }}>
                   <span style={{ minWidth: 0 }}>
-                    <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#333" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555" }}>
                       <Ban size={14} color="#582681" style={{ flexShrink: 0 }} /> {b.companyName}
                     </span>
                     {/* 막아 둔 곳이 정말 그곳인지 나중에도 확인할 수 있어야 한다. */}

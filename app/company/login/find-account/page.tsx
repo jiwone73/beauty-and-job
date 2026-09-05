@@ -58,7 +58,7 @@ export default function CompanyFindAccountPage() {
           onClick={() => router.back()}
           aria-label="뒤로"
           title="뒤로"
-          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#1a1a1a] transition"
+          className="-ml-1.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-[#6b6b6b] hover:bg-[#f5f5f5] hover:text-[#555] transition"
         >
           <ArrowLeft size={26} />
         </button>
@@ -67,7 +67,7 @@ export default function CompanyFindAccountPage() {
       <div className="flex-1 flex justify-center px-5 pt-6 md:pt-10 pb-16">
         <div className="w-full max-w-[400px]">
 
-          <h1 className="text-[22px] md:text-[26px] font-normal text-[#1a1a1a] text-center mb-3">
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-3">
             기업 계정 찾기
           </h1>
           <p className="text-center text-[13px] md:text-[14px] text-[#6b6b6b] mb-10">
@@ -138,7 +138,7 @@ export default function CompanyFindAccountPage() {
           {/* 결과: 불일치 */}
           {result && !result.found && (
             <div className="mt-6 p-5 bg-[#f8f8f8] border border-[#e8e8e8] rounded-lg text-center">
-              <p className="text-[14px] md:text-[15px] text-[#1a1a1a] font-normal mb-1">정보가 일치하지 않아요</p>
+              <p className="text-[14px] md:text-[15px] text-[#555] font-normal mb-1">정보가 일치하지 않아요</p>
               <p className="text-[13px] md:text-[14px] text-[#6b6b6b] mb-4">
                 사업자등록번호 또는 비밀번호를 다시 확인해주세요.<br />
                 비밀번호도 기억나지 않으시면 고객센터로 문의해주세요.

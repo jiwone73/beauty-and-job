@@ -81,13 +81,13 @@ export default function WithdrawPage() {
 
       <div style={{ maxWidth: 600, margin: "0 auto", padding: "12px 16px 32px" }}>
         <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a", margin: "0 0 4px" }}>
+          <p style={{ fontSize: 14, fontWeight: 600, color: "#555", margin: "0 0 4px" }}>
             지금까지 이용해 주셔서 감사합니다.
           </p>
           <p style={{ fontSize: 13, color: "#666", margin: "0 0 14px" }}>
             탈퇴하기 전 아래 유의사항을 확인해 주세요.
           </p>
-          <ul style={{ margin: 0, padding: "14px 14px", listStyle: "none", background: "#f7f8fa", borderRadius: 8, fontSize: 13, color: "#444", lineHeight: 1.7 }}>
+          <ul style={{ margin: 0, padding: "14px 14px", listStyle: "none", background: "#f7f8fa", borderRadius: 8, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
             <li style={{ marginBottom: 8 }}>
               · 탈퇴한 계정은 <b>복구할 수 없으며</b>, 같은 이메일로 <b style={{ color: "#d13b2e" }}>다시 가입할 수 없습니다.</b>
             </li>
@@ -111,11 +111,11 @@ export default function WithdrawPage() {
 
         <section style={{ background: "#fff", borderRadius: 12, padding: "16px 16px", marginBottom: 10 }}>
           <div style={{ marginBottom: 14 }}>
-            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 6 }}>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#555", marginBottom: 6 }}>
               탈퇴하려는 계정 <span style={{ color: "#582681", fontWeight: 400 }}>(필수)</span>
             </label>
             {/* 값이 오기 전에도 칸 높이는 잡아 둔다 */}
-            <div style={{ background: "#f7f8fa", borderRadius: 8, padding: "12px 14px", fontSize: 14, color: "#333", minHeight: 20, overflowWrap: "anywhere" }}>
+            <div style={{ background: "#f7f8fa", borderRadius: 8, padding: "12px 14px", fontSize: 14, color: "#555", minHeight: 20, overflowWrap: "anywhere" }}>
               {email || " "}
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function WithdrawPage() {
           {/* 소셜 로그인 계정은 비밀번호가 없다. 낼 수 없는 것을 요구하지 않는다. */}
           {hasPassword && (
             <div>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#1a1a1a", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#555", marginBottom: 6 }}>
                 비밀번호 확인 <span style={{ color: "#582681", fontWeight: 400 }}>(필수)</span>
               </label>
               <input type="password" placeholder="비밀번호 입력" value={pw}

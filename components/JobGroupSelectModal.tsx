@@ -276,7 +276,7 @@ export default function JobGroupSelectModal({
         .jgm-dd-item {
           display: flex; align-items: center; justify-content: space-between; gap: 10px;
           padding: 10px 13px; cursor: pointer; border-top: 1px solid #f5f5f5;
-          font-size: 13.5px; color: #333;
+          font-size: 13.5px; color: #555;
         }
         .jgm-dd-item:first-child { border-top: none; }
         .jgm-dd-item:hover, .jgm-dd-item.active { background: #f7f7f8; }
@@ -314,7 +314,7 @@ export default function JobGroupSelectModal({
           display: flex; align-items: center; gap: 9px;
           width: 100%; text-align: left; padding: 11px 8px;
           background: none; border: none; cursor: pointer;
-          font-size: 14px; color: #444; border-radius: 8px;
+          font-size: 14px; color: #555; border-radius: 8px;
         }
         .jgm-item:hover { background: #f7f7f8; }
         .jgm-item.selected { color: #582681; font-weight: 400; }

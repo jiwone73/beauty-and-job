@@ -207,7 +207,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         .ws-tab { padding: 6px 8px; margin-bottom: -1px; border: none; background: none; font-size: 13px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; }
         .ws-tab.on { color: #582681; font-weight: 600; border-bottom-color: #582681; }
         .ws-body { padding: 10px; max-height: 60vh; overflow-y: auto; }
-        .ws-quick-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 9px; border: 1px solid #e3e3e6; border-radius: 8px; background: #fff; cursor: pointer; text-align: left; margin-bottom: 6px; font-size: 13px; color: #333; }
+        .ws-quick-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 9px; border: 1px solid #e3e3e6; border-radius: 8px; background: #fff; cursor: pointer; text-align: left; margin-bottom: 6px; font-size: 13px; color: #555; }
         .ws-quick-row.on { border-color: #582681; background: #582681; color: #fff; }
         .ws-quick-row:disabled { color: #c8c8ce; background: #fafafb; border-color: #f0f0f2; cursor: not-allowed; }
         .ws-quick-row:disabled svg { color: #d8d8de !important; }
@@ -215,12 +215,12 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         .ws-daychip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
         .ws-weekchip { height: 30px; padding: 0 10px; border-radius: 7px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; font-family: inherit; }
         .ws-weekchip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
-        .ws-hourSel { height: 30px; border: 1px solid #ddd; border-radius: 6px; padding: 0 4px; font-size: 13px; color: #333; background: #fff; }
+        .ws-hourSel { height: 30px; border: 1px solid #ddd; border-radius: 6px; padding: 0 4px; font-size: 13px; color: #555; background: #fff; }
         .ws-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-top: 1px solid #eee; }
       `}</style>
       <div ref={popRef} className="ws-pop posshift-pop" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 10px 0" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#333" }}><Clock size={14} style={{ color: "#582681" }} />근무요일/시간</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#555" }}><Clock size={14} style={{ color: "#582681" }} />근무요일/시간</span>
           <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 2 }}><X size={15} /></button>
         </div>
 

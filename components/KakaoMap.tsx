@@ -45,7 +45,7 @@ export default function KakaoMap({
               `<div style="display:inline-block;max-width:220px;padding:5px 10px;` +
               `border-radius:8px;background:#fff;border:1px solid #e2e2e6;` +
               `box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:13px;font-weight:600;` +
-              `color:#1a1a1a;line-height:1.4;white-space:nowrap;overflow:hidden;` +
+              `color:#555;line-height:1.4;white-space:nowrap;overflow:hidden;` +
               `text-overflow:ellipsis;">${안전한이름}</div>`,
           });
           라벨.setMap(map);

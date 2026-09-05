@@ -77,7 +77,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
           {done ? (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
               <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px", color: "#1a1a1a" }}>문의가 접수되었습니다</h3>
+              <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px", color: "#555" }}>문의가 접수되었습니다</h3>
               <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6 }}>
                 남겨주신 이메일로 평일 기준 1~2일 내에 답변드리겠습니다.
               </p>

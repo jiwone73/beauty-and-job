@@ -74,8 +74,8 @@ export default function JobSearchCertificateModal({
     }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f7f7f8", color: "#1a1a1a", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f7f7f8", color: "#555", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, color: "#555", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
 
   return (
     <div className="rp-modal-overlay">
@@ -107,7 +107,7 @@ export default function JobSearchCertificateModal({
               </tbody>
             </table>
 
-            <p style={{ fontSize: isMobile ? 11 : 14, color: "#333", lineHeight: isMobile ? 1.5 : 1.9, margin: isMobile ? "0 0 10px" : "0 0 16px" }}>
+            <p style={{ fontSize: isMobile ? 11 : 14, color: "#555", lineHeight: isMobile ? 1.5 : 1.9, margin: isMobile ? "0 0 10px" : "0 0 16px" }}>
               위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautywork.co.kr)</strong>를 통해 아래와 같이 입사지원(구직활동)하였음을 증명합니다.
             </p>
 

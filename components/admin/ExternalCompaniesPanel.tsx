@@ -343,7 +343,7 @@ export default function ExternalCompaniesPanel() {
         {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드 안이라 표 콘텐츠 폭에 정확히 맞음 */}
         {selectedItems.length > 0 && (
           <div style={{ padding: "22px 24px", borderBottom: "1px solid #f0f0f0" }}>
-            <div style={{ fontSize: 14, color: "#333", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
+            <div style={{ fontSize: 14, color: "#555", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               {selectedItems.map((c) => {
                 const cApps = appsByCompany[c.id] || [];
@@ -351,7 +351,7 @@ export default function ExternalCompaniesPanel() {
                 const jobTitle = (c.jobs && c.jobs[0]?.title) || "-";
                 return (
                   <div key={c.id}>
-                    <div style={{ fontSize: 14, color: "#333", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 14, color: "#555", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {c.company_name}<span style={{ color: "#aaa" }}> · {jobTitle}</span>
                     </div>
                     <div style={{ display: "flex", gap: 6 }}>
@@ -434,7 +434,7 @@ export default function ExternalCompaniesPanel() {
                       </td>
                       {/* 제목만 말줄임하고, 원문 링크와 배지는 오른쪽에 고정한다.
                           셀 전체에 말줄임을 걸면 제목이 길 때 뒤의 것들이 통째로 잘려 안 보인다. */}
-                      <td style={{ maxWidth: 320, color: "#333" }} title={jobTitle}>
+                      <td style={{ maxWidth: 320, color: "#555" }} title={jobTitle}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                           {/* 공고명은 우리가 올린 공고로 — 실제로 어떻게 나갔는지 바로 확인하는 게 먼저다. */}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
@@ -471,7 +471,7 @@ export default function ExternalCompaniesPanel() {
                           {c.logo_url
                             ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
                             : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
-                          <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#1a1a1a", cursor: "pointer" }}>{c.company_name}</span>
+                          <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#555", cursor: "pointer" }}>{c.company_name}</span>
                         </div>
                       </td>
                       <td className="admin-td-date">{fmtRegion(c)}</td>

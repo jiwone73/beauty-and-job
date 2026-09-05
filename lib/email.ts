@@ -13,13 +13,13 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     to,
     subject: "[뷰티워크] 비밀번호 재설정 안내",
     html: `
-      <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+      <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#555;">
         <div style="padding:24px 0;border-bottom:2px solid #582681;">
           <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">비밀번호 재설정</h1>
-          <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 24px;">
+          <p style="font-size:14px;line-height:1.7;color:#555;margin:0 0 24px;">
             아래 버튼을 눌러 비밀번호를 재설정해 주세요.<br/>
             이 링크는 <strong>30분간</strong> 유효합니다.
           </p>
@@ -47,13 +47,13 @@ export async function sendEmailChangeCodeEmail(to: string, code: string) {
     to,
     subject: "[뷰티워크] 이메일 변경 인증코드",
     html: `
-      <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+      <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#555;">
         <div style="padding:24px 0;border-bottom:2px solid #582681;">
           <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">이메일 변경 인증</h1>
-          <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 20px;">
+          <p style="font-size:14px;line-height:1.7;color:#555;margin:0 0 20px;">
             아래 인증코드를 입력하면 이메일 변경이 완료됩니다. 코드는 <strong>5분간</strong> 유효합니다.
           </p>
           <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
@@ -77,13 +77,13 @@ export async function sendSignupEmailVerifyCode(to: string, code: string) {
     to,
     subject: "[뷰티워크] 회원가입 이메일 인증코드",
     html: `
-      <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+      <div style="max-width:480px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#555;">
         <div style="padding:24px 0;border-bottom:2px solid #582681;">
           <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
         <div style="padding:32px 0;">
           <h1 style="font-size:18px;margin:0 0 16px;">회원가입 이메일 인증</h1>
-          <p style="font-size:14px;line-height:1.7;color:#444;margin:0 0 20px;">
+          <p style="font-size:14px;line-height:1.7;color:#555;margin:0 0 20px;">
             아래 인증코드를 입력하면 이메일 인증이 완료됩니다. 코드는 <strong>5분간</strong> 유효합니다.
           </p>
           <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
@@ -218,7 +218,7 @@ export async function sendCompanyWelcomeEmail(to: string, companyName: string) {
                   </p>
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;margin:0 0 22px;">
                     <tr>
-                      <td style="padding:14px 20px;font-size:14px;color:#444;line-height:1.7;">
+                      <td style="padding:14px 20px;font-size:14px;color:#555;line-height:1.7;">
                         승인 전에도 로그인해서 기업 정보·로고 등을 미리 준비해 두실 수 있어요.
                       </td>
                     </tr>
@@ -448,7 +448,7 @@ export async function sendProposalEmail(
                   </table>
                   ${message ? `
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;background:#fff;border:1px solid #ece7f6;border-radius:10px;">
-                    <tr><td style="padding:16px 20px;font-size:14px;color:#444;line-height:1.7;">${messageHtml}</td></tr>
+                    <tr><td style="padding:16px 20px;font-size:14px;color:#555;line-height:1.7;">${messageHtml}</td></tr>
                   </table>` : ""}
                   <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">관심 있으면 공고를 확인하고 바로 지원해보세요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
@@ -507,7 +507,7 @@ export async function sendJobRecommendationEmail(
                   </td>
                   <td valign="middle" style="padding:14px 12px;">
                     <p style="font-size:12px;color:#8b8b8b;margin:0 0 2px;">${company}</p>
-                    <p style="font-size:15px;font-weight:700;color:#1a1a1a;margin:0 0 4px;line-height:1.4;">${j.title}</p>
+                    <p style="font-size:15px;font-weight:700;color:#555;margin:0 0 4px;line-height:1.4;">${j.title}</p>
                     <p style="font-size:12px;color:#8b8b8b;margin:0;">${meta}</p>
                   </td>
                   <td width="44" valign="middle" align="right" style="padding:14px 14px 14px 0;">
@@ -537,7 +537,7 @@ export async function sendJobRecommendationEmail(
               </tr>
               <tr>
                 <td style="padding:30px 28px 8px;">
-                  <p style="font-size:19px;font-weight:700;color:#1a1a1a;margin:0 0 22px;line-height:1.45;">${heading}</p>
+                  <p style="font-size:19px;font-weight:700;color:#555;margin:0 0 22px;line-height:1.45;">${heading}</p>
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     ${cardsHtml}
                   </table>
@@ -579,11 +579,11 @@ export async function sendAnnouncementEmails(recipients: string[], subject: stri
   const esc = bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const bodyHtml = esc.replace(/\n/g, "<br/>");
   const html = `
-    <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+    <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#555;">
       <div style="padding:20px 0;border-bottom:2px solid #582681;">
         <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
       </div>
-      <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#333;">
+      <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#555;">
         ${bodyHtml}
       </div>
       <div style="padding:16px 0;border-top:1px solid #eee;font-size:11px;color:#aaa;">
@@ -620,11 +620,11 @@ export async function sendInquiryReplyEmail(
     subject,
     attachments: attach.length ? attach : undefined,
     html: `
-      <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1a1a1a;">
+      <div style="max-width:560px;margin:0 auto;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#555;">
         <div style="padding:20px 0;border-bottom:2px solid #582681;">
           <span style="font-size:20px;font-weight:700;color:#582681;">뷰티워크</span>
         </div>
-        <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#333;">
+        <div style="padding:28px 4px;font-size:14px;line-height:1.8;color:#555;">
           ${bodyHtml}
         </div>
         <div style="padding:16px 0;border-top:1px solid #eee;font-size:11px;color:#aaa;">
@@ -673,7 +673,7 @@ export async function sendExternalApplicationEmail(
                       <td align="right" style="padding:14px 20px;font-size:14px;color:#2c2c2a;">${d.applicantEmail || "-"}</td>
                     </tr>
                   </table>
-                  ${cover ? `<div style="margin:18px 0 0;background:#fbfbfd;border:1px solid #eee;border-radius:10px;padding:14px 18px;"><p style="font-size:13px;color:#888;margin:0 0 6px;font-weight:700;">자기소개</p><p style="font-size:14px;color:#333;line-height:1.7;margin:0;white-space:pre-line;">${cover.replace(/</g, "&lt;")}</p></div>` : ""}
+                  ${cover ? `<div style="margin:18px 0 0;background:#fbfbfd;border:1px solid #eee;border-radius:10px;padding:14px 18px;"><p style="font-size:13px;color:#888;margin:0 0 6px;font-weight:700;">자기소개</p><p style="font-size:14px;color:#555;line-height:1.7;margin:0;white-space:pre-line;">${cover.replace(/</g, "&lt;")}</p></div>` : ""}
                   <p style="font-size:13px;color:#7c3aed;background:#f3eefc;border-radius:8px;padding:12px 16px;line-height:1.6;margin:20px 0 22px;">뷰티워크에 무료로 가입하면 이 지원자의 전체 이력서를 확인하고, 앞으로의 지원자도 직접 관리할 수 있어요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
                     <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">

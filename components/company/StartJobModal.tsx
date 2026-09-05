@@ -86,7 +86,7 @@ export default function StartJobModal({
                 {임시저장.map((j) => (
                   <button key={j.id} type="button" style={{ ...줄, textAlign: "left", width: "100%" }}
                     onClick={() => onPick(`/company/dashboard/jobs/new?id=${j.id}`)}>
-                    <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#333", lineHeight: 1.45 }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#555", lineHeight: 1.45 }}>
                       {j.title || "제목 없음"}
                       <span style={{ display: "block", fontSize: 12.5, color: "#aaa", marginTop: 3 }}>{날짜(j.created_at)}</span>
                     </span>
@@ -109,7 +109,7 @@ export default function StartJobModal({
                       style={{ ...줄, borderColor: 고름 ? "#582681" : "#efeff1", background: 고름 ? "#f7f7f8" : "#fff" }}>
                       <input type="radio" name="지난공고" checked={고름} onChange={() => set고른것(j.id)}
                         style={{ marginTop: 3, accentColor: "#582681", flexShrink: 0 }} />
-                      <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#333", lineHeight: 1.45 }}>
+                      <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#555", lineHeight: 1.45 }}>
                         {j.title || "제목 없음"}
                         <span style={{ display: "block", fontSize: 12.5, color: "#aaa", marginTop: 3 }}>
                           {j.deadline ? `마감일 ${날짜(j.deadline)}` : "상시채용"}

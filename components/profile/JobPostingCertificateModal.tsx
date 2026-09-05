@@ -83,8 +83,8 @@ export default function JobPostingCertificateModal({
     try { await printApplication(captureRef.current); } catch { alert("인쇄 준비 중 오류가 발생했습니다."); } finally { setCapturing(false); }
   };
 
-  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f7f7f8", color: "#1a1a1a", textAlign: "center", width: "22%", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
-  const td: CSSProperties = { border: "1px solid #ddd", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, color: "#333", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const th: CSSProperties = { border: "1px solid #ccc", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, fontWeight: 700, background: "#f7f7f8", color: "#555", textAlign: "center", width: "22%", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
+  const td: CSSProperties = { border: "1px solid #ddd", padding: capturing ? (isMobile ? "2px 4px 8px" : "4px 8px 14px") : (isMobile ? "5px 4px" : "8px 8px"), fontSize: isMobile ? 9.5 : 13, color: "#555", lineHeight: 1, verticalAlign: "middle", wordBreak: "keep-all" };
   const company = job?.company?.brand_name || job?.company?.company_name || app.brand_name || app.company_name || "-";
   const workplace = job?.location || job?.address || (job?.company ? [job.company.region_sido, job.company.region_sigungu].filter(Boolean).join(" ") : "") || "-";
 
@@ -121,11 +121,11 @@ export default function JobPostingCertificateModal({
                 </tbody>
               </table>
 
-              <p style={{ fontSize: isMobile ? 11 : 14, color: "#333", lineHeight: isMobile ? 1.5 : 1.9, margin: isMobile ? "0 0 12px" : "0 0 18px" }}>
+              <p style={{ fontSize: isMobile ? 11 : 14, color: "#555", lineHeight: isMobile ? 1.5 : 1.9, margin: isMobile ? "0 0 12px" : "0 0 18px" }}>
                 위 사람은 뷰티 채용 플랫폼 <strong>뷰티워크(beautywork.co.kr)</strong>를 통해 아래 채용공고에 입사지원(구직활동)하였음을 증명합니다.
               </p>
 
-              <h3 style={{ fontSize: isMobile ? 12 : 14, fontWeight: 700, color: "#1a1a1a", margin: "0 0 10px", paddingBottom: 6, borderBottom: "2px solid #eee" }}>■ 채용공고</h3>
+              <h3 style={{ fontSize: isMobile ? 12 : 14, fontWeight: 700, color: "#555", margin: "0 0 10px", paddingBottom: 6, borderBottom: "2px solid #eee" }}>■ 채용공고</h3>
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: job?.description ? 14 : 0 }}>
                 <tbody>
                   <tr>
@@ -152,7 +152,7 @@ export default function JobPostingCertificateModal({
               {job?.description && (
                 <div style={{ border: "1px solid #ddd", borderTop: "none", padding: isMobile ? "8px 8px 10px" : "12px 12px 14px", marginBottom: 0 }}>
                   <p style={{ fontSize: isMobile ? 10 : 12, fontWeight: 700, color: "#666", margin: "0 0 6px" }}>모집 내용</p>
-                  <p style={{ fontSize: isMobile ? 10.5 : 13, color: "#333", lineHeight: isMobile ? 1.55 : 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{job.description}</p>
+                  <p style={{ fontSize: isMobile ? 10.5 : 13, color: "#555", lineHeight: isMobile ? 1.55 : 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{job.description}</p>
                 </div>
               )}
 
