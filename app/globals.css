@@ -14682,8 +14682,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane-card { background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 22px;
   border-bottom: 1px solid #1a1a1a; }
 .co-pane-head { display: flex; align-items: flex-start; gap: 14px; }
-/* 기간·태그·상태값이 모두 같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들. */
-.co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--card-meta-c); }
+/* 이 화면의 회색은 한 색으로 간다(#555) — 두 단계로 나누니 어느 것이 옅은지
+   화면마다 달라 보였다. */
+.co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; }
 .co-pane-title { margin: 4px 0 0; font-size: 21px; font-weight: 400; color: #1a1a1a; line-height: 1.35; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
@@ -14717,7 +14718,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-line2 { display: flex; align-items: baseline; gap: 10px; }
 .tal-line2 > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tal-line2 .tal-when-r,
-.tal-line2 .tal-st-r { margin-left: auto; font-size: var(--card-meta); color: var(--card-meta-c); white-space: nowrap; }
+.tal-line2 .tal-st-r { margin-left: auto; font-size: var(--card-meta); color: #555; white-space: nowrap; }
 /* 메모 단추의 화살표 — 열려 있으면 뒤집힌다. */
 .tal-memo-btn svg.up { transform: rotate(180deg); }
 
@@ -14747,7 +14748,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 10px 18px; background: #fff; border-bottom: 1px solid #ececf0;
 }
 .apl-bar-n { font-size: 13.5px; color: #1a1a1a; }
-.apl-bar-n em { font-style: normal; color: #8a8a90; }
+.apl-bar-n em { font-style: normal; color: #555; }
 .apl-bar-sep { color: #dcdce2; }
 .apl-bar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .apl-sel {
@@ -14821,7 +14822,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 지원자 카드 아랫줄 — 직군 태그 · 지원한 공고 · 어떻게 들어왔는지. 값이 여럿이라
    가운뎃점 대신 여백으로 가른다(가운뎃점은 태그의 「·」와 섞인다). */
-.tal-foot .tal-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.tal-foot .tal-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; color: #555; }
 .tal-job { color: #666; }
 .tal-foot .tal-from { margin-left: 0; }
 
