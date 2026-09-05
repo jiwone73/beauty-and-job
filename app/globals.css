@@ -24,7 +24,7 @@
      테두리와 그림자가 그 위에 얹힌다. 크림빛으로 물들이면 탁해 보인다. */
   --card-bg: #ffffff;
   --card-line: #ececf0;
-  --card-shadow: 0 1px 2px rgba(30, 25, 20, .04), 0 3px 8px rgba(30, 25, 20, .035);
+  --card-shadow: 0 1px 2px rgba(30, 25, 20, .025), 0 2px 6px rgba(30, 25, 20, .02);
   --color-bg-soft: #f7f7f8;
   --color-dark: #1f2024;
   --color-error: #d4537e;
@@ -15069,8 +15069,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 공고 쪽은 카드가 아니라 그냥 바탕이다 — 이 판의 주인은 지원자 목록이다.
    카드는 그 아래 하나만 선다. */
 .co-pane-list {
-  /* 선 위에 둔 만큼 아래에도 둔다 — 카드가 선에 붙으면 선이 카드 테두리처럼 보인다. */
-  margin-top: 22px;
+  /* 선 위에 둔 만큼 아래에도 둔다 — 카드가 선에 붙으면 선이 카드 테두리처럼 보인다.
+     좌우는 공고 글과 구분선에 맞춘다(22px) — 카드만 넓으면 튀어나와 보인다. */
+  margin: 22px 22px 0;
   background: var(--card-bg); border: 1px solid var(--card-line);
   border-radius: 12px; box-shadow: var(--card-shadow); overflow: hidden;
 }
