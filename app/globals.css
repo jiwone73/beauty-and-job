@@ -24,7 +24,7 @@
      테두리를 진하게 긋지 않고도 카드가 떠 보인다. 그림자는 그 위에 얹는다. */
   --card-bg: #fffefc;
   --card-line: #efefef;
-  --card-shadow: 0 1px 2px rgba(30, 25, 20, .05), 0 4px 14px rgba(30, 25, 20, .06);
+  --card-shadow: 0 1px 2px rgba(30, 25, 20, .04), 0 3px 8px rgba(30, 25, 20, .035);
   --color-bg-soft: #f7f7f8;
   --color-dark: #1f2024;
   --color-error: #d4537e;
