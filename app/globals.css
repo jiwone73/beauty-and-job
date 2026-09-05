@@ -14718,7 +14718,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-line2 { display: flex; align-items: baseline; gap: 10px; }
 .tal-line2 > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tal-line2 .tal-when-r,
-.tal-line2 .tal-st-r { margin-left: auto; font-size: var(--card-meta); color: #555; white-space: nowrap; }
+.tal-line2 .tal-st-r { margin-left: auto; font-size: 13.5px; color: #555; white-space: nowrap; }
 /* 메모 단추의 화살표 — 열려 있으면 뒤집힌다. */
 .tal-memo-btn svg.up { transform: rotate(180deg); }
 
@@ -14822,7 +14822,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 지원자 카드 아랫줄 — 직군 태그 · 지원한 공고 · 어떻게 들어왔는지. 값이 여럿이라
    가운뎃점 대신 여백으로 가른다(가운뎃점은 태그의 「·」와 섞인다). */
-.tal-foot .tal-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; color: #555; }
+/* 이름·지역 줄과 같은 크기로 — 12.5px 는 그 위 줄들보다 작아 따로 놀았다. */
+.tal-foot .tal-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px;
+  color: #555; font-size: 13.5px; }
 .tal-job { color: #666; }
 .tal-foot .tal-from { margin-left: 0; }
 
@@ -14834,7 +14836,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-memo-btn {
   display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
   border: none; background: none; padding: 2px 0; font-family: inherit;
-  font-size: 13px; color: #c4c4c9; cursor: pointer; text-align: left;
+  font-size: 13.5px; color: #c4c4c9; cursor: pointer; text-align: left;
 }
 .tal-memo-btn.has { color: #4a4453; }
 .tal-memo-btn:hover { color: var(--color-primary); }
