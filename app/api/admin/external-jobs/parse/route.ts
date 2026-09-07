@@ -8,6 +8,7 @@ import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { parseStructured } from "@/lib/external/parsers/structured";
 import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
+import { parsePasted } from "@/lib/external/parsers/pasted";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
 import { dropUnsupported } from "@/lib/external/evidence";
@@ -78,6 +79,27 @@ const STORE_CATEGORIES = getAllJobItems("STORE");
 const OFFICE_CATEGORIES = getAllJobItems("OFFICE");
 // 폼·필터가 쓰는 태그는 benefit_tags 표에 있다. 여기에 목록을 또 적어 두면
 // 표에만 있는 태그(퇴직금·연차·주5일 근무 등)를 모델이 골라도 뒤에서 걸러져 사라진다.
+// 붙여넣은 글을 상세요강으로 그대로 쓴다. 손대는 것은 두 가지뿐이다 —
+// 사이트·카페가 붙인 안내 줄을 통째로 걷어내고, 빈 줄이 셋 이상 이어지면 하나로
+// 줄인다. 낱말은 건드리지 않는다. 지울 때는 반드시 줄 단위로 지운다(줄 가운데를
+// 잘라 " ※ 위" 같은 꼬리가 남는 일이 있었다).
+const 사이트안내줄 = [
+  /^\s*※?\s*위\s*공고는/, /카페\s*(이용|운영)\s*(안내|규칙)/, /게시(판|글)\s*이용\s*안내/,
+  /무단\s*(전재|복제|배포)/, /저작권/, /로그인\s*(후|하시면)/, /회원가입\s*(후|하시면)/,
+  /본\s*채용정보에\s*관심/, /상세요강\s*확인\s*후\s*입사지원/,
+  /^\s*#[^\s#]+(\s+#[^\s#]+)*\s*$/, // 해시태그만 있는 줄
+];
+function 원문본문(text: string): string {
+  return String(text || "")
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .filter((line) => !사이트안내줄.some((re) => re.test(line)))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, 16000);
+}
+
 const CONTACT_METHODS = ["문자", "이메일", "전화", "뷰티워크 온라인지원", "회사 홈페이지 지원"];
 const STORE_TAGS_FALLBACK = ["기숙사 제공", "교육비 지원", "인센티브", "식대 지원", "주차 가능", "4대보험", "주말·공휴일 휴무", "정규직 전환"];
 let STORE_TAGS: string[] = STORE_TAGS_FALLBACK;
@@ -376,6 +398,21 @@ export async function POST(req: NextRequest) {
 
   // ── 무료 파싱: 알려진 잡보드(헤어인잡 등)는 정규식으로 필드 추출 → AI 건너뜀(비용 0) ──
   let freeParsed = false;
+  if (bodyText) {
+    // 붙여넣은 글도 양식을 복사한 것이라 라벨을 읽으면 된다(요금 0).
+    // 상세요강은 붙여넣은 글 그대로 담는다 — 받아쓰지 않는다.
+    try {
+      const pt = parsePasted(pastedText);
+      if (pt) {
+        const 확실 = pt._확실한가; delete pt._확실한가;
+        out = { ...out, ...pt };
+        out.description = 원문본문(pastedText);
+        if (확실) { out.ai_parsed = true; freeParsed = true; }
+      }
+    } catch (e) {
+      console.error("[pasted parse]", e);
+    }
+  }
   if (!bodyText) { // 붙여넣은 본문이 없을 때(=URL 불러오기)만 구조화 파서 시도
     try {
       const st = parseStructured(hostname || "", html || "", url || "");
@@ -731,17 +768,14 @@ export async function POST(req: NextRequest) {
 - contact_phone: 지원·문의용 전화번호(담당자/채용 연락처)가 본문에 있으면 "010-1234-5678"처럼 하이픈 포함으로. 여러 개면 지원 담당 번호 우선(대표번호보다 채용 담당 우선). 없으면 "".
 - contact_email: "회사(매장)의 채용담당 이메일"만. 잡사이트 자체 이메일(예: @albamon.com·@jobkorea.co.kr·@saramin.co.kr 등 채용사이트 도메인 = 중계/문의용)은 회사 이메일이 아니므로 제외. 회사 이메일이 여러 개면 채용/인사 담당(recruit·hr·job·career·인사·채용 등) 우선, 대표·일반(info·ceo·master)은 후순위. 없으면 "".
 - contact_name: 채용 담당자 "사람 이름"이 명시돼 있으면 그 이름만(예: "이은주"). 부서명·회사명·"담당자"라는 일반어는 제외. 없으면 "".
-- description: 공고 본문을 "원문 그대로" 옮길 것. 요약·재작성·의역 금지, 없는 문장을 지어내지 마라.
+${bodyText.trim() ? `- description: "" 로 둔다. 상세요강은 붙여넣은 원문을 코드가 그대로 담는다 — 받아쓰지 마라.` : `- description: 공고 본문을 "원문 그대로" 옮길 것. 요약·재작성·의역 금지, 없는 문장을 지어내지 마라.
     ★★ 지원 방법을 가리키는 말("문자", "전화", "이메일", "직접방문", 이메일 주소, 전화번호)을
       절대 다른 말로 바꾸지 마라. 특히 "뷰티워크 온라인지원"으로 치환하는 일이 잦았는데,
-      원문에 없는 말이라 문장이 통째로 못 쓰게 된다. 예: "문자 주세요" 를
-      "뷰티워크 온라인 지원 주세요" 로 바꾸면 안 된다. 본문은 원문의 낱말 그대로다.
-    지우는 것은 ① 장식(이모지·♥·★·점만 있는 줄)과 ② 카페/사이트가 붙인 안내문(게시판 이용안내·등록 안내·로그인 안내·저작권·해시태그)뿐이다.
-    ★ 지울 때는 그 줄을 통째로 지워라. 앞머리 기호나 낱말 한두 개만 남기면 안 된다
-      (실제로 "※ 위 공고는 …카페에서…" 에서 뒷부분만 지워 " ※ 위" 만 남은 적이 있다).
-    ★ 줄바꿈은 원문 그대로 살릴 것. 특히 "근무시간"·"급여"·"복지" 같은 항목 제목 앞의 빈 줄은 반드시 남겨라 —
-      빈 줄을 없애면 항목이 다 붙어 읽기 어려워진다. 빈 줄이 셋 이상 이어질 때만 하나로 줄인다.
-    급여·근무시간처럼 다른 항목에도 담은 내용이라도, 본문에 있던 말이면 여기서 지우지 마라.
+      원문에 없는 말이라 문장이 통째로 못 쓰게 된다.
+    지우는 것은 ① 장식(이모지·♥·★·점만 있는 줄)과 ② 카페/사이트가 붙인 안내문뿐이다.
+    ★ 지울 때는 그 줄을 통째로 지워라. 앞머리 기호나 낱말 한두 개만 남기면 안 된다.
+    ★ 줄바꿈은 원문 그대로 살릴 것. 빈 줄이 셋 이상 이어질 때만 하나로 줄인다.
+    급여·근무시간처럼 다른 항목에도 담은 내용이라도, 본문에 있던 말이면 여기서 지우지 마라.`}
 - company_description: 글에 회사·브랜드를 "소개하는 문장이 실제로 있을 때"만, 그 문장을 원문 그대로 옮길 것.
     ★ 지어내지 마라. 채용 조건만 적힌 글이면 반드시 ""로 둘 것.
       매장 분위기·고객층·재료 지원 같은 말을 근거로 소개 문장을 새로 만들어 내면 안 된다.
@@ -896,6 +930,13 @@ export async function POST(req: NextRequest) {
       if (parsed && typeof parsed === "object") {
         out = { ...out, ...parsed };
         out.ai_parsed = true;
+        // 상세요강은 AI 가 받아쓴 것을 쓰지 않는다.
+        //
+        // 「원문 그대로 옮겨라」라고 아무리 세게 적어도 다시 받아쓰는 이상 줄이
+        // 빠지고 순서가 바뀌고 없던 말이 생긴다(등록 이슈 여럿 — "문자 주세요"가
+        // "뷰티워크 온라인 지원 주세요"로 바뀌고, 지우다 만 " ※ 위"만 남고).
+        // 붙여넣은 글은 그 자체가 원문이다. AI 를 거칠 이유가 없다.
+        if (bodyText.trim()) out.description = 원문본문(pastedText);
       } else {
         console.error("[external parse LLM] JSON 파싱 실패. 원문 앞부분:", raw.slice(0, 300));
         out.ai_failed = "읽어 온 값을 해석하지 못했어요.";
