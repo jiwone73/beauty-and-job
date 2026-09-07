@@ -82,6 +82,74 @@ const 칸이름: Record<string, string[]> = {
   extra_notes: ["조건", "근무조건", "지원방법", "하고픈말", "기타", "4대보험유/무", "4대보험"],
 };
 
+
+// ───────────── 라벨이 없을 때: 값 모양으로 읽는다 ─────────────
+//
+// 「급여 :」 같은 항목 이름이 없어도 「월 350만원」 「11:00 ~ 21:00」 처럼 값 자체가
+// 모양을 갖춘 것들이 있다. 모양이 정해져 있으니 코드로 읽으면 된다 — 찍는 것이
+// 아니라 글자를 그대로 옮기는 것이다.
+//
+// 다만 금액이라고 다 급여는 아니다. 정착지원금·성장축하금·보증금처럼 급여가
+// 아닌 것이 분명한 말이 같은 줄에 있으면 읽지 않는다.
+//   매출·객단가는 거르지 않는다. 「월 350만원 이상 가능」이라 적고 다음 줄에서
+//   「예약이 많아 매출 올리기 좋다」고 설명하는 식이라, 그 줄 자체는 급여다.
+const 급여아닌줄 = /정착지원금|성장축하금|축하금|입사지원금|위약금|권리금|월세|보증금|퇴직금|교육비|재료비/;
+const 급여모양 = [
+  // 단위를 앞에 붙인 것: 「월 350만원 이상」 「시급 13,000원」 「기본급 250만원」
+  /(?:연봉|월급|월|시급|일급|주급|기본급|초봉)\s*[가-힣]{0,4}\s*[\d,]+\s*(?:만원|원|만)?\s*(?:이상|~|부터)?/,
+  // 단위만 뒤에 있는 것: 「250만원 이상」 「3200 + 인센티브」
+  /[\d,]+\s*만원\s*(?:이상|~|부터)?/,
+];
+const 시간모양 = /(?:오전|오후)?\s*\d{1,2}\s*[:시]\s*\d{0,2}\s*분?\s*[~\-–]\s*(?:오전|오후)?\s*\d{1,2}\s*[:시]\s*\d{0,2}\s*분?/;
+const 휴무모양 = /(?:월|화|수|목|금|토|일)요일\s*(?:고정\s*)?휴(?:무|일)|주\s*[1-7]\s*일\s*(?:근무)?|월\s*\d{1,2}\s*회\s*휴무|격주\s*[1-7]?\s*일?/;
+const 경력모양 = new RegExp([
+  "경력\\s*무관", "초보\\s*(?:가능|환영)", "신입\\s*(?:가능|환영|모집)?",
+  // 「경력 2년 이상」 「샵경력 6개월 이상」 「3년 이상 경력」 — 년·개월 둘 다 본다.
+  "(?:샵\\s*)?경력\\s*\\d{1,2}\\s*(?:년|개월)\\s*(?:이상|차)?",
+  "\\d{1,2}\\s*(?:년|개월)\\s*(?:이상|차)\\s*경력",
+].join("|"));
+
+/** 줄들에서 그 모양에 처음 맞는 글자를 그대로 돌려준다. 없으면 "". */
+function 모양읽기(lines: string[], 모양: RegExp | RegExp[], 거르개?: RegExp): string {
+  const 모양들 = Array.isArray(모양) ? 모양 : [모양];
+  for (const line of lines) {
+    if (거르개 && 거르개.test(line)) continue;
+    for (const re of 모양들) {
+      const m = line.match(re);
+      if (m) return m[0].replace(/\s+/g, " ").trim();
+    }
+  }
+  return "";
+}
+
+
+/** 라벨로 잡은 값에서 그 칸에 맞는 조각만 남긴다.
+ *
+ *  「🩵 급여」 아래에는 금액 말고도 「기존 예약이 많은 매장이라…」 같은 설명이
+ *  줄줄이 붙는다. 그걸 통째로 급여 칸에 넣으면 화면이 깨진다. 값 모양에 맞는
+ *  조각을 원문에서 잘라 오고, 못 찾으면 첫 줄만 쓴다. 지어내는 것은 없다. */
+function 값다듬기(v: string, 모양: RegExp | RegExp[], 거르개?: RegExp): string {
+  const 줄 = String(v || "").split("\n").map((l) => l.trim()).filter(Boolean);
+  const 조각 = 모양읽기(줄, 모양, 거르개);
+  if (조각) return 조각;
+  // 모양에 안 맞으면 첫 줄이 짧을 때만 쓴다 — 「추후협의」·「면접 후 결정」처럼
+  // 금액이 없는 답도 값이기 때문이다. 길면 그건 값이 아니라 설명 문장이고
+  // (「입사 시 아래 2가지 급여제 중 선택 가능합니다…」), 거르개에 걸리는 줄도
+  // 값이 아니다(「성장축하금 200만원」). 그런 경우엔 비워서 아래 전체 검색에
+  // 넘긴다 — 라벨 밖에 진짜 값이 있을 수 있다.
+  const 첫줄 = (줄[0] || "").replace(/\s+/g, " ").trim();
+  if (!첫줄 || 첫줄.length > 20) return "";
+  if (거르개 && 거르개.test(첫줄)) return "";
+  return 첫줄;
+}
+
+/** 항목 값에서 이모지·장식 기호를 걷는다. 폼의 한 칸에 들어갈 값이라 글자만 남긴다.
+ *  (상세요강은 원문 그대로 두므로 여기 걸지 않는다.) */
+function 값글자만(v: string): string {
+  return String(v || "").replace(/[\p{So}\p{Extended_Pictographic}\uFE0F\u200D]/gu, " ")
+    .replace(/\s{2,}/g, " ").trim();
+}
+
 /**
  * 붙여넣은 글을 파싱한다. 양식이 아니면 null 을 돌려 AI 경로로 보낸다.
  *
@@ -101,6 +169,24 @@ export function parsePasted(text: string): PastedResult | null {
     out[칸] = 표[key];
     찾은수++;
   }
+  // 라벨로 잡은 값은 설명 문장까지 딸려 오므로 그 칸에 맞는 조각만 남긴다.
+  if (out.salary) out.salary = 값다듬기(out.salary, 급여모양, 급여아닌줄);
+  if (out.work_time) out.work_time = 값다듬기(out.work_time, 시간모양);
+  if (out.work_days) out.work_days = 값다듬기(out.work_days, 휴무모양);
+  if (out.career) out.career = 값다듬기(out.career, 경력모양);
+
+  // 라벨로 못 채운 칸은 글 전체에서 값 모양으로 한 번 더 읽는다.
+  const 줄들 = String(text || "").replace(/\r\n?/g, "\n").split("\n").map((l) => l.trim()).filter(Boolean);
+  if (!out.salary) { const v = 모양읽기(줄들, 급여모양, 급여아닌줄); if (v) { out.salary = v; 찾은수++; } }
+  if (!out.work_time) { const v = 모양읽기(줄들, 시간모양); if (v) { out.work_time = v; 찾은수++; } }
+  if (!out.work_days) { const v = 모양읽기(줄들, 휴무모양); if (v) { out.work_days = v; 찾은수++; } }
+  if (!out.career) { const v = 모양읽기(줄들, 경력모양); if (v) { out.career = v; 찾은수++; } }
+
+  // 한 칸에 들어갈 값들은 글자만 남긴다. 상세요강은 원문 그대로라 여기 안 걸린다.
+  for (const k of ["salary", "work_time", "work_days", "career", "company_name", "contact_name", "address", "job_category_raw"]) {
+    if (out[k]) out[k] = 값글자만(out[k]);
+  }
+
   // 항목이 넷 이상 늘어선 글은 양식이 확실하다. 그 경우엔 우리 칸으로 옮겨진 것이
   // 둘만 되어도 양식으로 본다(「조건」「매장특징」처럼 우리에게 칸이 없는 항목이 섞인다).
   const 항목수 = Object.keys(표).length;
