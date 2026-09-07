@@ -12,7 +12,7 @@ import { parsePasted } from "@/lib/external/parsers/pasted";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
 import { dropUnsupported } from "@/lib/external/evidence";
-import { stripTitleDecor } from "@/lib/titleDecor";
+import { stripTitleDecor, 제목글자만 } from "@/lib/titleDecor";
 import { PARSE_MODEL } from "@/lib/ai/models";
 
 function htmlToText(html: string): string {
@@ -1050,9 +1050,10 @@ ${bodyText.trim() ? `- description: "" 로 둔다. 상세요강은 붙여넣은 
     }
   }
 
-  // 제목의 장식은 프롬프트로도 시켰지만 그대로 실려 오는 일이 있어 코드로 한 번 더 건다.
-  // 다만 사람이 붙여넣은 제목은 손대지 않는다 — 카페 원문 그대로가 맞다.
-  if (!pastedTitle && typeof out.title === "string") out.title = stripTitleDecor(out.title);
+  // 제목은 글자만 남긴다. 이모지·장식 기호는 목록에서 제목을 밀어내고, 띄어쓰기가
+  // 없어 한 낱말로 취급돼 카드를 뚫고 나간다. 낱말은 안 건드리므로 「[구인]」 같은
+  // 말머리는 그대로 남는다.
+  if (typeof out.title === "string") out.title = 제목글자만(out.title);
 
   // ── 폼 선택지와 정확히 일치하는 값만 남기도록 검증(오타·off-list 방지) ──
   if (typeof out.career !== "string" || !CAREER_OPTIONS.includes(out.career)) out.career = "";
@@ -1238,8 +1239,7 @@ ${bodyText.trim() ? `- description: "" 로 둔다. 상세요강은 붙여넣은 
     .replace(/&#(\d+);/g, (_m, d) => { try { return String.fromCodePoint(Number(d)); } catch { return ""; } })
     .replace(/&#x([0-9a-fA-F]+);/g, (_m, h) => { try { return String.fromCodePoint(parseInt(h, 16)); } catch { return ""; } })
     .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
-  // 붙여넣은 제목은 원문 그대로 둔다(이모지·말머리 포함). AI 가 낸 제목만 다듬는다.
-  if (!pastedTitle && typeof out.title === "string") out.title = 기호풀기(out.title).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "").replace(/\s+/g, " ").trim();
+  if (typeof out.title === "string") out.title = 제목글자만(기호풀기(out.title));
 
   for (const k of ["description", "company_description", "extra_notes", "main_duties", "requirements", "preferred", "benefits"]) {
     if (typeof out[k] === "string" && out[k]) {

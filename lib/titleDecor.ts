@@ -25,3 +25,17 @@ export function stripTitleDecor(title: string): string {
     .replace(/[\s/·|,-]+$/, "")
     .trim();
 }
+
+/** 제목에서 글자만 남긴다 — 이모지와 장식 기호(★☆♥◆■▲●…)를 전부 걷는다.
+ *
+ *  목록에서 제목을 밀어내고, 띄어쓰기가 없어 한 낱말로 취급돼 카드를 뚫고 나간다.
+ *  낱말·괄호·구분자는 건드리지 않으므로 「[구인]」 같은 말머리는 그대로 남는다.
+ *  \p{So} 가 기타 기호(★♥◆■▲●✔♠…)를, Extended_Pictographic 이 이모지를 덮는다. */
+export function 제목글자만(title: string): string {
+  return String(title || "")
+    .replace(/[\p{So}\p{Extended_Pictographic}\uFE0F\u200D]/gu, " ")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^[\s\/·|,-]+/, "")
+    .replace(/[\s\/·|,-]+$/, "")
+    .trim();
+}
