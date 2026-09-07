@@ -698,9 +698,11 @@ export async function POST(req: NextRequest) {
 {"company_name","homepage_url","contact_email","contact_phone","contact_name","title","job_type","job_categories","job_category_raw","gender_preference","education","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
 규칙:
 - job_type: "회사 업종"이 아니라 "실제 근무 직무"를 기준으로 판단한다. 물리적 매장·샵에 상주하며 일하는 현장직 — 미용실·네일·피부·속눈썹 등 시술직 + 매장 카운터·판매·접객·매장관리·안내데스크·리셉션 등 오프라인 매장 상주 직무 — 이면 "STORE". 본사·사무실 근무 사무직(브랜드 기획·마케팅·MD·영업관리·연구개발·인사·경영 등)이면 "OFFICE". ★ 회사가 "판매점·유통·이커머스·재료 전문점" 업종이어도, 채용 직무가 오프라인 매장의 카운터·판매·매장관리·접객이면 반드시 "STORE"로 분류(예: "네일재료 판매점 카운터 및 매장관리 직원" → STORE).
-- job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 목록에 딱 맞는 게 없으면 가장 가까운 것 1개. 전혀 없으면 [].
+- job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 딱 맞는 게 없으면 [].
     ★ 본문이 말하지 않은 직군을 만들지 마라. 헤어스탭만 뽑는 글에 "헤어 디자이너"를,
       살롱 구인 글에 "미용강사"를 끼워 넣는 일이 잦았다. 본문에 그 말이 없으면 고르지 마라.
+    ★ "가장 가까운 것"을 찍지 마라. 애매하면 비워 둔다 — 빈 칸은 등록하는 사람 눈에
+      띄지만, 그럴듯하게 찍힌 직군은 그대로 올라가 버린다.
 - job_category_raw: 이 공고가 "무슨 일 할 사람"을 뽑는지, 글에 적힌 말 그대로 짧게(예: "발관리 전문가", "속눈썹 연장 디자이너"). 
     위 목록에 맞는 게 없어도 반드시 채울 것 — 비면 그 공고는 모집분야 없이 올라간다. 지역·매장명·급여는 빼고 직무만.
     · STORE 직군: ${STORE_CATEGORIES.join(" / ")}
@@ -714,7 +716,8 @@ export async function POST(req: NextRequest) {
 - title: 원문 공고 제목을 "그대로" 쓴다. 이모지·★♥🌸 같은 장식 기호와 반복된 특수문자만 걷어내고, 낱말은 바꾸지 말 것.
     ★ &#128153; 같은 HTML 기호(&#...; &amp; &nbsp;)는 글자가 아니라 부호다. 남기지 말고 지워라.
   (예: "🌸서울 은평구 네일샵 든든한 직원 구합니다🌸" → "서울 은평구 네일샵 든든한 직원 구합니다")
-  ★ 직무명으로 새로 지어내지 말 것("네일 아티스트(경력자)" 같은 요약 제목 금지). 원문에 제목이 없을 때만 내용으로 한 줄 짓는다.
+  ★ 직무명으로 새로 지어내지 말 것("네일 아티스트(경력자)" 같은 요약 제목 금지).
+    원문에 제목이 없으면 ""로 둔다. 내용을 요약해 제목을 짓지 마라 — 등록하는 사람이 적는다.
 - contact_methods: 지원자가 연락할 수 있는 방법을 아래에서 골라 배열로. 없으면 [].
     · 고를 수 있는 값: ${CONTACT_METHODS.join(" / ")}
     · "문자 주세요/문자 지원" → "문자", "전화 문의/☎/📞 번호" → "전화", 이메일 주소가 있으면 "이메일".
@@ -1070,50 +1073,13 @@ export async function POST(req: NextRequest) {
       out.job_categories = 골라낸;
     }
 
-    // 모델이 하나도 못 고르는 일이 있다. 직군 이름이 글의 말과 달라서다
-    // (예: '발관리 전문가' 를 뽑는 글인데 우리 직군 이름은 '문제성 네일 손발톱 관리사').
-    // 그럴 때만 글에서 직접 찾아 보탠다 — 모집분야가 비면 그 공고는 검색에 안 걸린다.
-    if (!out.job_categories.length) {
-      const src = [
-        out.title, bodyText, pageText,
-        out.description, out.requirements, out.preferred, out.main_duties, out.extra_notes,
-      ].map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ").toLowerCase();
-      // 여러 직군에 두루 나오는 말은 근거로 삼지 않는다.
-      // ('미용사'는 어느 직군이든 자격으로 적히고, '스태프·알바'는 고용형태에 가깝다.)
-      const 흔한말 = /^(스태프|스탭|스텝|인턴|staff|assistant|알바|아르바이트|파트타임|프리랜서|단기|일당|스페어|매장|교육|상담|관리사|아티스트|디자이너|미용사|모델|시술|샵)$/;
-      const 점수 = catPool
-        .map((cat) => {
-          const keys = [
-            ...cat.split(/[()·・,\/]| /).map((w) => w.trim()),
-            ...(SEARCH_TAGS[cat] || []),
-          ].filter((w) => w.length >= 3 && !흔한말.test(w));
-          return { cat, n: new Set(keys.filter((k) => src.includes(k.toLowerCase()))).size };
-        })
-        .filter((x) => x.n >= 2) // 한 낱말만 걸린 것은 우연일 수 있다
-        .sort((a, b) => b.n - a.n);
-      out.job_categories = 점수.slice(0, 2).map((x) => x.cat);
-    }
-
-    // 인턴·스탭을 뽑는 글에 「헤어 디자이너」가 붙는 일이 잦았다(등록 이슈 세 건).
-    // 낱말 점수만 세면 살롱 글은 죄다 디자이너 쪽에 몰린다 — 글이 「디자이너」라고
-    // 말하지 않았으면 디자이너로 적지 않고, 인턴·스탭이라 말했으면 그 자리로 옮긴다.
-    {
-      const t = [out.title, out.description, bodyText, pageText]
-        .map((v: any) => String(v || "")).join(" ");
-      const 스탭글 = /인턴|스탭|스텝|스태프|막내|수습|어시/.test(t);
-      const 디자이너글 = /디자이너|디쟈이너/.test(t);
-      if (Array.isArray(out.job_categories)) {
-        if (!디자이너글) out.job_categories = out.job_categories.filter((c: string) => !/디자이너/.test(c));
-        // 제목이 인턴·스탭을 말할 때만 보탠다. 본문에 한 번 스친 말로 보태면
-        // 디자이너를 뽑는 글에도 스텝이 붙는다.
-        const 제목스탭 = /인턴|스탭|스텝|스태프|막내|수습/.test(String(out.title || ""));
-        if ((제목스탭 || !디자이너글) && 스탭글 && catPool.includes("헤어 스텝")
-            && !out.job_categories.includes("헤어 스텝")
-            && /헤어|미용실|살롱|펌|염색|커트/.test(t)) {
-          out.job_categories = [...out.job_categories, "헤어 스텝"];
-        }
-      }
-    }
+    // 여기서 끝이다. 못 고르면 비워 둔다.
+    //
+    // 예전에는 두 가지를 더 했다. 하나는 낱말 점수를 세어 제일 그럴듯한 직군 둘을
+    // 찍는 것, 하나는 「인턴·스탭이라 썼으니 헤어 스텝이겠지」처럼 규칙으로 보태고
+    // 빼는 것이었다. 둘 다 글에 없는 것을 만들어 낸 것이라 걷었다. 찍은 직군은
+    // 등록 화면에서 맞는지 알아보기 어려워 그대로 올라갔고, 그게 등록 이슈로 돌아왔다.
+    // 비어 있으면 등록하는 사람이 폼에서 고른다 — 빈 칸은 눈에 띄지만 틀린 값은 안 띈다.
   }
   // 고용형태: 폼에 없는 값은 버린다. 글이 프리랜서라고 분명히 말하면 그대로 따른다.
   //   단, 구조화 파서(헤어인잡 등)가 '근무형태' 항목에서 이미 값을 읽었다면 그걸 신뢰한다.
