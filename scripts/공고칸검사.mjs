@@ -22,11 +22,17 @@ const 칸 = [...new Set([...블록.matchAll(/^\s{6}([a-z_][a-z0-9_]*):/gm)].map(
 
 // 저장하지 않는 것이 맞는 칸. 왜 그런지 적어 둔다.
 const 저장안함 = {
-  // 업체 행에 남기고 공고에는 안 싣는다. 회원 공고는 업체 정보에서 읽는다.
+  // 공고가 아니라 업체 행에 남기는 값이다(app/api/admin/jobs 의 companies UPDATE).
+  // 알바가 등록하면서 연락처를 지워도 그 업체에 연락할 길은 남겨 둔다.
+  // 기업회원 경로는 자기 연락처를 이미 알고 있어 보내지 않는다.
+  source_contact_phone: "업체 행에만 남긴다 — 대행 등록 전용",
+  source_contact_email: "업체 행에만 남긴다 — 대행 등록 전용",
 };
 // 조회에서 따로 안 내보내도 되는 칸.
 const 조회안함 = {
   job_type: "job_postings.job_type 을 조회 쿼리가 * 로 가져와 그대로 나간다",
+  source_contact_phone: "공고에 저장하지 않는 값이라 조회할 것도 없다",
+  source_contact_email: "공고에 저장하지 않는 값이라 조회할 것도 없다",
 };
 
 const 대상 = [

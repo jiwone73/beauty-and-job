@@ -95,7 +95,9 @@ export async function POST(req: NextRequest) {
     salary_text, headcount_text, gender_preference, positions,
     // 연락처를 칸마다 가릴지. 폼이 보내는데 안 받아 대행 등록에서는 늘 기본값으로 저장됐다.
     contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
-    cover_images
+    cover_images,
+    // 불러오기가 읽어 온 원본 연락처. 폼에서 지워도 업체 행에는 남긴다.
+    source_contact_phone, source_contact_email
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -241,14 +243,18 @@ export async function POST(req: NextRequest) {
     // 번호를 지우면 그 업체에 연락할 길이 사라진다 — 「나중에 그 번호로 연락해 회원가입을
     // 권한다」는 원래 뜻이 공고 하나에 매달려 있던 셈이다. 업체 행은 지점마다 따로라
     // (「리안헤어 녹양역점」처럼) 지점 번호가 지점에 남는다. 이미 있으면 덮지 않는다.
-    if (finalCompanyId && (extPhone || extEmail)) {
+    // 공고에서 번호를 지웠어도 불러오기가 읽어 온 원본이 있으면 그걸 남긴다.
+    // 지우는 건 「공고에 안 내보낸다」는 뜻이지 「업체 연락처를 버린다」가 아니다.
+    const 업체전화 = extPhone || ((source_contact_phone || '').replace(/\D/g, '') || null)
+    const 업체메일 = extEmail || ((source_contact_email || '').trim() || null)
+    if (finalCompanyId && (업체전화 || 업체메일)) {
       await client.query(
         `UPDATE companies SET
            phone = COALESCE(NULLIF(phone, ''), $2),
            email = COALESCE(email, NULLIF($3, '')::citext),
            updated_at = now()
          WHERE id = $1 AND is_member = false`,
-        [finalCompanyId, extPhone || null, extEmail || null]
+        [finalCompanyId, 업체전화, 업체메일]
       ).catch((e: any) => console.error('[업체 연락처 남기기]', e?.message))
     }
 

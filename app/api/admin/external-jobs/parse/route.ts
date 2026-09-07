@@ -1032,22 +1032,11 @@ export async function POST(req: NextRequest) {
     if (out.parsed_by === "structured") {
       out.job_categories = picked;
     } else {
-      // 근거는 공고명에서 먼저 찾는다.
-      //
-      // 공고명은 「… 디자이너/헤어스탭 채용」처럼 뽑는 자리를 거의 그대로 적는다
-      // (외부 공고 25건을 보니 스물둘이 그랬다). 반면 본문은 매장 자랑·복리후생·
-      // 교육 안내가 뒤섞여 있어, 「교육」 두 글자에 미용강사가 붙는 식으로 엉뚱한
-      // 직군이 딸려 왔다(등록 이슈 여섯 건). 그래서 공고명에서 하나라도 잡히면
-      // 거기서 끝내고, 공고명이 매장 이름뿐일 때만 본문까지 내려간다.
-      const 본문src = [
-        out.title, bodyText, pageText,
-        out.description, out.requirements, out.preferred, out.main_duties, out.extra_notes,
-      ].map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ").toLowerCase();
-      // 여기에 사이트가 상단 표에 정리해 둔 직종명(job_category_raw)도 같이 둔다.
-      // 「발관리 전문가」처럼 한 줄로 딱 적혀 오는 값이라 공고명 다음으로 믿을 만하다.
-      // 상세요강은 이미지로 된 것도 많고 자랑·교육 안내가 섞여 근거로는 제일 나중이다.
-      const 제목src = [out.title, out.job_category_raw].map((v: any) => String(v || "")).join(" ").toLowerCase();
-      let src = 제목src;
+      // 근거는 공고명과, 사이트가 「모집분야」 칸에 적어 둔 직종명(job_category_raw)
+      // 둘뿐이다. 상세요강은 안 본다 — 이미지로 된 것도 많고, 매장 자랑·복리후생·
+      // 교육 안내가 뒤섞여 있어 「교육」 두 글자에 강사 직군이 딸려 왔다.
+      const src = [out.title, out.job_category_raw]
+        .map((v: any) => String(v || "")).join(" ").toLowerCase();
       // 이름에 붙은 괄호·구분자를 떼어 낱말 단위로 본다: "피부관리사(일반·경락)" → 피부관리사 / 일반 / 경락
       //
       // 낱말이 헐거우면 근거 검사가 통과 도장이 된다. 「헤어강사」의 근거로 「헤어」가
@@ -1068,9 +1057,7 @@ export async function POST(req: NextRequest) {
         ].filter((w) => w.length >= 2 && !흔한말.has(w));
         return words.some((w) => src.includes(w.toLowerCase()));
       };
-      let 골라낸 = picked.filter(grounded);
-      if (!골라낸.length) { src = 본문src; 골라낸 = picked.filter(grounded); }
-      out.job_categories = 골라낸;
+      out.job_categories = picked.filter(grounded);
     }
 
     // 여기서 끝이다. 못 고르면 비워 둔다.

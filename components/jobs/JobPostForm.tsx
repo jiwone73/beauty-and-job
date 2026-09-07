@@ -389,6 +389,9 @@ export default function JobPostForm({
   // 나가면 지원이 뷰티워크 밖에서 끝난다. 기본은 가림.
   const [숨김, set숨김] = useState<Record<string, boolean>>({ name: true, phone: true, mail: true, kakao: true });
   const [nmManagerPhone, setNmManagerPhone] = useState("");
+  // 불러오기로 읽어 온 연락처 원본. 폼에서 지워도 이 값은 남는다 —
+  // 공고에는 안 나가지만 업체 행에 남겨 나중에 그 번호로 연락할 수 있게 한다.
+  const [원문연락처, set원문연락처] = useState<{ phone: string; email: string }>({ phone: "", email: "" });
   const [contactMethods, setContactMethods] = useState<string[]>([]); // 지원방법: 문자·이메일·전화·뷰티워크 온라인지원(복수)
   const toggleContactMethod = (m: string) =>
     setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]).sort((a, b) => CONTACT_METHOD_OPTIONS.indexOf(a) - CONTACT_METHOD_OPTIONS.indexOf(b)));
@@ -1516,6 +1519,7 @@ export default function JobPostForm({
         // 담당자 연락처는 '관리자 확인용'으로만 저장(구직자 비노출). 파싱값이 있으면 채워둔다.
         if (d.contact_email) setNmContactEmail(d.contact_email);
         if (d.contact_phone) setNmManagerPhone(d.contact_phone);
+        set원문연락처({ phone: d.contact_phone || "", email: d.contact_email || "" });
         // 지원방법을 골라야 담당자 연락처 칸이 화면에 나타난다.
         // 이걸 안 채우면 번호를 읽어 와도 담을 자리가 없어 사라진 것처럼 보인다.
         {
@@ -2500,6 +2504,10 @@ export default function JobPostForm({
       external_contact_name: 낼담당.이름 || null,
       external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
       external_contact_kakao: 낼담당.카톡 || null,
+      // 공고에서 지워도 업체 행에는 남길 값. 알바가 등록하면서 번호를 지우면
+      // 그 업체에 연락할 길이 사라졌다 — 지우는 건 공고에서만 지우는 것이다.
+      source_contact_phone: (원문연락처.phone || "").replace(/\D/g, "") || null,
+      source_contact_email: 원문연락처.email || null,
       contact_name_hidden: 숨김.name !== false,
       contact_phone_hidden: 숨김.phone !== false,
       contact_email_hidden: 숨김.mail !== false,
