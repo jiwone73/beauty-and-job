@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
+import { 공고모양 } from "@/lib/jobShape";
 import { formatSalaryWon } from "@/lib/salary";
 import CategoryPickPopover from "@/components/jobs/CategoryPickPopover";
 import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
@@ -2030,89 +2031,8 @@ export default function JobPostForm({
         return;
       }
     }
-    const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
-    const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
-    // 모집부문 표의 '경력/직책'을 공고 필터(신입·경력직·경력무관)로 옮긴다.
-    // 첫 행만 보면 '신입+경력' 처럼 섞인 공고가 한쪽으로만 잡히므로 모든 행을 본다.
-    // 직책(매니저·실장·부원장·원장)은 신입에게 주지 않는 자리라 경력직으로 센다.
-    const careers = positions.map((p) => p.career).filter(Boolean);
-    const isNew = (c: string) => c.includes("신입");
-    const isExp = (c: string) => /\d+\s*년/.test(c) || c.includes("경력") || /매니저|실장|부원장|원장|점장/.test(c);
-    const anyFree = careers.some((c) => c.includes("무관"));
-    const anyNew = careers.some(isNew);
-    const anyExp = careers.some((c) => !isNew(c) && isExp(c));
-    const expLevel = anyFree || (anyNew && anyExp) ? "ANY"
-      : anyNew ? "NEW"
-      : anyExp ? "EXPERIENCED" : "ANY";
-    // 고용형태는 여럿을 쉼표로 잇는다 — 공고 하나에 붙는 대표값은 첫 번째로 잡는다.
-    const 대표고용 = String(p0.employment || "").split(",")[0].trim();
-    const workType = (대표고용 === "아르바이트" || 대표고용 === "스페어") ? "PART_TIME"
-      : 대표고용 === "계약직" ? "CONTRACT" : "FULL_TIME";
-    let salaryMin: number | null = null;
-    let salaryMaxVal: number | null = null;
-    if (!salaryNego && form.salary) {
-      const n = parseInt(String(form.salary).replace(/[^0-9]/g, ""));
-      const wonUnit = (salaryType === "HOURLY" || salaryType === "DAILY");
-      if (n > 0) salaryMin = wonUnit ? n : n * 10000;
-      const mx = parseInt(String(salaryMax).replace(/[^0-9]/g, "")) || 0;
-      if (mx > n) salaryMaxVal = wonUnit ? mx : mx * 10000;
-    }
-
-    const payload: any = {
-      title: form.title,
-      job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
-      description: form.description || null,
-      requirements: form.requirements || null,
-      preferred_qualifications: form.preferred || null,
-      // 복리후생 자유입력이 있으면 텍스트 컬럼에도 줄바꿈으로 저장(공개 상세가 benefits 텍스트를 표시)
-      benefits: 복리후생값.length ? 복리후생값.join("\n") : null,
-      responsibilities: form.responsibilities || null,
-      education: p0.education || null, // 모집부문 표 첫 행 기준
-      salary_min: salaryMin, salary_max: salaryMaxVal,
-      salary_type: salaryMin ? salaryType : null,
-      salary_text: fiSalary.trim() || null, // 비회원 자유입력(예: "추후협의") — 있으면 표시 우선
-      positions: positions.length ? positions : null, // 모집부문 표(분야별 경력·급여·인원)
-      location: effRegions.join(", ") || null,
-      // 이 공고의 근무지 주소. 기본값은 매장 프로필 주소를 채워 두지만, 회원이 여기서
-      // 고치면 이 공고에만 적용된다 — 매장 프로필은 매장 설정에서만 바뀐다.
-      address: nmFullAddress.trim() || null,
-      work_locations: extraLocations.filter((l) => l.address.trim()).length
-        ? extraLocations.filter((l) => l.address.trim())
-        : null,
-      work_type: workType,
-      // 자유입력(fi*)이 채워졌으면 그 값으로 override(비회원 원문 보존). 비어 있으면 기존 위젯 값.
-      employment_type: p0.employment || null, // 모집부문 표 첫 행 기준(대표값)
-      experience_level: expLevel,
-      benefit_tags: 복리후생값,
-      work_period: fiWorkPeriod.trim() || workPeriod || null,
-      work_days: p0.workDays || null,
-      work_time: p0.workTime || null,
-      work_time_slots: null,
-      deadline: form.deadline || null,
-      headcount: primaryHeadcount,
-      headcount_text: fiHeadcount.trim() || null, // 비회원 자유입력(예: "인원미정") — 있으면 표시 우선
-      gender_preference: p0.gender || null, // 모집부문 표 첫 행 기준
-      categories: [...new Set(categories.map(baseCat))],
-      detail_images: detailImages,
-      hiring_process: hiringProcess.filter((s) => s.trim()),
-      notes: notes.trim() || null,
-      apply_method: applyMethod,
-      external_apply_url: externalApplyUrl.trim() || null,
-      external_contact_email: 낼담당.메일 || null,
-      external_contact_name: 낼담당.이름 || null,
-      external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
-      external_contact_kakao: 낼담당.카톡 || null,
-      contact_name_hidden: 숨김.name !== false,
-      contact_phone_hidden: 숨김.phone !== false,
-      contact_email_hidden: 숨김.mail !== false,
-      contact_kakao_hidden: 숨김.kakao !== false,
-      contact_methods: contactMethods,
-      // 불러온 원문 URL 저장 → 이후 파서 개선 시 일괄 재파싱·백필 가능(picked.url 우선)
-      source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
-      // 공고 전용 상단 이미지. 기업회원이 여기서 지워도 기업정보의 커버는 그대로 둔다.
-      //   (빈 배열이면 '이 공고는 상단 이미지 없음'으로 저장)
-      ...(mode === "company" ? { cover_images: bannerImages.map((b) => ({ url: b.url })) } : {}),
-    };
+    // 저장될 값은 한 곳에서만 만든다 — 미리보기도 같은 함수를 본다.
+    const { payload } = 저장값만들기();
 
     const company: any = nonMember
       ? { companyId: null, newCompany: { company_name: newCompanyName.trim(), brand_name: newBrandName.trim(), homepage_url: nmHomepage.trim(), contact_email: nmContactEmail.trim(), description: nmDescription.trim(), address: nmFullAddress, industry: fiIndustry.trim() || nmIndustry, company_size: nmSize, founded_year: nmFounded, representative_name: nmRepresentative.trim(), company_phone: nmPhone.replace(/\D/g, ""), logo_url: null, cover_images: bannerImages.map((b) => ({ url: b.url })) } }
@@ -2506,71 +2426,126 @@ export default function JobPostForm({
   const cp = companyProfile;
   const isNm = mode === "admin" && nonMember; // 비회원(외부) 공고면 nm* 값 사용
   const previewCompanyName = isNm ? newCompanyName : (cp?.company_name || (mode === "admin" ? companyName : ""));
-  const previewJob = {
-    id: editId || "preview",
-    companyId: "",
-    brand: isNm ? (newBrandName || newCompanyName) : (cp?.brand_name || cp?.company_name || (mode === "admin" ? companyName : "")),
-    brandDesc: isNm ? nmDescription : (cp?.description || ""),
-    tags: [] as string[],
-    title: form.title,
-    jobType: jobGroupType === "기업" ? "본사" : "매장",
-    jobCategories: [...new Set(categories.map(baseCat))],
-    career: form.career,
-    education: form.education || "",
-    region: regionList.join(", "),
-    employType: fiEmployment.trim() || (form.type ? form.type + ((fullTimeConvertible && (form.type === "계약직" || form.type === "인턴")) ? CONVERTIBLE_SUFFIX : "") : ""),
-    headcount: fiHeadcount.trim() || (form.headcount ? `${form.headcount}명` : ""),
-    genderPref: jobGroupType === "매장" ? genderPref : "",
-    deadline: alwaysOpen ? "상시채용" : (form.deadline ? form.deadline.replace(/-/g, ".") : ""),
-    salary: String(form.salary || "").trim() ? fmtSalary() : "",
-    positions: categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; }),
-    color: "#f7f7f8",
-    description: form.description || "",
-    requirements: form.requirements ? form.requirements.split("\n").filter(Boolean) : [],
-    preferreds: form.preferred ? form.preferred.split("\n").filter(Boolean) : [],
-    benefits: 복리후생값,
-    responsibilities: form.responsibilities ? form.responsibilities.split("\n").filter(Boolean) : [],
-    process: hiringProcess.filter((s) => s.trim()),
-    notes: notes,
-    logo_url: isNm ? null : cp?.logo_url,
-    // 실제 저장값(payload.cover_images)과 똑같이 이 폼의 bannerImages를 그대로 쓴다.
-    // 예전엔 기업회원 모드에서 companyProfile의 커버를 썼는데, 이 공고만 배너를
-    // 지우거나 새로 올리면 미리보기가 그걸 반영하지 못하고 매장정보 배너를 계속 보여줬다.
-    cover_images: bannerImages.map((b) => ({ url: b.url })),
-    detailImages: detailImages,
-    companyInfo: {
-      name: previewCompanyName,
-      brandName: isNm ? newBrandName : (cp?.brand_name || ""),
-      industry: isNm ? (fiIndustry.trim() || nmIndustry) : (cp?.industry || ""),
-      representative: isNm ? nmRepresentative : (cp?.representative_name || ""),
-      companyType: jobGroupType === "매장" ? "매장" : "본사",
-      size: isNm ? nmSize : (cp?.company_size || ""),
-      founded: isNm ? (nmFounded ? `${nmFounded}년` : "") : (cp?.founded_year || ""),
-      phone: isNm ? nmPhone : (cp?.company_phone || ""),
-      website: isNm ? nmHomepage : (cp?.website_url || ""),
-      location: isNm ? nmFullAddress : (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
-      latitude: null,
-      longitude: null,
-    },
-    // 근무지역은 이 공고의 주소를 먼저 쓰고, 비어 있을 때만 매장 프로필 주소로 물러선다.
-    companyAddress: nmFullAddress.trim() || (cp ? composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address) : ""),
-    // 안 고른 것은 비워 둔다 — 화면이 '협의'로 채우면 고른 적 없는 조건이 공고에 적힌다.
-    workDaysText: fiWorkDays.trim() || (workDaysNego ? "요일 협의" : workDays.join("·")),
-    workPeriodText: fiWorkPeriod.trim() || workPeriod,
-    workTimeText: fiWorkTime.trim() || (workTimeNego ? "시간 협의" : (workTimeStart && workTimeEnd ? `${workTimeStart}~${workTimeEnd}` : "")),
-    // 미리보기는 폼에 적힌 것만 보여준다 — 화면에 없는 값을 지어 넣지 않는다.
-    // 딱 하나, 관리자가 대신 올리는 공고의 지원 안내만 '뷰티워크 온라인지원'으로 낸다.
-    //   원래 공고의 담당자 연락처는 폼에 남아 저장되지만(나중에 그 번호로 연락해
-    //   회원가입을 권해야 한다), 화면에 내보내면 구직자가 뷰티워크를 건너뛰고 매장으로
-    //   바로 연락해 버린다 — 지원이 남지 않아 매장도 우리도 무슨 일이 있었는지 모른다.
-    //   이건 지어낸 값이 아니라 의도한 규칙이고, 실제 공개 화면도 같게 나간다.
-    isExternal: isNm,
-    contactKakao: mode === "admin" ? "" : 낼담당.카톡,
-    contactName: mode === "admin" ? "" : 낼담당.이름,
-    contactPhone: mode === "admin" ? "" : 낼담당.전화,
-    contactEmail: mode === "admin" ? "" : 낼담당.메일,
-    contactMethods: mode === "admin" ? ["뷰티워크 온라인지원"] : contactMethods,
+  /** 폼에 적힌 것을 「저장될 값」 하나로 만든다.
+   *
+   *  예전에는 저장할 payload 와 미리보기용 previewJob 을 따로 조립했다. 두 벌이라
+   *  칸 하나를 늘리거나 규칙을 바꿀 때 한쪽만 고쳐지고, 그때마다 「미리보기와 실제가
+   *  다르다」는 이슈가 올라왔다(배너·상세요강·지원방법). 이제 만드는 곳은 여기 하나뿐이고,
+   *  미리보기는 이 값을 공개 화면과 같은 함수(공고모양)에 태워 그린다. */
+  const 저장값만들기 = () => {
+    const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
+    const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
+    const positions = categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
+    const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
+    const careers = positions.map((p) => p.career).filter(Boolean);
+    const isNew = (c: string) => c.includes("신입");
+    const isExp = (c: string) => /\d+\s*년/.test(c) || c.includes("경력") || /매니저|실장|부원장|원장|점장/.test(c);
+    const anyFree = careers.some((c) => c.includes("무관"));
+    const anyNew = careers.some(isNew);
+    const anyExp = careers.some((c) => !isNew(c) && isExp(c));
+    const expLevel = anyFree || (anyNew && anyExp) ? "ANY" : anyNew ? "NEW" : anyExp ? "EXPERIENCED" : "ANY";
+    const 대표고용 = String(p0.employment || "").split(",")[0].trim();
+    const workType = (대표고용 === "아르바이트" || 대표고용 === "스페어") ? "PART_TIME"
+      : 대표고용 === "계약직" ? "CONTRACT" : "FULL_TIME";
+    let salaryMin: number | null = null;
+    let salaryMaxVal: number | null = null;
+    if (!salaryNego && form.salary) {
+      const n = parseInt(String(form.salary).replace(/[^0-9]/g, ""));
+      const wonUnit = (salaryType === "HOURLY" || salaryType === "DAILY");
+      if (n > 0) salaryMin = wonUnit ? n : n * 10000;
+      const mx = parseInt(String(salaryMax).replace(/[^0-9]/g, "")) || 0;
+      if (mx > n) salaryMaxVal = wonUnit ? mx : mx * 10000;
+    }
+    const payload: any = {
+      title: form.title,
+      job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
+      description: form.description || null,
+      requirements: form.requirements || null,
+      preferred_qualifications: form.preferred || null,
+      benefits: 복리후생값.length ? 복리후생값.join("\n") : null,
+      responsibilities: form.responsibilities || null,
+      education: p0.education || null,
+      salary_min: salaryMin, salary_max: salaryMaxVal,
+      salary_type: salaryMin ? salaryType : null,
+      salary_text: fiSalary.trim() || null,
+      positions: positions.length ? positions : null,
+      location: effRegions.join(", ") || null,
+      address: nmFullAddress.trim() || null,
+      work_locations: extraLocations.filter((l) => l.address.trim()).length
+        ? extraLocations.filter((l) => l.address.trim()) : null,
+      work_type: workType,
+      employment_type: p0.employment || null,
+      experience_level: expLevel,
+      benefit_tags: 복리후생값,
+      work_period: fiWorkPeriod.trim() || workPeriod || null,
+      work_days: p0.workDays || null,
+      work_time: p0.workTime || null,
+      work_time_slots: null,
+      deadline: alwaysOpen ? null : (form.deadline || null),
+      headcount: primaryHeadcount,
+      headcount_text: fiHeadcount.trim() || null,
+      gender_preference: p0.gender || null,
+      categories: [...new Set(categories.map(baseCat))],
+      detail_images: detailImages,
+      hiring_process: hiringProcess.filter((s) => s.trim()),
+      notes: notes.trim() || null,
+      apply_method: applyMethod,
+      external_apply_url: externalApplyUrl.trim() || null,
+      external_contact_email: 낼담당.메일 || null,
+      external_contact_name: 낼담당.이름 || null,
+      external_contact_phone: 낼담당.전화.replace(/\D/g, "") || null,
+      external_contact_kakao: 낼담당.카톡 || null,
+      contact_name_hidden: 숨김.name !== false,
+      contact_phone_hidden: 숨김.phone !== false,
+      contact_email_hidden: 숨김.mail !== false,
+      contact_kakao_hidden: 숨김.kakao !== false,
+      contact_methods: contactMethods,
+      source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
+      ...(mode === "company" ? { cover_images: bannerImages.map((b) => ({ url: b.url })) } : {}),
+    };
+    return { payload, positions, p0, effRegions };
   };
+
+  /** 미리보기 = 저장될 값을 공개 화면과 똑같은 함수(공고모양)에 태운 것.
+   *
+   *  손으로 다시 조립하지 않는다. 조립을 두 번 하면 언젠가 갈리고, 그때마다
+   *  「등록 폼과 미리보기가 다르다」가 된다. 지원방법·연락처를 가리는 규칙도
+   *  공개 화면이 쓰는 그 규칙(is_external)을 그대로 태워 같이 검증된다. */
+  const previewJob = (() => {
+    const { payload } = 저장값만들기();
+    const cp: any = companyProfile;
+    return 공고모양({
+      ...payload,
+      id: editId || "preview",
+      is_external: isNm,
+      source: isNm ? "EXTERNAL" : "NATIVE",
+      created_at: new Date().toISOString(),
+      // 상시채용은 저장값에 마감일이 없다 — 화면이 「상시채용」으로 읽게 한다.
+      deadline: alwaysOpen ? null : (form.deadline || null),
+      company_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
+      cover_images: bannerImages.map((b) => ({ url: b.url })),
+      company: {
+        id: companyId || "",
+        company_name: isNm ? (newCompanyName || newBrandName) : (cp?.company_name || (mode === "admin" ? companyName : "")),
+        brand_name: isNm ? newBrandName : (cp?.brand_name || ""),
+        description: isNm ? nmDescription : (cp?.description || ""),
+        representative_name: isNm ? nmRepresentative : (cp?.representative_name || ""),
+        company_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
+        industry: isNm ? (fiIndustry.trim() || nmIndustry) : (cp?.industry || ""),
+        company_size: isNm ? nmSize : (cp?.company_size || ""),
+        founded_year: isNm ? nmFounded : (cp?.founded_year || ""),
+        company_phone: isNm ? nmPhone : (cp?.company_phone || ""),
+        website_url: isNm ? nmHomepage : (cp?.website_url || ""),
+        logo_url: isNm ? null : cp?.logo_url,
+        cover_images: cp?.cover_images || [],
+        address: isNm ? nmFullAddress : (cp?.address || ""),
+        region_sido: isNm ? "" : (cp?.region_sido || ""),
+        region_sigungu: isNm ? "" : (cp?.region_sigungu || ""),
+        latitude: null, longitude: null,
+      },
+    });
+  })();
 
   // 본문 콘텐츠 가로 정렬. 사이드가 생긴 뒤로는 기업 폼도 왼쪽으로 붙인다 —
   // 가운데 두면 사이드바와 본문 사이가 아니라 사이드 왼쪽에 빈 띠가 넓게 남는다.
