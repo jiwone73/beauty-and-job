@@ -2502,7 +2502,10 @@ export default function JobPostForm({
       contact_kakao_hidden: 숨김.kakao !== false,
       contact_methods: contactMethods,
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
-      ...(mode === "company" ? { cover_images: bannerImages.map((b) => ({ url: b.url })) } : {}),
+      // 배너는 어느 쪽에서 올렸든 이 공고에 실린다. 예전에는 기업회원일 때만
+      // 공고에 싣고 관리자일 때는 업체 커버로만 넣었는데, 업체에 커버가 이미
+      // 있으면 덮지 않아서 미리보기에 보이던 배너가 저장 뒤에 사라졌다.
+      cover_images: bannerImages.map((b) => ({ url: b.url })),
     };
     return { payload, positions, p0, effRegions };
   };

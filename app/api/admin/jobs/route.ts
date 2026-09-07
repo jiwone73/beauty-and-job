@@ -94,7 +94,8 @@ export async function POST(req: NextRequest) {
     employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
     salary_text, headcount_text, gender_preference, positions,
     // 연락처를 칸마다 가릴지. 폼이 보내는데 안 받아 대행 등록에서는 늘 기본값으로 저장됐다.
-    contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden
+    contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
+    cover_images
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -186,9 +187,10 @@ export async function POST(req: NextRequest) {
          external_contact_name, external_contact_phone, contact_methods,
          employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
          salary_text, headcount_text, gender_preference, positions, work_locations, external_contact_kakao,
-         contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden
+         contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
+         cover_images
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -216,7 +218,10 @@ export async function POST(req: NextRequest) {
         contact_name_hidden !== false,
         contact_phone_hidden !== false,
         contact_email_hidden !== false,
-        contact_kakao_hidden !== false
+        contact_kakao_hidden !== false,
+        // 이 공고에 고른 배너. 업체 커버로만 넣던 때는 업체에 커버가 이미 있으면
+        // 덮지 않아, 미리보기에 보이던 배너가 저장 뒤에 사라졌다.
+        Array.isArray(cover_images) && cover_images.length ? JSON.stringify(cover_images) : null
       ]
     )
 

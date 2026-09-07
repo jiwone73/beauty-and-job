@@ -51,10 +51,15 @@ export function 공고모양(j: any) {
         // 관리자가 대신 올린 공고는 담당자 연락처를 내보내지 않고 지원 안내를
         // '뷰티워크 온라인지원' 하나로 낸다 — 등록 화면 미리보기와 같은 규칙이다.
         // 값은 DB에 그대로 남아 있다(나중에 그 번호로 연락해 회원가입을 권한다).
-        contactName: j.is_external ? '' : (j.external_contact_name || ''),
-        contactPhone: j.is_external ? '' : (j.external_contact_phone || ''),
-        contactEmail: j.is_external ? '' : (j.external_contact_email || ''),
-        contactKakao: j.is_external ? '' : (j.external_contact_kakao || ''),
+        //
+        // 「비공개」로 둔 칸도 여기서 지운다. 서버(lib/jobDetail)가 이미 지워 보내지만,
+        // 등록 화면 미리보기는 폼에 적힌 값을 그대로 태운다 — 지우는 규칙이 이 함수
+        // 밖에만 있으면 미리보기에는 번호가 보이고 실제 공고에는 안 보인다.
+        // 두 번 지워도 결과는 같으니(빈 값은 그대로 빈 값) 여기에 두는 것이 안전하다.
+        contactName: j.is_external || j.contact_name_hidden ? '' : (j.external_contact_name || ''),
+        contactPhone: j.is_external || j.contact_phone_hidden ? '' : (j.external_contact_phone || ''),
+        contactEmail: j.is_external || j.contact_email_hidden ? '' : (j.external_contact_email || ''),
+        contactKakao: j.is_external || j.contact_kakao_hidden ? '' : (j.external_contact_kakao || ''),
         contactMethods: j.is_external ? ['뷰티워크 온라인지원'] : (Array.isArray(j.contact_methods) ? j.contact_methods : []),
         companyInfo: {
           name: j.company?.company_name || '',

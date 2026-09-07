@@ -58,6 +58,11 @@ export async function 공고읽기(id: string) {
     positions: Array.isArray(job.positions) ? job.positions : [], // 모집부문 표(분야별 경력·급여·인원)
     location: job.location,
     address: job.address,
+    // 지점이 여럿인 매장이 공고에 따로 적어 둔 근무지들. 안 내보내면 등록
+    // 화면 미리보기에만 보이고 실제 공고에서는 사라진다.
+    work_locations: job.work_locations || null,
+    // 원문 주소(대행 등록). 화면이 「원문 보기」를 낼 때 쓴다.
+    source_url: job.source_url || null,
     work_type: job.work_type,
     employment_type: job.employment_type || '',
     experience_level: job.experience_level,

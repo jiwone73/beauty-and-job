@@ -31,6 +31,8 @@ export const ALBA_WEEK_RELIEF_MIN: Record<number, number> = {
 // 그대로 채우되 끝나는 날이 밀린다.
 export const ALBA_BLOCKED_WEEKS: Record<number, string> = {
   2: "기능보강·버그로 작업 불가", // 2026-08-24~30
+  3: "등록 이슈 정리로 작업 중단", // 2026-08-31~09-06. 등록 이슈가 쌓여 더 올려도
+  //   의미가 없어 그만 하라고 한 주다 — 알바가 안 한 것이 아니다.
 };
 export const ALBA_NO_PENALTY_WEEKS = Object.keys(ALBA_BLOCKED_WEEKS).map(Number);
 
