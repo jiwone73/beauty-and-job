@@ -350,9 +350,12 @@ export async function POST(req: NextRequest) {
     .map((x) => x.e)
     .slice(0, 5);
   // 전화번호(지원 연락처 후보): 표시 텍스트·붙여넣은 본문에서만 뽑아 오탐 최소화. 휴대폰/유선/대표번호 형식.
+  //   구분 기호 앞뒤에 공백을 넣어 적는 사람이 많다("010 -4324 -1407", "010 - 4324 - 1407").
+  //   예전 식은 기호 하나만 봐서 그런 번호를 통째로 놓쳤다(등록 이슈 「전화번호 안불러옴」).
   const phones = [...new Set(((pageText || "") + " " + pastedText)
-    .match(/(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/g) || [])]
-    .map((s) => s.replace(/[.\s]/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, ""))
+    .match(/(?:1[0-9]{3}\s*[-.]?\s*[0-9]{4})|(?:0\d{1,2}\s*[-.]?\s*\d{3,4}\s*[-.]?\s*\d{4})/g) || [])]
+    .map((s) => s.replace(/\s+/g, "").replace(/[.]/g, "-"))
+    .map((s) => (/^\d+$/.test(s) ? s : s.replace(/-{2,}/g, "-").replace(/^-|-$/g, "")))
     .filter((s) => { const d = s.replace(/\D/g, ""); return d.length >= 9 && d.length <= 11; })
     .slice(0, 5);
 
