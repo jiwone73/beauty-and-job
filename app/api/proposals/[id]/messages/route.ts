@@ -14,9 +14,17 @@ async function 당사자(req: NextRequest, proposalId: string) {
     `SELECT p.company_id, p.user_id, p.created_at, p.interested_at,
             EXISTS (SELECT 1 FROM user_company_blocks b
                      WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked,
-            -- 약속 장소의 기본값. 공고에 적힌 근무지가 먼저고, 없으면 매장 주소다.
-            COALESCE(NULLIF(TRIM(jp.address), ''), NULLIF(TRIM(c.address), ''),
-                     NULLIF(TRIM(CONCAT_WS(' ', c.region_sido, c.region_sigungu)), '')) AS 기본장소,
+            -- 약속 장소의 기본값. 그 공고의 근무지가 먼저고, 없으면 매장 주소다.
+            --   지점이 여럿인 매장은 근무지를 work_locations 에 따로 담는다. 그것도
+            --   보지 않으면 지점 공고인데 본점 주소로 약속을 보내게 된다.
+            COALESCE(
+              NULLIF(TRIM(jp.address), ''),
+              NULLIF(TRIM(CONCAT_WS(' ',
+                jp.work_locations -> 0 ->> 'address',
+                NULLIF(jp.work_locations -> 0 ->> 'detail', ''))), ''),
+              NULLIF(TRIM(c.address), ''),
+              NULLIF(TRIM(CONCAT_WS(' ', c.region_sido, c.region_sigungu)), '')
+            ) AS 기본장소,
             COALESCE(c.brand_name, c.company_name) AS 매장명
        FROM proposals p
        LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
