@@ -55,6 +55,8 @@ export default function ProposalThread({
   // 어디서 볼지. 기본값은 그 공고의 근무지고, 다른 데서 보기로 했으면 고쳐 쓴다.
   const [장소, set장소] = useState("");
   const [기본장소, set기본장소] = useState("");
+  // 약속 창을 열 때 매장 주소를 미리 넣는다. 보낸 뒤에는 비우므로 다음에 열면 다시 채워진다.
+  const 약속열기 = () => { if (!약속열림) set장소((v) => v || 기본장소); set약속열림((v) => !v); };
   const 바닥 = useRef<HTMLDivElement>(null);
 
   const 헤더 = { Authorization: `Bearer ${token}` };
@@ -223,7 +225,12 @@ export default function ProposalThread({
             {약속열림 && (
               <div className="pth-appt-form">
                 <input type="datetime-local" value={약속값} onChange={(e) => set약속값(e.target.value)} />
-                <input type="text" value={장소} placeholder={기본장소 || "만날 곳"}
+                {/* 매장 주소를 미리 넣어 둔다.
+                    면접은 거의 매장에서 본다. 예전에는 이 주소를 회색 안내 글씨로만
+                    보여 줬는데, 그러면 「채워 넣어야 하는 빈 칸」으로 읽힌다. 비워 둔
+                    채로 보내도 같은 주소가 들어갔지만 그걸 알 길이 없었다.
+                    값으로 채워 두면 그냥 보내면 되고, 다른 곳이면 그 자리에서 고친다. */}
+                <input type="text" value={장소} placeholder="만날 곳"
                   onChange={(e) => set장소(e.target.value)} />
                 <div className="pth-appt-form-acts">
                   <button type="button" onClick={() => { set약속열림(false); set약속값(""); set장소(""); }}>취소</button>
@@ -237,7 +244,7 @@ export default function ProposalThread({
                   메시지로 묻고 「좋아요·어려워요」로 답한다. */}
               {나 === "COMPANY" && (
                 <button type="button" className={`pth-appt-open${약속열림 ? " on" : ""}`} title="면접 약속 잡기"
-                  onClick={() => set약속열림((v) => !v)}>
+                  onClick={약속열기}>
                   <CalendarPlus size={18} />
                 </button>
               )}

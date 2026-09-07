@@ -14551,7 +14551,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    이미 내가 골라서 제안까지 보낸 사람이라 알아볼 만큼이면 되고, 72x92 는 처음 보는
    얼굴을 살피는 크기다. 연락처 줄이 없어 아래 여백은 이 카드가 직접 맡는다. */
 .tal-card.prop { padding-bottom: 14px; }
-.tal-card.prop .tal-avatar { width: 52px; height: 66px; font-size: 17px; }
+/* 보낸 제안은 원형. 이력서를 훑어보는 자리(인재검색·지원자)에서는 증명사진
+   비율이 그대로 보이는 네모가 맞지만, 여기는 「누구에게 보냈나」를 알아보는
+   자리라 대화 상대처럼 둥근 편이 읽기 쉽다. */
+.tal-card.prop .tal-avatar { width: 56px; height: 56px; border-radius: 50%; font-size: 17px; }
 
 /* 카드 목록의 기준 폭 — 인재 검색 카드가 기준이다(사이드 176 + 여백 28 을 뺀 값).
    사이드가 없는 화면(지원자)도 같은 폭으로 세워야 카드 크기가 화면마다 달라지지
