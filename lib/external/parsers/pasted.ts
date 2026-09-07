@@ -10,6 +10,8 @@
 // 라벨이 고정이라 「그 라벨 다음에 적힌 글자」를 그대로 가져오면 된다.
 // 값이 비어 있으면 비워 둔다 — 아래 자유 서술에서 찾아 채우지 않는다.
 
+import { getSigunguList } from "@/lib/data/regions";
+
 export type PastedResult = Record<string, any> & { _확실한가?: boolean };
 
 /** 「1) 샵명 :」 「◇ 모집분야」 처럼 항목을 여는 줄인가
@@ -100,6 +102,15 @@ const 급여모양 = [
   // 단위만 뒤에 있는 것: 「250만원 이상」 「3200 + 인센티브」
   /[\d,]+\s*만원\s*(?:이상|~|부터)?/,
 ];
+const 전화모양 = /(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/;
+/** 「010.6851.7582」 「01044072072」를 「010-6851-7582」로. 숫자는 그대로 두고 꼴만 맞춘다. */
+function 전화꼴(v: string): string {
+  const d = String(v || "").replace(/\D/g, "");
+  if (d.length === 11) return d.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+  if (d.length === 10) return d.replace(/(\d{2,3})(\d{3,4})(\d{4})/, "$1-$2-$3");
+  if (d.length === 8) return d.replace(/(\d{4})(\d{4})/, "$1-$2");
+  return v;
+}
 const 시간모양 = /(?:오전|오후)?\s*\d{1,2}\s*[:시]\s*\d{0,2}\s*분?\s*[~\-–]\s*(?:오전|오후)?\s*\d{1,2}\s*[:시]\s*\d{0,2}\s*분?/;
 const 휴무모양 = /(?:월|화|수|목|금|토|일)요일\s*(?:고정\s*)?휴(?:무|일)|주\s*[1-7]\s*일\s*(?:근무)?|월\s*\d{1,2}\s*회\s*휴무|격주\s*[1-7]?\s*일?/;
 const 경력모양 = new RegExp([
@@ -150,13 +161,88 @@ function 값글자만(v: string): string {
     .replace(/\s{2,}/g, " ").trim();
 }
 
+
+// ───────────── 나머지 칸도 값 모양으로 읽는다 ─────────────
+
+const 시도표: Record<string, string> = {
+  서울: "서울특별시", 부산: "부산광역시", 대구: "대구광역시", 인천: "인천광역시",
+  광주: "광주광역시", 대전: "대전광역시", 울산: "울산광역시", 세종: "세종특별자치시",
+  경기: "경기도", 강원: "강원특별자치도", 충북: "충청북도", 충남: "충청남도",
+  전북: "전북특별자치도", 전남: "전라남도", 경북: "경상북도", 경남: "경상남도", 제주: "제주특별자치도",
+};
+const 시도말 = Object.keys(시도표).join("|");
+
+/** 「경기도 시흥 은계지구」 「서울시 양화로6길 18」처럼 시도로 시작하는 주소 한 줄. */
+const 주소모양 = new RegExp(`(?:${시도말})(?:특별자치도|특별자치시|특별시|광역시|도|시)?\\s*[가-힣0-9]{1,10}(?:시|군|구)?[^\\n]{0,40}`);
+
+/** 주소에서 「시도 시군구」를 뽑는다. 못 뽑으면 "".
+ *
+ *  「경기도 시흥 은계지구」처럼 「시」를 빼고 적는 사람이 많아, 실제 시군구 표와
+ *  맞춰 본다. 표에 있는 이름만 쓰므로 지어내는 것이 아니다. */
+function 지역뽑기(addr: string): string {
+  const t = String(addr || "");
+  const sm = t.match(new RegExp(`(${시도말})`));
+  if (!sm) return "";
+  const 시도 = 시도표[sm[1]] || sm[1];
+  const 후보 = getSigunguList(시도);
+  // 긴 이름부터 본다 — 「고양시 일산동구」가 「고양시」보다 먼저 맞아야 한다.
+  const 맞는것 = [...후보].sort((a, b) => b.length - a.length)
+    .find((g) => t.includes(g) || t.includes(g.replace(/(시|군|구)$/, "")));
+  return 맞는것 ? `${시도} ${맞는것}` : 시도;
+}
+
+// 폼이 가진 선택지 그대로. 글에 그 말이 있을 때만 고른다.
+// 「인턴」은 넣지 않는다. 매장에서 인턴은 고용형태가 아니라 자리(인턴·신입·경력·
+// 실장)다. 넣었더니 「디자이너&인턴 구인중!」 공고의 고용형태가 인턴이 됐다.
+const 고용형태모양 = /정규직|계약직|아르바이트|파트타임|파트\s*타임|프리랜서|스페어|스페아|일용직|3\.3\s*%/;
+const 고용형태맞춤: Record<string, string> = {
+  "파트타임": "아르바이트", "파트 타임": "아르바이트", "스페아": "스페어", "3.3%": "프리랜서", "3.3 %": "프리랜서",
+};
+const 학력모양 = /학력\s*무관|고등학교\s*졸업(?:\s*이상)?|고졸(?:\s*이상)?|전문대\s*졸(?:업)?(?:\s*이상)?|대학교?\s*졸업(?:\s*이상)?|대졸(?:\s*이상)?|초대졸(?:\s*이상)?/;
+const 성별모양 = /성별\s*무관|남녀\s*무관|여성?\s*(?:분\s*)?(?:만|우대|선호)|남성?\s*(?:분\s*)?(?:만|우대|선호)/;
+const 마감모양 = /채용\s*시\s*까지|상시\s*(?:채용|모집)|수시\s*(?:채용|모집)|\d{1,2}\s*월\s*\d{1,2}\s*일\s*까지|\d{4}[.\-/]\s*\d{1,2}[.\-/]\s*\d{1,2}\s*까지/;
+
+/** 매장 이름. 「리안헤어 마들역점」처럼 브랜드 + 지점으로 끝나는 말을 그대로 가져온다. */
+const 매장이름모양 = /[가-힣A-Za-z0-9()]{2,20}\s*(?:[가-힣A-Za-z0-9]{1,12}(?:점|지점|본점|센터|아카데미|살롱|샵|스튜디오))/;
+
+
+/** 직종명을 우리 직군 이름으로 맞춘다.
+ *
+ *  글이 쓰는 말과 우리 직군 이름이 다르다(「헤어스탭」 → 「헤어 스텝」).
+ *  글에 그 말이 실제로 있을 때만 고른다 — 없는 직군을 만들지 않는다.
+ *  셀렉트미 파서가 쓰는 표와 같은 규칙이라, 한쪽만 고쳐 갈라지지 않게 여기 모아 둔다. */
+const 직종표: [RegExp, string][] = [
+  [/바버|barber/i, "바버(Barber)"],
+  [/헤어\s*디자이너|헤어디자이너/, "헤어 디자이너"],
+  [/헤어\s*스[탭텝태]프?|헤어스[탭텝]|미용\s*스[탭텝태]프?|샴푸|헤어\s*인턴|미용\s*보조/, "헤어 스텝"],
+  [/메이크업/, "메이크업 아티스트"],
+  [/네일/, "네일 아티스트"],
+  [/속눈썹|래쉬|반영구/, "속눈썹·반영구 아티스트"],
+  [/왁싱|제모/, "왁싱·제모 전문가"],
+  [/피부\s*관리|에스테틱|피부관리사|뷰티스트/, "피부 관리사(일반·경락)"],
+  [/발\s*관리|문제성\s*발|풋\s*케어/, "문제성 네일 손발톱 관리사"],
+  [/두피|탈모/, "두피 관리사"],
+  [/샵\s*매니저|샵매니저|점장/, "샵매니저"],
+  [/원장|부원장/, "헤어 디자이너"],
+];
+
+/** 글에서 직군을 고른다. 맞는 말이 없으면 빈 배열 — 찍지 않는다. */
+function 직군읽기(글: string): string[] {
+  const n = String(글 || "").replace(/\s/g, "");
+  const out: string[] = [];
+  for (const [re, cat] of 직종표) {
+    if (re.test(글) || re.test(n)) { if (!out.includes(cat)) out.push(cat); }
+  }
+  return out.slice(0, 3);
+}
+
 /**
  * 붙여넣은 글을 파싱한다. 양식이 아니면 null 을 돌려 AI 경로로 보낸다.
  *
  * _확실한가 가 true 면 라우트가 AI 호출을 건너뛴다 — 요금이 0 이 된다.
  * 라벨을 셋 이상 찾았을 때만 양식으로 본다(한둘은 우연히 걸린 것일 수 있다).
  */
-export function parsePasted(text: string): PastedResult | null {
+export function parsePasted(text: string, 제목 = ""): PastedResult | null {
   const 표 = 양식읽기(text);
   const out: Record<string, any> = {};
   let 찾은수 = 0;
@@ -174,6 +260,8 @@ export function parsePasted(text: string): PastedResult | null {
   if (out.work_time) out.work_time = 값다듬기(out.work_time, 시간모양);
   if (out.work_days) out.work_days = 값다듬기(out.work_days, 휴무모양);
   if (out.career) out.career = 값다듬기(out.career, 경력모양);
+  // 「◇ 지원문의」 아래에는 번호 다음 줄까지 붙어 온다("…3691\n본 채용정보에 관심 가").
+  if (out.contact_phone) out.contact_phone = 전화꼴(값다듬기(out.contact_phone, 전화모양));
 
   // 라벨로 못 채운 칸은 글 전체에서 값 모양으로 한 번 더 읽는다.
   const 줄들 = String(text || "").replace(/\r\n?/g, "\n").split("\n").map((l) => l.trim()).filter(Boolean);
@@ -181,9 +269,47 @@ export function parsePasted(text: string): PastedResult | null {
   if (!out.work_time) { const v = 모양읽기(줄들, 시간모양); if (v) { out.work_time = v; 찾은수++; } }
   if (!out.work_days) { const v = 모양읽기(줄들, 휴무모양); if (v) { out.work_days = v; 찾은수++; } }
   if (!out.career) { const v = 모양읽기(줄들, 경력모양); if (v) { out.career = v; 찾은수++; } }
+  if (!out.contact_phone) { const v = 모양읽기(줄들, 전화모양); if (v) { out.contact_phone = 전화꼴(v); 찾은수++; } }
+
+  // 주소·지역. 라벨(「샵 위치」)로 못 잡았으면 시도로 시작하는 줄을 찾는다.
+  if (!out.address) { const v = 모양읽기(줄들, 주소모양); if (v) { out.address = v; 찾은수++; } }
+  if (out.address) { const r = 지역뽑기(out.address); if (r) out.region = r; }
+  if (!out.region) { const v = 모양읽기(줄들, 주소모양); const r = 지역뽑기(v); if (r) out.region = r; }
+
+  // 고용형태·학력·성별·마감 — 폼 선택지에 있는 말이 글에 나올 때만 고른다.
+  {
+    const 원말 = 모양읽기(줄들, 고용형태모양);
+    if (원말) out.employment_type = 고용형태맞춤[원말.replace(/\s/g, "")] || 고용형태맞춤[원말] || 원말;
+  }
+  if (!out.education) { const v = 모양읽기(줄들, 학력모양); if (v) out.education = v; }
+  if (!out.gender_preference) {
+    const v = 모양읽기(줄들, 성별모양);
+    if (v) out.gender_preference = /무관/.test(v) ? "무관" : /^여/.test(v) ? "여성" : "남성";
+  }
+  {
+    const v = 모양읽기(줄들, 마감모양);
+    if (v && /채용\s*시|상시|수시/.test(v)) out.always_open = true;
+    else if (v) out.deadline_text = v;
+  }
+
+  // 직군. 근거는 공고명과 「모집분야」 칸뿐이다 — 상세요강은 안 본다.
+  //   (본문을 보면 「교육 시스템」 같은 자랑글에 강사 직군이 딸려 왔다.)
+  {
+    // 담당업무는 근거로 쓰지 않는다. 왁싱 공고의 업무에 「속눈썹펌(교육제공)」이
+    // 적혀 있어 속눈썹 직군이 딸려 왔다 — 뽑는 자리는 제목과 모집분야 칸에 있다.
+    const 근거 = [제목, out.job_category_raw].filter(Boolean).join(" ");
+    const cats = 직군읽기(근거);
+    if (cats.length) { out.job_categories = cats; 찾은수++; }
+  }
+
+  // 매장 이름. 제목에 대개 「리안헤어 마들역점」처럼 들어 있다.
+  if (!out.company_name) {
+    const v = 모양읽기(줄들.slice(0, 4), 매장이름모양);
+    if (v) { out.company_name = v; 찾은수++; }
+  }
 
   // 한 칸에 들어갈 값들은 글자만 남긴다. 상세요강은 원문 그대로라 여기 안 걸린다.
-  for (const k of ["salary", "work_time", "work_days", "career", "company_name", "contact_name", "address", "job_category_raw"]) {
+  for (const k of ["salary", "work_time", "work_days", "career", "company_name", "contact_name", "address", "job_category_raw", "employment_type", "education"]) {
     if (out[k]) out[k] = 값글자만(out[k]);
   }
 

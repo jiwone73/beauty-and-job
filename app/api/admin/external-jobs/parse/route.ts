@@ -405,7 +405,7 @@ export async function POST(req: NextRequest) {
     // 붙여넣은 글도 양식을 복사한 것이라 라벨을 읽으면 된다(요금 0).
     // 상세요강은 붙여넣은 글 그대로 담는다 — 받아쓰지 않는다.
     try {
-      const pt = parsePasted(pastedText);
+      const pt = parsePasted(pastedText, pastedTitle);
       if (pt) {
         const 확실 = pt._확실한가; delete pt._확실한가;
         out = { ...out, ...pt };
