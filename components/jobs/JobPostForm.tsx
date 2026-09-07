@@ -2875,7 +2875,7 @@ export default function JobPostForm({
           /* 통합 검색: 회사명 또는 공고 URL을 한 칸에서 자동 구분 */
           <div>
             <div style={{ display: "flex", gap: 8 }}>
-              <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명 또는 공고 URL 입력 (예: 준오헤어 · https://…)"
+              <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명, 또는 헤어인잡·잡코리아·알바몬·사람인·뷰티잡·셀렉미 공고 주소"
                 value={findQuery} onChange={(e) => { setFindQuery(e.target.value); if (picked && e.target.value !== picked.title) setPicked(null); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
               {picked && (

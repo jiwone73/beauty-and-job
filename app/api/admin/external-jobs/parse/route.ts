@@ -192,6 +192,16 @@ export async function POST(req: NextRequest) {
       if (!pastedText) return err("VALIDATION_001", "올바른 URL을 입력해주세요.", 400);
       url = "";
     }
+    // 파서가 있는 사이트만 가져온다.
+    //
+    // 파서가 없으면 AI 가 페이지를 읽어야 하는데, 그건 원문에 없는 값을 만들어
+    // 낸다. 여섯 곳 밖은 아예 안 가져오기로 했다 — 새 사이트가 필요하면 파서를
+    // 붙인 뒤에 연다. 글을 복사해 「글 붙여넣기」로 올리는 길은 그대로 열려 있다.
+    if (hostname && !parseStructured.지원사이트.test(hostname)) {
+      return err("VALIDATION_001",
+        "아직 가져올 수 없는 사이트예요. 헤어인잡·잡코리아·알바몬·사람인·뷰티잡·셀렉미만 됩니다. " +
+        "공고 글을 복사해 「글 붙여넣기」로 올려 주세요.", 400);
+    }
     // 알바몬: 검색결과에서 복사하면 ?searchRow=&searchKeyword=&logpath=&sc= 같은 추적 파라미터가 붙는데,
     // 이게 붙으면 봇/스크래퍼로 오인해 차단 확률이 올라감 → 깨끗한 상세 URL로 정규화한다.
     if (url && /(?:^|\.)albamon\.com$/i.test(hostname)) {
@@ -745,7 +755,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  if (!freeParsed && process.env.ANTHROPIC_API_KEY) {
+  // AI 는 그림에서 글자를 읽을 때만 부른다.
+  //
+  // 글과 URL 은 파서가 읽는다 — 여섯 사이트(헤어인잡·잡코리아·알바몬·사람인·
+  // 뷰티잡·셀렉트미)와 붙여넣기 양식을 덮고 있고, 그 밖은 가져오지 않기로 했다.
+  // 파서가 못 읽은 칸은 비워 둔다. 등록하는 사람이 상세요강을 보고 채우면 된다 —
+  // 빈 칸은 눈에 띄지만 그럴듯하게 채워진 값은 안 띈다.
+  //
+  // 그림(화면 캡처)만 예외다. 포스터 안의 글자는 코드가 읽을 방법이 없다.
+  if (!freeParsed && imageUrls.length > 0 && process.env.ANTHROPIC_API_KEY) {
     try {
       await loadBenefitTags();
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

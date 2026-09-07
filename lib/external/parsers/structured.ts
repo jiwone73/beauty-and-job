@@ -1062,6 +1062,10 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
 }
 
 // ───────────── 디스패처 ─────────────
+/** 파서가 있는 사이트. 여기 없는 곳은 라우트가 아예 안 가져온다 —
+ *  파서 없이 가져오면 AI 가 페이지를 읽어야 하고, 그건 원문에 없는 값을 만든다. */
+const 지원사이트 = /hairinjob\.com|jobkorea\.co\.kr|albamon\.com|saramin\.co\.kr|beautyjob\.kr|selectme\.co\.kr/i;
+
 export function parseStructured(hostname: string, html: string, url?: string): StructuredResult | null {
   if (!html) return null;
   if (/hairinjob\.com/i.test(hostname)) return parseHairinjob(html);
@@ -1072,3 +1076,4 @@ export function parseStructured(hostname: string, html: string, url?: string): S
   if (/selectme\.co\.kr/i.test(hostname)) return parseSelectme(html, url);
   return null;
 }
+parseStructured.지원사이트 = 지원사이트;
