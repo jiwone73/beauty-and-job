@@ -74,7 +74,10 @@ export async function POST(req: NextRequest) {
     work_period, contact_methods, education, gender_preference, positions, cover_images, status: reqStatus,
     // 접수담당자 — 여태 받지 않아 기업회원이 적어도 저장되지 않고 사라졌다.
     external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao,
-    contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden
+    contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
+    // 폼이 보내는데 여기서 안 받아 조용히 사라지던 값들. 미리보기에는 보이고 실제
+    // 공고에는 없어 「미리보기와 다르다」가 됐다 — 폼이 만드는 칸은 다 받는다.
+    apply_method, external_apply_url, salary_text, source_url, work_locations, headcount_text
   } = body
 
   if (!title || !job_type) {
@@ -93,9 +96,10 @@ export async function POST(req: NextRequest) {
        benefits, employment_type, benefit_tags,
        work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images,
        external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao,
-       contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden, status
+       contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
+       apply_method, external_apply_url, salary_text, source_url, work_locations, headcount_text, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, '${jobStatus}'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -128,7 +132,13 @@ export async function POST(req: NextRequest) {
       contact_name_hidden !== false,
       contact_phone_hidden !== false,
       contact_email_hidden !== false,
-      contact_kakao_hidden !== false
+      contact_kakao_hidden !== false,
+      apply_method || 'NATIVE',
+      (external_apply_url || '').trim() || null,
+      (salary_text || '').trim() || null,
+      (source_url || '').trim() || null,
+      Array.isArray(work_locations) && work_locations.length ? JSON.stringify(work_locations) : null,
+      (headcount_text || '').trim() || null
     ]
   )
   return ok(result.rows[0], 201)

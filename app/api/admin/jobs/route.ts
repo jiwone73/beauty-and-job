@@ -92,7 +92,9 @@ export async function POST(req: NextRequest) {
     apply_method, external_apply_url, external_contact_email, external_contact_kakao,
     external_contact_name, external_contact_phone, contact_methods,
     employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
-    salary_text, headcount_text, gender_preference, positions
+    salary_text, headcount_text, gender_preference, positions,
+    // 연락처를 칸마다 가릴지. 폼이 보내는데 안 받아 대행 등록에서는 늘 기본값으로 저장됐다.
+    contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
@@ -183,9 +185,10 @@ export async function POST(req: NextRequest) {
          status, created_by, source, apply_method, external_apply_url, external_contact_email, responsibilities,
          external_contact_name, external_contact_phone, contact_methods,
          employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
-         salary_text, headcount_text, gender_preference, positions, work_locations, external_contact_kakao
+         salary_text, headcount_text, gender_preference, positions, work_locations, external_contact_kakao,
+         contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -208,9 +211,31 @@ export async function POST(req: NextRequest) {
         (gender_preference || '').trim() || null,
         Array.isArray(positions) && positions.length ? JSON.stringify(positions) : null,
         Array.isArray(work_locations) && work_locations.length ? JSON.stringify(work_locations) : null,
-        (external_contact_kakao || '').trim() || null
+        (external_contact_kakao || '').trim() || null,
+        // 가리는 쪽이 기본이다 — 값을 안 보내면 가린 것으로 본다.
+        contact_name_hidden !== false,
+        contact_phone_hidden !== false,
+        contact_email_hidden !== false,
+        contact_kakao_hidden !== false
       ]
     )
+
+    // 공고에 적힌 연락처를 업체 행에도 남긴다.
+    //
+    // 여태 연락처는 공고 한 칸에만 있었다(외부 공고 157건 중 148건). 알바가 공고에서
+    // 번호를 지우면 그 업체에 연락할 길이 사라진다 — 「나중에 그 번호로 연락해 회원가입을
+    // 권한다」는 원래 뜻이 공고 하나에 매달려 있던 셈이다. 업체 행은 지점마다 따로라
+    // (「리안헤어 녹양역점」처럼) 지점 번호가 지점에 남는다. 이미 있으면 덮지 않는다.
+    if (finalCompanyId && (extPhone || extEmail)) {
+      await client.query(
+        `UPDATE companies SET
+           phone = COALESCE(NULLIF(phone, ''), $2),
+           email = COALESCE(email, NULLIF($3, '')::citext),
+           updated_at = now()
+         WHERE id = $1 AND is_member = false`,
+        [finalCompanyId, extPhone || null, extEmail || null]
+      ).catch((e: any) => console.error('[업체 연락처 남기기]', e?.message))
+    }
 
     await client.query('COMMIT')
 
