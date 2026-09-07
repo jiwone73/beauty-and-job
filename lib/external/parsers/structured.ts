@@ -182,7 +182,7 @@ function parseHairinjob(html: string): StructuredResult | null {
     if (/바버|barber/i.test(ck)) mappedCats = ["바버(Barber)"];
     else if (/웨딩|본식|업스타일|혼주/.test(ck)) mappedCats = ["웨딩 헤어디자이너"];
     else if (/디자이너|스타일리스트|원장|실장/.test(ck)) mappedCats = ["헤어 디자이너"];
-    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어 스탭(시니어·주니어)"];
+    else if (/스탭|스태프|스텝|인턴|어시|샴푸|막내|수습/.test(ck)) mappedCats = ["헤어 스텝"];
   }
   const job_categories = mappedCats.length ? mappedCats : sug.job_categories;
 
@@ -377,7 +377,7 @@ function mapRole(text: string): { job_type: string; item: string } | null {
     // 봐야 피부 관리사로 뭉뚱그려지지 않는다.
     [/왁싱|제모|waxing|브라질리언|슈가링/, "STORE", "왁싱·제모 전문가"],
     [/속눈썹|래쉬|eyelash|반영구/, "STORE", "속눈썹·반영구 아티스트"],
-    [/(웨딩|본식|혼주)메이크업|웨딩헤어메이크업/, "STORE", "웨딩·혼주 메이크업"],
+    [/(웨딩|본식|혼주)메이크업|웨딩헤어메이크업/, "STORE", "웨딩·혼주 메이크업 아티스트"],
     [/메이크업|makeup|분장|mua/, "STORE", "메이크업 아티스트"],
     [/바버|barber|이용사/, "STORE", "바버(Barber)"],
     [/상담실장|상담사|카운셀러|counselor/, "STORE", "에스테틱 상담 실장"],
@@ -386,13 +386,13 @@ function mapRole(text: string): { job_type: string; item: string } | null {
     [/피부미용|피부관리|피부관리사|피부테라|에스테티션|aesthetician|페이셜|경락|스킨케어|에스테틱|바디관리|체형관리/, "STORE", "피부 관리사(일반·경락)"],
     [/스파테라|아로마테라|테라피스트/, "STORE", "스파 테라피스트"],
     [/점장|샵마스터|매장관리/, "STORE", "매장 점장·샵마스터(직영)"],
-    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어 스탭(시니어·주니어)"],
+    [/샴푸|헤어스탭|헤어스태프|미용스탭|미용스태프/, "STORE", "헤어 스텝"],
     [/헤어디자이너|헤어스타일리스트|스타일리스트|미용사|hairstylist/, "STORE", "헤어 디자이너"],
     // ── OFFICE(본사·기업) ──
     [/화장품연구|제형연구|연구원|r&d/, "OFFICE", "화장품 연구원(R&D)"],
-    [/영상pd|영상편집|콘텐츠제작|크리에이티브디렉터|숏폼|영상디자이너/, "OFFICE", "영상 PD·크리에이티브 디렉터"],
+    [/영상pd|영상편집|콘텐츠제작|크리에이티브디렉터|숏폼|영상디자이너/, "OFFICE", "뷰티 영상 PD·크리에이티브 디렉터"],
     [/브랜드매니저|상품기획|브랜드마케팅|퍼포먼스마케팅|마케터|마케팅담당|마케팅|퍼블리싱|홍보담당/, "OFFICE", "브랜드 매니저(BM)·상품기획"],
-    [/영업매니저|해외영업|국내영업|영업담당|세일즈|수출영업|바이어영업|영업직/, "OFFICE", "영업 매니저(국내유통·면세·수출)"],
+    [/영업매니저|해외영업|국내영업|영업담당|세일즈|수출영업|바이어영업|영업직/, "OFFICE", "영업 매니저(국내유통·면세·해외수출)"],
     [/머천다이저|뷰티md|상품소싱/, "OFFICE", "뷰티 MD(H&B·이커머스·글로벌)"],
   ];
   for (const [re, jt, item] of R) if (re.test(ns)) return { job_type: jt, item };
@@ -913,7 +913,7 @@ function mapSelectmeCat(name: string): string {
   const n = (name || "").replace(/\s/g, "");
   if (/바버|barber/i.test(n)) return "바버(Barber)";
   if (/헤어디자이너|디자이너/.test(n)) return "헤어 디자이너";
-  if (/헤어스탭|헤어스텝|헤어스태프|스탭|스텝|인턴/.test(n)) return "헤어 스탭(시니어·주니어)";
+  if (/헤어스탭|헤어스텝|헤어스태프|스탭|스텝|인턴/.test(n)) return "헤어 스텝";
   if (/메이크업/.test(n)) return "메이크업 아티스트";
   if (/네일/.test(n)) return "네일 아티스트";
   if (/속눈썹|래쉬|반영구/.test(n)) return "속눈썹·반영구 아티스트";
@@ -922,11 +922,17 @@ function mapSelectmeCat(name: string): string {
 }
 function parseSelectme(html: string, url?: string): StructuredResult | null {
   const text = html.replace(/\\"/g, '"');
-  const chunks = text.split('"isInvisibleClosedRecruit":').slice(1);
   const id = (url || "").match(/\/recruit\/(\d+)/)?.[1] || "";
+  // 공고 덩어리를 찾는 자리.
+  //
+  // 예전에는 "isInvisibleClosedRecruit" 필드로 갈랐는데 사이트가 바뀌면서 그 필드가
+  // 사라졌다. 그때부터 파서가 통째로 실패해 AI 가 대신 돌고 있었다. 이제는 주소의
+  // 공고 번호로 바로 찾고, 못 찾으면 "recruit" 묶음에서, 그것도 없으면 옛 필드에서
+  // 찾는다 — 셋 중 하나만 맞으면 된다.
   let chunk = "";
-  if (id) chunk = chunks.find((c) => new RegExp(`"id":${id},"ceoId":`).test(c)) || "";
-  if (!chunk) chunk = chunks[0] || "";
+  if (id) { const i = text.indexOf(`"id":${id},"ceoId":`); if (i >= 0) chunk = text.slice(i); }
+  if (!chunk) { const i = text.indexOf('"recruit":{'); if (i >= 0) chunk = text.slice(i); }
+  if (!chunk) chunk = text.split('"isInvisibleClosedRecruit":')[1] || "";
   if (!chunk) return null;
 
   const g = (re: RegExp) => (chunk.match(re) || [])[1] || "";
@@ -1010,6 +1016,12 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
   }
 
   const contact_name = g(/"managerName":"([^"]*)"/).trim();
+  // 매장 전화. 사이트가 "01058059669"처럼 붙여서 주므로 보이는 꼴로 끊어 준다.
+  // 안 뽑고 있어 대행 등록에서 연락처가 비었다.
+  const rawPhone = g(/"shopPhone":"([^"]*)"/).replace(/\D/g, "");
+  const contact_phone = rawPhone.length === 11 ? rawPhone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
+    : rawPhone.length === 10 ? rawPhone.replace(/(\d{2,3})(\d{3,4})(\d{4})/, "$1-$2-$3")
+    : rawPhone;
   // 채용 담당자 이메일(대표 이메일이 아니라 공고 등록자=채용 담당). 유효할 때만.
   const mEmail = g(/"managerEmail":"([^"]*)"/).trim();
   const contact_email = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mEmail) ? mEmail : "";
@@ -1032,6 +1044,7 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     salary_negotiable,
     headcount: headcount || 0,
     contact_name,
+    ...(contact_phone ? { contact_phone } : {}),
     industry,
     always_open: true, // 셀렉미는 상시노출 위주(마감일 미표기)
     description,

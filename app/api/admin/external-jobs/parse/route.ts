@@ -502,6 +502,10 @@ export async function POST(req: NextRequest) {
               //   ※뷰티잡 iframe은 모든 공고가 잡코리아 템플릿(data-sentry·jobkorea.co.kr)으로 감싸져 있어 그 마커로 판별하면 항상 오탐.
               //     실제 신디케이션(구조화) 콘텐츠에만 있는 '포지션 및 자격요건' 헤더로만 판별한다.
               const isJk = /포지션\s*및\s*자격요건/i.test(detailText);
+              // 상세요강은 iframe 원문 전체다. 예전에는 「담당업무」 한 줄만 넣어
+              // 「미용보조」 네 글자로 올라갔고, 그 빈 자리를 AI 가 메우고 있었다.
+              // 담당업무·자격요건은 아래에서 각 칸에도 담지만, 상세요강은 원문이다.
+              if (detailText.length > 20) out.description = detailText.slice(0, 16000);
               if (isJk) {
                 // ── 회사 소개(기업정보) ── 잡코리아는 제목과 "포지션 및 자격요건" 사이에 회사 블러브를 둔다.
                 //    (예: "㈜○○는 2009년에 설립된 회사로 … 서울 강남구 …에 위치하고 있으며, …사업을 하고 있습니다.")
@@ -540,7 +544,7 @@ export async function POST(req: NextRequest) {
                   const duty = betw("담당업무", ["스킬", "핵심역량", "자격요건", "우대사항", "전형절차", "근무", "접수"]).slice(0, 4000);
                   const req = betw("자격요건", ["우대사항", "전형절차", "근무", "접수", "복리후생"]).slice(0, 4000);
                   const pref = betw("우대사항", ["전형절차", "근무", "접수", "복리후생", "담당자"]).slice(0, 4000);
-                  if (duty && duty.length > 3) { out.main_duties = duty; out.description = duty; }
+                  if (duty && duty.length > 3) out.main_duties = duty;
                   if (req && req.length > 3) out.requirements = req;
                   if (pref && pref.length > 3) out.preferred = pref;
                 }
@@ -662,6 +666,17 @@ export async function POST(req: NextRequest) {
 
   // ── 잡코리아: 상세(담당업무·자격요건·근무조건·디자인 이미지)는 GI_Read_Comt_Ifrm(iframe)에 있다.
   //    Gno=공고번호(=GI_Read/<번호>)만으로 서버 2차 fetch 가능(비로그인).
+  // 상세요강 자리에 사이트가 만든 메타 요약(og:description)이 남아 있으면 지운다.
+  //
+  // 「끌리메홍대점, … 경력:경력무관, 학력:고등학교졸업이상, 마감일:2026-09-24」처럼
+  // 사이트가 항목을 이어 붙인 한 줄이라 공고 본문이 아니다. 상세요강이 포스터
+  // 그림뿐인 공고(사람인이 그렇다)에서 그 자리를 이 요약이 채우고 있었다.
+  // 그림은 이미 상세 이미지로 들어가 있으니 글은 비우는 것이 맞다.
+  if (out.description && out.description === ogDesc) {
+    const 메타요약 = /(?:경력|학력|마감일|홈페이지)\s*:/.test(String(out.description));
+    if (메타요약) out.description = "";
+  }
+
   if (freeParsed && /jobkorea\.co\.kr/i.test(hostname) && url) {
     try {
       const gno = (url.match(/GI_Read\/(\d+)/) || url.match(/Gno=(\d+)/) || [])[1] || "";

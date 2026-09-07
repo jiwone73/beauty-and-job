@@ -49,6 +49,28 @@ for (const f of 코드들) {
   if (든것.size >= 3) 흠.push(`${f} 에 직군 이름이 ${든것.size}개 박혀 있다 — jobGroups 에서 가져와야 한다`);
 }
 
+// 4) 파서가 목록에 없는 직군 이름을 내면 안 된다.
+//    라우트가 「목록에 정확히 있는 값」만 남기므로, 이름 하나가 어긋나면 조용히
+//    걸러져 모집분야가 통째로 빈다. 실제로 셀렉트미 파서가 직군을 「헤어 스탭
+//    (시니어·주니어)」로 내고 있었다 — 이름을 「헤어 스텝」으로 바꾼 뒤로 계속
+//    걸러지고 있었고, 아무 오류도 안 났다.
+const 파서들 = execSync(`git ls-files 'lib/external/**/*.ts'`, { encoding: "utf8" })
+  .split("\n").filter(Boolean);
+const 정식 = new Set(모든항목);
+for (const f of 파서들) {
+  const 글 = readFileSync(f, "utf8");
+  // 직군을 값으로 내는 자리만 본다: return "…" / mappedCats = ["…"] / , "…"] 표
+  for (const m 
+of 글.matchAll(/(?:return|=>|,)\s*\[?\s*"([가-힣][^"]{1,30})"\s*\]?[;,)\n]/g)) {
+    const v = m[1];
+    // 직군처럼 생긴 값만 — 우리 목록의 낱말을 품고 있는데 정식 이름이 아닌 것
+    if (정식.has(v)) continue;
+    const 닮음 = 모든항목.some((i) => i.replace(/\s/g, "") === v.replace(/\s/g, "")
+      || (v.length >= 4 && i.includes(v.split(/[(·]/)[0].trim())));
+    if (닮음) 흠.push(`${f} 의 「${v}」는 직군 목록에 없는 이름이다 — 라우트가 조용히 걸러 모집분야가 빈다`);
+  }
+}
+
 if (흠.length) {
   console.error("직군 검사 실패\n" + 흠.map((h) => " - " + h).join("\n"));
   process.exit(1);
