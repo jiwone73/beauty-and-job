@@ -3310,9 +3310,12 @@ export default function JobPostForm({
                       </div>
                       {내행.map((c) => {
                         const row = 행읽기(c);
-                        // 직급을 고르기 전에는 아래를 못 만지게 둔다 — 누구를 뽑는지부터 정해야
-                        // 인원도 급여도 뜻이 생긴다. 라벨은 가장 흔한 신입을 흐리게 미리 보여 준다.
+                        // 직급을 고르기 전에는 아래를 못 만지게 막아 두었는데, 외부 공고를
+                        // 옮겨 담을 때는 경력이 비어 오는 일이 흔해 근무요일·급여 칸이 통째로
+                        // 잠겼다("근무요일 설정불가" 이슈 세 건). 잠그지 않고, 아직 안 고른
+                        // 자리라는 것만 흐린 라벨로 알린다.
                         const 미정 = !row.career;
+                        const 잠금 = false;
                         return (
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
                             <span className="jp-job-lab">{row.career || "경력무관"}</span>
@@ -3323,7 +3326,7 @@ export default function JobPostForm({
                                   <button type="button" onClick={() => setPos(c, "headcount", String(Math.max(1, n - 1)))}
                                     disabled={미정 || n <= 1} aria-label="한 명 줄이기">−</button>
                                   <b>{n}</b>
-                                  <button type="button" disabled={미정} onClick={() => setPos(c, "headcount", String(Math.min(99, n + 1)))}
+                                  <button type="button" disabled={잠금} onClick={() => setPos(c, "headcount", String(Math.min(99, n + 1)))}
                                     aria-label="한 명 늘리기">＋</button>
                                 </span>
                                 <span className="jp-job-unit">명</span>
@@ -3333,7 +3336,7 @@ export default function JobPostForm({
                               const g = 급여읽기(row.salary);
                               return (
                                 <span className={`jp-sal ${미정 ? "off" : ""}`}>
-                                  <select className="jp-sal-unit" disabled={미정} value={g.형태}
+                                  <select className="jp-sal-unit" disabled={잠금} value={g.형태}
                                     onChange={(e) => {
                                       const 새형태 = e.target.value;
                                       const 옮김 = !g.금액 || 원단위(g.형태) === 원단위(새형태) ? g.금액
@@ -3344,7 +3347,7 @@ export default function JobPostForm({
                                     {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
                                   </select>
                                   <span className="jp-sal-amt">
-                                    <input inputMode="decimal" disabled={미정} placeholder="0" value={g.금액}
+                                    <input inputMode="decimal" disabled={잠금} placeholder="0" value={g.금액}
                                       onChange={(e) => {
                                         const 원 = 원단위(g.형태);
                                         const v = 원 ? e.target.value.replace(/[^0-9]/g, "")
@@ -3355,7 +3358,7 @@ export default function JobPostForm({
                                   </span>
                                   {/* 협의를 따로 체크하지 않는다 — 적어 둔 금액을 어떻게 볼지(이상·정액·협의)를
                                       금액 바로 옆에서 고르게 한다. 체크 하나를 줄 끝에 떼어 두면 금액과 상관없어 보인다. */}
-                                  <select className="jp-sal-basis" disabled={미정}
+                                  <select className="jp-sal-basis" disabled={잠금}
                                     value={row.salaryNego === "open" ? "협의" : (g.이상 ? "이상" : "정액")}
                                     onChange={(e) => {
                                       const v = e.target.value;
@@ -3380,7 +3383,7 @@ export default function JobPostForm({
                               // 최저시급을 외우고 있는 사장님은 드물다 — 눌러서 채운다.
 
                               return (
-                                <button type="button" className="jp-minwage" disabled={미정}
+                                <button type="button" className="jp-minwage" disabled={잠금}
                                   title={`${최저임금해}년 최저임금 ${최저시급원.toLocaleString()}원`}
                                   onClick={() => setPos(c, "salary", 급여쓰기("시급", String(최저시급원), g.이상))}>
                                   최저시급
@@ -3395,7 +3398,7 @@ export default function JobPostForm({
                                 return (
                                   <span className="jp-cond-f jp-emp-pop" style={{ position: "relative" }}>
                                     <span>고용형태</span>
-                                    <button type="button" disabled={미정}
+                                    <button type="button" disabled={잠금}
                                       className={`jp-cond-sel jp-cond-shift ${고른것.length ? "" : "ph"}`}
                                       onClick={(e) => { if (고용열림 === c) { set고용열림(null); return; } openPopAt(e.currentTarget, 232, 190); set고용열림(c); }}>
                                       {고른것.join(", ") || "선택하기"}
@@ -3424,7 +3427,7 @@ export default function JobPostForm({
                               })()}
                               <span className="jp-cond-f posshift-pop" style={{ position: "relative" }}>
                                 <span>{isOffice ? "근무시간" : "근무요일 / 시간"}</span>
-                                <button type="button" disabled={미정} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
+                                <button type="button" disabled={잠금} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
                                   {shiftDisplay(row) || "-"}
                                 </button>
@@ -3445,7 +3448,7 @@ export default function JobPostForm({
                               {isOffice && (
                                 <label className="jp-cond-f">
                                   <span>학력</span>
-                                  <select className="jp-cond-sel" disabled={미정} value={row.education}
+                                  <select className="jp-cond-sel" disabled={잠금} value={row.education}
                                     onChange={(e) => setPos(c, "education", e.target.value)}>
                                     <option value="">선택하기</option>
                                     {POS_EDU.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -3454,7 +3457,7 @@ export default function JobPostForm({
                               )}
                               <label className="jp-cond-f">
                                 <span>성별</span>
-                                <select className="jp-cond-sel" disabled={미정} value={row.gender}
+                                <select className="jp-cond-sel" disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
                                   <option value="">선택하기</option>
                                   {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
@@ -3463,7 +3466,7 @@ export default function JobPostForm({
                               {근무지목록.length >= 2 && (
                                 <label className="jp-cond-f">
                                   <span>근무지</span>
-                                  <select className="jp-cond-sel" disabled={미정} value={row.location}
+                                  <select className="jp-cond-sel" disabled={잠금} value={row.location}
                                     onChange={(e) => setPos(c, "location", e.target.value)}>
                                     <option value="">전체</option>
                                     {근무지목록.map((r) => <option key={r} value={r}>{r}</option>)}

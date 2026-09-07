@@ -696,6 +696,8 @@ export async function POST(req: NextRequest) {
 규칙:
 - job_type: "회사 업종"이 아니라 "실제 근무 직무"를 기준으로 판단한다. 물리적 매장·샵에 상주하며 일하는 현장직 — 미용실·네일·피부·속눈썹 등 시술직 + 매장 카운터·판매·접객·매장관리·안내데스크·리셉션 등 오프라인 매장 상주 직무 — 이면 "STORE". 본사·사무실 근무 사무직(브랜드 기획·마케팅·MD·영업관리·연구개발·인사·경영 등)이면 "OFFICE". ★ 회사가 "판매점·유통·이커머스·재료 전문점" 업종이어도, 채용 직무가 오프라인 매장의 카운터·판매·매장관리·접객이면 반드시 "STORE"로 분류(예: "네일재료 판매점 카운터 및 매장관리 직원" → STORE).
 - job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 목록에 딱 맞는 게 없으면 가장 가까운 것 1개. 전혀 없으면 [].
+    ★ 본문이 말하지 않은 직군을 만들지 마라. 헤어스탭만 뽑는 글에 "헤어 디자이너"를,
+      살롱 구인 글에 "미용강사"를 끼워 넣는 일이 잦았다. 본문에 그 말이 없으면 고르지 마라.
 - job_category_raw: 이 공고가 "무슨 일 할 사람"을 뽑는지, 글에 적힌 말 그대로 짧게(예: "발관리 전문가", "속눈썹 연장 디자이너"). 
     위 목록에 맞는 게 없어도 반드시 채울 것 — 비면 그 공고는 모집분야 없이 올라간다. 지역·매장명·급여는 빼고 직무만.
     · STORE 직군: ${STORE_CATEGORIES.join(" / ")}
@@ -703,8 +705,11 @@ export async function POST(req: NextRequest) {
 - career: 아래 중 "정확히 하나"만 고르기 → ${CAREER_OPTIONS.join(" / ")}. "경력무관/무관/경력 사항 없음"은 "경력무관", "신입"만이면 "신입", "N년 이상/N년차"는 가장 가까운 값. 불명확하면 "".
 - region: 근무지의 시·도와 시·군·구를 "시도전체명 시군구" 형식으로(예: "경기도 수원시 영통구", "서울특별시 강남구"). 시도명은 축약하지 말고 전체명(경기도/서울특별시/부산광역시 등). 상세 도로명·번지는 빼고 시군구까지만. 없으면 "".
 - deadline: 특정 마감일이 "YYYY-MM-DD"로 명시된 경우만 그 날짜. 상시/수시/미상이면 "".
+    ★ 글이 올라온 날(등록일·작성일·업데이트 날짜)을 마감일로 쓰지 마라 — 실제로 「26년 8월 14일에
+      올라온 글」을 마감일로 읽은 적이 있다. "마감"·"~까지"라고 적힌 날짜만 마감일이다.
 - always_open: 상시채용·수시채용·채용시 마감·충원시 마감 등 마감일이 없는 상시 공고면 true, 아니면 false.
 - title: 원문 공고 제목을 "그대로" 쓴다. 이모지·★♥🌸 같은 장식 기호와 반복된 특수문자만 걷어내고, 낱말은 바꾸지 말 것.
+    ★ &#128153; 같은 HTML 기호(&#...; &amp; &nbsp;)는 글자가 아니라 부호다. 남기지 말고 지워라.
   (예: "🌸서울 은평구 네일샵 든든한 직원 구합니다🌸" → "서울 은평구 네일샵 든든한 직원 구합니다")
   ★ 직무명으로 새로 지어내지 말 것("네일 아티스트(경력자)" 같은 요약 제목 금지). 원문에 제목이 없을 때만 내용으로 한 줄 짓는다.
 - contact_methods: 지원자가 연락할 수 있는 방법을 아래에서 골라 배열로. 없으면 [].
@@ -721,6 +726,10 @@ export async function POST(req: NextRequest) {
 - contact_email: "회사(매장)의 채용담당 이메일"만. 잡사이트 자체 이메일(예: @albamon.com·@jobkorea.co.kr·@saramin.co.kr 등 채용사이트 도메인 = 중계/문의용)은 회사 이메일이 아니므로 제외. 회사 이메일이 여러 개면 채용/인사 담당(recruit·hr·job·career·인사·채용 등) 우선, 대표·일반(info·ceo·master)은 후순위. 없으면 "".
 - contact_name: 채용 담당자 "사람 이름"이 명시돼 있으면 그 이름만(예: "이은주"). 부서명·회사명·"담당자"라는 일반어는 제외. 없으면 "".
 - description: 공고 본문을 "원문 그대로" 옮길 것. 요약·재작성·의역 금지, 없는 문장을 지어내지 마라.
+    ★★ 지원 방법을 가리키는 말("문자", "전화", "이메일", "직접방문", 이메일 주소, 전화번호)을
+      절대 다른 말로 바꾸지 마라. 특히 "뷰티워크 온라인지원"으로 치환하는 일이 잦았는데,
+      원문에 없는 말이라 문장이 통째로 못 쓰게 된다. 예: "문자 주세요" 를
+      "뷰티워크 온라인 지원 주세요" 로 바꾸면 안 된다. 본문은 원문의 낱말 그대로다.
     지우는 것은 ① 장식(이모지·♥·★·점만 있는 줄)과 ② 카페/사이트가 붙인 안내문(게시판 이용안내·등록 안내·로그인 안내·저작권·해시태그)뿐이다.
     ★ 지울 때는 그 줄을 통째로 지워라. 앞머리 기호나 낱말 한두 개만 남기면 안 된다
       (실제로 "※ 위 공고는 …카페에서…" 에서 뒷부분만 지워 " ※ 위" 만 남은 적이 있다).
@@ -737,6 +746,9 @@ export async function POST(req: NextRequest) {
 - benefits: 복리후생/혜택 및 복지/복지/베네핏 등 이름이 무엇이든 그 혜택 내용을 서술형 텍스트로(줄바꿈 구분). 없으면 "".
     ★ 쉬는 날 조건(월 O회 휴무·연 O일 휴무·주 O일·연차)과 식사·휴게시간은 구직자가 가장 먼저 보는 값이다. 글에 있으면 반드시 담을 것.
 - hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
+- employment_type: 본문이 "정규직"이라 쓰면 정규직이다. 3.3% 공제·프리랜서 계약이라고 "적혀 있을 때만" 프리랜서다.
+    ★ 급여를 인센티브·프로테이지로 준다는 이유로 프리랜서라고 넘겨짚지 마라 — 실제로 정규직 공고를
+      프리랜서로 잘못 읽는 일이 여섯 번 있었다. 글에 없으면 "".
 - education: ${EDUCATION_OPTIONS.join(" | ")} 중 하나를 정확히 그대로, 글에 없으면 "".
     "학력 무관"·"학력 제한 없음"이면 "학력무관". 미용사 면허·자격증은 학력이 아니다(자격요건에 넣어라).
 - gender_preference: "남성" | "여성" | "무관" 중 하나, 글에 없으면 "".
@@ -749,6 +761,9 @@ export async function POST(req: NextRequest) {
 - salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
 - salary_type · salary_amount: 이 둘은 "반드시 같은 급여 하나"를 가리켜야 한다. 형태와 금액을 절대 섞지 말 것 → "연봉 3000만원"이면 type "ANNUAL" + amount 3000, "월 250만원"이면 type "MONTHLY" + amount 250. (예: 월인데 amount 3000 ✗ 절대 금지). 한 공고에 월급·연봉이 함께 적혀 있으면 "연봉(ANNUAL)"을 우선 선택(예: "월 250만원 / 연봉 3000~3300만원" → ANNUAL + 3000). 범위면 하한값.
    · salary_type: "ANNUAL"(연봉) | "MONTHLY"(월급) | "WEEKLY"(주급) | "HOURLY"(시급) 중 하나. 협의/비율제 등 고정 금액이 없으면 "".
+     ★ 원문이 쓴 단위를 그대로 따른다. "연봉 2800만원"을 월 2800으로, "일급 12만원"을 월급으로 옮긴
+       적이 있다 — 단위를 바꾸지 마라. 「일급」이면 고를 값이 없으므로 salary_type 은 "" 로 두고
+       금액은 salary 서술에만 남긴다.
    · salary_amount: 숫자만(범위면 하한값). 연봉·월급·주급은 "만원" 단위, 시급은 "원" 단위.
      ★ 원 단위 숫자(예: 2300000, 30000000)로 주어지면 연봉·월급·주급은 반드시 만원으로 환산(÷10,000): 월급 2,300,000원→230, 연봉 30,000,000원→3000. (÷1,000 하지 말 것 → 2300은 오답). "230만원"처럼 이미 만원으로 적혀 있으면 그대로 230. 시급만 원 그대로(예: 시급 10320원→10320). 없거나 협의면 0.
    · salary_amount_max: 급여가 "범위"로 적혀 있으면(예: "연봉 3000~3300만원") 상한값 숫자만(같은 단위, 예: 3300). 단일 금액이면 0.
@@ -938,6 +953,23 @@ export async function POST(req: NextRequest) {
   delete out._detailImagesRaw;
   // 연락처: AI가 못 뽑았으면 정규식 후보로 폴백 + 형식 정리.
   if (typeof out.contact_phone !== "string" || out.contact_phone.replace(/\D/g, "").length < 9) out.contact_phone = phones[0] || "";
+  // 번호는 하이픈까지 넣어 준다 — 숫자만 오면 사람이 다시 찍어야 한다(등록 이슈 두 건).
+  {
+    const d = String(out.contact_phone || "").replace(/\D/g, "");
+    if (d.length >= 9 && !String(out.contact_phone).includes("-")) {
+      out.contact_phone =
+        d.startsWith("02") ? (d.length === 9 ? `02-${d.slice(2, 5)}-${d.slice(5)}` : `02-${d.slice(2, 6)}-${d.slice(6)}`)
+        : d.length === 11 ? `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`
+        : d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`
+        : out.contact_phone;
+    }
+  }
+  // 글이 올라온 날을 마감일로 읽는 일이 있었다. 오늘보다 앞선 날짜면 마감일이 아니라
+  // 등록일로 보고 상시로 돌린다 — 이미 지난 날짜를 마감일로 넣으면 그 공고는 바로 닫힌다.
+  if (typeof out.deadline === "string" && /^\d{4}-\d{2}-\d{2}$/.test(out.deadline)) {
+    const 오늘 = new Date(); 오늘.setHours(0, 0, 0, 0);
+    if (new Date(out.deadline).getTime() < 오늘.getTime()) { out.deadline = ""; out.always_open = true; }
+  }
   if (typeof out.contact_email !== "string" || !/@/.test(out.contact_email)) out.contact_email = emails[0] || "";
   if (typeof out.contact_name !== "string") out.contact_name = "";
   if (out.apply_method === "REDIRECT" && !out.external_apply_url && url) out.external_apply_url = url;
@@ -1138,10 +1170,29 @@ export async function POST(req: NextRequest) {
     /["“”'']?헤어인잡에서\s*채용\s*정보\s*보고[\s\S]{0,70}?가능합니다\.?/g,
     // 위 문장이 잘려 나가고 남은 꼬리("※ 위" 만 덩그러니)
     /※\s*위\s*(?=$|[\n])/gm,
+    // 사이트가 붙인 문의 안내 — 매장이 쓴 내용이 아니고, 「문자」라는 말 때문에
+    // 지원방법이 잘못 잡히기도 한다. 등록 이슈로 「이제부터 자동 누락」 요청이 왔다.
+    /자세한\s*사항은?\s*전화로\s*문의\s*해?\s*주세요[.!~]*/g,
+    /전화\s*연결(?:이)?\s*안\s*될?\s*시[^\n]{0,30}?문자\s*(?:를)?\s*(?:남겨|주)[^\n]{0,12}[.!~]*/g,
+    /궁금한\s*게?\s*있으시면\s*편하게\s*문의\s*주세요[.!~]*/g,
+    // 크롤링 찌꺼기 — 태그 조각이 본문 앞에 붙어 들어온다.
+    /class\s*=\s*"[^"]*"\s*>/g,
+    /<\/?[a-zA-Z][^>]{0,80}>/g,
   ];
+  // 원문에 있을 수 없는 말이 본문에 박히면 그 문장은 못 쓴다. 모델이 「문자 주세요」를
+  // 「뷰티워크 온라인 지원 주세요」로 바꿔 놓는 일이 잦았는데(등록 이슈 여덟 건), 원래
+  // 낱말을 알 수 없으니 그 문장만 통째로 걷어낸다 — 알바가 손으로 하던 일이다.
+  const 지어낸말 = /[^\n.!?]*뷰티워크\s*온라인\s*지원[^\n.!?]*[.!?]?/g;
+  // HTML 기호는 글자가 아니다. 제목·본문 모두에서 푼다.
+  const 기호풀기 = (t: string) => t
+    .replace(/&#(\d+);/g, (_m, d) => { try { return String.fromCodePoint(Number(d)); } catch { return ""; } })
+    .replace(/&#x([0-9a-fA-F]+);/g, (_m, h) => { try { return String.fromCodePoint(parseInt(h, 16)); } catch { return ""; } })
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+  if (typeof out.title === "string") out.title = 기호풀기(out.title).replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "").replace(/\s+/g, " ").trim();
+
   for (const k of ["description", "company_description", "extra_notes", "main_duties", "requirements", "preferred", "benefits"]) {
     if (typeof out[k] === "string" && out[k]) {
-      let v = out[k] as string;
+      let v = 기호풀기(out[k] as string).replace(지어낸말, " ");
       for (const re of SITE_BOILERPLATE) v = v.replace(re, " ");
       v = v.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
       out[k] = v;
