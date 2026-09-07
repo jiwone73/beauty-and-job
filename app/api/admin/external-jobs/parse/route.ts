@@ -1033,11 +1033,23 @@ export async function POST(req: NextRequest) {
         out.description, out.requirements, out.preferred, out.main_duties, out.extra_notes,
       ].map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ").toLowerCase();
       // 이름에 붙은 괄호·구분자를 떼어 낱말 단위로 본다: "피부관리사(일반·경락)" → 피부관리사 / 일반 / 경락
+      //
+      // 낱말이 헐거우면 근거 검사가 통과 도장이 된다. 「헤어강사」의 근거로 「헤어」가
+      // 잡히니 헤어살롱 공고는 죄다 강사로 뽑혔다(등록 이슈 여섯 건 — 미용강사·헤어
+      // 디자이너 환각). 어느 공고에나 나오는 말은 근거로 치지 않는다.
+      const 흔한말 = new Set([
+        "헤어", "네일", "피부", "메이크업", "미용", "뷰티", "매장", "샵", "관리",
+        "디자이너", "스탭", "스태프", "인턴", "신입", "경력", "직원", "실장", "원장",
+        "아티스트", "전문가", "관리사", "상담", "판매", "교육", "기타",
+      ]);
       const grounded = (cat: string) => {
+        const 이름 = cat.replace(/\s+/g, "");
+        // 직군 이름 자체가 글에 나오면 그것으로 끝난다.
+        if (src.includes(이름.toLowerCase()) || src.includes(cat.toLowerCase())) return true;
         const words = [
-          ...cat.split(/[()·・,\/]| /).map((w) => w.trim()).filter((w) => w.length >= 2),
-          ...(SEARCH_TAGS[cat] || []).filter((w) => w.length >= 2),
-        ];
+          ...cat.split(/[()·・,\/]| /).map((w) => w.trim()),
+          ...(SEARCH_TAGS[cat] || []),
+        ].filter((w) => w.length >= 2 && !흔한말.has(w));
         return words.some((w) => src.includes(w.toLowerCase()));
       };
       out.job_categories = picked.filter(grounded);
@@ -1065,6 +1077,27 @@ export async function POST(req: NextRequest) {
         .filter((x) => x.n >= 2) // 한 낱말만 걸린 것은 우연일 수 있다
         .sort((a, b) => b.n - a.n);
       out.job_categories = 점수.slice(0, 2).map((x) => x.cat);
+    }
+
+    // 인턴·스탭을 뽑는 글에 「헤어 디자이너」가 붙는 일이 잦았다(등록 이슈 세 건).
+    // 낱말 점수만 세면 살롱 글은 죄다 디자이너 쪽에 몰린다 — 글이 「디자이너」라고
+    // 말하지 않았으면 디자이너로 적지 않고, 인턴·스탭이라 말했으면 그 자리로 옮긴다.
+    {
+      const t = [out.title, out.description, bodyText, pageText]
+        .map((v: any) => String(v || "")).join(" ");
+      const 스탭글 = /인턴|스탭|스텝|스태프|막내|수습|어시/.test(t);
+      const 디자이너글 = /디자이너|디쟈이너/.test(t);
+      if (Array.isArray(out.job_categories)) {
+        if (!디자이너글) out.job_categories = out.job_categories.filter((c: string) => !/디자이너/.test(c));
+        // 제목이 인턴·스탭을 말할 때만 보탠다. 본문에 한 번 스친 말로 보태면
+        // 디자이너를 뽑는 글에도 스텝이 붙는다.
+        const 제목스탭 = /인턴|스탭|스텝|스태프|막내|수습/.test(String(out.title || ""));
+        if ((제목스탭 || !디자이너글) && 스탭글 && catPool.includes("헤어 스텝")
+            && !out.job_categories.includes("헤어 스텝")
+            && /헤어|미용실|살롱|펌|염색|커트/.test(t)) {
+          out.job_categories = [...out.job_categories, "헤어 스텝"];
+        }
+      }
     }
   }
   // 고용형태: 폼에 없는 값은 버린다. 글이 프리랜서라고 분명히 말하면 그대로 따른다.
