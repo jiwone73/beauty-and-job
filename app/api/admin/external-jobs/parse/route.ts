@@ -3,7 +3,6 @@ export const dynamic = "force-dynamic";
 // 긴 공고가 끊긴다. 무료 요금제 상한이 60초라 그 끝까지 준다.
 export const maxDuration = 60;
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { parseStructured } from "@/lib/external/parsers/structured";
@@ -13,7 +12,6 @@ import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 import { rehostImages } from "@/lib/external/rehost";
 import { dropUnsupported } from "@/lib/external/evidence";
 import { stripTitleDecor, 제목글자만 } from "@/lib/titleDecor";
-import { PARSE_MODEL } from "@/lib/ai/models";
 
 function htmlToText(html: string): string {
   return html
@@ -755,243 +753,16 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // AI 는 그림에서 글자를 읽을 때만 부른다.
+  // AI 는 쓰지 않는다.
   //
   // 글과 URL 은 파서가 읽는다 — 여섯 사이트(헤어인잡·잡코리아·알바몬·사람인·
-  // 뷰티잡·셀렉트미)와 붙여넣기 양식을 덮고 있고, 그 밖은 가져오지 않기로 했다.
-  // 파서가 못 읽은 칸은 비워 둔다. 등록하는 사람이 상세요강을 보고 채우면 된다 —
-  // 빈 칸은 눈에 띄지만 그럴듯하게 채워진 값은 안 띈다.
+  // 뷰티잡·셀렉미)와 붙여넣기 양식을 덮고 있고, 그 밖은 가져오지 않는다.
+  // 그림(화면 캡처)도 읽지 않는다. 그림 속 글자를 읽히면 결국 추정이 섞이고,
+  // 읽어 온 값이 맞는지 사람이 다시 다 봐야 해 손도 안 줄었다.
   //
-  // 그림(화면 캡처)만 예외다. 포스터 안의 글자는 코드가 읽을 방법이 없다.
-  if (!freeParsed && imageUrls.length > 0 && process.env.ANTHROPIC_API_KEY) {
-    try {
-      await loadBenefitTags();
-      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-      const sys = `너는 뷰티 채용공고 페이지에서 핵심 정보를 뽑아 JSON으로 정리하는 도우미야.
-반드시 아래 키를 가진 JSON "하나만" 출력해(설명·코드펜스 금지):
-{"company_name","homepage_url","contact_email","contact_phone","contact_name","title","job_type","job_categories","job_category_raw","gender_preference","education","region","location","deadline","always_open","apply_method","external_apply_url","description","company_description","address","industry","requirements","preferred","benefits","benefit_tags","hiring_process","employment_type","career","salary","salary_type","salary_amount","salary_amount_max","salary_negotiable","work_days","work_time","extra_notes","main_duties"}
-규칙:
-- job_type: "회사 업종"이 아니라 "실제 근무 직무"를 기준으로 판단한다. 물리적 매장·샵에 상주하며 일하는 현장직 — 미용실·네일·피부·속눈썹 등 시술직 + 매장 카운터·판매·접객·매장관리·안내데스크·리셉션 등 오프라인 매장 상주 직무 — 이면 "STORE". 본사·사무실 근무 사무직(브랜드 기획·마케팅·MD·영업관리·연구개발·인사·경영 등)이면 "OFFICE". ★ 회사가 "판매점·유통·이커머스·재료 전문점" 업종이어도, 채용 직무가 오프라인 매장의 카운터·판매·매장관리·접객이면 반드시 "STORE"로 분류(예: "네일재료 판매점 카운터 및 매장관리 직원" → STORE).
-- job_categories: 위 job_type에 맞는 아래 "직군 목록"에서 이 공고에 해당하는 항목을 1~3개 골라 그 문자열을 "정확히 그대로" 배열로. 딱 맞는 게 없으면 [].
-    ★ 본문이 말하지 않은 직군을 만들지 마라. 헤어스탭만 뽑는 글에 "헤어 디자이너"를,
-      살롱 구인 글에 "미용강사"를 끼워 넣는 일이 잦았다. 본문에 그 말이 없으면 고르지 마라.
-    ★ "가장 가까운 것"을 찍지 마라. 애매하면 비워 둔다 — 빈 칸은 등록하는 사람 눈에
-      띄지만, 그럴듯하게 찍힌 직군은 그대로 올라가 버린다.
-- job_category_raw: 이 공고가 "무슨 일 할 사람"을 뽑는지, 글에 적힌 말 그대로 짧게(예: "발관리 전문가", "속눈썹 연장 디자이너"). 
-    위 목록에 맞는 게 없어도 반드시 채울 것 — 비면 그 공고는 모집분야 없이 올라간다. 지역·매장명·급여는 빼고 직무만.
-    · STORE 직군: ${STORE_CATEGORIES.join(" / ")}
-    · OFFICE 직군: ${OFFICE_CATEGORIES.join(" / ")}
-- career: 아래 중 "정확히 하나"만 고르기 → ${CAREER_OPTIONS.join(" / ")}. "경력무관/무관/경력 사항 없음"은 "경력무관", "신입"만이면 "신입", "N년 이상/N년차"는 가장 가까운 값. 불명확하면 "".
-- region: 근무지의 시·도와 시·군·구를 "시도전체명 시군구" 형식으로(예: "경기도 수원시 영통구", "서울특별시 강남구"). 시도명은 축약하지 말고 전체명(경기도/서울특별시/부산광역시 등). 상세 도로명·번지는 빼고 시군구까지만. 없으면 "".
-- deadline: 특정 마감일이 "YYYY-MM-DD"로 명시된 경우만 그 날짜. 상시/수시/미상이면 "".
-    ★ 글이 올라온 날(등록일·작성일·업데이트 날짜)을 마감일로 쓰지 마라 — 실제로 「26년 8월 14일에
-      올라온 글」을 마감일로 읽은 적이 있다. "마감"·"~까지"라고 적힌 날짜만 마감일이다.
-- always_open: 상시채용·수시채용·채용시 마감·충원시 마감 등 마감일이 없는 상시 공고면 true, 아니면 false.
-- title: 원문 공고 제목을 "그대로" 쓴다. 이모지·★♥🌸 같은 장식 기호와 반복된 특수문자만 걷어내고, 낱말은 바꾸지 말 것.
-    ★ &#128153; 같은 HTML 기호(&#...; &amp; &nbsp;)는 글자가 아니라 부호다. 남기지 말고 지워라.
-  (예: "🌸서울 은평구 네일샵 든든한 직원 구합니다🌸" → "서울 은평구 네일샵 든든한 직원 구합니다")
-  ★ 직무명으로 새로 지어내지 말 것("네일 아티스트(경력자)" 같은 요약 제목 금지).
-    원문에 제목이 없으면 ""로 둔다. 내용을 요약해 제목을 짓지 마라 — 등록하는 사람이 적는다.${pastedTitle ? `
-    ★ 이 공고는 제목을 따로 받았다. title 은 "" 로 두어라 — 어차피 쓰지 않는다.` : ""}
-- contact_methods: 지원자가 연락할 수 있는 방법을 아래에서 골라 배열로. 없으면 [].
-    · 고를 수 있는 값: ${CONTACT_METHODS.join(" / ")}
-    · "문자 주세요/문자 지원" → "문자", "전화 문의/☎/📞 번호" → "전화", 이메일 주소가 있으면 "이메일".
-    · 전화번호가 하나라도 있으면 최소한 "전화"는 넣을 것(연락 수단이 비면 지원자가 연락할 방법이 사라진다).
-- benefit_tags: 아래 job_type별 "복리후생·근무조건 태그 목록"에서 이 공고 내용과 맞는 것만 골라 문자열을 "정확히 그대로" 배열로(없으면 []). 이건 필터용 태그이고, 서술형 혜택 내용은 benefits에 따로 담아.
-    ★ 글에 그 혜택이 실제로 적혀 있을 때만 고를 것. 비슷해 보인다고 넘겨짚지 마라.
-      예) "식사시간 1시간"은 쉬는 시간이지 식대 지원이 아니다. "3.3% 프리랜서"는 4대보험이 아니라 그 반대다.
-    · STORE 태그: ${STORE_TAGS.join(" / ")}
-    · OFFICE 태그: ${OFFICE_TAGS.join(" / ")}
-- apply_method: 지원이 회사 홈페이지·특정 지원페이지에서만 가능하면 "REDIRECT"(그 링크를 external_apply_url에), 그 외에는 모두 "MANAGED". (채용 이메일이 보이면 contact_email에는 담되 apply_method는 MANAGED로.)
-- contact_phone: 지원·문의용 전화번호(담당자/채용 연락처)가 본문에 있으면 "010-1234-5678"처럼 하이픈 포함으로. 여러 개면 지원 담당 번호 우선(대표번호보다 채용 담당 우선). 없으면 "".
-- contact_email: "회사(매장)의 채용담당 이메일"만. 잡사이트 자체 이메일(예: @albamon.com·@jobkorea.co.kr·@saramin.co.kr 등 채용사이트 도메인 = 중계/문의용)은 회사 이메일이 아니므로 제외. 회사 이메일이 여러 개면 채용/인사 담당(recruit·hr·job·career·인사·채용 등) 우선, 대표·일반(info·ceo·master)은 후순위. 없으면 "".
-- contact_name: 채용 담당자 "사람 이름"이 명시돼 있으면 그 이름만(예: "이은주"). 부서명·회사명·"담당자"라는 일반어는 제외. 없으면 "".
-${bodyText.trim() ? `- description: "" 로 둔다. 상세요강은 붙여넣은 원문을 코드가 그대로 담는다 — 받아쓰지 마라.` : `- description: 공고 본문을 "원문 그대로" 옮길 것. 요약·재작성·의역 금지, 없는 문장을 지어내지 마라.
-    ★★ 지원 방법을 가리키는 말("문자", "전화", "이메일", "직접방문", 이메일 주소, 전화번호)을
-      절대 다른 말로 바꾸지 마라. 특히 "뷰티워크 온라인지원"으로 치환하는 일이 잦았는데,
-      원문에 없는 말이라 문장이 통째로 못 쓰게 된다.
-    지우는 것은 ① 장식(이모지·♥·★·점만 있는 줄)과 ② 카페/사이트가 붙인 안내문뿐이다.
-    ★ 지울 때는 그 줄을 통째로 지워라. 앞머리 기호나 낱말 한두 개만 남기면 안 된다.
-    ★ 줄바꿈은 원문 그대로 살릴 것. 빈 줄이 셋 이상 이어질 때만 하나로 줄인다.
-    급여·근무시간처럼 다른 항목에도 담은 내용이라도, 본문에 있던 말이면 여기서 지우지 마라.`}
-- company_description: 글에 회사·브랜드를 "소개하는 문장이 실제로 있을 때"만, 그 문장을 원문 그대로 옮길 것.
-    ★ 지어내지 마라. 채용 조건만 적힌 글이면 반드시 ""로 둘 것.
-      매장 분위기·고객층·재료 지원 같은 말을 근거로 소개 문장을 새로 만들어 내면 안 된다.
-- address: 회사/근무지의 전체 주소(도로명·번지 포함, 있으면). 없으면 "".
-- industry: job_type이 STORE면 [헤어샵, 네일샵, 피부·에스테틱, 속눈썹·왁싱·반영구, 메이크업, 애견미용, 토탈뷰티샵] 중 하나, OFFICE면 [화장품·미용기기 제조·브랜드, 뷰티 유통·이커머스, 프랜차이즈 본사, 미용 교육·아카데미, 피부과·성형외과, 뷰티 마케팅·미디어, 뷰티 서비스·플랫폼] 중 하나를 정확히 그대로. 애매하면 "".
-- requirements: 자격요건/지원자격을 한국어 텍스트로. 항목이 여러 개면 줄바꿈(\n)으로 구분. 없으면 "".
-- preferred: 우대사항을 텍스트로(줄바꿈 구분). 없으면 "".
-- benefits: 복리후생/혜택 및 복지/복지/베네핏 등 이름이 무엇이든 그 혜택 내용을 서술형 텍스트로(줄바꿈 구분). 없으면 "".
-    ★ 쉬는 날 조건(월 O회 휴무·연 O일 휴무·주 O일·연차)과 식사·휴게시간은 구직자가 가장 먼저 보는 값이다. 글에 있으면 반드시 담을 것.
-- hiring_process: 채용 절차 단계를 문자열 배열로(예: ["서류전형","면접","최종합격"]). 없으면 [].
-- employment_type: 본문이 "정규직"이라 쓰면 정규직이다. 3.3% 공제·프리랜서 계약이라고 "적혀 있을 때만" 프리랜서다.
-    ★ 급여를 인센티브·프로테이지로 준다는 이유로 프리랜서라고 넘겨짚지 마라 — 실제로 정규직 공고를
-      프리랜서로 잘못 읽는 일이 여섯 번 있었다. 글에 없으면 "".
-- education: ${EDUCATION_OPTIONS.join(" | ")} 중 하나를 정확히 그대로, 글에 없으면 "".
-    "학력 무관"·"학력 제한 없음"이면 "학력무관". 미용사 면허·자격증은 학력이 아니다(자격요건에 넣어라).
-- gender_preference: "남성" | "여성" | "무관" 중 하나, 글에 없으면 "".
-    "나이·성별 무관", "남녀 무관", "성별 상관없음" 이면 "무관". 특정 성별만 뽑는다고 적힌 경우만 남성/여성.
-- employment_type: ${EMPLOYMENT_TYPES.join(" | ")} 중 하나를 정확히 그대로, 없으면 "".
-    ★ "3.3%", "3.3 프리", "사업소득", "4대보험 무"가 보이면 프리랜서다. 파트타임·정규직으로 넘겨짚지 마라.
-    ★ "주OO회"처럼 요일만 적은 것은 고용형태가 아니다. 근무요일에 넣어라.
-    ★ "스페아"는 "스페어"의 다른 표기다. 주말·단기 일급 자리이니 아르바이트가 아니라 "스페어"로 넣어라.
-- main_duties: 주요업무/담당업무를 텍스트로(여러 개면 줄바꿈 구분). 없으면 "".
-- salary: 급여/처우 조건을 텍스트로(예: "월 250만원", "비율 5:5", "면접 후 협의"). 없으면 "".
-- salary_type · salary_amount: 이 둘은 "반드시 같은 급여 하나"를 가리켜야 한다. 형태와 금액을 절대 섞지 말 것 → "연봉 3000만원"이면 type "ANNUAL" + amount 3000, "월 250만원"이면 type "MONTHLY" + amount 250. (예: 월인데 amount 3000 ✗ 절대 금지). 한 공고에 월급·연봉이 함께 적혀 있으면 "연봉(ANNUAL)"을 우선 선택(예: "월 250만원 / 연봉 3000~3300만원" → ANNUAL + 3000). 범위면 하한값.
-   · salary_type: "ANNUAL"(연봉) | "MONTHLY"(월급) | "WEEKLY"(주급) | "HOURLY"(시급) 중 하나. 협의/비율제 등 고정 금액이 없으면 "".
-     ★ 원문이 쓴 단위를 그대로 따른다. "연봉 2800만원"을 월 2800으로, "일급 12만원"을 월급으로 옮긴
-       적이 있다 — 단위를 바꾸지 마라. 「일급」이면 고를 값이 없으므로 salary_type 은 "" 로 두고
-       금액은 salary 서술에만 남긴다.
-   · salary_amount: 숫자만(범위면 하한값). 연봉·월급·주급은 "만원" 단위, 시급은 "원" 단위.
-     ★ 원 단위 숫자(예: 2300000, 30000000)로 주어지면 연봉·월급·주급은 반드시 만원으로 환산(÷10,000): 월급 2,300,000원→230, 연봉 30,000,000원→3000. (÷1,000 하지 말 것 → 2300은 오답). "230만원"처럼 이미 만원으로 적혀 있으면 그대로 230. 시급만 원 그대로(예: 시급 10320원→10320). 없거나 협의면 0.
-   · salary_amount_max: 급여가 "범위"로 적혀 있으면(예: "연봉 3000~3300만원") 상한값 숫자만(같은 단위, 예: 3300). 단일 금액이면 0.
-- salary_negotiable: 급여가 "협의/면접 후 결정/비공개/비율제(예: 5:5)" 등 고정 금액이 아니면 true, 고정 금액이 명시되면 false.
-- work_days: 실제 "근무"하는 요일만 "월,화,수,목,금,토,일" 중에서 콤마로(휴무 요일은 제외). 예: "(월,화 휴무) 수,목,금,토,일" → "수,목,금,토,일". 요일이 협의/유동이면 "협의". 없으면 "".
-    ★ "주5일"처럼 일수만 적혀 있고 무슨 요일인지 안 적혀 있으면 ""로 둘 것. 임의로 월~금이라 넘겨짚지 마라(미용실은 월요일 휴무에 주말 근무가 흔하다).
-    ★ 매장 "영업시간/영업일"은 근무요일이 아니다. 매일 여는 매장이라고 이레를 다 넣지 마라.
-- work_time: 근무시간을 "HH:MM~HH:MM" 24시간 형식으로(예: "오전9시~오후7시30분" → "09:00~19:30", "9~18시" → "09:00~18:00"). 시간이 협의/탄력근무면 "협의". 없으면 "".
-  ★ 출근·퇴근 "시각"이 적혀 있을 때만 채운다. "일 9시간 근무", "1일 8시간", "주 40시간"처럼 시각이 아니라 총 근무 길이만 있으면 work_time 은 ""로 두고 그 내용은 extra_notes 에 적을 것. (시각으로 지어내지 말 것 — "일 9시간"을 "09:00~18:00"으로 바꾸면 사실과 다르다.)
-- homepage_url: 그 회사 자체의 홈페이지만. 지금 보고 있는 채용사이트(출처) 주소는 넣지 말 것. 회사 홈페이지가 없으면 "".
-- extra_notes: 위 항목에 안 담기는 나머지 정보(근태제도·담당자 연락처·기타 안내 등)를 한국어로 항목별 정리(줄바꿈 구분). 급여·근무요일·근무시간·복리후생은 각 전용 필드(salary/work_days/work_time/benefits)에 넣고 여기 중복하지 말 것. 없으면 "".
-- 원문의 표현을 그대로 살릴 것. 말을 다듬느라 정보를 빠뜨리지 마라.
-- 입력 중 [붙여넣은 공고 본문]이 있으면 그 내용을 최우선으로 신뢰하고, [페이지 텍스트]·[JSON-LD]·[__NEXT_DATA__]는 빠진 값을 채우는 보완용으로만 사용할 것.
-- 모르는 값은 빈 문자열 "" 또는 빈 배열 [].`;
-      const user = `URL: ${url || "(없음)"}\n호스트: ${hostname || "(없음)"}\n\n[붙여넣은 공고 본문 · 최우선 신뢰]\n${bodyText || "(없음)"}\n\n[JSON-LD]\n${jsonld || "(없음)"}\n\n[__NEXT_DATA__ / 초기상태(JSON에 공고 내용이 있을 수 있음)]\n${nextData || "(없음)"}\n\n[페이지 텍스트]\n${pageText || "(없음)"}`;
-
-      // OCR 모드: 캡처 이미지(여러 장 가능)를 비전으로 읽는다. 위→아래 순서대로 이어붙여 한 공고로 인식.
-      let userContent: any = user;
-      if (imageUrls.length) {
-        const imgBlocks: any[] = [];
-        for (const iu of imageUrls) {
-          try {
-            const ir = await fetch(iu, {
-              headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" },
-            });
-            if (!ir.ok) continue;
-            const ibuf = Buffer.from(await ir.arrayBuffer());
-            let mt = (ir.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
-            if (!/^image\/(jpeg|png|gif|webp)$/.test(mt)) mt = "image/jpeg";
-            if (ibuf.byteLength > 0 && ibuf.byteLength <= 5 * 1024 * 1024) {
-              imgBlocks.push({ type: "image", source: { type: "base64", media_type: mt, data: ibuf.toString("base64") } });
-            }
-          } catch (e) {
-            console.error("[ocr image fetch]", e);
-          }
-        }
-        if (imgBlocks.length) {
-          // 글과 그림이 같이 오면 글이 원본이다. 그림에서 읽은 글자는 오독이 섞이므로
-          // (전화번호 한 자리만 틀려도 지원이 엉뚱한 데로 간다) 글에 있는 값은 글을 그대로 쓴다.
-          const both = bodyText
-            ? `위 이미지들은 아래 [붙여넣은 공고 본문]과 "같은 공고"의 포스터야(총 ${imgBlocks.length}장, 위에서 아래 순서).
-★ 본문에 적혀 있는 값은 본문 글자를 "그대로" 쓸 것. 이미지에서 읽은 글자로 덮어쓰지 마.
-   (특히 전화번호·급여·상호는 한 글자만 달라도 못 쓴다. 본문에 있으면 본문이 정답이다.)
-★ 본문에 없는 값만 이미지에서 읽어 채울 것. 연락처·주소·모집분야를 포스터에만 적어 두는 공고가 많다.
-★ 모집분야가 여럿이면(경력/초보/아르바이트 등) job_categories 에 해당하는 직군을 모두 담아라.
-위 규칙대로 JSON "하나만" 출력해.`
-            : `위 이미지들은 하나의 채용공고 화면을 위에서 아래로 순서대로 캡처한 거야(총 ${imgBlocks.length}장). 모든 이미지의 글자를 정확히 읽어(OCR) 하나의 공고로 합쳐 위 규칙대로 JSON "하나만" 출력해. URL·호스트 정보는 없어.`;
-          userContent = [...imgBlocks, { type: "text", text: `${both}\n\n${user}` }];
-        }
-      }
-
-      // 얼마나 따져 볼지. 평소엔 건드리지 않는다.
-      // 예전에 긴 글이면 자동으로 낮췄는데, 그건 오퍼스가 1,863자에서 58.5초까지
-      // 걸려 60초 벽에 닿던 때의 대책이었다. 하이쿠는 가장 긴 글도 22초라 벽이
-      // 없으니, 낮출 이유 없이 품질만 깎게 된다.
-      const effort = process.env.PARSE_EFFORT as "low" | "medium" | "high" | undefined;
-
-      // 규칙서를 캐시에 얼마나 오래 얹어 둘지.
-      //  · "1h"  — 저장은 2배, 꺼내 쓰는 건 10분의 1. 한 시간 안에 두 번만 불러도 이득.
-      //  · "5m"  — 저장은 1.25배지만 5분이면 만료된다.
-      //  · null  — 캐시 없이.
-      // 공고 하나를 불러와 검토하고 등록하기까지 5분은 넘게 걸린다. 그래서 5분짜리는
-      // 다음 공고 차례에 이미 만료돼, 저장 요금만 내고 혜택은 못 받는 일이 잦다
-      // (한 시간에 열 건이면 캐시 없을 때 100원, 5분 캐시 120원, 1시간 캐시 29원).
-      const ask = (ttl: "1h" | "5m" | null) => anthropic.messages.create({
-        // 매일 여러 건 누르는 버튼이라 건당 요금이 그대로 월 비용이 된다
-        // (오퍼스 월 8만원 / 소넷 2만 7천원 / 하이쿠 1만 4천원).
-        // 지어내는 실수는 아래 dropUnsupported 가 코드로 막고, 값은 사람이 어차피
-        // 전부 확인하고 등록한다. 그래서 가장 싼 쪽을 쓴다.
-        model: PARSE_MODEL,
-        // 이 모델은 답하기 전에 스스로 따져 보는데, 그 몫도 max_tokens 를 나눠 쓴다.
-        // 3000 으로 두면 따지다가 한도를 다 써 JSON 이 잘린 채 끝난다.
-        max_tokens: 16000,
-        ...(effort ? { output_config: { effort } } : {}),
-        // 이 8,600자 규칙서는 매번 글자 하나 안 바뀐다. 캐시에 올려 두면 두 번째
-        // 호출부터 이 부분이 10분의 1 값이 된다.
-        system: ttl ? [{ type: "text" as const, text: sys, cache_control: { type: "ephemeral" as const, ttl } }] : sys,
-        messages: [{ role: "user", content: userContent }],
-      });
-      // 캐시를 거절당해도 불러오기 자체는 되어야 한다. 아껴 보려다 버튼이 죽으면
-      // 본말이 뒤집힌다. 한 시간짜리를 안 받아 주면 5분짜리로, 그것도 안 되면
-      // 캐시 없이 — 한 단계씩 물러선다.
-      // 다만 캐시가 이유일 때만 물러선다. 크레딧 부족이나 과부하까지 여러 번
-      // 부르면 시간 안에 못 끝낸다.
-      const isCacheError = (e: any) => e?.status === 400 && /cache|ttl/i.test(String(e?.message || ""));
-      const msg = await ask("1h")
-        .catch((e: any) => {
-          if (!isCacheError(e)) throw e;
-          console.error("[external parse] 1시간 캐시 거절 → 5분으로:", e?.message);
-          return ask("5m");
-        })
-        .catch((e: any) => {
-          if (!isCacheError(e)) throw e;
-          console.error("[external parse] 캐시 거절 → 캐시 없이:", e?.message);
-          return ask(null);
-        });
-
-      // 한 번 부를 때 실제로 얼마가 나가는지 남긴다. 토큰 수를 눈대중으로 잡으면
-      // 요금 계산이 몇 배씩 틀어진다. 배포 로그에서 진짜 값을 보고 판단하려는 것이다.
-      {
-        const u: any = msg.usage || {};
-        const fresh = u.input_tokens || 0;          // 캐시 못 쓴 입력 — 제값
-        const write = u.cache_creation_input_tokens || 0; // 캐시에 올리는 값 — 1.25배
-        const read = u.cache_read_input_tokens || 0;      // 캐시에서 꺼낸 값 — 10분의 1
-        const outTok = u.output_tokens || 0;
-        const RATE: Record<string, [number, number]> = { // [입력, 출력] $ per MTok
-          "claude-sonnet-5": [2, 10], "claude-opus-5": [5, 25], "claude-haiku-4-5": [1, 5],
-        };
-        const [ri, ro] = RATE[String(msg.model).replace(/-\d{8}$/, "")] || [2, 10];
-        // 저장 단가는 얼마짜리 캐시냐에 따라 다르다(5분 1.25배, 1시간 2배).
-        // 응답이 둘을 나눠 알려주면 그대로 쓰고, 아니면 우리가 먼저 시도한 1시간으로 친다.
-        const cc: any = u.cache_creation || {};
-        const w5 = cc.ephemeral_5m_input_tokens ?? 0;
-        const w1h = cc.ephemeral_1h_input_tokens ?? 0;
-        const writeCost = (w5 || w1h) ? (w5 * ri * 1.25 + w1h * ri * 2) : write * ri * 2;
-        const usd = (fresh * ri + writeCost + read * ri * 0.1 + outTok * ro) / 1e6;
-        console.log(
-          `[parse 요금] ${msg.model} 입력 ${fresh}(신규)+${write}(캐시저장)+${read}(캐시적중)` +
-          ` 출력 ${outTok} → 약 ${Math.round(usd * 1400)}원`
-        );
-      }
-      const raw = msg.content.map((c: any) => (c.type === "text" ? c.text : "")).join("").trim();
-      const parsed = safeJsonParse(raw);
-      if (parsed && typeof parsed === "object") {
-        out = { ...out, ...parsed };
-        out.ai_parsed = true;
-        // 상세요강은 AI 가 받아쓴 것을 쓰지 않는다.
-        //
-        // 「원문 그대로 옮겨라」라고 아무리 세게 적어도 다시 받아쓰는 이상 줄이
-        // 빠지고 순서가 바뀌고 없던 말이 생긴다(등록 이슈 여럿 — "문자 주세요"가
-        // "뷰티워크 온라인 지원 주세요"로 바뀌고, 지우다 만 " ※ 위"만 남고).
-        // 붙여넣은 글은 그 자체가 원문이다. AI 를 거칠 이유가 없다.
-        if (bodyText.trim()) out.description = 원문본문(pastedText);
-        // 사람이 붙여넣은 제목이 있으면 그것이 원문이다. AI 가 지은 것으로 덮지 않는다.
-        if (pastedTitle) out.title = pastedTitle;
-      } else {
-        console.error("[external parse LLM] JSON 파싱 실패. 원문 앞부분:", raw.slice(0, 300));
-        out.ai_failed = "읽어 온 값을 해석하지 못했어요.";
-      }
-    } catch (e) {
-      // 여기서 조용히 넘어가면 항목이 텅 빈 폼이 그냥 채워진다. 관리자는 원문에
-      // 내용이 없어서 빈 줄 알고 그대로 등록하게 된다. 실패는 실패라고 알린다.
-      console.error("[external parse LLM]", e);
-      // 크레딧이 떨어진 것은 기다린다고 풀리지 않는다. 무엇을 해야 하는지 바로 알려준다.
-      const emsg = String((e as any)?.message || "");
-      out.ai_failed = /credit balance|billing/i.test(emsg)
-        ? "API 크레딧이 떨어졌어요. 콘솔에서 충전한 뒤 다시 눌러 주세요."
-        : "불러오기가 실패했어요. 잠시 뒤 다시 눌러 주세요.";
-    }
-  }
+  // 파서가 못 읽은 칸은 비워 둔다. 등록하는 사람이 상세요강을 보고 채운다 —
+  // 상세요강은 원문 그대로 들어와 있고, 빈 칸은 눈에 띄지만 그럴듯하게
+  // 채워진 값은 안 띈다.
 
   out.source_site = hostname;
   out.source_url = url;
@@ -1195,6 +966,9 @@ ${bodyText.trim() ? `- description: "" 로 둔다. 상세요강은 붙여넣은 
     if (!out.contact_methods.length && out.contact_phone) out.contact_methods.push("전화");
   }
 
+  // 복리후생 표는 DB 에 있다. AI 를 걷어내면서 이걸 불러 두던 자리가 함께
+  // 사라져, 기본 목록만 남아 있었다.
+  await loadBenefitTags();
   const tagPool = out.job_type === "STORE" ? STORE_TAGS : (OFFICE_TAGS_DB || OFFICE_TAGS);
   out.benefit_tags = Array.isArray(out.benefit_tags)
     ? [...new Set(out.benefit_tags.filter((t: any) => tagPool.includes(t)))] : [];
