@@ -163,6 +163,9 @@ export async function POST(req: NextRequest) {
 
   const b = await req.json().catch(() => ({}));
   const pastedText = (b.text || "").trim();
+  // 붙여넣은 제목. 카페 글은 제목이 본문 위에 따로 있어 함께 복사되지 않는다.
+  // 이 값이 오면 제목은 여기서 끝이다 — AI 가 짓지 않는다.
+  const pastedTitle = (b.title || "").trim().slice(0, 300);
   const imageUrl = (b.image_url || "").trim(); // OCR: 공고 화면 캡처 이미지 URL(업로드 후 전달)
   // OCR 다중 이미지: 긴 공고를 여러 장 캡처해 함께 인식(위→아래 순서 유지)
   const imageUrls: string[] = [imageUrl, ...(Array.isArray(b.image_urls) ? b.image_urls : [])]
@@ -384,7 +387,7 @@ export async function POST(req: NextRequest) {
   let out: any = {
     ai_parsed: false,
     company_name: "", homepage_url: "", contact_email: emails[0] || "", contact_phone: phones[0] || "", contact_name: "",
-    title: ogTitle, job_type: "STORE", location: "", region: "", deadline: "", always_open: false,
+    title: pastedTitle || ogTitle, job_type: "STORE", location: "", region: "", deadline: "", always_open: false,
     apply_method: "MANAGED", external_apply_url: "",
     description: ogDesc,
     company_description: "", address: "", industry: "",
@@ -407,6 +410,7 @@ export async function POST(req: NextRequest) {
         const 확실 = pt._확실한가; delete pt._확실한가;
         out = { ...out, ...pt };
         out.description = 원문본문(pastedText);
+        if (pastedTitle) out.title = pastedTitle;
         if (확실) { out.ai_parsed = true; freeParsed = true; }
       }
     } catch (e) {
@@ -754,7 +758,8 @@ export async function POST(req: NextRequest) {
     ★ &#128153; 같은 HTML 기호(&#...; &amp; &nbsp;)는 글자가 아니라 부호다. 남기지 말고 지워라.
   (예: "🌸서울 은평구 네일샵 든든한 직원 구합니다🌸" → "서울 은평구 네일샵 든든한 직원 구합니다")
   ★ 직무명으로 새로 지어내지 말 것("네일 아티스트(경력자)" 같은 요약 제목 금지).
-    원문에 제목이 없으면 ""로 둔다. 내용을 요약해 제목을 짓지 마라 — 등록하는 사람이 적는다.
+    원문에 제목이 없으면 ""로 둔다. 내용을 요약해 제목을 짓지 마라 — 등록하는 사람이 적는다.${pastedTitle ? `
+    ★ 이 공고는 제목을 따로 받았다. title 은 "" 로 두어라 — 어차피 쓰지 않는다.` : ""}
 - contact_methods: 지원자가 연락할 수 있는 방법을 아래에서 골라 배열로. 없으면 [].
     · 고를 수 있는 값: ${CONTACT_METHODS.join(" / ")}
     · "문자 주세요/문자 지원" → "문자", "전화 문의/☎/📞 번호" → "전화", 이메일 주소가 있으면 "이메일".
@@ -937,6 +942,8 @@ ${bodyText.trim() ? `- description: "" 로 둔다. 상세요강은 붙여넣은 
         // "뷰티워크 온라인 지원 주세요"로 바뀌고, 지우다 만 " ※ 위"만 남고).
         // 붙여넣은 글은 그 자체가 원문이다. AI 를 거칠 이유가 없다.
         if (bodyText.trim()) out.description = 원문본문(pastedText);
+        // 사람이 붙여넣은 제목이 있으면 그것이 원문이다. AI 가 지은 것으로 덮지 않는다.
+        if (pastedTitle) out.title = pastedTitle;
       } else {
         console.error("[external parse LLM] JSON 파싱 실패. 원문 앞부분:", raw.slice(0, 300));
         out.ai_failed = "읽어 온 값을 해석하지 못했어요.";

@@ -405,6 +405,10 @@ export default function JobPostForm({
   // 글자로 보내면 캡처(이미지)보다 훨씬 싸고 전화번호를 잘못 읽을 일도 없다.
   const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
   const [pasteText, setPasteText] = useState("");
+  // 공고 제목은 따로 받는다. 카페 글은 제목이 본문 위에 떨어져 있어 본문을 드래그하면
+  // 안 딸려 온다. 예전에는 그 빈자리를 AI 가 본문을 읽고 지어 메웠는데(붙여넣기 아홉 건
+  // 중 여덟 건), 「월350이상 / 3호선」처럼 원문에 없는 말이라 맞는지 알 길이 없었다.
+  const [pasteTitle, setPasteTitle] = useState("");
   const [importImages, setImportImages] = useState<string[]>([]); // 북마클릿이 넘긴 사진 주소
   // 상세요강 그림에서 글자를 읽을지. 켤 때만 그림이 모델로 가고 요금이 붙는다.
   // (자동저장이 이 값을 읽으므로 선언이 그 위에 있어야 한다.)
@@ -640,7 +644,7 @@ export default function JobPostForm({
     form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations,
     detailImages, bannerImages, hiringProcess, benefitTags,
     salaryNego, salaryType, salaryMax, salaryByCat,
-    pasteText, ocrSourceUrl, parseUrl, importMode, findQuery,
+    pasteText, pasteTitle, ocrSourceUrl, parseUrl, importMode, findQuery,
     // 아직 배너에 안 넣은 '가져온 사진'과 텍스트 인식 토글도 같이 남긴다.
     // 새로고침 한 번에 다시 가져오고 다시 켜야 하면 유지의 뜻이 없다.
     importImages,
@@ -660,7 +664,7 @@ export default function JobPostForm({
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
-      hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, ocrSourceUrl,
+      hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, pasteTitle, ocrSourceUrl,
       parseUrl, importMode, findQuery, importImages, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
       nmManagerName, nmManagerPhone, nmContactEmail, nmKakaoId, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
@@ -704,7 +708,7 @@ export default function JobPostForm({
       : false;
     const 살펴볼것 = ["form", "notes", "categories", "posMeta", "regionList", "extraLocations",
       "detailImages", "bannerImages", "importImages", "hiringProcess", "benefitTags",
-      "pasteText", "ocrSourceUrl", "parseUrl", "findQuery",
+      "pasteText", "pasteTitle", "ocrSourceUrl", "parseUrl", "findQuery",
       "newCompanyName", "newBrandName", "nmDescription", "nmAddress", "nmAddressDetail",
       "nmIndustry", "nmSize", "nmFounded", "nmRepresentative", "nmPhone", "nmHomepage",
       "nmManagerName", "nmManagerPhone", "nmContactEmail", "nmKakaoId", "contactMethods", "externalApplyUrl"];
@@ -717,7 +721,8 @@ export default function JobPostForm({
     set(setDetailImages, d.detailImages); set(setBannerImages, d.bannerImages);
     set(setHiringProcess, d.hiringProcess); set(setBenefitTags, d.benefitTags);
     set(setSalaryNego, d.salaryNego); set(setSalaryType, d.salaryType); set(setSalaryMax, d.salaryMax); set(setSalaryByCat, d.salaryByCat);
-    set(setPasteText, d.pasteText); set(setOcrSourceUrl, d.ocrSourceUrl); set(setParseUrl, d.parseUrl);
+    set(setPasteText, d.pasteText); set(setPasteTitle, d.pasteTitle);
+    set(setOcrSourceUrl, d.ocrSourceUrl); set(setParseUrl, d.parseUrl);
     set(setImportMode, d.importMode); set(setFindQuery, d.findQuery);
     set(setImportImages, d.importImages);
     set(setNonMember, d.nonMember); set(setNewCompanyName, d.newCompanyName); set(setNewBrandName, d.newBrandName);
@@ -1738,7 +1743,12 @@ export default function JobPostForm({
         // 원문 주소는 '기록용'이라 파싱에 넘기지 않는다.
         // 넘기면 서버가 그 페이지를 열어 이미지를 긁는데, 카페는 글 사진이 로그인 뒤에 있어
         // 카페 로고가 대신 딸려 오고 그게 공고 배너로 박힌다.
-        body: JSON.stringify(imgs.length ? { text, image_urls: imgs.slice(0, 8) } : { text }),
+        body: JSON.stringify({
+          text,
+          // 붙여넣은 제목은 그대로 쓴다. 서버가 다시 짓지 않는다.
+          ...(pasteTitle.trim() ? { title: pasteTitle.trim() } : {}),
+          ...(imgs.length ? { image_urls: imgs.slice(0, 8) } : {}),
+        }),
       });
       const data = await res.json();
       if (!data.success) { setParseMsg(data.error?.message || "불러오지 못했어요."); return; }
@@ -2827,10 +2837,17 @@ export default function JobPostForm({
           {importMode === "paste" ? (
           /* 글 붙여넣기: 카페·블로그 글은 드래그 복사가 된다. 캡처보다 싸고 정확하다. */
           <div>
+            {/* 제목과 본문을 따로 받는다 — 카페 글은 두 자리가 떨어져 있어 한 번에 안 잡힌다. */}
+            <input
+              value={pasteTitle}
+              onChange={(e) => setPasteTitle(e.target.value)}
+              placeholder="공고 제목을 복사해 붙여넣으세요"
+              style={{ width: "100%", padding: "10px 12px", marginBottom: 8, border: "1.5px solid #e3e3e6", borderRadius: 8, fontSize: 13.5, background: "#fff", boxSizing: "border-box" }}
+            />
             <textarea
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
-              placeholder={"공고 글을 통째로 복사해 붙여넣으세요.\n(제목·모집분야·급여·근무시간·연락처가 다 들어가면 좋아요)"}
+              placeholder="공고 본문을 복사해 붙여넣으세요"
               style={{ width: "100%", minHeight: 160, padding: 12, border: "1.5px solid #e3e3e6", borderRadius: 8, fontSize: 13.5, lineHeight: 1.6, resize: "vertical", background: "#fff" }}
             />
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
