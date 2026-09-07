@@ -2490,7 +2490,11 @@ export default function JobPostForm({
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
       notes: notes.trim() || null,
-      apply_method: applyMethod,
+      // 지원방법은 여기서 최종값까지 만든다. 회원 공고는 뷰티워크 온라인지원
+      // (NATIVE), 대행으로 올리는 비회원 공고만 고른 방법을 쓴다. 예전에는 폼이
+      // 고른 값을 그대로 보내고 서버가 회원이면 NATIVE 로 바꿔 놨다 — 미리보기가
+      // 모르는 값이 저장돼 갈라졌다. 서버는 이제 받은 값을 그대로 넣는다.
+      apply_method: isNm ? applyMethod : "NATIVE",
       external_apply_url: externalApplyUrl.trim() || null,
       external_contact_email: 낼담당.메일 || null,
       external_contact_name: 낼담당.이름 || null,

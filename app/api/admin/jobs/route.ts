@@ -166,12 +166,22 @@ export async function POST(req: NextRequest) {
     }
 
     const isNonMember = !company_id
-    const am = isNonMember ? (['REDIRECT', 'EMAIL', 'MANAGED'].includes(apply_method) ? apply_method : 'MANAGED') : 'NATIVE'
-    const src = isNonMember ? 'EXTERNAL' : 'NATIVE'
-    const extUrl = isNonMember ? ((external_apply_url || '').trim() || null) : null
-    const extEmail = isNonMember ? ((external_contact_email || '').trim() || null) : null
-    const extName = isNonMember ? ((external_contact_name || '').trim() || null) : null
-    const extPhone = isNonMember ? ((external_contact_phone || '').replace(/\D/g, '') || null) : null
+    // 폼이 보낸 값을 그대로 넣는다. 서버가 다시 정하면 미리보기가 모르는 값이
+    // 저장돼 갈라진다. 값이 잘못됐으면 조용히 바꾸지 말고 아래에서 되돌려 보낸다.
+    const am = apply_method
+    if (!['NATIVE', 'REDIRECT', 'EMAIL', 'MANAGED'].includes(am)) {
+      await client.query('ROLLBACK'); return err('JOB_003', '지원방법 값이 올바르지 않습니다.')
+    }
+    const src = isNonMember ? 'EXTERNAL' : 'NATIVE' // 회원 여부에서 따라 나오는 값 — 폼이 보내는 칸이 아니다
+    const extUrl = (external_apply_url || '').trim() || null
+    // 담당자 정보는 회원 업체를 대신 등록할 때도 적은 대로 저장한다.
+    // 예전에는 비회원일 때만 저장하고 회원이면 버렸는데, 폼은 어느 쪽이든 담당자를
+    // 필수로 받고 미리보기도 그대로 보여 준다 — 저장 때만 사라져 「미리보기와 다르다」가
+    // 됐다. 기업회원이 직접 올릴 때(app/api/company/jobs)는 원래 그대로 저장한다.
+    // 카카오 ID 는 이 게이트 밖에 있어 혼자만 살아남고 있었다.
+    const extEmail = (external_contact_email || '').trim() || null
+    const extName = (external_contact_name || '').trim() || null
+    const extPhone = (external_contact_phone || '').replace(/\D/g, '') || null
     if (isNonMember) {
       if (am === 'REDIRECT' && !extUrl) { await client.query('ROLLBACK'); return err('JOB_003', '외부 링크형은 외부 지원 URL이 필요합니다.') }
       if (am === 'EMAIL' && !extEmail) { await client.query('ROLLBACK'); return err('JOB_003', '이메일 중계형은 채용 이메일이 필요합니다.') }
