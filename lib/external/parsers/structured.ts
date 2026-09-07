@@ -70,7 +70,15 @@ function parseHairinjob(html: string): StructuredResult | null {
   const region = normRegionLoose(regionRaw);
   // 업체주소: 프랜차이즈 등은 '본사 주소'가 들어와 근무지역(og)과 시·도가 다를 수 있다.
   // 이 경우 상세주소로 쓰면 지도가 엉뚱한 곳(본사)을 가리키므로 비운다(잘못된 주소보다 없는 게 낫다).
-  let address = liValue("업체주소");
+  // 근무위치 칸을 먼저 본다.
+  //
+  // 「업체주소」는 본사 주소일 때가 있다(프랜차이즈). 그때는 시·도가 근무지역과
+  // 달라 아래에서 통째로 버리고 시·군·구만 남겼다 — 「충청북도 진천군」처럼
+  // 상세가 사라졌다(등록 이슈 「주소 누락」). 페이지에는 실제 근무지 주소가
+  // 지도 위 area_print 칸에 따로 있다: 「충북 진천군 덕산읍 시가로 10」.
+  const 근무위치 = ((html.match(/class="area_print"[^>]*>([\s\S]*?)<\/span>/) || [])[1] || "")
+    .replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  let address = 근무위치 || liValue("업체주소");
   // 주소에도 묶음 표기가 그대로 온다("전남광주 북구 서하로 117"). 풀어 주지 않으면
   // 아래 시·도 비교에서 근무지역과 다르다고 보고 주소를 통째로 버렸다("상세주소 누락").
   if (address) {
@@ -123,11 +131,26 @@ function parseHairinjob(html: string): StructuredResult | null {
 
   // 급여: "300만원이상"(접두어 없음)은 월급으로 간주
   let salary_type = "", salary_amount = 0, salary_negotiable = false, salary = "";
-  const sm = mj.match(/(월급|시급|연봉|주급)?\s*([\d,]+)\s*만원/);
+  // 급여 종류는 낱말이 아니라 아이콘으로 온다: <img src="pay_year.gif" alt="연봉">.
+  // 낱말만 찾다 못 보고 기본값 월급을 쓰는 바람에 「연봉 2800만원」이 「월급
+  // 2800만원」이 됐다(등록 이슈). 아이콘의 alt 와 파일명을 먼저 본다.
+  const 급여아이콘 = (firstDiv.match(/<img[^>]*pay_\w+\.gif[^>]*>/i) || [])[0] || "";
+  const 아이콘alt = (급여아이콘.match(/alt=["']([^"']*)["']/i) || [])[1] || "";
+  const 아이콘종류 = /연봉/.test(아이콘alt) || /pay_year/i.test(급여아이콘) ? "ANNUAL"
+    : /시급/.test(아이콘alt) || /pay_hour/i.test(급여아이콘) ? "HOURLY"
+    : /주급/.test(아이콘alt) || /pay_week/i.test(급여아이콘) ? "WEEKLY"
+    : /일급/.test(아이콘alt) || /pay_day/i.test(급여아이콘) ? "DAILY"
+    : /월급/.test(아이콘alt) || /pay_month/i.test(급여아이콘) ? "MONTHLY" : "";
+  const sm = mj.match(/(월급|시급|연봉|주급|일급)?\s*([\d,]+)\s*만원/);
   if (sm && sm[2]) {
-    salary_type = ({ 월급: "MONTHLY", 시급: "HOURLY", 연봉: "ANNUAL", 주급: "WEEKLY" } as Record<string, string>)[sm[1] || ""] || "MONTHLY";
+    salary_type = ({ 월급: "MONTHLY", 시급: "HOURLY", 연봉: "ANNUAL", 주급: "WEEKLY", 일급: "DAILY" } as Record<string, string>)[sm[1] || ""]
+      || 아이콘종류 || "MONTHLY";
     salary_amount = Number(sm[2].replace(/,/g, ""));
-    salary = (mj.match(/[\d,]+\s*만원\s*이?상?/) || [])[0]?.trim() || `${salary_amount}만원`;
+    const 금액말 = (mj.match(/[\d,]+\s*만원\s*이?상?/) || [])[0]?.trim() || `${salary_amount}만원`;
+    // 아이콘으로만 종류를 알 수 있는 공고는 화면에 「2800만원이상」만 나와
+    // 연봉인지 월급인지 알 수 없었다. 종류를 앞에 붙여 준다.
+    const 종류말 = ({ ANNUAL: "연봉", HOURLY: "시급", WEEKLY: "주급", DAILY: "일급", MONTHLY: "월급" } as Record<string, string>)[salary_type] || "";
+    salary = (sm[1] || !종류말) ? 금액말 : `${종류말} ${금액말}`;
   } else if (/협의|면접|추후|내규/.test(mj)) {
     salary_negotiable = true;
   } else {
