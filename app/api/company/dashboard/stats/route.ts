@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest } from 'next/server'
-import { 제안유효일 } from "@/lib/proposal";
+import { 제안유효일, 채팅중SQL } from "@/lib/proposal";
 import pool from '@/lib/db'
 import { ok, requireAuth } from '@/lib/api'
 
@@ -117,18 +117,16 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 보낸제안 — 누적. 채팅 — 그중 실제로 말이 오간 것. 「관심 있어요」를 누른 수는
-  // 따로 세지 않는다 — 수락해야 매장이 말을 걸 수 있으니 채팅과 같은 사람들이다.
+  // 보낸제안 — 누적. 채팅 — 지금 채팅중인 것. 「관심 있어요」를 누른 수는 따로
+  // 세지 않는다 — 수락해야 매장이 말을 걸 수 있으니 채팅과 같은 사람들이다.
+  // 채팅의 뜻은 채용제안 화면과 한 곳(채팅중SQL)에서 가져온다.
   const sentRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt FROM proposals WHERE company_id = $1`,
     [companyId]
   )
   const chatRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt FROM proposals p
-      WHERE p.company_id = $1
-        AND EXISTS (SELECT 1 FROM proposal_messages m WHERE m.proposal_id = p.id)
-        AND NOT EXISTS (SELECT 1 FROM user_company_blocks b
-                         WHERE b.user_id = p.user_id AND b.company_id = p.company_id)`,
+      WHERE p.company_id = $1 AND (${채팅중SQL})`,
     [companyId]
   )
 
