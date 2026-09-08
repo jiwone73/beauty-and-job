@@ -78,7 +78,21 @@ export async function GET(req: NextRequest) {
   if (regions) {
     const list = regions.split(",").map((r) => r.trim()).filter(Boolean);
     if (list.length > 0) {
-      const conds = list.map(() => `up.region_prefer ILIKE $${idx++}`).join(" OR ");
+      // 희망지역은 두 곳에 있다.
+      //
+      //   users.preferred_regions   {sido, sigungu} 목록 — 이력서에서 고르는 정식 값
+      //   user_profiles.region_prefer  옛 문자열 칸 — 시·도만 들어 있다
+      //
+      // 옛 칸만 보고 있어서 시·군·구를 고르면 아무도 안 걸렸다. 「서울특별시
+      // 강남구」로 찾으면 앞의 것에서 걸리고, 「서울특별시」로 찾으면 둘 다에서
+      // 걸린다 — 같은 찾을 말 하나로 두 곳을 본다.
+      const conds = list.map(() => {
+        const n = idx++;
+        return `(up.region_prefer ILIKE $${n} OR EXISTS (
+          SELECT 1 FROM jsonb_array_elements(u.preferred_regions) pr
+           WHERE jsonb_typeof(u.preferred_regions) = 'array'
+             AND TRIM(CONCAT_WS(' ', pr->>'sido', pr->>'sigungu')) ILIKE $${n}))`;
+      }).join(" OR ");
       regionClause = `AND (${conds})`;
       params.push(...list.map((r) => `%${r}%`));
     }
