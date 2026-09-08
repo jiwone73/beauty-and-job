@@ -15151,7 +15151,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border: 1px solid var(--card-line); border-radius: 7px;
   font-family: inherit; font-size: 13px; color: var(--color-text); background: #fff;
 }
-.prop-side-search::placeholder { color: #b4b4b9; }
+.prop-side-search::placeholder { color: var(--color-text); }
 .prop-side-item {
   display: flex; align-items: center; gap: 6px; width: 100%;
   padding: 7px 9px; border: none; border-radius: 7px; background: none;
@@ -15159,8 +15159,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   text-align: left; cursor: pointer;
 }
 .prop-side-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.prop-side-item i { font-style: normal; color: #b4b4b9; }
-.prop-side-item em { font-style: normal; font-size: 12px; color: #a0a0a6; }
+.prop-side-item i { font-style: normal; color: var(--color-text); }
+.prop-side-item em { font-style: normal; font-size: 12px; color: var(--color-text); }
 .prop-side-item:hover { background: #f7f7f8; }
 .prop-side-item.on { background: #f4f0f9; color: var(--color-primary); }
 .prop-side-item.on em { color: var(--color-primary); }
@@ -15170,10 +15170,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: var(--color-primary); color: #fff; font-size: 11px; font-weight: 400;
   text-align: center; line-height: 17px;
 }
-.prop-side-item.done { color: #a0a0a6; }
+.prop-side-item.done { color: var(--color-text); }
 .prop-side-more {
   width: 100%; margin-top: 4px; padding: 6px 9px; border: none; background: none;
-  font-family: inherit; font-size: 12.5px; color: #a0a0a6; text-align: left; cursor: pointer;
+  font-family: inherit; font-size: 12.5px; color: var(--color-text); text-align: left; cursor: pointer;
 }
 .prop-side-more:hover { color: var(--color-primary); }
 
@@ -15185,7 +15185,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: 12px; }
 .prop-chipwrap { display: inline-flex; align-items: center; }
 /* 흐름을 잇는 화살표. 누르는 것이 아니라 방향만 말한다. */
-.prop-arrow { font-style: normal; padding: 0 4px; color: #c4c4c8; font-size: 18px; line-height: 1; }
+.prop-arrow { font-style: normal; padding: 0 4px; color: var(--color-text); font-size: 18px; line-height: 1; }
 /* 흐름 밖(전체·거절·기간지남)과 떼어 두는 자리. */
 .prop-sep { display: inline-block; width: 1px; height: 13px; margin: 0 9px; background: #e8e8ec; }
 .prop-chipwrap:first-child .prop-sep { display: none; }
@@ -15214,13 +15214,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .prop-table th {
   padding: 10px 12px; text-align: left; font-weight: 500; font-size: 12.5px;
-  color: #a0a0a6; border-bottom: 1px solid var(--card-line); white-space: nowrap;
+  color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;
 }
 .prop-table td { padding: 10px 12px; border-top: 1px solid #f4f4f6; color: var(--color-text); vertical-align: middle; }
 .prop-table tbody tr:first-child td { border-top: none; }
 /* 내 차례인 줄만 왼쪽에 띠. 목록을 훑을 때 그 줄만 눈에 걸리면 된다. */
 .prop-table tr.mine td:first-child { box-shadow: inset 2px 0 0 var(--color-primary); }
-.prop-table .c-no { width: 40px; color: #b4b4b9; }
+.prop-table .c-no { width: 40px; color: var(--color-text); }
 .prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
 .prop-table .c-act { width: 108px; text-align: right; }
 
@@ -15240,9 +15240,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-who:hover b { color: var(--color-primary); }
 
 .prop-st { font-size: 12.5px; }
-.prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: #b4b4b9; }
+.prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: var(--color-text); }
 .c-recent span { display: block; }
-.c-recent i { font-style: normal; font-size: 11.5px; color: #a0a0a6; }
+.c-recent i { font-style: normal; font-size: 11.5px; color: var(--color-text); }
 
 .prop-act {
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 7px;
@@ -15264,7 +15264,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13px; color: var(--color-text);
 }
 .tal-fromjob b { font-weight: 500; color: var(--color-primary); }
-.tal-fromjob i { font-style: normal; color: #8a8a90; }
+.tal-fromjob i { font-style: normal; color: var(--color-text); }
 .tal-fromjob button {
   margin-left: auto; display: inline-flex; align-items: center; gap: 2px;
   border: none; background: none; padding: 0; font-family: inherit;
