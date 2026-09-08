@@ -18,7 +18,11 @@ const PAGE_TITLES: Record<string, string> = {
   applicants: "지원자",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
-  proposals: "보낸 제안",
+  // 「공고별」이 붙어야 제목이 화면 이름으로 읽힌다. 그냥 「보낸 제안」이면
+  // 바로 아래 공고명과 같은 크기·같은 성격이라 둘 다 제목처럼 보여 무엇이
+  // 이 화면의 주인인지 헷갈렸다. 공고·지원자도 제목에 「관리」를 붙여 같은
+  // 층을 만든다.
+  proposals: "공고별 보낸 제안",
   settings: "기업 정보",
   account: "계정 설정",
   password: "비밀번호 변경",
