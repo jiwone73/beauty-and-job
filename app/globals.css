@@ -15185,7 +15185,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: 12px; }
 .prop-chipwrap { display: inline-flex; align-items: center; }
 /* 흐름을 잇는 화살표. 누르는 것이 아니라 방향만 말한다. */
-.prop-arrow { font-style: normal; padding: 0 5px; color: #d0d0d4; font-size: 13px; }
+.prop-arrow { font-style: normal; padding: 0 4px; color: #c4c4c8; font-size: 18px; line-height: 1; }
 /* 흐름 밖(전체·거절·기간지남)과 떼어 두는 자리. */
 .prop-sep { display: inline-block; width: 1px; height: 13px; margin: 0 9px; background: #e8e8ec; }
 .prop-chipwrap:first-child .prop-sep { display: none; }
@@ -15194,14 +15194,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 16px;
   background: #fff; font-family: inherit; font-size: 12.5px; color: var(--color-text); cursor: pointer;
 }
-.prop-chip em { font-style: normal; color: #a0a0a6; }
+.prop-chip em { font-style: normal; color: var(--color-text); }
 .prop-chip:hover { border-color: #d8d3de; }
 .prop-chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
 .prop-chip.on em { color: #fff; }
-/* 아직 아무도 오지 않은 단계 — 자리는 지키되 흐리게 둔다. */
-.prop-chip.zero { color: #c4c4c8; border-color: #f0f0f2; }
-.prop-chip.zero em { color: #d4d4d8; }
-.prop-chip.zero.on { color: #fff; border-color: var(--color-primary); }
+/* 아직 아무도 오지 않은 단계. 글자는 다른 칩과 같은 색으로 두고(옅게 했더니
+   안 보였다) 테두리만 흐리게 해서 구분한다. */
+.prop-chip.zero { border-color: #f2f2f4; }
+.prop-chip.zero.on { border-color: var(--color-primary); }
 /* 표 머리줄 — 카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백을 걷고
    아래 칩과 뜨지 않게 붙인다. */
 .prop-bar { padding: 10px 0 9px; background: none; border-bottom: none; margin-bottom: 10px; }
