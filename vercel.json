@@ -1,6 +1,6 @@
 {
   "regions": [
-    "syd1"
+    "icn1"
   ],
   "crons": [
     {
@@ -10,6 +10,10 @@
     {
       "path": "/api/cron/target-hiring",
       "schedule": "0 20 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-orphan-images",
+      "schedule": "0 19 * * 0"
     }
   ]
 }
