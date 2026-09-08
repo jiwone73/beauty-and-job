@@ -129,7 +129,6 @@ export default function TalentPage() {
   // 넘어오면 공고가 안 골라졌다.
   const [미리고른공고, set미리고른공고] = useState("");
   const [보내는공고이름, set보내는공고이름] = useState("");
-  const [걸린대분류, set걸린대분류] = useState("");
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("job") || "";
     set미리고른공고(id);
@@ -157,9 +156,7 @@ export default function TalentPage() {
           if (소.some((x) => 적힌것.includes(x))) 소.forEach((x) => 넓힌것.add(x));
         }
         const 걸것 = 넓힌것.size ? [...넓힌것] : 적힌것;
-        if (걸것.length) { setSelectedJobGroups(걸것); set걸린대분류(
-          getJobGroups(유형).filter((g) => getJobSubGroups(유형, g.group).some((x) => 적힌것.includes(x)))
-            .map((g) => g.group).join(", ")); }
+        if (걸것.length) setSelectedJobGroups(걸것);
       })
       .catch(() => {});
   }, []);
@@ -580,20 +577,6 @@ export default function TalentPage() {
 
   return (
     <CompanyLayout activePage="talent" sideExtra={!isMobile && view === "search" ? 필터 : undefined}>
-      {/* 채용제안에서 「이 공고로 제안 보내기」로 넘어온 자리.
-          누르는 순간 머리줄이 인재풀로 바뀌고 화면도 통째로 달라져, 어디서
-          왔는지 흔적이 없었다 — 그냥 인재검색에 떨어진 것처럼 보인다.
-          무슨 공고로 보내는 중인지와 돌아가는 길을 한 줄로 둔다. */}
-      {보내는공고이름 && (
-        <div className="tal-fromjob">
-          <b>{보내는공고이름}</b> 공고로 보낼 사람을 찾는 중
-          {걸린대분류 && <i>· {걸린대분류} 직군만</i>}
-          <button type="button" onClick={() => router.push(`${base}/proposals`)}>
-            채용제안으로 <ChevronRight size={14} />
-          </button>
-        </div>
-      )}
-
       {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. 매장·본사는 제 유형으로 묶인다. */}
       {companyType === "BOTH" && isMobile && view === "search" && (
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
@@ -780,8 +763,19 @@ export default function TalentPage() {
         </div>
       )}
 
-      {(selectedJobGroups.length > 0 || selectedRegions.length > 0) && (
+      {(보내는공고이름 || selectedJobGroups.length > 0 || selectedRegions.length > 0) && (
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+          {/* 채용제안에서 넘어왔으면 그 공고를 맨 앞 칩으로. 예전에는 「…공고로
+              보낼 사람을 찾는 중」이라고 한 줄 적어 두었는데, 그건 설명문이지
+              화면이 아니다 — 고른 조건은 이미 칩으로 서니 공고도 같은 칩이면 된다.
+              ×를 누르면 그 공고와의 연결이 풀린다. */}
+          {보내는공고이름 && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f7f7f8", color: "#582681", borderRadius: 20, fontSize: 13, fontWeight: 500 }}>
+              {보내는공고이름}
+              <button onClick={() => { set보내는공고이름(""); set미리고른공고(""); }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#582681", padding: 0, lineHeight: 1 }}>×</button>
+            </span>
+          )}
           {selectedJobGroups.map((g) => (
             <span key={g} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", background: "#f7f7f8", color: "#582681", borderRadius: 20, fontSize: 13 }}>
               {g}
