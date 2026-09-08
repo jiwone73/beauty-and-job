@@ -25,7 +25,7 @@ const PAGE_TITLES: Record<string, string> = {
   notifications: "알림 설정",
 };
 
-export default function CompanyLayout({ children, activePage, title, side }: {
+export default function CompanyLayout({ children, activePage, title, side, sideExtra }: {
   children: React.ReactNode;
   activePage: string;
   /** 화면 제목을 갈아 끼운다 — 한 사람의 이력서처럼 제목이 내용마다 달라지는 곳. */
@@ -33,6 +33,10 @@ export default function CompanyLayout({ children, activePage, title, side }: {
   /** 화면이 제 사이드를 직접 그린다. 지원자처럼 사이드에 세울 것이 고정 메뉴가
    *  아니라 그때그때 달라지는 목록(공고)인 경우에 쓴다. */
   side?: React.ReactNode;
+  /** 고정 메뉴 아래에 덧붙일 것(인재검색의 필터 판). 메뉴를 통째로 갈아 끼우는
+   *  side 와 달리, 메뉴는 그대로 두고 아래에 더한다 — 메뉴를 화면마다 다시 적으면
+   *  이름이 갈라진다. */
+  sideExtra?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -517,6 +521,7 @@ export default function CompanyLayout({ children, activePage, title, side }: {
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>
                   ))}
+              {sideExtra}
             </nav>
             <main className="company-content co-set-main">
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}

@@ -46,8 +46,14 @@ export async function GET(req: NextRequest) {
   if (jobGroups) {
     const groups = jobGroups.split(",").map((g) => g.trim()).filter(Boolean);
     if (groups.length > 0) {
+      // 대분류와 소분류를 둘 다 본다.
+      //
+      // 사이드 필터가 소분류를 넘긴다(「네일 아티스트」). 대분류만 보면 아무것도
+      // 안 걸린다. 이력서는 대분류(main_job_group)와 소분류(sub_job)를 따로 담고
+      // 있어 어느 쪽에 걸려도 그 사람이다.
       const ph = groups.map(() => `$${idx++}`).join(", ");
-      jobGroupClause = `AND up.main_job_group IN (${ph})`;
+      jobGroupClause = `AND (up.main_job_group IN (${ph}) OR up.sub_job IN (${ph}))`;
+      // 같은 자리표($3, $4…)를 두 곳에서 쓰므로 값은 한 번만 넣는다.
       params.push(...groups);
     }
   }
