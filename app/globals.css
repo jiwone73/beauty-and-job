@@ -14638,7 +14638,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 인재검색 사이드 필터 — 채용공고 페이지의 사이드와 같은 부품(.jobs-side-*)을
    그대로 쓴다. 여기서는 감싸는 폭과 위 여백만 맞춘다. 사이드 메뉴(.co-set-side)
    폭이 176px 이라 그 안에 들어간다. */
-.co-side-filter { margin-top: 14px; }
+.co-side-filter { margin-top: 0; }
 .co-side-filter .jobs-side-box { padding: 10px 10px 11px; margin-bottom: 6px; }
 .co-side-filter .jobs-side-t { font-size: 13.5px; margin-bottom: 7px; }
 .co-side-filter .jobs-side-list button { font-size: 13px; }

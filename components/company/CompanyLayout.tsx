@@ -422,6 +422,16 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
+        /* 인재풀은 두 갈래뿐이라 한 행 탭으로 세운다. 세로로 두면 그 아래 필터
+           판과 층이 안 갈려 어디까지가 메뉴인지 읽히지 않는다. */
+        .co-set-side.tabs { display: block; }
+        .co-set-side.tabs .co-set-tabrow { display: flex; gap: 4px; margin-bottom: 14px;
+          border-bottom: 1px solid #eeeef0; }
+        .co-set-side.tabs .co-set-item { flex: 1; padding: 8px 6px; font-size: 14px;
+          text-align: center; border-radius: 0; border-bottom: 2px solid transparent;
+          margin-bottom: -1px; }
+        .co-set-side.tabs .co-set-item:hover { background: none; color: var(--color-primary); }
+        .co-set-side.tabs .co-set-item.on { background: none; border-bottom-color: var(--color-primary); }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
         /* 다만 설정 화면은 왼쪽에 구분선이 있어 그만큼 안쪽으로 밀어야 한다. 위 규칙이
@@ -513,12 +523,20 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
-            <nav className="co-set-side">
+            <nav className={`co-set-side${묶음 === "talent" ? " tabs" : ""}`}>
               {/* 화면이 제 사이드를 주면 그것이 먼저다 — 고정 메뉴를 우선하면
                   넘겨준 사이드가 조용히 무시된다. */}
               {side
                 ? side
-                : 사이드?.map((m) => (
+                : 묶음 === "talent" ? (
+                    <div className="co-set-tabrow">
+                      {사이드?.map((m) => (
+                        <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
+                          {m.label(infoLabel(companyInfo.type))}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : 사이드?.map((m) => (
                     <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>

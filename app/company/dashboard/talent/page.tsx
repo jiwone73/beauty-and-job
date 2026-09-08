@@ -379,12 +379,14 @@ export default function TalentPage() {
       {activeTab === "STORE" && (
         <div className="jobs-side-box">
           <p className="jobs-side-t">지역</p>
-          <div className="jobs-side-list">
+          {/* 시도는 한 줄에 셋. 세로로 세우면 열일곱 줄이 되어 아래 직군이
+              화면 밖으로 밀린다 — 채용공고 페이지와 같은 짜임이다. */}
+          <div className="jobs-side-grid c3">
             {SIDO_LIST.map((시도) => {
               const 고른수 = selectedRegions.filter((r) => r === 시도 || r.startsWith(시도 + " ")).length;
               const 열림 = 열린팝?.종류 === "지역" && 열린팝.키 === 시도;
               return (
-                <span key={시도} className="jobs-pop-wrap block">
+                <span key={시도} className="jobs-pop-wrap">
                   <button type="button" className={고른수 ? "on" : undefined}
                     onClick={(e) => 열림 ? set열린팝(null) : 팝열기(e, "지역", 시도)}>
                     <span>{shortSido(시도)}</span>
@@ -392,8 +394,9 @@ export default function TalentPage() {
                     <ChevronRight size={13} className="jobs-side-arr" />
                   </button>
                   {열림 && (
-                    <Pop onClose={() => set열린팝(null)} title={shortSido(시도)} 좌={열린팝.좌} 상={열린팝.상}>
-                      <PopItem on={selectedRegions.includes(시도)} onClick={() => 지역토글(시도, true)}>전체</PopItem>
+                    <Pop onClose={() => set열린팝(null)} title={시도} 좌={열린팝.좌} 상={열린팝.상}>
+                      <PopItem on={selectedRegions.includes(시도)}
+                        onClick={() => 지역토글(시도, true)}>{shortSido(시도)} 전체</PopItem>
                       {getSigunguList(시도).map((gu) => (
                         <PopItem key={gu} on={selectedRegions.includes(`${시도} ${gu}`)}
                           onClick={() => 지역토글(`${시도} ${gu}`, false)}>{gu}</PopItem>
