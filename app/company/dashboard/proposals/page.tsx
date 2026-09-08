@@ -322,14 +322,25 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
+      {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
+          어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
+          「전체」와 끝난 것(거절·기간지남)은 흐름 밖이라 선으로 떼어 둔다. */}
       <div className="prop-chips">
-        {칩들.map((c) => (
-          <button key={c.키} type="button"
-            className={`prop-chip${고른상태 === c.키 ? " on" : ""}`}
-            onClick={() => set고른상태(c.키 as 상태키 | "전체")}>
-            {c.키}<em>{c.수}</em>
-          </button>
-        ))}
+        {칩들.map((c, i) => {
+          const 흐름 = !["전체", "거절", "기간지남"].includes(c.키);
+          const 앞흐름 = i > 0 && !["전체", "거절", "기간지남"].includes(칩들[i - 1].키);
+          return (
+            <span key={c.키} className="prop-chipwrap">
+              {흐름 && (앞흐름 ? <i className="prop-arrow">›</i> : <i className="prop-sep" />)}
+              {!흐름 && i > 0 && <i className="prop-sep" />}
+              <button type="button"
+                className={`prop-chip${고른상태 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
+                onClick={() => set고른상태(c.키 as 상태키 | "전체")}>
+                {c.키}<em>{c.수}</em>
+              </button>
+            </span>
+          );
+        })}
         {우리차례수 > 0 && <span className="prop-mine">내 차례 {우리차례수}</span>}
       </div>
 
