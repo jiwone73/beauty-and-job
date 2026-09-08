@@ -289,7 +289,6 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
   // 칸 안에서 그대로 펼칠 때 쓰는 몸통.
   const 몸통 = (
       <div className={inline ? "cv-body cv-body-inline" : "cv-body"}>
-        {!inline && <p className="cv-desc">내 직무 기반 스킬을 마음껏 추가해 보세요.</p>}
 
         <div className="cv-skill-input-row">
           <input
@@ -341,7 +340,6 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
         {!query && !inline && (
           <div className="cv-recommend-section">
             <h4 className="cv-recommend-title">추천 스킬</h4>
-            <p className="cv-recommend-desc">눌러서 담고, 없는 것은 위에 쳐서 넣으세요.</p>
             <div className="cv-skill-chips">
               {(() => {
                 const 남은 = recommended.filter((r) => !skills.includes(r));

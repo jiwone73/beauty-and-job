@@ -190,7 +190,7 @@ export default function SalaryPage() {
         <div className="salary-cta-box">
           <div className="salary-cta-left">
             <h3>내 연봉, 적정한가요?</h3>
-            <p>뷰티워크 에이전트에게 연봉 분석과 이직 제안을 받아보세요.</p>
+            <p>이력서를 올리면 매장·브랜드가 먼저 제안합니다.</p>
           </div>
           <div className="salary-cta-right">
             <Link href="/profile" className="salary-cta-btn primary">연봉 분석받기</Link>

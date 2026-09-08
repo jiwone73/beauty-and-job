@@ -221,7 +221,6 @@ export default function CompanyServicePage() {
             </div>
           </div>
         </div>
-        <p className="cs-note">※ 실제 서비스 화면은 지속적으로 기능이 추가되며 업그레이드됩니다.</p>
       </section>
 
       {/* ── 이용 절차 ── */}

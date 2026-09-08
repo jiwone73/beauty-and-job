@@ -317,7 +317,7 @@ export default function ResumeEditor({
             ref={entryRef}
             value={entryExperience}
             onChange={(e) => setEntryExperience(e.target.value)}
-            placeholder="아카데미·실습, 자격증, 대회·아르바이트 등 뷰티 직무와 이어지는 경험을 구체적으로 적어 보세요"
+            placeholder="아카데미 실습 · 자격증 · 대회 · 아르바이트"
             rows={2}
             style={{
               width: "100%", display: "block", marginTop: 8, padding: "12px 14px", borderRadius: 10,

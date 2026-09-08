@@ -2711,7 +2711,7 @@ export default function JobPostForm({
               </button>
             )}
             {mode === "admin" && (
-              <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating} title="현재 채워진 공고 내용을 뷰티워크 톤·형식으로 AI가 다듬어요">
+              <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating}>
                 {curating ? "다듬는 중..." : "✨ 큐레이션"}
               </button>
             )}
@@ -2893,7 +2893,6 @@ export default function JobPostForm({
                 {findResults.map((r) => { const on = picked?.url === r.url; return (
                   <div key={r.idx}
                     onClick={() => selectFoundJob(r)}
-                    title="선택하면 위 검색칸에 표시돼요. ↗로 원문을 새 탭에서 볼 수 있어요."
                     style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderBottom: "1px solid #f7f7f8", cursor: "pointer", background: on ? "#f7f7f8" : "transparent", transition: "background 0.12s" }}>
                     {/* 라디오(선택) */}
                     <span style={{ flexShrink: 0, width: 16, height: 16, borderRadius: "50%", border: on ? "1.5px solid #582681" : "1.5px solid #cfcfcf", display: "inline-flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
@@ -2928,9 +2927,7 @@ export default function JobPostForm({
                 <span style={{ fontSize: 10 }}>추가</span>
                 <input type="file" accept="image/*" multiple hidden onChange={(e) => { const fs = Array.from(e.target.files || []); if (fs.length) setOcrFiles((prev) => [...prev, ...fs]); e.currentTarget.value = ""; }} />
               </label>
-              {ocrFiles.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>공고 화면 캡처를 여기로 드래그하거나 추가하세요. 긴 공고는 위→아래로 여러 장 캡처하면 됩니다.</span>}
               <button type="button" onClick={() => processFiles(ocrFiles)} disabled={uploading || ocrFiles.length === 0}
-                title="캡처한 그림을 그대로 상세요강에 넣습니다. 브라우저 화면이 같이 찍혔다면 잘라내고 넣으세요."
                 style={{ marginLeft: "auto", alignSelf: "flex-end", padding: "8px 14px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 13.5, cursor: (uploading || ocrFiles.length === 0) ? "default" : "pointer", opacity: uploading ? 0.6 : 1 }}>
                 {uploading ? "넣는 중…" : "상세요강에 넣기"}</button>
               <button type="button" onClick={() => runOcrMulti(ocrFiles)} disabled={parsing || ocrFiles.length === 0}
@@ -2961,7 +2958,6 @@ export default function JobPostForm({
               <button type="button" onClick={() => setSiteNameWarn("")} style={{ border: "none", background: "none", color: "#b3261e", cursor: "pointer", fontSize: 12, flexShrink: 0 }}>확인</button>
             </div>
           )}
-          {mode !== "admin" && <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>타 사이트에 올린 공고의 URL을 넣으면 제목·직군·경력·근무지역·자격요건 등 <b>공고 내용</b>이 자동으로 채워져요. 회사 정보는 등록된 기업 프로필을 사용합니다. 확인·수정 후 등록하세요.</div>}
 
           </div>
         </div>
@@ -2972,7 +2968,7 @@ export default function JobPostForm({
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box", border: "1px solid #f0d9d9", background: "#fff8f6", borderRadius: 10, padding: "10px 12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: issueItems.length ? 8 : 0 }}>
             <span style={{ fontSize: 14, fontWeight: 500, color: "#c0392b" }}>🐞 이 공고 이슈</span>
-            <span style={{ fontSize: 12, color: "#b08a86" }}>불러온 원문과 다른·잘못된 항목을 적어두면 자동저장돼요</span>
+            
             <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: issueStatus === "error" ? 600 : 400, color: issueStatus === "error" ? "#c0392b" : issueStatus === "saved" ? "#22a06b" : "#c4a29e", minWidth: 44, textAlign: "right" }}>
               {issueStatus === "saving" ? "저장 중…" : issueStatus === "saved" ? "저장됨 ✓" : issueStatus === "error" ? "⚠ 저장 안 됨" : ""}
             </span>
@@ -3066,7 +3062,7 @@ export default function JobPostForm({
               </label>
               {/* 쓸 만한 사진이 없는 매장이 배너 없이 공고를 올리는 일이 많다.
                   준비된 배경에 문구만 얹어 한 장 만들 수 있게 기업회원도 같이 쓴다. */}
-              <button type="button" onClick={() => setBannerGenOpen((v) => !v)} title="쓸 만한 사진이 없을 때, 준비된 배경에 문구만 넣어 배너를 만들어요" style={bannerBtn(bannerGenOpen)}>
+              <button type="button" onClick={() => setBannerGenOpen((v) => !v)} style={bannerBtn(bannerGenOpen)}>
                 {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
               </button>
               {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
@@ -3251,7 +3247,7 @@ export default function JobPostForm({
                 {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                     고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                 <span className="jp-add-wrap catpick-pop" style={{ position: "relative" }}>
-                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen((v) => !v)} title="모집분야를 골라 행을 추가해요. 같은 분야를 또 고르면 신입·경력처럼 나눠 모집할 수 있어요"
+                  <button type="button" disabled={typeLocked} onClick={() => setAddRowOpen((v) => !v)}
                     className="jp-add-cat" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: "none", background: "none", color: typeLocked ? "#ddd" : "#582681", lineHeight: 1, padding: 0, cursor: typeLocked ? "default" : "pointer" }}>＋</button>
                   {/* 고정좌표(popAt) 팝오버는 화면 기준이라, 콘텐츠가 늦게 도착해 트리거가 밀리면
                       따라가지 못했다("+ 버튼 바로 밑에서 떠야지"). 여기는 표 밖이라 가로 스크롤에
@@ -3593,7 +3589,7 @@ export default function JobPostForm({
                 {nmAddress.trim()
                   ? <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />
                   : nmAddressDetail.trim()
-                    ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색을 눌러 주소를 넣어야 지도가 나와요. 지점명만으로는 엉뚱한 곳이 찍혀요.</div>
+                    ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색으로 주소를 넣어 주세요</div>
                     : null}
 
                 {/* 근무지가 여러 곳인 공고 — 주소 칸을 하나씩 더 만들고, 각자 지도를 붙인다.
@@ -3625,7 +3621,7 @@ export default function JobPostForm({
                       {loc.address.trim()
                         ? <AddressMap address={full} name={loc.detail.trim() || newCompanyName.trim() || undefined} height={200} />
                         : loc.detail.trim()
-                          ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색을 눌러 주소를 넣어야 지도가 나와요.</div>
+                          ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색으로 주소를 넣어 주세요</div>
                           : null}
                     </div>
                   );

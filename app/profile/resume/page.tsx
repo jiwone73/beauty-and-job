@@ -628,7 +628,7 @@ function ResumePageContent() {
               value={coverLocal}
               onChange={(e) => setCoverLocal(e.target.value)}
               rows={7}
-              placeholder="지원할 때 이 글을 불러와 공고에 맞게 고쳐 쓸 수 있어요"
+              placeholder="자기소개서"
               style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px",
                 fontSize: "14px", color: "#555", lineHeight: 1.7, resize: "vertical",
                 fontFamily: "inherit" }}

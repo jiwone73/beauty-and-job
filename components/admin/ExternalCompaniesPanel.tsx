@@ -373,9 +373,9 @@ export default function ExternalCompaniesPanel() {
           </div>
         )}
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>총 <strong>{filtered.length}</strong>개사 · 체크박스를 선택하면 진행 단계가 표시돼요</span>
+          <span>총 <strong>{filtered.length}</strong>개사</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} title={!canEmail && selectedIds.length ? "선택한 기업 중 이메일이 있는 곳이 없어요" : undefined} style={btn(canEmail, "#582681")}>
+            <button onClick={() => { if (canEmail) { setBroadcastChannel("email"); setBroadcastOpen(true); } }} disabled={!canEmail} style={btn(canEmail, "#582681")}>
               이메일 발송{selectedIds.length ? ` (${selectedIds.length})` : ""}
             </button>
             <button onClick={() => { if (canSms) { setBroadcastChannel("sms"); setBroadcastOpen(true); } }} disabled={!canSms}

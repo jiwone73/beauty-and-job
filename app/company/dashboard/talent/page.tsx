@@ -987,7 +987,7 @@ export default function TalentPage() {
             {/* 빈 칸을 두고 '문구 채우기' 버튼을 옆에 달아 뒀더니, 버튼을 못 찾으면
                 결국 빈 칸이었다. 공고를 고르는 순간 채워 두고 고쳐 쓰게 한다. */}
             <textarea value={proposeMessage} onChange={(e) => setProposeMessage(e.target.value.slice(0, 1000))}
-              placeholder="공고를 고르면 인사말이 채워져요. 덧붙이고 싶은 말이 있으면 고쳐 쓰세요."
+              placeholder="보낼 메시지"
               rows={5}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, resize: "vertical", outline: "none", marginBottom: 4 }} />
             <p style={{ fontSize: 11.5, color: "#bbb", margin: "0 0 16px", textAlign: "right" }}>{proposeMessage.length}/1000</p>

@@ -110,7 +110,6 @@ export default function NotificationModal({ isOpen, onClose }: Props) {
           <button className="cv-close" onClick={onClose}><X size={20} /></button>
         </div>
         <div className="cv-body">
-          <p className="cv-desc">나에게 필요한 알림을 맞춤으로 설정해보세요.</p>
           {NOTIFICATION_GROUPS.map((group) => (
             <div key={group.group} className="noti-group">
               <h3 className="noti-group-title">{group.group}</h3>

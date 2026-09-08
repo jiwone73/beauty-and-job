@@ -315,7 +315,6 @@ function JobsPageInner() {
               />
             </div>
             <div className="jobs-search-body">
-              <p className="jobs-search-desc">브랜드, 회사, 채용공고를 검색할 수 있어요.</p>
               <h4 className="jobs-search-section-title">추천 검색어</h4>
               <div className="jobs-search-chips">
                 {POPULAR_SEARCHES.map((kw) => (

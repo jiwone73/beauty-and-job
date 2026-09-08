@@ -109,7 +109,6 @@ export default function CompanyNotificationsPage() {
 
             <section>
               <h2 style={묶음제목}>뷰티워크 소식 받기</h2>
-              <p style={묶음설명}>가입할 때 받은 수신 동의예요. 끄면 그때부터 보내지 않아요.</p>
               <div style={두칸}>
                 {동의칸.map((c) => 칸(c.key, c.title, !!동의[c.key], () => 동의바꾸기(c.key)))}
               </div>

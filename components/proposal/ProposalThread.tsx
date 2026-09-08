@@ -256,9 +256,6 @@ export default function ProposalThread({
             </div>
           </>
         )}
-        {번호있나(글) && (
-          <p className="pth-warn">전화번호는 서로 믿을 만할 때 주고받는 게 좋아요.</p>
-        )}
       </div>
     </div>
   );

@@ -265,7 +265,7 @@ export default function AdminStoriesPage() {
               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
             <textarea value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
               spellCheck lang="ko"
-              placeholder="발제 내용을 입력하세요. 질문이나 화두를 던지면 댓글이 잘 붙어요."
+              placeholder="발제 내용"
               rows={4}
               style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
             <button onClick={submitPost} disabled={busy}

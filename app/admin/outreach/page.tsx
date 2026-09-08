@@ -441,7 +441,6 @@ export default function AdminOutreachPage() {
             </a>
           ) : (
             <button type="button" disabled
-              title="조회된 활성 공고 목록에서 라디오로 공고를 선택하면 활성화돼요"
               style={{ ...chip(false), opacity: 0.5, cursor: "default", borderColor: "#efeff1", color: "#b7b0c0" }}>
               선택 공고 등록
             </button>
@@ -666,7 +665,6 @@ export default function AdminOutreachPage() {
                                     /* 표가 1220px 라 창을 줄이면 오른쪽 끝이 가로스크롤 밖으로 나간다.
                                        보이는 오른쪽 가장자리에 붙여 둔다(바탕은 펼친 줄과 같은 색). */
                                     <label onClick={(e) => e.stopPropagation()}
-                                      title="원문에 연락처가 안 적혀 있으면 체크해 주세요"
                                       style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0,
                                         position: "sticky", right: 0, zIndex: 1, background: "#f7f7f8",
                                         padding: "2px 2px 2px 12px", boxShadow: "-8px 0 8px -6px #f7f7f8",
