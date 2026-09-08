@@ -15202,7 +15202,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-chip.zero { color: #c4c4c8; border-color: #f0f0f2; }
 .prop-chip.zero em { color: #d4d4d8; }
 .prop-chip.zero.on { color: #fff; border-color: var(--color-primary); }
-.prop-mine { margin-left: auto; font-size: 12.5px; color: var(--color-primary); }
+/* 표 머리줄 — 카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백을 걷고
+   아래 칩과 뜨지 않게 붙인다. */
+.prop-bar { padding: 10px 0 9px; background: none; border-bottom: none; margin-bottom: 10px; }
+.prop-mine { color: var(--color-primary); }
 
 .prop-tablewrap {
   background: var(--card-bg); border: 1px solid var(--card-line); border-radius: 10px;

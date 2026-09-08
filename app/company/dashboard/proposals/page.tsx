@@ -306,6 +306,17 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
+      {/* 표 머리줄 — 공고 블록과 아래 표를 갈라 준다. 이것이 없으면 상태 칩이
+          공고에 딸린 것인지 표에 딸린 것인지 안 갈렸다. 공고·지원자의
+          「지원자 총 N명」과 같은 자리·같은 짜임이다. */}
+      <div className="apl-bar prop-bar">
+        <span className="apl-bar-n"><em>보낸 제안</em> 총 {공고고른것.length}명</span>
+        {우리차례수 > 0 && (
+          <><span className="apl-bar-sep">|</span>
+            <span className="apl-bar-n prop-mine">내 차례 {우리차례수}</span></>
+        )}
+      </div>
+
       {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
           어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
           「전체」와 끝난 것(거절·기간지남)은 흐름 밖이라 선으로 떼어 둔다. */}
@@ -325,7 +336,6 @@ export default function CompanyProposalsPage() {
             </span>
           );
         })}
-        {우리차례수 > 0 && <span className="prop-mine">내 차례 {우리차례수}</span>}
       </div>
 
       {로딩 ? (
