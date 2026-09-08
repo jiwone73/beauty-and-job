@@ -14642,8 +14642,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    폭이 176px 이라 그 안에 들어간다. */
 .co-side-filter { margin-top: 0; }
 .co-side-filter .jobs-side-box { padding: 10px 10px 11px; margin-bottom: 6px; }
-.co-side-filter .jobs-side-t { font-size: 13.5px; margin-bottom: 7px; }
-.co-side-filter .jobs-side-list button { font-size: 13px; }
+/* 제목과 항목을 한 크기(14px)로 둔다. 좁은 폭에 맞추려고 제목을 13.5px,
+   직군을 13px 로 줄여 뒀더니 제목이 그 아래 항목보다 작아 층이 뒤집혔고,
+   지역(14px)과 직군(13px)이 같은 목록인데 두 크기로 나뉘었다.
+   제목은 크기가 아니라 굵기로 구분된다. */
+.co-side-filter .jobs-side-t { font-size: 14px; margin-bottom: 7px; }
+.co-side-filter .jobs-side-list button { font-size: 14px; }
 .co-side-reset {
   display: block; width: 100%; margin-top: 4px; padding: 7px 0;
   background: none; border: none; font-family: inherit;
