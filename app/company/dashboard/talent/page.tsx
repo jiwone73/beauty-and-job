@@ -128,8 +128,19 @@ export default function TalentPage() {
   // 아직 안 바뀌어 있어 빈 값이었다. 주소를 직접 치고 들어올 때만 되고 단추로
   // 넘어오면 공고가 안 골라졌다.
   const [미리고른공고, set미리고른공고] = useState("");
+  const [보내는공고이름, set보내는공고이름] = useState("");
   useEffect(() => {
-    set미리고른공고(new URLSearchParams(window.location.search).get("job") || "");
+    const id = new URLSearchParams(window.location.search).get("job") || "";
+    set미리고른공고(id);
+    if (!id) return;
+    // 띠에 공고 이름을 적으려면 이름이 있어야 한다. 제안 창을 열기 전이라
+    // 공고 목록이 아직 없으므로 여기서 한 번 받아 둔다.
+    companyJobsApi.list({ status: "ACTIVE", limit: 100 })
+      .then((r: any) => {
+        const j = r?.success && Array.isArray(r.data) ? r.data.find((x: any) => x.id === id) : null;
+        if (j) set보내는공고이름(j.title || "");
+      })
+      .catch(() => {});
   }, []);
   const [proposeMessage, setProposeMessage] = useState("");
   const [proposeSending, setProposeSending] = useState(false);
@@ -548,6 +559,18 @@ export default function TalentPage() {
 
   return (
     <CompanyLayout activePage="talent" sideExtra={!isMobile && view === "search" ? 필터 : undefined}>
+      {/* 채용제안에서 「이 공고로 제안 보내기」로 넘어온 자리.
+          누르는 순간 머리줄이 인재풀로 바뀌고 화면도 통째로 달라져, 어디서
+          왔는지 흔적이 없었다 — 그냥 인재검색에 떨어진 것처럼 보인다.
+          무슨 공고로 보내는 중인지와 돌아가는 길을 한 줄로 둔다. */}
+      {보내는공고이름 && (
+        <div className="tal-fromjob">
+          <b>{보내는공고이름}</b> 공고로 보낼 사람을 찾는 중
+          <button type="button" onClick={() => router.push(`${base}/proposals`)}>
+            채용제안으로 <ChevronRight size={14} />
+          </button>
+        </div>
+      )}
 
       {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. 매장·본사는 제 유형으로 묶인다. */}
       {companyType === "BOTH" && isMobile && view === "search" && (
