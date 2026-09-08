@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
-import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
+import { 제안만료, 제안남은날 } from "@/lib/proposal";
 import { 마감인가 } from "@/lib/jobClosed";
 import { Send, ChevronRight } from "lucide-react";
 
@@ -364,7 +364,7 @@ export default function CompanyProposalsPage() {
             <thead>
               <tr>
                 <th className="c-no">No.</th>
-                <th>제안 인재</th>
+                <th>인재</th>
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
                 <th>최근 활동</th>
@@ -417,11 +417,6 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
-      {목록.length > 0 && (
-        <p style={{ margin: "14px 2px 0", fontSize: 12.5, color: "#a0a0a6" }}>
-          답이 없으면 {제안유효일}일 뒤 닫혀요. 그때까지는 상대가 언제든 답할 수 있어요.
-        </p>
-      )}
 
       {대화 && (
         <ProposalThread

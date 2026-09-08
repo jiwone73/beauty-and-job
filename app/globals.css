@@ -15184,7 +15184,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-jobhead { padding: 0 0 16px; margin-bottom: 14px; }
 .prop-jobhead::after { left: 0; right: 0; }
 
-.prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: 12px; }
+.prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: -8px; }
 .prop-chipwrap { display: inline-flex; align-items: center; }
 /* 흐름을 잇는 화살표. 누르는 것이 아니라 방향만 말한다. */
 .prop-arrow { font-style: normal; padding: 0 4px; color: var(--color-text); font-size: 18px; line-height: 1; }
@@ -15206,7 +15206,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-chip.zero.on { border-color: var(--color-primary); }
 /* 표 머리줄 — 카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백을 걷고
    아래 칩과 뜨지 않게 붙인다. */
-.prop-bar { padding: 10px 0 9px; background: none; border-bottom: none; margin-bottom: 10px; }
+/* 판이 flex column + gap 20px 이라 줄 사이 여백은 그 gap 이 맡는다.
+   여기에 margin 을 더하면 28px 이 되어 표가 멀리 떨어진다. */
+.prop-bar { padding: 0; background: none; border-bottom: none; margin-bottom: -8px; }
 .prop-mine { color: var(--color-primary); }
 
 .prop-tablewrap {
