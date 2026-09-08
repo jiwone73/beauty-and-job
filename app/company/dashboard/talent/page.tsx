@@ -122,10 +122,15 @@ export default function TalentPage() {
   // 보낸 제안에서 「이 공고로 제안 보내기」로 넘어오면 그 공고를 미리 골라 둔다.
   // 보내는 자리는 여기 그대로고, 공고를 다시 고르는 수고만 던다.
   const [proposeJobId, setProposeJobId] = useState("");
-  const [미리고른공고] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return new URLSearchParams(window.location.search).get("job") || "";
-  });
+  // 주소는 그려진 뒤에 읽는다.
+  //
+  // 처음 그릴 때 읽었더니 화면 안에서 옮겨 왔을 때(채용제안 → 이 화면) 주소가
+  // 아직 안 바뀌어 있어 빈 값이었다. 주소를 직접 치고 들어올 때만 되고 단추로
+  // 넘어오면 공고가 안 골라졌다.
+  const [미리고른공고, set미리고른공고] = useState("");
+  useEffect(() => {
+    set미리고른공고(new URLSearchParams(window.location.search).get("job") || "");
+  }, []);
   const [proposeMessage, setProposeMessage] = useState("");
   const [proposeSending, setProposeSending] = useState(false);
 
