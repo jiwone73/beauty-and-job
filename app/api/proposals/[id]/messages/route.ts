@@ -79,6 +79,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (제안 && 제안만료(제안.created_at, 제안.interested_at)) {
     return err("PROP_MSG_006", "답변 기간이 지난 제안이에요.", 400);
   }
+  // 대화는 상대가 제안을 받아들여야 열린다. 매장이 먼저 말을 걸 수 있으면
+  // 제안을 받아들이지 않은 사람에게도 말이 가 버린다 — 제안 자체가 첫 마디다.
+  // 화면에서만 단추를 감추고 있었는데, 그건 화면 얘기지 규칙이 아니다.
+  if (쪽 === "COMPANY" && !제안?.interested_at) {
+    return err("PROP_MSG_007", "아직 제안을 받아들이지 않았어요. 답을 기다려 주세요.", 400);
+  }
   try {
     const b = await req.json().catch(() => ({}));
     const kind = b?.kind === "APPOINTMENT" ? "APPOINTMENT" : "TEXT";

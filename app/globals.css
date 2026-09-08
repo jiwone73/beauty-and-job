@@ -15162,7 +15162,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-side-item i { font-style: normal; color: var(--color-text); }
 .prop-side-item em { font-style: normal; font-size: 12px; color: var(--color-text); }
 .prop-side-item:hover { background: #f7f7f8; }
-.prop-side-item.on { background: #f4f0f9; color: var(--color-primary); }
+/* 고른 줄은 회색 바탕에 보라 글자 — 사이드 메뉴(.co-set-item.on)와 같은 값이다.
+   연보라 바탕을 쓰니 이 화면만 색 덩어리가 하나 더 생겼다. */
+.prop-side-item.on { background: #f7f7f8; color: var(--color-primary); }
 .prop-side-item.on em { color: var(--color-primary); }
 /* 내 차례 건수 — 어느 공고에 할 일이 있는지 훑어서 알게. */
 .prop-side-mine {
@@ -15222,7 +15224,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table tr.mine td:first-child { box-shadow: inset 2px 0 0 var(--color-primary); }
 .prop-table .c-no { width: 40px; color: var(--color-text); }
 .prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
-.prop-table .c-act { width: 108px; text-align: right; }
+/* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
+   머리 글자와 단추 글자가 12px 어긋나 보인다. */
+.prop-table .c-act { width: 108px; text-align: center; }
 
 .prop-who {
   display: inline-flex; align-items: center; gap: 8px;

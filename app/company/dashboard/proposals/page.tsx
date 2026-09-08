@@ -105,7 +105,9 @@ function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null 
   if (st === "면접예정") return { 글: "일정 확인", 우리차례: false };
   if (st === "채팅중") return { 글: "채팅하기", 우리차례: p.lastSender === "USER" };
   if (st === "수락") return { 글: "채팅하기", 우리차례: true };
-  return { 글: "채팅하기", 우리차례: false };
+  // 답변대기 — 상대가 제안을 받아들이기 전이라 대화가 열리지 않는다.
+  // 여기서 할 수 있는 일은 기다리는 것뿐이라 단추를 두지 않는다.
+  return null;
 }
 
 export default function CompanyProposalsPage() {

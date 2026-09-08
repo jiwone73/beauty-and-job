@@ -243,9 +243,11 @@ export default function ImageCropModal({ file, aspect, guides, minLongEdge, canc
                       const w = Math.min(2 * Math.min(cx, display.w - cx), 2 * Math.min(cy, display.h - cy) * g.ratio);
                       setBox({ x: cx - w / 2, y: cy - (w / g.ratio) / 2, w, h: w / g.ratio });
                     }}
-                    style={{ fontSize: 11.5, color: 켬 ? "#582681" : "#999",
-                      background: 켬 ? "#f4f0f9" : "#fff",
-                      border: `1px solid ${켬 ? "#d9c7ef" : "#e6e6ea"}`,
+                    // 고른 것은 회색 바탕에 보라 글자 — 사이트가 쓰는 값이다.
+                    // 연보라 바탕은 여기만 쓰던 색이라 걷었다.
+                    style={{ fontSize: 11.5, color: 켬 ? "#582681" : "#555",
+                      background: 켬 ? "#f7f7f8" : "#fff",
+                      border: `1px solid ${켬 ? "#582681" : "#e6e6ea"}`,
                       borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontWeight: 500 }}>
                     {g.key}에 맞추기{g.note && <span style={{ color: "#bbb", fontWeight: 400 }}> · {g.note}</span>}
                   </button>
