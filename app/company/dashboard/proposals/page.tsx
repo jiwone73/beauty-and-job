@@ -60,6 +60,12 @@ type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거
 // 색은 「지금 움직이고 있나」만 말한다. 대화가 오가는 중이면 보라, 끝맺은
 // 것이면 초록, 나머지는 기본 글자색이다 — 회색을 여러 단계로 나누면 어느
 // 것이 옅은지 화면마다 달라 보인다.
+// 화면에 적는 이름. 칩과 표가 같은 말을 써야 한다 — 칩은 「답변대기」,
+// 표는 「답 없음」으로 갈려 있었다.
+const 상태이름: Record<상태키, string> = {
+  답변대기: "답 없음", 수락: "수락", 채팅중: "채팅중",
+  면접예정: "면접예정", 채용완료: "채용완료", 거절: "거절", 기간지남: "기간 지남",
+};
 const 상태색: Record<상태키, string> = {
   채용완료: "#1f7a4d", 수락: "#1f7a4d",
   면접예정: "#582681", 채팅중: "#582681",
@@ -337,7 +343,7 @@ export default function CompanyProposalsPage() {
               <button type="button"
                 className={`prop-chip${고른상태 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
                 onClick={() => set고른상태(c.키 as 상태키 | "전체")}>
-                {c.키}<em>{c.수}</em>
+                {c.키 === "전체" ? "전체" : 상태이름[c.키 as 상태키]}<em>{c.수}</em>
               </button>
             </span>
           );
@@ -394,8 +400,12 @@ export default function CompanyProposalsPage() {
                     </td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
                     <td className="c-st">
-                      <span className="prop-st" style={{ color: 상태색[st] }}>{st}</span>
-                      {st === "답변대기" && 남은 <= 3 && <i className="prop-dday">D-{남은}</i>}
+                      <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
+                      {/* D-1 만으로는 무엇이 1일 남았는지 안 읽힌다. 제안이 닫히기까지
+                          남은 날이라고 적는다 — 공고 마감과 헷갈리지 않게 「닫힘」이다. */}
+                      {st === "답변대기" && 남은 <= 3 && (
+                        <i className="prop-dday">{남은 === 0 ? "오늘 닫힘" : `${남은}일 뒤 닫힘`}</i>
+                      )}
                     </td>
                     <td className="c-recent">
                       <span>{활.글}</span>
