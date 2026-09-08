@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
-import { 제안만료, 제안남은날 } from "@/lib/proposal";
+import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
 import { 마감인가 } from "@/lib/jobClosed";
 import { Send, ChevronRight } from "lucide-react";
 
@@ -41,6 +41,13 @@ type 제안 = {
   applicationStatus: string | null;
   blocked: boolean;
   appliedAt: string | null;
+};
+
+// 답이 없을 때 이 제안이 닫히는 날. 상대가 받아들이면 닫히지 않는다.
+const 닫히는날 = (createdAt: string) => {
+  const d = new Date(createdAt);
+  d.setDate(d.getDate() + 제안유효일);
+  return d;
 };
 
 const 날짜 = (s: string) =>
@@ -372,6 +379,7 @@ export default function CompanyProposalsPage() {
                 <th className="c-no">No.</th>
                 <th>인재</th>
                 <th className="c-date">제안일</th>
+                <th className="c-date">닫히는 날</th>
                 <th className="c-st">현재 상태</th>
                 <th>최근 활동</th>
                 <th className="c-act">다음 액션</th>
@@ -399,13 +407,16 @@ export default function CompanyProposalsPage() {
                       </button>
                     </td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
+                    {/* 답이 없는 동안만 닫히는 날이 있다. 받아들인 뒤에는 닫히지
+                        않으므로 비운다 — 없는 날짜를 적으면 오해한다. */}
+                    <td className="c-date">
+                      {st === "답변대기"
+                        ? <>{날짜(닫히는날(p.createdAt).toISOString())}
+                            {남은 <= 3 && <i className="prop-dday">{남은 === 0 ? "오늘" : `${남은}일`}</i>}</>
+                        : <span className="prop-dash">—</span>}
+                    </td>
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
-                      {/* D-1 만으로는 무엇이 1일 남았는지 안 읽힌다. 제안이 닫히기까지
-                          남은 날이라고 적는다 — 공고 마감과 헷갈리지 않게 「닫힘」이다. */}
-                      {st === "답변대기" && 남은 <= 3 && (
-                        <i className="prop-dday">{남은 === 0 ? "오늘 닫힘" : `${남은}일 뒤 닫힘`}</i>
-                      )}
                     </td>
                     <td className="c-recent">
                       <span>{활.글}</span>

@@ -15246,7 +15246,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-who:hover b { color: var(--color-primary); }
 
 .prop-st { font-size: 12.5px; }
-.prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: var(--color-text); }
+/* 닫히는 날이 사흘 안쪽일 때만 남은 날을 덧붙인다 — 일주일 내내 세고 있으면
+   재촉으로 읽힌다. */
+.prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: var(--color-primary); }
+.prop-dash { color: #d0d0d4; }
 .c-recent span { display: block; }
 .c-recent i { font-style: normal; font-size: 11.5px; color: var(--color-text); }
 
