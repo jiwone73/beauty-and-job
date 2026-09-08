@@ -110,7 +110,9 @@
 .gnb a, .gnb button {
   font-size: 16px;
   font-weight: 500;
-  color: #2b2b2b;
+  /* 기본 글자색과 같은 값. 메뉴만 따로 진하게 두면 같은 화면에서 회색이 두
+     가지가 된다 — 켜진 메뉴는 색이 아니라 보라와 밑줄로 말한다. */
+  color: var(--color-text);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -13267,7 +13269,7 @@ button,
 .jobs-side-type .seg-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 0; }
 
 .jobs-side-box { background: #fff; border: 1px solid #f7f7f8; border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
-.jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; color: #222; margin: 0 0 9px; }
+.jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; color: var(--color-text-strong); margin: 0 0 9px; }
 .jobs-side-t i { font-style: normal; font-size: 12px; font-weight: 500; color: #b7b0bf; }
 .jobs-side-sub { font-size: 12.5px; color: #a9a2b2; margin: 12px 0 5px; }
 .jobs-side-sub:first-of-type { margin-top: 0; }
@@ -13282,7 +13284,7 @@ button,
 .jobs-side-grid button, .jobs-side-list button {
   display: flex; align-items: baseline; gap: 4px; width: 100%;
   background: none; border: none; padding: 4px 2px; cursor: pointer; text-align: left;
-  font-family: inherit; font-size: 14px; color: #6b6570; border-radius: 5px;
+  font-family: inherit; font-size: 14px; color: var(--color-text); border-radius: 5px;
   transition: color .12s, background .12s;
 }
 .jobs-side-grid button:hover, .jobs-side-list button:hover { color: #2b2b2b; background: #f7f7f8; }
@@ -15159,8 +15161,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-side-item.on { background: #f4f0f9; color: var(--color-primary); }
 .prop-side-item.on em { color: var(--color-primary); }
 
-.prop-jobline { margin: 0 0 12px; font-size: var(--page-title, 19px); color: var(--color-text-strong); }
-.prop-jobline span { font-size: 13px; color: #b4b4b9; }
+/* 공고 머리 — 공고·지원자 관리의 .co-pane-card 를 그대로 쓴다. 이 화면에서는
+   카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백만 걷는다. */
+.prop-jobhead { padding: 0 0 16px; margin-bottom: 14px; }
+.prop-jobhead::after { left: 0; right: 0; }
 
 .prop-chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
 .prop-chip {

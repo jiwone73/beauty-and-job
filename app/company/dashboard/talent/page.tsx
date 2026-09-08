@@ -119,7 +119,13 @@ export default function TalentPage() {
     salary_min?: number | null; deadline?: string | null;
   }[]>([]);
   const [proposeJobsLoading, setProposeJobsLoading] = useState(false);
+  // 제안관리에서 「이 공고로 제안 보내기」로 넘어오면 그 공고를 미리 골라 둔다.
+  // 보내는 자리는 여기 그대로고, 공고를 다시 고르는 수고만 던다.
   const [proposeJobId, setProposeJobId] = useState("");
+  const [미리고른공고] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return new URLSearchParams(window.location.search).get("job") || "";
+  });
   const [proposeMessage, setProposeMessage] = useState("");
   const [proposeSending, setProposeSending] = useState(false);
 
@@ -331,6 +337,18 @@ export default function TalentPage() {
     const 초안 = `안녕하세요, ${proposeTarget.name}님.\n${이유}저희 '${공고?.title || "채용공고"}'에 함께하시면 좋을 것 같아 연락드립니다.\n공고 보시고 관심 있으시면 편하게 연락 주세요.`;
     setProposeMessage((prev) => (prev.trim() && prev !== 초안 && !prev.startsWith("안녕하세요,") ? prev : 초안));
   };
+
+  // 제안관리에서 공고를 안고 넘어왔으면 창이 열릴 때 그 공고를 골라 둔다.
+  // 한 번만 한다 — 사람이 일부러 다른 공고로 바꿨는데 되돌려 놓으면 안 된다.
+  const 미리고름적용 = useRef(false);
+  useEffect(() => {
+    if (!proposeTarget) { 미리고름적용.current = false; return; }
+    if (미리고름적용.current || !미리고른공고 || proposeJobId) return;
+    if (!proposeJobs.some((j) => j.id === 미리고른공고)) return;
+    미리고름적용.current = true;
+    공고고르기(미리고른공고);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposeTarget, proposeJobs, 미리고른공고, proposeJobId]);
 
   const sendPropose = async () => {
     if (!proposeTarget || !proposeJobId || !proposeMessage.trim()) return;

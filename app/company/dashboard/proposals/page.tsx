@@ -5,7 +5,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
 import { 마감인가 } from "@/lib/jobClosed";
-import { Send, Pencil } from "lucide-react";
+import { Send, Pencil, ChevronRight } from "lucide-react";
 
 // 제안관리 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
 //
@@ -28,6 +28,10 @@ type 제안 = {
   jobPostingId: string | null;
   jobStatus: string | null;
   jobDeadline: string | null;
+  jobCreatedAt: string | null;
+  jobPositions: any[] | null;
+  jobEmploymentType: string | null;
+  jobExperienceLevel: string | null;
   lastSender: "USER" | "COMPANY" | null;
   lastMessageAt: string | null;
   messageCount: number;
@@ -178,7 +182,29 @@ export default function CompanyProposalsPage() {
     });
   }, [공고고른것, 고른상태]);
 
-  const 고른공고이름 = 고른공고 === "ALL" ? null : 공고들.find((g) => g.id === 고른공고);
+  // 공고 머리에 쓸 값. 그 공고로 보낸 제안 아무 줄에서나 가져온다 — 같은 공고면
+  // 어느 줄이든 같은 값이다.
+  const 공고머리 = useMemo(() => {
+    if (고른공고 === "ALL") return null;
+    const p = 목록.find((x) => (x.jobPostingId || "none") === 고른공고);
+    if (!p) return null;
+    const md = (s: string) => {
+      const d = new Date(s);
+      return `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+    };
+    const 기간 = p.jobCreatedAt
+      ? `${md(p.jobCreatedAt)} ~ ${p.jobDeadline ? md(p.jobDeadline) : "상시"}`
+      : "";
+    const 경력글 = p.jobExperienceLevel === "NEW" ? "신입"
+      : p.jobExperienceLevel === "EXPERIENCED" ? "경력" : "경력무관";
+    const 부문 = Array.isArray(p.jobPositions) ? p.jobPositions : [];
+    const 조건 = [
+      부문.length ? [...new Set(부문.map((x: any) => x.category || x.group).filter(Boolean))].join(" · ") : null,
+      p.jobEmploymentType || null,
+      경력글,
+    ].filter(Boolean).join(" | ");
+    return { 제목: p.jobTitle || "공고 없음", 기간, 조건, 마감: 마감인가(p.jobStatus, p.jobDeadline) };
+  }, [목록, 고른공고]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
 
   const 사이드 = (
@@ -200,8 +226,35 @@ export default function CompanyProposalsPage() {
 
   return (
     <CompanyLayout activePage="proposals" side={사이드}>
-      {고른공고이름 && (
-        <p className="prop-jobline">{고른공고이름.제목}{고른공고이름.마감 && <span> · 마감</span>}</p>
+      {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
+          쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
+          다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸
+          제안의 조건이 바뀐다 — 고치는 일은 공고·지원자에서 한다. */}
+      {고른공고 !== "ALL" && 공고머리 && (
+        <div className="co-pane-card prop-jobhead">
+          <div className="co-pane-head">
+            <div style={{ minWidth: 0 }}>
+              <div className="co-pane-term">
+                <span className="co-jc-badge">{공고머리.마감 ? "마감" : "진행중"}</span>
+                {공고머리.기간}
+              </div>
+              <h2 className="co-pane-title">{공고머리.제목}</h2>
+            </div>
+            {/* 이 화면에서 다음에 할 일은 하나다 — 이 공고로 사람을 더 찾는 것.
+                보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다. */}
+            {!공고머리.마감 && 고른공고 !== "none" && (
+              <button type="button" className="co-pane-view"
+                onClick={() => router.push(`${base}/talent?job=${고른공고}`)}>
+                이 공고로 제안 보내기 <ChevronRight size={15} />
+              </button>
+            )}
+          </div>
+          {공고머리.조건 && (
+            <div className="co-pane-pos">
+              <div className="co-pane-posline">{공고머리.조건}</div>
+            </div>
+          )}
+        </div>
       )}
 
       <div className="prop-chips">

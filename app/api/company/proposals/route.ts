@@ -30,6 +30,11 @@ export async function GET(req: NextRequest) {
               p.job_posting_id,
               jp.status AS job_status,
               jp.deadline AS job_deadline,
+              -- 제안관리 위쪽 공고 머리에 쓸 값들(기간·조건 줄).
+              jp.created_at AS job_created_at,
+              jp.positions AS job_positions,
+              jp.employment_type AS job_employment_type,
+              jp.experience_level AS job_experience_level,
               -- 마지막으로 무슨 일이 있었나. 표의 「최근 활동」 열이 이걸 적는다.
               (SELECT m.created_at FROM proposal_messages m
                 WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at,
@@ -72,6 +77,10 @@ export async function GET(req: NextRequest) {
       jobPostingId: r.job_posting_id || null,
       jobStatus: r.job_status || null,
       jobDeadline: r.job_deadline || null,
+      jobCreatedAt: r.job_created_at || null,
+      jobPositions: r.job_positions || null,
+      jobEmploymentType: r.job_employment_type || null,
+      jobExperienceLevel: r.job_experience_level || null,
       lastMessageAt: r.last_message_at || null,
       messageCount: r.message_count || 0,
       appointmentAt: r.appointment_at || null,

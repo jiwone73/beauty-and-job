@@ -352,7 +352,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
         .co-top { min-height: 100vh; background: #fff; }
         /* 글자 크기·굵기·색은 메인 사이트 메뉴(.gnb)와 같은 값을 쓴다 */
         .co-top-nav { display: flex; gap: 28px; flex: 1; margin-left: 22px; }
-        .co-top-nav a { font-size: 16px; font-weight: 500; color: #2b2b2b; text-decoration: none;
+        .co-top-nav a { font-size: 16px; font-weight: 500; color: var(--color-text); text-decoration: none;
           white-space: nowrap; padding: 4px 0; transition: color .15s; }
         .co-top-nav a:hover { color: var(--color-primary); }
         .co-top-nav a.on { color: var(--color-primary); font-weight: 700;

@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
   Users, Search, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight
@@ -49,11 +50,10 @@ function daysLeft(deadline: string | null): number | null {
 }
 
 // 실질 마감 여부: 상태가 CLOSED이거나 마감일이 지난 경우
-function isJobClosed(job: { status: string; deadline: string | null }): boolean {
-  if (job.status === "CLOSED") return true;
-  const dl = daysLeft(job.deadline);
-  return dl !== null && dl < 0;
-}
+// 판정은 공용 함수 하나로. 여기 따로 두었더니 마감일 당일에 다른 화면과
+// 갈렸다(여기는 진행중, 지원자 카드는 마감).
+const isJobClosed = (job: { status: string; deadline: string | null }) =>
+  마감인가(job.status, job.deadline);
 
 function CompanyJobsContent() {
   const router = useRouter();
