@@ -35,6 +35,8 @@ export async function GET(req: NextRequest) {
               jp.positions AS job_positions,
               jp.employment_type AS job_employment_type,
               jp.experience_level AS job_experience_level,
+              jp.categories AS job_categories,
+              jp.headcount AS job_headcount,
               -- 마지막으로 무슨 일이 있었나. 표의 「최근 활동」 열이 이걸 적는다.
               (SELECT m.created_at FROM proposal_messages m
                 WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at,
@@ -81,6 +83,8 @@ export async function GET(req: NextRequest) {
       jobPositions: r.job_positions || null,
       jobEmploymentType: r.job_employment_type || null,
       jobExperienceLevel: r.job_experience_level || null,
+      jobCategories: r.job_categories || null,
+      jobHeadcount: r.job_headcount ?? null,
       lastMessageAt: r.last_message_at || null,
       messageCount: r.message_count || 0,
       appointmentAt: r.appointment_at || null,

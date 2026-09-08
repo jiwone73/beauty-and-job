@@ -15206,7 +15206,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .prop-av img { width: 100%; height: 100%; object-fit: cover; }
 .prop-who b { display: block; font-weight: 500; font-size: 13.5px; color: var(--color-text-strong); }
-.prop-who i { display: block; font-style: normal; font-size: 12px; color: #a0a0a6; }
+/* 이름 밑 공고명 — 기본 글자색으로. 옅은 회색으로 두었더니 안 보인다. */
+.prop-who i { display: block; font-style: normal; font-size: 12px; color: var(--color-text); }
 .prop-who:hover b { color: var(--color-primary); }
 
 .prop-st { font-size: 12.5px; }

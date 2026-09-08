@@ -32,6 +32,8 @@ type 제안 = {
   jobPositions: any[] | null;
   jobEmploymentType: string | null;
   jobExperienceLevel: string | null;
+  jobCategories: string[] | null;
+  jobHeadcount: number | null;
   lastSender: "USER" | "COMPANY" | null;
   lastMessageAt: string | null;
   messageCount: number;
@@ -195,15 +197,30 @@ export default function CompanyProposalsPage() {
     const 기간 = p.jobCreatedAt
       ? `${md(p.jobCreatedAt)} ~ ${p.jobDeadline ? md(p.jobDeadline) : "상시"}`
       : "";
-    const 경력글 = p.jobExperienceLevel === "NEW" ? "신입"
-      : p.jobExperienceLevel === "EXPERIENCED" ? "경력" : "경력무관";
+    // 조건 줄은 공고·지원자 관리와 같은 차례로 만든다. 모집부문이 있으면
+    // 부문마다 한 줄, 없으면 공고에 적힌 직군·고용형태·경력으로 한 줄이다.
+    // 부문만 보고 있어서 부문이 빈 공고는 「신입」 한 마디만 남았다.
+    const 경력글 = (v: string | null) =>
+      v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
     const 부문 = Array.isArray(p.jobPositions) ? p.jobPositions : [];
-    const 조건 = [
-      부문.length ? [...new Set(부문.map((x: any) => x.category || x.group).filter(Boolean))].join(" · ") : null,
-      p.jobEmploymentType || null,
-      경력글,
-    ].filter(Boolean).join(" | ");
-    return { 제목: p.jobTitle || "공고 없음", 기간, 조건, 마감: 마감인가(p.jobStatus, p.jobDeadline) };
+    const 줄들 = 부문.length > 0
+      ? 부문.map((x: any) => [
+          x.category || x.group,
+          x.headcount ? `${String(x.headcount).replace(/명$/, "")}명` : null,
+          x.location,
+          x.employment || p.jobEmploymentType,
+          x.gender, x.career, x.education,
+          [x.workDays, x.workTime].filter(Boolean).join(" "),
+          x.salary,
+        ].filter(Boolean).join("  |  "))
+      : [[
+          (p.jobCategories || []).join(" · "),
+          p.jobEmploymentType,
+          경력글(p.jobExperienceLevel),
+          p.jobHeadcount ? `${p.jobHeadcount}명` : null,
+        ].filter(Boolean).join("  |  ")];
+    return { 제목: p.jobTitle || "공고 없음", 기간, 줄들: 줄들.filter(Boolean),
+             마감: 마감인가(p.jobStatus, p.jobDeadline) };
   }, [목록, 고른공고]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
 
@@ -249,9 +266,13 @@ export default function CompanyProposalsPage() {
               </button>
             )}
           </div>
-          {공고머리.조건 && (
+          {공고머리.줄들.length > 0 && (
             <div className="co-pane-pos">
-              <div className="co-pane-posline">{공고머리.조건}</div>
+              <div style={{ minWidth: 0 }}>
+                {공고머리.줄들.map((줄: string, i: number) => (
+                  <div key={i} className="co-pane-posline">{줄}</div>
+                ))}
+              </div>
             </div>
           )}
         </div>
