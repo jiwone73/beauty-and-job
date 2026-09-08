@@ -7,7 +7,7 @@ import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
 import { 마감인가 } from "@/lib/jobClosed";
 import { Send, Pencil, ChevronRight } from "lucide-react";
 
-// 제안관리 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
+// 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
 //
 // 예전에는 보낸 제안을 카드 한 줄로 늘어놓았다. 카드는 「누구에게 보냈나」는
 // 말해도 「지금 어떤 상태고 누가 뭘 해야 하나」를 못 말한다 — 상태 한 마디를

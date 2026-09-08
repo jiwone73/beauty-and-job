@@ -119,7 +119,7 @@ export default function TalentPage() {
     salary_min?: number | null; deadline?: string | null;
   }[]>([]);
   const [proposeJobsLoading, setProposeJobsLoading] = useState(false);
-  // 제안관리에서 「이 공고로 제안 보내기」로 넘어오면 그 공고를 미리 골라 둔다.
+  // 보낸 제안에서 「이 공고로 제안 보내기」로 넘어오면 그 공고를 미리 골라 둔다.
   // 보내는 자리는 여기 그대로고, 공고를 다시 고르는 수고만 던다.
   const [proposeJobId, setProposeJobId] = useState("");
   const [미리고른공고] = useState(() => {
@@ -338,7 +338,7 @@ export default function TalentPage() {
     setProposeMessage((prev) => (prev.trim() && prev !== 초안 && !prev.startsWith("안녕하세요,") ? prev : 초안));
   };
 
-  // 제안관리에서 공고를 안고 넘어왔으면 창이 열릴 때 그 공고를 골라 둔다.
+  // 보낸 제안에서 공고를 안고 넘어왔으면 창이 열릴 때 그 공고를 골라 둔다.
   // 한 번만 한다 — 사람이 일부러 다른 공고로 바꿨는데 되돌려 놓으면 안 된다.
   const 미리고름적용 = useRef(false);
   useEffect(() => {

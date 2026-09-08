@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
               p.job_posting_id,
               jp.status AS job_status,
               jp.deadline AS job_deadline,
-              -- 제안관리 위쪽 공고 머리에 쓸 값들(기간·조건 줄).
+              -- 보낸 제안 위쪽 공고 머리에 쓸 값들(기간·조건 줄).
               jp.created_at AS job_created_at,
               jp.positions AS job_positions,
               jp.employment_type AS job_employment_type,

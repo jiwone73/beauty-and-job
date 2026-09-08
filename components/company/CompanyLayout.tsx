@@ -18,7 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   applicants: "지원자",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
-  proposals: "제안관리",
+  proposals: "보낸 제안",
   settings: "기업 정보",
   account: "계정 설정",
   password: "비밀번호 변경",
@@ -155,7 +155,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     { id: "jobs",      label: "채용공고",       icon: FileText,     href: `${base}/jobs`, group: "jobs" },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
-    { id: "proposals", label: "제안관리",     icon: Send,         href: `${base}/proposals`, group: "proposals" },
+    { id: "proposals", label: "채용제안",     icon: Send,         href: `${base}/proposals`, group: "proposals" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
     // 계정의 책임자는 담당자다 — 담당자 정보를 매장정보(프로필)에서 계정 설정으로 옮긴다
@@ -176,9 +176,18 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     { id: "jobs",       label: "공고·지원자",  href: `${base}/jobs` },
     { id: "talent",     label: "인재풀",       href: `${base}/talent` },
     // 제안은 공고를 골라 그 공고로 보낸 사람들을 관리하는 일이라, 인재를 찾는
-    // 인재풀과 하는 일이 다르다. 인재풀은 「누구에게 보낼까」, 제안관리는
+    // 인재풀과 하는 일이 다르다. 인재풀은 「누구에게 보낼까」, 보낸 제안은
     // 「보낸 뒤 어떻게 되고 있나」다.
-    { id: "proposals",  label: "제안관리",     href: `${base}/proposals` },
+    //
+    // 머리줄은 「채용제안」, 화면 제목은 「보낸 제안」이다. 공고·지원자도 같은
+    // 방식이다(머리줄 「공고·지원자」, 제목 「공고·지원자 관리」) — 머리줄은
+    // 어느 갈래인지를, 제목은 그 안에서 무엇을 보는지를 말한다.
+    //
+    // 「보낸 제안」은 구직자 쪽 「받은 제안」(/profile/proposals)과 짝이다.
+    //   「채용」은 우리가 모은 공고 256건 중 68%가 쓰는 말이고, 「스카웃」은 한
+    //   건도 없었다(리멤버 말투다). 사람인 「후보자 관리」·잡코리아 「포지션
+    //   제안」은 경력직 사무직 말투라 헤어 스텝·네일 인턴에는 무겁다.
+    { id: "proposals",  label: "채용제안",     href: `${base}/proposals` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
@@ -194,7 +203,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
       { id: "jobs-new", label: () => "공고 등록",        title: () => "공고 등록",        href: `${base}/jobs/new` },
     ],
     // 인재풀 — 찾는 곳과 담아 둔 곳. 인재 검색은 끝까지 검색이라 제안을 보내는
-    //   데서 끝난다. 보낸 뒤는 머리줄의 제안관리가 맡는다 — 공고를 골라 그 공고로
+    //   데서 끝난다. 보낸 뒤는 머리줄의 보낸 제안가 맡는다 — 공고를 골라 그 공고로
     //   보낸 사람들을 보는 일이라 인재를 찾는 일과 결이 다르다.
     talent: [
       { id: "talent",    label: () => "인재 검색",   title: () => "인재 검색",   href: `${base}/talent` },
