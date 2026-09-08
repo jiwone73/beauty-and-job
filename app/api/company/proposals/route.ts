@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (res) return res;
   try {
     const { rows } = await pool.query(
-      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at,
+      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.note,
               u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
@@ -68,6 +68,7 @@ export async function GET(req: NextRequest) {
       lastSender: r.last_sender,
       blocked: r.blocked,
       appliedAt: r.applied_at || null,
+      note: r.note || "",
       jobPostingId: r.job_posting_id || null,
       jobStatus: r.job_status || null,
       jobDeadline: r.job_deadline || null,
@@ -79,5 +80,27 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     console.error("[company proposals]", e);
     return err("SERVER_001", "불러오지 못했습니다.", 500);
+  }
+}
+
+// 메모 저장. 매장이 자기가 나중에 보려고 적는 한 줄이라 상대에게는 안 보인다.
+export async function PATCH(req: NextRequest) {
+  const { auth, res } = requireAuth(req, "company");
+  if (res) return res;
+  try {
+    const b = await req.json().catch(() => ({}));
+    const id = String(b?.id || "").trim();
+    if (!id) return err("VALIDATION_001", "제안을 찾을 수 없습니다.", 400);
+    const note = String(b?.note ?? "").slice(0, 200);
+    // 남의 제안을 고치지 못하게 회사까지 함께 본다.
+    const { rowCount } = await pool.query(
+      `UPDATE proposals SET note = NULLIF($3, '') WHERE id = $1 AND company_id = $2`,
+      [id, auth!.sub, note]
+    );
+    if (!rowCount) return err("PROP_001", "제안을 찾을 수 없습니다.", 404);
+    return ok({ id, note });
+  } catch (e: any) {
+    console.error("[company proposal note]", e);
+    return err("SERVER_001", "저장하지 못했습니다.", 500);
   }
 }
