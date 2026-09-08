@@ -15160,6 +15160,18 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-side-item:hover { background: #f7f7f8; }
 .prop-side-item.on { background: #f4f0f9; color: var(--color-primary); }
 .prop-side-item.on em { color: var(--color-primary); }
+/* 내 차례 건수 — 어느 공고에 할 일이 있는지 훑어서 알게. */
+.prop-side-mine {
+  flex-shrink: 0; min-width: 17px; padding: 0 5px; border-radius: 9px;
+  background: var(--color-primary); color: #fff; font-size: 11px; font-weight: 400;
+  text-align: center; line-height: 17px;
+}
+.prop-side-item.done { color: #a0a0a6; }
+.prop-side-more {
+  width: 100%; margin-top: 4px; padding: 6px 9px; border: none; background: none;
+  font-family: inherit; font-size: 12.5px; color: #a0a0a6; text-align: left; cursor: pointer;
+}
+.prop-side-more:hover { color: var(--color-primary); }
 
 /* 공고 머리 — 공고·지원자 관리의 .co-pane-card 를 그대로 쓴다. 이 화면에서는
    카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백만 걷는다. */

@@ -109,7 +109,10 @@ export default function CompanyProposalsPage() {
   const [목록, set목록] = useState<제안[]>([]);
   const [로딩, set로딩] = useState(true);
   const [대화, set대화] = useState<제안 | null>(null);
-  const [고른공고, set고른공고] = useState<string | "ALL">("ALL");
+  // 공고를 고르는 화면이라 처음부터 하나가 골라져 있다. 예전에는 「전체 공고」로
+  // 시작해 공고 없는 상태였는데, 그러면 위쪽 공고 머리가 비어 무엇을 보는 자리인지
+  // 안 읽혔다. 여러 공고에 걸친 「답할 것」은 사이드에 숫자로 붙는다.
+  const [고른공고, set고른공고] = useState<string | null>(null);
   const [고른상태, set고른상태] = useState<상태키 | "전체">("전체");
   const [공고검색, set공고검색] = useState("");
   // 지금 적고 있는 메모. 칸을 벗어날 때 저장한다 — 글자마다 보내면 서버가 시끄럽다.
@@ -148,30 +151,58 @@ export default function CompanyProposalsPage() {
   // 왼쪽 공고 목록. 제안을 보낸 공고만 나온다 — 안 보낸 공고를 늘어놓으면
   // 고를 것이 없는 줄이 대부분을 차지한다.
   const 공고들 = useMemo(() => {
-    const 표 = new Map<string, { id: string; 제목: string; 수: number; 마감: boolean }>();
+    const 표 = new Map<string, { id: string; 제목: string; 수: number; 내차례: number; 살아있나: boolean; 마감: boolean }>();
     for (const p of 목록) {
       const id = p.jobPostingId || "none";
+      const 내차례 = 다음할일(p)?.우리차례 ? 1 : 0;
+      // 아직 끝나지 않은 제안이 하나라도 있으면 그 공고는 살아 있다 — 공고가
+      // 마감돼도 대화 중이거나 면접이 잡힌 사람은 그대로 남는다.
+      const 진행 = !["거절", "기간지남", "채용완료"].includes(상태(p)) ? 1 : 0;
       const 앞 = 표.get(id);
-      if (앞) 앞.수 += 1;
+      if (앞) { 앞.수 += 1; 앞.내차례 += 내차례; 앞.살아있나 = 앞.살아있나 || !!진행; }
       else 표.set(id, {
-        id, 제목: p.jobTitle || "공고 없음", 수: 1,
+        id, 제목: p.jobTitle || "공고 없음", 수: 1, 내차례, 살아있나: !!진행,
         마감: 마감인가(p.jobStatus, p.jobDeadline),
       });
     }
     return [...표.values()]
       .filter((g) => !공고검색.trim() || g.제목.includes(공고검색.trim()))
-      .sort((a, b) => Number(a.마감) - Number(b.마감) || b.수 - a.수);
+      // 내 차례가 있는 공고가 먼저. 그다음 진행중, 마감은 아래로.
+      .sort((a, b) => Number(b.내차례 > 0) - Number(a.내차례 > 0)
+        || Number(a.마감) - Number(b.마감) || b.수 - a.수);
   }, [목록, 공고검색]);
 
-  const 공고고른것 = 고른공고 === "ALL" ? 목록 : 목록.filter((p) => (p.jobPostingId || "none") === 고른공고);
+  // 끝난 제안만 남은 마감 공고는 접어 둔다. 볼 일이 없는데 목록만 길어진다.
+  const [지난것펼침, set지난것펼침] = useState(false);
+  const 보일공고 = 공고들.filter((g) => !g.마감 || g.살아있나);
+  const 접힌공고 = 공고들.filter((g) => g.마감 && !g.살아있나);
 
-  // 상태 칩. 0건인 상태도 자리를 지킨다 — 있다 없다 하면 누를 자리가 흔들린다.
+  // 처음 열릴 때 첫 공고를 고른다.
+  useEffect(() => {
+    if (고른공고 || !보일공고.length) return;
+    set고른공고(보일공고[0].id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [보일공고.length]);
+
+  const 공고고른것 = 목록.filter((p) => (p.jobPostingId || "none") === 고른공고);
+
+  // 상태 칩은 제안이 흘러가는 차례 그대로 세운다.
+  //
+  //   답변대기 → 수락 → 채팅중 → 면접예정 → 채용완료
+  //
+  // 0건이어도 자리를 지킨다. 있는 것만 세우면 흐름이 끊겨, 지금 어디까지 왔고
+  // 어디서 막혔는지가 안 보인다. 끝난 것(거절·기간지남)은 흐름 밖이라 뒤에 두고
+  // 0건이면 감춘다 — 없는 일까지 자리를 잡으면 줄만 길어진다.
   const 칩들 = useMemo(() => {
-    const 순서: 상태키[] = ["답변대기", "수락", "채팅중", "면접예정", "채용완료", "거절", "기간지남"];
+    const 흐름: 상태키[] = ["답변대기", "수락", "채팅중", "면접예정", "채용완료"];
+    const 끝: 상태키[] = ["거절", "기간지남"];
     const 셈 = new Map<상태키, number>();
     for (const p of 공고고른것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
-    return [{ 키: "전체" as const, 수: 공고고른것.length },
-            ...순서.filter((k) => (셈.get(k) || 0) > 0).map((k) => ({ 키: k, 수: 셈.get(k)! }))];
+    return [
+      { 키: "전체" as const, 수: 공고고른것.length },
+      ...흐름.map((k) => ({ 키: k, 수: 셈.get(k) || 0 })),
+      ...끝.filter((k) => (셈.get(k) || 0) > 0).map((k) => ({ 키: k, 수: 셈.get(k)! })),
+    ];
   }, [공고고른것]);
 
   const 줄들 = useMemo(() => {
@@ -187,7 +218,6 @@ export default function CompanyProposalsPage() {
   // 공고 머리에 쓸 값. 그 공고로 보낸 제안 아무 줄에서나 가져온다 — 같은 공고면
   // 어느 줄이든 같은 값이다.
   const 공고머리 = useMemo(() => {
-    if (고른공고 === "ALL") return null;
     const p = 목록.find((x) => (x.jobPostingId || "none") === 고른공고);
     if (!p) return null;
     const md = (s: string) => {
@@ -228,16 +258,30 @@ export default function CompanyProposalsPage() {
     <div className="prop-side">
       <input className="prop-side-search" placeholder="공고명 검색"
         value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
-      <button type="button" className={`prop-side-item${고른공고 === "ALL" ? " on" : ""}`}
-        onClick={() => { set고른공고("ALL"); set고른상태("전체"); }}>
-        <span>전체 공고</span><em>{목록.length}</em>
-      </button>
-      {공고들.map((g) => (
+      {보일공고.map((g) => (
         <button key={g.id} type="button" className={`prop-side-item${고른공고 === g.id ? " on" : ""}`}
           onClick={() => { set고른공고(g.id); set고른상태("전체"); }}>
-          <span>{g.제목}{g.마감 && <i> 마감</i>}</span><em>{g.수}</em>
+          <span>{g.제목}{g.마감 && <i> 마감</i>}</span>
+          {/* 내 차례가 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
+              어느 공고에 할 일이 있는지 훑어서 알 수 있다. */}
+          {g.내차례 > 0 && <b className="prop-side-mine">{g.내차례}</b>}
+          <em>{g.수}</em>
         </button>
       ))}
+      {접힌공고.length > 0 && (
+        <>
+          <button type="button" className="prop-side-more"
+            onClick={() => set지난것펼침((v) => !v)}>
+            지난 공고 {접힌공고.length}
+          </button>
+          {지난것펼침 && 접힌공고.map((g) => (
+            <button key={g.id} type="button" className={`prop-side-item done${고른공고 === g.id ? " on" : ""}`}
+              onClick={() => { set고른공고(g.id); set고른상태("전체"); }}>
+              <span>{g.제목}<i> 마감</i></span><em>{g.수}</em>
+            </button>
+          ))}
+        </>
+      )}
     </div>
   );
 
@@ -247,7 +291,7 @@ export default function CompanyProposalsPage() {
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
           다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸
           제안의 조건이 바뀐다 — 고치는 일은 공고·지원자에서 한다. */}
-      {고른공고 !== "ALL" && 공고머리 && (
+      {공고머리 && (
         <div className="co-pane-card prop-jobhead">
           <div className="co-pane-head">
             <div style={{ minWidth: 0 }}>
@@ -259,7 +303,7 @@ export default function CompanyProposalsPage() {
             </div>
             {/* 이 화면에서 다음에 할 일은 하나다 — 이 공고로 사람을 더 찾는 것.
                 보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다. */}
-            {!공고머리.마감 && 고른공고 !== "none" && (
+            {!공고머리.마감 && 고른공고 && 고른공고 !== "none" && (
               <button type="button" className="co-pane-view"
                 onClick={() => router.push(`${base}/talent?job=${고른공고}`)}>
                 이 공고로 제안 보내기 <ChevronRight size={15} />
@@ -335,8 +379,7 @@ export default function CompanyProposalsPage() {
                         </span>
                         <span>
                           <b>{p.userName}</b>
-                          {고른공고 === "ALL" && p.jobTitle && <i>{p.jobTitle}</i>}
-                        </span>
+                                  </span>
                       </button>
                     </td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
