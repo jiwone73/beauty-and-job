@@ -191,7 +191,7 @@ export default function ProposalsPage() {
                         {p.interested_at ? (
                           <button type="button" className="prop-interest"
                             onClick={(e) => { e.stopPropagation(); set대화(p); }}>
-                            대화하기
+                            채팅하기
                           </button>
                         ) : 마감 ? null : 만료 ? (
                           <span className="prop-interest on">답변 기간이 지났어요</span>

@@ -126,7 +126,7 @@ export default function ProposalThread({
 
   const 차단 = async () => {
     set메뉴(false);
-    if (!confirm("차단하면 서로 보이지 않고 더 이상 대화할 수 없어요. 차단할까요?")) return;
+    if (!confirm("차단하면 서로 보이지 않고 더 이상 채팅할 수 없어요. 차단할까요?")) return;
     const r = await fetch(`/api/proposals/${proposalId}/block`, {
       method: "POST", headers: 헤더,
     }).then((x) => x.json()).catch(() => null);
@@ -216,7 +216,7 @@ export default function ProposalThread({
 
         {차단됨 || 만료됨 ? (
           <p className="pth-closed">
-            {차단됨 ? "차단된 대화예요." : `답변 기간(${제안유효일}일)이 지나 닫힌 대화예요.`}
+            {차단됨 ? "차단된 채팅이에요." : `답변 기간(${제안유효일}일)이 지나 닫힌 채팅이에요.`}
           </p>
         ) : (
           <>

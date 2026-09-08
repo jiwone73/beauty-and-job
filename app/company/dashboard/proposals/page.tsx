@@ -5,7 +5,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
 import { 마감인가 } from "@/lib/jobClosed";
-import { Send, Pencil, ChevronRight } from "lucide-react";
+import { Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
 //
@@ -41,7 +41,6 @@ type 제안 = {
   applicationStatus: string | null;
   blocked: boolean;
   appliedAt: string | null;
-  note: string;
 };
 
 const 날짜 = (s: string) =>
@@ -100,9 +99,9 @@ function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null 
   if (st === "거절" || st === "기간지남") return null;
   if (st === "채용완료") return { 글: "지원서 보기", 우리차례: false };
   if (st === "면접예정") return { 글: "일정 확인", 우리차례: false };
-  if (st === "채팅중") return { 글: "대화하기", 우리차례: p.lastSender === "USER" };
-  if (st === "수락") return { 글: "대화하기", 우리차례: true };
-  return { 글: "대화하기", 우리차례: false };
+  if (st === "채팅중") return { 글: "채팅하기", 우리차례: p.lastSender === "USER" };
+  if (st === "수락") return { 글: "채팅하기", 우리차례: true };
+  return { 글: "채팅하기", 우리차례: false };
 }
 
 export default function CompanyProposalsPage() {
@@ -115,11 +114,6 @@ export default function CompanyProposalsPage() {
   const [고른공고, set고른공고] = useState<string | null>(null);
   const [고른상태, set고른상태] = useState<상태키 | "전체">("전체");
   const [공고검색, set공고검색] = useState("");
-  // 지금 적고 있는 메모. 칸을 벗어날 때 저장한다 — 글자마다 보내면 서버가 시끄럽다.
-  const [메모중, set메모중] = useState<{ id: string; 값: string } | null>(null);
-  // 메모 칸을 연 줄. 아이콘을 눌러야 열린다 — 표에 입력칸이 줄마다 서 있으면
-  // 아직 안 적은 칸까지 다 「채워야 할 자리」로 읽힌다.
-  const [메모연줄, set메모연줄] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
   const base = pathname.split("/").filter(Boolean)[0] === "company"
@@ -136,17 +130,7 @@ export default function CompanyProposalsPage() {
   }, []);
   useEffect(() => { 불러오기(); }, [불러오기]);
 
-  const 메모저장 = async (p: 제안, 값: string) => {
-    set메모중(null);
-    if ((값 || "") === (p.note || "")) return;
-    set목록((prev) => prev.map((x) => (x.id === p.id ? { ...x, note: 값 } : x)));
-    const token = localStorage.getItem("access_token");
-    await fetch("/api/company/proposals", {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ id: p.id, note: 값 }),
-    }).catch(() => {});
-  };
+
 
   // 왼쪽 공고 목록. 제안을 보낸 공고만 나온다 — 안 보낸 공고를 늘어놓으면
   // 고를 것이 없는 줄이 대부분을 차지한다.
@@ -369,7 +353,6 @@ export default function CompanyProposalsPage() {
                 <th className="c-st">현재 상태</th>
                 <th>최근 활동</th>
                 <th className="c-act">다음 액션</th>
-                <th className="c-note">메모</th>
               </tr>
             </thead>
             <tbody>
@@ -407,32 +390,6 @@ export default function CompanyProposalsPage() {
                         <button type="button" className={`prop-act${할.우리차례 ? " key" : ""}`}
                           onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
                           {할.글}
-                        </button>
-                      )}
-                    </td>
-                    {/* 메모는 그 자리에서 적는다. 「통화함」·「화요일 3시 면접」처럼
-                        자기가 나중에 보려고 적는 것이라 창을 띄울 일이 아니다. */}
-                    <td className="c-note">
-                      {메모연줄 === p.id ? (
-                        <input className="prop-note" maxLength={200} autoFocus
-                          placeholder="통화함 · 화요일 3시 면접 …"
-                          value={메모중?.id === p.id ? 메모중.값 : (p.note || "")}
-                          onChange={(e) => set메모중({ id: p.id, 값: e.target.value })}
-                          onBlur={(e) => { 메모저장(p, e.target.value.trim()); set메모연줄(null); }}
-                          onKeyDown={(e) => {
-                            // 한글을 치는 중(조합 중)에 누른 Enter 는 글자를 확정하는
-                            // 키다. 그때 칸을 벗어나면 마지막 글자가 날아간다 —
-                            // 확정한 뒤 한 번 더 누르는 것이 저장이다.
-                            if (e.nativeEvent.isComposing) return;
-                            if (e.key === "Enter") e.currentTarget.blur();
-                            if (e.key === "Escape") { set메모중(null); set메모연줄(null); }
-                          }} />
-                      ) : (
-                        <button type="button" className={`prop-note-btn${p.note ? " has" : ""}`}
-                          title={p.note || "메모"}
-                          onClick={() => { set메모중({ id: p.id, 값: p.note || "" }); set메모연줄(p.id); }}>
-                          <Pencil size={13} />
-                          {p.note && <span>{p.note}</span>}
                         </button>
                       )}
                     </td>
