@@ -15261,6 +15261,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13px; color: var(--color-text);
 }
 .tal-fromjob b { font-weight: 500; color: var(--color-primary); }
+.tal-fromjob i { font-style: normal; color: #8a8a90; }
 .tal-fromjob button {
   margin-left: auto; display: inline-flex; align-items: center; gap: 2px;
   border: none; background: none; padding: 0; font-family: inherit;

@@ -129,6 +129,7 @@ export default function TalentPage() {
   // 넘어오면 공고가 안 골라졌다.
   const [미리고른공고, set미리고른공고] = useState("");
   const [보내는공고이름, set보내는공고이름] = useState("");
+  const [걸린대분류, set걸린대분류] = useState("");
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("job") || "";
     set미리고른공고(id);
@@ -138,7 +139,27 @@ export default function TalentPage() {
     companyJobsApi.list({ status: "ACTIVE", limit: 100 })
       .then((r: any) => {
         const j = r?.success && Array.isArray(r.data) ? r.data.find((x: any) => x.id === id) : null;
-        if (j) set보내는공고이름(j.title || "");
+        if (!j) return;
+        set보내는공고이름(j.title || "");
+        // 그 공고의 직군을 필터에 걸어 둔다. 안 걸면 넘어와도 인재 전부가 뜬다
+        //   — 네일 공고로 왔는데 헤어·피부·본사 마케터까지 섞여 있어, 그 공고에
+        //   맞는 사람을 처음부터 다시 찾아야 했다.
+        // 사이드 필터에 그대로 걸리므로 언제든 풀 수 있다.
+        const 유형 = j.job_type === "OFFICE" ? "OFFICE" : "STORE";
+        setActiveTab(유형);
+        // 공고에 적힌 소분류가 아니라 그 소분류가 든 대분류 전체를 건다.
+        //   「네일 스탭·인턴」으로 좁히니 아무도 안 남았다(0명). 네일 자리를
+        //   뽑는데 네일 하는 사람이 안 보이면 걸러 둔 뜻이 없다.
+        const 적힌것 = Array.isArray(j.categories) ? j.categories.filter(Boolean) : [];
+        const 넓힌것 = new Set<string>();
+        for (const g of getJobGroups(유형)) {
+          const 소 = getJobSubGroups(유형, g.group);
+          if (소.some((x) => 적힌것.includes(x))) 소.forEach((x) => 넓힌것.add(x));
+        }
+        const 걸것 = 넓힌것.size ? [...넓힌것] : 적힌것;
+        if (걸것.length) { setSelectedJobGroups(걸것); set걸린대분류(
+          getJobGroups(유형).filter((g) => getJobSubGroups(유형, g.group).some((x) => 적힌것.includes(x)))
+            .map((g) => g.group).join(", ")); }
       })
       .catch(() => {});
   }, []);
@@ -566,6 +587,7 @@ export default function TalentPage() {
       {보내는공고이름 && (
         <div className="tal-fromjob">
           <b>{보내는공고이름}</b> 공고로 보낼 사람을 찾는 중
+          {걸린대분류 && <i>· {걸린대분류} 직군만</i>}
           <button type="button" onClick={() => router.push(`${base}/proposals`)}>
             채용제안으로 <ChevronRight size={14} />
           </button>
