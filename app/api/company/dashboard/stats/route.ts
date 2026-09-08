@@ -117,17 +117,10 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 보낸제안 — 누적. 제안 관심 — 그중 「관심 있어요」를 누른 것. 채팅 — 그중 실제로
-  // 말이 오간 것. 셋이 한 줄기라 나란히 두면 어디서 끊기는지가 보인다.
+  // 보낸제안 — 누적. 채팅 — 그중 실제로 말이 오간 것. 「관심 있어요」를 누른 수는
+  // 따로 세지 않는다 — 수락해야 매장이 말을 걸 수 있으니 채팅과 같은 사람들이다.
   const sentRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt FROM proposals WHERE company_id = $1`,
-    [companyId]
-  )
-  const interestedRes = await pool.query(
-    `SELECT COUNT(*)::int AS cnt FROM proposals p
-      WHERE p.company_id = $1 AND p.interested_at IS NOT NULL
-        AND NOT EXISTS (SELECT 1 FROM user_company_blocks b
-                         WHERE b.user_id = p.user_id AND b.company_id = p.company_id)`,
     [companyId]
   )
   const chatRes = await pool.query(
@@ -142,7 +135,6 @@ export async function GET(req: NextRequest) {
   return ok({
     unviewed_applications: unviewedRes.rows[0].cnt,
     sent_proposals: sentRes.rows[0].cnt,
-    proposal_interested: interestedRes.rows[0].cnt,
     chats: chatRes.rows[0].cnt,
     scrapped_talents: scrapRes.rows[0].cnt,
     awaiting_reply: awaitingRes.rows[0].cnt,

@@ -11,7 +11,6 @@ interface Stats {
   scrapped_talents: number;
   unviewed_applications: number;
   sent_proposals: number;
-  proposal_interested: number;
   chats: number;
 }
 
@@ -104,15 +103,16 @@ export default function CompanyDashboard() {
   // 없음)은 가져오되 내용은 다르다. 거기는 마이페이지 요약이라 누적을 보여주지만
   // 여기는 홈이고, 사장님이 홈을 여는 이유는 「지금 뭘 해야 하나」 하나다.
   // 넷 다 0이면 좋은 숫자다 — 누적이 아니라 밀린 일이다.
-  // 셀렉미 「활동정보」와 같은 줄. 제안은 보낸 것 → 관심 → 채팅으로 이어지는 한
-  // 줄기라 나란히 두면 어디서 끊기는지가 보인다.
+  // 셀렉미 「활동정보」와 같은 줄. 「제안 관심」 칸은 뺐다 — 매장은 구직자가
+  // 수락해야 말을 걸 수 있으므로(PROP_MSG_007) 수락한 사람은 곧 채팅 칸에서
+  // 세어진다. 두 칸이 늘 같은 사람을 가리켜서 하나는 읽을 것이 없었다.
+  // 한 사람이 지금 어디까지 왔는지는 채용제안 화면이 맡는다.
   const statCards = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
     { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=마감임박" },
     // 공고 → 지원 → 제안 순으로 세운다. 아래 카드 제목과 같은 이름을 쓴다.
     { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/jobs?status=미열람" },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
-    { label: "제안 관심", value: stats?.proposal_interested ?? 0, href: "/company/dashboard/proposals" },
     { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/talent/scrapped" },
   ];
