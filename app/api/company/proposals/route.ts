@@ -25,7 +25,26 @@ export async function GET(req: NextRequest) {
               -- 없어서, 보낸 제안이 채용으로 이어졌는지를 볼 데가 없었다.
               (SELECT MIN(ap.applied_at) FROM applications ap
                 WHERE ap.user_id = p.user_id AND ap.job_posting_id = p.job_posting_id
-                  AND ap.status <> 'WITHDRAWN') AS applied_at
+                  AND ap.status <> 'WITHDRAWN') AS applied_at,
+              -- 표가 공고별로 묶이므로 어느 공고인지 알아야 한다.
+              p.job_posting_id,
+              jp.status AS job_status,
+              jp.deadline AS job_deadline,
+              -- 마지막으로 무슨 일이 있었나. 표의 「최근 활동」 열이 이걸 적는다.
+              (SELECT m.created_at FROM proposal_messages m
+                WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at,
+              (SELECT count(*) FROM proposal_messages m
+                WHERE m.proposal_id = p.id AND m.kind = 'TEXT')::int AS message_count,
+              -- 잡힌 면접. 약속을 서로 받아들인 것만 센다.
+              (SELECT m.appointment_at FROM proposal_messages m
+                WHERE m.proposal_id = p.id AND m.kind = 'APPOINTMENT'
+                  AND m.appointment_status = 'ACCEPTED'
+                ORDER BY m.appointment_at DESC LIMIT 1) AS appointment_at,
+              -- 채용까지 갔는가. 지원서 상태가 최종합격이면 그것이 제안의 끝이다.
+              (SELECT ap.status FROM applications ap
+                WHERE ap.user_id = p.user_id AND ap.job_posting_id = p.job_posting_id
+                  AND ap.status <> 'WITHDRAWN'
+                ORDER BY ap.applied_at DESC LIMIT 1) AS application_status
          FROM proposals p
          JOIN users u ON u.id = p.user_id
          LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
@@ -49,6 +68,13 @@ export async function GET(req: NextRequest) {
       lastSender: r.last_sender,
       blocked: r.blocked,
       appliedAt: r.applied_at || null,
+      jobPostingId: r.job_posting_id || null,
+      jobStatus: r.job_status || null,
+      jobDeadline: r.job_deadline || null,
+      lastMessageAt: r.last_message_at || null,
+      messageCount: r.message_count || 0,
+      appointmentAt: r.appointment_at || null,
+      applicationStatus: r.application_status || null,
     })));
   } catch (e: any) {
     console.error("[company proposals]", e);

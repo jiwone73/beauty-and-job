@@ -18,7 +18,7 @@ const PAGE_TITLES: Record<string, string> = {
   applicants: "지원자",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
-  proposals: "보낸 제안",
+  proposals: "제안관리",
   settings: "기업 정보",
   account: "계정 설정",
   password: "비밀번호 변경",
@@ -155,7 +155,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     { id: "jobs",      label: "채용공고",       icon: FileText,     href: `${base}/jobs`, group: "jobs" },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
-    { id: "proposals", label: "보낸 제안",     icon: Send,         href: `${base}/proposals`, group: "talent" },
+    { id: "proposals", label: "제안관리",     icon: Send,         href: `${base}/proposals`, group: "proposals" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
     // 계정의 책임자는 담당자다 — 담당자 정보를 매장정보(프로필)에서 계정 설정으로 옮긴다
@@ -175,6 +175,10 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     // 잡코리아도 「공고·지원자 관리」로 묶어 부른다.
     { id: "jobs",       label: "공고·지원자",  href: `${base}/jobs` },
     { id: "talent",     label: "인재풀",       href: `${base}/talent` },
+    // 제안은 공고를 골라 그 공고로 보낸 사람들을 관리하는 일이라, 인재를 찾는
+    // 인재풀과 하는 일이 다르다. 인재풀은 「누구에게 보낼까」, 제안관리는
+    // 「보낸 뒤 어떻게 되고 있나」다.
+    { id: "proposals",  label: "제안관리",     href: `${base}/proposals` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
@@ -189,14 +193,12 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
       { id: "jobs",     label: () => "공고·지원자 관리", title: () => "공고·지원자 관리", href: `${base}/jobs` },
       { id: "jobs-new", label: () => "공고 등록",        title: () => "공고 등록",        href: `${base}/jobs/new` },
     ],
-    // 인재풀 — 찾는 곳과 보낸 뒤를 보는 곳을 나눈다. 인재 검색은 끝까지 검색이라
-    //   제안을 보내는 데서 끝나고, 보낸 뒤의 상태(읽음·대화 수락·기한)는 보낸 제안이
-    //   맡는다. 사람인의 '인재풀 검색 / 후보자 관리', 셀렉미의 '인재정보 / 찜한 인재·
-    //   보낸제안'과 같은 갈래다.
+    // 인재풀 — 찾는 곳과 담아 둔 곳. 인재 검색은 끝까지 검색이라 제안을 보내는
+    //   데서 끝난다. 보낸 뒤는 머리줄의 제안관리가 맡는다 — 공고를 골라 그 공고로
+    //   보낸 사람들을 보는 일이라 인재를 찾는 일과 결이 다르다.
     talent: [
       { id: "talent",    label: () => "인재 검색",   title: () => "인재 검색",   href: `${base}/talent` },
       { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재", href: `${base}/talent/scrapped` },
-      { id: "proposals", label: () => "보낸 제안",   title: () => "보낸 제안",   href: `${base}/proposals` },
     ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
@@ -215,7 +217,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new" || activePage === "applicants")
-    : id === "talent" ? (activePage === "talent" || activePage === "scrapped" || activePage === "proposals")
+    : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
