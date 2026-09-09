@@ -356,7 +356,7 @@ export default function CompanySignupPage() {
                   <t.Icon size={30} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                   <span className="jt-text flex flex-col min-w-0">
                     <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">{t.label}</span>
-                    <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">{t.desc}</span>
+                    <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">{t.desc}</span>
                   </span>
                   {form.company_type === t.value && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#582681] rounded-full flex items-center justify-center">
