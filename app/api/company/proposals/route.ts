@@ -16,6 +16,20 @@ export async function GET(req: NextRequest) {
     const { rows } = await pool.query(
       `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.canceled_at, p.position_index, p.note,
               u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
+              -- 누구인지 알아야 「이 사람에게 왜 보냈더라」가 풀린다. 이름만으로는
+              -- 열 명 중 누구였는지 떠오르지 않는다. 인재검색 카드가 쓰는 값과
+              -- 같은 것들이다 — 이미 열람한 사람들이라 새로 여는 정보가 아니다.
+              u.gender,
+              CASE WHEN u.birth_date IS NULL THEN NULL
+                   ELSE EXTRACT(YEAR FROM AGE(u.birth_date))::int END AS age,
+              COALESCE(NULLIF(TRIM(CONCAT_WS(' ', u.region_sido, u.region_sigungu)), ''),
+                       up.region_prefer) AS region,
+              up.sub_job, up.main_job_group, up.career_stage, up.work_type_prefer,
+              (SELECT CASE
+                 WHEN MIN(uc.start_date) ~ '^[0-9]{4}'
+                 THEN GREATEST(EXTRACT(YEAR FROM NOW())::int - LEFT(MIN(uc.start_date),4)::int, 0)
+                 ELSE NULL END
+                 FROM user_careers uc WHERE uc.user_id = u.id) AS career_years,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
               (SELECT sender FROM proposal_messages m
@@ -56,6 +70,7 @@ export async function GET(req: NextRequest) {
                 ORDER BY ap.applied_at DESC LIMIT 1) AS application_status
          FROM proposals p
          JOIN users u ON u.id = p.user_id
+         LEFT JOIN user_profiles up ON up.user_id = u.id
          LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
         WHERE p.company_id = $1
         ORDER BY p.created_at DESC
@@ -79,6 +94,15 @@ export async function GET(req: NextRequest) {
       userName: r.user_name,
       // 사진만 감춘 사람은 아예 내려보내지 않는다 — 화면에서 가리면 응답에 남는다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,
+      gender: r.gender || null,
+      age: r.age ?? null,
+      region: r.region || null,
+      // 직군은 소분류가 먼저다 — 「속눈썹·반영구 아티스트」가 「네일·속눈썹」보다 말이 된다.
+      subJob: r.sub_job || r.main_job_group || null,
+      // 경력은 본인이 고른 단계가 먼저, 없으면 이력에서 셈한 연차.
+      careerText: r.career_stage
+        || (r.career_years ? `경력 ${r.career_years}년` : null),
+      workTypePrefer: r.work_type_prefer || null,
       jobTitle: r.job_title,
       lastSender: r.last_sender,
       blocked: r.blocked,

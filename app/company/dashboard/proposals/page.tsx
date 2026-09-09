@@ -5,6 +5,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 마감인가 } from "@/lib/jobClosed";
 import { 님 } from "@/lib/josa";
+import { workTypeLabel } from "@/lib/constants";
 import { Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
@@ -46,7 +47,27 @@ type 제안 = {
   /** 제안한 자리 한 줄. 공고에 모집분야가 여럿일 때 누구에게 어느 자리를
    *  보냈는지가 없어 매장도 알 수 없었다. */
   positionLine: string | null;
+  gender: string | null;
+  age: number | null;
+  region: string | null;
+  subJob: string | null;
+  careerText: string | null;
+  workTypePrefer: string | null;
 };
+
+// 이름만으로는 열 명 중 누구였는지 떠오르지 않는다. 인재검색 카드가 쓰는 값을
+// 두 줄로 편다 — 첫 줄은 사람, 둘째 줄은 조건.
+const 성별글 = (g: string | null) =>
+  g === "FEMALE" || g === "여성" || g === "F" ? "여"
+  : g === "MALE" || g === "남성" || g === "M" ? "남" : null;
+const 인적 = (p: 제안) =>
+  [성별글(p.gender), p.age ? `만 ${p.age}세` : null].filter(Boolean).join(" · ");
+// 근무형태는 FULL_TIME 같은 코드로 저장된다 — 사람이 읽는 말로 편다.
+// 값이 없으면 「정규직」으로 넘겨짚지 않는다(workTypeLabel 의 기본값). 안 고른
+// 것과 정규직을 고른 것은 다르다.
+const 조건 = (p: 제안) =>
+  [p.region, p.subJob, p.careerText,
+   p.workTypePrefer ? workTypeLabel(p.workTypePrefer) : null].filter(Boolean).join(" · ");
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
@@ -255,6 +276,12 @@ export default function CompanyProposalsPage() {
 
   // 공고 머리에 쓸 값. 그 공고로 보낸 제안 아무 줄에서나 가져온다 — 같은 공고면
   // 어느 줄이든 같은 값이다.
+  // 이 표에 실제로 쓰인 자리들. 옛 제안은 값이 없어 빠진다.
+  const 제안한자리 = useMemo(
+    () => Array.from(new Set(공고고른것.map((p) => p.positionLine).filter(Boolean))) as string[],
+    [공고고른것]
+  );
+
   const 공고머리 = useMemo(() => {
     const p = 목록.find((x) => (x.jobPostingId || "none") === 고른공고);
     if (!p) return null;
@@ -408,6 +435,13 @@ export default function CompanyProposalsPage() {
         </div>
       ) : (
         <div className="prop-tablewrap">
+          {/* 제안한 자리는 이 표 전체에 하나다 — 표가 공고별로 묶여 있고 한 공고에서
+              여러 자리로 보내는 일은 드물다. 줄마다 적으면 같은 글이 열 번 찍힌다. */}
+          {제안한자리.length > 0 && (
+            <p className="prop-sentpos">
+              제안한 자리 · <b>{제안한자리.join(" / ")}</b>
+            </p>
+          )}
           <table className="prop-table">
             <thead>
               <tr>
@@ -434,9 +468,12 @@ export default function CompanyProposalsPage() {
                             ? <img src={p.avatarUrl} alt="" loading="lazy" />
                             : <span>{(p.userName || "?").slice(0, 1)}</span>}
                         </span>
-                        <span>
-                          <b>{p.userName}</b>
-                          {p.positionLine && <em className="prop-pos">{p.positionLine}</em>}
+                        <span className="prop-whoinfo">
+                          <b>
+                            {p.userName}
+                            {인적(p) && <i>{인적(p)}</i>}
+                          </b>
+                          {조건(p) && <em>{조건(p)}</em>}
                         </span>
                       </button>
                     </td>
