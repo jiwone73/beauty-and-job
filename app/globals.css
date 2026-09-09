@@ -15257,13 +15257,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    재촉으로 읽힌다. */
 .prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: var(--color-primary); }
 .prop-dash { color: #d0d0d4; }
-/* 무슨 일이 있었나와 언제가 한 줄이다. 두 줄로 두면 줄마다 높이가 늘어
-   표가 훑어지지 않는다. 넘치면 줄임표로 자른다 — 시각은 끝에 붙어 있어야
-   하므로 글만 줄인다. */
-.c-recent { white-space: nowrap; }
-.c-recent span { display: inline; }
-.c-recent i { font-style: normal; font-size: 11.5px; color: var(--color-text);
-  margin-left: 6px; }
+/* 무슨 일이 있었나가 윗줄, 언제가 아랫줄 괄호 안. 「○○님에게 보냈습니다」로
+   주체가 글 안에 들어가면서 줄이 길어져 시각을 옆에 두면 밀려난다. */
+.c-recent span { display: block; }
+.c-recent i { display: block; margin-top: 2px; font-style: normal;
+  font-size: 11.5px; color: #9a9aa3; }
 
 .prop-act {
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 7px;
@@ -15411,13 +15409,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .prop-act.quiet { border-color: #ececf0; color: #9a9aa3; }
 .prop-act.quiet:hover { border-color: var(--color-border); color: var(--color-text); }
 
-/* 보낸 제안 표의 인재 칸. 첫 줄은 사람(이름·성별·나이), 둘째 줄은 조건
-   (지역·직군·경력·근무형태). 제안한 자리는 표 위에 한 번만 적는다 —
-   표가 공고별로 묶여 있어 줄마다 반복할 이유가 없다. */
-.prop-whoinfo b { font-weight: 600; color: var(--color-text-strong); }
-.prop-whoinfo b i { font-style: normal; margin-left: 6px; font-size: 12px;
-  font-weight: 400; color: var(--color-text); }
-.prop-whoinfo em { display: block; margin-top: 3px; font-style: normal;
-  font-size: 12px; color: var(--color-text); }
+/* 보낸 제안 표의 인재 칸.
+   아바타 옆은 늘 두 줄(이름 / 성별·나이)이다 — 값이 없는 사람도 자리를 비워
+   두어야 줄 높이가 들쭉날쭉하지 않다. 직군은 결이 달라 선 아래로 내린다. */
+.prop-whoinfo { display: flex; flex-direction: column; justify-content: center;
+  min-height: 34px; }
+.prop-whoinfo b { font-weight: 600; color: var(--color-text-strong); line-height: 1.35; }
+.prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
+  font-size: 12px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
+.prop-job2 { display: block; margin-top: 9px; padding-top: 9px;
+  border-top: 1px solid #f2f2f4; font-size: 12.5px; color: var(--color-text); }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }

@@ -126,7 +126,10 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   // (「정용희이 읽었습니다」). 님을 붙이면 받침이 생겨 조사도 하나로 정해지고,
   // 다른 화면이 쓰는 「○○님에게 제안하기」와도 결이 맞는다.
   const 그분 = 님(p.userName);
-  if (p.canceledAt) return { 글: "우리가 제안을 거뒀습니다", 때: p.canceledAt };
+  // 우리가 한 일도 상대 이름으로 적는다 — 「○○님에게 보냈습니다」면 누가 누구에게
+  // 한 일인지가 한 번에 읽히고, 「우리가」를 따로 붙일 이유가 없어진다.
+  const 그분에게 = 님(p.userName, "에게");
+  if (p.canceledAt) return { 글: `${그분에게} 보낸 제안을 거뒀습니다`, 때: p.canceledAt };
   if (p.applicationStatus === "PASSED") return { 글: `${p.userName}님 최종합격`, 때: p.appliedAt };
   if (p.appliedAt) return { 글: `${그분} 지원했습니다`, 때: p.appliedAt };
   if (p.declinedAt) return { 글: `${그분} 거절했습니다`, 때: p.declinedAt };
@@ -140,11 +143,11 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   if (p.messageCount > 0) {
     return p.lastSender === "USER"
       ? { 글: `${그분} 메시지를 보냈습니다`, 때: p.lastMessageAt }
-      : { 글: "우리가 메시지를 보냈습니다", 때: p.lastMessageAt };
+      : { 글: `${그분에게} 메시지를 보냈습니다`, 때: p.lastMessageAt };
   }
   if (p.interestedAt) return { 글: `${그분} 제안을 수락했습니다`, 때: p.interestedAt };
   if (p.readAt) return { 글: `${그분} 읽었습니다`, 때: p.readAt };
-  return { 글: "우리가 제안을 보냈습니다", 때: p.createdAt };
+  return { 글: `${그분에게} 제안을 보냈습니다`, 때: p.createdAt };
 }
 
 /** 다음에 할 일. 우리 차례인 것만 색을 채운다. */
@@ -463,13 +466,14 @@ export default function CompanyProposalsPage() {
                             : <span>{(p.userName || "?").slice(0, 1)}</span>}
                         </span>
                         <span className="prop-whoinfo">
-                          <b>
-                            {p.userName}
-                            {인적(p) && <i>{인적(p)}</i>}
-                          </b>
-                          {조건(p) && <em>{조건(p)}</em>}
+                          {/* 아바타 옆은 늘 두 줄이다 — 값이 없는 사람도 자리를
+                              비워 두어야 줄 높이가 들쭉날쭉하지 않다. */}
+                          <b>{p.userName}</b>
+                          <i>{인적(p)}</i>
                         </span>
                       </button>
+                      {/* 직군은 사람 정보와 결이 달라 선 아래로 내린다. */}
+                      {조건(p) && <span className="prop-job2">{조건(p)}</span>}
                     </td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
                     <td className="c-st">
@@ -477,7 +481,7 @@ export default function CompanyProposalsPage() {
                     </td>
                     <td className="c-recent">
                       <span>{활.글}</span>
-                      {활.때 && <i>{때(활.때)}</i>}
+                      {활.때 && <i>({때(활.때)})</i>}
                     </td>
                     <td className="c-act">
                       <div className="prop-acts">
