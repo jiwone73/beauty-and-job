@@ -1379,7 +1379,7 @@ const SECTIONS: any[] = [
         "h": "개인정보 보호책임자"
       },
       {
-        "p": "· 성명: 김미희"
+        "p": "· 성명: 정은우"
       },
       {
         "p": "· 직책: 대표"
@@ -1394,7 +1394,7 @@ const SECTIONS: any[] = [
         "p": "· 전자우편: support@beautywork.co.kr"
       },
       {
-        "p": "· 주소: [사업장 주소 입력]"
+        "p": "· 주소: 서울특별시 구로구 디지털로34길 43, 702-54호(구로동, 코오롱싸이언스밸리1차)"
       },
       {
         "h": "개인정보 민원처리 담당부서"
@@ -1531,7 +1531,7 @@ export default function PrivacyPage() {
               ))}
             </div>
             <div className="legal-body">
-              <p className="legal-intro">하이어스(대표 김미희, 이하 “하이어스”)는 정보주체의 자유와 권리를 보호하기 위하여 「개인정보 보호법」 및 관계 법령을 준수하며, 개인정보를 적법하고 안전하게 처리합니다.</p>
+              <p className="legal-intro">하이어스(대표 정은우, 이하 “하이어스”)는 정보주체의 자유와 권리를 보호하기 위하여 「개인정보 보호법」 및 관계 법령을 준수하며, 개인정보를 적법하고 안전하게 처리합니다.</p>
               <p className="legal-intro">하이어스는 개인정보의 처리 및 보호에 관한 절차와 기준을 안내하고 개인정보와 관련한 정보주체의 고충을 신속하고 원활하게 처리하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.</p>
               {SECTIONS.map((s) => (
                 <section key={s.id} id={s.id} className="legal-section">

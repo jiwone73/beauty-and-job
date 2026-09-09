@@ -581,9 +581,11 @@ function Footer() {
           </nav>
         </div>
         <div style={{ fontSize: 13, color: "#9a9aa3", lineHeight: 2 }}>
-          <div><span style={{ fontWeight: 400, color: "#6b6b73" }}>하이어스</span><Sep />대표 : 김미희</div>
-          <div>주소 : <Sep />전화번호 : </div>
-          <div>사업자등록번호 : <Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
+          <div><span style={{ fontWeight: 400, color: "#6b6b73" }}>하이어스</span><Sep />대표 : 정은우</div>
+          <div>주소 : 서울특별시 구로구 디지털로34길 43, 702-54호<Sep />전화번호 : </div>
+          {/* 통신판매업·유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
+              번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
+          <div>사업자등록번호 : 431-05-03695<Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#9a9aa3" }}>© {new Date().getFullYear()} 하이어스. All rights reserved.</span>
