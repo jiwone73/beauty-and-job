@@ -905,6 +905,9 @@ export async function POST(req: NextRequest) {
       // 교육 안내가 뒤섞여 있어 「교육」 두 글자에 강사 직군이 딸려 왔다.
       const src = [out.title, out.job_category_raw]
         .map((v: any) => String(v || "")).join(" ").toLowerCase();
+      // 띄어쓰기는 사람마다 다르다 — 「네일 리스트」와 「네일리스트」는 같은 말이다.
+      // 붙여 쓴 것끼리도 견줘야 한 쪽만 걸리는 일이 없다.
+      const src붙임 = src.replace(/\s+/g, "");
       // 이름에 붙은 괄호·구분자를 떼어 낱말 단위로 본다: "피부관리사(일반·경락)" → 피부관리사 / 일반 / 경락
       //
       // 낱말이 헐거우면 근거 검사가 통과 도장이 된다. 「헤어강사」의 근거로 「헤어」가
@@ -915,15 +918,18 @@ export async function POST(req: NextRequest) {
         "디자이너", "스탭", "스태프", "인턴", "신입", "경력", "직원", "실장", "원장",
         "아티스트", "전문가", "관리사", "상담", "판매", "교육", "기타",
       ]);
+      const 들었나 = (w: string) => {
+        const v = w.toLowerCase();
+        return src.includes(v) || src붙임.includes(v.replace(/\s+/g, ""));
+      };
       const grounded = (cat: string) => {
-        const 이름 = cat.replace(/\s+/g, "");
         // 직군 이름 자체가 글에 나오면 그것으로 끝난다.
-        if (src.includes(이름.toLowerCase()) || src.includes(cat.toLowerCase())) return true;
+        if (들었나(cat)) return true;
         const words = [
           ...cat.split(/[()·・,\/]| /).map((w) => w.trim()),
           ...(SEARCH_TAGS[cat] || []),
         ].filter((w) => w.length >= 2 && !흔한말.has(w));
-        return words.some((w) => src.includes(w.toLowerCase()));
+        return words.some(들었나);
       };
       out.job_categories = picked.filter(grounded);
     }

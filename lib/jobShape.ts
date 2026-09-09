@@ -59,7 +59,11 @@ export function 공고모양(j: any) {
         contactPhone: j.is_external || j.contact_phone_hidden ? '' : (j.external_contact_phone || ''),
         contactEmail: j.is_external || j.contact_email_hidden ? '' : (j.external_contact_email || ''),
         contactKakao: j.is_external || j.contact_kakao_hidden ? '' : (j.external_contact_kakao || ''),
-        contactMethods: j.is_external ? ['뷰티워크 온라인지원'] : (Array.isArray(j.contact_methods) ? j.contact_methods : []),
+        // 지원방법은 폼에 고른 그대로 나간다. 예전에는 대행(비회원) 공고면 무조건
+        // 「뷰티워크 온라인지원」으로 바꿔 놓았는데, 그러면 알바가 폼에서 「전화」를
+        // 골라도 공고에는 다른 말이 실려 등록 화면과 공고가 갈라졌다. 고쳐야 할 것이
+        // 있으면 알바가 폼에서 고치면 된다 — 화면이 몰래 바꾸지 않는다.
+        contactMethods: Array.isArray(j.contact_methods) ? j.contact_methods : [],
         companyInfo: {
           name: j.company?.company_name || '',
           brandName: j.company?.brand_name || '',
