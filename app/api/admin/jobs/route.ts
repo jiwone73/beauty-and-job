@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_locations, work_type, experience_level, deadline, categories,
-    detail_images, hiring_process, notes, benefits, responsibilities, created_by,
+    detail_images, hiring_process, benefits, responsibilities, created_by,
     apply_method, external_apply_url, external_contact_email, external_contact_kakao,
     external_contact_name, external_contact_phone, contact_methods,
     employment_type, benefit_tags, work_days, work_time, work_time_slots, headcount, work_period, education, source_url,
@@ -212,7 +212,8 @@ export async function POST(req: NextRequest) {
         experience_level || 'ANY', deadline || null, categories || [],
         JSON.stringify(detail_images || []),
         JSON.stringify(hiring_process || []),
-        notes || null, benefits || null,
+        null, benefits || null, // 비고 칸은 없앴다 — 상세요강 하나로 간다
+
         // 누가 올렸는지는 토큰에서 가져온다 — 알바 실적 집계가 여기에 달려 있어
         // 본문 값을 그대로 믿으면 안 된다.
         auth?.sub || created_by || 'admin',

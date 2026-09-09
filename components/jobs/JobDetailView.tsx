@@ -465,9 +465,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {job.description?.trim() && (
                   <p className="job-detail-desc" style={{ padding: "18px 24px 0", margin: 0 }}>{job.description.trim()}</p>
                 )}
-                {job.notes?.trim() && (
-                  <p className="job-detail-desc" style={{ padding: "14px 24px 24px", margin: 0 }}>{job.notes.trim()}</p>
-                )}
               </section>
             );
           })()
@@ -477,11 +474,6 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             <section className="job-detail-section">
               <h2 className="job-detail-section-title">상세요강</h2>
               <p className="job-detail-desc">{job.description.trim()}</p>
-              {/* 비고는 원래 같은 글에서 갈라져 나온 내용이라 상세요강 안에 이어 붙인다.
-                  따로 떼어 두면 근무조건이 두 군데로 흩어져 읽기 어렵다. */}
-              {job.notes?.trim() && (
-                <p className="job-detail-desc" style={{ marginTop: 14 }}>{job.notes.trim()}</p>
-              )}
             </section>
           )}
 

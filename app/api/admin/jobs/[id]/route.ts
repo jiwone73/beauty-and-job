@@ -75,7 +75,7 @@ export async function PATCH(
     "salary_min", "salary_max", "salary_type",
     "location", "address", "work_type", "experience_level",
     "deadline", "status", "categories", "detail_images",
-    "hiring_process", "notes",
+    "hiring_process",
     "work_days", "work_time", "work_time_slots", "work_period",
     "responsibilities", "headcount", "education", "source_url",
     "salary_text", "headcount_text", "gender_preference", "positions", "work_locations",

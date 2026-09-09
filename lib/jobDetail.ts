@@ -90,7 +90,6 @@ export async function 공고읽기(id: string) {
     contact_email_hidden: !!job.contact_email_hidden,
     contact_kakao_hidden: !!job.contact_kakao_hidden,
     contact_methods: job.contact_methods || [],
-    notes: job.notes || '',
     responsibilities: job.responsibilities || '',
     work_days: job.work_days || '',
     work_time: job.work_time || '',

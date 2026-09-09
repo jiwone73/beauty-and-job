@@ -39,7 +39,6 @@ export function 공고모양(j: any) {
         benefits: (Array.isArray(j.benefit_tags) && j.benefit_tags.length) ? j.benefit_tags : (j.benefits ? j.benefits.split('\n').filter(Boolean) : []),
         responsibilities: j.responsibilities ? String(j.responsibilities).split('\n').filter(Boolean) : [],
         process: j.hiring_process || [],
-        notes: j.notes || '',
         logo_url: j.company?.logo_url,
         // 공고에 지정한 상단 이미지가 있으면 그걸 쓰고, 없으면(null) 기업정보 커버로 폴백.
         //   공고에서 지운 경우엔 빈 배열이 와서 상단 이미지 없이 표시된다(기업정보는 그대로).

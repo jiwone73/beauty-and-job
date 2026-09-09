@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     title, job_type, job_category_id, description, requirements,
     preferred_qualifications, salary_min, salary_max, salary_type,
     location, address, work_type, experience_level, deadline, categories,
-    detail_images, hiring_process, notes, benefits, employment_type, benefit_tags,
+    detail_images, hiring_process, benefits, employment_type, benefit_tags,
     work_days, work_time, work_time_slots, responsibilities, headcount,
     work_period, contact_methods, education, gender_preference, positions, cover_images, status: reqStatus,
     // 접수담당자 — 여태 받지 않아 기업회원이 적어도 저장되지 않고 사라졌다.
@@ -109,7 +109,8 @@ export async function POST(req: NextRequest) {
       experience_level || 'ANY', deadline || null, categories || [],
       JSON.stringify(detail_images || []),
       JSON.stringify(hiring_process || []),
-      notes || null,
+      null, // 비고 칸은 없앴다 — 상세요강 하나로 간다
+
       benefits || null,
       employment_type || null,
       benefit_tags || [],

@@ -38,7 +38,7 @@ export async function PATCH(
     "benefits", "employment_type", "benefit_tags", "salary_min", "salary_max", "salary_type",
     "location", "address", "work_type", "experience_level",
     "deadline", "status", "categories", "detail_images",
-    "hiring_process", "notes",
+    "hiring_process",
     "work_days", "work_time", "work_time_slots", "work_period",
     "headcount", "contact_methods", "responsibilities", "education", "gender_preference", "positions",
     "cover_images",

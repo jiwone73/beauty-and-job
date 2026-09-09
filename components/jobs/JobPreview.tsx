@@ -19,7 +19,6 @@ interface JobPreviewProps {
   requirements: string;
   preferred: string;
   hiringProcess: string[];
-  notes: string;
   detailImages: { url: string; name: string }[];
 }
 
@@ -86,7 +85,6 @@ const JobPreview = forwardRef<HTMLDivElement, JobPreviewProps>(function JobPrevi
         </div>
       )}
 
-      {p.notes && <Block title="비고 · 유의사항" text={p.notes} />}
 
       {p.detailImages.length > 0 && (
         <div className="rp-section">

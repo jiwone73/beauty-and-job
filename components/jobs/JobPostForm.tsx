@@ -113,7 +113,7 @@ const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "�
 // 같은 말이 두 번 실리는 것을 막는 장치.
 //
 // 파서는 원문을 상세요강에 통째로 담으면서, 그 안의 「우대 조건 : …」·「급여 조건 : …」
-// 같은 줄을 우대사항·비고 칸에도 따로 담아 보낸다. 그 칸들을 다시 상세요강에 이어
+// 같은 줄을 우대사항 칸에도 따로 담아 보낸다. 그 칸을 다시 상세요강에 이어
 // 붙이니 같은 문장이 두 번 나갔다. 예전 검사는 글자가 똑같을 때만 걸러서
 // 「우대 조건 : 책임감 있고…」와 「책임감 있고…」를 다른 줄로 봤다.
 //
@@ -150,27 +150,6 @@ const 상세합치기 = (...조각: (string | null | undefined)[]) => {
     const 남길줄 = 글.split("\n").filter((줄) => {
       const 열쇠 = 열쇠만들기(줄);
       if (!열쇠.전체) return true;         // 빈 줄은 모양이라 세지 않는다
-      if (같은말있나(본줄, 열쇠)) return false;
-      본줄.push(열쇠);
-      return true;
-    });
-    const 남은글 = 남길줄.join("\n").trim();
-    if (남은글) 담을것.push(남은글);
-  }
-  return 담을것.join("\n\n");
-};
-
-/** 비고에 담을 것 중, 상세요강에 이미 적힌 말은 뺀다.
- *  파서가 급여·근무처·희망직원을 상세요강에도 넣고 비고에도 넣어 보내는 일이 잦다. */
-const 비고추리기 = (상세요강: string, 조각: (string | null | undefined)[]) => {
-  const 본줄: 줄열쇠[] = 상세요강.split("\n").map(열쇠만들기).filter((k) => k.전체);
-  const 담을것: string[] = [];
-  for (const 조각하나 of 조각) {
-    const 글 = (조각하나 || "").trim();
-    if (!글) continue;
-    const 남길줄 = 글.split("\n").filter((줄) => {
-      const 열쇠 = 열쇠만들기(줄);
-      if (!열쇠.전체) return true;
       if (같은말있나(본줄, 열쇠)) return false;
       본줄.push(열쇠);
       return true;
@@ -663,7 +642,6 @@ export default function JobPostForm({
   const [detailImages, setDetailImages] = useState<{ url: string; name: string; readable?: boolean; fromSource?: boolean }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [hiringProcess, setHiringProcess] = useState<string[]>([]);
-  const [notes, setNotes] = useState("");
   const [benefitTags, setBenefitTags] = useState<string[]>([]);
   const [benefitTagOptions, setBenefitTagOptions] = useState<{ name: string; is_curated: boolean }[]>([]); // 복리후생 마스터(DB)
   const [benefitSearch, setBenefitSearch] = useState("");
@@ -690,7 +668,7 @@ export default function JobPostForm({
   const snapshot = () => ({
     v: 1,
     at: new Date().toISOString(),
-    form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations,
+    form, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations,
     detailImages, bannerImages, hiringProcess, benefitTags,
     salaryNego, salaryType, salaryMax, salaryByCat,
     pasteText, pasteTitle, ocrSourceUrl, parseUrl, importMode, findQuery,
@@ -712,7 +690,7 @@ export default function JobPostForm({
     }, 600);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, notes, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
+  }, [form, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
       hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, pasteTitle, ocrSourceUrl,
       parseUrl, importMode, findQuery, importImages, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
       nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
@@ -755,7 +733,7 @@ export default function JobPostForm({
       : Array.isArray(v) ? v.some(뭔가있음)
       : v && typeof v === "object" ? Object.values(v).some(뭔가있음)
       : false;
-    const 살펴볼것 = ["form", "notes", "categories", "posMeta", "regionList", "extraLocations",
+    const 살펴볼것 = ["form", "categories", "posMeta", "regionList", "extraLocations",
       "detailImages", "bannerImages", "importImages", "hiringProcess", "benefitTags",
       "pasteText", "pasteTitle", "ocrSourceUrl", "parseUrl", "findQuery",
       "newCompanyName", "newBrandName", "nmDescription", "nmAddress", "nmAddressDetail",
@@ -764,7 +742,7 @@ export default function JobPostForm({
     if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
     if (!자동복원) { set되살릴것(d.at || ""); return; }
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
-    set(setForm, d.form); set(setNotes, d.notes); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
+    set(setForm, d.form); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
     set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
     set(setExtraLocations, d.extraLocations);
     set(setDetailImages, d.detailImages); set(setBannerImages, d.bannerImages);
@@ -1077,10 +1055,7 @@ export default function JobPostForm({
   const [processModalOpen, setProcessModalOpen] = useState(false);
   const [processDraft, setProcessDraft] = useState<string[]>([]);
   const [processCustom, setProcessCustom] = useState("");
-  const [notesModalOpen, setNotesModalOpen] = useState(false);
-  const [notesModalValue, setNotesModalValue] = useState("");
   const processPopRef = useRef<HTMLDivElement>(null);
-  const notesPopRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!processModalOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -1089,14 +1064,6 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [processModalOpen]);
-  useEffect(() => {
-    if (!notesModalOpen) return;
-    const onDown = (e: MouseEvent) => {
-      if (notesPopRef.current && !notesPopRef.current.contains(e.target as Node)) setNotesModalOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [notesModalOpen]);
 
   useEffect(() => {
     // 업체 유형이 정해진 기업회원은 자동 지정(잠금 없음). 관리자는 미선택("")으로 시작해 직접 고르게 함.
@@ -1156,7 +1123,6 @@ export default function JobPostForm({
       // 공고에 저장된 상단 이미지를 그대로 복원. 빈 배열이면 '없음'을 유지(기업 커버로 되살리지 않음).
       setBannerImages(((Array.isArray(j.cover_images) ? j.cover_images : (j.company?.cover_images || [])) as any[]).map((c: any) => ({ url: c?.url, name: "배너" })).filter((x: any) => x.url));
       setHiringProcess(j.hiring_process || []);
-      setNotes(j.notes || "");
       setBenefitTags(j.benefit_tags || []);
       // 근무 조건 복원
       setWorkPeriod(j.work_period || "");
@@ -1260,9 +1226,6 @@ export default function JobPostForm({
     setProcessModalOpen(false);
   };
 
-  // ── 비고 모달 핸들러 ───────────────────────
-  const openNotesModal = () => { setNotesModalValue(notes); setNotesModalOpen(true); };
-  const saveNotesModal = () => { setNotes(notesModalValue); setNotesModalOpen(false); };
 
   // 그림에 글자가 있는지 대충 가려낸다. 포스터는 흰 바탕에 검은 글씨라 밝기가
   // 양극단에 몰리고 가로줄마다 밝기가 급하게 오르내린다. 매장 사진은 그 반대다.
@@ -1557,7 +1520,7 @@ export default function JobPostForm({
       setBenefitTags([]); setHiringProcess([]); setCategories([]); setPosMeta({});
       setWorkPeriod(""); setWorkDays([]); setWorkDaysNego(false);
       setWorkTimeStart(""); setWorkTimeEnd(""); setWorkTimeNego(false);
-      setSalaryNego(false); setSalaryMax(""); setNotes("");
+      setSalaryNego(false); setSalaryMax("");
       if (mode === "admin") {
         setNewCompanyName(""); setNewBrandName(""); setNmHomepage(""); setNmContactEmail("");
         setNmDescription(""); setNmAddress(""); setNmAddressDetail(""); setNmIndustry("");
@@ -1653,7 +1616,6 @@ export default function JobPostForm({
         return (typeof v === "string" && v.trim()) ? tidyText(v) : fb;
       };
       // 원문이 담당업무·자격요건·우대사항으로 나뉘어 와도 상세요강 한 칸에 모은다.
-      // 비고에 담을 것을 고를 때도 이 글을 견줘야 해서 먼저 만들어 둔다.
       const 상세요강 = 상세합치기(asText(d.main_duties, ""), asText(d.description, ""),
                                   asText(d.requirements, ""), asText(d.preferred, ""));
       // 불러오기는 '새 소스로 통째 교체' → 소스에 없는 항목은 이전 불러오기 잔여값을 남기지 않고 비운다.
@@ -1719,10 +1681,6 @@ export default function JobPostForm({
         const m = d.work_time.trim().match(/^(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})$/);
         if (m) { setWorkTimeNego(false); setWorkTimeStart(`${m[1].padStart(2, "0")}:${m[2]}`); setWorkTimeEnd(`${m[3].padStart(2, "0")}:${m[4]}`); }
       }
-      // 비고는 상세요강에 없는 말만 담는다. 파서가 급여·근무처·희망직원을 양쪽에 다
-      // 넣어 보내서, 그대로 받으면 구직자 화면에 같은 줄이 두 번 나갔다.
-      const extraLines = 비고추리기(상세요강, [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""]);
-      setNotes(extraLines);
       {
         const c: string[] = [];
         if (d.contact_phone) c.push(`전화 ${d.contact_phone}`);
@@ -1987,7 +1945,7 @@ export default function JobPostForm({
 
   // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
   const runCurate = async () => {
-    const hasAny = [form.title, nmDescription, form.description, form.responsibilities, form.requirements, form.preferred, form.benefits, notes].some((v) => (v || "").trim());
+    const hasAny = [form.title, nmDescription, form.description, form.responsibilities, form.requirements, form.preferred, form.benefits].some((v) => (v || "").trim());
     if (!hasAny) { setParseMsg("먼저 공고 내용을 채워주세요."); return; }
     setCurating(true); setParseMsg("");
     try {
@@ -1999,7 +1957,7 @@ export default function JobPostForm({
           title: form.title, company_description: nmDescription,
           description: form.description, responsibilities: form.responsibilities,
           requirements: form.requirements, preferred: form.preferred,
-          benefits: form.benefits, notes,
+          benefits: form.benefits,
           job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
         }),
       });
@@ -2018,7 +1976,6 @@ export default function JobPostForm({
         benefits: d.benefits || f.benefits,
       }));
       if (typeof d.company_description === "string" && d.company_description.trim()) setNmDescription(d.company_description);
-      if (typeof d.notes === "string" && d.notes.trim()) setNotes(d.notes);
       setParseMsg("✓ 큐레이션 완료 — 내용을 뷰티워크 톤으로 다듬었어요. 확인 후 등록하세요.");
     } catch { setParseMsg("오류가 발생했습니다."); }
     finally { setCurating(false); }
@@ -2491,7 +2448,6 @@ export default function JobPostForm({
   const 남은자리글 = (제목쓰는중 || !form.title) ? 제목자리글.slice(form.title.length) : "";
 
   const processFilled = hiringProcess.length > 0;
-  const notesFilled = !!notes.trim();
 
   // 미리보기용 job 객체 (실제 상세 페이지와 동일한 뷰로 렌더)
   const cp = companyProfile;
@@ -2560,7 +2516,6 @@ export default function JobPostForm({
       categories: [...new Set(categories.map(baseCat))],
       detail_images: detailImages,
       hiring_process: hiringProcess.filter((s) => s.trim()),
-      notes: notes.trim() || null,
       // 지원방법은 여기서 최종값까지 만든다. 회원 공고는 뷰티워크 온라인지원
       // (NATIVE), 대행으로 올리는 비회원 공고만 고른 방법을 쓴다. 예전에는 폼이
       // 고른 값을 그대로 보내고 서버가 회원이면 NATIVE 로 바꿔 놨다 — 미리보기가
@@ -3892,7 +3847,7 @@ export default function JobPostForm({
 
         </div>
 
-        {/* ═══ 오른쪽 컬럼: 상세이미지 + 상세내용 + 채용절차·비고 ═══ */}
+        {/* ═══ 오른쪽 컬럼: 상세이미지 + 상세내용 + 채용절차 ═══ */}
         <div style={{ alignSelf: "stretch", display: "flex", flexDirection: "column", gap: "8px" }}>
 
           {/* 상세요강 */}
