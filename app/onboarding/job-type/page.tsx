@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
+import RegionSelectModal from "@/components/RegionSelectModal";
+import { shortRegion } from "@/lib/regionShort";
 import { useAuthStore } from "@/lib/store/authStore";
 
 export default function OnboardingJobTypePage() {
@@ -20,6 +22,12 @@ export default function OnboardingJobTypePage() {
   const [가입표, set가입표] = useState<string | null>(null);
   const [표번호있나, set표번호있나] = useState(false);
   const [읽는중, set읽는중] = useState(true);
+
+  // 희망 근무지역. 직군과 함께 「어떤 일을 어디서 찾느냐」의 나머지 반쪽이라
+  // 여기서 받는다 — 이게 없으면 기업의 지역 필터에 아예 걸리지 않는다.
+  // 고르는 창은 프로필에서 쓰는 것을 그대로 쓴다(RegionSelectModal).
+  const [지역들, set지역들] = useState<string[]>([]);
+  const [지역창, set지역창] = useState(false);
 
   // 약관은 이메일 가입과 같은 것을 쓴다(/api/terms → term_agreements).
   type 약관 = { id: string; title: string; is_required: boolean };
@@ -91,6 +99,10 @@ export default function OnboardingJobTypePage() {
       setError("휴대폰 인증을 완료해 주세요.");
       return;
     }
+    if (지역들.length === 0) {
+      setError("희망 근무지역을 골라 주세요.");
+      return;
+    }
     if (!필수동의됨) {
       setError("필수 약관에 동의해 주세요.");
       return;
@@ -99,6 +111,14 @@ export default function OnboardingJobTypePage() {
     setError("");
     const 고른약관 = 약관들.filter((t) => 동의[t.id]).map((t) => t.id);
     const 번호 = phone.replace(/\D/g, "");
+    // 창이 주는 꼴("서울특별시 강남구")을 프로필과 같은 꼴로 바꾼다.
+    // 두 화면이 다른 꼴로 저장하면 기업 검색이 한쪽을 못 읽는다.
+    const 희망지역 = 지역들.map((r) => {
+      const i = r.lastIndexOf(" ");
+      const sido = r.slice(0, i);
+      const tail = r.slice(i + 1);
+      return { sido, sigungu: tail === "전체" ? "" : tail };
+    });
     try {
       if (가입표) {
         // 아직 회원이 아니다 — 여기서 회원이 만들어지고 동의도 같이 남는다.
@@ -109,6 +129,7 @@ export default function OnboardingJobTypePage() {
             signup: 가입표,
             job_type: selected,
             phone: needPhone ? 번호 : undefined,
+            preferred_regions: 희망지역,
             agreed_term_ids: 고른약관,
           }),
         });
@@ -143,8 +164,8 @@ export default function OnboardingJobTypePage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(needPhone
-          ? { job_type: selected, phone: 번호 }
-          : { job_type: selected }),
+          ? { job_type: selected, phone: 번호, preferred_regions: 희망지역 }
+          : { job_type: selected, preferred_regions: 희망지역 }),
       });
       if (!res.ok) throw new Error("저장 실패");
 
@@ -210,6 +231,27 @@ export default function OnboardingJobTypePage() {
             </p>
           </button>
         </div>
+
+        <div className="mb-8">
+          <p className="text-[13px] text-[#6b6b6b] mb-2">
+            희망 근무지역 <span className="text-red-500">*</span>
+            <span className="text-[#9a9a9a]"> · 이 지역 공고를 먼저 보여드려요</span>
+          </p>
+          <button type="button" onClick={() => set지역창(true)}
+            className="w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
+            {지역들.length === 0
+              ? <span className="text-[#9a9a9a]">지역을 선택해 주세요</span>
+              : <span className="text-[#3a3a3a]">{지역들.map((r) => shortRegion(r)).join(" · ")}</span>}
+          </button>
+        </div>
+
+        <RegionSelectModal
+          open={지역창}
+          initial={지역들}
+          allowAny
+          onClose={() => set지역창(false)}
+          onApply={(r) => { set지역들(r); set지역창(false); }}
+        />
 
         {needPhone && (
           <div className="mb-8">
@@ -287,7 +329,7 @@ export default function OnboardingJobTypePage() {
 
         <button
           onClick={handleSubmit}
-          disabled={!selected || loading || 읽는중 || !필수동의됨 || (needPhone && !phoneVerified)}
+          disabled={!selected || loading || 읽는중 || !필수동의됨 || 지역들.length === 0 || (needPhone && !phoneVerified)}
           className="w-full h-[52px] rounded-lg bg-[#582681] text-white font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
         >
           {loading ? "저장 중..." : "시작하기"}

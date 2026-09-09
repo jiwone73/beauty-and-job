@@ -15,7 +15,7 @@ import { sendWelcomeEmail } from "@/lib/email";
 // 들어왔든 동의 기록은 한 자리에 모여야 나중에 확인할 수 있다.
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({} as any));
-  const { signup, job_type, phone, agreed_term_ids } = body || {};
+  const { signup, job_type, phone, preferred_regions, agreed_term_ids } = body || {};
 
   if (!signup) return err("SOCIAL_001", "가입 정보가 없어요. 처음부터 다시 해주세요.", 400);
 
@@ -30,6 +30,11 @@ export async function POST(req: NextRequest) {
   if (job_type !== "STORE" && job_type !== "OFFICE") {
     return err("SOCIAL_003", "직종을 선택해 주세요.", 400);
   }
+
+  // 희망 근무지역 — 프로필(PATCH /api/users/me)과 같은 꼴, 같은 한도(5개)를 쓴다.
+  const 지역 = Array.isArray(preferred_regions) ? preferred_regions : [];
+  if (지역.length === 0) return err("SOCIAL_006", "희망 근무지역을 골라 주세요.", 400);
+  if (지역.length > 5) return err("SOCIAL_007", "희망 근무지역은 최대 5개까지 가능합니다.", 400);
 
   // 필수 약관은 서버가 확인한다 — 화면에서 막는 것만으로는 요청을 직접 보내는
   // 경우를 못 막고, 동의 없이 만들어진 회원은 나중에 되돌릴 방법이 없다.
@@ -62,10 +67,11 @@ export async function POST(req: NextRequest) {
     }
 
     const ins = await client.query(
-      `INSERT INTO users (kakao_id, naver_id, name, email, phone, avatar_url, job_type, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'ACTIVE')
+      `INSERT INTO users (kakao_id, naver_id, name, email, phone, avatar_url, job_type,
+                          preferred_regions, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, 'ACTIVE')
        RETURNING id, email, name, phone, job_type, office_job_areas, status`,
-      [kakaoId, naverId, 표.name, 표.email, 번호, 표.avatarUrl, job_type]
+      [kakaoId, naverId, 표.name, 표.email, 번호, 표.avatarUrl, job_type, JSON.stringify(지역)]
     );
     const user = ins.rows[0];
 
