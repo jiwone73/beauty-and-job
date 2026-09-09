@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 마감인가 } from "@/lib/jobClosed";
+import { 님 } from "@/lib/josa";
 import { Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
@@ -106,23 +107,29 @@ function 상태(p: 제안): 상태키 {
 /** 마지막으로 무슨 일이 있었나. 주체를 반드시 밝힌다 — 「답장 기다리는 중」은
  *  누가 기다리는지가 없어 카드에서 가장 헷갈리던 말이었다. */
 function 최근활동(p: 제안): { 글: string; 때: string | null } {
-  const 이름 = p.userName;
-  if (p.applicationStatus === "PASSED") return { 글: `${이름} 최종합격`, 때: p.appliedAt };
-  if (p.appliedAt) return { 글: `${이름}이 지원했습니다`, 때: p.appliedAt };
-  if (p.declinedAt) return { 글: `${이름}이 거절했습니다`, 때: p.declinedAt };
+  // 이름 뒤 조사를 「이」로 붙박아 두어 받침 없는 이름이 전부 틀렸다
+  // (「정용희이 읽었습니다」). 님을 붙이면 받침이 생겨 조사도 하나로 정해지고,
+  // 다른 화면이 쓰는 「○○님에게 제안하기」와도 결이 맞는다.
+  const 그분 = 님(p.userName);
+  if (p.canceledAt) return { 글: "우리가 제안을 거뒀습니다", 때: p.canceledAt };
+  if (p.applicationStatus === "PASSED") return { 글: `${p.userName}님 최종합격`, 때: p.appliedAt };
+  if (p.appliedAt) return { 글: `${그분} 지원했습니다`, 때: p.appliedAt };
+  if (p.declinedAt) return { 글: `${그분} 거절했습니다`, 때: p.declinedAt };
   if (p.blocked) return { 글: "차단됨", 때: null };
   if (p.appointmentAt) {
     const d = new Date(p.appointmentAt);
     return { 글: `${d.getMonth() + 1}.${d.getDate()} 면접 약속`, 때: p.lastMessageAt };
   }
+  // 우리가 한 일에도 주체를 밝힌다. 「메시지를 보냈습니다」만 있으면 그 줄이
+  // 누구의 줄인지 알면서도 누가 보냈는지는 모른다.
   if (p.messageCount > 0) {
     return p.lastSender === "USER"
-      ? { 글: `${이름}이 메시지를 보냈습니다`, 때: p.lastMessageAt }
-      : { 글: "메시지를 보냈습니다", 때: p.lastMessageAt };
+      ? { 글: `${그분} 메시지를 보냈습니다`, 때: p.lastMessageAt }
+      : { 글: "우리가 메시지를 보냈습니다", 때: p.lastMessageAt };
   }
-  if (p.interestedAt) return { 글: `${이름}이 제안을 수락했습니다`, 때: p.interestedAt };
-  if (p.readAt) return { 글: `${이름}이 읽었습니다`, 때: p.readAt };
-  return { 글: "제안을 보냈습니다", 때: p.createdAt };
+  if (p.interestedAt) return { 글: `${그분} 제안을 수락했습니다`, 때: p.interestedAt };
+  if (p.readAt) return { 글: `${그분} 읽었습니다`, 때: p.readAt };
+  return { 글: "우리가 제안을 보냈습니다", 때: p.createdAt };
 }
 
 /** 다음에 할 일. 우리 차례인 것만 색을 채운다. */
@@ -442,18 +449,21 @@ export default function CompanyProposalsPage() {
                       {활.때 && <i>{때(활.때)}</i>}
                     </td>
                     <td className="c-act">
-                      {할 ? (
-                        <button type="button" className={`prop-act${할.우리차례 ? " key" : ""}`}
-                          onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
-                          {할.글}
-                        </button>
-                      ) : st === "답변대기" ? (
-                        /* 대기 줄만 할 일이 없어 비어 있었다. 답을 기다리는 것 말고
-                           할 수 있는 일이 하나 생겼다 — 거두는 것. 색은 채우지
-                           않는다. 나아가는 일이 아니라 물리는 일이다. */
-                        <button type="button" className="prop-act quiet"
-                          onClick={() => set취소할것(p)}>제안 취소</button>
-                      ) : null}
+                      <div className="prop-acts">
+                        {/* 거두는 길은 어느 단계에나 있어야 한다 — 대화 중에 갑자기
+                            다른 사람을 뽑는 일이 제일 흔하다. 이미 끝난 것만 뺀다.
+                            물리는 일은 왼쪽에 옅게, 나아가는 일은 오른쪽에 둔다. */}
+                        {!["채용완료", "거절", "취소"].includes(st) && (
+                          <button type="button" className="prop-act quiet"
+                            onClick={() => set취소할것(p)}>제안 취소</button>
+                        )}
+                        {할 && (
+                          <button type="button" className={`prop-act${할.우리차례 ? " key" : ""}`}
+                            onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
+                            {할.글}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

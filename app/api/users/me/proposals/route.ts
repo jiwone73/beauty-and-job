@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
        JOIN companies c    ON c.id  = p.company_id
        JOIN job_postings jp ON jp.id = p.job_posting_id
        LEFT JOIN user_profiles up ON up.user_id = p.user_id
-       WHERE p.user_id = $1 AND p.hidden_at IS NULL AND p.canceled_at IS NULL
+       WHERE p.user_id = $1 AND p.hidden_at IS NULL
        ORDER BY p.created_at DESC
        LIMIT 100`,
       [auth!.sub]

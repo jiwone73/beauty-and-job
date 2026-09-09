@@ -15232,7 +15232,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
    머리 글자와 단추 글자가 12px 어긋나 보인다. */
-.prop-table .c-act { width: 108px; text-align: center; }
+.prop-table .c-act { width: 176px; text-align: right; }
+/* 물리는 일(제안 취소)은 왼쪽에 옅게, 나아가는 일(채팅하기 등)은 오른쪽에.
+   순서를 섞으면 누르려던 것을 놓친다. */
+.prop-acts { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
 
 .prop-who {
   display: inline-flex; align-items: center; gap: 8px;
