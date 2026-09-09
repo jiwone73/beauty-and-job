@@ -418,6 +418,17 @@ export async function POST(req: NextRequest) {
         const 확실 = pt._확실한가; delete pt._확실한가;
         out = { ...out, ...pt };
         out.description = 원문본문(pastedText);
+        // 상세요강이 원문 그대로다. 그러니 그 원문에서 뽑아 둔 글 항목을 따로 넘기면
+        // 안 된다 — 폼은 이 항목들을 상세요강 뒤에 이어 붙이도록 되어 있어서, 같은
+        // 문장이 공고에 두 번 나간다.
+        //   「우대 조건 : 책임감 있고…」가 상세요강에 있는데 맨 밑에 「책임감 있고…」가
+        //   또 붙고, 「근무처」·「희망 직원」이 비고로 한 번 더 나갔다.
+        // 이 항목들은 붙여넣기 갈래에서 상세요강을 만드는 데만 쓰였다. 상세요강이
+        // 이미 원문이니 여기서 비우면 잃는 것이 없다.
+        out.preferred = "";
+        out.requirements = "";
+        out.main_duties = "";
+        out.extra_notes = "";
         if (pastedTitle) out.title = pastedTitle;
         if (확실) { out.ai_parsed = true; freeParsed = true; }
       }

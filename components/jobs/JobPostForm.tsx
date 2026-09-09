@@ -110,9 +110,37 @@ const SOURCE_CAFES: { name: string; url: string }[] = [
 ];
 
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
+// 같은 말이 두 번 실리는 것을 막는 장치.
+//
+// 파서는 원문을 상세요강에 통째로 담으면서, 그 안의 「우대 조건 : …」·「급여 조건 : …」
+// 같은 줄을 우대사항·비고 칸에도 따로 담아 보낸다. 그 칸들을 다시 상세요강에 이어
+// 붙이니 같은 문장이 두 번 나갔다. 예전 검사는 글자가 똑같을 때만 걸러서
+// 「우대 조건 : 책임감 있고…」와 「책임감 있고…」를 다른 줄로 봤다.
+//
+// 그래서 두 가지를 더 본다.
+//   · 한쪽이 다른 쪽을 통째로 품고 있으면 같은 말이다(라벨만 더 붙은 경우).
+//     「협의」 같은 짧은 줄까지 이러면 멀쩡한 줄이 사라지므로 여덟 자부터 본다.
+//   · 라벨에서 「조건·사항·내용」을 떼고 견준다. 「급여 조건 : 월 300만원」과
+//     「급여: 월 300만원」은 하려는 말이 같다. 값만으로 견주지 않는 이유는
+//     「경력 : 무관」과 「학력 : 무관」처럼 라벨이 달라야 뜻이 갈리는 줄이 있어서다.
+type 줄열쇠 = { 전체: string; 정규: string };
+const 열쇠만들기 = (줄: string): 줄열쇠 => {
+  const 전체 = 줄.replace(/\s+/g, "");
+  const i = 전체.indexOf(":");
+  if (i <= 0 || i > 12) return { 전체, 정규: 전체 };
+  const 라벨 = 전체.slice(0, i).replace(/(조건|사항|내용|여부|정보)$/, "");
+  const 값 = 전체.slice(i + 1);
+  return { 전체, 정규: (라벨 && 값) ? `${라벨}:${값}` : 전체 };
+};
+const 같은말있나 = (담긴: 줄열쇠[], 이번: 줄열쇠) =>
+  담긴.some((앞) =>
+    앞.전체 === 이번.전체
+    || 앞.정규 === 이번.정규
+    || (이번.전체.length >= 8 && 앞.전체.includes(이번.전체)));
+
 // 나뉘어 온 글을 한 덩이로 잇는다. 빈 것은 건너뛰고, 사이는 빈 줄 하나로 띄운다.
 const 상세합치기 = (...조각: (string | null | undefined)[]) => {
-  const 본줄 = new Set<string>();
+  const 본줄: 줄열쇠[] = [];
   const 담을것: string[] = [];
   for (const 조각하나 of 조각) {
     const 글 = (조각하나 || "").trim();
@@ -120,10 +148,31 @@ const 상세합치기 = (...조각: (string | null | undefined)[]) => {
     // 통째로 이미 담긴 조각은 버린다(파서가 description 과 requirements 에 같은 글을
     // 넣어 보내는 일이 흔하다).
     const 남길줄 = 글.split("\n").filter((줄) => {
-      const 열쇠 = 줄.replace(/\s+/g, "");
-      if (!열쇠) return true;              // 빈 줄은 모양이라 세지 않는다
-      if (본줄.has(열쇠)) return false;
-      본줄.add(열쇠);
+      const 열쇠 = 열쇠만들기(줄);
+      if (!열쇠.전체) return true;         // 빈 줄은 모양이라 세지 않는다
+      if (같은말있나(본줄, 열쇠)) return false;
+      본줄.push(열쇠);
+      return true;
+    });
+    const 남은글 = 남길줄.join("\n").trim();
+    if (남은글) 담을것.push(남은글);
+  }
+  return 담을것.join("\n\n");
+};
+
+/** 비고에 담을 것 중, 상세요강에 이미 적힌 말은 뺀다.
+ *  파서가 급여·근무처·희망직원을 상세요강에도 넣고 비고에도 넣어 보내는 일이 잦다. */
+const 비고추리기 = (상세요강: string, 조각: (string | null | undefined)[]) => {
+  const 본줄: 줄열쇠[] = 상세요강.split("\n").map(열쇠만들기).filter((k) => k.전체);
+  const 담을것: string[] = [];
+  for (const 조각하나 of 조각) {
+    const 글 = (조각하나 || "").trim();
+    if (!글) continue;
+    const 남길줄 = 글.split("\n").filter((줄) => {
+      const 열쇠 = 열쇠만들기(줄);
+      if (!열쇠.전체) return true;
+      if (같은말있나(본줄, 열쇠)) return false;
+      본줄.push(열쇠);
       return true;
     });
     const 남은글 = 남길줄.join("\n").trim();
@@ -1587,25 +1636,31 @@ export default function JobPostForm({
       // 마감일: 상시채용이면 토글 ON, 아니면 날짜 세팅
       const isAlways = d.always_open === true || (!d.deadline);
       setAlwaysOpen(isAlways);
-      // 불러온 본문 자동 정렬: 원문 HTML에서 <p>·<br>가 줄바꿈으로 변환되며 줄 사이 빈 줄(엔터 여러 번)이 잔뜩 끼는데,
-      // 이걸 그대로 두면 상세요강 행간이 과하게 벌어진다. → 줄 끝 공백 제거 + 빈 줄 모두 제거(단일 행간)로 정돈.
+      // 불러온 본문 자동 정렬: 원문 HTML에서 <p>·<br>가 줄바꿈으로 변환되며 줄 사이 빈 줄(엔터 여러 번)이
+      // 잔뜩 끼는데, 그대로 두면 상세요강 행간이 과하게 벌어진다.
+      //
+      // 그렇다고 빈 줄을 다 지우면 안 된다. 매장이 항목 사이를 한 줄씩 띄워 적은 글까지
+      // 붙어 버려, 원문과 다른 모양으로 공고가 나간다. 그래서 「빈 줄 두 개 이상은 하나로」만
+      // 한다 — 과하게 벌어진 것은 줄이고, 사람이 띄운 한 줄은 그대로 둔다.
       const tidyText = (s: string) => s
         .replace(/\r\n?/g, "\n")
         .split("\n").map((l) => l.replace(/\s+$/g, "")).join("\n")
-        .replace(/\n{2,}/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
         .trim();
       // 텍스트 필드가 배열로 와도 안전하게 문자열로 변환 + 행간 정돈
       const asText = (v: any, fb: string) => {
         if (Array.isArray(v)) { const j = v.filter(Boolean).join("\n"); return j ? tidyText(j) : fb; }
         return (typeof v === "string" && v.trim()) ? tidyText(v) : fb;
       };
+      // 원문이 담당업무·자격요건·우대사항으로 나뉘어 와도 상세요강 한 칸에 모은다.
+      // 비고에 담을 것을 고를 때도 이 글을 견줘야 해서 먼저 만들어 둔다.
+      const 상세요강 = 상세합치기(asText(d.main_duties, ""), asText(d.description, ""),
+                                  asText(d.requirements, ""), asText(d.preferred, ""));
       // 불러오기는 '새 소스로 통째 교체' → 소스에 없는 항목은 이전 불러오기 잔여값을 남기지 않고 비운다.
       setForm((f) => ({
         ...f,
         title: d.title || "",
-        // 원문이 담당업무·자격요건·우대사항으로 나뉘어 와도 상세요강 한 칸에 모은다.
-        description: 상세합치기(asText(d.main_duties, ""), asText(d.description, ""),
-                                asText(d.requirements, ""), asText(d.preferred, "")),
+        description: 상세요강,
         deadline: isAlways ? "" : (d.deadline || ""),
         requirements: "",
         preferred: "",
@@ -1664,8 +1719,10 @@ export default function JobPostForm({
         const m = d.work_time.trim().match(/^(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})$/);
         if (m) { setWorkTimeNego(false); setWorkTimeStart(`${m[1].padStart(2, "0")}:${m[2]}`); setWorkTimeEnd(`${m[3].padStart(2, "0")}:${m[4]}`); }
       }
-      const extraLines = [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""].filter(Boolean).join("\n\n");
-      if (extraLines) setNotes(extraLines);
+      // 비고는 상세요강에 없는 말만 담는다. 파서가 급여·근무처·희망직원을 양쪽에 다
+      // 넣어 보내서, 그대로 받으면 구직자 화면에 같은 줄이 두 번 나갔다.
+      const extraLines = 비고추리기(상세요강, [(!salaryStructured && d.salary) ? `급여: ${d.salary}` : "", d.extra_notes || ""]);
+      setNotes(extraLines);
       {
         const c: string[] = [];
         if (d.contact_phone) c.push(`전화 ${d.contact_phone}`);
