@@ -3416,7 +3416,7 @@ export default function JobPostForm({
                                             <button key={t} type="button" disabled={잠김}
                                               onClick={() => setPos(c, "employment",
                                                 (on ? 고른것.filter((x) => x !== t) : [...고른것, t]).join(", "))}
-                                              style={{ padding: "5px 11px", borderRadius: 999, fontSize: 13,
+                                              style={{ padding: "5px 11px", borderRadius: "var(--chip-radius)", fontSize: 13,
                                                 cursor: 잠김 ? "not-allowed" : "pointer",
                                                 border: on ? "1.5px solid #582681" : "1.5px solid #efeff1",
                                                 background: on ? "#582681" : "#fff",
@@ -3535,7 +3535,7 @@ export default function JobPostForm({
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxHeight: 200, overflowY: "auto", marginTop: 10 }}>
                           {visible.map((o) => { const on = benefitTags.includes(o.name); return (
                             <button key={o.name} type="button" onClick={() => toggleBenefit(o.name)}
-                              style={{ padding: "7px 13px", borderRadius: 999, fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              style={{ padding: "7px 13px", borderRadius: "var(--chip-radius)", fontSize: 14, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666", display: "inline-flex", alignItems: "center", gap: 4 }}>
                               {o.name}
                               {/* 고른 것은 여기 x로 바로 뺀다 — 아래 "담은 것" 칩을 따로 또
                                   두면 같은 값이 위아래로 겹쳐 보여 헷갈렸다. */}
@@ -3738,7 +3738,7 @@ export default function JobPostForm({
                               return (
                                 <button key={m} type="button"
                                   onClick={() => setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))}
-                                  style={{ padding: "5px 11px", borderRadius: 999, fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
+                                  style={{ padding: "5px 11px", borderRadius: "var(--chip-radius)", fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
                               );
                             })}
                           </div>

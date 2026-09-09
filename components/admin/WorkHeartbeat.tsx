@@ -98,7 +98,7 @@ export default function WorkHeartbeat() {
       style={{
         position: "fixed", right: 16, bottom: 16, zIndex: 9999,
         display: "flex", alignItems: "center", gap: 10,
-        padding: "10px 14px", borderRadius: 999,
+        padding: "10px 14px", borderRadius: "var(--chip-radius)",
         background: paused ? "#6b6b6b" : "#582681", color: "#fff",
         boxShadow: "0 6px 20px rgba(0,0,0,.18)",
         fontSize: 13, fontVariantNumeric: "tabular-nums",

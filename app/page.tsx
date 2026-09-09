@@ -296,7 +296,7 @@ function Hero() {
 }
 
 /* ============================================
-   섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
+   섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
    ============================================ */
 /* ============================================
    섹션: 지금 적극 채용 중
@@ -320,7 +320,7 @@ function SectionActiveHiring({ onLoaded }: { onLoaded: (ids: string[]) => void }
         <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
         <div className="section-head">
           <div>
-            <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
+            <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
             <p className="section-sub">여러 채용 지표를 분석해, 지금 가장 적극적으로 채용 중인 곳만 엄선했어요</p>
           </div>
           

@@ -42,6 +42,10 @@
   --card-badge: 11.5px;      /* 뱃지 */
   /* 화면 제목 — 머리줄로 들어오든 사이드로 들어오든 한 값이다. */
   --page-title: 20px;
+  /* 칩·태그·탭의 모서리. 알약(100px)에서 둥근 네모로 바꾸면서 값을 한 곳에 모았다 —
+     같은 것을 34군데에 적어 두면 다음에 또 갈릴 때 몇 개는 남는다.
+     동그라미여야 하는 것(알림 점, 진행 막대, 숫자 배지)은 이 값을 쓰지 않는다. */
+  --chip-radius: 8px;
   --card-title-c: #555;
   --card-sub-c: #666;
   --card-meta-c: #8a8a90;
@@ -357,7 +361,7 @@
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid var(--color-border);
   padding: 7px 14px;
-  border-radius: 100px;
+  border-radius: var(--chip-radius);
   font-size: 13px;
   color: #555;
   cursor: pointer;
@@ -1724,7 +1728,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-skill-add-btn { height: 48px; padding: 0 16px; background: white; border: 1px solid var(--color-border); border-radius: 8px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: inherit; }
 .cv-skill-add-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .cv-skill-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-.cv-skill-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 100px; font-size: 13px; font-weight: 400; border: 1px solid var(--color-border); background: white; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.cv-skill-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--chip-radius); font-size: 13px; font-weight: 400; border: 1px solid var(--color-border); background: white; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .cv-skill-chip:hover { border-color: var(--color-primary-light); color: var(--color-primary); }
 .cv-skill-chip.active { background: var(--color-primary); border-color: var(--color-primary); color: white; }
 .cv-skill-chip button { background: transparent; border: none; color: inherit; cursor: pointer; padding: 0; display: flex; }
@@ -1752,7 +1756,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 스킬 칩 (프로필 페이지) */
 .profile-skill-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.profile-skill-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--color-primary-soft); border-radius: 100px; font-size: 13px; font-weight: 500; color: var(--color-primary); }
+.profile-skill-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--color-primary-soft); border-radius: var(--chip-radius); font-size: 13px; font-weight: 500; color: var(--color-primary); }
 .profile-skill-chip button { background: transparent; border: none; color: var(--color-primary); cursor: pointer; font-size: 14px; padding: 0; display: flex; align-items: center; }
 
 /* ===========================================
@@ -1780,7 +1784,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .brand-search-input { flex: 1; height: 44px; border: none; outline: none; font-size: 14px; font-family: inherit; background: transparent; }
 .brand-search-input::placeholder { color: var(--color-text-mute); }
 .brand-selected-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-.brand-selected-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--color-primary); color: white; font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: 100px; }
+.brand-selected-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--color-primary); color: white; font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: var(--chip-radius); }
 .brand-selected-tag button { background: transparent; border: none; color: white; cursor: pointer; display: flex; padding: 0; }
 .brand-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
 .brand-card { background: white; border: 1.5px solid var(--color-border); border-radius: 10px; padding: 16px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; cursor: pointer; transition: all 0.15s; text-align: left; font-family: inherit; }
@@ -1809,7 +1813,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-editor p, .resume-editor a, .resume-item-text, .resume-career-dept, .resume-edu-info { overflow-wrap: anywhere; }
 .resume-sidebar { background: white; border-bottom: 1px solid var(--color-border); padding: 16px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .resume-sidebar-title { width: 100%; font-size: 12px; font-weight: 700; color: var(--color-text-mute); letter-spacing: 0.5px; margin: 0; padding: 0; }
-.resume-sidebar-item { background: #f7f7f8; border: 1px solid var(--color-border); border-radius: 100px; padding: 6px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.resume-sidebar-item { background: #f7f7f8; border: 1px solid var(--color-border); border-radius: var(--chip-radius); padding: 6px 14px; font-size: 13px; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .resume-sidebar-item:hover { background: #efeff1; color: var(--color-text); }
 /* 다 채운 칸이 보라로 든다(사람인과 같은 방식). 표시는 ✓ 하나로 두고 색만
    가르는 것이라, 아직 안 한 칸은 같은 자리에 옅은 체크로 남는다. */
@@ -1834,7 +1838,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .badge-up {
   position: relative; display: inline-flex; align-items: center; gap: 3px;
   margin-left: 6px; padding: 2px 8px; border: 1px solid var(--color-primary);
-  border-radius: 999px; background: #fff; color: var(--color-primary);
+  border-radius: var(--chip-radius); background: #fff; color: var(--color-primary);
   font-size: 11.5px; font-weight: 400; line-height: 1.6; white-space: nowrap;
   overflow: hidden; vertical-align: middle;
 }
@@ -1868,14 +1872,14 @@ input[type="range"].career-slider::-moz-range-thumb {
    고르면 자소서가 다 똑같아지기 때문이다. */
 .cl-key {
   flex: 1 1 200px; min-width: 0; height: 32px; padding: 0 11px;
-  border: 1px solid var(--color-border); border-radius: 999px; background: #fff;
+  border: 1px solid var(--color-border); border-radius: var(--chip-radius); background: #fff;
   font-family: inherit; font-size: 12.5px; color: #555;
 }
 .cl-key::placeholder { color: #c4c4c9; }
 .cl-key:focus { outline: none; border-color: var(--color-primary); }
 .cl-tool {
   display: inline-flex; align-items: center; gap: 4px; padding: 6px 11px;
-  border: 1px solid var(--color-border); border-radius: 999px; background: #fff;
+  border: 1px solid var(--color-border); border-radius: var(--chip-radius); background: #fff;
   font-family: inherit; font-size: 12.5px; color: #555; cursor: pointer; white-space: nowrap;
 }
 .cl-tool:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
@@ -1947,7 +1951,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .resume-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .resume-tag-label { font-size: 13px; color: var(--color-text-mute); }
-.resume-tag-add { background: transparent; border: 1px dashed var(--color-border); border-radius: 100px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-mute); transition: all 0.15s; }
+.resume-tag-add { background: transparent; border: 1px dashed var(--color-border); border-radius: var(--chip-radius); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-mute); transition: all 0.15s; }
 .resume-tag-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 .resume-empty-notice { background: #fff3f3; color: #d4537e; font-size: 13px; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; }
@@ -2075,7 +2079,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-filter-left { display: flex; gap: 8px; }
 .jobs-filter-right { display: flex; align-items: center; gap: 10px; }
 .jobs-dropdown-wrap { position: relative; }
-.jobs-filter-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1.5px solid var(--color-border); border-radius: 100px; padding: 9px 16px; font-size: 14px; font-weight: 600; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+.jobs-filter-btn { display: flex; align-items: center; gap: 6px; background: white; border: 1.5px solid var(--color-border); border-radius: var(--chip-radius); padding: 9px 16px; font-size: 14px; font-weight: 600; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
 .jobs-filter-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .jobs-dropdown { position: absolute; top: calc(100% + 6px); left: 0; background: white; border: 1px solid var(--color-border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50; min-width: 180px; max-height: 300px; overflow-y: auto; padding: 6px; }
 .jobs-dropdown-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; border: none; background: transparent; font-size: 14px; color: var(--color-text); cursor: pointer; border-radius: 8px; text-align: left; transition: background 0.15s; font-family: inherit; }
@@ -2520,7 +2524,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 복리후생 */
 .job-detail-benefits { display: flex; flex-wrap: wrap; gap: 8px; }
-.job-detail-benefit-chip { background: var(--color-primary-soft); color: var(--color-primary); font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: 100px; }
+.job-detail-benefit-chip { background: var(--color-primary-soft); color: var(--color-primary); font-size: 14px; font-weight: 500; padding: 6px 14px; border-radius: var(--chip-radius); }
 
 /* 채용 절차 — 동그라미 없이 숫자만 깔끔하게 */
 .job-detail-process { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
@@ -2725,7 +2729,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .insights-hero-badge {
   display: inline-block;
   background: rgba(255,255,255,0.2);
-  border-radius: 100px;
+  border-radius: var(--chip-radius);
   padding: 4px 14px;
   font-size: 13px;
   font-weight: 600;
@@ -2818,7 +2822,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .insights-tab {
   background: white;
   border: 1.5px solid var(--color-border);
-  border-radius: 100px;
+  border-radius: var(--chip-radius);
   padding: 8px 18px;
   font-size: 14px;
   font-weight: 500;
@@ -2953,7 +2957,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: var(--color-primary-soft);
   color: var(--color-primary);
   font-size: 13px; font-weight: 500;
-  padding: 6px 14px; border-radius: 100px;
+  padding: 6px 14px; border-radius: var(--chip-radius);
 }
 
 /* 관련 아티클 */
@@ -3074,14 +3078,14 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .company-section { padding: 80px 0; }
 .company-section-gray { background: transparent; }
 .company-section-head { text-align: center; margin-bottom: 48px; }
-.company-section-badge { display: inline-block; background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 100px; margin-bottom: 12px; letter-spacing: 0.5px; }
+.company-section-badge { display: inline-block; background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: var(--chip-radius); margin-bottom: 12px; letter-spacing: 0.5px; }
 .company-section-title { font-size: 32px; font-weight: 800; color: var(--color-text); line-height: 1.3; letter-spacing: -0.5px; margin-bottom: 14px; }
 .company-section-desc { font-size: 16px; color: var(--color-text-sub); line-height: 1.7; }
 
 /* 히어로 */
 .company-hero { background: linear-gradient(135deg, #f7f7f8 0%, #fce4ec 50%, #fff3e0 100%); padding: 80px 0 60px; }
 .company-hero-inner { max-width: 1360px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: 1fr 480px; gap: 64px; align-items: center; }
-.company-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 20px; }
+.company-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: var(--chip-radius); margin-bottom: 20px; }
 .company-hero-title { font-size: 40px; font-weight: 900; color: var(--color-text); line-height: 1.25; letter-spacing: -1px; margin-bottom: 20px; }
 .company-hero-point { color: var(--color-primary); }
 .company-hero-desc { font-size: 16px; color: var(--color-text-sub); line-height: 1.8; margin-bottom: 32px; }
@@ -3122,7 +3126,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .company-strength-role { font-weight: 600; color: var(--color-primary); width: 110px; flex-shrink: 0; }
 .company-strength-point { color: var(--color-text-sub); }
 .company-strength-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.company-tag { background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 100px; }
+.company-tag { background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: var(--chip-radius); }
 .company-strength-cta { display: inline-block; color: var(--color-primary); font-size: 14px; font-weight: 600; text-decoration: none; margin-top: 8px; transition: opacity 0.15s; }
 .company-strength-cta:hover { opacity: 0.7; }
 
@@ -3145,7 +3149,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .company-product-card { border-radius: 16px; padding: 28px 20px; position: relative; display: flex; flex-direction: column; border: 1px solid transparent; transition: transform 0.2s; }
 .company-product-card:hover { transform: translateY(-4px); }
 .company-product-card.recommended { border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 12px 40px rgba(95,0,128,0.3); }
-.company-product-badge { position: absolute; top: -10px; left: 20px; background: #ff5722; color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 100px; }
+.company-product-badge { position: absolute; top: -10px; left: 20px; background: #ff5722; color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: var(--chip-radius); }
 .company-product-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
 .company-product-period { font-size: 13px; opacity: 0.7; margin-bottom: 12px; }
 .company-product-price { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.2); }
@@ -3179,7 +3183,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .company-talent-icon { font-size: 32px; margin-bottom: 10px; }
 .company-talent-category { font-size: 16px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; }
 .company-talent-roles { display: flex; flex-wrap: wrap; gap: 6px; }
-.company-talent-role { background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 100px; }
+.company-talent-role { background: var(--color-primary-soft); color: var(--color-primary); font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: var(--chip-radius); }
 
 /* 기업 유형별 추천 */
 .company-recommend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -3297,7 +3301,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .brands-search-input::placeholder { color: var(--color-text-mute); }
 
 .brands-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 12px; }
-.brands-tab { background: white; border: 1.5px solid var(--color-border); border-radius: 100px; padding: 8px 18px; font-size: 14px; font-weight: 500; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.brands-tab { background: white; border: 1.5px solid var(--color-border); border-radius: var(--chip-radius); padding: 8px 18px; font-size: 14px; font-weight: 500; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .brands-tab:hover { border-color: var(--color-primary-light); color: var(--color-primary); }
 .brands-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: white; font-weight: 600; }
 
@@ -3335,7 +3339,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .salary-container { max-width: 1360px; margin: 0 auto; padding: 0 32px 64px; }
 
 .salary-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding: 48px 0 36px; }
-.salary-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 100px; margin-bottom: 16px; }
+.salary-hero-badge { display: inline-block; background: var(--color-primary); color: white; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: var(--chip-radius); margin-bottom: 16px; }
 .salary-hero-title { font-size: 36px; font-weight: 900; color: var(--color-text); line-height: 1.25; letter-spacing: -1px; margin-bottom: 14px; }
 .salary-hero-point { color: var(--color-primary); }
 .salary-hero-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 24px; }
@@ -3370,7 +3374,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .salary-sort-btn.active { background: var(--color-text); color: white; font-weight: 700; }
 
 .salary-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
-.salary-tab { background: transparent; border: 1.5px solid var(--color-border); border-radius: 100px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.salary-tab { background: transparent; border: 1.5px solid var(--color-border); border-radius: var(--chip-radius); padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--color-text-sub); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .salary-tab:hover { border-color: var(--color-primary-light); color: var(--color-primary); }
 .salary-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: white; font-weight: 600; }
 
@@ -11876,7 +11880,7 @@ div:has(> table.admin-table),
 .filter-section:last-child { margin-bottom: 0; }
 .filter-section-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin-bottom: 12px; }
 .filter-chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.filter-chip { padding: 8px 14px; border: 1.5px solid var(--color-border); border-radius: 100px; background: white; font-size: 13px; font-weight: 500; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.filter-chip { padding: 8px 14px; border: 1.5px solid var(--color-border); border-radius: var(--chip-radius); background: white; font-size: 13px; font-weight: 500; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .filter-chip:hover { border-color: var(--color-primary); }
 .filter-chip.on { border-color: var(--color-primary); background: var(--color-primary); color: white; }
 .filter-sheet-foot { display: flex; gap: 10px; }
@@ -11891,7 +11895,7 @@ div:has(> table.admin-table),
 }
 /* 복리후생 체크박스 (공고 등록폼) */
 .benefit-chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.benefit-chip { padding: 7px 13px; border: none; border-radius: 100px; background: #f7f7f8; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.benefit-chip { padding: 7px 13px; border: none; border-radius: var(--chip-radius); background: #f7f7f8; font-size: 13px; color: #555; cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .benefit-chip:hover { background: #efeff1; }
 .benefit-chip.on { background: var(--color-primary); color: #fff; }
 .jobs-dropdown-benefit { min-width: 200px; max-height: 320px; overflow-y: auto; }
@@ -12156,7 +12160,7 @@ div:has(> table.admin-table),
 /* 매장 표시. 핀 하나에 이름과 공고 수를 함께 실어, 지도만 보고도 어디가
    사람을 구하는지 읽히게 한다. */
 .nb-pin { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px;
-  background: #fff; border: 1px solid #efeff1; border-radius: 999px; cursor: pointer;
+  background: #fff; border: 1px solid #efeff1; border-radius: var(--chip-radius); cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,.14); white-space: nowrap; transform: translateX(-50%); }
 .nb-pin:hover { border-color: var(--color-primary); }
 .nb-pin-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-primary); flex-shrink: 0; }
@@ -13416,7 +13420,7 @@ button,
    고르지 않는다. */
 .jobs-picked { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 12px 0 2px; }
 .jobs-picked-chip { display: inline-flex; align-items: center; gap: 6px;
-  background: #f7f7f8; border: none; border-radius: 999px; padding: 6px 11px 6px 13px;
+  background: #f7f7f8; border: none; border-radius: var(--chip-radius); padding: 6px 11px 6px 13px;
   cursor: pointer; font-family: inherit; font-size: 13.5px; color: #431a63;
   transition: background .15s; }
 .jobs-picked-chip:hover { background: #f7f7f8; }
@@ -13751,7 +13755,7 @@ button,
 /* 경력 — 살롱 직급 고르기 */
 .career-rank { display: flex; flex-wrap: wrap; gap: 7px; }
 .career-rank-chip {
-  border: 1px solid #dcdce0; background: #fff; border-radius: 999px;
+  border: 1px solid #dcdce0; background: #fff; border-radius: var(--chip-radius);
   padding: 7px 14px; font-size: 13.5px; color: #6f6f75; cursor: pointer; font-family: inherit;
   transition: border-color .12s, color .12s, background .12s;
 }
@@ -13839,13 +13843,13 @@ button,
 .cv-inline-cancel:hover { border-color: #b9b9be; color: #3d3d3d; }
 /* 추천 스킬 더 보기 */
 .cv-skill-more {
-  border: 1px dashed #dcdce0; background: #fff; border-radius: 999px;
+  border: 1px dashed #dcdce0; background: #fff; border-radius: var(--chip-radius);
   padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
 }
 .cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }
 /* 추천 스킬 더 보기 */
 .cv-skill-more {
-  border: 1px dashed #dcdce0; background: #fff; border-radius: 999px;
+  border: 1px dashed #dcdce0; background: #fff; border-radius: var(--chip-radius);
   padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
 }
 .cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }
@@ -15265,3 +15269,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    나뉘면 어디에 적었는지 찾아다니게 된다 — 메모는 지원자 관리가 맡는다. */
 
 
+
+/* 고르는 칸의 목록을 흰 바탕으로.
+ *
+ * 여는 목록을 누가 그리는지는 브라우저마다 다르다. 윈도우 크롬은 제가 그려서
+ * 아래 값이 먹고, macOS 는 운영체제 메뉴(NSMenu)를 띄워 우리 CSS가 닿지 않는다.
+ * 그래서 macOS 에서는 회색 바탕 그대로 보인다 — 그건 우리 화면이 아니라 그
+ * 컴퓨터의 메뉴다. 먹는 곳에서라도 흰 바탕이 되게 적어 둔다. */
+select { background-color: #fff; color: var(--color-text-strong); }
+select option { background-color: #fff; color: var(--color-text-strong); }

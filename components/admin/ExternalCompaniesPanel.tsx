@@ -459,7 +459,7 @@ export default function ExternalCompaniesPanel() {
                       {/* 누가 올린 공고인지 — 알바 실적과 관리자 등록을 눈으로 가른다 */}
                       <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
                         {j0 ? (
-                          <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 999,
+                          <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: "var(--chip-radius)",
                             background: isAlba(j0) ? "#eef7f0" : "#f7f7f8",
                             color: isAlba(j0) ? "#0a7d34" : "#7b7387" }}>
                             {isAlba(j0) ? "알바" : "관리자"}

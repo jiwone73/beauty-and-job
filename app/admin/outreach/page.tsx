@@ -325,7 +325,7 @@ export default function AdminOutreachPage() {
   const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13.5, boxSizing: "border-box" };
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
   const chip = (active: boolean): React.CSSProperties => ({
-    padding: "6px 12px", borderRadius: 999, fontSize: 14, fontWeight: 400, cursor: "pointer",
+    padding: "6px 12px", borderRadius: "var(--chip-radius)", fontSize: 14, fontWeight: 400, cursor: "pointer",
     border: active ? `1px solid ${PURPLE}` : "1px solid #efeff1",
     background: active ? PURPLE : "#fff", color: active ? "#fff" : "#6b6473",
   });
@@ -338,7 +338,7 @@ export default function AdminOutreachPage() {
     return Number.isFinite(t) && Date.now() - t < NEW_DAYS * 86400000;
   };
   const badge = (color: string): React.CSSProperties => ({
-    display: "inline-block", padding: "2px 8px", borderRadius: 999, fontSize: 13, fontWeight: 400,
+    display: "inline-block", padding: "2px 8px", borderRadius: "var(--chip-radius)", fontSize: 13, fontWeight: 400,
     color, background: `${color}18`,
   });
 

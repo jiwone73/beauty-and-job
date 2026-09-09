@@ -252,7 +252,7 @@ export default function AdminStoriesPage() {
             <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
               {CATEGORIES.map((c) => (
                 <button key={c} onClick={() => setForm((f) => ({ ...f, category: c }))}
-                  style={{ padding: "6px 14px", borderRadius: 100, fontSize: 14, cursor: "pointer",
+                  style={{ padding: "6px 14px", borderRadius: "var(--chip-radius)", fontSize: 14, cursor: "pointer",
                     border: form.category === c ? "1.5px solid #582681" : "1px solid #ddd",
                     background: form.category === c ? "#582681" : "#fff",
                     color: form.category === c ? "#fff" : "#666" }}>
@@ -395,7 +395,7 @@ export default function AdminStoriesPage() {
                       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                         {CATEGORIES.map((c) => (
                           <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
-                            style={{ padding: "5px 13px", borderRadius: 100, fontSize: 13.5, cursor: "pointer",
+                            style={{ padding: "5px 13px", borderRadius: "var(--chip-radius)", fontSize: 13.5, cursor: "pointer",
                               border: edit.category === c ? "1.5px solid #582681" : "1px solid #ddd",
                               background: edit.category === c ? "#582681" : "#fff",
                               color: edit.category === c ? "#fff" : "#666" }}>

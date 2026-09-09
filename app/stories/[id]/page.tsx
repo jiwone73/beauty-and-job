@@ -132,7 +132,7 @@ export default function StoryDetailPage() {
       </header>
 
       <article style={{ paddingBottom: 24, borderBottom: "8px solid #f7f7f8", marginBottom: 20 }}>
-        <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 12 }}>{post.category}</span>
+        <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 12 }}>{post.category}</span>
         {post.title && <h1 style={{ fontSize: 16, fontWeight: 700, color: "#555", marginBottom: 10, lineHeight: 1.4 }}>{post.title}</h1>}
         <p style={{ fontSize: 16, color: "#555", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{post.body}</p>
         <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 18 }}>

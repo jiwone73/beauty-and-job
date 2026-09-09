@@ -94,7 +94,7 @@ export default function StoriesPage() {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="제목·내용 검색"
             style={{
-              width: "100%", padding: "11px 40px 11px 16px", borderRadius: 100,
+              width: "100%", padding: "11px 40px 11px 16px", borderRadius: "var(--chip-radius)",
               border: "1px solid #efeff1", fontSize: 14, boxSizing: "border-box",
               outline: "none", background: "#fff",
             }}
@@ -212,7 +212,7 @@ export default function StoriesPage() {
                   padding: 18, cursor: "pointer",
                 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 100, fontSize: 11, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 7 }}>
+                    <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: "var(--chip-radius)", fontSize: 11, fontWeight: 600, background: cs.bg, color: cs.color, marginBottom: 7 }}>
                       {p.category}
                     </span>
                     {p.title && <h2 className="story-item-title">{p.title}</h2>}
