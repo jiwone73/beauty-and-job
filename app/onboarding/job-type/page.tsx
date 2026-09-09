@@ -227,8 +227,8 @@ export default function OnboardingJobTypePage() {
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
               <StoreIcon size={20} style={{ color: "#582681" }} /> 매장
             </p>
-            <p className="text-[14px] text-[#555] leading-relaxed">
-              시술·스탭 · 샵 운영 · 웨딩 · 미용강사 · 병원 현장
+            <p className="text-[14px] text-[#555] leading-relaxed break-keep">
+              시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장
             </p>
           </button>
 
@@ -242,7 +242,7 @@ export default function OnboardingJobTypePage() {
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
               <OfficeIcon size={20} style={{ color: "#582681" }} /> 본사
             </p>
-            <p className="text-[14px] text-[#555] leading-relaxed">
+            <p className="text-[14px] text-[#555] leading-relaxed break-keep">
               제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원
             </p>
           </button>

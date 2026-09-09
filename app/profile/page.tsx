@@ -698,7 +698,7 @@ export default function ProfilePage() {
                     {dbJobType && (
                       <em className="profile-info-note">
                         {dbJobType === "STORE"
-                          ? "시술·스탭 · 샵 운영 · 웨딩 · 미용강사 · 병원 현장"
+                          ? "시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장"
                           : "제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원"}
                       </em>
                     )}

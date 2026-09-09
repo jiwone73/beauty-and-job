@@ -271,7 +271,7 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장</span>
                   <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">
-                    시술·스탭 · 샵 운영 · 웨딩 · 미용강사 · 병원 현장
+                    시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장
                   </span>
                 </span>
                 {jobType === "STORE" && (
