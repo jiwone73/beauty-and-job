@@ -481,18 +481,18 @@ export default function CompanyProposalsPage() {
                     </td>
                     <td className="c-act">
                       <div className="prop-acts">
-                        {/* 거두는 길은 어느 단계에나 있어야 한다 — 대화 중에 갑자기
-                            다른 사람을 뽑는 일이 제일 흔하다. 이미 끝난 것만 뺀다.
-                            물리는 일은 왼쪽에 옅게, 나아가는 일은 오른쪽에 둔다. */}
-                        {!["채용완료", "거절", "취소"].includes(st) && (
-                          <button type="button" className="prop-act quiet"
-                            onClick={() => set취소할것(p)}>제안 취소</button>
-                        )}
                         {할 && (
                           <button type="button" className={`prop-act${할.우리차례 ? " key" : ""}`}
                             onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
                             {할.글}
                           </button>
+                        )}
+                        {/* 거두는 길은 어느 단계에나 있어야 한다 — 대화 중에 갑자기
+                            다른 사람을 뽑는 일이 제일 흔하다. 이미 끝난 것만 뺀다.
+                            나아가는 일 아래에 옅게 둔다. */}
+                        {!["채용완료", "거절", "취소"].includes(st) && (
+                          <button type="button" className="prop-act quiet"
+                            onClick={() => set취소할것(p)}>제안 취소</button>
                         )}
                       </div>
                     </td>
