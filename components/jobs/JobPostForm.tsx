@@ -1602,13 +1602,13 @@ export default function JobPostForm({
       // 불러온 본문 자동 정렬: 원문 HTML에서 <p>·<br>가 줄바꿈으로 변환되며 줄 사이 빈 줄(엔터 여러 번)이
       // 잔뜩 끼는데, 그대로 두면 상세요강 행간이 과하게 벌어진다.
       //
-      // 그렇다고 빈 줄을 다 지우면 안 된다. 매장이 항목 사이를 한 줄씩 띄워 적은 글까지
-      // 붙어 버려, 원문과 다른 모양으로 공고가 나간다. 그래서 「빈 줄 두 개 이상은 하나로」만
-      // 한다 — 과하게 벌어진 것은 줄이고, 사람이 띄운 한 줄은 그대로 둔다.
+      // 빈 줄은 모두 걷어 한 줄 간격으로 맞춘다. 카페 양식은 항목 사이가 한 줄씩
+      // 벌어져 있는데, 그대로 두면 공고가 세로로 길어지기만 하고 읽기는 나빠진다.
+      // 낱말은 건드리지 않는다 — 줄 사이만 좁힌다.
       const tidyText = (s: string) => s
         .replace(/\r\n?/g, "\n")
         .split("\n").map((l) => l.replace(/\s+$/g, "")).join("\n")
-        .replace(/\n{3,}/g, "\n\n")
+        .replace(/\n{2,}/g, "\n")
         .trim();
       // 텍스트 필드가 배열로 와도 안전하게 문자열로 변환 + 행간 정돈
       const asText = (v: any, fb: string) => {
@@ -3830,14 +3830,18 @@ export default function JobPostForm({
                         <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
                           fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
                       )}
-                      {/* 사람인과 같은 자리 — 칸 오른쪽에서 그 칸만 가린다. */}
-                      <label style={{ display: "inline-flex", alignItems: "center", gap: 5, flexShrink: 0,
-                        marginLeft: 10, fontSize: 13, color: "#666", cursor: "pointer", userSelect: "none" }}>
-                        <input type="checkbox" checked={숨김[f.k] !== false}
-                          onChange={(e) => set숨김((p) => ({ ...p, [f.k]: e.target.checked }))}
-                          style={{ width: 15, height: 15, accentColor: "#582681", margin: 0, cursor: "pointer" }} />
-                        비공개
-                      </label>
+                      {/* 연락처를 공고에 드러낼지는 기업이 제 계정에서 정하는 값이다.
+                          대행으로 올리는 비회원 공고에는 그 기업의 뜻을 물을 데가 없고,
+                          지원도 뷰티워크가 받으므로 늘 가린다 — 고르는 칸을 두지 않는다. */}
+                      {!isNm && (
+                        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, flexShrink: 0,
+                          marginLeft: 10, fontSize: 13, color: "#666", cursor: "pointer", userSelect: "none" }}>
+                          <input type="checkbox" checked={숨김[f.k] !== false}
+                            onChange={(e) => set숨김((p) => ({ ...p, [f.k]: e.target.checked }))}
+                            style={{ width: 15, height: 15, accentColor: "#582681", margin: 0, cursor: "pointer" }} />
+                          비공개
+                        </label>
+                      )}
                     </span>
                   </div>
                 ))}
