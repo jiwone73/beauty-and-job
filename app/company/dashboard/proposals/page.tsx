@@ -483,21 +483,22 @@ export default function CompanyProposalsPage() {
                       {활.때 && <i>({때(활.때)})</i>}
                     </td>
                     <td className="c-act">
-                      <div className="prop-acts">
+                      {/* 테두리 없이 글자로 둔다 — 공고 관리의 「수정 | 마감」과 같은
+                          꼴이다. 한 줄에 단추 상자가 둘이면 표가 시끄러워진다.
+                          거두는 길은 어느 단계에나 있어야 한다(대화 중에 갑자기 다른
+                          사람을 뽑는 일이 제일 흔하다). 이미 끝난 것만 뺀다. */}
+                      <span className="prop-acts">
+                        {!["채용완료", "거절", "취소"].includes(st) && (
+                          <button type="button" onClick={() => set취소할것(p)}>제안 취소</button>
+                        )}
+                        {!["채용완료", "거절", "취소"].includes(st) && 할 && <i>|</i>}
                         {할 && (
-                          <button type="button" className={`prop-act${할.우리차례 ? " key" : ""}`}
+                          <button type="button" className={할.우리차례 ? "key" : undefined}
                             onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
                             {할.글}
                           </button>
                         )}
-                        {/* 거두는 길은 어느 단계에나 있어야 한다 — 대화 중에 갑자기
-                            다른 사람을 뽑는 일이 제일 흔하다. 이미 끝난 것만 뺀다.
-                            나아가는 일 아래에 옅게 둔다. */}
-                        {!["채용완료", "거절", "취소"].includes(st) && (
-                          <button type="button" className="prop-act quiet"
-                            onClick={() => set취소할것(p)}>제안 취소</button>
-                        )}
-                      </div>
+                      </span>
                     </td>
                   </tr>
                 );
