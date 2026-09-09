@@ -2534,10 +2534,13 @@ export default function JobPostForm({
       // 그 업체에 연락할 길이 사라졌다 — 지우는 건 공고에서만 지우는 것이다.
       source_contact_phone: (원문연락처.phone || "").replace(/\D/g, "") || null,
       source_contact_email: 원문연락처.email || null,
-      contact_name_hidden: 숨김.name !== false,
-      contact_phone_hidden: 숨김.phone !== false,
-      contact_email_hidden: 숨김.mail !== false,
-      contact_kakao_hidden: 숨김.kakao !== false,
+      // 대행(비회원) 공고에는 「비공개」를 고르는 칸이 없다 — 그건 기업이 제 계정에서
+      // 정하는 값이다. 칸이 없으니 폼에 적힌 대로 나간다. 화면에 보이는 것과 공고에
+      // 실리는 것이 달라지지 않게, 여기서도 가리지 않는다.
+      contact_name_hidden: isNm ? false : 숨김.name !== false,
+      contact_phone_hidden: isNm ? false : 숨김.phone !== false,
+      contact_email_hidden: isNm ? false : 숨김.mail !== false,
+      contact_kakao_hidden: isNm ? false : 숨김.kakao !== false,
       contact_methods: contactMethods,
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
       // 배너는 어느 쪽에서 올렸든 이 공고에 실린다. 예전에는 기업회원일 때만
