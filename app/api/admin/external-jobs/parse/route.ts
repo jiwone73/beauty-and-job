@@ -89,6 +89,9 @@ const 사이트안내줄 = [
 ];
 function 원문본문(text: string): string {
   return String(text || "")
+    // 카페 편집기가 빈 문단에 넣는 폭 없는 공백. 이게 남으면 빈 줄이 아니라
+    // 「글자 하나짜리 줄」이 되어 어떤 정리에도 안 걸린다.
+    .replace(/[\u200b-\u200d\u2060\ufeff]/g, "")
     .replace(/\r\n?/g, "\n")
     .split("\n")
     .filter((line) => !사이트안내줄.some((re) => re.test(line)))
