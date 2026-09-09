@@ -22,14 +22,7 @@ export async function GET(req: NextRequest) {
               u.gender,
               CASE WHEN u.birth_date IS NULL THEN NULL
                    ELSE EXTRACT(YEAR FROM AGE(u.birth_date))::int END AS age,
-              COALESCE(NULLIF(TRIM(CONCAT_WS(' ', u.region_sido, u.region_sigungu)), ''),
-                       up.region_prefer) AS region,
-              up.sub_job, up.main_job_group, up.career_stage, up.work_type_prefer,
-              (SELECT CASE
-                 WHEN MIN(uc.start_date) ~ '^[0-9]{4}'
-                 THEN GREATEST(EXTRACT(YEAR FROM NOW())::int - LEFT(MIN(uc.start_date),4)::int, 0)
-                 ELSE NULL END
-                 FROM user_careers uc WHERE uc.user_id = u.id) AS career_years,
+              up.sub_job, up.main_job_group,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
               (SELECT sender FROM proposal_messages m
@@ -96,13 +89,8 @@ export async function GET(req: NextRequest) {
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,
       gender: r.gender || null,
       age: r.age ?? null,
-      region: r.region || null,
       // 직군은 소분류가 먼저다 — 「속눈썹·반영구 아티스트」가 「네일·속눈썹」보다 말이 된다.
       subJob: r.sub_job || r.main_job_group || null,
-      // 경력은 본인이 고른 단계가 먼저, 없으면 이력에서 셈한 연차.
-      careerText: r.career_stage
-        || (r.career_years ? `경력 ${r.career_years}년` : null),
-      workTypePrefer: r.work_type_prefer || null,
       jobTitle: r.job_title,
       lastSender: r.last_sender,
       blocked: r.blocked,

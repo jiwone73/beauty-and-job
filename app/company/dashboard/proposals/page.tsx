@@ -5,7 +5,6 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 마감인가 } from "@/lib/jobClosed";
 import { 님 } from "@/lib/josa";
-import { workTypeLabel } from "@/lib/constants";
 import { Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
@@ -49,10 +48,7 @@ type 제안 = {
   positionLine: string | null;
   gender: string | null;
   age: number | null;
-  region: string | null;
   subJob: string | null;
-  careerText: string | null;
-  workTypePrefer: string | null;
 };
 
 // 이름만으로는 열 명 중 누구였는지 떠오르지 않는다. 인재검색 카드가 쓰는 값을
@@ -62,12 +58,10 @@ const 성별글 = (g: string | null) =>
   : g === "MALE" || g === "남성" || g === "M" ? "남" : null;
 const 인적 = (p: 제안) =>
   [성별글(p.gender), p.age ? `만 ${p.age}세` : null].filter(Boolean).join(" · ");
-// 근무형태는 FULL_TIME 같은 코드로 저장된다 — 사람이 읽는 말로 편다.
-// 값이 없으면 「정규직」으로 넘겨짚지 않는다(workTypeLabel 의 기본값). 안 고른
-// 것과 정규직을 고른 것은 다르다.
-const 조건 = (p: 제안) =>
-  [p.region, p.subJob, p.careerText,
-   p.workTypePrefer ? workTypeLabel(p.workTypePrefer) : null].filter(Boolean).join(" · ");
+// 둘째 줄은 희망직군 하나다. 지역·경력·근무형태까지 넣었더니 한 줄이 세 줄이
+// 되어 표가 무거워졌다 — 여기서 견주는 것은 「누가 답했나」이지 사람의 조건이
+// 아니고, 조건은 이력서를 열면 다 있다.
+const 조건 = (p: 제안) => p.subJob || "";
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
