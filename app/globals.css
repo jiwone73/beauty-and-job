@@ -15232,11 +15232,16 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
    머리 글자와 단추 글자가 12px 어긋나 보인다. */
-.prop-table .c-act { width: 148px; text-align: right; }
+ /* 왼쪽 정렬이다. 오른쪽에 붙이면 「채팅하기」가 없는 줄에서 「제안 취소」가
+    오른쪽으로 밀려 줄마다 자리가 달라진다. 왼쪽으로 두면 취소는 늘 같은
+    자리에 있고, 제목도 같은 선에서 시작한다. */
+.prop-table .c-act { width: 148px; text-align: left; }
 /* 테두리 없이 글자로 — 공고 관리의 「수정 | 마감」과 같은 꼴이다. 한 줄에
    단추 상자가 둘이면 표가 시끄러워진다. */
-.prop-acts { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
-.prop-acts button { border: none; background: none; padding: 2px; font-family: inherit;
+.prop-acts { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-start; }
+/* 좌우 여백을 두지 않는다 — 2px 이라도 있으면 글자 오른끝이 제목보다 그만큼
+   안쪽에서 끝나 줄이 안 맞는다. 누를 자리는 위아래로만 넓힌다. */
+.prop-acts button { border: none; background: none; padding: 4px 0; font-family: inherit;
   font-size: 13px; color: var(--color-text); cursor: pointer; white-space: nowrap; }
 .prop-acts button:hover { color: var(--color-primary); }
 .prop-acts button.key { color: var(--color-primary); font-weight: 600; }
