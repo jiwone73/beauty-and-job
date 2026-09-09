@@ -142,6 +142,19 @@ export default function CompanyProposalsPage() {
   const [목록, set목록] = useState<제안[]>([]);
   const [로딩, set로딩] = useState(true);
   const [대화, set대화] = useState<제안 | null>(null);
+  // 제안 거두기. 되돌릴 수 없으니 한 번 묻는다.
+  const [취소할것, set취소할것] = useState<제안 | null>(null);
+  const 취소하기 = async () => {
+    const p = 취소할것;
+    if (!p) return;
+    set취소할것(null);
+    const token = localStorage.getItem("access_token");
+    const r = await fetch(`/api/company/proposals/${p.id}/cancel`, {
+      method: "POST", headers: { Authorization: `Bearer ${token}` },
+    }).then((x) => x.json()).catch(() => null);
+    if (r?.success) 불러오기();
+    else alert(r?.error?.message || "제안을 거두지 못했어요.");
+  };
   // 공고를 고르는 화면이라 처음부터 하나가 골라져 있다. 예전에는 「전체 공고」로
   // 시작해 공고 없는 상태였는데, 그러면 위쪽 공고 머리가 비어 무엇을 보는 자리인지
   // 안 읽혔다. 여러 공고에 걸친 「답할 것」은 사이드에 숫자로 붙는다.
@@ -429,12 +442,18 @@ export default function CompanyProposalsPage() {
                       {활.때 && <i>{때(활.때)}</i>}
                     </td>
                     <td className="c-act">
-                      {할 && (
+                      {할 ? (
                         <button type="button" className={`prop-act${할.우리차례 ? " key" : ""}`}
                           onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
                           {할.글}
                         </button>
-                      )}
+                      ) : st === "답변대기" ? (
+                        /* 대기 줄만 할 일이 없어 비어 있었다. 답을 기다리는 것 말고
+                           할 수 있는 일이 하나 생겼다 — 거두는 것. 색은 채우지
+                           않는다. 나아가는 일이 아니라 물리는 일이다. */
+                        <button type="button" className="prop-act quiet"
+                          onClick={() => set취소할것(p)}>제안 취소</button>
+                      ) : null}
                     </td>
                   </tr>
                 );
@@ -444,6 +463,18 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
+
+      {취소할것 && (
+        <div className="rp-modal-overlay">
+          <div className="prop-dec">
+            <p className="prop-dec-t">{취소할것.userName}님에게 보낸 제안을 거둘까요?</p>
+            <div className="prop-dec-acts">
+              <button type="button" onClick={() => set취소할것(null)}>취소</button>
+              <button type="button" className="key" onClick={취소하기}>제안 거두기</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {대화 && (
         <ProposalThread

@@ -15397,3 +15397,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .prop-row { flex-direction: column; }
   .prop-side { flex-direction: row; align-items: center; width: 100%; justify-content: flex-end; }
 }
+
+/* 「다음 액션」 칸의 물리는 단추. 채팅하기처럼 나아가는 일과 같은 무게로
+   두면 안 된다 — 색을 채우지 않고 글자만 옅게 둔다. */
+.prop-act.quiet { border-color: #ececf0; color: #9a9aa3; }
+.prop-act.quiet:hover { border-color: var(--color-border); color: var(--color-text); }
