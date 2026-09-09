@@ -360,8 +360,16 @@ export default function CompanyProposalsPage() {
               <span className="co-jc-badge">{공고머리.마감 ? "마감" : "진행중"}</span>
               {공고머리.기간}
             </div>
+          </div>
+          <div className="co-pane-pos">
+            <div style={{ minWidth: 0 }}>
+              {공고머리.줄들.map((줄: string, i: number) => (
+                <div key={i} className="co-pane-posline">{줄}</div>
+              ))}
+            </div>
             {/* 이 화면에서 다음에 할 일은 하나다 — 이 공고로 사람을 더 찾는 것.
-                보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다. */}
+                보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다.
+                제목 줄 오른쪽은 기간이 쓰므로 한 줄 아래에 선다. */}
             {!공고머리.마감 && 고른공고 && 고른공고 !== "none" && (
               <button type="button" className="co-pane-view"
                 onClick={() => router.push(`${base}/talent?job=${고른공고}`)}>
@@ -369,15 +377,6 @@ export default function CompanyProposalsPage() {
               </button>
             )}
           </div>
-          {공고머리.줄들.length > 0 && (
-            <div className="co-pane-pos">
-              <div style={{ minWidth: 0 }}>
-                {공고머리.줄들.map((줄: string, i: number) => (
-                  <div key={i} className="co-pane-posline">{줄}</div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
