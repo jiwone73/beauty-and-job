@@ -33,6 +33,16 @@ export default function SocialCallbackPage() {
       const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
       const data = JSON.parse(new TextDecoder().decode(bytes));
 
+      // 아직 회원이 아닌 사람 — 카카오·네이버에서 받아 온 값을 가입표로만 들고
+      // 왔다. 약관에 동의해야 회원이 되므로 토큰도 없고 저장할 것도 없다.
+      if (data.signup) {
+        sessionStorage.setItem("social_signup", data.signup);
+        sessionStorage.setItem("social_signup_name", data.name || "");
+        sessionStorage.setItem("social_signup_phone", data.hasPhone ? "1" : "");
+        router.replace("/onboarding/job-type");
+        return;
+      }
+
       localStorage.setItem("access_token", data.access_token);
       // 카카오·네이버는 외부 화면을 다녀오므로 '로그인 유지'를 물을 자리가 없다 — 유지 쪽으로 둔다.
       setLoginPersistence(true);

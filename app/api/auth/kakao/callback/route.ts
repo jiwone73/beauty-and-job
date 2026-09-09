@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
+import { 가입표만들기 } from "@/lib/socialSignup";
 import { signAccessToken } from "@/lib/jwt";
 
 const KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
@@ -83,7 +84,6 @@ export async function GET(req: NextRequest) {
 
     // 3) 회원 조회 / 연동 / 생성
     let user: any = null;
-    let isNew = false;
 
     // (a) kakao_id로 먼저 조회 — 재방문 카카오 회원
     const byKakao = await pool.query(
@@ -116,28 +116,35 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // (c) 못 찾았으면 신규 가입 (번호를 못 받으면 비워 두고 온보딩에서 인증받는다)
+    // (c) 못 찾았으면 신규다. 여기서 users 에 넣지 않는다 — 우리 약관에 동의하기
+    //     전에 개인정보를 저장하게 되기 때문이다. 받아 온 값은 가입표에 담아
+    //     넘기고, 동의를 받은 뒤 /api/auth/social/complete 가 회원을 만든다.
     if (!user) {
-      isNew = true;
-      const ins = await pool.query(
-        `INSERT INTO users (kakao_id, name, email, phone, avatar_url, status)
-         VALUES ($1, $2, $3, $4, $5, 'ACTIVE')
-         RETURNING id, email, name, phone, status, job_type, office_job_areas`,
-        [kakaoId, nickname, email, phone, profileImage]
-      );
-      user = ins.rows[0];
+      const 표 = 가입표만들기({
+        provider: "kakao",
+        providerId: kakaoId,
+        name: nickname,
+        email,
+        phone,
+        avatarUrl: profileImage,
+      });
+      const b64 = Buffer.from(JSON.stringify({ signup: 표, name: nickname, hasPhone: !!phone }), "utf-8")
+        .toString("base64url");
+      const res = NextResponse.redirect(`${base}/login/social/callback`);
+      res.cookies.set("social_auth", b64, {
+        maxAge: 600, path: "/", httpOnly: false, sameSite: "lax",
+      });
+      return res;
     }
 
     if (user.status && user.status !== "ACTIVE") {
       return NextResponse.redirect(`${base}/login?kakao_error=inactive`);
     }
 
-    // 재방문/연동 시 마지막 로그인 갱신 (신규는 위에서 처리됨)
-    if (!isNew) {
-      pool
-        .query(`UPDATE users SET last_login_at = NOW() WHERE id = $1`, [user.id])
-        .catch((e) => console.error("[update last_login_at]", e));
-    }
+    // 여기까지 온 것은 이미 있는 회원뿐이다(신규는 가입표를 들고 돌아갔다).
+    pool
+      .query(`UPDATE users SET last_login_at = NOW() WHERE id = $1`, [user.id])
+      .catch((e) => console.error("[update last_login_at]", e));
 
     // 4) 자체 JWT (기존 이메일 로그인과 동일한 형식)
     const accessToken = signAccessToken({
@@ -155,7 +162,6 @@ export async function GET(req: NextRequest) {
         job_type: user.job_type || "",
         office_job_areas: user.office_job_areas || [],
       },
-      isNew,
     };
 
     /* 수정 — 교체 */
