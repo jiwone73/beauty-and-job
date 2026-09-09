@@ -269,7 +269,7 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
-                    살롱 · 샵 등 매장
+                    살롱 · 샵 · 미용학원 등 현장
                   </span>
                 </span>
                 {jobType === "STORE" && (
@@ -294,7 +294,7 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">본사</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
-                    브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳
+                    브랜드·제조·유통·협력사 등 현장이 아닌 곳
                   </span>
                 </span>
                 {jobType === "OFFICE" && (

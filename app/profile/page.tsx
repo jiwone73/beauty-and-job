@@ -698,8 +698,8 @@ export default function ProfilePage() {
                     {dbJobType && (
                       <em className="profile-info-note">
                         {dbJobType === "STORE"
-                          ? "살롱·샵 등 매장에서 근무하는 직군이에요"
-                          : "브랜드·제조·유통·교육·협력사 등 매장이 아닌 곳에서 근무하는 직군이에요"}
+                          ? "살롱·샵·미용학원 등 현장에서 근무하는 직군이에요"
+                          : "브랜드·제조·유통·협력사 등 현장이 아닌 곳에서 근무하는 직군이에요"}
                       </em>
                     )}
                   </span>
