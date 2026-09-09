@@ -9,8 +9,13 @@ import type { TalentItem } from "@/lib/api/company";
 // 화면이 곧 어긋난다 — 실제로 그렇게 어긋나 있었다(스크랩 쪽에는 이름 가리기도,
 // 제안 이력도 없었다). 카드는 여기 한 곳에만 둔다.
 
-function careerLabel(years: number | null, count: number): string {
-  if (!count || years === null || years === 0) return "신입";
+// 경력은 본인이 고른 단계(인턴·신입·경력·실장 / 1~2년 …)를 먼저 쓴다.
+// 예전에는 경력 이력의 개수만 보고, 이력을 안 쓴 사람을 모두 「신입」이라
+// 적었다 — 10년차가 신입으로 뜨는 것은 빈 값이 아니라 틀린 값이고, 기업이
+// 그걸 보고 거른다. 고른 단계도 이력도 없으면 아무것도 적지 않는다.
+function careerLabel(stage: string | null, years: number | null, count: number): string | null {
+  if (stage) return stage;
+  if (!count || years === null || years === 0) return null;
   return `경력 ${years}년`;
 }
 
@@ -56,7 +61,7 @@ export default function TalentCard({
     // 직군이 늘 mainJobGroup 에 있는 것은 아니다 — 매장은 skillAreas 에만,
     // 본사는 officeJobAreas 에만 든 사람이 있다.
     t.subJob || t.mainJobGroup || t.skillAreas?.[0] || t.officeJobAreas?.[0],
-    careerLabel(t.careerYears, t.careerCount),
+    careerLabel(t.careerStage, t.careerYears, t.careerCount),
     t.workTypePrefer ? 고용형태[t.workTypePrefer] || null : null,
   ].filter(Boolean) as string[];
 

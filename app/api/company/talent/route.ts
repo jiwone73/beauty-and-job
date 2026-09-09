@@ -118,20 +118,29 @@ export async function GET(req: NextRequest) {
   // 신입·경력은 근무 기간으로, 인턴·실장 같은 자리는 이력서에 적힌 직급으로 가른다.
   // 예전에는 화면이 「5-10년」·「10년+」을 보내는데 여기에 그 둘이 없어, 골라도
   // 아무것도 걸러지지 않고 전체가 그대로 나왔다.
-  const 직급으로 = (말: string) => `AND career_position ILIKE '%${말}%'`;
+  //
+  // 이제 가입할 때 본인이 단계를 고르므로(career_stage) 그 값이 먼저다. 고르지
+  // 않은 옛 회원만 예전처럼 이력에서 셈한 값으로 가른다. 두 갈래를 OR 로 묶어야
+  // 새 회원과 옛 회원이 같은 필터에 함께 걸린다.
+  const 고른단계가 = (말: string) => `career_stage = '${말}'`;
+  const 직급으로 = (말: string) => `(career_stage IS NULL AND career_position ILIKE '%${말}%')`;
+  const 이력이 = (조건: string) => `(career_stage IS NULL AND ${조건})`;
+  const 묶음 = (a: string, b: string) => `AND (${a} OR ${b})`;
+
   let careerClause = "";
-  if (careerFilter === "신입")  careerClause = "AND (career_years IS NULL OR career_years = 0)";
-  else if (careerFilter === "경력") careerClause = "AND career_years >= 1";
-  else if (careerFilter === "인턴") careerClause = 직급으로("인턴");
-  else if (careerFilter === "실장") careerClause = 직급으로("실장");
-  else if (careerFilter === "매니저급") careerClause = 직급으로("매니저");
-  else if (careerFilter === "점장급") careerClause = 직급으로("점장");
-  // 본사는 연차로 뽑는다 — 근무 기간에서 셈한 값으로 가른다. 구간은 겹치지
-  // 않는다(예전 「1-3년」·「3-5년」은 3년에서 겹쳤다).
-  else if (careerFilter === "1~2년") careerClause = "AND career_years BETWEEN 1 AND 2";
-  else if (careerFilter === "3~5년") careerClause = "AND career_years BETWEEN 3 AND 5";
-  else if (careerFilter === "5~10년") careerClause = "AND career_years BETWEEN 6 AND 10";
-  else if (careerFilter === "10년+") careerClause = "AND career_years > 10";
+  if (careerFilter === "신입")
+    careerClause = 묶음(고른단계가("신입"), 이력이("(career_years IS NULL OR career_years = 0)"));
+  else if (careerFilter === "경력")
+    careerClause = 묶음(고른단계가("경력"), 이력이("career_years >= 1"));
+  else if (careerFilter === "인턴")    careerClause = 묶음(고른단계가("인턴"), 직급으로("인턴"));
+  else if (careerFilter === "실장")    careerClause = 묶음(고른단계가("실장"), 직급으로("실장"));
+  else if (careerFilter === "매니저급") careerClause = 묶음(고른단계가("매니저급"), 직급으로("매니저"));
+  else if (careerFilter === "점장급")   careerClause = 묶음(고른단계가("점장급"), 직급으로("점장"));
+  // 본사는 연차로 뽑는다. 구간은 겹치지 않는다(예전 「1-3년」·「3-5년」은 3년에서 겹쳤다).
+  else if (careerFilter === "1~2년")  careerClause = 묶음(고른단계가("1~2년"), 이력이("career_years BETWEEN 1 AND 2"));
+  else if (careerFilter === "3~5년")  careerClause = 묶음(고른단계가("3~5년"), 이력이("career_years BETWEEN 3 AND 5"));
+  else if (careerFilter === "5~10년") careerClause = 묶음(고른단계가("5~10년"), 이력이("career_years BETWEEN 6 AND 10"));
+  else if (careerFilter === "10년+")  careerClause = 묶음(고른단계가("10년+"), 이력이("career_years > 10"));
 
   // 연령 (CTE 이후, 매장직)
   let ageClause = "";
@@ -163,6 +172,7 @@ export async function GET(req: NextRequest) {
         up.intro,
         up.main_job_group,
         up.sub_job,
+        up.career_stage,
         up.skills,
         up.skill_areas,
         up.office_job_areas,
@@ -292,6 +302,7 @@ export async function GET(req: NextRequest) {
       intro: r.intro,
       mainJobGroup: r.main_job_group,
       subJob: r.sub_job,
+      careerStage: r.career_stage,
       skills: r.skills || [],
       skillAreas: r.skill_areas || [],
       officeJobAreas: r.office_job_areas || [],

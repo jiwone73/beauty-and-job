@@ -7,6 +7,9 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 import { setLoginPersistence } from "@/lib/auth/session";
+import JobCareerPicker from "@/components/signup/JobCareerPicker";
+import RegionSelectModal from "@/components/RegionSelectModal";
+import { shortRegion } from "@/lib/regionShort";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 interface Term {
@@ -34,6 +37,12 @@ function SignupEmailContent() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
+  // 간편가입 온보딩과 같은 것을 묻는다 — 한쪽에만 있으면 어느 길로 들어왔는지에
+  // 따라 기업 검색에 걸리는 사람과 안 걸리는 사람이 갈린다.
+  const [대분류, set대분류] = useState("");
+  const [단계, set단계] = useState("");
+  const [지역들, set지역들] = useState<string[]>([]);
+  const [지역창, set지역창] = useState(false);
   const [terms, setTerms] = useState<Term[]>([]);
   const [agreed, setAgreed] = useState<Record<string, boolean>>({});
   const [error, setError] = useState("");
@@ -83,6 +92,9 @@ function SignupEmailContent() {
 
   const isFormValid =
     jobType !== "" &&
+    대분류 !== "" &&
+    단계 !== "" &&
+    지역들.length > 0 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
     emailStatus !== "taken" &&
     name.trim().length > 0 &&
@@ -172,6 +184,13 @@ function SignupEmailContent() {
           phone,
           password,
           job_type: jobType,
+          main_job_group: 대분류,
+          career_stage: 단계,
+          preferred_regions: 지역들.map((r) => {
+            const i = r.lastIndexOf(" ");
+            const tail = r.slice(i + 1);
+            return { sido: r.slice(0, i), sigungu: tail === "전체" ? "" : tail };
+          }),
           agreed_term_ids: agreedTermIds,
         }),
       });
@@ -291,6 +310,25 @@ function SignupEmailContent() {
               <p className="text-[12px] md:text-[14px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
             )}
           </div>
+
+          <JobCareerPicker jobType={jobType as any} group={대분류} stage={단계}
+            onGroup={set대분류} onStage={set단계} />
+
+          <div className="mb-8">
+            <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
+              희망 근무지역 <span className="text-red-500">*</span>
+            </p>
+            <button type="button" onClick={() => set지역창(true)}
+              className="w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
+              {지역들.length === 0
+                ? <span className="text-[#9a9a9a]">지역을 선택해 주세요</span>
+                : <span className="text-[#3a3a3a]">{지역들.map((r) => shortRegion(r)).join(" · ")}</span>}
+            </button>
+          </div>
+
+          <RegionSelectModal open={지역창} initial={지역들} allowAny
+            onClose={() => set지역창(false)}
+            onApply={(r) => { set지역들(r); set지역창(false); }} />
           {/* 이메일 — 중복 확인만. 인증은 비밀번호 재설정·이메일 변경 시점에 한다. */}
           <div className="mb-4">
             <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>

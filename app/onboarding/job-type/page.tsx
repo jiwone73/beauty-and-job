@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import RegionSelectModal from "@/components/RegionSelectModal";
+import JobCareerPicker from "@/components/signup/JobCareerPicker";
 import { shortRegion } from "@/lib/regionShort";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -22,6 +23,10 @@ export default function OnboardingJobTypePage() {
   const [가입표, set가입표] = useState<string | null>(null);
   const [표번호있나, set표번호있나] = useState(false);
   const [읽는중, set읽는중] = useState(true);
+
+  // 직군 대분류와 경력 단계. 이메일 가입 폼과 같은 부품을 쓴다.
+  const [대분류, set대분류] = useState("");
+  const [단계, set단계] = useState("");
 
   // 희망 근무지역. 직군과 함께 「어떤 일을 어디서 찾느냐」의 나머지 반쪽이라
   // 여기서 받는다 — 이게 없으면 기업의 지역 필터에 아예 걸리지 않는다.
@@ -99,6 +104,8 @@ export default function OnboardingJobTypePage() {
       setError("휴대폰 인증을 완료해 주세요.");
       return;
     }
+    if (!대분류) { setError("직군을 골라 주세요."); return; }
+    if (!단계)   { setError("경력을 골라 주세요."); return; }
     if (지역들.length === 0) {
       setError("희망 근무지역을 골라 주세요.");
       return;
@@ -130,6 +137,8 @@ export default function OnboardingJobTypePage() {
             job_type: selected,
             phone: needPhone ? 번호 : undefined,
             preferred_regions: 희망지역,
+            main_job_group: 대분류,
+            career_stage: 단계,
             agreed_term_ids: 고른약관,
           }),
         });
@@ -168,6 +177,13 @@ export default function OnboardingJobTypePage() {
           : { job_type: selected, preferred_regions: 희망지역 }),
       });
       if (!res.ok) throw new Error("저장 실패");
+
+      // 인재 검색이 INNER JOIN 하는 user_profiles 에 직군·경력을 남긴다.
+      await fetch("/api/users/me/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ main_job_group: 대분류, career_stage: 단계 }),
+      }).catch((e) => console.error("[profile]", e));
 
       await fetch("/api/users/me/terms", {
         method: "POST",
@@ -231,6 +247,9 @@ export default function OnboardingJobTypePage() {
             </p>
           </button>
         </div>
+
+        <JobCareerPicker jobType={selected} group={대분류} stage={단계}
+          onGroup={set대분류} onStage={set단계} />
 
         <div className="mb-8">
           <p className="text-[13px] text-[#6b6b6b] mb-2">
@@ -329,7 +348,7 @@ export default function OnboardingJobTypePage() {
 
         <button
           onClick={handleSubmit}
-          disabled={!selected || loading || 읽는중 || !필수동의됨 || 지역들.length === 0 || (needPhone && !phoneVerified)}
+          disabled={!selected || !대분류 || !단계 || loading || 읽는중 || !필수동의됨 || 지역들.length === 0 || (needPhone && !phoneVerified)}
           className="w-full h-[52px] rounded-lg bg-[#582681] text-white font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
         >
           {loading ? "저장 중..." : "시작하기"}

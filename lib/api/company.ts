@@ -104,6 +104,8 @@ export type TalentItem = {
   workTypePrefer: string | null;
   careerYears: number | null;
   careerCount: number;
+  /** 본인이 고른 경력 단계. 직군 대분류마다 사다리가 다르다. */
+  careerStage: string | null;
   educationDetail: { school: string; major: string | null; status: string | null; start_date: string | null; end_date: string | null } | null;
   careerDetail: { company: string; department: string | null; position: string | null; start_date: string | null; end_date: string | null } | null;
   jobSearchStatus: "SEEKING" | "OPEN" | "CLOSED";

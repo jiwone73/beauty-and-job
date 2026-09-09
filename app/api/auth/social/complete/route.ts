@@ -6,6 +6,7 @@ import { ok, err } from "@/lib/api";
 import { signAccessToken } from "@/lib/jwt";
 import { 가입표읽기 } from "@/lib/socialSignup";
 import { sendWelcomeEmail } from "@/lib/email";
+import { getGroupNames, 경력단계, 경력묶음 } from "@/lib/data/jobGroups";
 
 // 간편가입의 마지막 걸음 — 약관에 동의한 뒤에야 회원이 된다.
 //
@@ -15,7 +16,8 @@ import { sendWelcomeEmail } from "@/lib/email";
 // 들어왔든 동의 기록은 한 자리에 모여야 나중에 확인할 수 있다.
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({} as any));
-  const { signup, job_type, phone, preferred_regions, agreed_term_ids } = body || {};
+  const { signup, job_type, phone, preferred_regions,
+          main_job_group, career_stage, agreed_term_ids } = body || {};
 
   if (!signup) return err("SOCIAL_001", "가입 정보가 없어요. 처음부터 다시 해주세요.", 400);
 
@@ -35,6 +37,17 @@ export async function POST(req: NextRequest) {
   const 지역 = Array.isArray(preferred_regions) ? preferred_regions : [];
   if (지역.length === 0) return err("SOCIAL_006", "희망 근무지역을 골라 주세요.", 400);
   if (지역.length > 5) return err("SOCIAL_007", "희망 근무지역은 최대 5개까지 가능합니다.", 400);
+
+  // 직군 대분류와 경력 단계. 고른 값이 그 직군의 사다리에 있는 것인지까지 본다 —
+  // 사다리에 없는 말이 들어오면 기업의 경력 필터가 그 사람을 영영 못 찾는다.
+  const 대분류 = String(main_job_group || "");
+  const 단계 = String(career_stage || "");
+  if (!getGroupNames(job_type).includes(대분류)) {
+    return err("SOCIAL_008", "직군을 골라 주세요.", 400);
+  }
+  if (!경력단계(대분류, job_type).includes(단계)) {
+    return err("SOCIAL_009", "경력을 골라 주세요.", 400);
+  }
 
   // 필수 약관은 서버가 확인한다 — 화면에서 막는 것만으로는 요청을 직접 보내는
   // 경우를 못 막고, 동의 없이 만들어진 회원은 나중에 되돌릴 방법이 없다.
@@ -74,6 +87,19 @@ export async function POST(req: NextRequest) {
       [kakaoId, naverId, 표.name, 표.email, 번호, 표.avatarUrl, job_type, JSON.stringify(지역)]
     );
     const user = ins.rows[0];
+
+    // 인재 검색은 user_profiles 를 INNER JOIN 한다 — 이 행이 없으면 기업 눈에
+    // 아예 안 보인다. 가입할 때 만들어 둔다.
+    await client.query(
+      `INSERT INTO user_profiles (user_id, main_job_group, career_stage, is_entry_level, updated_at)
+       VALUES ($1, $2, $3, $4, NOW())
+       ON CONFLICT (user_id) DO UPDATE
+         SET main_job_group = EXCLUDED.main_job_group,
+             career_stage   = EXCLUDED.career_stage,
+             is_entry_level = EXCLUDED.is_entry_level,
+             updated_at     = NOW()`,
+      [user.id, 대분류, 단계, 경력묶음(단계) === "신입"]
+    );
 
     for (const termId of 동의) {
       await client.query(

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import { 이력서쓰기 } from "@/lib/resumeWrite";
 import pool from "@/lib/db";
+import { 경력묶음 } from "@/lib/data/jobGroups";
 import { ok, err, requireAuth } from "@/lib/api";
 
 // ============================================
@@ -120,6 +121,14 @@ export async function PATCH(req: NextRequest) {
   if (typeof b.region_prefer === "string") fields.push(["region_prefer", b.region_prefer]);
   if (Array.isArray(b.office_job_areas)) fields.push(["office_job_areas", b.office_job_areas]);
   if (typeof b.entry_experience === "string") fields.push(["entry_experience", b.entry_experience]);
+  // 가입할 때 고르는 직군 대분류와 경력 단계. 사다리는 대분류마다 다르다
+  // (헤어·바버는 실장까지, 본사는 연차) — lib/data/jobGroups.ts 의 경력단계.
+  // 신입 여부는 고른 단계에서 끌어낸다. 따로 물으면 둘이 어긋난다.
+  if (typeof b.main_job_group === "string") fields.push(["main_job_group", b.main_job_group]);
+  if (typeof b.career_stage === "string") {
+    fields.push(["career_stage", b.career_stage]);
+    fields.push(["is_entry_level", 경력묶음(b.career_stage) === "신입"]);
+  }
   // 희망급여 — 공고와 같은 모양(원 단위 + 유형). 비우면 「급여 협의」다.
   if (typeof b.salary_type === "string") fields.push(["salary_type", b.salary_type]);
   if (b.salary_min === null || typeof b.salary_min === "number") fields.push(["salary_min", b.salary_min]);
