@@ -698,8 +698,8 @@ export default function ProfilePage() {
                     {dbJobType && (
                       <em className="profile-info-note">
                         {dbJobType === "STORE"
-                          ? "헤어·바버 · 메이크업 · 네일·속눈썹 · 피부·바디 · 두피·탈모 · 웨딩·이벤트 · 뷰티 리테일 · 샵 운영·상담 · 미용강사 · 의료미용(병원 현장)"
-                          : "뷰티 플랫폼·콘텐츠 · 뷰티 리테일 & 커머스 · 뷰티 제조·OEM·ODM · 교육·아카데미 · HR 서비스 · 의료미용(해외·통역)"}
+                          ? "시술·스탭 · 샵 운영 · 웨딩 · 미용강사 · 병원 현장"
+                          : "제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원"}
                       </em>
                     )}
                   </span>
