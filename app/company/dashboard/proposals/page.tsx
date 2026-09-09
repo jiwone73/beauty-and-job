@@ -472,7 +472,6 @@ export default function CompanyProposalsPage() {
                           <i>{인적(p)}</i>
                         </span>
                       </button>
-                      {/* 직군은 사람 정보와 결이 달라 선 아래로 내린다. */}
                       {조건(p) && <span className="prop-job2">{조건(p)}</span>}
                     </td>
                     <td className="c-date">{날짜(p.createdAt)}</td>

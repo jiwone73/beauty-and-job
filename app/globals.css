@@ -15411,13 +15411,13 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 보낸 제안 표의 인재 칸.
    아바타 옆은 늘 두 줄(이름 / 성별·나이)이다 — 값이 없는 사람도 자리를 비워
-   두어야 줄 높이가 들쭉날쭉하지 않다. 직군은 결이 달라 선 아래로 내린다. */
+   두어야 줄 높이가 들쭉날쭉하지 않다. 직군은 그 아래에 붙인다 — 선을 그었더니
+   위아래 여백까지 붙어 줄이 통째로 늘어졌다. */
 .prop-whoinfo { display: flex; flex-direction: column; justify-content: center;
   min-height: 34px; }
 .prop-whoinfo b { font-weight: 600; color: var(--color-text-strong); line-height: 1.35; }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
   font-size: 12px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
-.prop-job2 { display: block; margin-top: 9px; padding-top: 9px;
-  border-top: 1px solid #f2f2f4; font-size: 12.5px; color: var(--color-text); }
+.prop-job2 { display: block; margin-top: 4px; font-size: 12.5px; color: var(--color-text); }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }
