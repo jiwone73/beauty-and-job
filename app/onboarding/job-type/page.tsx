@@ -228,7 +228,7 @@ export default function OnboardingJobTypePage() {
               <StoreIcon size={20} style={{ color: "#582681" }} /> 매장
             </p>
             <p className="text-[13px] text-[#6b6b6b]">
-              살롱·샵·미용학원 등 현장에서 근무하는 직군이에요
+              헤어·바버 · 메이크업 · 네일·속눈썹 · 피부·바디 · 두피·탈모 · 웨딩·이벤트 · 뷰티 리테일 · 샵 운영·상담 · 미용강사 · 의료미용(병원 현장)
             </p>
           </button>
 
@@ -243,7 +243,7 @@ export default function OnboardingJobTypePage() {
               <OfficeIcon size={20} style={{ color: "#582681" }} /> 본사
             </p>
             <p className="text-[13px] text-[#6b6b6b]">
-              브랜드·제조·유통·협력사 등 현장이 아닌 곳에서 근무하는 직군이에요
+              뷰티 플랫폼·콘텐츠 · 뷰티 리테일 & 커머스 · 뷰티 제조·OEM·ODM · 교육·아카데미 · HR 서비스 · 의료미용(해외·통역)
             </p>
           </button>
         </div>

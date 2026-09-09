@@ -254,7 +254,9 @@ function SignupEmailContent() {
             <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            {/* 두 칸으로 나누면 420px 폼에서 한 칸이 205px 이라, 대분류를 적어 둔 줄이
+                대여섯 줄로 늘어져 읽히지 않는다. 온보딩과 같이 세로로 세운다. */}
+            <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => setJobType("STORE")}
@@ -269,7 +271,7 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
-                    살롱 · 샵 · 미용학원 등 현장
+                    헤어·바버 · 메이크업 · 네일·속눈썹 · 피부·바디 · 두피·탈모 · 웨딩·이벤트 · 뷰티 리테일 · 샵 운영·상담 · 미용강사 · 의료미용(병원 현장)
                   </span>
                 </span>
                 {jobType === "STORE" && (
@@ -294,7 +296,7 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">본사</span>
                   <span className="jt-desc text-[11px] md:text-[13px] mt-0.5 leading-tight">
-                    브랜드·제조·유통·협력사 등 현장이 아닌 곳
+                    뷰티 플랫폼·콘텐츠 · 뷰티 리테일 & 커머스 · 뷰티 제조·OEM·ODM · 교육·아카데미 · HR 서비스 · 의료미용(해외·통역)
                   </span>
                 </span>
                 {jobType === "OFFICE" && (
