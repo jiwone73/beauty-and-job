@@ -254,9 +254,7 @@ function SignupEmailContent() {
             <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
-            {/* 두 칸으로 나누면 420px 폼에서 한 칸이 205px 이라, 대분류를 적어 둔 줄이
-                대여섯 줄로 늘어져 읽히지 않는다. 온보딩과 같이 세로로 세운다. */}
-            <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-2 gap-2 items-stretch">
               <button
                 type="button"
                 onClick={() => setJobType("STORE")}

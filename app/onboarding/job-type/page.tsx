@@ -209,14 +209,14 @@ export default function OnboardingJobTypePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-lg">
         <div className="mb-8 text-center">
           <p className="text-[13px] text-[#582681] font-semibold mb-2">거의 다 왔어요!</p>
           <h1 className="text-[22px] font-bold text-[#111]">어떤 일을 찾고 계세요?</h1>
           <p className="text-[14px] text-[#6b6b6b] mt-2">관심 분야 공고를 먼저 보여드릴게요</p>
         </div>
 
-        <div className="flex flex-col gap-3 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-8 items-stretch">
           <button
             onClick={() => setSelected("STORE")}
             className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
