@@ -440,6 +440,7 @@ export default function CompanyProposalsPage() {
               <tr>
                 <th className="c-no">No.</th>
                 <th>인재</th>
+                <th className="c-job">희망직군</th>
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
                 <th>최근 활동</th>
@@ -468,8 +469,10 @@ export default function CompanyProposalsPage() {
                           <i>{인적(p)}</i>
                         </span>
                       </button>
-                      {조건(p) && <span className="prop-job2">{조건(p)}</span>}
                     </td>
+                    {/* 직군은 열을 따로 준다. 이름 아래에 붙이면 사람에 따라 줄 수가
+                        달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
+                    <td className="c-job">{조건(p)}</td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>

@@ -15435,6 +15435,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .prop-whoinfo b { font-weight: 600; color: var(--color-text-strong); line-height: 1.35; }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
   font-size: 12px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
-.prop-job2 { display: block; margin-top: 4px; font-size: 12.5px; color: var(--color-text); }
+/* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
+   낱말 가운데서 끊기지 않게 keep-all 을 준다. */
+.prop-table .c-job { width: 108px; font-size: 12.5px; color: var(--color-text);
+  line-height: 1.45; word-break: keep-all; }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }
