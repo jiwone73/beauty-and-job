@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { 모집분야한줄 } from "@/lib/positionLine";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import {
   Search, BookmarkCheck, Bookmark, X,
@@ -117,7 +118,11 @@ export default function TalentPage() {
     id: string; title: string; location?: string | null;
     employment_type?: string | null; salary_type?: string | null;
     salary_min?: number | null; deadline?: string | null;
+    job_type?: string | null; positions?: any[] | null;
   }[]>([]);
+  // 어느 자리로 제안하는가. 공고에 모집분야가 여럿일 때 고른다 —
+  // 없으면 받는 사람이 어느 자리를 제안받은 것인지 알 수 없다.
+  const [proposePos, setProposePos] = useState<number | null>(null);
   const [proposeJobsLoading, setProposeJobsLoading] = useState(false);
   // 보낸 제안에서 「이 공고로 제안 보내기」로 넘어오면 그 공고를 미리 골라 둔다.
   // 보내는 자리는 여기 그대로고, 공고를 다시 고르는 수고만 던다.
@@ -341,6 +346,8 @@ export default function TalentPage() {
               id: j.id, title: j.title, location: j.location || null,
               employment_type: j.employment_type || null, salary_type: j.salary_type || null,
               salary_min: j.salary_min ?? null, deadline: j.deadline || null,
+              job_type: j.job_type || null,
+              positions: Array.isArray(j.positions) ? j.positions.filter((x: any) => x && x.category) : [],
             })));
       } catch (e) {
         console.error("[propose jobs fetch]", e);
@@ -360,6 +367,9 @@ export default function TalentPage() {
   // 이미 손대 쓴 글이 있으면 덮지 않는다.
   const 공고고르기 = (id: string) => {
     setProposeJobId(id);
+    // 자리가 하나뿐이면 고르고 말고가 없다. 여럿이면 비워 두고 고르게 한다.
+    const 자리들 = proposeJobs.find((j) => j.id === id)?.positions || [];
+    setProposePos(자리들.length === 1 ? 0 : null);
     if (!id || !proposeTarget) return;
     const 공고 = proposeJobs.find((j) => j.id === id);
     const 직 = proposeTarget.subJob || proposeTarget.mainJobGroup || "";
@@ -386,9 +396,13 @@ export default function TalentPage() {
 
   const sendPropose = async () => {
     if (!proposeTarget || !proposeJobId || !proposeMessage.trim()) return;
+    if ((고른공고?.positions?.length || 0) > 1 && proposePos === null) {
+      alert("어느 자리로 제안할지 골라 주세요.");
+      return;
+    }
     setProposeSending(true);
     try {
-      await companyTalentApi.propose(proposeTarget.id, { jobPostingId: proposeJobId, message: proposeMessage.trim() });
+      await companyTalentApi.propose(proposeTarget.id, { jobPostingId: proposeJobId, positionIndex: proposePos, message: proposeMessage.trim() });
       alert("제안을 보냈어요.");
       const 보낸이 = proposeTarget.id;
       const 지금 = new Date().toISOString();
@@ -957,6 +971,25 @@ export default function TalentPage() {
               </select>
             )}
 
+            {/* 어느 자리로 제안하는가. 공고에 모집분야가 여럿일 때만 묻는다 —
+                하나뿐인 공고에서 뻔한 것을 매번 고르게 하지 않는다.
+                이 값이 없으면 받는 사람은 공고의 모든 자리를 보게 되어, 자기가
+                어느 자리를 제안받은 것인지 알 수 없다. */}
+            {(고른공고?.positions?.length || 0) > 1 && (
+              <>
+                <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>모집분야</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
+                  {고른공고!.positions!.map((pos: any, i: number) => (
+                    <button key={i} type="button"
+                      className={`filter-chip${proposePos === i ? " on" : ""}`}
+                      onClick={() => setProposePos(i)}>
+                      {모집분야한줄(pos, (고른공고!.job_type || "") === "OFFICE")}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
             {/* 고른 공고의 핵심 = 상대가 받아 보게 될 내용. 보내기 전에 확인하는 자리다.
                 제안의 알맹이는 메시지가 아니라 공고라, 이게 비면 제안도 빈 것이 된다. */}
             {고른공고 && (
@@ -998,7 +1031,8 @@ export default function TalentPage() {
                 취소
               </button>
               <button type="button" onClick={sendPropose}
-                disabled={proposeSending || !proposeJobId || !proposeMessage.trim()}
+                disabled={proposeSending || !proposeJobId || !proposeMessage.trim()
+                  || ((고른공고?.positions?.length || 0) > 1 && proposePos === null)}
                 style={{ flex: 1, height: 44, borderRadius: 9, border: "none", background: "#582681", color: "#fff",
                   fontSize: 14, fontWeight: 600, cursor: (proposeSending || !proposeJobId || !proposeMessage.trim()) ? "not-allowed" : "pointer",
                   opacity: (proposeSending || !proposeJobId || !proposeMessage.trim()) ? 0.5 : 1 }}>

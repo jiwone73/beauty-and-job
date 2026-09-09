@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
+import { 제안분야들 } from "@/lib/positionLine";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (res) return res;
   try {
     const { rows } = await pool.query(
-      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.note,
+      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.canceled_at, p.position_index, p.note,
               u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
@@ -33,6 +34,7 @@ export async function GET(req: NextRequest) {
               -- 보낸 제안 위쪽 공고 머리에 쓸 값들(기간·조건 줄).
               jp.created_at AS job_created_at,
               jp.positions AS job_positions,
+              jp.job_type,
               jp.employment_type AS job_employment_type,
               jp.experience_level AS job_experience_level,
               jp.categories AS job_categories,
@@ -66,6 +68,12 @@ export async function GET(req: NextRequest) {
       readAt: r.read_at,
       interestedAt: r.interested_at,
       declinedAt: r.declined_at || null,
+      canceledAt: r.canceled_at || null,
+      // 어느 자리로 보낸 제안인지. 공고에 모집분야가 여럿이면 이게 없으면
+      // 매장도 누구에게 무엇을 제안했는지 알 수 없다. 옛 제안은 비어 있어
+      // 그때는 공고의 분야를 전부 적는다.
+      positionLine: 제안분야들(r.job_positions, r.position_index,
+        (r.job_type || "") === "OFFICE").join(" / ") || null,
       interestMessage: r.interest_message,
       userId: r.user_id,
       userName: r.user_name,

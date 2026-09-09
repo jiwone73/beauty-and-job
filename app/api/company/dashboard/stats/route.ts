@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest } from 'next/server'
-import { 제안유효일, 채팅열림SQL } from "@/lib/proposal";
+import { 채팅열림SQL } from "@/lib/proposal";
 import pool from '@/lib/db'
 import { ok, requireAuth } from '@/lib/api'
 
@@ -100,12 +100,17 @@ export async function GET(req: NextRequest) {
     `SELECT COUNT(*)::int AS cnt FROM company_talent_scraps WHERE company_id = $1`,
     [companyId]
   )
-  // 회신 대기 — 보냈는데 아직 답이 없는 제안(기한 안쪽). 기한이 지난 것은 끝난 것이라 세지 않는다.
+  // 회신 대기 — 보냈는데 아직 답이 없는 제안. 예전에는 7일 안쪽만 셌는데,
+  // 제안의 수명을 공고에 맡기면서 그 기준이 없어졌다. 거절·취소된 것과 공고가
+  // 닫힌 것은 기다릴 일이 아니라 뺀다.
   const awaitingRes = await pool.query(
-    `SELECT COUNT(*)::int AS cnt FROM proposals
-      WHERE company_id = $1 AND interested_at IS NULL
-        AND created_at >= NOW() - ($2 || ' days')::interval`,
-    [companyId, String(제안유효일)]
+    `SELECT COUNT(*)::int AS cnt FROM proposals p
+       LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
+      WHERE p.company_id = $1
+        AND p.interested_at IS NULL AND p.declined_at IS NULL AND p.canceled_at IS NULL
+        AND (jp.id IS NULL OR (jp.status = 'ACTIVE'
+             AND (jp.deadline IS NULL OR jp.deadline::date >= CURRENT_DATE)))`,
+    [companyId]
   )
 
   // 아직 안 본 지원자 — 「미열람 지원자」 카드 제목에 쓴다.

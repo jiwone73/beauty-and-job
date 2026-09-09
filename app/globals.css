@@ -15365,3 +15365,35 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .ap-cert { width: 100%; justify-content: center; }
   .ap-table th:nth-child(4), .ap-table td:nth-child(4) { display: none; }
 }
+
+/* 받은 제안 카드.
+ *
+ * 왼쪽은 「어떤 자리인가」, 오른쪽은 「지금 무슨 상태이고 무엇을 하면 되나」.
+ * 모집분야는 공고 상세의 표를 세로바 한 줄로 편다(lib/positionLine) — 카드에
+ * 표를 통째로 넣을 자리가 없고, 열 이름은 값만 봐도 안다.
+ *
+ * 기한은 적지 않는다. 제안의 수명을 공고에 맡겼으므로 공고 기간 줄이 그 답이다. */
+.prop-row { display: flex; gap: 16px; align-items: flex-start; }
+.prop-main { flex: 1; min-width: 0; }
+.prop-period { margin: 0; font-size: 12.5px; color: var(--color-text); }
+.prop-period .on { color: var(--color-primary); margin-right: 6px; }
+.prop-period .off { color: #b4b4b9; margin-right: 6px; }
+.prop-title2 { margin: 3px 0 0; font-size: 16px; color: var(--color-text-strong); }
+.prop-co2 { margin: 4px 0 0; font-size: 13px; color: var(--color-text); }
+.prop-pos2 { margin: 6px 0 0; font-size: 13px; color: var(--color-text); line-height: 1.6; word-break: keep-all; }
+.prop-msg2 { margin: 8px 0 0; font-size: 13px; color: var(--color-text); line-height: 1.6; }
+
+.prop-side { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end;
+  gap: 8px; min-width: 104px; }
+.prop-st2 { font-size: 13px; }
+.prop-sub2 { font-size: 12px; color: var(--color-text); }
+.prop-go { border: none; background: var(--color-primary); color: #fff; font-size: 13px;
+  padding: 8px 16px; border-radius: var(--chip-radius); cursor: pointer; font-family: inherit;
+  white-space: nowrap; }
+.prop-go.ghost { background: #fff; color: var(--color-text); border: 1px solid var(--color-border); }
+.prop-go:hover { opacity: .92; }
+
+@media (max-width: 768px) {
+  .prop-row { flex-direction: column; }
+  .prop-side { flex-direction: row; align-items: center; width: 100%; justify-content: flex-end; }
+}

@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
-import { 제안유효일, 제안만료, 제안남은날 } from "@/lib/proposal";
 import { 마감인가 } from "@/lib/jobClosed";
 import { Send, ChevronRight } from "lucide-react";
 
@@ -41,13 +40,11 @@ type 제안 = {
   applicationStatus: string | null;
   blocked: boolean;
   appliedAt: string | null;
-};
-
-// 답이 없을 때 이 제안이 닫히는 날. 상대가 받아들이면 닫히지 않는다.
-const 닫히는날 = (createdAt: string) => {
-  const d = new Date(createdAt);
-  d.setDate(d.getDate() + 제안유효일);
-  return d;
+  /** 기업이 제안을 거둔 시각. 수락 전에만 누를 수 있다. */
+  canceledAt: string | null;
+  /** 제안한 자리 한 줄. 공고에 모집분야가 여럿일 때 누구에게 어느 자리를
+   *  보냈는지가 없어 매장도 알 수 없었다. */
+  positionLine: string | null;
 };
 
 const 날짜 = (s: string) =>
@@ -63,7 +60,7 @@ const 때 = (s: string) => {
 
 // 상태는 하나만 정한다. 위에서부터 먼저 맞는 것이 그 사람의 상태다 —
 // 채용까지 갔으면 채팅 중이기도 하지만 말할 것은 채용이다.
-type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거절" | "답변대기" | "기간지남";
+type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거절" | "취소" | "공고마감" | "답변대기";
 // 색은 「지금 움직이고 있나」만 말한다. 대화가 오가는 중이면 보라, 끝맺은
 // 것이면 초록, 나머지는 기본 글자색이다 — 회색을 여러 단계로 나누면 어느
 // 것이 옅은지 화면마다 달라 보인다.
@@ -74,24 +71,35 @@ type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거
 // 뿌리는 이 단계만 「일어난 일」이 아니라는 데 있다 — 나머지는 다 사건인데
 // (수락·채팅·면접·채용) 여기만 아직 아무 일도 없다.
 //
-// 그래서 짧은 한 마디로 끝낸다. 읽었는지는 「최근 활동」이, 며칠 남았는지는
-// 「닫히는 날」이 따로 말하므로 상태 칸은 단계만 말하면 된다.
+// 그래서 짧은 한 마디로 끝낸다. 읽었는지는 「최근 활동」이 따로 말하므로
+// 상태 칸은 단계만 말하면 된다.
+//
+// 「기간 지남」은 없앴다. 7일이라는 숫자를 우리가 정해 두고 닫던 것인데,
+// 공고가 열려 있으면 그 자리는 실제로 있는 것이라 근거가 없었다. 이제는
+// 공고가 닫힐 때 같이 닫히고 이름도 「공고마감」이다 — 매장도 구직자도
+// 아는 말이고, 자연 마감이든 사람을 뽑아 조기 마감이든 같은 말이다.
 const 상태이름: Record<상태키, string> = {
   답변대기: "대기", 수락: "수락", 채팅중: "채팅중",
-  면접예정: "면접예정", 채용완료: "채용완료", 거절: "거절", 기간지남: "기간 지남",
+  면접예정: "면접예정", 채용완료: "채용완료",
+  거절: "거절", 취소: "취소함", 공고마감: "공고마감",
 };
 const 상태색: Record<상태키, string> = {
   채용완료: "#1f7a4d", 수락: "#1f7a4d",
   면접예정: "#582681", 채팅중: "#582681",
-  거절: "var(--color-text)", 답변대기: "var(--color-text)", 기간지남: "var(--color-text)",
+  거절: "var(--color-text)", 취소: "var(--color-text)",
+  공고마감: "var(--color-text)", 답변대기: "var(--color-text)",
 };
 
+// 이미 무슨 일이 일어난 제안은 공고가 닫혀도 그 상태를 지킨다 — 면접까지
+// 잡아 놓고 매장이 공고를 내렸다고 「공고마감」이 되면 대화가 어디 갔나 싶다.
+// 공고마감은 아직 아무 일도 없는 제안에만 붙는다.
 function 상태(p: 제안): 상태키 {
   if (p.applicationStatus === "PASSED") return "채용완료";
   if (p.declinedAt || p.blocked) return "거절";
+  if (p.canceledAt) return "취소";
   if (p.appointmentAt) return "면접예정";
   if (p.interestedAt) return p.messageCount > 0 ? "채팅중" : "수락";
-  if (제안만료(p.createdAt, p.interestedAt)) return "기간지남";
+  if (마감인가(p.jobStatus, p.jobDeadline)) return "공고마감";
   return "답변대기";
 }
 
@@ -120,7 +128,7 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
 /** 다음에 할 일. 우리 차례인 것만 색을 채운다. */
 function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null {
   const st = 상태(p);
-  if (st === "거절" || st === "기간지남") return null;
+  if (st === "거절" || st === "취소" || st === "공고마감") return null;
   if (st === "채용완료") return { 글: "지원서 보기", 우리차례: false };
   if (st === "면접예정") return { 글: "일정 확인", 우리차례: false };
   if (st === "채팅중") return { 글: "채팅하기", 우리차례: p.lastSender === "USER" };
@@ -167,7 +175,7 @@ export default function CompanyProposalsPage() {
       const 내차례 = 다음할일(p)?.우리차례 ? 1 : 0;
       // 아직 끝나지 않은 제안이 하나라도 있으면 그 공고는 살아 있다 — 공고가
       // 마감돼도 대화 중이거나 면접이 잡힌 사람은 그대로 남는다.
-      const 진행 = !["거절", "기간지남", "채용완료"].includes(상태(p)) ? 1 : 0;
+      const 진행 = !["거절", "취소", "공고마감", "채용완료"].includes(상태(p)) ? 1 : 0;
       const 앞 = 표.get(id);
       if (앞) { 앞.수 += 1; 앞.내차례 += 내차례; 앞.살아있나 = 앞.살아있나 || !!진행; }
       else 표.set(id, {
@@ -201,11 +209,11 @@ export default function CompanyProposalsPage() {
   //   답변대기 → 수락 → 채팅중 → 면접예정 → 채용완료
   //
   // 0건이어도 자리를 지킨다. 있는 것만 세우면 흐름이 끊겨, 지금 어디까지 왔고
-  // 어디서 막혔는지가 안 보인다. 끝난 것(거절·기간지남)은 흐름 밖이라 뒤에 두고
+  // 어디서 막혔는지가 안 보인다. 끝난 것(거절·취소·공고마감)은 흐름 밖이라 뒤에 두고
   // 0건이면 감춘다 — 없는 일까지 자리를 잡으면 줄만 길어진다.
   const 칩들 = useMemo(() => {
     const 흐름: 상태키[] = ["답변대기", "수락", "채팅중", "면접예정", "채용완료"];
-    const 끝: 상태키[] = ["거절", "기간지남"];
+    const 끝: 상태키[] = ["거절", "취소", "공고마감"];
     const 셈 = new Map<상태키, number>();
     for (const p of 공고고른것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
     return [
@@ -345,11 +353,11 @@ export default function CompanyProposalsPage() {
 
       {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
           어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
-          「전체」와 끝난 것(거절·기간지남)은 흐름 밖이라 선으로 떼어 둔다. */}
+          「전체」와 끝난 것(거절·취소·공고마감)은 흐름 밖이라 선으로 떼어 둔다. */}
       <div className="prop-chips">
         {칩들.map((c, i) => {
-          const 흐름 = !["전체", "거절", "기간지남"].includes(c.키);
-          const 앞흐름 = i > 0 && !["전체", "거절", "기간지남"].includes(칩들[i - 1].키);
+          const 흐름 = !["전체", "거절", "취소", "공고마감"].includes(c.키);
+          const 앞흐름 = i > 0 && !["전체", "거절", "취소", "공고마감"].includes(칩들[i - 1].키);
           return (
             <span key={c.키} className="prop-chipwrap">
               {흐름 && (앞흐름 ? <i className="prop-arrow">›</i> : <i className="prop-sep" />)}
@@ -386,7 +394,6 @@ export default function CompanyProposalsPage() {
                 <th className="c-no">No.</th>
                 <th>인재</th>
                 <th className="c-date">제안일</th>
-                <th className="c-date">닫히는 날</th>
                 <th className="c-st">현재 상태</th>
                 <th>최근 활동</th>
                 <th className="c-act">다음 액션</th>
@@ -397,7 +404,6 @@ export default function CompanyProposalsPage() {
                 const st = 상태(p);
                 const 활 = 최근활동(p);
                 const 할 = 다음할일(p);
-                const 남은 = 제안남은날(p.createdAt);
                 return (
                   <tr key={p.id} className={할?.우리차례 ? "mine" : undefined}>
                     <td className="c-no">{i + 1}</td>
@@ -410,18 +416,11 @@ export default function CompanyProposalsPage() {
                         </span>
                         <span>
                           <b>{p.userName}</b>
-                                  </span>
+                          {p.positionLine && <em className="prop-pos">{p.positionLine}</em>}
+                        </span>
                       </button>
                     </td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
-                    {/* 답이 없는 동안만 닫히는 날이 있다. 받아들인 뒤에는 닫히지
-                        않으므로 비운다 — 없는 날짜를 적으면 오해한다. */}
-                    <td className="c-date">
-                      {st === "답변대기"
-                        ? <>{날짜(닫히는날(p.createdAt).toISOString())}
-                            {남은 <= 3 && <i className="prop-dday">{남은 === 0 ? "오늘" : `${남은}일`}</i>}</>
-                        : <span className="prop-dash">—</span>}
-                    </td>
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
                     </td>

@@ -1,21 +1,12 @@
-// 제안에 답이 없으면 언제까지 기다리나. 거절 통보를 만들지 않기로 한 대신,
-// 기다리는 기간을 정해 둔다 — 매장이 다음 사람을 찾을 판단이 서야 한다.
-// (원티드도 면접 제안을 7일 뒤 자동 거절로 처리한다.)
-export const 제안유효일 = 7;
-
-export function 제안만료(created_at: string | Date | null, interested_at?: string | Date | null): boolean {
-  if (interested_at) return false;            // 답한 제안은 만료되지 않는다
-  if (!created_at) return false;
-  const 지난날 = (Date.now() - new Date(created_at).getTime()) / 86400000;
-  return 지난날 >= 제안유효일;
-}
-
-// 며칠 남았나. 만료됐으면 0.
-export function 제안남은날(created_at: string | Date | null): number {
-  if (!created_at) return 제안유효일;
-  const 지난날 = (Date.now() - new Date(created_at).getTime()) / 86400000;
-  return Math.max(0, Math.ceil(제안유효일 - 지난날));
-}
+// 제안은 공고가 살아 있는 동안 살아 있다.
+//
+// 예전에는 7일이라는 숫자를 우리가 정해 두고 그때 닫았다. 그런데 그 숫자에는
+// 근거가 없었다 — 공고가 열려 있으면 그 자리는 실제로 있는 것이라 열흘 뒤에
+// 수락해도 틀린 게 아니고, 반대로 매장이 사람을 뽑아 공고를 내렸으면 하루
+// 만에도 의미가 없다. 그래서 제안의 수명을 공고의 수명에 맡긴다.
+//
+// 「닫히는 날」·「기간 지남」 같은 말도 같이 없앴다. 구직자에게 필요한 것은
+// 「지금 살아 있는 자리인가」 하나이고, 그건 공고 기간이 이미 말해 준다.
 
 // 홈의 「채팅」 칸이 세는 것 — 지금 대화가 열려 있는 제안.
 //

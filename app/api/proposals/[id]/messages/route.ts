@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 제안만료 } from "@/lib/proposal";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 실을 쓴다 — 그래서 owner 를 지정하지 않고
 // 받은 뒤에 이 제안의 당사자인지 따진다. 남의 스레드는 404 로 돌려보낸다(있는지
@@ -59,7 +58,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       me: 쪽,
       messages: rows,
       blocked: !!제안?.blocked,
-      expired: !!제안 && 제안만료(제안.created_at, 제안.interested_at),
+      expired: false,
       기본장소: 제안?.기본장소 || null,
       매장명: 제안?.매장명 || null,
     });
@@ -75,10 +74,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // 차단된 사이에는 말이 오가지 않는다. 읽기는 남겨 둔다 — 지난 대화까지
   // 사라지면 무슨 일이 있었는지 확인할 길이 없다.
   if (제안?.blocked) return err("PROP_MSG_005", "더 이상 대화할 수 없어요.", 403);
-  // 답 없이 기간이 지난 제안은 닫힌다. 매장이 언제까지 기다릴지 알아야 한다.
-  if (제안 && 제안만료(제안.created_at, 제안.interested_at)) {
-    return err("PROP_MSG_006", "답변 기간이 지난 제안이에요.", 400);
-  }
   // 대화는 상대가 제안을 받아들여야 열린다. 매장이 먼저 말을 걸 수 있으면
   // 제안을 받아들이지 않은 사람에게도 말이 가 버린다 — 제안 자체가 첫 마디다.
   // 화면에서만 단추를 감추고 있었는데, 그건 화면 얘기지 규칙이 아니다.

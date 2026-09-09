@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, Wallet, Briefcase } from "lucide-react";
 import ProposalThread from "@/components/proposal/ProposalThread";
-import { 제안만료, 제안남은날 } from "@/lib/proposal";
+import { 마감인가 } from "@/lib/jobClosed";
 import ProfileShell from "@/components/profile/ProfileShell";
 import { formatSalaryWon } from "@/lib/salary";
 import { 지역비교 } from "@/lib/regionMatch";
@@ -40,6 +40,38 @@ type Proposal = {
   contact_methods: string[] | null;
   region_prefer: string | null;
   work_type_prefer: string | null;
+  declined_at: string | null;
+  job_created_at: string | null;
+  /** 기업이 고른 자리 한 줄. 옛 제안은 공고의 자리를 전부 담는다. */
+  positionLines: string[];
+  message_count: number;
+  appointment_at: string | null;
+  application_status: string | null;
+};
+
+// 상태는 기업의 「공고별 보낸 제안」과 같은 말을 쓴다 — 같은 제안을 놓고 두
+// 화면이 다르게 부르면 매장과 구직자가 다른 것을 세게 된다.
+// 이미 무슨 일이 일어난 제안은 공고가 닫혀도 그 상태를 지킨다. 공고마감은
+// 아직 아무 일도 없는 제안에만 붙는다.
+type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거절" | "공고마감" | "대기";
+const 상태색: Record<상태키, string> = {
+  채용완료: "#1f7a4d", 수락: "#1f7a4d",
+  면접예정: "var(--color-primary)", 채팅중: "var(--color-primary)",
+  거절: "var(--color-text)", 공고마감: "var(--color-text)", 대기: "var(--color-text)",
+};
+function 상태(p: Proposal): 상태키 {
+  if (p.application_status === "PASSED") return "채용완료";
+  if (p.declined_at) return "거절";
+  if (p.appointment_at) return "면접예정";
+  if (p.interested_at) return p.message_count > 0 ? "채팅중" : "수락";
+  if (마감인가(p.job_status, p.deadline)) return "공고마감";
+  return "대기";
+}
+const 기간 = (시작: string | null, 마감일: string | null) => {
+  const 짧게 = (v: string) => new Date(v).toLocaleDateString("ko-KR",
+    { month: "2-digit", day: "2-digit" }).replace(/\.$/, "").replace(/\s/g, "");
+  if (!시작) return 마감일 ? `~ ${짧게(마감일)}` : "상시";
+  return `${짧게(시작)} ~ ${마감일 ? 짧게(마감일) : "상시"}`;
 };
 
 export default function ProposalsPage() {
@@ -124,11 +156,6 @@ export default function ProposalsPage() {
       <div className="profile-content">
         <section className="profile-section">
           <div className="profile-info-card">
-            <div className="pf-notif-head">
-              <span className="profile-info-label">
-                받은 제안{안읽음 > 0 && <em className="pf-notif-count">{안읽음}</em>}
-              </span>
-            </div>
 
             {불러오는중 ? (
               <p className="pf-notif-empty">불러오는 중…</p>
@@ -137,71 +164,70 @@ export default function ProposalsPage() {
             ) : (
               <div className="prop-list">
                 {목록.map((p) => {
-                  const 마감 = p.job_status === "CLOSED"
-                    || (p.deadline && new Date(p.deadline) < new Date());
-                  // 답 없이 기간이 지나면 닫힌다. 거절을 통보하는 대신 기다리는
-                  // 기간을 정해 둔 것이라, 남은 날을 미리 알려 준다.
-                  const 만료 = 제안만료(p.created_at, p.interested_at);
-                  const 남은날 = 제안남은날(p.created_at);
+                  const st = 상태(p);
+                  const 마감 = st === "공고마감" || 마감인가(p.job_status, p.deadline);
                   // 기업이 따로 쓰지 않아도, 내 희망 조건과 겹치는 것을 찾아 붙인다.
                   const 맞는점: string[] = [];
                   if (지역비교(p.location, p.region_prefer) === "same") 맞는점.push("희망 지역");
                   if (p.employment_type && p.work_type_prefer
                       && p.employment_type === p.work_type_prefer) 맞는점.push("희망 근무형태");
-                  const 급여 = p.salary_min ? formatSalaryWon(p.salary_min, p.salary_type) : null;
 
                   return (
                     <div key={p.id} className={`prop-item${p.read_at ? "" : " unread"}`}
                       onClick={() => 열기(p)}>
-                      {/* 왼쪽에 누가 무엇을 보냈는지, 오른쪽에 언제와 갈 곳.
-                          제목을 머리줄 밖으로 내리면 오른쪽 두 줄만큼 빈 자리가 생긴다. */}
-                      <div className="prop-head">
-                        <span className="prop-headl">
-                          <span className="prop-co">{p.brand_name || p.company_name}</span>
-                          <span className="prop-title">
-                            {/* 누르면 공고로 간다 — 밑줄이 그 길을 말한다. */}
-                            <span className="prop-titletxt">{p.job_title}</span>
-                            {마감 && <span className="prop-closed">마감</span>}
-                          </span>
-                        </span>
-                        <span className="prop-when">
-                          <span className="prop-date">
-                            {new Date(p.created_at).toLocaleDateString("ko-KR")}
-                          </span>
-                        </span>
-                      </div>
-
-                      <div className="prop-meta">
-                        {p.location && <span><MapPin size={12} />{p.location}</span>}
-                        {p.employment_type && <span><Briefcase size={12} />{p.employment_type}</span>}
-                        {급여 && <span><Wallet size={12} />{급여}</span>}
-                      </div>
-
-                      {맞는점.length > 0 && (
-                        <div className="prop-match">
-                          {맞는점.map((m) => <span key={m}>{m}과 같아요</span>)}
+                      <div className="prop-row">
+                        <div className="prop-main">
+                          {/* 공고 기간이 곧 마감일이다 — 따로 칸을 두지 않는다. */}
+                          <p className="prop-period">
+                            <span className={마감 ? "off" : "on"}>{마감 ? "마감" : "진행중"}</span>
+                            {기간(p.job_created_at, p.deadline)}
+                          </p>
+                          <p className="prop-title2">{p.job_title}</p>
+                          <p className="prop-co2">
+                            {p.brand_name || p.company_name}
+                            {p.location ? ` · ${p.location}` : ""}
+                          </p>
+                          {/* 어느 자리로 온 제안인가. 기업이 고른 자리만 적는다 —
+                              옛 제안은 그 값이 없어 공고의 자리를 전부 적는다. */}
+                          {p.positionLines?.map((줄, i) => (
+                            <p key={i} className="prop-pos2">{줄}</p>
+                          ))}
+                          {맞는점.length > 0 && (
+                            <div className="prop-match">
+                              {맞는점.map((m) => <span key={m}>{m}과 같아요</span>)}
+                            </div>
+                          )}
+                          {p.message && <p className="prop-msg2">“{p.message}”</p>}
                         </div>
-                      )}
 
-                      {/* 매장이 쓴 말과 그에 대한 답은 한 줄이다 — 버튼을 아래로
-                          따로 내리면 카드가 세로로 길어지고 눌 곳이 멀어진다. */}
-                      <div className="prop-say">
-                        {p.message ? <p className="prop-msg">{p.message}</p> : <span className="prop-msg" />}
-                        {/* 마감된 자리는 관심을 눌러도 갈 데가 없다. */}
-                        {p.interested_at ? (
-                          <button type="button" className="prop-interest"
-                            onClick={(e) => { e.stopPropagation(); set대화(p); }}>
-                            채팅하기
-                          </button>
-                        ) : 마감 ? null : 만료 ? (
-                          <span className="prop-interest on">답변 기간이 지났어요</span>
-                        ) : 관심쓰는중 === p.id ? null : (
-                          <button type="button" className="prop-interest"
-                            onClick={(e) => 관심열기(p.id, e)}>
-                            관심 있어요
-                            {남은날 <= 3 && <span className="prop-interest-left">{남은날}일 남음</span>}
-                          </button>
-                        )}
+                        {/* 오른쪽은 지금 무슨 상태이고 무엇을 하면 되는가 — 세 줄로 끝낸다. */}
+                        <div className="prop-side">
+                          <span className="prop-st2" style={{ color: 상태색[st] }}>{st}</span>
+                          {st === "면접예정" && p.appointment_at && (
+                            <span className="prop-sub2">
+                              {new Date(p.appointment_at).toLocaleString("ko-KR",
+                                { month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })}
+                            </span>
+                          )}
+                          {st === "대기" && (
+                            <button type="button" className="prop-go"
+                              onClick={(e) => 관심열기(p.id, e)}>수락하기</button>
+                          )}
+                          {(st === "수락" || st === "채팅중") && (
+                            <button type="button" className="prop-go"
+                              onClick={(e) => { e.stopPropagation(); set대화(p); }}>채팅하기</button>
+                          )}
+                          {st === "면접예정" && (
+                            <button type="button" className="prop-go ghost"
+                              onClick={(e) => { e.stopPropagation(); set대화(p); }}>일정 확인</button>
+                          )}
+                          {st === "대기" && (
+                            <button type="button" className="prop-decline"
+                              onClick={(e) => { e.stopPropagation(); set거절할것(p); set같이차단(false); }}>
+                              거절하기
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       {관심쓰는중 === p.id && (
@@ -215,20 +241,6 @@ export default function ProposalsPage() {
                           </div>
                         </div>
                       )}
-
-                      <div className="prop-foot">
-                        {/* 지원 방법은 공고에 적힌 대로 알려 준다 — 이 업계는
-                            전화 한 통으로 끝나는 경우가 많다. */}
-                        {p.contact_methods && p.contact_methods.length > 0 && (
-                          <span className="prop-how">지원 방법 · {p.contact_methods.join(", ")}</span>
-                        )}
-                        {!p.interested_at && (
-                          <button type="button" className="prop-decline"
-                            onClick={(e) => { e.stopPropagation(); set거절할것(p); set같이차단(false); }}>
-                            거절하기
-                          </button>
-                        )}
-                      </div>
                     </div>
                   );
                 })}

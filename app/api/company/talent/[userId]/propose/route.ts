@@ -18,6 +18,9 @@ export async function POST(
   const body = await req.json().catch(() => ({}));
   const jobPostingId = String(body?.jobPostingId || "").trim();
   const message = String(body?.message || "").trim();
+  // 어느 자리로 제안하는가. 공고에 모집분야가 여럿이면 골라야 하고, 하나뿐이면
+  // 화면이 알아서 0을 보낸다 — 뻔한 것을 매번 고르게 하지 않는다.
+  const positionIndex = Number.isInteger(body?.positionIndex) ? Number(body.positionIndex) : null;
   if (!jobPostingId) return err("VALIDATION_001", "제안할 공고를 선택해주세요.", 400);
   if (!message) return err("VALIDATION_002", "제안 메시지를 입력해주세요.", 400);
   if (message.length > MAX_MESSAGE) return err("VALIDATION_003", `메시지는 ${MAX_MESSAGE}자 이내로 입력해주세요.`, 400);
@@ -35,7 +38,7 @@ export async function POST(
   const client = await pool.connect();
   try {
     const jobRes = await client.query(
-      `SELECT title FROM job_postings
+      `SELECT title, positions FROM job_postings
         WHERE id = $1 AND company_id = $2 AND status = 'ACTIVE'
           AND (deadline IS NULL OR deadline >= CURRENT_DATE)`,
       [jobPostingId, auth!.sub]
@@ -44,6 +47,17 @@ export async function POST(
       return err("JOB_001", "진행 중인 공고에만 제안할 수 있어요. 공고가 마감되었는지 확인해 주세요.", 404);
     }
     const jobTitle = jobRes.rows[0].title;
+    // 그 공고에 실제로 있는 자리인지 본다. 없는 번호가 들어오면 구직자 화면에
+    // 아무것도 안 뜨거나 엉뚱한 자리가 뜬다.
+    const 자리들 = Array.isArray(jobRes.rows[0].positions)
+      ? jobRes.rows[0].positions.filter((x: any) => x && x.category) : [];
+    let 고른자리: number | null = positionIndex;
+    if (고른자리 !== null && !자리들[고른자리]) {
+      await client.query("ROLLBACK");
+      return err("JOB_002", "그 공고에 없는 모집분야예요.", 400);
+    }
+    // 자리가 하나뿐이면 고르고 말고가 없다.
+    if (고른자리 === null && 자리들.length === 1) 고른자리 = 0;
 
     const userRes = await client.query(
       `SELECT u.id, u.name, u.email, u.notification_settings
@@ -71,9 +85,9 @@ export async function POST(
 
     // 남는 기록. 알림은 지워질 수 있어 여기가 제안의 원본이다.
     await client.query(
-      `INSERT INTO proposals (company_id, user_id, job_posting_id, message)
-       VALUES ($1, $2, $3, $4)`,
-      [auth!.sub, params.userId, jobPostingId, message]
+      `INSERT INTO proposals (company_id, user_id, job_posting_id, message, position_index)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [auth!.sub, params.userId, jobPostingId, message, 고른자리]
     );
 
     await client.query(

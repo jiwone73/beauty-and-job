@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, CalendarPlus, Send, MoreHorizontal, MapPin } from "lucide-react";
-import { 제안유효일 } from "@/lib/proposal";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 화면을 쓴다 — 한쪽만 다르게 보이면
 // 무슨 말이 어떻게 갔는지 서로 다르게 기억하게 된다.
@@ -50,7 +49,6 @@ export default function ProposalThread({
   const [약속열림, set약속열림] = useState(false);
   const [약속값, set약속값] = useState("");
   const [차단됨, set차단됨] = useState(false);
-  const [만료됨, set만료됨] = useState(false);
   const [메뉴, set메뉴] = useState(false);
   // 어디서 볼지. 기본값은 그 공고의 근무지고, 다른 데서 보기로 했으면 고쳐 쓴다.
   const [장소, set장소] = useState("");
@@ -67,7 +65,6 @@ export default function ProposalThread({
       set메시지들(r.data.messages || []);
       set나(r.data.me);
       set차단됨(!!r.data.blocked);
-      set만료됨(!!r.data.expired);
       set기본장소(r.data.기본장소 || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,10 +211,8 @@ export default function ProposalThread({
           <div ref={바닥} />
         </div>
 
-        {차단됨 || 만료됨 ? (
-          <p className="pth-closed">
-            {차단됨 ? "차단된 채팅이에요." : `답변 기간(${제안유효일}일)이 지나 닫힌 채팅이에요.`}
-          </p>
+        {차단됨 ? (
+          <p className="pth-closed">차단된 채팅이에요.</p>
         ) : (
           <>
             {/* 약속 폼은 메시지창을 덮지 않고 그 위에 얹는다. 덮어 버리면 달력을
