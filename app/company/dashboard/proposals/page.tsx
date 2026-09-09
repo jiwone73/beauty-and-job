@@ -98,7 +98,7 @@ type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거
 const 상태이름: Record<상태키, string> = {
   답변대기: "대기", 수락: "수락", 채팅중: "채팅중",
   면접예정: "면접예정", 채용완료: "채용완료",
-  거절: "거절", 취소: "취소함", 공고마감: "공고마감",
+  거절: "거절", 취소: "제안취소", 공고마감: "공고마감",
 };
 const 상태색: Record<상태키, string> = {
   채용완료: "#1f7a4d", 수락: "#1f7a4d",
@@ -255,10 +255,13 @@ export default function CompanyProposalsPage() {
     const 끝: 상태키[] = ["거절", "취소", "공고마감"];
     const 셈 = new Map<상태키, number>();
     for (const p of 공고고른것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
+    // 흐름이 왼쪽 끝에서 시작한다. 「전체」를 앞에 두면 흐름이 가운데로 밀려
+    // 어디서 시작하는지 안 보인다. 흐름이 아닌 것(끝난 것과 전체)은 오른쪽에
+    // 모은다.
     return [
-      { 키: "전체" as const, 수: 공고고른것.length },
       ...흐름.map((k) => ({ 키: k, 수: 셈.get(k) || 0 })),
       ...끝.filter((k) => (셈.get(k) || 0) > 0).map((k) => ({ 키: k, 수: 셈.get(k)! })),
+      { 키: "전체" as const, 수: 공고고른것.length },
     ];
   }, [공고고른것]);
 
@@ -393,15 +396,17 @@ export default function CompanyProposalsPage() {
 
       {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
           어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
-          「전체」와 끝난 것(거절·취소·공고마감)은 흐름 밖이라 선으로 떼어 둔다. */}
+          끝난 것(거절·제안취소·공고마감)과 「전체」는 흐름 밖이라 선으로 떼어
+          오른쪽에 모은다 — 흐름 앞에 두면 흐름이 왼쪽 끝에서 시작하지 못한다. */}
       <div className="prop-chips">
         {칩들.map((c, i) => {
           const 흐름 = !["전체", "거절", "취소", "공고마감"].includes(c.키);
           const 앞흐름 = i > 0 && !["전체", "거절", "취소", "공고마감"].includes(칩들[i - 1].키);
           return (
             <span key={c.키} className="prop-chipwrap">
-              {흐름 && (앞흐름 ? <i className="prop-arrow">›</i> : <i className="prop-sep" />)}
-              {!흐름 && i > 0 && <i className="prop-sep" />}
+              {i > 0 && (흐름 && 앞흐름
+                ? <i className="prop-arrow">›</i>
+                : <i className="prop-sep" />)}
               <button type="button"
                 className={`prop-chip${고른상태 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
                 onClick={() => set고른상태(c.키 as 상태키 | "전체")}>
