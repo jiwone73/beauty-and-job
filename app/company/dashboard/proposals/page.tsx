@@ -482,19 +482,22 @@ export default function CompanyProposalsPage() {
                       {활.때 && <i>({때(활.때)})</i>}
                     </td>
                     <td className="c-act">
-                      {/* 테두리 없이 글자로 둔다 — 공고 관리의 「수정 | 마감」과 같은
-                          꼴이다. 한 줄에 단추 상자가 둘이면 표가 시끄러워진다.
+                      {/* 줄이 이미 두 줄 높이라 세로로 쌓아도 표가 안 늘어난다.
+                          열이 좁아진 만큼은 「최근 활동」이 쓴다.
                           거두는 길은 어느 단계에나 있어야 한다(대화 중에 갑자기 다른
                           사람을 뽑는 일이 제일 흔하다). 이미 끝난 것만 뺀다. */}
                       <span className="prop-acts">
-                        {!["채용완료", "거절", "취소"].includes(st) && (
-                          <button type="button" onClick={() => set취소할것(p)}>제안 취소</button>
-                        )}
-                        {!["채용완료", "거절", "취소"].includes(st) && 할 && <i>|</i>}
+                        {/* 나아가는 일이 먼저, 물리는 일이 아래. 줄마다 「제안 취소」가
+                            먼저 눈에 들어오면 부담스럽다. */}
                         {할 && (
                           <button type="button" className={할.우리차례 ? "key" : undefined}
                             onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
-                            {할.글}
+                            {할.글} <ChevronRight size={13} />
+                          </button>
+                        )}
+                        {!["채용완료", "거절", "취소"].includes(st) && (
+                          <button type="button" onClick={() => set취소할것(p)}>
+                            제안 취소 <ChevronRight size={13} />
                           </button>
                         )}
                       </span>
