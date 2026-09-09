@@ -435,16 +435,24 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
-        /* 인재풀은 두 갈래뿐이라 한 행 탭으로 세운다. 세로로 두면 그 아래 필터
-           판과 층이 안 갈려 어디까지가 메뉴인지 읽히지 않는다. */
-        .co-set-side.tabs { display: block; }
-        .co-set-side.tabs .co-set-tabrow { display: flex; gap: 4px; margin-bottom: 14px;
-          border-bottom: 1px solid #eeeef0; }
-        .co-set-side.tabs .co-set-item { flex: 1; padding: 8px 6px; font-size: 14px;
-          text-align: center; border-radius: 0; border-bottom: 2px solid transparent;
-          margin-bottom: -1px; }
-        .co-set-side.tabs .co-set-item:hover { background: none; color: var(--color-primary); }
-        .co-set-side.tabs .co-set-item.on { background: none; border-bottom-color: var(--color-primary); }
+        /* 인재풀 — 탭이 제목 자리를 대신한다. 그래서 글자도 제목과 같은 크기·굵기·
+           색(.co-set-title)을 쓴다. 켜진 탭이 곧 지금 보고 있는 화면의 이름이다.
+           다른 화면 제목이 모두 가운데 서 있으므로 이 줄도 가운데 세운다. */
+        .co-tal { display: block; }
+        .co-tal-tabrow { display: flex; justify-content: center; gap: 32px;
+          border-bottom: 1px solid #eeeef0; margin: 0 0 20px; }
+        .co-tal-tab { padding: 0 2px 12px; font-size: var(--page-title); color: #555;
+          text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+        .co-tal-tab:hover { color: var(--color-primary); }
+        .co-tal-tab.on { color: var(--color-text-strong); font-weight: 700;
+          border-bottom-color: var(--color-primary); }
+        /* 기둥은 필터가 있을 때만 선다. 없으면 목록이 판 폭을 다 쓴다 — 빈 기둥을
+           세워 두면 화면 한쪽이 이유 없이 비어 보인다. */
+        .co-tal-body { display: flex; align-items: flex-start; gap: 28px; }
+        .co-tal-side { position: sticky; top: 92px; }
+        /* 아래 .co-top-body .co-set-main 규칙이 !important 로 안쪽 여백을 못 박으므로
+           같은 무게로 되돌린다 — 기둥이 없으면 세로 구분선도 그 여백도 쓸 데가 없다. */
+        .co-top-body .co-tal-solo { border-left: none; margin-left: 0; padding-left: 0 !important; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
         /* 다만 설정 화면은 왼쪽에 구분선이 있어 그만큼 안쪽으로 밀어야 한다. 위 규칙이
@@ -532,24 +540,35 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
         {!사이드있나 && (
           <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
-        {사이드있나 ? (
+        {묶음 === "talent" ? (
+          /* 인재풀은 두 갈래뿐이라 탭이 곧 제목이다 — 탭에 「스크랩 인재」라 적어 두고
+             그 옆에 또 같은 제목을 세우면 같은 말이 두 번 나온다.
+             탭을 본문 위 한 줄로 올리고, 왼쪽 기둥은 필터에게만 내준다. 예전에는
+             탭이 기둥에 얹혀 있어서, 필터가 없는 스크랩 인재에서는 기둥이 텅 빈 채로
+             서 있었다. */
+          <div className="co-set-wrap co-tal">
+            <nav className="co-tal-tabrow">
+              {사이드?.map((m) => (
+                <Link key={m.id} href={m.href} className={`co-tal-tab ${activePage === m.id ? "on" : ""}`}>
+                  {m.label(infoLabel(companyInfo.type))}
+                </Link>
+              ))}
+            </nav>
+            <div className="co-tal-body">
+              {sideExtra && <aside className="co-set-side co-tal-side">{sideExtra}</aside>}
+              <main className={`company-content co-set-main${sideExtra ? "" : " co-tal-solo"}`}>{children}</main>
+            </div>
+          </div>
+        ) : 사이드있나 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
-            <nav className={`co-set-side${묶음 === "talent" ? " tabs" : ""}`}>
+            <nav className="co-set-side">
               {/* 화면이 제 사이드를 주면 그것이 먼저다 — 고정 메뉴를 우선하면
                   넘겨준 사이드가 조용히 무시된다. */}
               {side
                 ? side
-                : 묶음 === "talent" ? (
-                    <div className="co-set-tabrow">
-                      {사이드?.map((m) => (
-                        <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
-                          {m.label(infoLabel(companyInfo.type))}
-                        </Link>
-                      ))}
-                    </div>
-                  ) : 사이드?.map((m) => (
+                : 사이드?.map((m) => (
                     <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>
