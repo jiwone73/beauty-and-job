@@ -626,6 +626,9 @@ export default function JobPostForm({
   }, [popAt !== null]);
   const [coverStart, setCoverStart] = useState(0); // 공고 상단 이미지 썸네일: 두 장을 넘으면 화살표로 넘길 시작 위치
   const [regionList, setRegionList] = useState<string[]>([]);
+  // 대행 등록에서 주소를 손으로 적는 중인가. 원문이 「건대입구역」처럼 주소가
+  // 아닌 자리만 적어 둔 공고를 넣을 길이다. 이때는 지도를 그리지 않는다.
+  const [직접주소, set직접주소] = useState(false);
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [regionOpen, setRegionOpen] = useState(false);
   const [regionQuery, setRegionQuery] = useState("");
@@ -3595,17 +3598,46 @@ export default function JobPostForm({
             <div className="admin-form-body">
               <div>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 8 : 12 }}>
-                  <input readOnly value={nmAddress} onClick={() => openAddressSearch()}
-                    placeholder="주소 검색을 눌러주세요"
-                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: "pointer" }} />
+                  <input readOnly={!직접주소} value={nmAddress}
+                    onClick={직접주소 ? undefined : () => openAddressSearch()}
+                    onChange={직접주소 ? (e) => setNmAddress(e.target.value) : undefined}
+                    placeholder={직접주소 ? "원문에 적힌 그대로 (예: 건대입구역)" : "주소 검색을 눌러주세요"}
+                    style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left", cursor: 직접주소 ? "text" : "pointer" }} />
                   <input value={nmAddressDetail} onChange={(e) => setNmAddressDetail(e.target.value)}
                     placeholder="상세주소 (동·호수 등)"
                     style={{ minWidth: 0, boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, background: "#fff", fontSize: 15, outline: "none", padding: "9px 11px", textAlign: "left" }} />
                 </div>
+
+                {/* 원문이 「건대입구역」처럼 자리만 적어 둔 공고가 있다. 주소 검색으로는
+                    넣을 수가 없어 등록 자체가 막혔다 — 대행 등록에서는 적힌 그대로 넣게
+                    한다. 대신 지도는 그리지 않는다(주소가 아니면 엉뚱한 곳이 찍힌다).
+                    지역은 따로 골라야 한다. 그게 없으면 그 지역으로 찾는 사람에게
+                    이 공고가 안 보인다. */}
+                {isNm && (
+                  <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <button type="button" onClick={() => set직접주소((v) => !v)}
+                      style={{ border: "none", background: "none", padding: 0, fontSize: 13, color: "#582681", cursor: "pointer" }}>
+                      {직접주소 ? "주소 검색으로" : "직접 입력"}
+                    </button>
+                    {직접주소 && (
+                      <>
+                        <span style={{ fontSize: 13, color: "#999" }}>지역</span>
+                        <button type="button" onClick={() => setRegionModalOpen(true)}
+                          style={{ border: "none", borderRadius: 5, cursor: "pointer", fontSize: 14,
+                            background: regionList.length ? "transparent" : PH_BG,
+                            padding: regionList.length ? "0 2px" : "3px 9px",
+                            color: regionList.length ? "#555" : "#b4b4b9" }}>
+                          {regionList.join(", ") || "시·군·구"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+
                 {/* 주소 없이 지점명만 있으면 지도를 그리지 않는다. 카카오는 주소를 못 찾으면
                     낱말로 장소를 검색해 첫 결과를 찍는데, "천안청당점" 으로는 엉뚱한 가게가
                     잡힌다. 틀린 지도는 없는 지도보다 나쁘다 — 구직자가 그리로 찾아간다. */}
-                {nmAddress.trim()
+                {직접주소 ? null : nmAddress.trim()
                   ? <AddressMap address={nmFullAddress} name={newCompanyName.trim() || undefined} height={220} />
                   : nmAddressDetail.trim()
                     ? <div style={{ fontSize: 12.5, color: "#c0392b", marginTop: 6 }}>주소 검색으로 주소를 넣어 주세요</div>
