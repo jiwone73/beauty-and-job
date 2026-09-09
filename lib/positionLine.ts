@@ -21,16 +21,21 @@ function 급여값(p: any): string {
   return v || (p?.salaryNego === "open" ? "협의" : "");
 }
 
-/** 모집분야 한 자리를 「네일 아티스트 | 1명 | 정규직 | 무관 | 경력 | 주5일 10~19시 | 월급 240만원」로.
- *  값이 없는 칸은 세로바째로 빠진다 — 「무관 |  | 경력」처럼 빈자리가 생기지 않게. */
+/** 모집분야 한 자리를 「네일 아티스트 | 1명 | 정규직 | 경력 | 주5일 10~19시 | 월급 240만원」로.
+ *  값이 없는 칸은 세로바째로 빠진다 — 빈자리가 생기지 않게. */
 export function 모집분야한줄(p: any, 본사공고: boolean): string {
   if (!p) return "";
+  // 「무관」은 빼고 「여성」·「남성」만 적는다. 공고 상세 표에는 「성별」이라는
+  // 열 이름이 있어 「무관」이 읽히지만, 여기는 값만 이어 붙이므로 무엇이 무관인지
+  // 알 수가 없다. 게다가 대부분 무관이라 적어도 알려 주는 것이 없다.
+  const 성별 = ["여성", "남성", "여", "남"].includes(String(p.gender || "").trim())
+    ? p.gender : "";
   const 칸 = [
     p.category,
     본사공고 ? "" : (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : ""),
     p.location,
     p.employment,
-    p.gender,
+    성별,
     p.career,
     본사공고 ? p.education : "",
     p.workDays || p.workTime || "",

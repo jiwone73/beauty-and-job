@@ -5,6 +5,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 마감인가 } from "@/lib/jobClosed";
 import { 님 } from "@/lib/josa";
+import { 모집분야한줄 } from "@/lib/positionLine";
 import { Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
@@ -294,17 +295,11 @@ export default function CompanyProposalsPage() {
     // 부문만 보고 있어서 부문이 빈 공고는 「신입」 한 마디만 남았다.
     const 경력글 = (v: string | null) =>
       v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
+    // 모집분야 한 줄은 lib/positionLine 이 맡는다. 여기 따로 적어 두었더니
+    // 규칙이 갈렸다 — 성별 「무관」을 빼는 것이 한쪽에만 들어갔다.
     const 부문 = Array.isArray(p.jobPositions) ? p.jobPositions : [];
     const 줄들 = 부문.length > 0
-      ? 부문.map((x: any) => [
-          x.category || x.group,
-          x.headcount ? `${String(x.headcount).replace(/명$/, "")}명` : null,
-          x.location,
-          x.employment || p.jobEmploymentType,
-          x.gender, x.career, x.education,
-          [x.workDays, x.workTime].filter(Boolean).join(" "),
-          x.salary,
-        ].filter(Boolean).join("  |  "))
+      ? 부문.map((x: any) => 모집분야한줄(x, false))
       : [[
           (p.jobCategories || []).join(" · "),
           p.jobEmploymentType,
@@ -357,11 +352,13 @@ export default function CompanyProposalsPage() {
         <div className="co-pane-card prop-jobhead">
           <div className="co-pane-head">
             <div style={{ minWidth: 0 }}>
-              <div className="co-pane-term">
-                <span className="co-jc-badge">{공고머리.마감 ? "마감" : "진행중"}</span>
-                {공고머리.기간}
-              </div>
               <h2 className="co-pane-title">{공고머리.제목}</h2>
+            </div>
+            {/* 기간은 공고명과 같은 줄 오른쪽에 둔다 — 제목 위에 얹으면 제목보다
+                먼저 읽히는데, 이 판의 주인은 공고명이다. */}
+            <div className="co-pane-term">
+              <span className="co-jc-badge">{공고머리.마감 ? "마감" : "진행중"}</span>
+              {공고머리.기간}
             </div>
             {/* 이 화면에서 다음에 할 일은 하나다 — 이 공고로 사람을 더 찾는 것.
                 보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다. */}
