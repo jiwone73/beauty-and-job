@@ -79,6 +79,35 @@ export async function POST(req: NextRequest) {
       return err("SOCIAL_005", "이미 가입된 계정이에요. 로그인해 주세요.", 409);
     }
 
+    // 이메일·전화번호 중복. 이메일 가입(app/api/auth/email/signup)이 하는 검사를
+    // 그대로 한다 — 여기 없으면 users 의 유일 제약에 걸려 500 으로 떨어지고,
+    // 「이미 가입된 번호예요」 대신 알 수 없는 오류만 보게 된다.
+    // 카카오·네이버가 주는 번호와 온보딩에서 인증한 번호 모두 이 검사를 지난다.
+    const 겹침 = await client.query(
+      `SELECT email, phone FROM users
+        WHERE ($1::text IS NOT NULL AND email = $1)
+           OR ($2::text IS NOT NULL AND phone = $2)
+        LIMIT 1`,
+      [표.email, 번호]
+    );
+    if (겹침.rowCount && 겹침.rowCount > 0) {
+      await client.query("ROLLBACK");
+      const 그것 = 겹침.rows[0];
+      if (표.email && 그것.email === 표.email) {
+        return err("SOCIAL_010", "이미 가입된 이메일이에요. 그 계정으로 로그인해 주세요.", 409);
+      }
+      return err("SOCIAL_011", "이미 가입된 전화번호예요. 그 계정으로 로그인해 주세요.", 409);
+    }
+
+    // 이메일은 기업 계정과도 겹칠 수 없다 — 이메일 가입과 같은 규칙이다.
+    if (표.email) {
+      const 기업 = await client.query(`SELECT 1 FROM companies WHERE email = $1 LIMIT 1`, [표.email]);
+      if (기업.rowCount && 기업.rowCount > 0) {
+        await client.query("ROLLBACK");
+        return err("SOCIAL_012", "기업회원으로 가입된 이메일이에요. 다른 계정으로 시도해 주세요.", 409);
+      }
+    }
+
     const ins = await client.query(
       `INSERT INTO users (kakao_id, naver_id, name, email, phone, avatar_url, job_type,
                           preferred_regions, status)
