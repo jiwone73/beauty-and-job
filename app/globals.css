@@ -5597,7 +5597,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-name { font-size: 14px; font-weight: 600; color: #555; }
 
 /* 콘텐츠 */
-.admin-content { padding: 20px 28px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 1800px; margin: 0 auto; width: 100%; }
+/* 본문 폭·여백은 헤더(.admin-header-inner)와 같은 값을 쓴다. 헤더는 1360 가운데인데
+   본문만 1800 이라 기준이 둘이었다 — 로고·계정과 내용의 세로줄이 안 맞았다.
+   넓은 화면에서는 본문이 왼쪽으로 몰려 보였다. */
+.admin-content { padding: 20px 32px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 1360px; margin: 0 auto; width: 100%; }
 
 /* 관리자 본문 글자 +1px (사이드바·타이틀은 .admin-content 밖이라 자동 제외, 표 헤더는 유지) */
 .admin-content .admin-table td { font-size: 15px; }
