@@ -1,4 +1,11 @@
-import { Pool } from 'pg'
+import { Pool, types } from 'pg'
+
+// DATE 칸은 연-월-일만 있는 값이다. 그대로 두면 pg 가 「한국 시각 자정」짜리
+// Date 로 만들어 주는데, 그것을 JSON 으로 내보내면 UTC 로 옮겨져 전날 15시가 된다
+// (2026-12-31 → "2026-12-30T15:00:00.000Z"). 받는 쪽은 앞 열 글자만 잘라 쓰므로
+// 마감일·유료기간이 **하루 당겨져** 보이고, 그 값을 그대로 저장하면 고칠 때마다
+// 하루씩 밀렸다. 시각이 없는 값에 시간대를 태우지 않는다 — 글자 그대로 넘긴다.
+types.setTypeParser(1082, (v) => v)
 
 const globalForPg = globalThis as unknown as { pgPool?: Pool }
 
