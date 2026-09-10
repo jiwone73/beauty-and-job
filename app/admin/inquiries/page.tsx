@@ -158,7 +158,7 @@ export default function AdminInquiriesPage() {
   };
 
   const badge = (status: string) => (
-    <span style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", color: status === "done" ? "#888" : "#582681" }}>
+    <span style={{ fontSize: 13, whiteSpace: "nowrap", color: "#555" }}>
       {status === "done" ? "회신완료" : "신규"}
     </span>
   );
@@ -207,7 +207,7 @@ export default function AdminInquiriesPage() {
                     <input type="checkbox" checked={checked.includes(it.id)} onChange={() => toggleCheck(it.id)} style={{ cursor: "pointer" }} />
                   </td>
                   <td className="admin-td-type">
-                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f7f7f8", color: "#582681", whiteSpace: "nowrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f7f7f8", color: "#555", whiteSpace: "nowrap" }}>
                       {it.type}
                     </span>
                   </td>
@@ -237,7 +237,7 @@ export default function AdminInquiriesPage() {
                 {/* 왼쪽: 문의 정보 + 내용 */}
                 <div style={{ flex: "1 1 300px", minWidth: 0 }}>
               <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 15, marginBottom: 18 }}>
-                <span style={{ color: "#888" }}>회원구분</span><span style={{ fontWeight: 600, color: "#582681" }}>{selected.type}</span>
+                <span style={{ color: "#888" }}>회원구분</span><span style={{ color: "#555" }}>{selected.type}</span>
                 <span style={{ color: "#888" }}>이름</span><span>{selected.name}</span>
                 <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
                 <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
@@ -282,7 +282,7 @@ export default function AdminInquiriesPage() {
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)}
-                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#582681", border: "1.5px solid #582681", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#555", border: "1px solid #efeff1", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                       완료로 표시
                     </button>
                   )}

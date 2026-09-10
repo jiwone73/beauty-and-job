@@ -234,7 +234,7 @@ export default function AdminStoriesPage() {
                 </span>
               </button>
               <button onClick={generateAI} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #582681", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
                 {generating ? "생성 중..." : "✨ AI 글 생성"}
               </button>
               {tab === "posts" && (
@@ -319,8 +319,8 @@ export default function AdminStoriesPage() {
               style={{
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "7px 14px", borderRadius: 8,
-                border: `1px solid ${checked.length ? "#cfe8d4" : "#eee"}`, background: "#fff",
-                color: checked.length ? "#16a34a" : "#bbb",
+                border: `1px solid ${checked.length ? "#efeff1" : "#eee"}`, background: "#fff",
+                color: checked.length ? "#555" : "#bbb",
                 fontSize: 14, fontWeight: 600,
                 cursor: checked.length ? "pointer" : "default",
               }}
@@ -379,7 +379,7 @@ export default function AdminStoriesPage() {
                       <td style={td}>{p.view_count ?? 0}</td>
                     </>
                   )}
-                  <td style={td}><span style={{ fontSize: 13, color: p.status === "hidden" ? "#d32f2f" : p.status === "pending" ? "#e65100" : "#2e7d32", fontWeight: 600 }}>{STATUS_LABELS[p.status] || p.status}</span></td>
+                  <td style={td}><span style={{ fontSize: 13, color: "#555" }}>{STATUS_LABELS[p.status] || p.status}</span></td>
                   {tab === "pending" && (
                     <td style={td}>
                       <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
@@ -412,7 +412,7 @@ export default function AdminStoriesPage() {
                         style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
                       <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => saveEdit(p.id)} disabled={busy}
-                          style={{ padding: "8px 18px", borderRadius: 8, border: "1.5px solid #582681", background: "#fff", color: "#582681", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
+                          style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
                           저장
                         </button>
                         {tab === "pending" && (

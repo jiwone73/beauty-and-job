@@ -200,13 +200,13 @@ export default function AdminNewslettersPage() {
             </thead>
             <tbody>
               {list.map((n) => (
-                <tr key={n.id} style={{ background: checked.includes(n.id) ? "#f7f7f8" : n.status === "sent" ? "#f6fbf6" : "#fff" }}>
+                <tr key={n.id} style={{ background: checked.includes(n.id) ? "#f7f7f8" : "#fff" }}>
                   <td style={td}>
                     <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   </td>
                   <td onClick={() => setPreviewItem(n)} style={{ ...td, maxWidth: 360, textAlign: "left", cursor: "pointer" }}>{n.title}</td>
                   <td style={td}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: n.status === "sent" ? "#2e7d32" : "#e65100" }}>
+                    <span style={{ fontSize: 13, color: "#555" }}>
                       {STATUS_LABELS[n.status] || n.status}
                     </span>
                   </td>
@@ -252,5 +252,5 @@ export default function AdminNewslettersPage() {
 const th: React.CSSProperties = {};
 const td: React.CSSProperties = {};
 const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#666", fontSize: 13.5, cursor: "pointer" };
-const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1.5px solid #582681", background: "#fff", color: "#582681", fontSize: 13.5, cursor: "pointer" };
+const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 13.5, cursor: "pointer" };
 const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#582681", color: "#fff", fontSize: 13.5, cursor: "pointer" };

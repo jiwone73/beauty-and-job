@@ -48,34 +48,8 @@ const NAV_ITEMS = [
   { id: "inquiries", label: "1:1 문의", icon: MessageSquare, href: "/admin/inquiries" },
 ];
 
-const PAGE_TITLES: Record<string, string> = {
-  "dashboard": "대시보드",
-  "jobs": "채용공고",
-  "jobs-new": "채용공고",
-  "jobs-issues": "등록 이슈",
-  "jobs-scrapped": "스크랩 채용공고",
-  "jobs-viewed": "열람한 채용공고",
-  "jobs-external-inbox": "외부 지원 인박스",
-  "import": "외부공고 불러오기",
-  "import-hairinjob": "외부공고 불러오기",
-  "import-selectme": "외부공고 불러오기",
-  "import-work24": "외부공고 불러오기",
-  "members": "회원관리",
-  "members-companies": "회원관리",
-  "members-alba": "회원관리",
-  "members-blocked": "열람제한기업",
-  "members-favorites": "관심기업",
-  "resumes": "인재정보",
-  
-  "resumes-applications": "입사지원",
-  "outreach": "브랜드 리스트",
-  "stories": "현장이야기",
-  "newsletters": "뉴스레터",
-  "notices": "공지사항",
-  "ads": "사업문의",
-  "inquiries": "1:1 문의",
-};
 
+/** 화면 제목. 사이드에서 켜질 메뉴(activeMenu)로 찾는다. */
 const PAGE_SUBTITLES: Record<string, string> = {
   "members": "개인회원",
   "members-companies": "기업회원",
@@ -89,6 +63,11 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "import-work24": "고용24 공고 불러오기",
   "jobs-issues": "등록 이슈",
   "outreach": "브랜드 리스트",
+  "stories": "현장이야기",
+  "newsletters": "뉴스레터",
+  "notices": "공지사항",
+  "ads": "사업문의",
+  "inquiries": "1:1 문의",
 };
 
 export default function AdminLayout({ children, activeMenu, pageTitle }: {
