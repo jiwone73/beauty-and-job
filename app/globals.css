@@ -5651,7 +5651,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-content .admin-table td { font-size: 15px; }
 .admin-content .admin-stat-value { font-size: 29px; }
 .admin-content .admin-stat-label { font-size: 16px; }
-.admin-content .admin-card-title { font-size: 17px; }
+/* 카드 제목은 묶음 제목(.admin-section-heading 17)보다 한 단 작게. */
+.admin-content .admin-card-title { font-size: 15px; }
 .admin-content .admin-table-meta { font-size: 15px; }
 .admin-content .admin-search-input { font-size: 15px; }
 .admin-content .admin-empty { font-size: 15px; }
@@ -7197,9 +7198,10 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 8px;
 }
+/* 화면 제목(20) 아래 한 단. 카드 제목보다 커야 「이 아래가 한 묶음」으로 읽힌다. */
 .admin-section-heading {
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 17px;
+  font-weight: 700;
   color: #555;
   margin: 0;
 }

@@ -51,6 +51,7 @@ const NAV_ITEMS = [
 
 /** 화면 제목. 사이드에서 켜질 메뉴(activeMenu)로 찾는다. */
 const PAGE_SUBTITLES: Record<string, string> = {
+  "dashboard": "대시보드",
   "members": "개인회원",
   "members-companies": "기업회원",
   "members-alba": "알바 근무현황",
