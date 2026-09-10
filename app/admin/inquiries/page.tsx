@@ -165,134 +165,112 @@ export default function AdminInquiriesPage() {
 
   return (
     <AdminLayout activeMenu="inquiries">
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <FilterDropdown label="처리상태"
-          value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}
-          options={STATUS_TABS.map((t) => t.label)}
-          onChange={(lbl) => setStatusFilter(STATUS_TABS.find((t) => t.label === lbl)?.key ?? "")} />
-        {checked.length > 0 && (
-          <button onClick={handleDelete}
-            style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", background: "#e74c3c", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-            <Trash2 size={15} /> 선택 삭제 ({checked.length})
-          </button>
-        )}
-      </div>
+      {/* 왼쪽에서 고르고 오른쪽에서 본다. 모달로 띄우면 목록이 가려져 다음 것을
+          보려면 매번 닫아야 했다. 공지사항·뉴스레터와 같은 짜임으로 맞춘다. */}
+      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
 
-      {loading ? (
-        <div className="admin-empty">불러오는 중...</div>
-      ) : items.length === 0 ? (
-        <div className="admin-empty">문의가 없습니다.</div>
-      ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ width: 40, textAlign: "center" }}>
-                  <input type="checkbox" checked={checked.length === items.length && items.length > 0} onChange={toggleAll} style={{ cursor: "pointer" }} />
-                </th>
-                <th style={{ width: 90 }}>회원구분</th>
-                <th style={{ width: 100 }}>이름</th>
-                <th style={{ width: 130 }}>전화번호</th>
-                <th>이메일</th>
-                <th>제목</th>
-                <th style={{ width: 150 }}>접수일시</th>
-                <th style={{ width: 84 }}>상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((it) => (
-                <tr key={it.id} onClick={() => openDetail(it)} style={{ cursor: "pointer", background: checked.includes(it.id) ? "#f7f7f8" : undefined }}>
-                  <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
-                    <input type="checkbox" checked={checked.includes(it.id)} onChange={() => toggleCheck(it.id)} style={{ cursor: "pointer" }} />
-                  </td>
-                  <td className="admin-td-type">
-                    <span style={{ fontSize: 13, fontWeight: 700, padding: "3px 8px", borderRadius: 6, background: "#f7f7f8", color: "#555", whiteSpace: "nowrap" }}>
-                      {it.type}
-                    </span>
-                  </td>
-                  <td style={{ fontWeight: 600 }}>{it.name}</td>
-                  <td style={{ fontSize: 14, whiteSpace: "nowrap" }}>{it.phone ? formatPhone(it.phone) : "-"}</td>
-                  <td style={{ fontSize: 14, color: "#555", wordBreak: "break-all" }}>{it.email || "-"}</td>
-                  <td style={{ fontWeight: 500 }}>{it.subject || "(제목 없음)"}</td>
-                  <td style={{ fontSize: 14, color: "#888" }}>{fmtDate(it.created_at)}</td>
-                  <td>{badge(it.status)}</td>
-                </tr>
+        {/* 왼쪽 — 목록 */}
+        <div className="admin-card" style={{ width: 420, flexShrink: 0, overflow: "hidden" }}>
+          <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <FilterDropdown label="처리상태"
+              value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}
+              options={STATUS_TABS.map((t) => t.label)}
+              onChange={(lbl) => setStatusFilter(STATUS_TABS.find((t) => t.label === lbl)?.key ?? "")} />
+            {checked.length > 0 && (
+              <button onClick={handleDelete}
+                style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5,
+                  padding: "6px 11px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff",
+                  color: "#c0392b", fontSize: 13.5, cursor: "pointer" }}>
+                <Trash2 size={14} /> 삭제 ({checked.length})
+              </button>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+          ) : items.length === 0 ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>문의가 없습니다.</div>
+          ) : (
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {items.map((item) => (
+                <li key={item.id} style={{ display: "flex", alignItems: "center", gap: 8,
+                  borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
+                  background: selected?.id === item.id ? "#f7f7f8" : "#fff" }}>
+                  <input type="checkbox" checked={checked.includes(item.id)} onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
+                  <button type="button" onClick={() => openDetail(item)}
+                    style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                      <span style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.subject || item.name || "-"}
+                      </span>
+                      <span style={{ marginLeft: "auto", flexShrink: 0, fontSize: 12.5, color: "#9a9aa0" }}>{badge(item.status)}</span>
+                    </div>
+                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {fmtDate(item.created_at)}{item.email ? ` · ${item.email}` : ""}
+                    </div>
+                  </button>
+                </li>
               ))}
-            </tbody>
-          </table>
+            </ul>
+          )}
         </div>
-      )}
-      </div>
 
-      {selected && (
-        <div className="cv-overlay">
-          <div className="cv-modal" style={{ maxWidth: 1080, width: "94vw", maxHeight: "95vh" }} onClick={(e) => e.stopPropagation()}>
-            <div className="cv-body">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-                <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>1:1 문의 상세</h2>
-                <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", fontSize: 21, cursor: "pointer", color: "#999" }}>✕</button>
-              </div>
-              <div style={{ display: "flex", gap: 22, alignItems: "flex-start", flexWrap: "wrap" }}>
-                {/* 왼쪽: 문의 정보 + 내용 */}
-                <div style={{ flex: "1 1 300px", minWidth: 0 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", rowGap: 12, columnGap: 12, fontSize: 15, marginBottom: 18 }}>
+        {/* 오른쪽 — 고른 문의 */}
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 640 }}>
+          {!selected ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 문의를 고르세요.</div>
+          ) : (
+            <div style={{ padding: 18 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "92px 1fr", rowGap: 10, columnGap: 12, fontSize: 14.5, marginBottom: 18 }}>
                 <span style={{ color: "#888" }}>회원구분</span><span style={{ color: "#555" }}>{selected.type}</span>
                 <span style={{ color: "#888" }}>이름</span><span>{selected.name}</span>
                 <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
                 <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
-                <span style={{ color: "#888" }}>제목</span><span style={{ fontWeight: 500 }}>{selected.subject || "(제목 없음)"}</span>
+                <span style={{ color: "#888" }}>제목</span><span>{selected.subject || "(제목 없음)"}</span>
                 <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
                 <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
                 {selected.replied_at && (<><span style={{ color: "#888" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
               </div>
               <div style={{ marginBottom: 18 }}>
-                <div style={{ color: "#888", fontSize: 14, marginBottom: 6 }}>문의 내용</div>
-                <div style={{ background: "#f7f7f8", borderRadius: 10, padding: 14, fontSize: 15, lineHeight: 1.7, color: "#555", whiteSpace: "pre-wrap" }}>{selected.message}</div>
+                <div style={{ color: "#888", fontSize: 13.5, marginBottom: 6 }}>문의 내용</div>
+                <div style={{ background: "#f7f7f8", borderRadius: 10, padding: 14, fontSize: 14.5, lineHeight: 1.7, color: "#555", whiteSpace: "pre-wrap" }}>{selected.message}</div>
               </div>
 
-              </div>{/* 왼쪽 끝 */}
-                {/* 오른쪽: 답변 작성 */}
-                {selected.email ? (
-                <div style={{ flex: "1 1 420px", minWidth: 0, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
-                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>답변 메일 작성</div>
+              {selected.email ? (
+                <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16 }}>
+                  <div style={{ fontSize: 14.5, color: "#1a1a1a", marginBottom: 10 }}>답변 메일 작성</div>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
                     spellCheck lang="ko"
-                    style={{ minHeight: "min(68vh, 720px)", resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
-                  <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
-                    <input type="file" multiple
-                      onChange={(e) => setFiles(Array.from(e.target.files || []))}
-                      style={{ fontSize: 13 }} />
+                    style={{ minHeight: 320, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
+                  <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <input type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} style={{ fontSize: 13 }} />
                     {files.length > 0 && (
                       <span style={{ fontSize: 12, color: "#888" }}>
                         첨부 {files.length}개 · {(files.reduce((sum, f) => sum + f.size, 0) / 1024 / 1024).toFixed(2)}MB / 3MB
                       </span>
                     )}
+                    <button onClick={sendReply} className="admin-primary-btn" style={{ marginLeft: "auto" }}>
+                      답변 메일 보내기
+                    </button>
                   </div>
-                  <button onClick={sendReply}
-                    style={{ width: "100%", marginTop: 14, padding: "12px", background: "#582681", color: "#fff", border: "none", borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                    답변 메일 보내기
-                  </button>
-                  <p style={{ fontSize: 13, color: "#999", textAlign: "center", marginTop: 8 }}>
-                    support@beautywork.co.kr에서 발송되며, 발송과 동시에 상태가 회신완료로 바뀌고 회신 시각이 기록됩니다. (첨부 총 3MB 이하)
+                  <p style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 8 }}>
+                    support@beautywork.co.kr 에서 나갑니다. 보내면 상태가 회신완료로 바뀌고 시각이 남습니다. (첨부 3MB 이하)
                   </p>
                 </div>
               ) : (
-                <div style={{ flex: "1 1 420px", minWidth: 0, fontSize: 14, color: "#999", textAlign: "center", paddingTop: 40, borderLeft: "1px solid #eee", paddingLeft: 22 }}>
-                  이메일 주소가 없어 답변 메일을 보낼 수 없습니다.
+                <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16, fontSize: 14, color: "#999" }}>
+                  이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해 주세요.
                   {selected.status !== "done" && (
-                    <button onClick={() => markDone(selected.id)}
-                      style={{ display: "block", width: "100%", marginTop: 12, padding: "10px", background: "#fff", color: "#555", border: "1px solid #efeff1", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+                    <button onClick={() => markDone(selected.id)} className="admin-secondary-btn" style={{ marginLeft: 10 }}>
                       완료로 표시
                     </button>
                   )}
                 </div>
               )}
-              </div>{/* flex 끝 */}
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </AdminLayout>
   );
 }

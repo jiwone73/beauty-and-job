@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, Fragment } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { Plus, Search } from "lucide-react";
 import FilterDropdown from "@/components/company/FilterDropdown";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
@@ -214,46 +215,156 @@ export default function AdminStoriesPage() {
     else setChecked((prev) => Array.from(new Set([...prev, ...ids])));
   };
 
+  const 지금것 = visiblePosts.find((x) => x.id === expandedId) || null;
+
   return (
     <AdminLayout activeMenu="stories">
-      <div style={{ padding: "8px 0", width: "fit-content", maxWidth: "100%" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <button onClick={() => { setTab("posts"); setChecked([]); }} style={tabStyle(tab === "posts")}>글 관리</button>
-          <button onClick={() => { setTab("pending"); setChecked([]); }} style={tabStyle(tab === "pending")}>
-            AI 글 승인대기{pendingCount > 0 ? ` (${pendingCount})` : ""}
-          </button>
+      {/* 왼쪽에서 고르고 오른쪽에서 본다. 표 안에서 행을 펴 고치던 방식은 글이
+          길어지면 아래 목록이 통째로 밀려, 어디를 보고 있었는지 잃어버렸다.
+          공지사항·뉴스레터·문의와 같은 짜임으로 맞춘다. */}
+      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
 
-          {(
-            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-              <button onClick={toggleAutogen} disabled={autogenSaving}
-                title="현장이야기 매일 자동 생성+게시 on/off"
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 600, color: "#555", cursor: "pointer" }}>
-                자동 게시
-                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
-                  <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
-                </span>
+        {/* 왼쪽 — 목록 */}
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
+          <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <button onClick={() => { setTab("posts"); setChecked([]); setExpandedId(null); }} style={tabStyle(tab === "posts")}>글 관리</button>
+            <button onClick={() => { setTab("pending"); setChecked([]); setExpandedId(null); }} style={tabStyle(tab === "pending")}>
+              승인대기{pendingCount > 0 ? ` ${pendingCount}` : ""}
+            </button>
+            {tab === "posts" && (
+              <button onClick={() => setWriting(true)} className="admin-primary-btn" style={{ marginLeft: "auto" }}>
+                <Plus size={15} /> 발제 글
               </button>
-              <button onClick={generateAI} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                {generating ? "생성 중..." : "✨ AI 글 생성"}
-              </button>
-              {tab === "posts" && (
-                <button onClick={() => setWriting((v) => !v)}
-                  style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                  {writing ? "닫기" : "+ 발제 글 작성"}
-                </button>
-              )}
+            )}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderBottom: "1px solid #f2f2f4", flexWrap: "wrap" }}>
+            <div className="admin-search-wrap" style={{ flex: "1 1 150px", minWidth: 140 }}>
+              <Search size={15} className="admin-search-icon" />
+              <input className="admin-search-input" value={searchQ} onChange={(e) => setSearchQ(e.target.value)} placeholder="제목·내용 검색" />
             </div>
+            <FilterDropdown label="카테고리" value={catFilter}
+              options={["전체", "공감", "꿀팁", "질문", "정보"]} onChange={setCatFilter} />
+          </div>
+
+          {checked.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderBottom: "1px solid #f2f2f4" }}>
+              <span style={{ fontSize: 13, color: "#9a9aa0" }}>{checked.length}건</span>
+              <button onClick={() => bulkChangeStatus("hidden")} disabled={busy} className="admin-secondary-btn" style={{ marginLeft: "auto" }}>숨김</button>
+              <button onClick={() => bulkChangeStatus("published")} disabled={busy} className="admin-secondary-btn">복구</button>
+              <button onClick={handleBulkDelete} disabled={busy}
+                style={{ padding: "6px 11px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: "#c0392b", fontSize: 13.5, cursor: "pointer" }}>
+                삭제
+              </button>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+          ) : visiblePosts.length === 0 ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>
+              {tab === "pending" ? "승인 대기 중인 글이 없습니다." : "글이 없습니다."}
+            </div>
+          ) : (
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {visiblePosts.map((p) => (
+                <li key={p.id} style={{ display: "flex", alignItems: "center", gap: 8,
+                  borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
+                  background: expandedId === p.id ? "#f7f7f8" : "#fff" }}>
+                  <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
+                  <button type="button" onClick={() => openExpand(p)}
+                    style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
+                    <div style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {p.title || p.body?.slice(0, 40) || "(제목 없음)"}
+                    </div>
+                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2 }}>
+                      {p.category}
+                      {" · "}{p.source === "ai" ? "AI" : p.source === "user_story" ? "사용자" : "운영자"}
+                      {" · "}{STATUS_LABELS[p.status] || p.status}
+                      {tab !== "pending" ? ` · 공감 ${p.like_count} · 댓글 ${p.comment_count} · 조회 ${p.view_count ?? 0}` : ""}
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
-        {tab === "posts" && writing && (
-          <div style={{ background: "#f7f7f8", border: "1px solid #eee", borderRadius: 12, padding: 18, marginBottom: 20 }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        {/* 오른쪽 — 고른 글 */}
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 620 }}>
+          {!지금것 ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 글을 고르세요.</div>
+          ) : (
+            <div style={{ padding: 18 }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+                {CATEGORIES.map((c) => (
+                  <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
+                    style={{ padding: "5px 13px", borderRadius: "var(--chip-radius)", fontSize: 13.5, cursor: "pointer",
+                      border: edit.category === c ? "1px solid #582681" : "1px solid #efeff1",
+                      background: edit.category === c ? "#582681" : "#fff",
+                      color: edit.category === c ? "#fff" : "#666" }}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <input value={edit.title} onChange={(e) => setEdit((s) => ({ ...s, title: e.target.value }))}
+                placeholder="제목 (선택)"
+                style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 16, marginBottom: 8, boxSizing: "border-box", outline: "none" }} />
+              <textarea value={edit.body} onChange={(e) => setEdit((s) => ({ ...s, body: e.target.value }))}
+                spellCheck lang="ko"
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 15, lineHeight: 1.75, minHeight: 380, boxSizing: "border-box", resize: "vertical", outline: "none" }} />
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                <button onClick={() => saveEdit(지금것.id)} disabled={busy} className="admin-secondary-btn">저장</button>
+                {tab === "pending" && (
+                  <>
+                    <button onClick={() => saveEdit(지금것.id, "published")} disabled={busy} className="admin-primary-btn">저장 후 승인</button>
+                    <button onClick={() => changeStatus("post", 지금것.id, "hidden")} disabled={busy}
+                      style={{ padding: "7px 14px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: "#c0392b", fontSize: 13.5, cursor: "pointer" }}>
+                      반려
+                    </button>
+                  </>
+                )}
+                <button onClick={() => changeStatus("post", 지금것.id, 지금것.status === "hidden" ? "published" : "hidden")} disabled={busy}
+                  className="admin-secondary-btn" style={{ marginLeft: "auto" }}>
+                  {지금것.status === "hidden" ? "복구" : "숨김"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 자동 게시·AI 생성은 늘 쓰는 것이 아니라 아래에 둔다 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, justifyContent: "flex-end" }}>
+        <button onClick={toggleAutogen} disabled={autogenSaving}
+          title="현장이야기 매일 자동 생성+게시 on/off"
+          style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13.5, color: "#555", cursor: "pointer" }}>
+          자동 게시
+          <span style={{ width: 34, height: 20, borderRadius: 10, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+            <span style={{ position: "absolute", top: 2, left: autogen ? 16 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+          </span>
+        </button>
+        <button onClick={generateAI} disabled={generating} className="admin-secondary-btn">
+          {generating ? "생성 중…" : "AI 글 생성"}
+        </button>
+      </div>
+
+      {/* 발제 글 쓰기 — 가끔 하는 일이라 모달로 */}
+      {writing && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1200, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+          onClick={() => !busy && setWriting(false)}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 640, padding: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <strong style={{ fontSize: 16, color: "#1a1a1a" }}>발제 글</strong>
+              <button type="button" onClick={() => setWriting(false)} aria-label="닫기"
+                style={{ border: "none", background: "none", fontSize: 20, color: "#aaa", cursor: "pointer" }}>×</button>
+            </div>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
               {CATEGORIES.map((c) => (
                 <button key={c} onClick={() => setForm((f) => ({ ...f, category: c }))}
                   style={{ padding: "6px 14px", borderRadius: "var(--chip-radius)", fontSize: 14, cursor: "pointer",
-                    border: form.category === c ? "1.5px solid #582681" : "1px solid #ddd",
+                    border: form.category === c ? "1px solid #582681" : "1px solid #efeff1",
                     background: form.category === c ? "#582681" : "#fff",
                     color: form.category === c ? "#fff" : "#666" }}>
                   {c}
@@ -262,186 +373,17 @@ export default function AdminStoriesPage() {
             </div>
             <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="제목 (선택)"
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 16, marginBottom: 8, boxSizing: "border-box", outline: "none" }} />
             <textarea value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-              spellCheck lang="ko"
-              placeholder="발제 내용"
-              rows={4}
-              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
-            <button onClick={submitPost} disabled={busy}
-              style={{ padding: "9px 20px", borderRadius: 8, border: "none", background: busy ? "#ccc" : "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-              게시하기
-            </button>
-          </div>
-        )}
-
-        {loading ? (
-          <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
-        ) : (
-          <>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
-            <div style={{ position: "relative", flex: "1 1 200px", minWidth: 180 }}>
-              <input
-                type="text"
-                value={searchQ}
-                onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="제목·내용 검색"
-                style={{
-                  width: "100%", padding: "8px 34px 8px 12px", borderRadius: 8,
-                  border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box", outline: "none",
-                }}
-              />
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                <circle cx="11" cy="11" r="7" stroke="#bbb" strokeWidth="2" />
-                <path d="M21 21l-4.3-4.3" stroke="#bbb" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+              spellCheck lang="ko" placeholder="발제 내용"
+              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #efeff1", fontSize: 15, lineHeight: 1.7, minHeight: 220, boxSizing: "border-box", resize: "vertical", outline: "none" }} />
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
+              <button type="button" className="admin-secondary-btn" onClick={() => setWriting(false)} disabled={busy}>닫기</button>
+              <button type="button" className="admin-primary-btn" onClick={async () => { await submitPost(); setWriting(false); }} disabled={busy}>게시하기</button>
             </div>
-            <FilterDropdown label="카테고리" value={catFilter}
-              options={["전체", "공감", "꿀팁", "질문", "정보"]} onChange={setCatFilter} />
-            <button
-              onClick={() => bulkChangeStatus("hidden")}
-              disabled={checked.length === 0 || busy}
-              style={{
-                display: "flex", alignItems: "center", gap: 6, marginLeft: "auto",
-                padding: "7px 14px", borderRadius: 8,
-                border: `1px solid ${checked.length ? "#efeff1" : "#eee"}`, background: "#fff",
-                color: checked.length ? "#582681" : "#bbb",
-                fontSize: 14, fontWeight: 600,
-                cursor: checked.length ? "pointer" : "default",
-              }}
-            >
-              숨김{checked.length ? ` (${checked.length})` : ""}
-            </button>
-            <button
-              onClick={() => bulkChangeStatus("published")}
-              disabled={checked.length === 0 || busy}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "7px 14px", borderRadius: 8,
-                border: `1px solid ${checked.length ? "#efeff1" : "#eee"}`, background: "#fff",
-                color: checked.length ? "#555" : "#bbb",
-                fontSize: 14, fontWeight: 600,
-                cursor: checked.length ? "pointer" : "default",
-              }}
-            >
-              복구
-            </button>
-            <button
-              onClick={handleBulkDelete}
-              disabled={checked.length === 0 || busy}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "7px 14px", borderRadius: 8, border: "none",
-                background: checked.length ? "#e74c3c" : "#ededed",
-                color: checked.length ? "#fff" : "#aaa",
-                fontSize: 14, fontWeight: 600,
-                cursor: checked.length ? "pointer" : "default",
-              }}
-            >
-              선택 삭제{checked.length ? ` (${checked.length})` : ""}
-            </button>
           </div>
-          <div style={{ overflowX: "auto" }}>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ ...th, width: 36 }}>
-                  <input type="checkbox" checked={allChecked} onChange={toggleAll} />
-                </th>
-                <th style={th}>카테고리</th><th style={th}>제목/내용</th>
-                {tab === "pending" ? <th style={th}>출처</th> : <><th style={th}>출처</th><th style={th}>공감</th><th style={th}>댓글</th><th style={th}>조회</th></>}
-                <th style={th}>상태</th>{tab === "pending" && <th style={th}>관리</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {visiblePosts.map((p) => (
-                <Fragment key={p.id}>
-                <tr style={{ background: checked.includes(p.id) ? "#f7f7f8" : p.status === "hidden" ? "#fff5f5" : p.status === "pending" ? "#fffdf5" : "#fff" }}>
-                  <td style={td}>
-                    <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
-                  </td>
-                  <td style={td}>{p.category}</td>
-                  <td style={{ ...td, maxWidth: 442, cursor: "pointer", textAlign: "left" }} onClick={() => openExpand(p)}>
-                    <div style={{ fontWeight: 600, color: "#555", display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{ color: "#bbb", fontSize: 12 }}>{expandedId === p.id ? "▼" : "▶"}</span>
-                      {p.title || "(제목 없음)"}
-                    </div>
-                    <div style={{ color: "#999", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 416 }}>{p.body}</div>
-                  </td>
-                  {tab === "pending" ? (
-                    <td style={{ ...td, color: "#888" }}>{p.source === "ai" ? "🤖 AI" : p.source === "user_story" ? "사용자" : "운영자"}</td>
-                  ) : (
-                    <>
-                      <td style={{ ...td, color: "#888" }}>{p.source === "ai" ? "🤖 AI" : p.source === "user_story" ? "사용자" : "운영자"}</td>
-                      <td style={td}>{p.like_count}</td>
-                      <td style={td}>{p.comment_count}</td>
-                      <td style={td}>{p.view_count ?? 0}</td>
-                    </>
-                  )}
-                  <td style={td}><span style={{ fontSize: 13, color: "#555" }}>{STATUS_LABELS[p.status] || p.status}</span></td>
-                  {tab === "pending" && (
-                    <td style={td}>
-                      <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
-                        <button onClick={() => changeStatus("post", p.id, "published")} disabled={busy} style={btnGreen}>승인</button>
-                        <button onClick={() => changeStatus("post", p.id, "hidden")} disabled={busy} style={btnRed}>반려</button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-                {expandedId === p.id && (
-                  <tr style={{ background: "#f7f7f8" }}>
-                    <td colSpan={tab === "pending" ? 6 : 8} style={{ padding: "16px 12px" }}>
-                      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                        {CATEGORIES.map((c) => (
-                          <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
-                            style={{ padding: "5px 13px", borderRadius: "var(--chip-radius)", fontSize: 13.5, cursor: "pointer",
-                              border: edit.category === c ? "1.5px solid #582681" : "1px solid #ddd",
-                              background: edit.category === c ? "#582681" : "#fff",
-                              color: edit.category === c ? "#fff" : "#666" }}>
-                            {c}
-                          </button>
-                        ))}
-                      </div>
-                      <input value={edit.title} onChange={(e) => setEdit((s) => ({ ...s, title: e.target.value }))}
-                        placeholder="제목 (선택)"
-                        style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, marginBottom: 8, boxSizing: "border-box" }} />
-                      <textarea value={edit.body} onChange={(e) => setEdit((s) => ({ ...s, body: e.target.value }))}
-                        spellCheck lang="ko"
-                        rows={5}
-                        style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 15, lineHeight: 1.7, marginBottom: 10, boxSizing: "border-box", resize: "vertical" }} />
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button onClick={() => saveEdit(p.id)} disabled={busy}
-                          style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
-                          저장
-                        </button>
-                        {tab === "pending" && (
-                          <button onClick={() => saveEdit(p.id, "published")} disabled={busy}
-                            style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#2e7d32", color: "#fff", fontSize: 14.5, fontWeight: 600, cursor: "pointer" }}>
-                            저장 후 승인
-                          </button>
-                        )}
-                        <button onClick={() => setExpandedId(null)}
-                          style={{ padding: "8px 18px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 14.5, cursor: "pointer", marginLeft: "auto" }}>
-                          닫기
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-                </Fragment>
-              ))}
-              {visiblePosts.length === 0 && (
-                <tr><td colSpan={tab === "pending" ? 6 : 8} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
-                  {tab === "pending" ? "승인 대기 중인 글이 없습니다. 'AI 글 생성'을 눌러보세요." : "글이 없습니다."}
-                </td></tr>
-              )}
-            </tbody>
-          </table>
-          </div>
-          </>
-        )}
-      </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
