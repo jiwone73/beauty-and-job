@@ -172,7 +172,7 @@ export default function ImportListPage() {
             </div>
             <ol style={{ margin: "0 0 12px", padding: "0 0 0 18px", fontSize: 13, color: "#6f6f75", lineHeight: 1.9 }}>
               <li><b style={{ color: "#1a1a1a" }}>⇱ 주소 모으기</b> 버튼을 즐겨찾기 줄로 끌어다 놓으세요. <span style={{ color: "#9a9aa0" }}>(처음 1회만)</span></li>
-              <li><b style={{ color: "#1a1a1a" }}>고용24 목록 열기</b> 버튼을 누른 후, 즐겨찾기에 추가하신 <b style={{ color: "#1a1a1a" }}>주소 모으기</b> 버튼을 클릭해서 전체 목록을 복사합니다.</li>
+              <li><b style={{ color: "#1a1a1a" }}>고용24 목록 열기</b> 버튼을 누르면 고용24 페이지 새창이 열리며, 열린 새창에서 <b style={{ color: "#1a1a1a" }}>주소 모으기</b> 버튼을 클릭하시면 전체 목록이 복사됩니다.</li>
               <li>아래 박스에 붙여넣기 한 후 <b style={{ color: "#1a1a1a" }}>붙여넣은 주소로 가져오기</b> 버튼을 누르면 공고 목록이 업데이트됩니다.</li>
             </ol>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
