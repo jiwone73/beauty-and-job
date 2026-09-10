@@ -90,7 +90,8 @@ function AdminJobNewForm() {
   };
 
   return (
-    <AdminLayout activeMenu={from ? `import-${from}` : "jobs-new"}>
+    <AdminLayout activeMenu={from ? `import-${from}` : "jobs-new"}
+      pageTitle={editId ? "공고 수정" : "공고 등록"}>
       {from && 소스이름[from] && (
         <div style={{ marginBottom: 10 }}>
           <Link href={`/admin/import/${from}`}

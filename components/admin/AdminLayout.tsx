@@ -90,7 +90,14 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "jobs-issues": "등록 이슈",
 };
 
-export default function AdminLayout({ children, activeMenu }: { children: React.ReactNode; activeMenu: string }) {
+export default function AdminLayout({ children, activeMenu, pageTitle }: {
+  children: React.ReactNode;
+  activeMenu: string;
+  /** 사이드에서 켜질 메뉴와 화면 제목이 다를 때. 목록에서 넘어온 공고 등록 폼이
+   *  그렇다 — 사이드는 그 소스를 켜 두어야 어디서 왔는지 보이지만, 제목은
+   *  「셀렉미 공고 불러오기」가 아니라 「공고 등록」이어야 한다. */
+  pageTitle?: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -319,8 +326,8 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
           </div>
         </header>
         <main className="admin-content">
-          {PAGE_SUBTITLES[activeMenu] && (
-            <h1 className="admin-page-title">{PAGE_SUBTITLES[activeMenu]}</h1>
+          {(pageTitle || PAGE_SUBTITLES[activeMenu]) && (
+            <h1 className="admin-page-title">{pageTitle || PAGE_SUBTITLES[activeMenu]}</h1>
           )}
           {children}
         </main>
