@@ -170,8 +170,12 @@ export default function ImportListPage() {
                 ⇱ 주소 모으기
               </a>
             </div>
-            <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "#9a9aa0" }}>
-              「주소 모으기」를 즐겨찾기 줄로 끌어다 놓은 뒤, <b style={{ color: "#582681" }}>고용24 목록 화면에서</b> 그것을 누르세요.
+            {/* 이 한 줄이 전부다. 단추를 어디서 누르는지 — 그걸 몰라 다 헤맸다. */}
+            <p style={{ margin: "0 0 12px", fontSize: 13.5, color: "#555" }}>
+              <b style={{ color: "#582681", fontSize: 15 }}>고용24 목록 화면에서</b> 눌러야 합니다.
+              <span style={{ color: "#9a9aa0", marginLeft: 8, fontSize: 12.5 }}>
+                「주소 모으기」를 즐겨찾기 줄로 한 번 끌어다 놓으세요. 여기서 눌러도 아무 일도 안 일어납니다.
+              </span>
             </p>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
