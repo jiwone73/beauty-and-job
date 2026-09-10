@@ -1,6 +1,32 @@
 import { Resend } from "resend";
+import pool from "@/lib/db";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// 모든 메일은 여기로 나간다.
+//
+// 메일 서비스는 실패해도 예외를 던지지 않고 { error } 를 돌려준다. 그래서 부르는
+// 쪽의 .catch() 는 한 번도 불리지 않았고, 실패가 서버 로그에조차 안 남았다 —
+// 「지원했는데 메일이 안 왔다」는 문의가 오면 확인할 길이 없었다.
+// 실패는 표(email_failures)에 남기고, 부르는 쪽의 동작은 그대로 둔다.
+type 보낼것 = Parameters<typeof resend.emails.send>[0];
+async function 보내기(msg: 보낼것) {
+  try {
+    const res = await resend.emails.send(msg);
+    if (res?.error) 실패남기기(msg, res.error.message || JSON.stringify(res.error));
+    return res;
+  } catch (e: any) {
+    실패남기기(msg, e?.message || String(e));
+    throw e;
+  }
+}
+function 실패남기기(msg: 보낼것, reason: string) {
+  const to = Array.isArray((msg as any).to) ? (msg as any).to.join(", ") : String((msg as any).to || "");
+  pool.query(
+    `INSERT INTO email_failures (to_addr, subject, reason) VALUES ($1, $2, $3)`,
+    [to.slice(0, 300), String((msg as any).subject || "").slice(0, 300), reason.slice(0, 500)]
+  ).catch((e) => console.error("[email] 실패 기록 못 남김", e?.message));
+}
 
 const FROM = "뷰티워크 <noreply@beautywork.co.kr>";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beauty-work.vercel.app";
@@ -8,7 +34,7 @@ const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
 const LOGO_URL = `${SITE_URL}/images/logo.png`;
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 비밀번호 재설정 안내",
@@ -42,7 +68,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
 }
 
 export async function sendEmailChangeCodeEmail(to: string, code: string) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 이메일 변경 인증코드",
@@ -72,7 +98,7 @@ export async function sendEmailChangeCodeEmail(to: string, code: string) {
 }
 
 export async function sendSignupEmailVerifyCode(to: string, code: string) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 회원가입 이메일 인증코드",
@@ -102,7 +128,7 @@ export async function sendSignupEmailVerifyCode(to: string, code: string) {
 }
 
 export async function sendWelcomeEmail(to: string, name: string) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 가입을 환영해요",
@@ -195,7 +221,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
 }
 
 export async function sendCompanyWelcomeEmail(to: string, companyName: string) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 기업 회원가입 신청이 접수됐어요",
@@ -248,7 +274,7 @@ export async function sendCompanyWelcomeEmail(to: string, companyName: string) {
 export async function sendApplicationCompleteEmail(
   to: string, name: string, jobTitle: string, companyName: string, appliedDate: string
 ) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 지원이 완료됐어요",
@@ -304,7 +330,7 @@ export async function sendApplicationCompleteEmail(
 export async function sendNewApplicantEmail(
   to: string, companyName: string, applicantName: string, jobType: string, jobTitle: string, appliedDate: string
 ) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 새 지원자가 도착했어요",
@@ -360,7 +386,7 @@ export async function sendNewApplicantEmail(
 export async function sendResumeViewedEmail(
   to: string, name: string, jobTitle: string, companyName: string, viewedAt: string
 ) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: "[뷰티워크] 기업이 이력서를 확인했어요",
@@ -418,7 +444,7 @@ export async function sendProposalEmail(
 ) {
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const messageHtml = esc(message).replace(/\n/g, "<br/>");
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: `[뷰티워크] ${companyName}에서 제안을 보냈어요`,
@@ -521,7 +547,7 @@ export async function sendJobRecommendationEmail(
     })
     .join("");
 
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: `[프로모션] ${name} 님, 오늘의 추천 포지션이 도착했어요`,
@@ -564,7 +590,7 @@ export async function sendJobRecommendationEmail(
     `,
   });
 }export async function sendNewsletterEmail(to: string, subject: string, html: string) {
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject,
@@ -613,7 +639,7 @@ export async function sendInquiryReplyEmail(
   const attach = (attachments || [])
     .filter((a) => a && a.filename && a.content)
     .map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "base64") }));
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     replyTo: "support@beautywork.co.kr",
     to,
@@ -641,7 +667,7 @@ export async function sendExternalApplicationEmail(
   d: { companyName: string; applicantName: string; applicantPhone: string; applicantEmail: string; jobTitle: string; coverLetter?: string | null }
 ) {
   const cover = (d.coverLetter || "").trim();
-  return resend.emails.send({
+  return 보내기({
     from: FROM,
     to,
     subject: `[뷰티워크] 「${d.jobTitle}」에 지원자가 있어요`,

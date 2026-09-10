@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
+import { 이름가리기 } from '@/lib/companyEntitlement'
 import { ok, requireAuth } from '@/lib/api'
 
 export async function GET(req: NextRequest) {
@@ -46,6 +47,7 @@ export async function GET(req: NextRequest) {
        a.position_title, a.work_location,
        COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
        u.id AS user_id,
+       u.status AS user_status,
        u.name AS user_name,
        u.email AS user_email,
        u.phone AS user_phone,
@@ -102,5 +104,20 @@ export async function GET(req: NextRequest) {
     [...params, limit, offset]
   )
 
-  return ok(result.rows)
+  return ok(result.rows.map(탈퇴가림))
+}
+
+// 탈퇴한 사람의 이름·연락처는 기업 화면에 남기지 않는다. 지원했다는 사실과
+// 경력은 두되(기업이 받은 지원서다), 누구인지 알 수 있는 값은 걷는다.
+// 표의 값을 지우지 않고 내보낼 때 가린다 — 되돌릴 수 없는 일은 하지 않는다.
+function 탈퇴가림(r: any) {
+  if (r.user_status !== 'WITHDRAWN') return r
+  return {
+    ...r,
+    user_name: 이름가리기(r.user_name),
+    user_email: null, user_phone: null, user_birth_date: null,
+    user_avatar_url: null, user_region_sigungu: null,
+    portfolio_images: null, sns_url: null,
+    withdrawn: true,
+  }
 }

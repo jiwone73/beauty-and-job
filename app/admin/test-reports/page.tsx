@@ -35,6 +35,7 @@ export default function TestReportsPage() {
   const [loading, setLoading] = useState(true);
   const [보기, set보기] = useState<"현황" | "리포트" | "케이스">("현황");
   const [runs, setRuns] = useState<{ case_id: string; area: Area; result: "pass" | "fail" | "blocked"; ran_at: string }[]>([]);
+  const [메일실패, set메일실패] = useState<{ total: number; items: { to_addr: string; subject: string; reason: string; created_at: string }[] }>({ total: 0, items: [] });
   const [거르기, set거르기] = useState<"open" | "done" | "">("open");
   const [고른것, set고른것] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -53,6 +54,13 @@ export default function TestReportsPage() {
     fetch("/api/admin/test-runs", { headers: { Authorization: `Bearer ${token()}` } })
       .then((r) => r.json())
       .then((res) => { if (res.success) setRuns(res.data.items || []); })
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    fetch("/api/admin/email-failures", { headers: { Authorization: `Bearer ${token()}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) set메일실패(res.data); })
       .catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -144,6 +152,21 @@ export default function TestReportsPage() {
               </div>
             ))}
           </div>
+
+          {/* 못 보낸 메일 — 외부 서비스가 흔들린 흔적. 없으면 이 칸도 없다. */}
+          {메일실패.total > 0 && (
+            <div className="admin-card">
+              <div className="admin-card-head"><h2 className="admin-card-title">못 보낸 메일 {메일실패.total}건</h2></div>
+              {메일실패.items.slice(0, 8).map((m, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "9px 16px", borderBottom: "1px solid #f6f6f8" }}>
+                  <span style={{ width: 70, flexShrink: 0, fontSize: 12.5, color: "#b3adbd" }}>{날짜(m.created_at)}</span>
+                  <span style={{ width: 200, flexShrink: 0, fontSize: 13.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.to_addr}</span>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.subject}</span>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, color: "#c0392b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.reason}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="admin-card">
             <div className="admin-card-head"><h2 className="admin-card-title">지금 막고 있는 것</h2></div>

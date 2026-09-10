@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
+import { 이름가리기 } from "@/lib/companyEntitlement";
 import { ok, err, requireAuth } from "@/lib/api";
 import { sendResumeViewedEmail } from "@/lib/email";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -18,7 +19,7 @@ export async function GET(
   const result = await pool.query(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.note, a.resume_snapshot,
             a.position_title, a.work_location,
-            a.user_id, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
+            a.user_id, u.status AS user_status, u.name AS user_name, u.email AS user_email, u.phone AS user_phone,
             u.job_type AS user_job_type, u.portfolio_images, u.preferred_regions, u.office_job_areas,
             u.avatar_url AS user_avatar_url, u.notification_settings,
             u.gender AS user_gender, u.birth_date AS user_birth_date,
@@ -36,7 +37,8 @@ export async function GET(
     return err("APP_002", "지원 내역을 찾을 수 없습니다.", 404);
   }
   // 처음 조회 시 viewed_at 자동 기록 + 구직자에게 열람 알림
-  if (!result.rows[0].viewed_at) {
+  // 떠난 사람에게는 「지원서를 확인했어요」를 보내지 않는다.
+  if (!result.rows[0].viewed_at && result.rows[0].user_status !== "WITHDRAWN") {
     pool.query(
       `UPDATE applications SET viewed_at = NOW() WHERE id = $1`,
       [params.id]
@@ -75,6 +77,17 @@ export async function GET(
   }
 
   const row = result.rows[0];
+  // 탈퇴한 사람의 이름·연락처·사진·첨부 이력서는 기업 화면에 남기지 않는다.
+  // 지원 사실과 경력은 둔다. 표는 건드리지 않고 내보낼 때만 가린다.
+  const 나감 = row.user_status === "WITHDRAWN";
+  if (나감) {
+    row.user_name = 이름가리기(row.user_name);
+    row.user_email = null; row.user_phone = null; row.user_birth_date = null;
+    row.user_avatar_url = null; row.user_address_road = null; row.user_address_detail = null;
+    row.portfolio_images = null; row.resume_file_url = null;
+    row.resume_snapshot = 스냅가림(row.resume_snapshot);
+    row.withdrawn = true;
+  }
   const snap = row.resume_snapshot;
 
   // 첨부 이력서 파일 (지원 시점 박제본) → 비공개 버킷, 매번 signed URL 새로 발급
@@ -140,10 +153,30 @@ export async function GET(
       educations: educations.rows,
       experiences: experiences.rows,
       languages: languages.rows,
-      links: links.rows,
+      links: 나감 ? [] : links.rows,
       certificates: certificates.rows,
     },
   });
+}
+
+// 지원할 때 박제한 사본에도 이름·연락처·사진이 들어 있다. 떠난 사람이면 그것을 걷는다.
+function 스냅가림(s: any) {
+  if (!s || typeof s !== "object") return s;
+  const 빼기 = (o: any) => (o && typeof o === "object" && !Array.isArray(o))
+    ? Object.fromEntries(Object.entries(o).filter(([k]) => !/name|phone|email|birth|address|avatar|photo/i.test(k)))
+    : o;
+  // 사본의 resume 칸에 이름·전화·메일이 그대로 들어 있고, 제목(「OOO의 이력서」)에도
+  // 실명이 박혀 있다. profile 만 걷었더니 여기로 샜다.
+  const 실명 = String(s.resume?.name || "").trim();
+  const 제목 = s.resume?.title && 실명
+    ? String(s.resume.title).split(실명).join(이름가리기(실명))
+    : s.resume?.title;
+  return {
+    ...s,
+    profile: 빼기(s.profile),
+    links: [],
+    resume: s.resume ? { ...빼기(s.resume), title: 제목, portfolio_images: [] } : s.resume,
+  };
 }
 
 // 지원자 상태/메모 수정

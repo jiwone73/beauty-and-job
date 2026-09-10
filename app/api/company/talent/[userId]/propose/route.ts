@@ -83,12 +83,30 @@ export async function POST(
     const coRes = await client.query(`SELECT company_name FROM companies WHERE id = $1`, [auth!.sub]);
     const companyName = coRes.rows[0]?.company_name || "기업";
 
+    // 같은 공고로 같은 사람에게는 한 번만 보낸다. 동시에 다섯 번 보내니 다섯 건이
+    // 그대로 들어가 받는 사람이 알림·메일을 다섯 번 받았다. 먼저 보고, 그 틈으로
+    // 겹쳐 들어온 것은 표의 유일 조건이 막는다 — 막힌 것도 같은 말로 답한다.
+    const 보낸적 = await client.query(
+      `SELECT 1 FROM proposals WHERE company_id = $1 AND user_id = $2 AND job_posting_id = $3`,
+      [auth!.sub, params.userId, jobPostingId]
+    );
+    if ((보낸적.rowCount ?? 0) > 0) {
+      return err("PROPOSAL_006", "이 공고로 이미 제안을 보냈어요.", 409);
+    }
+
     // 남는 기록. 알림은 지워질 수 있어 여기가 제안의 원본이다.
-    await client.query(
+    const 넣음 = await client.query(
       `INSERT INTO proposals (company_id, user_id, job_posting_id, message, position_index)
        VALUES ($1, $2, $3, $4, $5)`,
       [auth!.sub, params.userId, jobPostingId, message, 고른자리]
-    );
+    ).then(() => true).catch((e: any) => {
+      if (e?.code === "23505") return false;
+      throw e;
+    });
+    if (!넣음) {
+      await client.query("ROLLBACK").catch(() => {});
+      return err("PROPOSAL_006", "이 공고로 이미 제안을 보냈어요.", 409);
+    }
 
     await client.query(
       `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)

@@ -286,9 +286,15 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const locationSection = hasMap ? (
     <div className="jd-subblock" key="location">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#b7b0c0", flexShrink: 0 }} />근무지역</h2>
-      {job.companyAddress?.trim() && (
-        <p className="job-detail-desc" style={{ marginBottom: "12px" }}>{job.companyAddress}</p>
-      )}
+      {/* 근무지가 여럿이면 다 적는다. 폼의 「근무지 추가」로 넣은 지점이 여태
+          지원 창에서 고를 때만 보여, 폼과 공고가 갈렸다. 지도는 첫 주소로 그린다. */}
+      {[job.companyAddress, ...(((job as any).workLocations || []) as any[])
+          .map((l) => [l?.address, l?.detail].filter(Boolean).join(" "))]
+        .map((a) => String(a || "").trim()).filter(Boolean)
+        .filter((a, i, all) => all.indexOf(a) === i)
+        .map((a, i, all) => (
+          <p key={a} className="job-detail-desc" style={{ marginBottom: i === all.length - 1 ? "12px" : "4px" }}>{a}</p>
+        ))}
       <LazyMap latitude={ci.latitude} longitude={ci.longitude} address={job.companyAddress} name={ci.name} height={280} />
     </div>
   ) : null;
