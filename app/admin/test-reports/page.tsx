@@ -130,7 +130,7 @@ export default function TestReportsPage() {
               <div key={c.label} className="admin-stat-card">
                 <div className="admin-stat-label">{c.label}</div>
                 <div className="admin-stat-value">{c.value}</div>
-                <div className="admin-stat-sub-text">{c.sub}</div>
+                <div className="admin-stat-sub-text" style={{ color: "#555" }}>{c.sub}</div>
               </div>
             ))}
           </div>
