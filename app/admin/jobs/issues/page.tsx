@@ -80,9 +80,9 @@ export default function JobIssuesPage() {
     <AdminLayout activeMenu="jobs-issues">
       {/* 답글 한 줄이 화면 끝까지 늘어나면 눈이 되돌아올 자리를 잃는다. 900 으로 묶는다. */}
       <div style={{ padding: "4px 4px 40px", maxWidth: 900, margin: "0 auto", width: "100%" }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#2b2533", margin: 0 }}>등록 이슈</h1>
-          <span style={{ fontSize: 14, color: "#9a92a6" }}>미해결 {미해결수} · 해결 {해결수}</span>
+        {/* 제목은 레이아웃이 그린다(.admin-page-title) — 여기선 건수만 적는다. */}
+        <div style={{ marginBottom: 12, fontSize: 14, color: "#9a92a6" }}>
+          미해결 {미해결수} · 해결 {해결수}
         </div>
 
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>

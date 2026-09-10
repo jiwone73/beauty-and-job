@@ -83,6 +83,11 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "jobs": "채용공고 목록",
   "jobs-new": "공고 직접 등록",
   "resumes-applications": "입사지원 목록",
+  // 외부공고 불러오기는 소스마다 화면이 달라, 어느 소스를 보고 있는지 제목이 말해 준다.
+  "import-hairinjob": "헤어인잡 공고 불러오기",
+  "import-selectme": "셀렉미 공고 불러오기",
+  "import-work24": "고용24 공고 불러오기",
+  "jobs-issues": "등록 이슈",
 };
 
 export default function AdminLayout({ children, activeMenu }: { children: React.ReactNode; activeMenu: string }) {
