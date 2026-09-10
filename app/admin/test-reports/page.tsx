@@ -143,10 +143,10 @@ export default function TestReportsPage() {
                 <div style={{ flex: 1, minWidth: 0, height: 8, borderRadius: 4, background: "#f2f2f4", overflow: "hidden" }}>
                   <div style={{ width: `${Math.round((x.해봄 / x.전체) * 100)}%`, height: "100%", background: x.걸림 ? "#c0392b" : "#582681" }} />
                 </div>
-                <span style={{ width: 96, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: "#9a9aa0" }}>
+                <span style={{ width: 96, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: "#555" }}>
                   {x.해봄} / {x.전체}
                 </span>
-                <span style={{ width: 78, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: x.걸림 ? "#c0392b" : "#b3adbd" }}>
+                <span style={{ width: 78, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: "#555" }}>
                   {x.걸림 ? `걸림 ${x.걸림}` : x.대기 ? `대기 ${x.대기}` : "—"}
                 </span>
               </div>
@@ -159,10 +159,10 @@ export default function TestReportsPage() {
               <div className="admin-card-head"><h2 className="admin-card-title">못 보낸 메일 {메일실패.total}건</h2></div>
               {메일실패.items.slice(0, 8).map((m, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "9px 16px", borderBottom: "1px solid #f6f6f8" }}>
-                  <span style={{ width: 70, flexShrink: 0, fontSize: 12.5, color: "#b3adbd" }}>{날짜(m.created_at)}</span>
+                  <span style={{ width: 70, flexShrink: 0, fontSize: 12.5, color: "#555" }}>{날짜(m.created_at)}</span>
                   <span style={{ width: 200, flexShrink: 0, fontSize: 13.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.to_addr}</span>
                   <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.subject}</span>
-                  <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, color: "#c0392b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.reason}</span>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.reason}</span>
                 </div>
               ))}
             </div>
@@ -177,9 +177,9 @@ export default function TestReportsPage() {
                 <button key={r.id} type="button" onClick={() => { set보기("리포트"); set고른것(r.id); }}
                   style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left", border: "none", background: "#fff", cursor: "pointer", padding: "10px 16px", borderBottom: "1px solid #f6f6f8", font: "inherit" }}>
                   <span style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 6, flexShrink: 0, background: 무게색[r.severity].bg, color: 무게색[r.severity].fg }}>{r.severity}</span>
-                  <span style={{ fontSize: 12.5, color: "#9a9aa0", flexShrink: 0 }}>{r.area}</span>
+                  <span style={{ fontSize: 12.5, color: "#555", flexShrink: 0 }}>{r.area}</span>
                   <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</span>
-                  <span style={{ fontSize: 12.5, color: "#b3adbd", flexShrink: 0 }}>
+                  <span style={{ fontSize: 12.5, color: "#555", flexShrink: 0 }}>
                     {r.decided_by === "alba" ? "알바" : r.decided_by === "admin" ? "관리자" : ""}
                   </span>
                 </button>
@@ -195,16 +195,16 @@ export default function TestReportsPage() {
             return (
               <div key={area}>
                 <div style={{ padding: "10px 14px", borderBottom: "1px solid #f2f2f4", background: "#fafafb", fontSize: 14, color: "#555" }}>
-                  {area} <span style={{ color: "#9a9aa0", fontSize: 13 }}>{cs.length}건</span>
+                  {area} <span style={{ color: "#555", fontSize: 13 }}>{cs.length}건</span>
                 </div>
                 {cs.map((c) => {
                   const r = 케이스결과[c.id];
                   return (
                     <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 14px", borderBottom: "1px solid #f6f6f8" }}>
-                      <span style={{ width: 84, flexShrink: 0, fontSize: 12.5, color: "#9a9aa0" }}>{c.id}</span>
+                      <span style={{ width: 84, flexShrink: 0, fontSize: 12.5, color: "#555" }}>{c.id}</span>
                       <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, color: "#555" }}>{c.title}</span>
-                      <span style={{ flex: 1.4, minWidth: 0, fontSize: 13, color: "#9a9aa0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.expect}</span>
-                      <span style={{ flexShrink: 0, fontSize: 12.5, width: 108, textAlign: "right", color: c.waiting ? "#a2701a" : r ? "#c0392b" : "#b3adbd" }}>
+                      <span style={{ flex: 1.4, minWidth: 0, fontSize: 13, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.expect}</span>
+                      <span style={{ flexShrink: 0, fontSize: 12.5, width: 108, textAlign: "right", color: "#555" }}>
                         {c.waiting ? c.waiting : r ? (r.status === "open" ? "리포트 있음" : 상태이름[r.status]) : "안 해봄"}
                       </span>
                     </div>
@@ -239,11 +239,11 @@ export default function TestReportsPage() {
                         background: 고른것 === r.id ? "#f7f7f8" : "#fff", font: "inherit" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
                         <span style={{ fontSize: 11.5, padding: "2px 7px", borderRadius: 6, background: 무게색[r.severity].bg, color: 무게색[r.severity].fg }}>{r.severity}</span>
-                        <span style={{ fontSize: 12.5, color: "#9a9aa0" }}>{r.area}</span>
-                        {r.case_id && <span style={{ fontSize: 12.5, color: "#b3adbd" }}>{r.case_id}</span>}
-                        <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#b3adbd" }}>{날짜(r.created_at)}</span>
+                        <span style={{ fontSize: 12.5, color: "#555" }}>{r.area}</span>
+                        {r.case_id && <span style={{ fontSize: 12.5, color: "#555" }}>{r.case_id}</span>}
+                        <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#555" }}>{날짜(r.created_at)}</span>
                       </div>
-                      <div style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</div>
+                      <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</div>
                     </button>
                   </li>
                 ))}
@@ -256,8 +256,8 @@ export default function TestReportsPage() {
               <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 리포트를 고르세요.</div>
             ) : (
               <>
-                <div style={{ fontSize: 16, color: "#1a1a1a", marginBottom: 4 }}>{지금것.title}</div>
-                <div style={{ fontSize: 12.5, color: "#9a9aa0", marginBottom: 14 }}>
+                <div style={{ fontSize: 16, color: "#555", marginBottom: 4 }}>{지금것.title}</div>
+                <div style={{ fontSize: 12.5, color: "#555", marginBottom: 14 }}>
                   {지금것.area}
                   {지금것.case_id ? ` · ${지금것.case_id}` : ""}
                   {` · ${날짜(지금것.created_at)}`}
@@ -267,7 +267,7 @@ export default function TestReportsPage() {
 
                 {지금것.steps && (
                   <>
-                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginBottom: 3 }}>이렇게 하면 나온다</div>
+                    <div style={{ fontSize: 12.5, color: "#555", marginBottom: 3 }}>이렇게 하면 나온다</div>
                     <div style={{ fontSize: 14, color: "#555", whiteSpace: "pre-line", lineHeight: 1.7, marginBottom: 12 }}>{지금것.steps}</div>
                   </>
                 )}
@@ -275,11 +275,11 @@ export default function TestReportsPage() {
                 <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
                   <div style={{ flex: 1, background: "#f1f8f3", borderRadius: 8, padding: "9px 12px" }}>
                     <div style={{ fontSize: 12, color: "#2f7a4d", marginBottom: 2 }}>이래야 한다</div>
-                    <div style={{ fontSize: 13.5, color: "#2f7a4d", whiteSpace: "pre-line" }}>{지금것.expected || "-"}</div>
+                    <div style={{ fontSize: 13.5, color: "#555", whiteSpace: "pre-line" }}>{지금것.expected || "-"}</div>
                   </div>
                   <div style={{ flex: 1, background: "#fdecea", borderRadius: 8, padding: "9px 12px" }}>
                     <div style={{ fontSize: 12, color: "#c0392b", marginBottom: 2 }}>이렇게 됐다</div>
-                    <div style={{ fontSize: 13.5, color: "#c0392b", whiteSpace: "pre-line" }}>{지금것.actual || "-"}</div>
+                    <div style={{ fontSize: 13.5, color: "#555", whiteSpace: "pre-line" }}>{지금것.actual || "-"}</div>
                   </div>
                 </div>
 
@@ -293,7 +293,7 @@ export default function TestReportsPage() {
 
                 {지금것.options.length > 0 && (
                   <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 12 }}>
-                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginBottom: 8 }}>
+                    <div style={{ fontSize: 12.5, color: "#555", marginBottom: 8 }}>
                       {지금것.decision ? "고른 것" : "정해 주세요"}
                     </div>
                     {지금것.options.map((o, i) => {
@@ -302,7 +302,7 @@ export default function TestReportsPage() {
                         <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                           <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: 고름 ? "#582681" : "#555" }}>
                             {o.text}
-                            {o.recommend && <span style={{ marginLeft: 8, fontSize: 12, color: "#9a9aa0" }}>클로드 의견</span>}
+                            {o.recommend && <span style={{ marginLeft: 8, fontSize: 12, color: "#555" }}>클로드 의견</span>}
                           </span>
                           {!지금것.decision && (
                             <button type="button" disabled={busy} onClick={() => 정하기(지금것.id, o.text, "open")}
