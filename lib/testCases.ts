@@ -57,3 +57,17 @@ export const TEST_CASES: TestCase[] = [
 ];
 
 export const CASES_BY_AREA = (area: Area) => TEST_CASES.filter((c) => c.area === area);
+
+/** 클로드 테스트팀 — 누가 어디를 맡는가.
+ *
+ *  한 사람이 다 보면 자기가 만든 자리를 자기가 검사하게 된다. 영역을 갈라
+ *  맡기고, 맡은 사람은 그 영역만 끝까지 본다. 역할은 코드에 두고 결과만 쌓는다.
+ */
+export type TeamMember = { id: string; name: string; area: Area; role: string };
+
+export const TEST_TEAM: TeamMember[] = [
+  { id: "reg",   name: "등록조", area: "공고등록",     role: "폼·미리보기·실제공고 세 곳을 대조한다" },
+  { id: "biz",   name: "기업조", area: "기업공고관리", role: "기업회원이 직접 쓰는 자리를 본다" },
+  { id: "apply", name: "지원조", area: "지원",         role: "구직자가 넣고 기업이 받는 길을 본다" },
+  { id: "join",  name: "가입조", area: "회원가입",     role: "가입·로그인·승인을 본다" },
+];
