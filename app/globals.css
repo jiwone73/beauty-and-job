@@ -5560,7 +5560,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   right: 0;
   top: 71px;
   height: 1px;
-  background: #582681;
+  background: #f0f0f0;
   z-index: 20;
   pointer-events: none;
 }
