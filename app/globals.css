@@ -5413,9 +5413,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  /* 메인 사이트와 같은 바탕(#f7f7f8). 전부 흰색이라 카드가 바탕에 묻혔다.
-     헤더와 사이드는 제 흰 바탕을 따로 깐다. */
-  background: var(--color-bg-soft);
+  /* 메인 채용공고 화면(.jobs-page)과 같은 흰 바탕. body 는 연회색이지만 그 위에
+     화면마다 흰 바탕을 한 겹 더 깐다 — 관리자만 회색이면 두 화면이 갈려 보인다. */
+  background: #fff;
   font-family: var(--font-sans);
   /* 사이드와 본문을 한 덩어리로 가운데 세운다. 사이드만 화면 왼쪽 끝에 두면
      둘 사이가 통째로 벌어져, 표는 가운데인데 메뉴는 저 멀리 있게 된다. */
