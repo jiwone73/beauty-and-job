@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 자소서짓기, type 이력자료 } from "@/lib/ai/coverLetter";
-import { 하루쓴횟수, 하루한도 } from "@/lib/ai/quota";
+import { 한자리집기, 자리돌려주기, 하루쓴횟수, 하루한도 } from "@/lib/ai/quota";
 import { shortenRegion } from "@/lib/memberFormat";
 import { addressRegion } from "@/lib/regionShort";
 
@@ -94,15 +94,19 @@ export async function POST(req: NextRequest) {
     공고,
   };
 
+  // 부르기 직전에 자리를 집는다. 여기서 못 집으면 한도를 넘은 것이라 모델을 안 부른다.
+  if (!(await 한자리집기(userId, "cover_letter"))) {
+    return err("AI_LIMIT", `자기소개서 작성은 하루 ${하루한도.cover_letter}번까지예요. 내일 다시 눌러 주세요.`, 429);
+  }
   try {
     const 글 = await 자소서짓기(자료);
-    if (!글) return err("AI_EMPTY", "초안을 만들지 못했어요. 잠시 후 다시 눌러 주세요.", 502);
-    await pool.query(
-      `INSERT INTO ai_usage (user_id, day, kind, count) VALUES ($1, CURRENT_DATE, 'cover_letter', 1)
-       ON CONFLICT (user_id, day, kind) DO UPDATE SET count = ai_usage.count + 1`, [userId]
-    );
+    if (!글) {
+      await 자리돌려주기(userId, "cover_letter");
+      return err("AI_EMPTY", "초안을 만들지 못했어요. 잠시 후 다시 눌러 주세요.", 502);
+    }
     return ok({ text: 글, left: Math.max(0, 하루한도.cover_letter - 쓴횟수 - 1) });
   } catch (e: any) {
+    await 자리돌려주기(userId, "cover_letter");
     console.error("[ai cover-letter]", e?.message || e);
     return err("AI_FAIL", "초안을 만들지 못했어요. 잠시 후 다시 눌러 주세요.", 502);
   }
