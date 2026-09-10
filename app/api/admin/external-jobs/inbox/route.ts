@@ -84,6 +84,13 @@ export async function POST(req: NextRequest) {
   const b = await req.json().catch(() => ({} as any));
   const 붙인주소 = [...new Set([...String(b?.붙임 || "").matchAll(/wantedAuthNo=([A-Z0-9]{10,})/g)].map((m) => m[1]))];
 
+  // 목록 주소를 붙인 경우. 그건 로그인 뒤에 있어 우리가 못 연다 — 공개 목록으로
+  // 슬쩍 넘어가면 엉뚱한 결과가 나오고 왜 그런지도 알 수 없다. 그냥 말해 준다.
+  if (!붙인주소.length && /work24\.go\.kr/i.test(String(b?.붙임 || ""))) {
+    return err("INBOX_006",
+      "목록 주소에는 공고 번호가 없어요. 그 목록에서 공고 주소를 복사해 붙여넣어 주세요.", 400);
+  }
+
   let 목록: Awaited<ReturnType<typeof 목록받기>>;
   if (붙인주소.length) {
     if (source !== "work24") return err("INBOX_004", "주소 붙여넣기는 고용24에서만 됩니다.", 400);

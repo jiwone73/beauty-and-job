@@ -120,7 +120,7 @@ export default function ImportListPage() {
         {붙여넣기가능 && (
           <div style={{ padding: "14px 16px", borderBottom: "1px solid #f2f2f4" }}>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
-              placeholder="고용24 목록에서 복사한 공고 주소를 붙여넣으세요"
+              placeholder={"고용24 목록에서 복사한 공고 주소\n(…empDetailAuthView.do?wantedAuthNo=… 여러 줄)"}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8,
                 padding: "10px 12px", fontSize: 13.5, outline: "none", resize: "vertical",
                 fontFamily: "inherit", lineHeight: 1.5 }} />
