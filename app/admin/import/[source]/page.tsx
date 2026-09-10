@@ -31,6 +31,11 @@ export default function ImportListPage() {
   const [붙임, set붙임] = useState("");
   const 붙여넣기가능 = source === "work24";
   const [복사됨, set복사됨] = useState("");
+  // 알바 컴퓨터는 윈도우, 대표님은 맥이다. 보는 사람의 자판으로 적어 준다.
+  const [맥인가, set맥인가] = useState(false);
+  useEffect(() => { set맥인가(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)); }, []);
+  const 콘솔키 = 맥인가 ? "Cmd+Option+C" : "F12 → Console";
+  const 붙여넣기키 = 맥인가 ? "Cmd+V" : "Ctrl+V";
   const 복사 = (무엇: string, 글: string) => {
     navigator.clipboard.writeText(글);
     set복사됨(무엇); setTimeout(() => set복사됨(""), 1800);
@@ -146,12 +151,12 @@ export default function ImportListPage() {
                 {복사됨 === "주소" ? "복사됨" : "주소 복사"}
               </button>
               <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>2</b> 그 화면에서 <code style={{ fontSize: 12 }}>Cmd+Option+C</code> 누르고 붙여넣기</span>
+              <span><b style={{ color: "#582681" }}>2</b> 그 화면에서 <code style={{ fontSize: 12 }}>{콘솔키}</code> 열고 붙여넣기</span>
               <button type="button" className="admin-secondary-btn" onClick={() => 복사("코드", 주소복사코드)}>
                 {복사됨 === "코드" ? "복사됨" : "코드 복사"}
               </button>
               <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>3</b> 아래 칸에 <code style={{ fontSize: 12 }}>Cmd+V</code></span>
+              <span><b style={{ color: "#582681" }}>3</b> 아래 칸에 <code style={{ fontSize: 12 }}>{붙여넣기키}</code></span>
             </div>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
