@@ -291,7 +291,7 @@ export default function AdminStoriesPage() {
         </div>
 
         {/* 오른쪽 — 고른 글 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 620 }}>
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 640 }}>
           {!지금것 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 글을 고르세요.</div>
           ) : (

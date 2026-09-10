@@ -170,7 +170,7 @@ export default function AdminInquiriesPage() {
       <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
 
         {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 420, flexShrink: 0, overflow: "hidden" }}>
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
           <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <FilterDropdown label="처리상태"
               value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}

@@ -112,7 +112,7 @@ export default function AdminNoticesPage() {
       <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
 
         {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 380, flexShrink: 0, overflow: "hidden" }}>
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
           <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span>전체 <strong>{list.length}</strong>건</span>
             <button onClick={() => { setForm({ ...빈값 }); set새공지열림(true); }} className="admin-primary-btn">
@@ -150,7 +150,7 @@ export default function AdminNoticesPage() {
         </div>
 
         {/* 오른쪽 — 고른 공지 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0 }}>
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 640 }}>
           {!지금것 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 공지를 고르세요.</div>
           ) : (
