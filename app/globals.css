@@ -5568,7 +5568,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   font-size: 20px;
   font-weight: 700;
   color: #555;
-  margin: 0 0 18px;
+  /* 볼드 20 이라 아래가 붙어 보였다. 제목과 내용 사이를 한 칸 더 띄운다. */
+  margin: 0 0 26px;
   text-align: center;
 }
 .admin-header-right {

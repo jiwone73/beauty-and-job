@@ -346,8 +346,8 @@ export default function AdminOutreachPage() {
   return (
     <AdminLayout activeMenu="outreach">
       <div style={{ padding: "4px 4px 40px" }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#2b2533", margin: 0 }}>브랜드 리스트</h1>
+        {/* 제목은 레이아웃이 그린다(.admin-page-title · 가운데) — 여기선 건수만 적는다. */}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
           <span style={{ fontSize: 14, color: "#9a92a6" }}>
             활성공고 총 {totalActive.toLocaleString()}건
             {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 오피스 {globalSO.office.toLocaleString()})</span>}
@@ -372,6 +372,14 @@ export default function AdminOutreachPage() {
             <input className="admin-search-input" placeholder="브랜드·특징 검색"
               value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
+          <FilterDropdown label="연락처"
+            value={phoneFilter === "y" ? "있음" : phoneFilter === "n" ? "없음" : "전체"}
+            options={["전체", "있음", "없음"]}
+            onChange={(v) => setPhoneFilter(v === "있음" ? "y" : v === "없음" ? "n" : "")} />
+          <FilterDropdown label="이메일"
+            value={emailFilter === "y" ? "있음" : emailFilter === "n" ? "없음" : "전체"}
+            options={["전체", "있음", "없음"]}
+            onChange={(v) => setEmailFilter(v === "있음" ? "y" : v === "없음" ? "n" : "")} />
           <FilterDropdown label="채용유무"
             value={hiringFilter || "전체"}
             options={["전체", ...HIRING]}
@@ -417,14 +425,16 @@ export default function AdminOutreachPage() {
                 <th style={{ ...th, width: 110 }}>채용유무</th>
                 <th style={{ ...th, minWidth: 130 }}>총 활성공고</th>
                 <th style={{ ...th, width: 120 }}>뷰티워크 공고</th>
+                <th style={{ ...th, minWidth: 130 }}>연락처</th>
+                <th style={{ ...th, minWidth: 170 }}>이메일</th>
                 <th style={{ ...th, minWidth: 280 }}>메모</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={7} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row, rowIdx) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
@@ -527,6 +537,17 @@ export default function AdminOutreachPage() {
                           );
                         })()}
                       </td>
+                      {/* 연락처·이메일 (자동저장) — 브랜드에 닿는 길이라 이 화면의 핵심이다. */}
+                      <td style={td}>
+                        <input style={inp} placeholder="연락처" value={val(row, "phone") || ""}
+                          onChange={(e) => setDraft(row.id, { phone: e.target.value })}
+                          onBlur={() => saveField(row, "phone")} />
+                      </td>
+                      <td style={td}>
+                        <input style={inp} placeholder="이메일" value={val(row, "email") || ""}
+                          onChange={(e) => setDraft(row.id, { email: e.target.value })}
+                          onBlur={() => saveField(row, "email")} />
+                      </td>
                       {/* 메모 (2줄 자동저장 · 미편집시 말줄임+툴팁) */}
                       <td style={{ ...td, minWidth: 280 }}>
                         {editMemoId === row.id ? (
@@ -552,7 +573,7 @@ export default function AdminOutreachPage() {
                       const shown = activeTab ? row.found_jobs.filter((jb) => jb.source === activeTab) : row.found_jobs;
                       return (
                       <tr>
-                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={7}>
+                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={9}>
                           <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 6 }}>
                             조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
                           </div>

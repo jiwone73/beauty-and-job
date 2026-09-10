@@ -88,6 +88,7 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "import-selectme": "셀렉미 공고 불러오기",
   "import-work24": "고용24 공고 불러오기",
   "jobs-issues": "등록 이슈",
+  "outreach": "브랜드 리스트",
 };
 
 export default function AdminLayout({ children, activeMenu, pageTitle }: {
