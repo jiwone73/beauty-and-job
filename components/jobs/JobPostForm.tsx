@@ -216,6 +216,8 @@ export interface JobPostFormProps {
   initialParsed?: any;
   // 임시저장(DRAFT) 목록 로더 — 넘기면 상단에 "임시저장 목록" 노출(관리자 직접등록 전용)
   listDrafts?: () => Promise<Array<{ id: string; title: string; company_name?: string; created_at?: string }>>;
+  /** 임시저장 한 건 지우기. 넘기면 목록 줄마다 ✕ 가 붙는다. */
+  deleteDraft?: (id: string) => Promise<boolean>;
   initialFindQuery?: string; // 외부에서 전달된 초기 검색어(회사명/URL) — 검색창에 미리 채움
 }
 
@@ -226,13 +228,14 @@ let 폼이열린적있음 = false;
 
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
-  uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "", initialImportMode, initialParsed,
+  uploadImage, onSubmit, loadEditData, listDrafts, deleteDraft, initialFindQuery = "", initialImportMode, initialParsed,
 }: JobPostFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   // 임시저장 목록(관리자 직접등록 전용) — 상단에서 이어쓰기
   const [drafts, setDrafts] = useState<Array<{ id: string; title: string; company_name?: string; created_at?: string }>>([]);
   const [draftMenuOpen, setDraftMenuOpen] = useState(false); // 임시저장 버튼 옆 드롭다운(목록)
+  const [draftDeleting, setDraftDeleting] = useState<string | null>(null);
   const draftMenuRef = useRef<HTMLDivElement>(null);
   const reloadDrafts = useCallback(() => {
     if (!listDrafts) return;
@@ -707,6 +710,16 @@ export default function JobPostForm({
   // 새로고침이 아닌 길로 들어왔을 때, 지우지 않고 되살릴 수 있다고만 알린다.
   const [되살릴것, set되살릴것] = useState<string | null>(null);
   const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
+
+  // 빈 화면에서 다시 시작한다. 새로고침만으로는 브라우저에 남은 내용이 그대로 되살아난다.
+  // 값을 하나하나 비우면 빠뜨린 칸이 생기므로, 남은 내용을 지우고 화면을 새로 연다.
+  const 초기화 = () => {
+    if (!confirm("쓰던 내용을 모두 지우고 빈 화면에서 새로 쓸까요?")) return;
+    try { localStorage.removeItem(`jobpost:autosave:${mode}:new`); } catch { /* noop */ }
+    // 고치던 중이면 주소의 ?id= 를 떼야 빈 등록 화면이 된다.
+    if (editId) router.push(pathname);
+    else location.reload();
+  };
 
   // 화면이 뜰 때 남아 있던 내용을 되살린다.
   //
@@ -2727,19 +2740,39 @@ export default function JobPostForm({
                     {drafts.map((d) => {
                       const on = editId === d.id;
                       return (
-                        <button key={d.id} type="button"
-                          onClick={() => { setDraftMenuOpen(false); if (!on) router.push(`${pathname}?id=${d.id}`); }}
-                          style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", width: "100%", padding: "8px 10px", borderRadius: 8, border: on ? "1.5px solid #582681" : "1px solid #eee", background: on ? "#f7f7f8" : "#fff", cursor: on ? "default" : "pointer", font: "inherit" }}>
-                          <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
-                            {d.title || "(제목 없음)"}
-                            {d.company_name && <span style={{ color: "#9a92a6", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
-                          </span>
-                          {on ? (
-                            <span style={{ flexShrink: 0, fontSize: 12, color: "#582681", fontWeight: 600 }}>편집 중</span>
-                          ) : d.created_at ? (
-                            <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{new Date(d.created_at).toLocaleDateString("ko-KR")}</span>
-                          ) : null}
-                        </button>
+                        /* 이어쓰기와 지우기를 한 줄에 둔다. 버튼 안에 버튼은 못 넣으므로 줄을 감싼다. */
+                        <div key={d.id}
+                          style={{ display: "flex", alignItems: "center", borderRadius: 8, border: on ? "1.5px solid #582681" : "1px solid #eee", background: on ? "#f7f7f8" : "#fff" }}>
+                          <button type="button"
+                            onClick={() => { setDraftMenuOpen(false); if (!on) router.push(`${pathname}?id=${d.id}`); }}
+                            style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", flex: 1, minWidth: 0, padding: "8px 4px 8px 10px", border: "none", background: "none", cursor: on ? "default" : "pointer", font: "inherit" }}>
+                            <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
+                              {d.title || "(제목 없음)"}
+                              {d.company_name && <span style={{ color: "#9a92a6", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
+                            </span>
+                            {on ? (
+                              <span style={{ flexShrink: 0, fontSize: 12, color: "#582681", fontWeight: 600 }}>편집 중</span>
+                            ) : d.created_at ? (
+                              <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{new Date(d.created_at).toLocaleDateString("ko-KR")}</span>
+                            ) : null}
+                          </button>
+                          {deleteDraft && (
+                            <button type="button" title="임시저장 지우기" disabled={draftDeleting === d.id}
+                              onClick={async () => {
+                                if (!confirm(`"${d.title || "(제목 없음)"}" 임시저장을 지울까요?`)) return;
+                                setDraftDeleting(d.id);
+                                const 됐나 = await deleteDraft(d.id);
+                                setDraftDeleting(null);
+                                if (!됐나) { alert("지우지 못했습니다."); return; }
+                                setDrafts((list) => list.filter((x) => x.id !== d.id));
+                                // 지금 고치던 것을 지웠으면 빈 등록 화면으로 나간다.
+                                if (on) { setDraftMenuOpen(false); router.push(pathname); }
+                              }}
+                              style={{ flexShrink: 0, padding: "8px 10px", border: "none", background: "none", color: "#b3adbd", fontSize: 14, lineHeight: 1, cursor: "pointer" }}>
+                              ✕
+                            </button>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
@@ -2758,6 +2791,11 @@ export default function JobPostForm({
                 {curating ? "다듬는 중..." : "✨ 큐레이션"}
               </button>
             )}
+            {/* 새로고침해도 브라우저에 남은 내용이 되살아나, 빈 화면에서 다시 시작할 길이 없었다. */}
+            <button type="button" onClick={초기화}
+              style={{ border: "none", background: "none", color: "#9a92a6", fontSize: 13.5, fontFamily: "inherit", cursor: "pointer", padding: "0 4px", textDecoration: "underline", textUnderlineOffset: 3 }}>
+              초기화
+            </button>
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
@@ -2776,15 +2814,6 @@ export default function JobPostForm({
           </button>
         </>,
         headerSlot
-      )}
-
-      {/* 관리자 화면 제목 — 기업 폼은 위 헤더 줄로 옮겼다(목록으로 링크가 있던 자리). */}
-      {mode === "admin" && !isMobile && (
-        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 10px`, boxSizing: "border-box" }}>
-          <h2 style={{ fontSize: 18, fontWeight: 400, color: "#555", margin: "0 0 0 2px" }}>
-            {editId ? "채용공고 수정" : "채용공고 등록"}
-          </h2>
-        </div>
       )}
 
 

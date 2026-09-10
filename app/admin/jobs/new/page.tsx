@@ -70,6 +70,15 @@ function AdminJobNewForm() {
       .map((j: any) => ({ id: j.id, title: j.title, company_name: j.company_name, created_at: j.created_at }));
   };
 
+  const deleteDraft = async (id: string) => {
+    const res = await fetch(`/api/admin/jobs/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    return !!data.success;
+  };
+
   const onSubmit = async (
     payload: any,
     status: "draft" | "publish",
@@ -110,6 +119,7 @@ function AdminJobNewForm() {
         uploadImage={uploadImage}
         onSubmit={onSubmit}
         loadEditData={loadEditData}
+        deleteDraft={deleteDraft}
         listDrafts={listDrafts}
         initialFindQuery={initialFind}
       />
