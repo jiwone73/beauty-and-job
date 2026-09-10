@@ -23,7 +23,11 @@ export async function GET(
        c.industry AS company_industry,
        c.company_size, c.founded_year,
        c.representative_name, c.company_phone,
-       c.logo_url, c.cover_images, c.is_member
+       c.logo_url, c.is_member,
+       -- 이름을 갈라 둔다. jp.* 에도 cover_images 가 있어, 그냥 c.cover_images 로
+       -- 두면 뒤엣것이 이겨 「공고 배너」 자리에 「업체 배너」가 실린다. 편집 화면을
+       -- 열 때마다 공고에 걸어 둔 배너가 업체 것(대개 빈 값)으로 바뀌어 사라졌다.
+       c.cover_images AS company_cover_images
      FROM job_postings jp
      LEFT JOIN companies c ON c.id = jp.company_id
      WHERE jp.id = $1`,
@@ -51,7 +55,7 @@ export async function GET(
       representative_name: j.representative_name || "",
       company_phone: j.company_phone || "",
       logo_url: j.logo_url || null,
-      cover_images: j.cover_images || [],
+      cover_images: j.company_cover_images || [],
       is_member: j.is_member === true,
     },
   });
@@ -83,6 +87,10 @@ export async function PATCH(
     "external_contact_name", "external_contact_phone", "external_contact_email",
     "external_contact_kakao",
     "contact_methods",
+    // 배너와 「비공개」가 빠져 있었다. 편집 화면에서 고쳐도 저장이 안 돼,
+    // 배너를 다시 걸어도 공고에는 그대로였다.
+    "cover_images",
+    "contact_name_hidden", "contact_phone_hidden", "contact_email_hidden", "contact_kakao_hidden",
   ];
 
   const client = await pool.connect();
@@ -92,7 +100,7 @@ export async function PATCH(
     const updates: string[] = [];
     const values: any[] = [];
     let idx = 1;
-    const jsonbFields = ["detail_images", "hiring_process", "positions", "work_locations"];
+    const jsonbFields = ["detail_images", "hiring_process", "positions", "work_locations", "cover_images"];
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
         updates.push(`${field} = $${idx++}`);
