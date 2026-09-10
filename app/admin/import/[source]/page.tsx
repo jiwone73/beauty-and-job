@@ -42,13 +42,29 @@ export default function ImportListPage() {
   // 고용24 맞춤채용정보 목록. 한 쪽에 이백 건씩 나오게 해 둔다 — 한 번에 다 가져오려고.
   const 고용24목록주소 =
     "https://www.work24.go.kr/wk/p/c/1310/custmadeInfoList.do?seqNo=1&sortField=DATE&sortOrderBy=DESC&pageIndex=1&resultCnt=200";
-  // 그 목록 화면의 콘솔에 붙여넣으면 공고 주소를 모두 클립보드로 복사한다.
+  // 공고 주소를 모으는 코드.
+  //
+  // 목록마다 링크 모양이 다르다 — 맞춤채용정보는 href 에 번호가 없다. 그래서
+  // 링크·단추의 href·onclick 과 화면 글자까지 훑는다. 다만 아무 글자나 주우면
+  // 메뉴 번호(EBG0200…)까지 딸려 오므로, 공고번호 모양(K + 열다섯 자)만 본다.
+  const 주소모으기 = [
+    "var B='https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=';",
+    "var re=/K[A-Z0-9]{15}/g;var s=new Set();",
+    "var H=document.body.innerHTML;",
+    "var m1=H.match(/wantedAuthNo[^A-Za-z0-9]{0,4}(K[A-Z0-9]{15})/g);",
+    "if(m1)m1.forEach(function(x){var y=x.match(re);if(y)s.add(y[y.length-1])});",
+    "if(!s.size){[].forEach.call(document.querySelectorAll('[href],[onclick],[data-wantedauthno]'),function(e){",
+    "var h=(e.getAttribute('href')||'')+' '+(e.getAttribute('onclick')||'')+' '+(e.getAttribute('data-wantedauthno')||'');",
+    "var m=h.match(re);if(m)m.forEach(function(x){s.add(x)})})}",
+    "var t=Array.from(s).map(function(n){return B+n}).join('\\n');",
+  ].join("");
   const 주소복사코드 =
-    "copy([...new Set([...document.querySelectorAll('a[href*=wantedAuthNo]')].map(a=>a.href))].join('\\n'))";
-  // 즐겨찾기로 만들어 두면 콘솔을 안 열어도 된다 — 고용24 목록에서 누르기만 하면 복사된다.
+    "(function(){" + 주소모으기 + "copy(t);console.log(t.split('\\n').length+'건 복사')})()";
+  // 즐겨찾기로 만들어 두면 콘솔을 안 열어도 된다 — 목록에서 누르기만 하면 복사된다.
   // 콘솔 전용인 copy() 대신 클립보드 API 를 쓴다(누른 것이 곧 사용자 동작이라 허용된다).
   const 즐겨찾기코드 =
-    "javascript:(function(){var t=[...new Set([...document.querySelectorAll('a[href*=wantedAuthNo]')].map(function(a){return a.href}))].join('\\n');navigator.clipboard.writeText(t).then(function(){alert(t.split('\\n').length+'건 복사했습니다')})})()";
+    "javascript:(function(){" + 주소모으기 +
+    "navigator.clipboard.writeText(t).then(function(){alert(t.split('\\n').length+'건 복사했습니다')})})()";
   // React 는 href 에 javascript: 를 넣으면 막는다. 그려질 때 직접 붙인다.
   // useEffect 로 하면 안 된다 — 첫 그림에는 이 단추가 아직 없어서 붙일 자리가 없고,
   // 단추가 생긴 뒤에는 그 effect 가 다시 돌지 않는다.
