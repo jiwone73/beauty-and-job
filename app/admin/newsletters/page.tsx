@@ -153,98 +153,90 @@ export default function AdminNewslettersPage() {
     }
   };
 
+  const 지금것 = list.find((n) => n.id === previewItem?.id) || previewItem;
+
   return (
     <AdminLayout activeMenu="newsletters">
-      <div style={{ padding: "8px 0" }}>
-        <div className="admin-card" style={{ width: "fit-content", maxWidth: "100%" }}>
-          <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      {/* 왼쪽에서 고르고 오른쪽에서 본다. 미리보기를 모달로 띄우면 목록이 가려져
+          「다음 것」을 보려면 매번 닫아야 했다. 공지사항과 같은 짜임으로 맞춘다. */}
+      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+
+        {/* 왼쪽 — 목록 */}
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
+          <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <button onClick={toggleAutogen} disabled={autogenSaving}
                 title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e0e0e0", background: "#fff", fontSize: 14, fontWeight: 400, color: "#555", cursor: "pointer" }}>
+                style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13.5, color: "#555", cursor: "pointer" }}>
                 자동 발송
-                <span style={{ width: 38, height: 22, borderRadius: 11, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
-                  <span style={{ position: "absolute", top: 2, left: autogen ? 18 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+                <span style={{ width: 34, height: 20, borderRadius: 10, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                  <span style={{ position: "absolute", top: 2, left: autogen ? 16 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
                 </span>
               </button>
-              <button onClick={generate} disabled={generating}
-                style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 14, fontWeight: 400, cursor: "pointer" }}>
-                {generating ? "생성 중..." : "뉴스레터 생성"}
+              <button onClick={generate} disabled={generating} className="admin-primary-btn">
+                {generating ? "생성 중…" : "뉴스레터 생성"}
               </button>
             </div>
             <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "7px 14px", borderRadius: 8, border: "none",
-                background: checked.length ? "#e74c3c" : "#ededed",
-                color: checked.length ? "#fff" : "#aaa",
-                fontSize: 14, fontWeight: 600,
-                cursor: checked.length ? "pointer" : "default",
-              }}>
+              style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff",
+                color: checked.length ? "#c0392b" : "#c4c4c9", fontSize: 13.5,
+                cursor: checked.length ? "pointer" : "default" }}>
               선택 삭제{checked.length ? ` (${checked.length})` : ""}
             </button>
           </div>
 
-        {loading ? (
-          <p style={{ textAlign: "center", padding: "40px 0", color: "#888" }}>불러오는 중...</p>
-        ) : (
-          <div className="admin-table-wrap">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th style={{ ...th, width: 36 }}>
-                  <input type="checkbox" checked={allChecked} onChange={toggleAll} />
-                </th>
-                <th style={th}>제목</th><th style={th}>상태</th><th style={th}>생성일</th><th style={th}>발송수</th><th style={th}>발송일</th>
-              </tr>
-            </thead>
-            <tbody>
+          {loading ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+          ) : list.length === 0 ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>
+              생성된 뉴스레터가 없습니다. 「뉴스레터 생성」을 눌러보세요.
+            </div>
+          ) : (
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {list.map((n) => (
-                <tr key={n.id} style={{ background: checked.includes(n.id) ? "#f7f7f8" : "#fff" }}>
-                  <td style={td}>
-                    <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
-                  </td>
-                  <td onClick={() => setPreviewItem(n)} style={{ ...td, maxWidth: 360, textAlign: "left", cursor: "pointer" }}>{n.title}</td>
-                  <td style={td}>
-                    <span style={{ fontSize: 13, color: "#555" }}>
+                <li key={n.id} style={{ display: "flex", alignItems: "center", gap: 8,
+                  borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
+                  background: previewItem?.id === n.id ? "#f7f7f8" : "#fff" }}>
+                  <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
+                  <button type="button" onClick={() => setPreviewItem(n)}
+                    style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
+                    <div style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {n.title}
+                    </div>
+                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2 }}>
                       {STATUS_LABELS[n.status] || n.status}
-                    </span>
-                  </td>
-                  <td style={{ ...td, color: "#888" }}>{(n.created_at || "").slice(0, 10)}</td>
-                  <td style={td}>{n.sent_count ?? "-"}</td>
-                  <td style={{ ...td, color: "#888" }}>{n.sent_at ? (n.sent_at || "").slice(0, 10) : "-"}</td>
-                </tr>
+                      {" · "}{(n.created_at || "").slice(0, 10)}
+                      {n.sent_at ? ` · 발송 ${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0})` : ""}
+                    </div>
+                  </button>
+                </li>
               ))}
-              {list.length === 0 && (
-                <tr><td colSpan={6} style={{ textAlign: "center", padding: "40px 0", color: "#aaa" }}>
-                  생성된 뉴스레터가 없습니다. '뉴스레터 생성'을 눌러보세요.
-                </td></tr>
-              )}
-            </tbody>
-          </table>
-          </div>
-        )}
+            </ul>
+          )}
+        </div>
+
+        {/* 오른쪽 — 고른 뉴스레터 */}
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", minHeight: 640 }}>
+          {!지금것 ? (
+            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 뉴스레터를 고르세요.</div>
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px", borderBottom: "1px solid #f2f2f4" }}>
+                <span style={{ fontSize: 15, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{지금것.title}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                  <button onClick={() => testSend(지금것.id)} disabled={busyId === 지금것.id} style={btnPurpleOutline}>테스트 발송</button>
+                  {지금것.status !== "sent" && (
+                    <button onClick={() => sendAll(지금것.id, 지금것.title)} disabled={busyId === 지금것.id} className="admin-primary-btn">전체발송</button>
+                  )}
+                </div>
+              </div>
+              <iframe title="뉴스레터 미리보기"
+                srcDoc={(지금것.content_html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#")}
+                style={{ flex: 1, width: "100%", border: "none", minHeight: 560 }} />
+            </>
+          )}
         </div>
       </div>
-      {previewItem && (
-        <div onClick={() => setPreviewItem(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-          <div onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 12, width: "min(680px, 96vw)", height: "min(90vh, 900px)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontSize: 15, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{previewItem.title}</span>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                <button onClick={() => testSend(previewItem.id)} disabled={busyId === previewItem.id} style={btnPurpleOutline}>테스트 발송</button>
-                {previewItem.status !== "sent" && (
-                  <button onClick={() => sendAll(previewItem.id, previewItem.title)} disabled={busyId === previewItem.id} style={btnPurple}>전체발송</button>
-                )}
-                <button onClick={() => setPreviewItem(null)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999", lineHeight: 1 }}>✕</button>
-              </div>
-            </div>
-            <iframe title="뉴스레터 미리보기" srcDoc={(previewItem.content_html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#")} style={{ flex: 1, width: "100%", border: "none" }} />
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }
