@@ -91,7 +91,7 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes", "import"]);
   const [authChecked, setAuthChecked] = useState(false);
   const [newInquiries, setNewInquiries] = useState(0);
   const [newSupportInquiries, setNewSupportInquiries] = useState(0);
@@ -181,7 +181,9 @@ export default function AdminLayout({ children, activeMenu }: { children: React.
     setOpenMenus(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]);
   };
 
-  const isMenuOpen = (id: string) => openMenus.includes(id);
+  // 지금 보고 있는 화면이 든 묶음은 늘 펴 둔다. 하위 메뉴를 누르면 화면이 바뀌며
+  // 사이드가 다시 그려지는데, 접힌 채로 시작하면 방금 누른 자리가 사라져 버린다.
+  const isMenuOpen = (id: string) => openMenus.includes(id) || activeMenu === id || activeMenu.startsWith(`${id}-`);
 
   return (
     <div className="admin-layout">

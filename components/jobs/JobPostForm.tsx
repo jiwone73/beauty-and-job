@@ -212,6 +212,8 @@ export interface JobPostFormProps {
   loadEditData?: (editId: string) => Promise<any | null>;
   /** 처음 열 때 어느 불러오기 자리를 펼칠지. 목록이 없는 카페는 붙여넣기로 연다. */
   initialImportMode?: "url" | "paste";
+  /** 외부공고 불러오기에서 이미 읽어 둔 값. 있으면 열면서 바로 채운다. */
+  initialParsed?: any;
   // 임시저장(DRAFT) 목록 로더 — 넘기면 상단에 "임시저장 목록" 노출(관리자 직접등록 전용)
   listDrafts?: () => Promise<Array<{ id: string; title: string; company_name?: string; created_at?: string }>>;
   initialFindQuery?: string; // 외부에서 전달된 초기 검색어(회사명/URL) — 검색창에 미리 채움
@@ -224,7 +226,7 @@ let 폼이열린적있음 = false;
 
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
-  uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "", initialImportMode,
+  uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "", initialImportMode, initialParsed,
 }: JobPostFormProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -1943,6 +1945,18 @@ export default function JobPostForm({
     setParseMsg("가져왔어요. [불러오기]를 누르면 항목별로 채워집니다.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
+
+  // 목록에서 골라 들어온 것은 열면서 바로 채운다.
+  //
+  // 「불러오기」를 또 누를 이유가 없다 — 값은 목록을 받을 때 이미 읽어 두었고,
+  // 그 값을 그대로 태운다. 원문을 다시 읽지 않으니 요금도 시간도 들지 않는다.
+  const 채웠나 = useRef(false);
+  useEffect(() => {
+    if (채웠나.current || !initialParsed || editId) return;
+    채웠나.current = true;
+    applyParsed(initialParsed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialParsed, editId]);
 
   // ?url= 로 들어오면 검색칸에 주소만 채워 두고, 불러오기는 사람이 누른다.
   // 예전엔 자동으로 한 번 불러왔는데, 들어오자마자 요금이 나가고 상세요강 그림에서

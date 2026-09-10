@@ -78,8 +78,8 @@ export default function ImportListPage() {
     } finally { set받는중(false); }
   };
 
-  const 열기 = (u: string) =>
-    router.push(`/admin/jobs/new?url=${encodeURIComponent(u)}&from=${source}`);
+  const 열기 = (x: 줄) =>
+    router.push(`/admin/jobs/new?inbox=${x.id}&from=${source}`);
 
   const 시각 = (t: string | null) => {
     if (!t) return "아직 안 받음";
@@ -155,7 +155,7 @@ export default function ImportListPage() {
                   <td>
                     <span className="adm-td2" title={x.title}
                       style={{ maxWidth: 330, color: "#555", cursor: "pointer" }}
-                      onClick={() => 열기(x.url)}>
+                      onClick={() => 열기(x)}>
                       {x.title}
                     </span>
                     <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 3 }}>{x.categories.join(" · ")}</div>

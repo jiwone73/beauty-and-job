@@ -16,8 +16,18 @@ function AdminJobNewForm() {
   // 카페처럼 목록이 없는 곳은 붙여넣기 칸이 열린 채로 시작한다.
   const paste = searchParams?.get("paste") === "1";
   const 소스이름: Record<string, string> = { hairinjob: "헤어인잡", selectme: "셀렉미", work24: "고용24" };
+  const inboxId = searchParams?.get("inbox") || "";
+  const [받아둔값, set받아둔값] = useState<any>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
+
+  // 목록에서 골라 들어온 경우. 이미 읽어 둔 값을 받아 폼에 바로 태운다.
+  useEffect(() => {
+    if (!inboxId) return;
+    fetch(`/api/admin/external-jobs/inbox/${inboxId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((r) => r.json()).then((j) => { if (j.success) set받아둔값(j.data); }).catch(() => {});
+  }, [inboxId, token]);
 
   useEffect(() => {
     fetch("/api/admin/companies", { headers: { Authorization: `Bearer ${token}` } })
@@ -91,6 +101,7 @@ function AdminJobNewForm() {
       )}
       <JobPostForm
         initialImportMode={paste ? "paste" : undefined}
+        initialParsed={받아둔값}
         mode="admin"
         editId={editId}
         listHref="/admin/jobs"
