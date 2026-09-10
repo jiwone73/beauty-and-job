@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
-  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2, Download } from "lucide-react";
+  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2, Download, Clock } from "lucide-react";
 const NAV_ITEMS = [
   { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
   
@@ -15,23 +15,19 @@ const NAV_ITEMS = [
     children: [
       { id: "members", label: "개인회원", href: "/admin/members" },
       { id: "members-companies", label: "기업회원", href: "/admin/members/companies" },
-      { id: "members-alba", label: "알바 근무현황", href: "/admin/members/alba" },
     ]
   },
-  {
-    id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs",
-    children: [
-      { id: "jobs", label: "채용공고 목록", href: "/admin/jobs" },
-      { id: "jobs-new", label: "공고 직접 등록", href: "/admin/jobs/new" },
-      { id: "jobs-issues", label: "등록 이슈", href: "/admin/jobs/issues" },
-    ]
-  },
+  // 「공고 직접 등록」은 메뉴에서 뺐다. 공고를 만드는 길은 「외부공고 불러오기」에서
+  // 고른 뒤 열리는 폼 하나뿐이라, 빈 폼을 따로 여는 자리가 필요 없다.
+  // (/admin/jobs/new 는 그대로 살아 있다 — 그 폼으로 가는 길이다.)
+  { id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs" },
   {
     id: "resumes", label: "입사지원", icon: Users, href: "/admin/resumes/applications",
     children: [
       { id: "resumes-applications", label: "입사지원 목록", href: "/admin/resumes/applications" },
     ]
   },
+  { id: "members-alba", label: "알바 근무현황", icon: Clock, href: "/admin/members/alba" },
   {
     id: "import", label: "외부공고 불러오기", icon: Download, href: "/admin/import/hairinjob",
     children: [
@@ -40,9 +36,11 @@ const NAV_ITEMS = [
       { id: "import-work24", label: "고용24", href: "/admin/import/work24" },
       // 카페는 목록을 만들 수 없다 — 알바가 글을 찾아 붙여넣는 자리로 바로 보낸다.
       { id: "import-cafe", label: "맨사 / 뷰앤잡", href: "/admin/jobs/new?paste=1" },
+      // 등록 이슈는 불러오다 걸린 것을 적어 두는 곳이라, 불러오기 옆에 둔다.
+      { id: "jobs-issues", label: "등록 이슈", href: "/admin/jobs/issues" },
     ]
   },
-  { id: "outreach", label: "외부업체 리스트", icon: Building2, href: "/admin/outreach" },
+  { id: "outreach", label: "브랜드 리스트", icon: Building2, href: "/admin/outreach" },
   { id: "stories", label: "현장이야기", icon: BookOpen, href: "/admin/stories" },
   { id: "newsletters", label: "뉴스레터", icon: Mail, href: "/admin/newsletters" },
   { id: "notices", label: "공지사항", icon: Bell, href: "/admin/notices" },
@@ -54,7 +52,7 @@ const PAGE_TITLES: Record<string, string> = {
   "dashboard": "대시보드",
   "jobs": "채용공고",
   "jobs-new": "채용공고",
-  "jobs-issues": "채용공고",
+  "jobs-issues": "외부공고 불러오기",
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
   "jobs-external-inbox": "외부 지원 인박스",
@@ -70,7 +68,7 @@ const PAGE_TITLES: Record<string, string> = {
   "resumes": "인재정보",
   
   "resumes-applications": "입사지원",
-  "outreach": "외부업체 리스트",
+  "outreach": "브랜드 리스트",
   "stories": "현장이야기",
   "newsletters": "뉴스레터",
   "notices": "공지사항",

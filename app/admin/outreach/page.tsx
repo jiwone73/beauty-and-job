@@ -346,16 +346,13 @@ export default function AdminOutreachPage() {
     <AdminLayout activeMenu="outreach">
       <div style={{ padding: "4px 4px 40px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>외부업체 컨택 리스트</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>브랜드 리스트</h1>
           <span style={{ fontSize: 14, color: "#9a92a6" }}>
             활성공고 총 {totalActive.toLocaleString()}건
             {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 오피스 {globalSO.office.toLocaleString()})</span>}
             {" · "}업체 {totalCount}개
           </span>
         </div>
-        <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
-          체크박스로 업체를 선택해 "선택 업데이트"를 누르거나, "전체 업데이트"로 모든 탭의 업체를 한 번에 조회할 수 있습니다. 브랜드명으로 7개 채용사이트(헤어인잡·알바몬·잡코리아·사람인·뷰티잡·셀렉미·자사홈)를 조회해 채용유무를 자동 확인합니다. 입력값은 자동저장됩니다. 조회는 무료입니다.
-        </p>
 
         {/* 그룹 탭 */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
@@ -365,28 +362,6 @@ export default function AdminOutreachPage() {
             </button>
           ))}
         </div>
-
-        {/* 사이트별 활성 공고수(현재 탭) — 그룹 칩 아래 */}
-        {(() => {
-          const known = SITE_ORDER.filter((s) => bySite[s]);
-          const etc = Object.keys(bySite).filter((s) => !SITE_ORDER.includes(s));
-          const sum = Object.values(bySite).reduce((a, b) => a + b, 0);
-          if (!sum) return null;
-          const label = (s: string) => s === "자사홈페이지" ? "자사홈" : s;
-          return (
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "4px 14px", marginBottom: 12, fontSize: 13.5, color: "#6b6473" }}>
-              <span style={{ color: "#9a92a6" }}>사이트별 활성공고</span>
-              {[...known, ...etc].map((s) => (
-                <span key={s}><b style={{ color: "#2b2533", fontWeight: 600 }}>{label(s)}</b> {bySite[s].toLocaleString()}</span>
-              ))}
-              {(storeCnt > 0 || officeCnt > 0) && (
-                <span style={{ marginLeft: 4, paddingLeft: 12, borderLeft: "1px solid #efeff1" }} title="공고 제목 기반 추정(정확한 매장/오피스는 불러오기 시 분류됨)">
-                  <b style={{ color: "#582681", fontWeight: 600 }}>매장</b> {storeCnt.toLocaleString()} · <b style={{ color: "#582681", fontWeight: 600 }}>오피스</b> {officeCnt.toLocaleString()} <span style={{ color: "#b7b0c0" }}>(추정)</span>
-                </span>
-              )}
-            </div>
-          );
-        })()}
 
         {/* 필터 + 일괄 */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 12 }}>
@@ -400,18 +375,6 @@ export default function AdminOutreachPage() {
             value={hiringFilter || "전체"}
             options={["전체", ...HIRING]}
             onChange={(v) => setHiringFilter(v === "전체" ? "" : v)} />
-          <FilterDropdown label="등록유무"
-            value={regFilter || "전체"}
-            options={["전체", ...REG]}
-            onChange={(v) => setRegFilter(v === "전체" ? "" : v)} />
-          <FilterDropdown label="연락처"
-            value={phoneFilter === "y" ? "있음" : phoneFilter === "n" ? "없음" : "전체"}
-            options={["전체", "있음", "없음"]}
-            onChange={(v) => setPhoneFilter(v === "있음" ? "y" : v === "없음" ? "n" : "")} />
-          <FilterDropdown label="이메일"
-            value={emailFilter === "y" ? "있음" : emailFilter === "n" ? "없음" : "전체"}
-            options={["전체", "있음", "없음"]}
-            onChange={(v) => setEmailFilter(v === "있음" ? "y" : v === "없음" ? "n" : "")} />
           <div style={{ flex: 1 }} />
           {dirtyCount > 0 ? (
             <button onClick={flushDrafts}
@@ -427,24 +390,8 @@ export default function AdminOutreachPage() {
             style={{ ...chip(false), display: "inline-flex", alignItems: "center", justifyContent: "center", opacity: totalCount ? 1 : 0.5, cursor: totalCount ? "pointer" : "default" }}>
             <RefreshCw size={15} /><span style={{ marginLeft: 6 }}>전체</span>
           </button>
-          <button onClick={() => bulkCheck([...selected])} disabled={!selected.size}
-            style={{ ...chip(!!selected.size), opacity: selected.size ? 1 : 0.5, cursor: selected.size ? "pointer" : "default" }}>
-            {selected.size > 0 && allVisibleSelected ? `전체 ${selected.size}건 업데이트` : `선택 ${selected.size}건 업데이트`}
-          </button>
-          {/* 선택 공고 등록: 조회된 활성 공고에서 라디오 선택(pickedJobUrl) 시에만 활성화 */}
-          {pickedJobUrl ? (
-            <a href={`/admin/jobs/new?url=${encodeURIComponent(pickedJobUrl)}`}
-              target="_blank" rel="noreferrer"
-              title="선택한 공고 URL이 등록 페이지 검색창에 채워집니다"
-              style={{ ...chip(true), textDecoration: "none" }}>
-              선택 공고 등록 ↗
-            </a>
-          ) : (
-            <button type="button" disabled
-              style={{ ...chip(false), opacity: 0.5, cursor: "default", borderColor: "#efeff1", color: "#b7b0c0" }}>
-              선택 공고 등록
-            </button>
-          )}
+          {/* 「선택 공고 등록」은 여기 없다 — 공고를 고르고 담는 일은 「외부공고
+              불러오기」가 맡는다. 이 화면은 브랜드를 보는 자리다. */}
         </div>
         {bulkMsg && <div style={{ fontSize: 13.5, color: PURPLE, marginBottom: 8 }}>{bulkMsg}</div>}
 
@@ -467,19 +414,16 @@ export default function AdminOutreachPage() {
                 <th style={{ ...th, width: 34 }}>#</th>
                 <th style={{ ...th, minWidth: 230 }}>브랜드명 <span style={{ fontWeight: 400, color: "#b7b0c0" }}>(클릭=홈페이지)</span></th>
                 <th style={{ ...th, width: 110 }}>채용유무</th>
-                <th style={{ ...th, minWidth: 130 }}>활성공고</th>
-                <th style={{ ...th, width: 100 }}>등록유무</th>
-                <th style={{ ...th, minWidth: 120 }}>연락처</th>
-                <th style={{ ...th, minWidth: 150 }}>이메일</th>
-                <th style={{ ...th, minWidth: 190 }}>주요특징</th>
+                <th style={{ ...th, minWidth: 130 }}>총 활성공고</th>
+                <th style={{ ...th, width: 120 }}>뷰티워크 공고</th>
                 <th style={{ ...th, minWidth: 280 }}>메모</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={10} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={7} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={10} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={7} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row, rowIdx) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
@@ -568,30 +512,19 @@ export default function AdminOutreachPage() {
                           );
                         })() : <span style={{ color: "#c8c8ce" }}>—</span>}
                       </td>
-                      {/* 등록유무 */}
+                      {/* 뷰티워크 공고 — 이 브랜드 공고 중 우리가 이미 올린 것.
+                          누르면 채용공고 목록이 그 브랜드로 걸러진 채 열린다. */}
                       <td style={td}>
-                        <select value={REG.includes(rv) ? rv : "미등록"} onChange={(e) => quickPatch(row, { is_registered: e.target.value })}
-                          style={{ ...inp, width: 90, color: regColor[REG.includes(rv) ? rv : "미등록"], fontWeight: 400 }}>
-                          {REG.map((r) => <option key={r} value={r}>{r}</option>)}
-                        </select>
-                      </td>
-                      {/* 연락처 (자동저장) */}
-                      <td style={td}>
-                        <input style={inp} placeholder="연락처" value={val(row, "phone") || ""}
-                          onChange={(e) => setDraft(row.id, { phone: e.target.value })}
-                          onBlur={() => saveField(row, "phone")} />
-                      </td>
-                      {/* 이메일 (자동저장) */}
-                      <td style={td}>
-                        <input style={inp} placeholder="이메일" value={val(row, "email") || ""}
-                          onChange={(e) => setDraft(row.id, { email: e.target.value })}
-                          onBlur={() => saveField(row, "email")} />
-                      </td>
-                      {/* 주요특징 (2줄 말줄임 + 툴팁) */}
-                      <td style={{ ...td, maxWidth: 220 }}>
-                        <div title={row.features || ""} style={{ ...clamp2, fontSize: 12.5, color: "#6b6473", lineHeight: 1.45 }}>
-                          {row.features || "-"}
-                        </div>
+                        {(() => {
+                          const 올린수 = (row.found_jobs || []).filter((j) => isRegistered(j.url)).length;
+                          if (!올린수) return <span style={{ color: "#c8c8ce" }}>—</span>;
+                          return (
+                            <a href={`/admin/jobs?search=${encodeURIComponent(row.brand_name)}`}
+                              style={{ ...badge(PURPLE), textDecoration: "none" }}>
+                              {올린수}건 ↗
+                            </a>
+                          );
+                        })()}
                       </td>
                       {/* 메모 (2줄 자동저장 · 미편집시 말줄임+툴팁) */}
                       <td style={{ ...td, minWidth: 280 }}>
@@ -618,7 +551,7 @@ export default function AdminOutreachPage() {
                       const shown = activeTab ? row.found_jobs.filter((jb) => jb.source === activeTab) : row.found_jobs;
                       return (
                       <tr>
-                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={10}>
+                        <td style={{ ...td, background: "#f7f7f8" }} colSpan={7}>
                           <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 6 }}>
                             조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
                           </div>
