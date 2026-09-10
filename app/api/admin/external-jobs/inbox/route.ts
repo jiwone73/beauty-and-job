@@ -109,7 +109,9 @@ export async function POST(req: NextRequest) {
     [source, 지금주소]);
 
   // 이미 받아 둔 것은 다시 안 읽는다. 살아 있다는 표시만 새로 찍는다.
-  const 새것최대 = 붙인주소.length ? 100 : 한번에;
+  // 붙여넣기는 알바가 조건을 걸어 고른 것들이라 버릴 게 거의 없다. 넉넉히 받는다.
+  // 다섯씩 나눠 받아 이백 건이면 일 분쯤 걸린다 — maxDuration 안에 든다.
+  const 새것최대 = 붙인주소.length ? 200 : 한번에;
   await pool.query(
     `UPDATE external_job_inbox SET last_seen = now(), closed_at = NULL
       WHERE source = $1 AND url = ANY($2::text[])`, [source, 지금주소]);
