@@ -60,14 +60,19 @@ export default function TestReportsPage() {
   const 남은날 = Math.max(0, Math.ceil((new Date("2026-10-01T00:00:00+09:00").getTime() - Date.now()) / 86400000));
 
   const 결과맵 = useMemo(() => Object.fromEntries(runs.map((r) => [r.case_id, r.result])), [runs]);
+  // 아직 못 도는 것(PG·요금제 대기)은 분모에서 뺀다. 넣어 두면 진행률이 영영
+  // 100 이 안 돼 「어디까지 왔나」를 말해 주지 못한다.
+  const 지금할것 = useMemo(() => TEST_CASES.filter((c) => !c.waiting), []);
+  const 기다림 = useMemo(() => TEST_CASES.filter((c) => c.waiting), []);
   const 영역현황 = useMemo(() => AREAS.map((area) => {
-    const cs = TEST_CASES.filter((c) => c.area === area);
+    const cs = 지금할것.filter((c) => c.area === area);
+    const 대기 = 기다림.filter((c) => c.area === area).length;
     const 해봄 = cs.filter((c) => 결과맵[c.id]).length;
     const 걸림 = cs.filter((c) => 결과맵[c.id] === "fail" || 결과맵[c.id] === "blocked").length;
-    return { area, 전체: cs.length, 해봄, 걸림 };
-  }).filter((x) => x.전체 > 0), [결과맵]);
-  const 전체 = TEST_CASES.length;
-  const 해본것 = TEST_CASES.filter((c) => 결과맵[c.id]).length;
+    return { area, 전체: cs.length, 해봄, 걸림, 대기 };
+  }).filter((x) => x.전체 > 0 || x.대기 > 0), [결과맵, 지금할것, 기다림]);
+  const 전체 = 지금할것.length;
+  const 해본것 = 지금할것.filter((c) => 결과맵[c.id]).length;
 
   const 지금것 = list.find((r) => r.id === 고른것) || null;
 
@@ -112,7 +117,7 @@ export default function TestReportsPage() {
               { label: "오픈까지", value: `D-${남은날}`, sub: "10월 1일" },
               { label: "테스트 케이스", value: `${해본것} / ${전체}`, sub: `안 해본 것 ${전체 - 해본것}건` },
               { label: "정해야 할 것", value: String(counts.open ?? 0), sub: "사람이 골라야 진행됨" },
-              { label: "처리됨", value: String(counts.done ?? 0), sub: "고치고 확인까지 끝난 것" },
+              { label: "기다리는 것", value: String(기다림.length), sub: "PG·요금제가 정해져야 돌림" },
             ].map((c) => (
               <div key={c.label} className="admin-stat-card">
                 <div className="admin-stat-label">{c.label}</div>
@@ -134,7 +139,7 @@ export default function TestReportsPage() {
                   {x.해봄} / {x.전체}
                 </span>
                 <span style={{ width: 78, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: x.걸림 ? "#c0392b" : "#b3adbd" }}>
-                  {x.걸림 ? `걸림 ${x.걸림}` : "—"}
+                  {x.걸림 ? `걸림 ${x.걸림}` : x.대기 ? `대기 ${x.대기}` : "—"}
                 </span>
               </div>
             ))}
@@ -176,8 +181,8 @@ export default function TestReportsPage() {
                       <span style={{ width: 84, flexShrink: 0, fontSize: 12.5, color: "#9a9aa0" }}>{c.id}</span>
                       <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, color: "#555" }}>{c.title}</span>
                       <span style={{ flex: 1.4, minWidth: 0, fontSize: 13, color: "#9a9aa0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.expect}</span>
-                      <span style={{ flexShrink: 0, fontSize: 12.5, color: r ? "#c0392b" : "#b3adbd" }}>
-                        {r ? (r.status === "open" ? "리포트 있음" : 상태이름[r.status]) : "안 해봄"}
+                      <span style={{ flexShrink: 0, fontSize: 12.5, width: 108, textAlign: "right", color: c.waiting ? "#a2701a" : r ? "#c0392b" : "#b3adbd" }}>
+                        {c.waiting ? c.waiting : r ? (r.status === "open" ? "리포트 있음" : 상태이름[r.status]) : "안 해봄"}
                       </span>
                     </div>
                   );

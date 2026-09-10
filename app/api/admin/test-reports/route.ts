@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 
-const 영역들 = ["공고등록", "지원", "회원가입", "기업공고관리", "그밖"];
+const 영역들 = ["공고등록", "지원", "회원가입", "기업공고관리", "결제·유료", "그밖"];
 const 무게들 = ["막힘", "정해야 함", "알림"];
 const 상태들 = ["open", "done", "wontfix"];
 

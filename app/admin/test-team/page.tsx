@@ -49,15 +49,17 @@ export default function TestTeamPage() {
   const 결과맵 = useMemo(() => Object.fromEntries(runs.map((r) => [r.case_id, r])), [runs]);
 
   const 조별 = useMemo(() => TEST_TEAM.map((m) => {
-    const cs = TEST_CASES.filter((c) => c.area === m.area);
+    const 대기 = TEST_CASES.filter((c) => c.area === m.area && c.waiting).length;
+    const cs = TEST_CASES.filter((c) => c.area === m.area && !c.waiting);
     const 돌린것 = cs.map((c) => 결과맵[c.id]).filter(Boolean) as Run[];
     const 어긋남 = 돌린것.filter((r) => r.result !== "pass").length;
     const 마지막 = 돌린것.map((r) => r.ran_at).sort().slice(-1)[0] || null;
     const 정해야 = reports.filter((r) => r.area === m.area && r.status === "open").length;
-    return { ...m, 전체: cs.length, 해봄: 돌린것.length, 어긋남, 마지막, 정해야 };
+    return { ...m, 전체: cs.length, 해봄: 돌린것.length, 어긋남, 마지막, 정해야, 대기 };
   }), [결과맵, reports]);
 
-  const 전체케이스 = TEST_CASES.length;
+  const 전체케이스 = TEST_CASES.filter((c) => !c.waiting).length;
+  const 기다리는수 = TEST_CASES.filter((c) => c.waiting).length;
   const 해본것 = runs.length;
   const 정해야할것 = reports.filter((r) => r.status === "open").length;
 
@@ -72,6 +74,7 @@ export default function TestTeamPage() {
         <p style={{ margin: 0, fontSize: 13, color: "#777" }}>
           오픈 <b style={{ color: "#582681" }}>2026.10.01</b> · 남은 <b style={{ color: "#582681" }}>{남은날}일</b> ·
           {" "}케이스 {전체케이스}건 중 {해본것}건 돌림
+          {기다리는수 > 0 && ` · PG·요금제 기다리는 것 ${기다리는수}건`}
           {정해야할것 > 0 && <span style={{ marginLeft: 8, color: "#c0392b" }}>● 정해 주셔야 할 것 {정해야할것}건</span>}
         </p>
         <button onClick={load} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
@@ -97,7 +100,7 @@ export default function TestTeamPage() {
               </div>
               <div style={{ width: 96, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: "#555" }}>{m.해봄} / {m.전체}</div>
               <div style={{ width: 92, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: m.정해야 ? "#c0392b" : "#b3adbd" }}>
-                {m.정해야 ? `정해야 ${m.정해야}` : m.어긋남 ? `어긋남 ${m.어긋남}` : "—"}
+                {m.정해야 ? `정해야 ${m.정해야}` : m.어긋남 ? `어긋남 ${m.어긋남}` : m.대기 ? `대기 ${m.대기}` : "—"}
               </div>
               <div style={{ width: 74, flexShrink: 0, textAlign: "right", fontSize: 12.5, color: "#b3adbd" }}>
                 {m.마지막 ? 언제(m.마지막) : "대기"}

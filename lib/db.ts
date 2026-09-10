@@ -28,6 +28,20 @@ const pool =
     options: "-c search_path=public,extensions",
   })
 
-if (!globalForPg.pgPool) globalForPg.pgPool = pool
+// 연결마다 시간대를 한국으로 못 박는다.
+//
+// 서버는 UTC 로 돈다. 그대로 두면 CURRENT_DATE 가 UTC 날짜라, 한국 시각 자정부터
+// 오전 9시까지는 아직 「어제」다 — 마감일이 지난 공고가 아홉 시간 더 열려 있고,
+// 하루 세 번짜리 AI 한도가 새벽에 안 풀리고, 대시보드의 「오늘」이 아침마다 비었다.
+// 우리는 한국에서만 쓰는 서비스라 날짜는 한국 날짜여야 한다.
+//
+// 연결 문자열의 -c timezone= 은 가운데 있는 풀러가 흘려버려 듣지 않는다. 연결이
+// 열릴 때 직접 건다.
+if (!globalForPg.pgPool) {
+  pool.on("connect", (client) => {
+    client.query("SET TIME ZONE 'Asia/Seoul'").catch(() => { /* 다음 연결에서 다시 시도된다 */ })
+  })
+  globalForPg.pgPool = pool
+}
 
 export default pool
