@@ -462,26 +462,35 @@ export default function JobPostForm({
   const [findResults, setFindResults] = useState<{ idx: number; title: string; url: string; source: string }[]>([]);
   // 검색 목록에서 특정 공고를 불러오면 상단 입력칸 대신 '선택한 공고'를 링크로 표시(클릭 시 원문 새 탭)
   const [picked, setPicked] = useState<{ title: string; url: string; source?: string } | null>(null);
-  // 이슈 메모: 불러온 원문 URL이 바뀌면 그 공고의 저장된 이슈를 불러온다.
+  // 이슈는 원문 주소를 열쇠로 저장한다. 예전에는 「회사명 / URL」로 고른 것(picked)만
+  // 열쇠로 삼아, 글 붙여넣기나 목록에서 들어온 공고에는 이슈를 적을 자리가 아예 없었다.
+  // 정작 이슈가 가장 많이 나오는 자리들이다 — 어느 갈래로 왔든 주소만 있으면 적는다.
+  const 이슈열쇠 = (picked?.url || parseUrl || ocrSourceUrl || "").trim();
+  const 이슈제목 = picked?.title || pasteTitle || 이슈열쇠;
+  // 이슈 메모: 원문 주소가 바뀌면 그 공고의 저장된 이슈를 불러온다.
   useEffect(() => {
-    if (mode !== "admin" || !picked?.url) { setIssueItems([]); setIssueStatus("idle"); return; }
+    if (mode !== "admin" || !이슈열쇠) { setIssueItems([]); setIssueStatus("idle"); return; }
     const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
-    fetch(`/api/admin/app-notes?key=${encodeURIComponent(`jobissue:${picked.url}`)}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => {
-        if (!res.success) return;
-        try { const v = JSON.parse(res.data.value || "{}"); setIssueItems(Array.isArray(v.items) ? v.items : []); }
-        catch { setIssueItems([]); }
-      })
-      .catch(() => {});
+    // 주소를 손으로 치는 중에는 글자마다 부르지 않는다.
+    const t = setTimeout(() => {
+      fetch(`/api/admin/app-notes?key=${encodeURIComponent(`jobissue:${이슈열쇠}`)}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((res) => {
+          if (!res.success) return;
+          try { const v = JSON.parse(res.data.value || "{}"); setIssueItems(Array.isArray(v.items) ? v.items : []); }
+          catch { setIssueItems([]); }
+        })
+        .catch(() => {});
+    }, 400);
+    return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [picked?.url, mode]);
+  }, [이슈열쇠, mode]);
   // 이슈 메모 저장(디바운스) — 전체 목록을 원문 URL 키로 저장
   const saveIssues = (items: { field: string; note: string }[]) => {
-    if (!picked?.url) return;
+    if (!이슈열쇠) return;
     setIssueStatus("saving");
     if (issueTimer.current) clearTimeout(issueTimer.current);
-    const url = picked.url, title = picked.title;
+    const url = 이슈열쇠, title = 이슈제목;
     issueTimer.current = setTimeout(async () => {
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -2881,6 +2890,14 @@ export default function JobPostForm({
           {importMode === "paste" ? (
           /* 글 붙여넣기: 카페·블로그 글은 드래그 복사가 된다. 캡처보다 싸고 정확하다. */
           <div>
+            {/* 원문 주소 — 글만 붙여넣으면 어디서 가져왔는지가 사라진다. 주소가 있어야
+                같은 공고를 두 번 올리지 않고, 이슈도 이 주소를 열쇠로 적을 수 있다. */}
+            <input
+              value={ocrSourceUrl}
+              onChange={(e) => setOcrSourceUrl(e.target.value)}
+              placeholder="원문 주소 (예: cafe.naver.com/… )"
+              style={{ width: "100%", padding: "10px 12px", marginBottom: 8, border: "1.5px solid #e3e3e6", borderRadius: 8, fontSize: 13.5, background: "#fff", boxSizing: "border-box" }}
+            />
             {/* 제목과 본문을 따로 받는다 — 카페 글은 두 자리가 떨어져 있어 한 번에 안 잡힌다. */}
             <input
               value={pasteTitle}
@@ -3007,8 +3024,8 @@ export default function JobPostForm({
         </div>
       )}
 
-      {/* 이 공고 이슈 메모 — 불러온 원문(picked.url)에 매칭. 필드 선택 + 한 줄 메모, 자동저장 */}
-      {mode === "admin" && picked?.url && (
+      {/* 이 공고 이슈 메모 — 원문 주소에 매칭. 필드 선택 + 한 줄 메모, 자동저장 */}
+      {mode === "admin" && !!이슈열쇠 && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box", border: "1px solid #f0d9d9", background: "#fff8f6", borderRadius: 10, padding: "10px 12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: issueItems.length ? 8 : 0 }}>
             <span style={{ fontSize: 14, fontWeight: 500, color: "#c0392b" }}>🐞 이 공고 이슈</span>
