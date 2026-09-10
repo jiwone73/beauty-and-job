@@ -5446,6 +5446,12 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   height: 72px;
   flex-shrink: 0;
   box-sizing: border-box;
+  /* 사이드의 오른쪽 세로선을 이 칸에서만 끊는다. 메인 사이트는 맨 윗줄이 헤더
+     하나로 이어지는데, 관리자만 로고 옆에 세로선이 올라와 있었다.
+     한 칸 더 오른쪽으로 늘려 그 선을 덮는다. */
+  position: relative;
+  margin-right: -1px;
+  background: #fff;
   /* 메인 사이트 헤더(.header-inner)와 같은 왼쪽 여백. 16 이라 로고만 왼쪽 끝에
      붙어 보였다. 사이드를 접으면 64 라 그때만 좁힌다. */
   padding: 0 24px;
