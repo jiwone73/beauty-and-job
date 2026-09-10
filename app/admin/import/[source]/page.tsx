@@ -161,8 +161,8 @@ export default function ImportListPage() {
         {붙여넣기가능 && (
           <div style={{ padding: "14px 16px", borderBottom: "1px solid #f2f2f4" }}>
             {/* 단추를 늘어놓으니 「어느 화면에서 누르는가」가 묻혔다. 그게 전부인데.
-                끌어다 놓는 것 하나, 목록 여는 것 하나만 남긴다. */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+                순서를 그대로 적고, 단추는 그 자리에 둔다. */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
               <a href={고용24목록주소} target="_blank" rel="noopener noreferrer" className="admin-secondary-btn"
                 style={{ textDecoration: "none" }}>고용24 목록 열기 ↗</a>
               <a ref={즐겨찾기붙이기} className="admin-secondary-btn" style={{ textDecoration: "none", cursor: "grab" }}
@@ -170,13 +170,11 @@ export default function ImportListPage() {
                 ⇱ 주소 모으기
               </a>
             </div>
-            {/* 이 한 줄이 전부다. 단추를 어디서 누르는지 — 그걸 몰라 다 헤맸다. */}
-            <p style={{ margin: "0 0 12px", fontSize: 13.5, color: "#555" }}>
-              <b style={{ color: "#582681", fontSize: 15 }}>고용24 목록 화면에서</b> 눌러야 합니다.
-              <span style={{ color: "#9a9aa0", marginLeft: 8, fontSize: 12.5 }}>
-                「주소 모으기」를 즐겨찾기 줄로 한 번 끌어다 놓으세요. 여기서 눌러도 아무 일도 안 일어납니다.
-              </span>
-            </p>
+            <ol style={{ margin: "0 0 12px", padding: "0 0 0 18px", fontSize: 13, color: "#6f6f75", lineHeight: 1.9 }}>
+              <li><b style={{ color: "#1a1a1a" }}>⇱ 주소 모으기</b> 버튼을 즐겨찾기 줄로 끌어다 놓으세요. <span style={{ color: "#9a9aa0" }}>(처음 1회만)</span></li>
+              <li><b style={{ color: "#1a1a1a" }}>고용24 목록 열기</b> 버튼을 누른 후, 즐겨찾기에 추가하신 <b style={{ color: "#1a1a1a" }}>주소 모으기</b> 버튼을 클릭해서 전체 목록을 복사합니다.</li>
+              <li>아래 박스에 붙여넣기 한 후 <b style={{ color: "#1a1a1a" }}>붙여넣은 주소로 가져오기</b> 버튼을 누르면 공고 목록이 업데이트됩니다.</li>
+            </ol>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8,
