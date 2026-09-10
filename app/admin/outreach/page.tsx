@@ -495,10 +495,9 @@ export default function AdminOutreachPage() {
                       {/* 채용유무 */}
                       <td style={td}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                          <select value={HIRING.includes(hv) ? hv : "없음"} onChange={(e) => quickPatch(row, { is_hiring: e.target.value })}
-                            style={{ ...inp, width: 90, color: "#555", fontWeight: 400 }}>
-                            {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
-                          </select>
+                          {/* 고르는 칸이 아니다. 조회가 정하는 값이라(활성공고가 있으면
+                              「채용중」) 손으로 골라 놔도 다음 업데이트에 덮인다. */}
+                          <span style={{ color: "#555" }}>{HIRING.includes(hv) ? hv : "없음"}</span>
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}
                         </div>
                       </td>
