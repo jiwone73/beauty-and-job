@@ -31,9 +31,6 @@ export default function ImportListPage() {
   const [붙임, set붙임] = useState("");
   const 붙여넣기가능 = source === "work24";
   const [복사됨, set복사됨] = useState("");
-  // 알바 컴퓨터는 윈도우, 대표님은 맥이다. 둘 다 적는다 — 고르게 하면 한 번 더 손이 간다.
-  const 콘솔키 = "F12 / Cmd+Option+C";
-  const 붙여넣기키 = "Ctrl+V / Cmd+V";
   const 복사 = (무엇: string, 글: string) => {
     navigator.clipboard.writeText(글);
     set복사됨(무엇); setTimeout(() => set복사됨(""), 1800);
@@ -58,8 +55,6 @@ export default function ImportListPage() {
     "var m=h.match(re);if(m)m.forEach(function(x){s.add(x)})})}",
     "var t=Array.from(s).map(function(n){return B+n}).join('\\n');",
   ].join("");
-  const 주소복사코드 =
-    "(function(){" + 주소모으기 + "copy(t);console.log(t.split('\\n').length+'건 복사')})()";
   // 즐겨찾기로 만들어 두면 콘솔을 안 열어도 된다 — 목록에서 누르기만 하면 복사된다.
   // 콘솔 전용인 copy() 대신 클립보드 API 를 쓴다(누른 것이 곧 사용자 동작이라 허용된다).
   const 즐겨찾기코드 =
@@ -165,28 +160,19 @@ export default function ImportListPage() {
 
         {붙여넣기가능 && (
           <div style={{ padding: "14px 16px", borderBottom: "1px solid #f2f2f4" }}>
-            {/* 매번 어딘가에서 찾아 오지 않게, 쓸 것을 여기 둔다.
-                순서를 번호로만 적는다 — 줄글로 풀면 아무도 안 읽는다. */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap", fontSize: 13, color: "#8b8b93" }}>
-              <span><b style={{ color: "#582681" }}>1</b> 고용24 목록 열기</span>
+            {/* 단추를 늘어놓으니 「어느 화면에서 누르는가」가 묻혔다. 그게 전부인데.
+                끌어다 놓는 것 하나, 목록 여는 것 하나만 남긴다. */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
               <a href={고용24목록주소} target="_blank" rel="noopener noreferrer" className="admin-secondary-btn"
-                style={{ textDecoration: "none" }}>열기 ↗</a>
-              <button type="button" className="admin-secondary-btn" onClick={() => 복사("주소", 고용24목록주소)}>
-                {복사됨 === "주소" ? "복사됨" : "주소 복사"}
-              </button>
-              <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>2</b> 목록에서 공고 주소 모으기</span>
+                style={{ textDecoration: "none" }}>고용24 목록 열기 ↗</a>
               <a ref={즐겨찾기붙이기} className="admin-secondary-btn" style={{ textDecoration: "none", cursor: "grab" }}
-                onClick={(e) => e.preventDefault()} title="즐겨찾기 막대로 끌어다 놓으세요">
+                onClick={(e) => e.preventDefault()} draggable>
                 ⇱ 주소 모으기
               </a>
-              <span style={{ fontSize: 12, color: "#b9b3c4" }}>← 즐겨찾기로 끌어다 놓기</span>
-              <button type="button" className="admin-secondary-btn" onClick={() => 복사("코드", 주소복사코드)}>
-                {복사됨 === "코드" ? "복사됨" : "콘솔용 코드"}
-              </button>
-              <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>3</b> 아래 칸에 붙여넣기 <code style={{ fontSize: 12 }}>{붙여넣기키}</code></span>
             </div>
+            <p style={{ margin: "0 0 12px", fontSize: 12.5, color: "#9a9aa0" }}>
+              「주소 모으기」를 즐겨찾기 줄로 끌어다 놓은 뒤, <b style={{ color: "#582681" }}>고용24 목록 화면에서</b> 그것을 누르세요.
+            </p>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8,

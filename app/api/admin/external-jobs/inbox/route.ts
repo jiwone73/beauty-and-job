@@ -109,8 +109,12 @@ export async function POST(req: NextRequest) {
 
   const 지금주소 = 목록.map((x) => x.url);
   // 목록에서 사라진 것은 마감으로 본다. 화면에서 빠진다.
-  // 붙여넣기는 목록 전부가 아니므로 이 일을 하지 않는다.
-  const 닫음 = 붙인주소.length ? { rowCount: 0 } : await pool.query(
+  //
+  // 다만 고용24는 이 일을 하지 않는다. 우리가 받아 올 수 있는 건 조건 없는 최신순뿐이라
+  // 「거기 없다」가 「마감됐다」를 뜻하지 않는다. 실제로 붙여넣어 담은 일흔여덟 건이
+  // 공개 목록에 없다는 이유로 통째로 지워진 적이 있다.
+  const 마감판정 = 붙인주소.length === 0 && source !== "work24";
+  const 닫음 = !마감판정 ? { rowCount: 0 } : await pool.query(
     `UPDATE external_job_inbox SET closed_at = now()
       WHERE source = $1 AND closed_at IS NULL AND NOT (url = ANY($2::text[]))`,
     [source, 지금주소]);
