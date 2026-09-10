@@ -337,9 +337,10 @@ export default function AdminOutreachPage() {
     const t = Date.parse(firstSeen);
     return Number.isFinite(t) && Date.now() - t < NEW_DAYS * 86400000;
   };
-  const badge = (color: string): React.CSSProperties => ({
+  // 표 안에서는 색으로 말하지 않는다. 뱃지 모양만 남기고 색은 하나로 둔다.
+  const badge = (_color?: string): React.CSSProperties => ({
     display: "inline-block", padding: "2px 8px", borderRadius: "var(--chip-radius)", fontSize: 13, fontWeight: 400,
-    color, background: `${color}18`,
+    color: "#555", background: "#f7f7f8",
   });
 
   return (
@@ -485,7 +486,7 @@ export default function AdminOutreachPage() {
                       <td style={td}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <select value={HIRING.includes(hv) ? hv : "없음"} onChange={(e) => quickPatch(row, { is_hiring: e.target.value })}
-                            style={{ ...inp, width: 90, color: hiringColor[HIRING.includes(hv) ? hv : "없음"], fontWeight: 400 }}>
+                            style={{ ...inp, width: 90, color: "#555", fontWeight: 400 }}>
                             {HIRING.map((h) => <option key={h} value={h}>{h}</option>)}
                           </select>
                           {isChecking && <span style={{ fontSize: 12, color: PURPLE }}>조회중…</span>}

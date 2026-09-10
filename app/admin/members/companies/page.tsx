@@ -372,7 +372,7 @@ function AdminCompaniesContent() {
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {selectedIds.length > 0 && (["ACTIVE", "PENDING", "SUSPENDED", "REJECTED"] as const).map((key) => {
               const label = STATUS_TO_LABEL[key];
-              const color = key === "ACTIVE" ? "#10b981" : key === "PENDING" ? "#f59e0b" : key === "SUSPENDED" ? "#e74c3c" : "#999";
+              const color = "#555";
               const disabled = selectedIds.every((id) => companies.find((c) => c.id === id)?.status === key);
               return (
                 <button key={key} onClick={() => handleBulkStatus(key)} disabled={disabled}
@@ -460,7 +460,7 @@ function AdminCompaniesContent() {
                   {/* 매장/기업명 → 클릭 시 기업정보 모달 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f0eef4", color: "#555", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                         {(() => {
                           const cover = Array.isArray(c.cover_images) && c.cover_images[0]?.url ? c.cover_images[0].url : null;
                           const img = c.thumb_url || c.logo_url || cover;
@@ -495,7 +495,7 @@ function AdminCompaniesContent() {
                     <div style={{ marginTop: 4 }}>
                       {c.business_license_url ? (
                         <button onClick={() => setPreviewUrl(c.business_license_url)} title="사업자등록증 보기"
-                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#582681", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 13, fontWeight: 500 }}>
+                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#555", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 13 }}>
                           <FileText size={14} /><span>사업자등록증</span>
                         </button>
                       ) : (
@@ -510,7 +510,7 @@ function AdminCompaniesContent() {
                     {c.job_count > 0 ? (
                       <a href={`/admin/jobs?search=${encodeURIComponent(c.company_name)}`}
                         title={`${c.company_name} 공고 보기`}
-                        style={{ color: "#582681", fontWeight: 600, textDecoration: "none" }}>
+                        style={{ color: "#555", textDecoration: "none" }}>
                         {c.job_count}건
                       </a>
                     ) : (
@@ -525,15 +525,11 @@ function AdminCompaniesContent() {
                       onChange={(e) => 유료기간저장(c.id, e.target.value)}
                       style={{ border: "1px solid #e8e8ea", borderRadius: 6, padding: "3px 6px",
                         fontSize: 12.5, fontFamily: "inherit",
-                        color: 유료인가(c.paid_until) ? "#0a7a3d" : "#999" }} />
+                        color: "#555" }} />
                   </td>
                   {/* 상태 */}
                   <td>
-                    <span style={{ fontWeight: 500, color:
-                      c.status === "ACTIVE" ? "#10b981" :
-                      c.status === "PENDING" ? "#f59e0b" :
-                      c.status === "SUSPENDED" ? "#e74c3c" : "#999"
-                    }}>
+                    <span style={{ color: "#555" }}>
                       {STATUS_TO_LABEL[c.status] || c.status}
                     </span>
                   </td>
@@ -601,7 +597,7 @@ function AdminCompaniesContent() {
               <div style={{ padding: "18px 22px 0" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 19, fontWeight: 700, color: "#555" }}>{companyDetail.company_name}</span>
-                  <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#582681" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
+                  <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#555" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
                   <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#777" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
                 </div>
                 {companyDetail.brand_name && <p style={{ fontSize: 14, color: "#888", margin: "4px 0 0" }}>{companyDetail.brand_name}</p>}

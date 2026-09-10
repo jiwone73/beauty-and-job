@@ -223,11 +223,11 @@ export default function ImportListPage() {
                   <td>
                     <a href={x.url} target="_blank" rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      style={{ fontSize: 12.5, color: "#582681", textDecoration: "none", whiteSpace: "nowrap" }}>
+                      style={{ fontSize: 12.5, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>
                       보기 ↗
                     </a>
                   </td>
-                  <td style={{ color: x.상태 === "미등록" ? "#582681" : "#9a9aa0", fontSize: 13 }}>{x.상태}</td>
+                  <td style={{ color: "#555", fontSize: 13 }}>{x.상태}</td>
                 </tr>
               ))}
             </tbody>

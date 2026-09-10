@@ -340,11 +340,10 @@ function AdminMembersPageInner() {
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {checked.length > 0 && (["ACTIVE", "INACTIVE", "SUSPENDED"] as const).map((key) => {
             const label = STATUS_TO_LABEL[key];
-            const color = key === "ACTIVE" ? "#10b981" : key === "INACTIVE" ? "#f59e0b" : "#e74c3c";
             const disabled = checked.every((id) => members.find((m) => m.id === id)?.status === key);
             return (
               <button key={key} onClick={() => handleBulkStatus(key)} disabled={disabled}
-                style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${disabled ? "#e2e2e2" : color}`, background: "#fff", color: disabled ? "#c4c4c4" : color, fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
+                style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: disabled ? "#c4c4c4" : "#555", fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
                 {label}
               </button>
             );
@@ -411,7 +410,6 @@ function AdminMembersPageInner() {
                 <th>인재검색</th>
                 <th>가입</th>
                 <th>최종로그인</th>
-                <th>이력서</th>
                 <th>포트폴리오</th>
                 <th>상태</th>
               </tr>
@@ -438,7 +436,7 @@ function AdminMembersPageInner() {
                     {/* 이름: 아바타 + 이름·성별(1행) / 나이·경력(2행) */}
                     <td className="admin-td-brand">
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#582681", color: "#fff", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#f0eef4", color: "#555", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                           {m.avatar_url ? (
                             <img src={m.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
@@ -513,9 +511,7 @@ function AdminMembersPageInner() {
                         const age = statusAge(m.job_search_status_at);
                         return (
                           <>
-                            <div style={{ display: "inline-block", padding: "2px 8px", borderRadius: 11, fontSize: 12.5, fontWeight: 500, color: js.color, background: js.bg }}>
-                              {js.text}
-                            </div>
+                            <div style={{ fontSize: 13, color: "#555" }}>{js.text}</div>
                             {age && <div style={{ color: "#aaa", fontSize: 12, marginTop: 3 }}>{age}</div>}
                           </>
                         );
@@ -539,21 +535,6 @@ function AdminMembersPageInner() {
                     {/* 최종로그인 */}
                     <td className="admin-td-date">{fmtDate(m.last_login_at)}</td>
 
-                    {/* 이력서 */}
-                    <td>
-                      <div style={{ display: "flex", justifyContent: "center" }}>
-                        {m.resume_id ? (
-                          <button onClick={() => setSelected(m)} title="이력서 보기" style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: 0 }}>
-                            <FileText size={15} /><span>이력서</span>
-                          </button>
-                        ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 14 }}>
-                            <FileText size={15} /><span>이력서</span>
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
                     {/* 포트폴리오 · SNS — 기업회원 인재검색과 같은 구성 */}
                     <td>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
@@ -564,11 +545,7 @@ function AdminMembersPageInner() {
 
                     {/* 상태 */}
                     <td>
-                      <span style={{ fontWeight: 500, color:
-                        m.status === "ACTIVE" ? "#10b981" :
-                        m.status === "INACTIVE" ? "#f59e0b" :
-                        m.status === "SUSPENDED" ? "#e74c3c" : "#999"
-                      }}>
+                      <span style={{ color: "#555" }}>
                         {STATUS_TO_LABEL[m.status] || m.status}
                       </span>
                     </td>

@@ -72,12 +72,12 @@ function shortLocation(loc: string | null) {
   const sigungu = parts[1] || "";
   return `${sido}${sigungu ? " " + sigungu : ""}`;
 }
+// 표 안에서는 색으로 말하지 않는다. 보라는 「고른 것」에만 쓰고, 나머지 글자는
+// 모두 같은 색으로 둔다 — 색이 여럿이면 무엇이 중요한지가 아니라 색만 보인다.
 function productBadge(type: string | null) {
   const t = type || "FREE";
-  if (t === "TOP") return { label: "상단노출", bg: "#f7f7f8", color: "#582681" };
-  if (t === "PREMIUM") return { label: "프리미엄", bg: "#582681", color: "#fff" };
-  if (t === "FREE") return { label: "무료", bg: "#f0f0f0", color: "#999" };
-  return { label: t, bg: "#f7f7f8", color: "#582681" };
+  const 이름 = t === "TOP" ? "상단노출" : t === "PREMIUM" ? "프리미엄" : t === "FREE" ? "무료" : t;
+  return { label: 이름, bg: "transparent", color: "#555" };
 }
 function AdminJobsPageInner() {
   const searchParams = useSearchParams();
@@ -289,11 +289,10 @@ function AdminJobsPageInner() {
           <span>총 <strong>{filtered.length}</strong>건{checkedIds.size > 0 ? ` · ${checkedIds.size}건 선택` : ""}</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {checkedIds.size > 0 && (["진행중", "승인대기", "반려"] as const).map((label) => {
-              const color = label === "진행중" ? "#10b981" : label === "승인대기" ? "#f59e0b" : "#e74c3c";
               const disabled = Array.from(checkedIds).every((id) => jobs.find((j) => j.id === id)?.status === LABEL_TO_STATUS[label]);
               return (
                 <button key={label} onClick={() => handleBulkStatus(label)} disabled={disabled}
-                  style={{ padding: "6px 12px", borderRadius: 6, border: `1px solid ${disabled ? "#e2e2e2" : color}`, background: "#fff", color: disabled ? "#c4c4c4" : color, fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
+                  style={{ padding: "6px 12px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: disabled ? "#c4c4c4" : "#555", fontSize: 14, fontWeight: 400, cursor: disabled ? "not-allowed" : "pointer" }}>
                   {label}
                 </button>
               );
@@ -369,7 +368,7 @@ function AdminJobsPageInner() {
                         <div style={{
                           width: 26, height: 26, borderRadius: 6, background: "#f7f7f8",
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 12, color: "#7c3aed", flexShrink: 0
+                          fontSize: 12, color: "#555", flexShrink: 0
                         }}>
                           {job.company_name.charAt(0)}
                         </div>
@@ -393,7 +392,7 @@ function AdminJobsPageInner() {
                       {(() => {
                         const isMember = job.is_member !== false && job.source !== "EXTERNAL";
                         return (
-                          <span style={{ fontSize: 12, whiteSpace: "nowrap", color: isMember ? "#7c3aed" : "#999" }}>
+                          <span style={{ fontSize: 12, whiteSpace: "nowrap", color: "#555" }}>
                             {isMember ? "회원" : "비회원"}
                           </span>
                         );
@@ -439,12 +438,7 @@ function AdminJobsPageInner() {
                   {/* 상태 — DRAFT는 관리자 임시저장/기업 승인대기로 구분 */}
                   <td>
                     {(() => { const lb = labelOf(job); return (
-                    <span style={{ fontWeight: 500, color:
-                      lb === "진행중" ? "#10b981" :
-                      lb === "임시저장" ? "#6f6f75" :
-                      lb === "승인대기" ? "#f59e0b" :
-                      lb === "반려" ? "#e74c3c" : "#999"
-                    }}>
+                    <span style={{ color: "#555" }}>
                       {lb}
                     </span>
                     ); })()}
@@ -452,7 +446,7 @@ function AdminJobsPageInner() {
                   {/* 관리: 수정 */}
                   <td>
                     <Link href={`/admin/jobs/new?id=${job.id}`}
-                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #efeff1", color: "#582681", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", textDecoration: "none" }}>
+                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #efeff1", color: "#555", fontSize: 13, whiteSpace: "nowrap", textDecoration: "none" }}>
                       수정
                     </Link>
                   </td>
