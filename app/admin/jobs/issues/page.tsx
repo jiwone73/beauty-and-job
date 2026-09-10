@@ -12,6 +12,7 @@ export default function JobIssuesPage() {
   const [list, setList] = useState<PostingIssues[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [탭, set탭] = useState<"미해결" | "해결" | "전체">("미해결");
   const [draft, setDraft] = useState<Record<string, string>>({}); // 이슈별 코멘트 입력값
   const [saving, setSaving] = useState<string | null>(null);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -62,23 +63,40 @@ export default function JobIssuesPage() {
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
-    if (!k) return list;
-    return list.filter((p) => `${p.title} ${p.url} ${p.items.map((i) => `${i.field} ${i.note}`).join(" ")}`.toLowerCase().includes(k));
-  }, [list, q]);
+    const 해결 = (p: any) => (p.replies || []).some((r: any) => /\[해결\]/.test(r.text || ""));
+    const 탭걸러 = 탭 === "전체" ? list : list.filter((p) => (탭 === "해결") === 해결(p));
+    if (!k) return 탭걸러;
+    return 탭걸러.filter((p) => `${p.title} ${p.url} ${p.items.map((i) => `${i.field} ${i.note}`).join(" ")}`.toLowerCase().includes(k));
+  }, [list, q, 탭]);
 
+  // 답글에 「[해결]」이 있으면 정리된 것으로 본다. 해결된 것이 미해결과 섞여 있어
+  // 정작 봐야 할 것이 묻혔다 — 기본은 미해결만 보여 준다.
+  const 해결됐나 = (p: any) => (p.replies || []).some((r: any) => /\[해결\]/.test(r.text || ""));
+  const 미해결수 = list.filter((p) => !해결됐나(p)).length;
+  const 해결수 = list.length - 미해결수;
   const totalIssues = list.reduce((s, p) => s + p.items.length, 0);
   const fmtDate = (s?: string) => { if (!s) return ""; try { return new Date(s).toLocaleDateString("ko-KR"); } catch { return ""; } };
 
   return (
     <AdminLayout activeMenu="jobs-issues">
-      <div style={{ padding: "4px 4px 40px" }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
+      {/* 답글 한 줄이 화면 끝까지 늘어나면 눈이 되돌아올 자리를 잃는다. 900 으로 묶는다. */}
+      <div style={{ padding: "4px 4px 40px", maxWidth: 900, margin: "0 auto", width: "100%" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
           <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>등록 이슈</h1>
-          <span style={{ fontSize: 14, color: "#9a92a6" }}>공고 {list.length}건 · 이슈 {totalIssues}개</span>
+          <span style={{ fontSize: 14, color: "#9a92a6" }}>미해결 {미해결수} · 해결 {해결수}</span>
         </div>
-        <p style={{ fontSize: 13.5, color: "#9a92a6", margin: "0 0 14px" }}>
-          공고 직접 등록에서 불러오기 후 기록한 이슈들이에요. <b>불러와 수정</b>을 누르면 그 원문을 자동으로 불러와 고칠 수 있고, 정리되면 <b>삭제</b>하세요.
-        </p>
+
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          {(["미해결", "해결", "전체"] as const).map((t) => (
+            <button key={t} type="button" onClick={() => set탭(t)}
+              style={{ padding: "6px 14px", borderRadius: "var(--chip-radius)", fontSize: 13.5, cursor: "pointer",
+                border: `1px solid ${탭 === t ? "#582681" : "#efeff1"}`,
+                background: 탭 === t ? "#582681" : "#fff",
+                color: 탭 === t ? "#fff" : "#6f6f75" }}>
+              {t}{t === "미해결" ? ` ${미해결수}` : t === "해결" ? ` ${해결수}` : ` ${list.length}`}
+            </button>
+          ))}
+        </div>
 
         <div className="admin-search-wrap" style={{ width: 320, marginBottom: 14 }}>
           <Search size={16} className="admin-search-icon" />
@@ -94,29 +112,33 @@ export default function JobIssuesPage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {filtered.map((p) => (
-              <div key={p.url} style={{ border: "1px solid #f0e0dd", background: "#fff8f6", borderRadius: 12, padding: "12px 14px" }}>
+              <div key={p.url} style={{ border: "1px solid #efeff1", background: "#fff", borderRadius: 12, padding: "12px 14px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: 15, fontWeight: 600, color: "#2b2533", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{p.title || "(제목 없음)"}</span>
                   <a href={p.url} target="_blank" rel="noreferrer" style={{ flexShrink: 0, fontSize: 13, color: "#582681", textDecoration: "none" }}>원문 ↗</a>
                   {p.updated_at && <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{fmtDate(p.updated_at)}</span>}
                   <span style={{ marginLeft: "auto", flexShrink: 0, display: "flex", gap: 6 }}>
-                    <Link href={`/admin/jobs/new?url=${encodeURIComponent(p.url)}`}
-                      style={{ padding: "6px 12px", borderRadius: 6, background: "#582681", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>불러와 수정</Link>
+                    {/* 「불러와 수정」은 없앴다 — 공고를 다시 불러 고치는 일은
+                        「외부공고 불러오기」 목록에서 한다. */}
                     <button onClick={() => remove(p.url)}
-                      style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #e6cfca", background: "#fff", color: "#c0392b", fontSize: 13, cursor: "pointer" }}>삭제</button>
+                      style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: "#c0392b", fontSize: 13, cursor: "pointer" }}>삭제</button>
                   </span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {/* 칸 이름(「기타」)은 안 적는다. 일흔여섯 개가 전부 기타였다 —
+                      고르는 게 귀찮아 다들 기타를 눌렀고, 그래서 아무것도 안 알려 준다. */}
                   {p.items.map((it, i) => (
-                    <div key={i} style={{ display: "flex", gap: 8, alignItems: "baseline", fontSize: 13.5 }}>
-                      <span style={{ flexShrink: 0, minWidth: 130, fontWeight: 600, color: "#c0392b" }}>{it.field || "(필드 미지정)"}</span>
-                      <span style={{ color: "#4a4453", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{it.note}</span>
+                    <div key={i} style={{ fontSize: 13.5, color: "#4a4453", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                      {it.field && it.field !== "기타" && (
+                        <b style={{ color: "#c0392b", marginRight: 6 }}>{it.field}</b>
+                      )}
+                      {it.note}
                     </div>
                   ))}
                 </div>
 
                 {/* 수정내용·코멘트 — 이슈 아래에 시간순으로 쌓인다 */}
-                <div style={{ marginTop: 10, borderTop: "1px solid #f2e3e0", paddingTop: 10 }}>
+                <div style={{ marginTop: 10, borderTop: "1px solid #f4f4f6", paddingTop: 10 }}>
                   {(p.replies || []).length > 0 && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
                       {(p.replies || []).map((r, i) => (
