@@ -159,17 +159,17 @@ export default function ImportListPage() {
                 {복사됨 === "주소" ? "복사됨" : "주소 복사"}
               </button>
               <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>2</b> 그 화면에서 주소 긁기</span>
+              <span><b style={{ color: "#582681" }}>2</b> 목록에서 공고 주소 모으기</span>
               <a ref={즐겨찾기붙이기} className="admin-secondary-btn" style={{ textDecoration: "none", cursor: "grab" }}
                 onClick={(e) => e.preventDefault()} title="즐겨찾기 막대로 끌어다 놓으세요">
-                ⇱ 주소 긁기
+                ⇱ 주소 모으기
               </a>
               <span style={{ fontSize: 12, color: "#b9b3c4" }}>← 즐겨찾기로 끌어다 놓기</span>
               <button type="button" className="admin-secondary-btn" onClick={() => 복사("코드", 주소복사코드)}>
-                {복사됨 === "코드" ? "복사됨" : `${콘솔키} 코드`}
+                {복사됨 === "코드" ? "복사됨" : "콘솔용 코드"}
               </button>
               <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>3</b> 아래 칸에 <code style={{ fontSize: 12 }}>{붙여넣기키}</code></span>
+              <span><b style={{ color: "#582681" }}>3</b> 아래 칸에 붙여넣기 <code style={{ fontSize: 12 }}>{붙여넣기키}</code></span>
             </div>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
