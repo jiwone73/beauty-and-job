@@ -30,6 +30,14 @@ export default function ImportListPage() {
   // 알바가 그 화면에서 주소를 복사해 붙여넣는 길을 함께 둔다.
   const [붙임, set붙임] = useState("");
   const 붙여넣기가능 = source === "work24";
+  const [코드복사됨, set코드복사됨] = useState(false);
+
+  // 고용24 맞춤채용정보 목록. 한 쪽에 이백 건씩 나오게 해 둔다 — 한 번에 다 가져오려고.
+  const 고용24목록주소 =
+    "https://www.work24.go.kr/wk/p/c/1310/custmadeInfoList.do?seqNo=1&sortField=DATE&sortOrderBy=DESC&pageIndex=1&resultCnt=200";
+  // 그 목록 화면의 콘솔에 붙여넣으면 공고 주소를 모두 클립보드로 복사한다.
+  const 주소복사코드 =
+    "copy([...new Set([...document.querySelectorAll('a[href*=wantedAuthNo]')].map(a=>a.href))].join('\\n'))";
 
   const token = () => (typeof window === "undefined" ? "" : localStorage.getItem("admin_token") || "");
 
@@ -124,6 +132,22 @@ export default function ImportListPage() {
 
         {붙여넣기가능 && (
           <div style={{ padding: "14px 16px", borderBottom: "1px solid #f2f2f4" }}>
+            {/* 목록 주소와 복사 코드를 여기 둔다. 알바가 매번 어딘가에서 찾아 오지 않게. */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
+              <a href={고용24목록주소} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 13, color: "#582681", textDecoration: "none" }}>
+                고용24 목록 열기 ↗
+              </a>
+              <code style={{ flex: 1, minWidth: 240, fontSize: 11.5, color: "#8b8b93", background: "#fbfbfc",
+                border: "1px solid #f2f2f4", borderRadius: 6, padding: "5px 8px",
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {주소복사코드}
+              </code>
+              <button type="button" className="admin-secondary-btn"
+                onClick={() => { navigator.clipboard.writeText(주소복사코드); set코드복사됨(true); setTimeout(() => set코드복사됨(false), 2000); }}>
+                {코드복사됨 ? "복사됨" : "코드 복사"}
+              </button>
+            </div>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8,
