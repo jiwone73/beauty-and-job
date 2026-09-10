@@ -210,6 +210,8 @@ export interface JobPostFormProps {
   uploadImage: (file: File) => Promise<{ success: boolean; url?: string; name?: string; error?: string }>;
   onSubmit: (payload: any, status: "draft" | "publish", company: { companyId: string | null; newCompany: { company_name: string; brand_name: string } | null }) => Promise<{ success: boolean; error?: string; id?: string }>;
   loadEditData?: (editId: string) => Promise<any | null>;
+  /** 처음 열 때 어느 불러오기 자리를 펼칠지. 목록이 없는 카페는 붙여넣기로 연다. */
+  initialImportMode?: "url" | "paste";
   // 임시저장(DRAFT) 목록 로더 — 넘기면 상단에 "임시저장 목록" 노출(관리자 직접등록 전용)
   listDrafts?: () => Promise<Array<{ id: string; title: string; company_name?: string; created_at?: string }>>;
   initialFindQuery?: string; // 외부에서 전달된 초기 검색어(회사명/URL) — 검색창에 미리 채움
@@ -222,7 +224,7 @@ let 폼이열린적있음 = false;
 
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
-  uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "",
+  uploadImage, onSubmit, loadEditData, listDrafts, initialFindQuery = "", initialImportMode,
 }: JobPostFormProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -431,7 +433,7 @@ export default function JobPostForm({
   // 회사명/URL · 글 붙여넣기 · 화면 캡처
   // 붙여넣기를 먼저 두는 이유: 카페·블로그 글은 드래그 복사가 되고,
   // 글자로 보내면 캡처(이미지)보다 훨씬 싸고 전화번호를 잘못 읽을 일도 없다.
-  const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">("url");
+  const [importMode, setImportMode] = useState<"url" | "paste" | "ocr">(initialImportMode || "url");
   const [pasteText, setPasteText] = useState("");
   // 공고 제목은 따로 받는다. 카페 글은 제목이 본문 위에 떨어져 있어 본문을 드래그하면
   // 안 딸려 온다. 예전에는 그 빈자리를 AI 가 본문을 읽고 지어 메웠는데(붙여넣기 아홉 건

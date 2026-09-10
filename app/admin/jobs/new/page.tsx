@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
 import JobPostForm from "@/components/jobs/JobPostForm";
 
@@ -10,6 +11,11 @@ function AdminJobNewForm() {
   const searchParams = useSearchParams();
   const editId = searchParams?.get("id") || null;
   const initialFind = searchParams?.get("url") || searchParams?.get("q") || "";
+  // 어느 목록에서 왔는지. 등록하고 나서 그 자리로 돌아가려면 알아야 한다.
+  const from = searchParams?.get("from") || "";
+  // 카페처럼 목록이 없는 곳은 붙여넣기 칸이 열린 채로 시작한다.
+  const paste = searchParams?.get("paste") === "1";
+  const 소스이름: Record<string, string> = { hairinjob: "헤어인잡", selectme: "셀렉미", work24: "고용24" };
   const [companies, setCompanies] = useState<Company[]>([]);
   const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
 
@@ -74,8 +80,17 @@ function AdminJobNewForm() {
   };
 
   return (
-    <AdminLayout activeMenu="jobs-new">
+    <AdminLayout activeMenu={from ? `import-${from}` : "jobs-new"}>
+      {from && 소스이름[from] && (
+        <div style={{ marginBottom: 10 }}>
+          <Link href={`/admin/import/${from}`}
+            style={{ fontSize: 13.5, color: "#582681", textDecoration: "none" }}>
+            ← {소스이름[from]} 목록으로
+          </Link>
+        </div>
+      )}
       <JobPostForm
+        initialImportMode={paste ? "paste" : undefined}
         mode="admin"
         editId={editId}
         listHref="/admin/jobs"

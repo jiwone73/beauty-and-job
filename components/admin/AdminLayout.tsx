@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
-  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2 } from "lucide-react";
+  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2, Download } from "lucide-react";
 const NAV_ITEMS = [
   { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
   
@@ -32,6 +32,16 @@ const NAV_ITEMS = [
       { id: "resumes-applications", label: "입사지원 목록", href: "/admin/resumes/applications" },
     ]
   },
+  {
+    id: "import", label: "외부공고 불러오기", icon: Download, href: "/admin/import/hairinjob",
+    children: [
+      { id: "import-hairinjob", label: "헤어인잡", href: "/admin/import/hairinjob" },
+      { id: "import-selectme", label: "셀렉미", href: "/admin/import/selectme" },
+      { id: "import-work24", label: "고용24", href: "/admin/import/work24" },
+      // 카페는 목록을 만들 수 없다 — 알바가 글을 찾아 붙여넣는 자리로 바로 보낸다.
+      { id: "import-cafe", label: "맨사 / 뷰앤잡", href: "/admin/jobs/new?paste=1" },
+    ]
+  },
   { id: "outreach", label: "외부업체 리스트", icon: Building2, href: "/admin/outreach" },
   { id: "stories", label: "현장이야기", icon: BookOpen, href: "/admin/stories" },
   { id: "newsletters", label: "뉴스레터", icon: Mail, href: "/admin/newsletters" },
@@ -48,6 +58,10 @@ const PAGE_TITLES: Record<string, string> = {
   "jobs-scrapped": "스크랩 채용공고",
   "jobs-viewed": "열람한 채용공고",
   "jobs-external-inbox": "외부 지원 인박스",
+  "import": "외부공고 불러오기",
+  "import-hairinjob": "외부공고 불러오기",
+  "import-selectme": "외부공고 불러오기",
+  "import-work24": "외부공고 불러오기",
   "members": "회원관리",
   "members-companies": "회원관리",
   "members-alba": "회원관리",

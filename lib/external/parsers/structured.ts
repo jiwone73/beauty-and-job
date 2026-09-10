@@ -1183,6 +1183,13 @@ function parseWork24(html: string): StructuredResult | null {
   const deadline = (!always_open && 마감숫자 && !마감숫자.startsWith("2099"))
     ? `${마감숫자.slice(0, 4)}-${마감숫자.slice(4, 6)}-${마감숫자.slice(6, 8)}` : "";
 
+  // 채용담당자. 대행 여부는 입사지원 값에 적혀 있다(empAgencyYn).
+  const 대행 = /empAgencyYn\s*:\s*"Y"/.test(html);
+  const 담당칸 = (html.match(/채용\s*담당자<\/strong>([\s\S]{0,2500}?)<\/div>\s*<\/div>/i) || [])[1] || "";
+  const 담당글 = strip(담당칸);
+  const 담당전화 = ((담당글.match(/전화번호\s*((?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})|(?:1[0-9]{3}[-.\s]?\d{4}))/) || [])[1] || "").trim();
+  const 담당이름 = ((담당글.match(/\)\s*([가-힣]{2,4})\s*(?:전화번호|팩스|$)/) || [])[1] || "").trim();
+
   // 우대사항 — 자격면허의 「우대 …」와 우대조건·기타 우대사항을 모은다.
   const preferred = [V("자격면허"), V("우대조건"), V("기타우대사항")]
     .map((x) => x.replace(/^-$/, "").trim()).filter(Boolean).join("\n");
@@ -1230,8 +1237,10 @@ function parseWork24(html: string): StructuredResult | null {
     deadline, always_open,
     preferred, benefit_tags, hiring_process,
     parsed_by: "work24",
-    // 담당자는 싣지 않는다. 이 자리에 적힌 사람은 대개 매장이 아니라 채용대행
-    // 기관(새일센터 등)이고, 접수 이메일은 로그인해야 나온다.
+    // 담당자는 「채용대행」이 아닐 때만 싣는다. 대행이면 그 자리에 적힌 사람은
+    // 매장이 아니라 새일센터 같은 기관이고, 그 번호로는 매장에 닿지 않는다.
+    ...(대행 ? {} : (담당전화 ? { contact_phone: 담당전화 } : {})),
+    ...(대행 ? {} : (담당이름 ? { contact_name: 담당이름 } : {})),
     _confident: !!(title && company_name),
   };
   return out;
