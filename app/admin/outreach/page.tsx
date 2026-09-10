@@ -346,7 +346,7 @@ export default function AdminOutreachPage() {
     <AdminLayout activeMenu="outreach">
       <div style={{ padding: "4px 4px 40px" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 400, color: "#2b2533", margin: 0 }}>브랜드 리스트</h1>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#2b2533", margin: 0 }}>브랜드 리스트</h1>
           <span style={{ fontSize: 14, color: "#9a92a6" }}>
             활성공고 총 {totalActive.toLocaleString()}건
             {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 오피스 {globalSO.office.toLocaleString()})</span>}
