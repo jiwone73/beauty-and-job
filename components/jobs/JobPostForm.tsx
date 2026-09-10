@@ -2681,7 +2681,7 @@ export default function JobPostForm({
             삭제하고 밑에 있는 채용공고 등록 텍스트를 이동해줘" — CompanyLayout의
             PAGE_TITLES["jobs-new"]). 여기는 버튼을 오른쪽 끝으로 미는 빈 자리만 남긴다. */}
         {!isMobile && (
-          <div className="admin-form-actions" style={{ flex: 1, minWidth: 0 }}>
+          <div className="admin-form-actions" style={{ flex: 1, minWidth: 0, justifyContent: "flex-end" }}>
             {/* 임시저장 버튼 + (관리자) 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출 */}
             <div ref={draftMenuRef} style={{ position: "relative", display: "inline-flex", alignItems: "stretch" }}>
               <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}
@@ -2763,15 +2763,6 @@ export default function JobPostForm({
                 </div>
               )}
             </div>
-            {/* 이슈 모아보기 — 별도 관리 페이지로 이동(100건+ 대비) */}
-            {mode === "admin" && issueList.length > 0 && (
-              <button type="button" className="admin-secondary-btn" onClick={() => router.push("/admin/jobs/issues")} title="기록된 이슈 목록 페이지 보기"
-                style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                🐞 이슈 <span style={{ fontSize: 12, fontWeight: 700, color: "#c0392b" }}>{issueList.length}</span>
-              </button>
-            )}
-            {/* 여기까지가 왼쪽 묶음(쓰던 것 다루기), 다음부터가 오른쪽 묶음(내보내기) */}
-            <span style={{ marginRight: "auto" }} />
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
@@ -2796,9 +2787,8 @@ export default function JobPostForm({
       {/* 채용유형(매장/본사) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#582681", fontSize: 16, fontWeight: 400 }}>
-            <Settings size={16} /> 채용유형
-          </span>
+          {/* 아래 「외부 공고 불러오기」와 같은 글꼴·색. 화면마다 새로 정하지 않는다. */}
+          <span style={{ fontWeight: 400, fontSize: 16, color: "#582681" }}>채용유형</span>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             {([["매장", "매장"], ["기업", "본사"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
