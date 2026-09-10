@@ -2537,13 +2537,11 @@ export default function JobPostForm({
       // 그 업체에 연락할 길이 사라졌다 — 지우는 건 공고에서만 지우는 것이다.
       source_contact_phone: (원문연락처.phone || "").replace(/\D/g, "") || null,
       source_contact_email: 원문연락처.email || null,
-      // 대행(비회원) 공고에는 「비공개」를 고르는 칸이 없다 — 그건 기업이 제 계정에서
-      // 정하는 값이다. 칸이 없으니 폼에 적힌 대로 나간다. 화면에 보이는 것과 공고에
-      // 실리는 것이 달라지지 않게, 여기서도 가리지 않는다.
-      contact_name_hidden: isNm ? false : 숨김.name !== false,
-      contact_phone_hidden: isNm ? false : 숨김.phone !== false,
-      contact_email_hidden: isNm ? false : 숨김.mail !== false,
-      contact_kakao_hidden: isNm ? false : 숨김.kakao !== false,
+      // 가릴지 말지는 폼의 「비공개」 하나로만 정한다. 회원이든 대행이든 같다.
+      contact_name_hidden: 숨김.name !== false,
+      contact_phone_hidden: 숨김.phone !== false,
+      contact_email_hidden: 숨김.mail !== false,
+      contact_kakao_hidden: 숨김.kakao !== false,
       contact_methods: contactMethods,
       source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
       // 배너는 어느 쪽에서 올렸든 이 공고에 실린다. 예전에는 기업회원일 때만
@@ -3869,18 +3867,16 @@ export default function JobPostForm({
                         <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
                           fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
                       )}
-                      {/* 연락처를 공고에 드러낼지는 기업이 제 계정에서 정하는 값이다.
-                          대행으로 올리는 비회원 공고에는 그 기업의 뜻을 물을 데가 없고,
-                          지원도 뷰티워크가 받으므로 늘 가린다 — 고르는 칸을 두지 않는다. */}
-                      {!isNm && (
-                        <label style={{ display: "inline-flex", alignItems: "center", gap: 5, flexShrink: 0,
-                          marginLeft: 10, fontSize: 13, color: "#666", cursor: "pointer", userSelect: "none" }}>
-                          <input type="checkbox" checked={숨김[f.k] !== false}
-                            onChange={(e) => set숨김((p) => ({ ...p, [f.k]: e.target.checked }))}
-                            style={{ width: 15, height: 15, accentColor: "#582681", margin: 0, cursor: "pointer" }} />
-                          비공개
-                        </label>
-                      )}
+                      {/* 사람인과 같은 자리 — 칸 오른쪽에서 그 칸만 가린다.
+                          켜면 미리보기에서도 공고에서도 그 값이 나가지 않는다. 가릴지 말지를
+                          정하는 곳은 여기 하나뿐이라, 화면과 공고가 갈라질 자리가 없다. */}
+                      <label style={{ display: "inline-flex", alignItems: "center", gap: 5, flexShrink: 0,
+                        marginLeft: 10, fontSize: 13, color: "#666", cursor: "pointer", userSelect: "none" }}>
+                        <input type="checkbox" checked={숨김[f.k] !== false}
+                          onChange={(e) => set숨김((p) => ({ ...p, [f.k]: e.target.checked }))}
+                          style={{ width: 15, height: 15, accentColor: "#582681", margin: 0, cursor: "pointer" }} />
+                        비공개
+                      </label>
                     </span>
                   </div>
                 ))}
