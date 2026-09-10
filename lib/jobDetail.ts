@@ -48,6 +48,9 @@ export async function 공고읽기(id: string) {
     id: job.id,
     title: job.title,
     job_type: job.job_type,
+    // 업체 종류. 화면(공고모양)이 이 값을 먼저 보고 매장/본사 이름을 짓는데,
+    // 안 내보내면 미리보기는 이 값으로, 실제 공고는 job_type 으로 짓게 된다.
+    company_type: job.company_type,
     description: job.description,
     requirements: job.requirements,
     preferred_qualifications: job.preferred_qualifications,
