@@ -180,6 +180,11 @@ export async function POST(
          RETURNING id, status, applied_at`,
         [reactivateId, auth!.sub, ...applyParams]
       )
+    // 앞에서 「이미 지원했나」를 한 번 봤지만, 단추를 연달아 누르면 그 확인과 이 넣기
+    // 사이로 여러 요청이 한꺼번에 들어온다. 실제로 여덟 번 누르면 한 건만 들어가고
+    // 나머지 일곱은 본문 없는 500 이 떨어져, 창에는 「지원 중 오류」가 떴다 —
+    // 정작 지원은 됐는데 안 된 줄 알고 다시 누르게 된다.
+    // 표의 유일 조건이 데이터는 지켜 주니, 그 걸림을 같은 말(이미 지원함)로 바꿔 준다.
     : await pool.query(
         `INSERT INTO applications (job_posting_id, user_id, resume_id, cover_letter, resume_snapshot,
                                     resume_file_url, resume_file_name, resume_file_size, job_snapshot,
@@ -187,7 +192,11 @@ export async function POST(
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'APPLIED')
          RETURNING id, status, applied_at`,
         [jobPostingId, auth!.sub, ...applyParams]
-      )
+      ).catch((e: any) => {
+        if (e?.code === '23505') return null   // 같은 사람이 같은 공고에 — 겹쳐 들어온 것
+        throw e
+      })
+  if (!result) return err('APP_001', '이미 지원하신 공고입니다.', 409)
   // 지원자 수 +1 (취소 시 -1 되어 있으므로 재지원도 대칭으로 +1)
   await pool.query(
     `UPDATE job_postings SET application_count = application_count + 1 WHERE id = $1`,
