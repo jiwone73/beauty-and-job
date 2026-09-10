@@ -5417,6 +5417,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
      헤더와 사이드는 제 흰 바탕을 따로 깐다. */
   background: var(--color-bg-soft);
   font-family: var(--font-sans);
+  /* 사이드와 본문을 한 덩어리로 가운데 세운다. 사이드만 화면 왼쪽 끝에 두면
+     둘 사이가 통째로 벌어져, 표는 가운데인데 메뉴는 저 멀리 있게 된다. */
+  justify-content: center;
 }
 /* 관리자 전체 버튼 평체(weight 400) 통일 — 인라인 굵기까지 덮어씀 */
 .admin-layout button { font-weight: 400 !important; }
@@ -5531,6 +5534,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   display: flex;
   flex-direction: column;
   min-width: 0;
+  /* 헤더·본문과 같은 값. 사이드(220)와 합쳐 1580 이 가운데 선다. */
+  max-width: 1360px;
 }
 
 /* 헤더 */
