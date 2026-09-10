@@ -109,10 +109,12 @@ export default function AdminNoticesPage() {
 
   return (
     <AdminLayout activeMenu="notices">
-      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
+        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
+        flex: 1, minHeight: 0 }}>
 
         {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span>전체 <strong>{list.length}</strong>건</span>
             <button onClick={() => { setForm({ ...빈값 }); set새공지열림(true); }} className="admin-primary-btn">
@@ -124,7 +126,7 @@ export default function AdminNoticesPage() {
           ) : list.length === 0 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>등록된 공지가 없습니다.</div>
           ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
               {list.map((n) => (
                 <li key={n.id}>
                   <button type="button" onClick={() => 고르기(n)}
@@ -150,7 +152,7 @@ export default function AdminNoticesPage() {
         </div>
 
         {/* 오른쪽 — 고른 공지 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 640 }}>
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           {!지금것 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 공지를 고르세요.</div>
           ) : (

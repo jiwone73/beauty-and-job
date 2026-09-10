@@ -167,10 +167,12 @@ export default function AdminInquiriesPage() {
     <AdminLayout activeMenu="inquiries">
       {/* 왼쪽에서 고르고 오른쪽에서 본다. 모달로 띄우면 목록이 가려져 다음 것을
           보려면 매번 닫아야 했다. 공지사항·뉴스레터와 같은 짜임으로 맞춘다. */}
-      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
+        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
+        flex: 1, minHeight: 0 }}>
 
         {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <FilterDropdown label="처리상태"
               value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}
@@ -191,7 +193,7 @@ export default function AdminInquiriesPage() {
           ) : items.length === 0 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>문의가 없습니다.</div>
           ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
               {items.map((item) => (
                 <li key={item.id} style={{ display: "flex", alignItems: "center", gap: 8,
                   borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
@@ -216,7 +218,7 @@ export default function AdminInquiriesPage() {
         </div>
 
         {/* 오른쪽 — 고른 문의 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 640 }}>
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           {!selected ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 문의를 고르세요.</div>
           ) : (

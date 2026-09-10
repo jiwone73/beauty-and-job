@@ -159,10 +159,12 @@ export default function AdminNewslettersPage() {
     <AdminLayout activeMenu="newsletters">
       {/* 왼쪽에서 고르고 오른쪽에서 본다. 미리보기를 모달로 띄우면 목록이 가려져
           「다음 것」을 보려면 매번 닫아야 했다. 공지사항과 같은 짜임으로 맞춘다. */}
-      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
+        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
+        flex: 1, minHeight: 0 }}>
 
         {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <button onClick={toggleAutogen} disabled={autogenSaving}
@@ -192,7 +194,7 @@ export default function AdminNewslettersPage() {
               생성된 뉴스레터가 없습니다. 「뉴스레터 생성」을 눌러보세요.
             </div>
           ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
               {list.map((n) => (
                 <li key={n.id} style={{ display: "flex", alignItems: "center", gap: 8,
                   borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
@@ -216,7 +218,7 @@ export default function AdminNewslettersPage() {
         </div>
 
         {/* 오른쪽 — 고른 뉴스레터 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", minHeight: 640 }}>
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
           {!지금것 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 뉴스레터를 고르세요.</div>
           ) : (

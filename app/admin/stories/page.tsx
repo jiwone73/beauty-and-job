@@ -222,10 +222,12 @@ export default function AdminStoriesPage() {
       {/* 왼쪽에서 고르고 오른쪽에서 본다. 표 안에서 행을 펴 고치던 방식은 글이
           길어지면 아래 목록이 통째로 밀려, 어디를 보고 있었는지 잃어버렸다.
           공지사항·뉴스레터·문의와 같은 짜임으로 맞춘다. */}
-      <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
+      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
+        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
+        flex: 1, minHeight: 0 }}>
 
         {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden" }}>
+        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <button onClick={() => { setTab("posts"); setChecked([]); setExpandedId(null); }} style={tabStyle(tab === "posts")}>글 관리</button>
             <button onClick={() => { setTab("pending"); setChecked([]); setExpandedId(null); }} style={tabStyle(tab === "pending")}>
@@ -266,7 +268,7 @@ export default function AdminStoriesPage() {
               {tab === "pending" ? "승인 대기 중인 글이 없습니다." : "글이 없습니다."}
             </div>
           ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
               {visiblePosts.map((p) => (
                 <li key={p.id} style={{ display: "flex", alignItems: "center", gap: 8,
                   borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
@@ -291,7 +293,7 @@ export default function AdminStoriesPage() {
         </div>
 
         {/* 오른쪽 — 고른 글 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, minHeight: 640 }}>
+        <div className="admin-card" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           {!지금것 ? (
             <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 글을 고르세요.</div>
           ) : (

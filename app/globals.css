@@ -5502,6 +5502,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   display: flex;
   flex-direction: column;
   gap: 2px;
+  /* 메뉴가 화면보다 길면 페이지 전체가 세로로 밀렸다. 본문은 화면 안에 다 들어와
+     있는데 메뉴 때문에 스크롤바가 생겼다. 넘치는 만큼은 메뉴 안에서만 굴린다. */
+  overflow-y: auto;
+  min-height: 0;
 }
 .admin-nav-item {
   display: flex;
@@ -5542,14 +5546,23 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-header {
   height: 72px;
   background: #fff;
-  border-bottom: 1px solid #f0f0f0;
   position: sticky;
-  /* 구분선은 화면 끝까지 긋는다. 헤더 자체는 1360 안에 있어 선도 거기서 끊겼는데,
-     맨 윗줄을 가르는 선이 중간에 멈추면 화면이 두 동강 난 것처럼 보인다.
-     양옆으로 늘린 그림자로 긋는다 — 자리를 차지하지 않아 가로 스크롤이 안 생긴다. */
-  box-shadow: 2000px 1px 0 -0px #f0f0f0, -2000px 1px 0 -0px #f0f0f0;
   top: 0;
   z-index: 10;
+}
+/* 맨 윗줄을 가르는 선은 화면 왼쪽 끝에서 오른쪽 끝까지 긋는다. 헤더 자체는 1360 안에
+   있어 선도 거기서 끊겼고, 그림자로 늘리면 폭보다 멀리 밀린 만큼 사이가 비었다.
+   자리를 차지하지 않는 fixed 한 줄로 긋는다 — 가로 스크롤이 생기지 않는다. */
+.admin-header::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 71px;
+  height: 1px;
+  background: #582681;
+  z-index: 20;
+  pointer-events: none;
 }
 .admin-header-inner {
   /* 메인 사이트 헤더와 같은 폭·여백 (.header-inner 참고) */
@@ -5571,7 +5584,11 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   /* 볼드 20 이라 아래가 붙어 보였다. 제목과 내용 사이를 한 칸 더 띄운다. */
   margin: 0 0 26px;
   text-align: center;
+  /* 윗줄 띠는 사이드까지 한 덩어리로 보인다. 본문 칸만 기준으로 가운데를 잡으면
+     사이드 폭의 절반만큼 오른쪽으로 밀린다. 사이드 폭만큼 오른쪽을 비워 되돌린다. */
+  padding-right: 220px;
 }
+.admin-sidebar.closed ~ .admin-main .admin-page-title { padding-right: 64px; }
 .admin-header-right {
   display: flex;
   align-items: center;
@@ -5626,7 +5643,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 표가 없는 화면(대시보드 등)은 1360 을 다 쓰면 좌우로 벌어져 읽기 나쁘다.
    화면마다 숫자를 새로 정하지 말고 이 하나를 쓴다. */
 .admin-narrow { max-width: 1080px; margin: 0 auto; width: 100%; }
-.admin-content { padding: 20px 32px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 1360px; margin: 0 auto; width: 100%; }
+/* flex:1 — 두 칸짜리 화면(공지사항·뉴스레터 등)이 남는 높이를 그대로 쓰게.
+   숫자로 짐작해 빼면 화면 크기마다 어긋난다. */
+.admin-content { padding: 20px 32px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 1360px; margin: 0 auto; width: 100%; flex: 1; min-height: 0; }
 
 /* 관리자 본문 글자 +1px (사이드바·타이틀은 .admin-content 밖이라 자동 제외, 표 헤더는 유지) */
 .admin-content .admin-table td { font-size: 15px; }
