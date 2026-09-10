@@ -5640,9 +5640,6 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 본문 폭·여백은 헤더(.admin-header-inner)와 같은 값을 쓴다. 헤더는 1360 가운데인데
    본문만 1800 이라 기준이 둘이었다 — 로고·계정과 내용의 세로줄이 안 맞았다.
    넓은 화면에서는 본문이 왼쪽으로 몰려 보였다. */
-/* 표가 없는 화면(대시보드 등)은 1360 을 다 쓰면 좌우로 벌어져 읽기 나쁘다.
-   화면마다 숫자를 새로 정하지 말고 이 하나를 쓴다. */
-.admin-narrow { max-width: 1080px; margin: 0 auto; width: 100%; }
 /* flex:1 — 두 칸짜리 화면(공지사항·뉴스레터 등)이 남는 높이를 그대로 쓰게.
    숫자로 짐작해 빼면 화면 크기마다 어긋난다. */
 .admin-content { padding: 20px 32px 28px; display: flex; flex-direction: column; gap: 14px; max-width: 1360px; margin: 0 auto; width: 100%; flex: 1; min-height: 0; }
@@ -7191,7 +7188,8 @@ div:has(> table.admin-table),
   justify-content: space-between;
   padding: 8px 0 4px;
   border-bottom: 2px solid #f0f0f0;
-  margin-top: 48px;
+  /* 아래 카운터가 이 선에 바로 붙어 선과 카드 테두리가 겹쳐 보였다. 한 칸 띄운다. */
+  margin: 48px 0 14px;
 }
 .admin-section-title-wrap {
   display: flex;

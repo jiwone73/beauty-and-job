@@ -245,7 +245,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout activeMenu="dashboard">
-      <div className="admin-narrow">
+      <div>
 
       {/* ── 1. 전체 요약 카드 ── */}
       <div className="admin-stat-grid">
