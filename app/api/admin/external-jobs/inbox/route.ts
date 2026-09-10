@@ -76,22 +76,40 @@ export async function POST(req: NextRequest) {
   const source = new URL(req.url).searchParams.get("source");
   if (!소스인가(source)) return err("INBOX_001", "소스를 지정해주세요.", 400);
 
+  // 붙여넣은 주소가 있으면 그것을 목록으로 삼는다.
+  //
+  // 고용24는 조건을 걸어 찾은 목록이 로그인 뒤에 있어 우리가 받아 올 수 없다.
+  // 알바가 그 화면에서 주소를 복사해 오면 그대로 읽는다. 이건 「그 조건에 맞는
+  // 것들」이지 「지금 살아 있는 전부」가 아니라서, 여기 없다고 마감으로 보면 안 된다.
+  const b = await req.json().catch(() => ({} as any));
+  const 붙인주소 = [...new Set([...String(b?.붙임 || "").matchAll(/wantedAuthNo=([A-Z0-9]{10,})/g)].map((m) => m[1]))];
+
   let 목록: Awaited<ReturnType<typeof 목록받기>>;
-  try {
-    목록 = await 목록받기(source);
-  } catch (e: any) {
-    return err("INBOX_002", `목록을 불러오지 못했어요 (${e?.message || "실패"}).`, 502);
+  if (붙인주소.length) {
+    if (source !== "work24") return err("INBOX_004", "주소 붙여넣기는 고용24에서만 됩니다.", 400);
+    목록 = 붙인주소.map((no) => ({
+      source: "work24" as const, key: no, title: no,
+      url: `https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=${no}&infoTypeCd=VALIDATION&infoTypeGroup=tb_workinfoworknet`,
+    }));
+  } else {
+    try {
+      목록 = await 목록받기(source);
+    } catch (e: any) {
+      return err("INBOX_002", `목록을 불러오지 못했어요 (${e?.message || "실패"}).`, 502);
+    }
   }
   if (!목록.length) return err("INBOX_003", "목록이 비어 있어요. 사이트가 바뀌었을 수 있습니다.", 502);
 
-  // 목록에서 사라진 것은 마감으로 본다. 화면에서 빠진다.
   const 지금주소 = 목록.map((x) => x.url);
-  const 닫음 = await pool.query(
+  // 목록에서 사라진 것은 마감으로 본다. 화면에서 빠진다.
+  // 붙여넣기는 목록 전부가 아니므로 이 일을 하지 않는다.
+  const 닫음 = 붙인주소.length ? { rowCount: 0 } : await pool.query(
     `UPDATE external_job_inbox SET closed_at = now()
       WHERE source = $1 AND closed_at IS NULL AND NOT (url = ANY($2::text[]))`,
     [source, 지금주소]);
 
   // 이미 받아 둔 것은 다시 안 읽는다. 살아 있다는 표시만 새로 찍는다.
+  const 새것최대 = 붙인주소.length ? 100 : 한번에;
   await pool.query(
     `UPDATE external_job_inbox SET last_seen = now(), closed_at = NULL
       WHERE source = $1 AND url = ANY($2::text[])`, [source, 지금주소]);
@@ -99,7 +117,7 @@ export async function POST(req: NextRequest) {
     `SELECT url FROM external_job_inbox WHERE source = $1 AND url = ANY($2::text[])`,
     [source, 지금주소]);
   const 이미 = new Set<string>(있는것.rows.map((x: any) => x.url));
-  const 새것 = 목록.filter((x) => !이미.has(x.url)).slice(0, 한번에);
+  const 새것 = 목록.filter((x) => !이미.has(x.url)).slice(0, 새것최대);
 
   let 담음 = 0, 뷰티아님 = 0, 연락처없음 = 0, 못읽음 = 0;
   // 다섯씩 나눠 받는다 — 한꺼번에 몰면 상대 사이트에도 무리고 서버도 먼저 끊긴다.

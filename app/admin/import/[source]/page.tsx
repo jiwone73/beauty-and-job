@@ -26,6 +26,10 @@ export default function ImportListPage() {
   const [부르는중, set부르는중] = useState(true);
   const [받는중, set받는중] = useState(false);
   const [결과, set결과] = useState<any>(null);
+  // 고용24는 조건을 걸어 찾은 목록이 로그인 뒤에 있어 우리가 받아 올 수 없다.
+  // 알바가 그 화면에서 주소를 복사해 붙여넣는 길을 함께 둔다.
+  const [붙임, set붙임] = useState("");
+  const 붙여넣기가능 = source === "work24";
 
   const token = () => (typeof window === "undefined" ? "" : localStorage.getItem("admin_token") || "");
 
@@ -51,6 +55,24 @@ export default function ImportListPage() {
       const j = await res.json();
       set결과(j.success ? j.data : { 오류: j.error?.message || "가져오지 못했어요." });
       if (j.success) await 불러오기();
+    } catch {
+      set결과({ 오류: "네트워크 오류가 발생했어요." });
+    } finally { set받는중(false); }
+  };
+
+  const 주소로받기 = async () => {
+    set받는중(true); set결과(null);
+    try {
+      const res = await fetch(`/api/admin/external-jobs/inbox?source=${source}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ 붙임: 붙임.trim() }),
+      });
+      const j = await res.json();
+      if (!j.success) { set결과({ 오류: j.error?.message || "가져오지 못했어요." }); return; }
+      set결과(j.data);
+      set붙임("");
+      await 불러오기();
     } catch {
       set결과({ 오류: "네트워크 오류가 발생했어요." });
     } finally { set받는중(false); }
@@ -92,6 +114,21 @@ export default function ImportListPage() {
                 {결과.마감 ? ` · 마감돼 지운 것 ${결과.마감}건` : ""}
               </>
             )}
+          </div>
+        )}
+
+        {붙여넣기가능 && (
+          <div style={{ padding: "14px 16px", borderBottom: "1px solid #f2f2f4" }}>
+            <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
+              placeholder="고용24 목록에서 복사한 공고 주소를 붙여넣으세요"
+              style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8,
+                padding: "10px 12px", fontSize: 13.5, outline: "none", resize: "vertical",
+                fontFamily: "inherit", lineHeight: 1.5 }} />
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+              <button className="admin-secondary-btn" onClick={주소로받기} disabled={받는중 || !붙임.trim()}>
+                붙여넣은 주소로 가져오기
+              </button>
+            </div>
           </div>
         )}
 
