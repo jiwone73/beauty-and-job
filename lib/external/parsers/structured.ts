@@ -17,11 +17,14 @@ const SIDO: Record<string, string> = {
   전북: "전북특별자치도", 전남: "전라남도", 경북: "경상북도", 경남: "경상남도",
   제주: "제주특별자치도",
 };
+/** 「광주 북구」를 「광주광역시 북구」로. 짧게 적힌 시도를 정식 이름으로 편다.
+ *  앞의 낱말을 짧게 끊어 잡던 탓에 「광 주 북구」가 나왔다 — 시도는 통째로 본다. */
 function normRegion(s: string): string {
   if (!s) return "";
-  const m = s.trim().match(/^([가-힣]+?)\s*(.+구|.+시|.+군)$/);
-  if (!m) return s.trim();
-  return `${SIDO[m[1]] || m[1]} ${m[2].trim()}`;
+  const t = s.trim().replace(/\s+/g, " ");
+  const m = t.match(/^(\S+)\s+(\S+[시군구])$/);
+  if (!m) return t;
+  return `${SIDO[m[1]] || m[1]} ${m[2]}`;
 }
 function stripTags(s: any): string {
   // JSON-LD 필드가 문자열이 아닌 객체/배열로 오는 경우(예: experienceRequirements)를 방어 → 크래시 방지
@@ -347,7 +350,8 @@ function getJobPostingLd(html: string): any | null {
 }
 function mapCareer(exp: string): string {
   const e = (exp || "").replace(/\s/g, "");
-  if (/무관/.test(e)) return "경력무관";
+  // 고용24 는 「관계없음」이라 적는다. 뜻은 무관과 같다.
+  if (/무관|관계없음/.test(e)) return "경력무관";
   if (/^신입$/.test(e)) return "신입";
   const n = (e.match(/(\d+)년/) || [])[1];
   if (n) {
@@ -1085,9 +1089,157 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
 }
 
 // ───────────── 디스패처 ─────────────
+// ───────────── 고용24(work24.go.kr) ─────────────
+// 상세: /wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=<번호>
+//   로그인 없이 열린다(접수 이메일 한 줄만 로그인 뒤에 나온다).
+//   값이 거의 다 <th>라벨</th><td>값</td> 표라, 라벨만 보면 그대로 옮겨진다.
+//
+// 이 사이트에서 제일 조심할 것은 「미제공」이다. 복리후생·전형방법이 아이콘
+// 목록으로 오는데, 제공하지 않는 항목도 글자는 그대로 있고 <li class="disable">
+// 와 <em class="blind">미제공</em> 으로만 갈린다. 글자만 긁으면 하나도 없는
+// 공고가 「통근버스·기숙사·식사제공 다 있음」으로 둔갑한다.
+function parseWork24(html: string): StructuredResult | null {
+  const dec = decodeHtmlEntities;
+  // 공용 해독기가 못 푸는 이름 엔티티(&middot; 등)가 상세요강에 글자 그대로 남았다.
+  const strip = (s: string) => dec(s.replace(/<[^>]+>/g, " "))
+    .replace(/&middot;/g, "·").replace(/&[a-z]{2,8};/gi, " ")
+    .replace(/\s+/g, " ").trim();
+
+  // 제목·회사명은 화면 글자가 아니라 페이지가 들고 있는 값에서 가져온다.
+  const title = dec((html.match(/WANTED_TITLE\s*=\s*"([^"]{1,300})"/) || [])[1] || "").trim();
+  const company_name = dec((html.match(/f_createVisitedEmpInfoCookie\(\s*"([^"]{1,120})"/) || [])[1] || "").trim();
+  if (!title) return null;
+
+  // th/td 표를 한 장으로 모은다.
+  const 표: Record<string, string> = {};
+  for (const m of html.matchAll(/<th[^>]*>([\s\S]*?)<\/th>\s*<td[^>]*>([\s\S]*?)<\/td>/gi)) {
+    const k = strip(m[1]).replace(/\s/g, "").replace(/도움말.*$/, "");
+    if (k && !(k in 표)) 표[k] = m[2];          // 값은 태그째로 둔다(줄바꿈이 필요한 칸이 있다)
+  }
+  const V = (k: string) => strip(표[k] || "");
+
+  // 직무내용 — 표가 아니라 접히는 상자 안에 있다.
+  const 직무 = strip((html.match(/직무내용<\/strong>([\s\S]{0,3000}?)<\/div>/i) || [])[1] || "");
+
+  // 아이콘 목록에서 「제공하는 것」만 고른다. disable 이 붙은 <li> 는 통째로 버린다.
+  const 켜진항목 = (제목: string): string[] => {
+    // 같은 제목이 위쪽 요약 상자에도 있다. 아이콘이 다 들어 있는 건 아래 본문이라
+    // 마지막 것을 잡는다.
+    const 자리 = [...html.matchAll(new RegExp(`<strong[^>]*>\\s*${제목}\\s*</strong>`, "gi"))];
+    if (!자리.length) return [];
+    const 구역 = html.slice(자리[자리.length - 1].index!);
+    const ul = (구역.match(/<ul[^>]*>([\s\S]{0,4000}?)<\/ul>/i) || [])[1] || "";
+    const out: string[] = [];
+    for (const li of ul.matchAll(/<li([^>]*)>([\s\S]*?)<\/li>/gi)) {
+      if (/disable/i.test(li[1]) || /미제공/.test(li[2])) continue;
+      const 이름 = strip(li[2].replace(/<em[^>]*class="blind"[\s\S]*?<\/em>/gi, ""));
+      if (이름) out.push(이름);
+    }
+    return out;
+  };
+  const 복지원문 = 켜진항목("복리후생");
+  const 전형원문 = 켜진항목("전형방법");
+
+  // 우리 복리후생 태그로 옮길 수 있는 것만 옮긴다. 없는 말은 버린다.
+  const 복지표: [RegExp, string][] = [
+    [/기숙사/, "기숙사 제공"], [/교육비/, "교육비 지원"], [/식사/, "식대 지원"],
+    [/통근버스|차량유지비/, "주차 가능"],
+  ];
+  const benefit_tags = [...new Set(복지원문.flatMap((w) =>
+    복지표.filter(([re]) => re.test(w)).map(([, tag]) => tag)))];
+  if (/국민연금|건강보험|고용보험|산재/.test(V("사회보험"))) benefit_tags.push("4대보험");
+
+  const hiring_process = 전형원문.map((w) => (/서류/.test(w) ? "서류전형" : w));
+
+  // 임금 — 「월급 220만원 ~ 240만원 이하 협의가능」
+  const 임금 = V("임금조건");
+  const s = parseSalaryText(임금);
+  if (/협의/.test(임금)) s.salary_negotiable = true;
+
+  // 근무시간 — 도움말 풍선이 같은 칸에 들어 있어 그대로 쓰면 설명문이 딸려 온다.
+  //   「상세 근무시간」 뒤만 본다.
+  const 시간칸 = (표["근무시간"] || "").replace(/<(button|div)[^>]*class="[^"]*tooltip[^"]*"[\s\S]*?<\/\1>/gi, "");
+  const 시간글 = strip((시간칸.match(/상세\s*근무시간([\s\S]*)$/i) || [])[1] || 시간칸);
+  const 첫시간 = (시간글.match(/(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})/) || []);
+  const work_time = 첫시간[0] ? `${첫시간[1]}~${첫시간[2]}` : "";
+
+  // 근무지 — 「지도 보기」·「길찾기」 단추 글자가 주소 뒤에 붙어 온다.
+  const addr = V("근무예정지").replace(/\s*(지도\s*보기|길찾기)\s*/g, " ").trim();
+  // 2026년 통합으로 「전남광주통합특별시」처럼 두 이름이 붙은 표기가 온다.
+  // 그런 이름은 우리 지역 목록에 없어, 뒤에 오는 쪽(광역시)을 쓴다.
+  const 시도풀기 = (t: string) => {
+    if (SIDO[t] || Object.values(SIDO).includes(t)) return t;
+    let 찾음 = "";
+    for (const k of Object.keys(SIDO)) { const i = t.indexOf(k); if (i >= 0 && i >= t.indexOf(찾음 || k)) 찾음 = k; }
+    return 찾음 || t;
+  };
+  const 주소조각 = addr.match(/^(\S+?(?:특별시|광역시|특별자치시|특별자치도|[시도]))\s+(\S+?[시군구])/) || [];
+  const region = 주소조각[1] ? normRegion(`${시도풀기(주소조각[1])} ${주소조각[2]}`) : "";
+
+  // 마감 — 「채용시까지」면 상시채용이다.
+  const 마감글 = strip((html.match(/접수\s*마감일<\/strong>([\s\S]{0,300}?)<\/p>/i) || [])[1] || "");
+  const always_open = /채용시까지/.test(마감글);
+  const 마감숫자 = (html.match(/receiptCloseDt:\s*"(\d{8})"/) || [])[1] || "";
+  const deadline = (!always_open && 마감숫자 && !마감숫자.startsWith("2099"))
+    ? `${마감숫자.slice(0, 4)}-${마감숫자.slice(4, 6)}-${마감숫자.slice(6, 8)}` : "";
+
+  // 우대사항 — 자격면허의 「우대 …」와 우대조건·기타 우대사항을 모은다.
+  const preferred = [V("자격면허"), V("우대조건"), V("기타우대사항")]
+    .map((x) => x.replace(/^-$/, "").trim()).filter(Boolean).join("\n");
+
+  // 직군은 「모집 직종」과 제목만 근거로 본다. 직무내용까지 넣으면 매장 자랑글에
+  // 딸린 낱말로 엉뚱한 직군이 붙는다.
+  //
+  // 고용24 는 뷰티만 모아 둔 곳이 아니다. 「건물 청소원」·「자동차공학 기술자」까지
+  // 섞여 오는데, 직군 짐작기는 어떻게든 가장 가까운 것을 찾아내 「뷰티 전문
+  // 헤드헌터」·「화장품 연구원」을 붙였다. 그래서 먼저 관문을 둔다 — 뷰티 일을
+  // 가리키는 말이 하나도 없으면 직군을 비워 둔다. 비어 있으면 일괄 등록이 건너뛴다.
+  const 뷰티일 = /헤어|미용|이용사|바버|네일|속눈썹|눈썹|반영구|피부|에스테틱|경락|체형|왁싱|제모|메이크업|분장|두피|탈모|스파|테라피|마사지|발\s*관리|풋케어|화장품|뷰티|샵|살롱|에스테|타투/;
+  const 직군근거 = `${V("모집직종")} ${title}`;
+  const sug = 뷰티일.test(직군근거) ? suggestCats(직군근거) : { job_type: "STORE", job_categories: [] as string[] };
+
+  // 상세요강 — 직무내용을 머리에 두고, 표에만 있고 우리 칸이 없는 것을 잇는다.
+  const description = [
+    직무,
+    V("고용형태") && `고용형태 : ${V("고용형태")}`,
+    시간글 && `근무시간 : ${시간글}`,
+    V("근무형태") && `근무형태 : ${V("근무형태")}`,
+    V("사회보험") && `사회보험 : ${V("사회보험")}`,
+    V("퇴직급여") && V("퇴직급여") !== "-" ? `퇴직급여 : ${V("퇴직급여")}` : "",
+  ].filter(Boolean).join("\n").trim();
+
+  const out: StructuredResult = {
+    title, company_name,
+    job_type: sug.job_type || "STORE",
+    job_categories: sug.job_categories,
+    job_category_raw: V("모집직종"),
+    description,
+    headcount: Number((V("모집인원").match(/(\d+)/) || [])[1]) || 0,
+    career: mapCareer(V("경력")),
+    education: /무관/.test(V("학력")) ? "학력무관" : V("학력"),
+    // 고용24 표기는 「기간의 정함이 있는/없는 근로계약」이다. 「없는」이 정규직인데
+    // 낱말에 「계약」이 들어 있어 둘 다 계약직으로 읽혔다 — 있고 없고를 먼저 본다.
+    employment_type: /기간의\s*정함이\s*없는/.test(V("고용형태")) ? "정규직"
+      : /기간의\s*정함이\s*있는/.test(V("고용형태")) ? "계약직"
+      : mapEmploymentKo(V("고용형태")),
+    salary: s.salary, salary_type: s.salary_type,
+    salary_amount: s.salary_amount, salary_amount_max: s.salary_amount_max,
+    salary_negotiable: s.salary_negotiable,
+    work_days: V("근무형태"), work_time,
+    address: addr, region,
+    deadline, always_open,
+    preferred, benefit_tags, hiring_process,
+    parsed_by: "work24",
+    // 담당자는 싣지 않는다. 이 자리에 적힌 사람은 대개 매장이 아니라 채용대행
+    // 기관(새일센터 등)이고, 접수 이메일은 로그인해야 나온다.
+    _confident: !!(title && company_name),
+  };
+  return out;
+}
+
 /** 파서가 있는 사이트. 여기 없는 곳은 라우트가 아예 안 가져온다 —
  *  파서 없이 가져오면 AI 가 페이지를 읽어야 하고, 그건 원문에 없는 값을 만든다. */
-const 지원사이트 = /hairinjob\.com|jobkorea\.co\.kr|albamon\.com|saramin\.co\.kr|beautyjob\.kr|selectme\.co\.kr/i;
+const 지원사이트 = /hairinjob\.com|jobkorea\.co\.kr|albamon\.com|saramin\.co\.kr|beautyjob\.kr|selectme\.co\.kr|work24\.go\.kr/i;
 
 export function parseStructured(hostname: string, html: string, url?: string): StructuredResult | null {
   if (!html) return null;
@@ -1097,6 +1249,7 @@ export function parseStructured(hostname: string, html: string, url?: string): S
   if (/saramin\.co\.kr/i.test(hostname)) return parseSaramin(html);
   if (/beautyjob\.kr/i.test(hostname)) return parseBeautyjob(html);
   if (/selectme\.co\.kr/i.test(hostname)) return parseSelectme(html, url);
+  if (/work24\.go\.kr/i.test(hostname)) return parseWork24(html);
   return null;
 }
 parseStructured.지원사이트 = 지원사이트;
