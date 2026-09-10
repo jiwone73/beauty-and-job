@@ -33,15 +33,23 @@ export async function PATCH(
   const body = await req.json().catch(() => ({}));
 
   // 수정 가능한 필드 목록 (whitelist 방식 - 보안)
+  //
+  // 폼이 보내는 값은 하나도 빠짐없이 여기 있어야 한다. 빠진 칸은 저장이 조용히
+  // 무시되고, 그러면 미리보기에는 새 값이 공고에는 옛 값이 남는다 — 폼 = 미리보기 =
+  // 실제공고가 그 자리에서 깨진다. 등록(POST)이 넣는 칸과 같은 목록을 쓴다.
   const allowedFields = [
-    "title", "description", "requirements", "preferred_qualifications",
+    "title", "job_type", "description", "requirements", "preferred_qualifications",
     "benefits", "employment_type", "benefit_tags", "salary_min", "salary_max", "salary_type",
-    "location", "address", "work_type", "experience_level",
+    "salary_text",
+    "location", "address", "work_locations", "work_type", "experience_level",
     "deadline", "status", "categories", "detail_images",
     "hiring_process",
     "work_days", "work_time", "work_time_slots", "work_period",
-    "headcount", "contact_methods", "responsibilities", "education", "gender_preference", "positions",
-    "cover_images",
+    "headcount", "headcount_text", "contact_methods", "responsibilities", "education",
+    "gender_preference", "positions",
+    "cover_images", "source_url",
+    // 지원방법 — 「뷰티워크 온라인지원」이냐 바깥 주소냐.
+    "apply_method", "external_apply_url",
     // 접수담당자
     "external_contact_name", "external_contact_phone", "external_contact_email",
     "external_contact_kakao",
@@ -52,11 +60,14 @@ export async function PATCH(
   const updates: string[] = [];
   const values: any[] = [];
   let idx = 1;
-  const jsonbFields = ["detail_images", "hiring_process", "positions", "cover_images"];
+  const jsonbFields = ["detail_images", "hiring_process", "positions", "work_locations", "cover_images"];
   for (const field of allowedFields) {
     if (body[field] !== undefined) {
       updates.push(`${field} = $${idx++}`);
-      values.push(jsonbFields.includes(field) ? JSON.stringify(body[field]) : body[field]);
+      // null 은 그대로 NULL 로 넣는다. JSON.stringify(null) 은 "null" 이라
+      // 「값 없음」이 아니라 JSON null 이 저장돼 읽는 쪽이 갈린다.
+      values.push(jsonbFields.includes(field) && body[field] !== null
+        ? JSON.stringify(body[field]) : body[field]);
     }
   }
 

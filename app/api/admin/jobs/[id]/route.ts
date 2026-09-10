@@ -104,7 +104,9 @@ export async function PATCH(
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
         updates.push(`${field} = $${idx++}`);
-        values.push(jsonbFields.includes(field) ? JSON.stringify(body[field]) : body[field]);
+        // null 은 그대로 NULL 로. JSON.stringify(null) 은 "null" 이라 JSON null 이 저장된다.
+        values.push(jsonbFields.includes(field) && body[field] !== null
+          ? JSON.stringify(body[field]) : body[field]);
       }
     }
 
