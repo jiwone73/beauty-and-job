@@ -31,11 +31,9 @@ export default function ImportListPage() {
   const [붙임, set붙임] = useState("");
   const 붙여넣기가능 = source === "work24";
   const [복사됨, set복사됨] = useState("");
-  // 알바 컴퓨터는 윈도우, 대표님은 맥이다. 보는 사람의 자판으로 적어 준다.
-  const [맥인가, set맥인가] = useState(false);
-  useEffect(() => { set맥인가(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)); }, []);
-  const 콘솔키 = 맥인가 ? "Cmd+Option+C" : "F12 → Console";
-  const 붙여넣기키 = 맥인가 ? "Cmd+V" : "Ctrl+V";
+  // 알바 컴퓨터는 윈도우, 대표님은 맥이다. 둘 다 적는다 — 고르게 하면 한 번 더 손이 간다.
+  const 콘솔키 = "F12 / Cmd+Option+C";
+  const 붙여넣기키 = "Ctrl+V / Cmd+V";
   const 복사 = (무엇: string, 글: string) => {
     navigator.clipboard.writeText(글);
     set복사됨(무엇); setTimeout(() => set복사됨(""), 1800);
