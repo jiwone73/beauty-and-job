@@ -5544,6 +5544,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
   position: sticky;
+  /* 구분선은 화면 끝까지 긋는다. 헤더 자체는 1360 안에 있어 선도 거기서 끊겼는데,
+     맨 윗줄을 가르는 선이 중간에 멈추면 화면이 두 동강 난 것처럼 보인다.
+     양옆으로 늘린 그림자로 긋는다 — 자리를 차지하지 않아 가로 스크롤이 안 생긴다. */
+  box-shadow: 2000px 1px 0 -0px #f0f0f0, -2000px 1px 0 -0px #f0f0f0;
   top: 0;
   z-index: 10;
 }
