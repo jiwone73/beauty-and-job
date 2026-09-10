@@ -2489,10 +2489,14 @@ export default function JobPostForm({
       title: form.title,
       job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
       description: form.description || null,
-      requirements: form.requirements || null,
-      preferred_qualifications: form.preferred || null,
+      // 폼에 칸이 없는 값은 싣지 않는다. 자격요건·우대사항·담당업무는 상세요강 한 칸으로
+      // 합쳤는데(textFields 참조) payload 에만 남아 있었다 — 어디서든 값이 들어오면
+      // 미리보기와 공고에는 나오는데 폼에서는 보이지도 고치지도 못한다.
+      // 폼 = 미리보기 = 실제공고. 예외를 두지 않는다.
+      requirements: null,
+      preferred_qualifications: null,
       benefits: 복리후생값.length ? 복리후생값.join("\n") : null,
-      responsibilities: form.responsibilities || null,
+      responsibilities: null,
       education: p0.education || null,
       salary_min: salaryMin, salary_max: salaryMaxVal,
       salary_type: salaryMin ? salaryType : null,
@@ -2619,11 +2623,10 @@ export default function JobPostForm({
     { id: "deadline", label: "마감일", done: !!form.deadline || alwaysOpen },
     { id: "region", label: "근무지역", done: 지역참 },
     { id: "benefit", label: "복리후생", done: benefitTags.length > 0 || !!fiBenefits.trim() },
-    // 상세요강: 이미지가 있으면 됐고, 없으면 본문(본사=담당업무 / 매장=상세요강 글)과 자격요건.
-    //   전엔 description 만 봐서 본사 공고는 아무리 채워도 안 채운 것으로 셌다.
+    // 상세요강: 이미지가 있으면 됐고, 없으면 상세요강 글. 담당업무·자격요건 칸이
+    // 상세요강 하나로 합쳐진 뒤로도 그 둘을 세고 있어, 아무리 채워도 안 채운 것으로 셌다.
     { id: "detail", label: "상세요강", done: detailImages.length > 0
-        || (!!String(isOffice ? form.responsibilities : form.description || "").trim()
-            && !!String(form.requirements || "").trim()) },
+        || !!String(form.description || "").trim() },
   ];
   const 채운칸 = 할칸.filter((c) => c.done).length;
   const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
