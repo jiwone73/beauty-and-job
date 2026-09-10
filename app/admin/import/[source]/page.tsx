@@ -100,9 +100,14 @@ export default function ImportListPage() {
             {이름[source]} <strong>{목록.length}</strong>건
             <span style={{ color: "#9a9aa0", marginLeft: 10 }}>마지막 업데이트 {시각(마지막)}</span>
           </span>
-          <button className="admin-primary-btn" onClick={업데이트} disabled={받는중}>
-            <RefreshCw size={15} /> {받는중 ? "받는 중…" : "업데이트"}
-          </button>
+          {/* 고용24는 「업데이트」가 없다. 조건을 건 목록이 로그인 뒤에 있어 우리가 받아 올 수
+              있는 건 조건 없는 최신순뿐인데, 거기 뷰티는 이백 건에 한둘이라 눌러 봐야
+              건지는 게 없다. 헷갈리기만 하니 단추를 두지 않는다 — 주소를 붙여넣는다. */}
+          {!붙여넣기가능 && (
+            <button className="admin-primary-btn" onClick={업데이트} disabled={받는중}>
+              <RefreshCw size={15} /> {받는중 ? "받는 중…" : "업데이트"}
+            </button>
+          )}
         </div>
 
         {결과 && (
@@ -120,7 +125,7 @@ export default function ImportListPage() {
         {붙여넣기가능 && (
           <div style={{ padding: "14px 16px", borderBottom: "1px solid #f2f2f4" }}>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
-              placeholder={"고용24 목록에서 복사한 공고 주소\n(…empDetailAuthView.do?wantedAuthNo=… 여러 줄)"}
+              placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8,
                 padding: "10px 12px", fontSize: 13.5, outline: "none", resize: "vertical",
                 fontFamily: "inherit", lineHeight: 1.5 }} />
