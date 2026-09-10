@@ -499,7 +499,6 @@ export default function JobPostForm({
   };
   const updateIssues = (items: { field: string; note: string }[]) => { setIssueItems(items); saveIssues(items); };
   const [contactNotice, setContactNotice] = useState("");
-  const [curating, setCurating] = useState(false);
   const [jobGroupType, setJobGroupType] = useState<"" | "기업" | "매장">("매장"); // 기본값 매장(관리자). 선택 전 직군·급여·복지 잠금 해제용
   const [categories, setCategories] = useState<string[]>([]);
   // 모집부문 표: 모집분야(=categories)별 경력·고용형태·급여·근무요일·근무시간·인원·성별우대.
@@ -1982,44 +1981,6 @@ export default function JobPostForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFindQuery, editId]);
 
-  // 큐레이션(관리자 전용): 현재 채워진 내용을 뷰티워크 톤·형식으로 AI가 다듬기
-  const runCurate = async () => {
-    const hasAny = [form.title, nmDescription, form.description, form.responsibilities, form.requirements, form.preferred, form.benefits].some((v) => (v || "").trim());
-    if (!hasAny) { setParseMsg("먼저 공고 내용을 채워주세요."); return; }
-    setCurating(true); setParseMsg("");
-    try {
-      const token = localStorage.getItem("admin_token");
-      const res = await fetch("/api/admin/external-jobs/curate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          title: form.title, company_description: nmDescription,
-          description: form.description, responsibilities: form.responsibilities,
-          requirements: form.requirements, preferred: form.preferred,
-          benefits: form.benefits,
-          job_type: jobGroupType === "기업" ? "OFFICE" : "STORE",
-        }),
-      });
-      const j = await res.json();
-      if (!j.success) { setParseMsg(j.error?.message || "큐레이션에 실패했어요."); return; }
-      const d = j.data;
-      if (!d.curated) { setParseMsg("⚠ 큐레이션에 실패했어요. 잠시 후 다시 시도해주세요."); return; }
-      setForm((f) => ({
-        ...f,
-        title: d.title || f.title,
-        description: 상세합치기(d.responsibilities, d.description, d.requirements, d.preferred)
-          || f.description,
-        responsibilities: "",
-        requirements: "",
-        preferred: "",
-        benefits: d.benefits || f.benefits,
-      }));
-      if (typeof d.company_description === "string" && d.company_description.trim()) setNmDescription(d.company_description);
-      setParseMsg("✓ 큐레이션 완료 — 내용을 뷰티워크 톤으로 다듬었어요. 확인 후 등록하세요.");
-    } catch { setParseMsg("오류가 발생했습니다."); }
-    finally { setCurating(false); }
-  };
-
   // 복리후생은 화면에 보이는 것만 나간다 — 직접 적은 것, 아니면 고른 태그.
   // 불러오기가 채운 글은 화면 어디에도 안 보이므로 쓰지 않는다. 보이지 않는 값을
   // 대신 실어 보내면 매장이 고른 것과 공고에 적힌 것이 달라진다.
@@ -2716,9 +2677,8 @@ export default function JobPostForm({
         {/* 제목은 이제 페이지 맨 위 마스트헤드가 대신 보여준다("헤더쪽 채용공고 관리를
             삭제하고 밑에 있는 채용공고 등록 텍스트를 이동해줘" — CompanyLayout의
             PAGE_TITLES["jobs-new"]). 여기는 버튼을 오른쪽 끝으로 미는 빈 자리만 남긴다. */}
-        {!isMobile && <span style={{ marginRight: "auto" }} />}
         {!isMobile && (
-          <div className="admin-form-actions">
+          <div className="admin-form-actions" style={{ flex: 1, minWidth: 0 }}>
             {/* 임시저장 버튼 + (관리자) 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출 */}
             <div ref={draftMenuRef} style={{ position: "relative", display: "inline-flex", alignItems: "stretch" }}>
               <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}
@@ -2735,7 +2695,28 @@ export default function JobPostForm({
               )}
               {draftMenuOpen && drafts.length > 0 && (
                 <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 60, width: 340, maxWidth: "80vw", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 8 }}>
-                  <div style={{ fontSize: 12, color: "#9a92a6", padding: "2px 6px 6px" }}>임시저장 {drafts.length}건 · 클릭하면 이어서 작성돼요</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "2px 6px 6px" }}>
+                    <span style={{ fontSize: 12, color: "#9a92a6" }}>임시저장 {drafts.length}건 · 클릭하면 이어서 작성돼요</span>
+                    {deleteDraft && (
+                      <button type="button" disabled={draftDeleting === "*"}
+                        onClick={async () => {
+                          if (!confirm(`임시저장 ${drafts.length}건을 모두 지울까요? 되돌릴 수 없어요.`)) return;
+                          setDraftDeleting("*");
+                          const 지운것: string[] = [];
+                          for (const d of drafts) { if (await deleteDraft(d.id)) 지운것.push(d.id); }
+                          setDraftDeleting(null);
+                          const 남은것 = drafts.filter((x) => !지운것.includes(x.id));
+                          setDrafts(남은것);
+                          if (남은것.length) { alert(`${남은것.length}건은 지우지 못했습니다.`); return; }
+                          setDraftMenuOpen(false);
+                          // 고치던 것도 함께 지워졌으니 빈 등록 화면으로 나간다.
+                          if (editId) router.push(pathname);
+                        }}
+                        style={{ marginLeft: "auto", flexShrink: 0, border: "none", background: "none", color: "#c0392b", fontSize: 12, fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
+                        {draftDeleting === "*" ? "지우는 중…" : "전체삭제"}
+                      </button>
+                    )}
+                  </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 3, maxHeight: 320, overflowY: "auto" }}>
                     {drafts.map((d) => {
                       const on = editId === d.id;
@@ -2786,16 +2767,8 @@ export default function JobPostForm({
                 🐞 이슈 <span style={{ fontSize: 12, fontWeight: 700, color: "#c0392b" }}>{issueList.length}</span>
               </button>
             )}
-            {mode === "admin" && (
-              <button type="button" className="admin-secondary-btn" onClick={runCurate} disabled={parsing || curating}>
-                {curating ? "다듬는 중..." : "✨ 큐레이션"}
-              </button>
-            )}
-            {/* 새로고침해도 브라우저에 남은 내용이 되살아나, 빈 화면에서 다시 시작할 길이 없었다. */}
-            <button type="button" onClick={초기화}
-              style={{ border: "none", background: "none", color: "#9a92a6", fontSize: 13.5, fontFamily: "inherit", cursor: "pointer", padding: "0 4px", textDecoration: "underline", textUnderlineOffset: 3 }}>
-              초기화
-            </button>
+            {/* 여기까지가 왼쪽 묶음(쓰던 것 다루기), 다음부터가 오른쪽 묶음(내보내기) */}
+            <span style={{ marginRight: "auto" }} />
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정" : "공고 등록")}
@@ -2903,6 +2876,12 @@ export default function JobPostForm({
                 ))}
               </div>
             )}
+            {/* 새로고침해도 브라우저에 남은 내용이 되살아나, 빈 화면에서 다시 시작할 길이 없었다.
+                불러오기 줄 끝에 둔다 — 불러온 것을 물리는 자리라 여기가 맞다. */}
+            <button type="button" onClick={초기화}
+              style={{ marginLeft: "auto", border: "none", background: "none", color: "#555", fontSize: 13.5, fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
+              초기화
+            </button>
           </div>
           <div style={{ background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10, padding: "12px 16px", boxSizing: "border-box" }}>
 
@@ -4128,12 +4107,6 @@ export default function JobPostForm({
         </div>
       )}
 
-      {isMobile && mode === "admin" && (
-        <button type="button" onClick={runCurate} disabled={parsing || curating}
-          style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, display: "block", padding: "10px", borderRadius: 8, border: "1px solid #582681", background: "#fff", color: "#582681", fontSize: 14, fontWeight: 700, boxSizing: "border-box", opacity: curating ? 0.6 : 1 }}>
-          {curating ? "다듬는 중..." : "✨ 큐레이션"}
-        </button>
-      )}
       {isMobile && (
         <button type="button" className="jobpost-mobile-submit" onClick={() => handleSubmit("publish")}>
           {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정 완료" : "공고 등록")}
