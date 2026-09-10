@@ -45,6 +45,16 @@ export default function ImportListPage() {
   // 그 목록 화면의 콘솔에 붙여넣으면 공고 주소를 모두 클립보드로 복사한다.
   const 주소복사코드 =
     "copy([...new Set([...document.querySelectorAll('a[href*=wantedAuthNo]')].map(a=>a.href))].join('\\n'))";
+  // 즐겨찾기로 만들어 두면 콘솔을 안 열어도 된다 — 고용24 목록에서 누르기만 하면 복사된다.
+  // 콘솔 전용인 copy() 대신 클립보드 API 를 쓴다(누른 것이 곧 사용자 동작이라 허용된다).
+  const 즐겨찾기코드 =
+    "javascript:(function(){var t=[...new Set([...document.querySelectorAll('a[href*=wantedAuthNo]')].map(function(a){return a.href}))].join('\\n');navigator.clipboard.writeText(t).then(function(){alert(t.split('\\n').length+'건 복사했습니다')})})()";
+  // React 는 href 에 javascript: 를 넣으면 막는다. 그려질 때 직접 붙인다.
+  // useEffect 로 하면 안 된다 — 첫 그림에는 이 단추가 아직 없어서 붙일 자리가 없고,
+  // 단추가 생긴 뒤에는 그 effect 가 다시 돌지 않는다.
+  const 즐겨찾기붙이기 = useCallback((el: HTMLAnchorElement | null) => {
+    el?.setAttribute("href", 즐겨찾기코드);
+  }, [즐겨찾기코드]);
 
   const token = () => (typeof window === "undefined" ? "" : localStorage.getItem("admin_token") || "");
 
@@ -149,9 +159,14 @@ export default function ImportListPage() {
                 {복사됨 === "주소" ? "복사됨" : "주소 복사"}
               </button>
               <span style={{ color: "#dcdce0" }}>|</span>
-              <span><b style={{ color: "#582681" }}>2</b> 그 화면에서 <code style={{ fontSize: 12 }}>{콘솔키}</code> 열고 붙여넣기</span>
+              <span><b style={{ color: "#582681" }}>2</b> 그 화면에서 주소 긁기</span>
+              <a ref={즐겨찾기붙이기} className="admin-secondary-btn" style={{ textDecoration: "none", cursor: "grab" }}
+                onClick={(e) => e.preventDefault()} title="즐겨찾기 막대로 끌어다 놓으세요">
+                ⇱ 주소 긁기
+              </a>
+              <span style={{ fontSize: 12, color: "#b9b3c4" }}>← 즐겨찾기로 끌어다 놓기</span>
               <button type="button" className="admin-secondary-btn" onClick={() => 복사("코드", 주소복사코드)}>
-                {복사됨 === "코드" ? "복사됨" : "코드 복사"}
+                {복사됨 === "코드" ? "복사됨" : `${콘솔키} 코드`}
               </button>
               <span style={{ color: "#dcdce0" }}>|</span>
               <span><b style={{ color: "#582681" }}>3</b> 아래 칸에 <code style={{ fontSize: 12 }}>{붙여넣기키}</code></span>
