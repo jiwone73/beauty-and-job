@@ -3708,9 +3708,11 @@ export default function JobPostForm({
             </div>
           </div>
 
-          {/* 전형절차 — 본사 공고에만. 서류·면접이 몇 번인지가 지원 여부를 가르는 값이라
-              지원 안내 안에 묻어 두지 않고 제 제목을 달고 그 앞에 선다. */}
-          {jobGroupType === "기업" && (
+          {/* 전형절차 — 본사 공고에는 늘, 매장 공고에는 값이 있을 때만. 서류·면접이 몇 번인지가
+              지원 여부를 가르는 값이라 지원 안내 안에 묻어 두지 않고 제 제목을 달고 그 앞에 선다.
+              매장에도 열어 두는 까닭: 고용24 원문의 「전형방법」이 매장 공고에도 실려 오는데,
+              폼에 자리가 없으면 미리보기·실제 공고에만 나오고 고칠 수가 없었다. */}
+          {(jobGroupType === "기업" || hiringProcess.length > 0) && (
             <>
               <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>전형절차</h2>
               <div className="company-card" style={{ overflow: "visible" }}>
@@ -3734,11 +3736,11 @@ export default function JobPostForm({
                         onClick={(e) => { if (절차열림) { set절차열림(false); return; } openPopAt(e.currentTarget, 200, 250); set절차열림(true); }}>＋</button>
                       {절차열림 && popAt && (
                         <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width: 200, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                          {PRESET_PROCESS.기업.filter((x) => !hiringProcess.includes(x)).map((x) => (
+                          {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).filter((x) => !hiringProcess.includes(x)).map((x) => (
                             <button key={x} type="button" className="jp-proc-opt"
                               onClick={() => { setHiringProcess([...hiringProcess, x]); set절차열림(false); }}>{x}</button>
                           ))}
-                          {PRESET_PROCESS.기업.every((x) => hiringProcess.includes(x)) && (
+                          {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).every((x) => hiringProcess.includes(x)) && (
                             <div style={{ fontSize: 12.5, color: "#a8a8ad", padding: "8px 10px" }}>더할 단계가 없어요</div>
                           )}
                         </div>
