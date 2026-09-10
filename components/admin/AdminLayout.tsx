@@ -28,8 +28,8 @@ const NAV_ITEMS = [
     ]
   },
   { id: "members-alba", label: "알바 근무현황", icon: Clock, href: "/admin/members/alba" },
-  // 등록 이슈는 알바가 적어 두는 것이라 근무현황 옆에 둔다.
-  { id: "jobs-issues", label: "등록 이슈", icon: Bug, href: "/admin/jobs/issues" },
+  // 시험하다 나온 것을 모으는 자리. 공고 등록 이슈도 여기 「공고등록」 영역으로 들어온다.
+  { id: "test-reports", label: "테스트 리포트", icon: Bug, href: "/admin/test-reports" },
   {
     id: "import", label: "외부공고 불러오기", icon: Download, href: "/admin/import/hairinjob",
     children: [
@@ -62,6 +62,7 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "import-hairinjob": "헤어인잡 공고 불러오기",
   "import-selectme": "셀렉미 공고 불러오기",
   "import-work24": "고용24 공고 불러오기",
+  "test-reports": "테스트 리포트",
   "jobs-issues": "등록 이슈",
   "outreach": "브랜드 리스트",
   "stories": "현장이야기",
