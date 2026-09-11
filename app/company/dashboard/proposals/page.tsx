@@ -403,35 +403,38 @@ export default function CompanyProposalsPage() {
   const 공고고르기 = (id: string) => { set고른공고(id); set고른상태("전체"); };
 
   // 스크랩 인재의 왼쪽 — 보낸 제안과 같은 모양의 공고 목록. 숫자는 그 공고로 담은 사람 수.
+  // 공고 목록은 공고 지원자 화면(ApplicantsScreen)과 같은 부품이다 — 제목 두 줄까지.
   const 스크랩사이드 = (
-    <div className="prop-side">
+    <>
       <input className="prop-side-search" placeholder="공고명 검색"
         value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
       {진행공고.filter((g) => !공고검색.trim() || g.title.includes(공고검색.trim())).map((g) => (
-        <button key={g.id} type="button" className={`prop-side-item${고른스크랩 === g.id ? " on" : ""}`}
-          onClick={() => set고른스크랩(g.id)}>
-          <span>{g.title}</span><em>{스크랩수(g.id)}</em>
+        <button key={g.id} type="button" className={`co-set-item co-jobitem${고른스크랩 === g.id ? " on" : ""}`}
+          onClick={() => set고른스크랩(g.id)} title={g.title}>
+          <span className="co-jobitem-t">{g.title}</span>
+          <span className="co-jobitem-n">{스크랩수(g.id)}</span>
         </button>
       ))}
-      <button type="button" className={`prop-side-item done${고른스크랩 === "none" ? " on" : ""}`}
+      <button type="button" className={`co-set-item co-jobitem${고른스크랩 === "none" ? " on" : ""}`}
         onClick={() => set고른스크랩("none")}>
-        <span>공고 없이 담은 사람</span><em>{스크랩수("none")}</em>
+        <span className="co-jobitem-t">공고 없이 담은 사람</span>
+        <span className="co-jobitem-n">{스크랩수("none")}</span>
       </button>
-    </div>
+    </>
   );
 
   const 사이드 = (
-    <div className="prop-side">
+    <>
       <input className="prop-side-search" placeholder="공고명 검색"
         value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
       {보일공고.map((g) => (
-        <button key={g.id} type="button" className={`prop-side-item${고른공고 === g.id ? " on" : ""}`}
-          onClick={() => 공고고르기(g.id)}>
-          <span>{g.제목}{g.마감 && <i> 마감</i>}</span>
+        <button key={g.id} type="button" className={`co-set-item co-jobitem${고른공고 === g.id ? " on" : ""}`}
+          onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
+          <span className="co-jobitem-t">{g.제목}{g.마감 && <span className="co-jobitem-off">마감</span>}</span>
           {/* 내 차례가 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
               어느 공고에 할 일이 있는지 훑어서 알 수 있다. */}
           {g.내차례 > 0 && <b className="prop-side-mine">{g.내차례}</b>}
-          <em>{g.수}</em>
+          <span className="co-jobitem-n">{g.수}</span>
         </button>
       ))}
       {접힌공고.length > 0 && (
@@ -441,14 +444,15 @@ export default function CompanyProposalsPage() {
             지난 공고 {접힌공고.length}
           </button>
           {지난것펼침 && 접힌공고.map((g) => (
-            <button key={g.id} type="button" className={`prop-side-item done${고른공고 === g.id ? " on" : ""}`}
-              onClick={() => 공고고르기(g.id)}>
-              <span>{g.제목}<i> 마감</i></span><em>{g.수}</em>
+            <button key={g.id} type="button" className={`co-set-item co-jobitem${고른공고 === g.id ? " on" : ""}`}
+              onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
+              <span className="co-jobitem-t">{g.제목}<span className="co-jobitem-off">마감</span></span>
+              <span className="co-jobitem-n">{g.수}</span>
             </button>
           ))}
         </>
       )}
-    </div>
+    </>
   );
 
   // 공고 머리 판 — 보낸 제안과 스크랩 인재가 같은 것을 그린다. 같은 공고를 두 탭에서
