@@ -389,8 +389,17 @@ export default function CompanyProposalsPage() {
           경력글(g.경력),
           g.인원 ? `${g.인원}명` : null,
         ].filter(Boolean).join("  |  ")];
+    // 상태 글은 공고·지원자와 같은 말 — 마감 7일 안이면 D-n, 당일이면 「오늘 마감」.
+    const 마감 = 마감인가(g.상태, g.마감일);
+    const 남은날 = g.마감일
+      ? Math.round((new Date(`${String(g.마감일).slice(0, 10)}T00:00:00`).getTime()
+          - new Date(new Date().toDateString()).getTime()) / 86400000)
+      : null;
+    const 상태글 = 마감 ? "마감"
+      : 남은날 !== null && 남은날 <= 7 ? (남은날 === 0 ? "오늘 마감" : `D-${남은날}`)
+      : "진행중";
     return { 제목: g.제목 || "공고 없음", 기간, 줄들: 줄들.filter(Boolean) as string[],
-             마감: 마감인가(g.상태, g.마감일) };
+             마감, 상태글 };
   };
   const 공고머리 = useMemo(() => {
     const p = 목록.find((x) => (x.jobPostingId || "none") === 고른공고);
@@ -483,15 +492,15 @@ export default function CompanyProposalsPage() {
   // 다르게 그리면 같은 것으로 안 읽힌다. 「이 공고로 제안 보내기」도 두 탭에 같이 선다.
   const 머리판 = (머리: ReturnType<typeof 머리만들기>, 공고id: string | null) => (
         <div className="co-pane-card prop-jobhead">
+              {/* 상태·기간은 공고명 위에 — 공고·지원자의 공고 머리와 같은 짜임이다.
+                  같은 공고를 두 화면이 다르게 그리면 같은 것으로 안 읽힌다. */}
               <div className="co-pane-head">
                 <div style={{ minWidth: 0 }}>
+                  <div className="co-pane-term">
+                    <span className="co-jc-badge">{머리.상태글}</span>
+                    {머리.기간}
+                  </div>
                   <h2 className="co-pane-title">{머리.제목}</h2>
-                </div>
-                {/* 기간은 공고명과 같은 줄 오른쪽에 둔다 — 제목 위에 얹으면 제목보다
-                    먼저 읽히는데, 이 판의 주인은 공고명이다. */}
-                <div className="co-pane-term">
-                  <span className="co-jc-badge">{머리.마감 ? "마감" : "진행중"}</span>
-                  {머리.기간}
                 </div>
               </div>
               <div className="co-pane-pos">

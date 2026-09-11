@@ -14788,11 +14788,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 이 화면의 회색은 한 색으로 간다(#555) — 두 단계로 나누니 어느 것이 옅은지
    화면마다 달라 보였다. */
 .co-pane-term { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #555; }
-/* 보낸 제안의 공고 머리 — 제목 줄 오른쪽 끝은 기간이, 그 아래 줄 오른쪽 끝은
-   「이 공고로 제안 보내기」가 쓴다. 둘을 한 줄에 두면 기간이 가운데에 떠서
-   어느 쪽에 붙은 값인지 읽히지 않는다. */
-.prop-jobhead .co-pane-head { align-items: baseline; }
-.prop-jobhead .co-pane-term { margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+/* 보낸 제안의 공고 머리 — 상태·기간은 공고·지원자처럼 제목 위에 서고,
+   조건 줄 오른쪽 끝은 「이 공고로 제안 보내기」가 쓴다. */
 .prop-jobhead .co-pane-pos { align-items: flex-end; }
 .prop-jobhead .co-pane-pos .co-pane-view { margin-left: auto; flex-shrink: 0; }
 /* 상태는 상자 없이 글자만 — 카드 안에 상자를 더 두지 않는다. */
