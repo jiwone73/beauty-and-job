@@ -41,7 +41,6 @@ type 제안 = {
   lastMessageAt: string | null;
   messageCount: number;
   appointmentAt: string | null;
-  applicationStatus: string | null;
   blocked: boolean;
   appliedAt: string | null;
   /** 기업이 제안을 거둔 시각. 수락 전에만 누를 수 있다. */
@@ -78,8 +77,13 @@ const 때 = (s: string) => {
 };
 
 // 상태는 하나만 정한다. 위에서부터 먼저 맞는 것이 그 사람의 상태다 —
-// 채용까지 갔으면 채팅 중이기도 하지만 말할 것은 채용이다.
-type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거절" | "취소" | "공고마감" | "답변대기";
+// 면접까지 갔으면 채팅 중이기도 하지만 말할 것은 면접이다.
+//
+// 「채용완료」는 없다. 제안은 지원서와 잇지 않는다 — 수락은 「지원하겠다」가
+// 아니라 「더 얘기해 보자」이고, 지원할 사람은 공고에 직접 지원한다. 합격·불합격은
+// 지원자 관리가 맡는다. 예전에는 그 지원서가 합격이면 여기서 채용완료라 불렀는데,
+// 같은 공고에 다른 사람이 뽑혀도 아무 표시가 없어 무엇이 끝났다는 건지 헷갈렸다.
+type 상태키 = "면접예정" | "채팅중" | "수락" | "거절" | "취소" | "공고마감" | "답변대기";
 // 색은 「지금 움직이고 있나」만 말한다. 대화가 오가는 중이면 보라, 끝맺은
 // 것이면 초록, 나머지는 기본 글자색이다 — 회색을 여러 단계로 나누면 어느
 // 것이 옅은지 화면마다 달라 보인다.
@@ -88,7 +92,7 @@ type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거
 // 첫 단계 이름을 여러 번 고쳤다. 「답변대기」는 누가 기다리는지가 없고,
 // 「답 없음」은 상대가 무시한 것처럼 읽히고, 「미응답」은 말투가 무겁다.
 // 뿌리는 이 단계만 「일어난 일」이 아니라는 데 있다 — 나머지는 다 사건인데
-// (수락·채팅·면접·채용) 여기만 아직 아무 일도 없다.
+// (수락·채팅·면접) 여기만 아직 아무 일도 없다.
 //
 // 그래서 짧은 한 마디로 끝낸다. 읽었는지는 「최근 활동」이 따로 말하므로
 // 상태 칸은 단계만 말하면 된다.
@@ -99,11 +103,11 @@ type 상태키 = "채용완료" | "면접예정" | "채팅중" | "수락" | "거
 // 아는 말이고, 자연 마감이든 사람을 뽑아 조기 마감이든 같은 말이다.
 const 상태이름: Record<상태키, string> = {
   답변대기: "대기", 수락: "수락", 채팅중: "채팅중",
-  면접예정: "면접예정", 채용완료: "채용완료",
+  면접예정: "면접예정",
   거절: "거절", 취소: "제안취소", 공고마감: "공고마감",
 };
 const 상태색: Record<상태키, string> = {
-  채용완료: "#1f7a4d", 수락: "#1f7a4d",
+  수락: "#1f7a4d",
   면접예정: "#582681", 채팅중: "#582681",
   거절: "var(--color-text)", 취소: "var(--color-text)",
   공고마감: "var(--color-text)", 답변대기: "var(--color-text)",
@@ -113,7 +117,6 @@ const 상태색: Record<상태키, string> = {
 // 잡아 놓고 매장이 공고를 내렸다고 「공고마감」이 되면 대화가 어디 갔나 싶다.
 // 공고마감은 아직 아무 일도 없는 제안에만 붙는다.
 function 상태(p: 제안): 상태키 {
-  if (p.applicationStatus === "PASSED") return "채용완료";
   if (p.declinedAt || p.blocked) return "거절";
   if (p.canceledAt) return "취소";
   if (p.appointmentAt) return "면접예정";
@@ -133,7 +136,6 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   // 한 일인지가 한 번에 읽히고, 「우리가」를 따로 붙일 이유가 없어진다.
   const 그분에게 = 님(p.userName, "에게");
   if (p.canceledAt) return { 글: `${그분에게} 보낸 제안을 거뒀습니다`, 때: p.canceledAt };
-  if (p.applicationStatus === "PASSED") return { 글: `${p.userName}님 최종합격`, 때: p.appliedAt };
   if (p.appliedAt) return { 글: `${그분} 지원했습니다`, 때: p.appliedAt };
   if (p.declinedAt) return { 글: `${그분} 거절했습니다`, 때: p.declinedAt };
   if (p.blocked) return { 글: "차단됨", 때: null };
@@ -157,7 +159,6 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
 function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null {
   const st = 상태(p);
   if (st === "거절" || st === "취소" || st === "공고마감") return null;
-  if (st === "채용완료") return { 글: "지원서 보기", 우리차례: false };
   if (st === "면접예정") return { 글: "일정 확인", 우리차례: false };
   if (st === "채팅중") return { 글: "채팅하기", 우리차례: p.lastSender === "USER" };
   if (st === "수락") return { 글: "채팅하기", 우리차례: true };
@@ -268,7 +269,7 @@ export default function CompanyProposalsPage() {
       const 내차례 = 다음할일(p)?.우리차례 ? 1 : 0;
       // 아직 끝나지 않은 제안이 하나라도 있으면 그 공고는 살아 있다 — 공고가
       // 마감돼도 대화 중이거나 면접이 잡힌 사람은 그대로 남는다.
-      const 진행 = !["거절", "취소", "공고마감", "채용완료"].includes(상태(p)) ? 1 : 0;
+      const 진행 = !["거절", "취소", "공고마감"].includes(상태(p)) ? 1 : 0;
       const 앞 = 표.get(id);
       if (앞) { 앞.수 += 1; 앞.내차례 += 내차례; 앞.살아있나 = 앞.살아있나 || !!진행; }
       else 표.set(id, {
@@ -306,13 +307,13 @@ export default function CompanyProposalsPage() {
 
   // 상태 칩은 제안이 흘러가는 차례 그대로 세운다.
   //
-  //   답변대기 → 수락 → 채팅중 → 면접예정 → 채용완료
+  //   답변대기 → 수락 → 채팅중 → 면접예정
   //
   // 0건이어도 자리를 지킨다. 있는 것만 세우면 흐름이 끊겨, 지금 어디까지 왔고
   // 어디서 막혔는지가 안 보인다. 끝난 것(거절·취소·공고마감)은 흐름 밖이라 뒤에 두고
   // 0건이면 감춘다 — 없는 일까지 자리를 잡으면 줄만 길어진다.
   const 칩들 = useMemo(() => {
-    const 흐름: 상태키[] = ["답변대기", "수락", "채팅중", "면접예정", "채용완료"];
+    const 흐름: 상태키[] = ["답변대기", "수락", "채팅중", "면접예정"];
     const 끝: 상태키[] = ["거절", "취소", "공고마감"];
     const 셈 = new Map<상태키, number>();
     for (const p of 공고고른것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
@@ -629,11 +630,11 @@ export default function CompanyProposalsPage() {
                             먼저 눈에 들어오면 부담스럽다. */}
                         {할 && (
                           <button type="button" className={할.우리차례 ? "key" : undefined}
-                            onClick={() => (st === "채용완료" ? 이력서열기(p) : set대화(p))}>
+                            onClick={() => set대화(p)}>
                             {할.글} <ChevronRight size={13} />
                           </button>
                         )}
-                        {!["채용완료", "거절", "취소"].includes(st) && (
+                        {!["거절", "취소"].includes(st) && (
                           <button type="button" onClick={() => set취소할것(p)}>
                             제안 취소 <ChevronRight size={13} />
                           </button>

@@ -47,22 +47,20 @@ type Proposal = {
   positionLines: string[];
   message_count: number;
   appointment_at: string | null;
-  application_status: string | null;
 };
 
 // 상태는 기업의 「공고별 보낸 제안」과 같은 말을 쓴다 — 같은 제안을 놓고 두
 // 화면이 다르게 부르면 매장과 구직자가 다른 것을 세게 된다.
 // 이미 무슨 일이 일어난 제안은 공고가 닫혀도 그 상태를 지킨다. 공고마감은
 // 아직 아무 일도 없는 제안에만 붙는다.
-type 상태키 = "채용완료" | "취소됨" | "면접예정" | "채팅중" | "수락" | "거절" | "공고마감" | "대기";
+type 상태키 = "취소됨" | "면접예정" | "채팅중" | "수락" | "거절" | "공고마감" | "대기";
 const 상태색: Record<상태키, string> = {
-  채용완료: "#1f7a4d", 수락: "#1f7a4d",
+  수락: "#1f7a4d",
   면접예정: "var(--color-primary)", 채팅중: "var(--color-primary)",
   거절: "var(--color-text)", 공고마감: "var(--color-text)", 대기: "var(--color-text)",
   취소됨: "var(--color-text)",
 };
 function 상태(p: Proposal): 상태키 {
-  if (p.application_status === "PASSED") return "채용완료";
   // 매장이 거둔 제안. 알림은 이미 갔으므로 조용히 사라지지 않고 그대로 남는다 —
   // 알림을 누르고 들어왔는데 아무것도 없으면 더 이상하다.
   if (p.canceled_at) return "취소됨";

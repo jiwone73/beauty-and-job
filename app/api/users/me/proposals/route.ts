@@ -28,10 +28,6 @@ export async function GET(req: NextRequest) {
                 WHERE m.proposal_id = p.id AND m.kind = 'APPOINTMENT'
                   AND m.appointment_status = 'ACCEPTED'
                 ORDER BY m.appointment_at DESC LIMIT 1) AS appointment_at,
-              (SELECT ap.status FROM applications ap
-                WHERE ap.user_id = p.user_id AND ap.job_posting_id = p.job_posting_id
-                  AND ap.status <> 'WITHDRAWN'
-                ORDER BY ap.applied_at DESC LIMIT 1) AS application_status,
               up.region_prefer, up.work_type_prefer
        FROM proposals p
        JOIN companies c    ON c.id  = p.company_id
