@@ -413,11 +413,15 @@ export default function TalentPage() {
     }
     setProposeSending(true);
     try {
-      await companyTalentApi.propose(proposeTarget.id, { jobPostingId: proposeJobId, positionIndex: proposePos, message: proposeMessage.trim() });
+      const r: any = await companyTalentApi.propose(proposeTarget.id, { jobPostingId: proposeJobId, positionIndex: proposePos, message: proposeMessage.trim() });
       alert("제안을 보냈어요.");
       const 보낸이 = proposeTarget.id;
       const 지금 = new Date().toISOString();
-      setTalents((prev) => prev.map((t) => (t.id === 보낸이 ? { ...t, proposedAt: 지금 } : t)));
+      // 공고 없이 담아 둔 사람이면 서버가 스크랩을 이 공고로 옮긴다. 북마크 목록도 따라간다.
+      const 담은곳: string[] | undefined = r?.data?.scrapJobIds;
+      setTalents((prev) => prev.map((t) => (t.id === 보낸이
+        ? { ...t, proposedAt: 지금, ...(담은곳 ? { scrapJobIds: 담은곳, isScrapped: 담은곳.length > 0 } : {}) }
+        : t)));
       setProposeTarget(null);
     } catch (e: any) {
       alert(e?.message || "제안 전송에 실패했습니다.");

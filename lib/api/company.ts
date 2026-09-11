@@ -165,5 +165,5 @@ export const companyTalentApi = {
     api.delete<ApiResponse<{ scrapped: boolean; scrapJobIds: string[] }>>(
       `/api/company/talent/${userId}/scrap${job ? `?job=${encodeURIComponent(job)}` : ""}`),
   propose: (userId: string, body: { jobPostingId: string; positionIndex?: number | null; message: string }) =>
-    api.post<ApiResponse<{ sent: boolean }>>(`/api/company/talent/${userId}/propose`, body),
+    api.post<ApiResponse<{ sent: boolean; scrapJobIds?: string[] }>>(`/api/company/talent/${userId}/propose`, body),
 };

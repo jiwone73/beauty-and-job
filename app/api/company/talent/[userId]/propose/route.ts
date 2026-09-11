@@ -119,12 +119,40 @@ export async function POST(
       ]
     );
 
+    // 공고 없이 담아 둔 사람이면 스크랩도 이 공고로 옮긴다. 제안은 보냈는데 스크랩
+    // 목록에는 계속 「공고 없이 담은 사람」으로 남아, 아직 공고가 없는 사람처럼 보였다.
+    // 이 공고로도 이미 담아 두었으면 공고 없는 쪽만 지운다. 다른 공고로 담아 둔 것은
+    // 건드리지 않는다. 옮기다 실패해도 제안은 이미 나갔으니 막지 않는다.
+    let scrapJobIds: string[] | undefined;
+    try {
+      await client.query(
+        `DELETE FROM company_talent_scraps
+          WHERE company_id = $1 AND user_id = $2 AND job_posting_id IS NULL
+            AND EXISTS (SELECT 1 FROM company_talent_scraps s
+                         WHERE s.company_id = $1 AND s.user_id = $2 AND s.job_posting_id = $3)`,
+        [auth!.sub, params.userId, jobPostingId]
+      );
+      await client.query(
+        `UPDATE company_talent_scraps SET job_posting_id = $3
+          WHERE company_id = $1 AND user_id = $2 AND job_posting_id IS NULL`,
+        [auth!.sub, params.userId, jobPostingId]
+      );
+      const 담은 = await client.query(
+        `SELECT COALESCE(job_posting_id::text, 'none') AS j FROM company_talent_scraps
+          WHERE company_id = $1 AND user_id = $2`,
+        [auth!.sub, params.userId]
+      );
+      scrapJobIds = 담은.rows.map((x: any) => x.j);
+    } catch (e) {
+      console.error("[talent propose] 스크랩 옮기기 실패", e);
+    }
+
     if (target.email) {
       sendProposalEmail(target.email, target.name || "회원", jobTitle, companyName, message, jobPostingId)
         .catch((e) => console.error("[email] 제안 발송 실패", e));
     }
 
-    return ok({ sent: true });
+    return ok({ sent: true, scrapJobIds });
   } catch (e: any) {
     console.error("[talent propose]", e);
     return err("PROPOSAL_001", "제안 전송에 실패했습니다: " + e.message, 500);
