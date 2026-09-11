@@ -14779,11 +14779,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    보인다. 흰 바탕과 여백만으로 갈린다. */
 /* 카드 밑에 진한 선 하나 — 여기서 공고가 끝나고 지원자가 시작한다. */
 .co-pane-card { position: relative; background: #fff; border-radius: 12px 12px 0 0; padding: 20px 22px 22px; }
-/* 선은 카드 테두리가 아니라 지원자 카드와 같은 폭으로 — 좌우 22px 안쪽. */
-.co-pane-card::after {
-  content: ""; position: absolute; left: 22px; right: 22px; bottom: 0;
-  height: 1px; background: #555;
-}
+/* 공고 머리와 아래 목록 사이의 구분선은 걷었다 — 그 자리를 「이 공고의 지원자 N명 ⌄」
+   띠(.co-pane-band)가 맡는다. 선만으로는 아래가 이 공고에 딸린 것인지 안 읽혔다. */
 .co-pane-head { display: flex; align-items: flex-start; gap: 14px; }
 /* 이 화면의 회색은 한 색으로 간다(#555) — 두 단계로 나누니 어느 것이 옅은지
    화면마다 달라 보였다. */
@@ -15167,7 +15164,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    카드는 그 아래 하나만 선다. */
 /* 지원자 쪽을 다시 상자로 감싸지 않는다 — 카드는 사람 하나마다 하나다.
    여기서는 자리만 잡고, 왼쪽 끝은 공고 글과 같은 22px 에 선다. */
-.co-pane-list { margin-top: 30px; }
+.co-pane-list { margin-top: 0; }
 .co-pane-card,
 .co-pane .apl-bar,
 .co-pane-apps { background: transparent; }
@@ -15250,11 +15247,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 공고 머리 — 공고·지원자 관리의 .co-pane-card 를 그대로 쓴다. 이 화면에서는
    카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백만 걷는다. */
-.prop-jobhead { padding: 0 0 16px; margin-bottom: 30px; }
-/* 공고 머리 구분선 밑 가운데의 아래 화살표 — 아래 목록(지원자·보낸 제안·스크랩)이
-   이 공고에 딸린 것이라는 표시. 누르는 단추가 아니고 늘 아래를 가리킨다. */
-.co-pane-arrow { position: absolute; left: 50%; bottom: -22px; transform: translateX(-50%); color: #555; pointer-events: none; }
-.prop-jobhead::after { left: 0; right: 0; }
+.prop-jobhead { padding: 0 0 14px; margin-bottom: 0; }
+/* 공고 머리 밑 띠 — 아래 목록이 이 공고의 지원자·보낸 제안·스크랩이라는 것을 글로 말한다.
+   바탕은 사이드 메뉴 선택색과 같은 회색, 글자는 #555. 누르는 단추가 아니다. */
+.co-pane-band { display: flex; align-items: center; justify-content: center; gap: 6px;
+  height: 38px; border-radius: 8px; background: #f7f7f8; font-size: 14px; color: #555; margin-bottom: 12px; }
+.co-pane-list > .co-pane-band { margin: 0 22px 12px; }
+
 
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: -8px; }
 .prop-chipwrap { display: inline-flex; align-items: center; }
@@ -15282,7 +15281,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    아래 칩과 뜨지 않게 붙인다. */
 /* 판이 flex column + gap 20px 이라 줄 사이 여백은 그 gap 이 맡는다.
    여기에 margin 을 더하면 28px 이 되어 표가 멀리 떨어진다. */
-.prop-bar { padding: 0; background: none; border-bottom: none; margin-bottom: -8px; }
 .prop-mine { color: var(--color-primary); }
 
 .prop-tablewrap {

@@ -638,18 +638,15 @@ function CompanyJobsContent() {
                         )}
                       </span>
                     </div>
-                    {/* 아래 목록이 이 공고의 지원자라는 표시 — 보낸 제안·스크랩과 같다.
-                        누르는 단추가 아니고 접히지 않는다. */}
-                    <ChevronDown className="co-pane-arrow" size={18} aria-hidden="true" />
                   </div>
 
                   <div className="co-pane-list">
-                  {/* 지원자 머리줄 — 몇 명인지와 상태 고르개만. 검색과 정렬은
-                      뺀다: 한 공고의 지원자는 몇 명뿐이라 훑는 것이 빠르고,
-                      차례는 늘 최근 지원이 위다. */}
-                  <div className="apl-bar">
-                    <span className="apl-bar-n"><em>지원자</em> 총 {목록.length}명</span>
-                    {안본 > 0 && <><span className="apl-bar-sep">|</span><span className="apl-bar-n">미열람 {안본}</span></>}
+                  {/* 공고 머리 밑 띠 — 아래 목록이 이 공고의 지원자라는 것을 글로 말한다.
+                      보낸 제안·스크랩과 같은 부품이다. 몇 명인지도 여기서 말한다. */}
+                  <div className="co-pane-band">
+                    <span>이 공고의 지원자 {목록.length}명</span>
+                    {안본 > 0 && <><span className="apl-bar-sep">|</span><span>미열람 {안본}</span></>}
+                    <ChevronDown size={16} aria-hidden="true" />
                   </div>
 
                   <div className="co-pane-apps">

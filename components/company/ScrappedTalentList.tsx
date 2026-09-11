@@ -10,7 +10,7 @@ import type { TalentItem } from "@/lib/api/company";
 // 한다(왼쪽 숫자와 오른쪽 목록이 같은 데이터에서 나와야 어긋나지 않는다).
 // 카드는 인재 검색과 같은 것 — 북마크로 다른 공고에 더 담거나 뺄 수 있다.
 export default function ScrappedTalentList({
-  base, talents, loading, scrapJobs, onScrapJob, chips, proposeJobId,
+  base, talents, loading, scrapJobs, onScrapJob, chips, proposeJobId, hideCount,
 }: {
   base: string;
   talents: TalentItem[];
@@ -22,6 +22,8 @@ export default function ScrappedTalentList({
   chips?: React.ReactNode;
   /** 왼쪽에서 고른 공고 — 제안하기를 누르면 그 공고가 골라진 채로 제안 창이 열린다. */
   proposeJobId?: string;
+  /** 위에 공고 머리 띠(「이 공고로 스크랩한 인재 N명」)가 있으면 「총 N명」 줄을 두지 않는다. */
+  hideCount?: boolean;
 }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -54,9 +56,11 @@ export default function ScrappedTalentList({
 
       {chips}
 
-      <div style={{ fontSize: 14, color: "#555", margin: "0 0 8px" }}>
-        총 <strong>{filtered.length}</strong>명
-      </div>
+      {!hideCount && (
+        <div style={{ fontSize: 14, color: "#555", margin: "0 0 8px" }}>
+          총 <strong>{filtered.length}</strong>명
+        </div>
+      )}
 
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>

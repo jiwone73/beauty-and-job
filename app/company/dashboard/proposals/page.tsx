@@ -519,10 +519,15 @@ export default function CompanyProposalsPage() {
                   </button>
                 )}
               </div>
-              {/* 아래 목록이 이 공고의 보낸 제안·스크랩이라는 표시. 누르는 단추가 아니다 —
-                  늘 아래를 가리키고 접히지 않는다. */}
-              <ChevronDown className="co-pane-arrow" size={18} aria-hidden="true" />
             </div>
+  );
+  // 공고 머리 밑 띠 — 아래 목록이 이 공고의 것이라는 것을 글로 말한다. 공고·지원자와
+  // 같은 부품이다. 몇 명인지도 여기서 말하므로 「총 N명」 줄을 따로 두지 않는다.
+  const 띠 = (글: string, 덧?: React.ReactNode) => (
+    <div className="co-pane-band">
+      <span>{글}</span>{덧}
+      <ChevronDown size={16} aria-hidden="true" />
+    </div>
   );
 
   return (
@@ -530,10 +535,12 @@ export default function CompanyProposalsPage() {
       {스크랩모드 ? (
         <>
           {스크랩머리 && 머리판(스크랩머리, 고른스크랩)}
+          {스크랩머리 && 띠(`이 공고로 스크랩한 인재 ${보일스크랩.length}명`)}
           <ScrappedTalentList base={base} loading={스크랩로딩}
             talents={보일스크랩}
             scrapJobs={진행공고} onScrapJob={스크랩담기}
             proposeJobId={고른스크랩 || undefined}
+            hideCount={!!스크랩머리}
             chips={고른스크랩 ? undefined : (
               // .prop-chips 는 보낸 제안 표에 붙으려고 아래 여백이 -8px 이다. 여기는
               // 바로 밑이 「총 N명」 줄이라 그대로 두면 글자를 덮는다.
@@ -560,13 +567,8 @@ export default function CompanyProposalsPage() {
       {/* 표 머리줄 — 공고 블록과 아래 표를 갈라 준다. 이것이 없으면 상태 칩이
           공고에 딸린 것인지 표에 딸린 것인지 안 갈렸다. 공고·지원자의
           「지원자 총 N명」과 같은 자리·같은 짜임이다. */}
-      <div className="apl-bar prop-bar">
-        <span className="apl-bar-n"><em>보낸 제안</em> 총 {공고고른것.length}명</span>
-        {우리차례수 > 0 && (
-          <><span className="apl-bar-sep">|</span>
-            <span className="apl-bar-n prop-mine">내 차례 {우리차례수}</span></>
-        )}
-      </div>
+      {띠(공고머리 ? `이 공고로 제안한 인재 ${공고고른것.length}명` : `보낸 제안 ${공고고른것.length}명`,
+        우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">내 차례 {우리차례수}</span></> : null)}
 
       {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
           어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
