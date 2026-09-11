@@ -426,7 +426,12 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
            28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
         .co-set-main { flex: 1; min-width: 0;
           border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
-        .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center; }
+        /* 제목은 머리줄(헤더) 한가운데에 선다 — 사이드가 없는 화면(.co-top-title)과 같은 자리.
+           본문 칸 안에서 가운데로 두면 사이드 폭(176) + 간격(28) + 구분선(1)의 절반만큼
+           오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.
+           옮긴 상자가 사이드 윗부분에 걸치므로 누름은 통과시킨다. */
+        .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center;
+          position: relative; left: calc((176px + 28px + 1px) / -2); pointer-events: none; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.

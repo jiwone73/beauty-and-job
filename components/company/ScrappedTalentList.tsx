@@ -1,8 +1,6 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TalentCard from "@/components/company/TalentCard";
-import { Search } from "lucide-react";
 import type { TalentItem } from "@/lib/api/company";
 
 // 스크랩 인재 목록 — 채용제안 화면의 본문 자리. 왼쪽에서 공고를 고르면 화면이
@@ -26,7 +24,6 @@ export default function ScrappedTalentList({
   hideCount?: boolean;
 }) {
   const router = useRouter();
-  const [search, setSearch] = useState("");
 
   // 전체 스크랩(공고를 안 고른 때)에서는 카드마다 어느 공고에 담겼는지 붙인다.
   // 여러 공고에 담겼으면 첫 공고 「외 N」, 진행 중인 공고가 아니면 「지난 공고」.
@@ -39,21 +36,12 @@ export default function ScrappedTalentList({
     return ids.length > 1 ? `${이름} 외 ${ids.length - 1}` : 이름;
   };
 
-  const filtered = talents.filter((t) =>
-    !search
-    || (t.name || "").includes(search)
-    || (t.mainJobGroup || "").includes(search)
-    || (t.subJob || "").includes(search)
-  );
+  // 검색창은 두지 않는다 — 스크랩은 매장이 골라 담은 사람이라 많지 않다. 공고와
+  // 연결 칩으로 추리면 충분하다.
+  const filtered = talents;
 
   return (
     <div style={{ width: "100%" }}>
-      <div className="admin-search-wrap" style={{ maxWidth: 400, marginBottom: 12 }}>
-        <Search size={16} className="admin-search-icon" />
-        <input className="admin-search-input" placeholder="이름, 직군 검색"
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
-
       {chips}
 
       {!hideCount && (
