@@ -10,15 +10,17 @@ import type { TalentItem } from "@/lib/api/company";
 // 한다(왼쪽 숫자와 오른쪽 목록이 같은 데이터에서 나와야 어긋나지 않는다).
 // 카드는 인재 검색과 같은 것 — 북마크로 다른 공고에 더 담거나 뺄 수 있다.
 export default function ScrappedTalentList({
-  base, talents, loading, scrapJobs, onScrapJob, heading,
+  base, talents, loading, scrapJobs, onScrapJob, heading, proposeJobId,
 }: {
   base: string;
   talents: TalentItem[];
   loading: boolean;
   scrapJobs: { id: string; title: string }[];
   onScrapJob: (t: TalentItem, key: string, on: boolean) => void;
-  /** 고른 공고 이름 */
+  /** 목록 위에 붙일 이름(「공고 없이 담은 사람」). 공고는 위쪽 공고 머리가 말하므로 비운다. */
   heading?: string;
+  /** 왼쪽에서 고른 공고 — 제안하기를 누르면 그 공고가 골라진 채로 제안 창이 열린다. */
+  proposeJobId?: string;
 }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -52,7 +54,7 @@ export default function ScrappedTalentList({
             <TalentCard key={t.id} t={t} base={base}
               onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)}
               onToggleScrap={() => {}}
-              onPropose={(x) => router.push(`${base}/talent?propose=${x.id}`)}
+              onPropose={(x) => router.push(`${base}/talent?propose=${x.id}${proposeJobId ? `&job=${proposeJobId}` : ""}`)}
               scrapJobs={scrapJobs} onScrapJob={onScrapJob} />
           ))}
         </div>

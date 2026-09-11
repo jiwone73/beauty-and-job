@@ -204,7 +204,7 @@ export default function CompanyProposalsPage() {
   // 왼쪽 숫자와 오른쪽 목록이 한 데이터에서 나오도록 여기서 한 번에 부른다.
   const [스크랩인재, set스크랩인재] = useState<TalentItem[]>([]);
   const [스크랩로딩, set스크랩로딩] = useState(true);
-  const [진행공고, set진행공고] = useState<{ id: string; title: string }[]>([]);
+  const [진행공고, set진행공고] = useState<{ id: string; title: string; raw?: any }[]>([]);
   const [고른스크랩, set고른스크랩] = useState<string | null>(null); // 공고 id 또는 "none"
   useEffect(() => {
     if (!스크랩모드) return;
@@ -217,7 +217,7 @@ export default function CompanyProposalsPage() {
         ]);
         const 공고 = (잡?.success && 잡.data ? 잡.data : [])
           .filter((j: any) => !j.deadline || new Date(j.deadline) >= new Date(new Date().toDateString()))
-          .map((j: any) => ({ id: j.id, title: j.title }));
+          .map((j: any) => ({ id: j.id, title: j.title, raw: j }));
         set진행공고(공고);
         set스크랩인재(인?.success ? (인.data || []) : []);
         set고른스크랩((v) => v ?? (공고[0]?.id || "none"));
@@ -344,15 +344,18 @@ export default function CompanyProposalsPage() {
     [공고고른것]
   );
 
-  const 공고머리 = useMemo(() => {
-    const p = 목록.find((x) => (x.jobPostingId || "none") === 고른공고);
-    if (!p) return null;
+  // 공고 머리는 한 벌로 만든다. 보낸 제안은 제안 줄에 딸려 온 공고 값으로, 스크랩 인재는
+  // 공고 목록의 값으로 — 스크랩만 있고 제안은 아직 없는 공고도 같은 머리를 그려야 해서다.
+  const 머리만들기 = (g: {
+    제목: string | null; 시작: string | null; 마감일: string | null; 부문: any; 직군: any;
+    고용형태: string | null; 경력: string | null; 인원: number | null; 상태: string | null;
+  }) => {
     const md = (s: string) => {
       const d = new Date(s);
       return `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
     };
-    const 기간 = p.jobCreatedAt
-      ? `${md(p.jobCreatedAt)} ~ ${p.jobDeadline ? md(p.jobDeadline) : "상시"}`
+    const 기간 = g.시작
+      ? `${md(g.시작)} ~ ${g.마감일 ? md(g.마감일) : "상시"}`
       : "";
     // 조건 줄은 공고·지원자 관리와 같은 차례로 만든다. 모집부문이 있으면
     // 부문마다 한 줄, 없으면 공고에 적힌 직군·고용형태·경력으로 한 줄이다.
@@ -361,18 +364,39 @@ export default function CompanyProposalsPage() {
       v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
     // 모집분야 한 줄은 lib/positionLine 이 맡는다. 여기 따로 적어 두었더니
     // 규칙이 갈렸다 — 성별 「무관」을 빼는 것이 한쪽에만 들어갔다.
-    const 부문 = Array.isArray(p.jobPositions) ? p.jobPositions : [];
+    const 부문 = Array.isArray(g.부문) ? g.부문 : [];
     const 줄들 = 부문.length > 0
       ? 부문.map((x: any) => 모집분야한줄(x, false))
       : [[
-          (p.jobCategories || []).join(" · "),
-          p.jobEmploymentType,
-          경력글(p.jobExperienceLevel),
-          p.jobHeadcount ? `${p.jobHeadcount}명` : null,
+          (Array.isArray(g.직군) ? g.직군 : []).join(" · "),
+          g.고용형태,
+          경력글(g.경력),
+          g.인원 ? `${g.인원}명` : null,
         ].filter(Boolean).join("  |  ")];
-    return { 제목: p.jobTitle || "공고 없음", 기간, 줄들: 줄들.filter(Boolean),
-             마감: 마감인가(p.jobStatus, p.jobDeadline) };
+    return { 제목: g.제목 || "공고 없음", 기간, 줄들: 줄들.filter(Boolean) as string[],
+             마감: 마감인가(g.상태, g.마감일) };
+  };
+  const 공고머리 = useMemo(() => {
+    const p = 목록.find((x) => (x.jobPostingId || "none") === 고른공고);
+    if (!p) return null;
+    return 머리만들기({
+      제목: p.jobTitle, 시작: p.jobCreatedAt, 마감일: p.jobDeadline, 부문: p.jobPositions,
+      직군: p.jobCategories, 고용형태: p.jobEmploymentType, 경력: p.jobExperienceLevel,
+      인원: p.jobHeadcount, 상태: p.jobStatus,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [목록, 고른공고]);
+  // 스크랩 인재의 공고 머리 — 보낸 제안과 같은 모양. 「공고 없이 담은 사람」에는 없다.
+  const 스크랩머리 = useMemo(() => {
+    const g = 진행공고.find((x) => x.id === 고른스크랩)?.raw;
+    if (!g) return null;
+    return 머리만들기({
+      제목: g.title, 시작: g.created_at, 마감일: g.deadline, 부문: g.positions,
+      직군: g.categories, 고용형태: g.employment_type, 경력: g.experience_level,
+      인원: g.headcount, 상태: g.status,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [진행공고, 고른스크랩]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
 
   const 공고고르기 = (id: string) => { set고른공고(id); set고른상태("전체"); };
@@ -426,49 +450,57 @@ export default function CompanyProposalsPage() {
     </div>
   );
 
+  // 공고 머리 판 — 보낸 제안과 스크랩 인재가 같은 것을 그린다. 같은 공고를 두 탭에서
+  // 다르게 그리면 같은 것으로 안 읽힌다. 「이 공고로 제안 보내기」도 두 탭에 같이 선다.
+  const 머리판 = (머리: ReturnType<typeof 머리만들기>, 공고id: string | null) => (
+        <div className="co-pane-card prop-jobhead">
+              <div className="co-pane-head">
+                <div style={{ minWidth: 0 }}>
+                  <h2 className="co-pane-title">{머리.제목}</h2>
+                </div>
+                {/* 기간은 공고명과 같은 줄 오른쪽에 둔다 — 제목 위에 얹으면 제목보다
+                    먼저 읽히는데, 이 판의 주인은 공고명이다. */}
+                <div className="co-pane-term">
+                  <span className="co-jc-badge">{머리.마감 ? "마감" : "진행중"}</span>
+                  {머리.기간}
+                </div>
+              </div>
+              <div className="co-pane-pos">
+                <div style={{ minWidth: 0 }}>
+                  {머리.줄들.map((줄: string, i: number) => (
+                    <div key={i} className="co-pane-posline">{줄}</div>
+                  ))}
+                </div>
+                {/* 이 화면에서 다음에 할 일은 하나다 — 이 공고로 사람을 더 찾는 것.
+                    보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다.
+                    제목 줄 오른쪽은 기간이 쓰므로 한 줄 아래에 선다. */}
+                {!머리.마감 && 공고id && 공고id !== "none" && (
+                  <button type="button" className="co-pane-view"
+                    onClick={() => router.push(`${base}/talent?job=${공고id}`)}>
+                    이 공고로 제안 보내기 <ChevronRight size={15} />
+                  </button>
+                )}
+              </div>
+            </div>
+  );
+
   return (
     <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"} sideExtra={스크랩모드 ? 스크랩사이드 : 사이드}>
       {스크랩모드 ? (
-        <ScrappedTalentList base={base} loading={스크랩로딩}
-          talents={스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩 || ""))}
-          scrapJobs={진행공고} onScrapJob={스크랩담기}
-          heading={고른스크랩 === "none" ? "공고 없이 담은 사람" : 진행공고.find((g) => g.id === 고른스크랩)?.title} />
+        <>
+          {스크랩머리 && 머리판(스크랩머리, 고른스크랩)}
+          <ScrappedTalentList base={base} loading={스크랩로딩}
+            talents={스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩 || ""))}
+            scrapJobs={진행공고} onScrapJob={스크랩담기}
+            heading={고른스크랩 === "none" ? "공고 없이 담은 사람" : undefined}
+            proposeJobId={고른스크랩 && 고른스크랩 !== "none" ? 고른스크랩 : undefined} />
+        </>
       ) : (<>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
           다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸
           제안의 조건이 바뀐다 — 고치는 일은 공고·지원자에서 한다. */}
-      {공고머리 && (
-        <div className="co-pane-card prop-jobhead">
-          <div className="co-pane-head">
-            <div style={{ minWidth: 0 }}>
-              <h2 className="co-pane-title">{공고머리.제목}</h2>
-            </div>
-            {/* 기간은 공고명과 같은 줄 오른쪽에 둔다 — 제목 위에 얹으면 제목보다
-                먼저 읽히는데, 이 판의 주인은 공고명이다. */}
-            <div className="co-pane-term">
-              <span className="co-jc-badge">{공고머리.마감 ? "마감" : "진행중"}</span>
-              {공고머리.기간}
-            </div>
-          </div>
-          <div className="co-pane-pos">
-            <div style={{ minWidth: 0 }}>
-              {공고머리.줄들.map((줄: string, i: number) => (
-                <div key={i} className="co-pane-posline">{줄}</div>
-              ))}
-            </div>
-            {/* 이 화면에서 다음에 할 일은 하나다 — 이 공고로 사람을 더 찾는 것.
-                보내는 자리는 인재 검색 그대로고, 공고를 다시 고르는 수고만 던다.
-                제목 줄 오른쪽은 기간이 쓰므로 한 줄 아래에 선다. */}
-            {!공고머리.마감 && 고른공고 && 고른공고 !== "none" && (
-              <button type="button" className="co-pane-view"
-                onClick={() => router.push(`${base}/talent?job=${고른공고}`)}>
-                이 공고로 제안 보내기 <ChevronRight size={15} />
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+      {공고머리 && 머리판(공고머리, 고른공고)}
 
       {/* 표 머리줄 — 공고 블록과 아래 표를 갈라 준다. 이것이 없으면 상태 칩이
           공고에 딸린 것인지 표에 딸린 것인지 안 갈렸다. 공고·지원자의

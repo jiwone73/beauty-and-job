@@ -225,7 +225,13 @@ export default function TalentPage() {
       if (res.success && res.data) {
         setTalents(res.data);
         if (보낼사람) {
-          const 그사람 = res.data.find((t) => t.id === 보낼사람);
+          // 공고를 들고 넘어오면 목록이 그 공고의 직군으로 걸러져 있어, 스크랩해 둔 사람이
+          // 안 들어 있을 수 있다(네일 공고로 담아 둔 헤어 경력자). 그러면 스크랩 목록에서 찾는다.
+          let 그사람: TalentItem | undefined = res.data.find((t) => t.id === 보낼사람);
+          if (!그사람) {
+            const r2: any = await companyTalentApi.list({ scrapped: true, limit: 200 }).catch(() => null);
+            그사람 = r2?.success ? (r2.data || []).find((t: TalentItem) => t.id === 보낼사람) : undefined;
+          }
           if (그사람) openPropose(그사람);
           set보낼사람(null);
         }
