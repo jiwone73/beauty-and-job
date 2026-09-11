@@ -316,9 +316,9 @@ export default function CompanyProposalsPage() {
     const 끝: 상태키[] = ["거절", "취소", "공고마감"];
     const 셈 = new Map<상태키, number>();
     for (const p of 공고고른것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
-    // 흐름이 왼쪽 끝에서 시작한다. 「전체」를 앞에 두면 흐름이 가운데로 밀려
-    // 어디서 시작하는지 안 보인다. 흐름이 아닌 것(끝난 것과 전체)은 오른쪽에
-    // 모은다.
+    // 「전체」가 맨 앞 — 기본으로 골라져 있는 칸이라 첫 자리가 자연스럽다. 그 뒤로
+    // 선 하나를 두고 흐름이 이어서 시작하고, 흐름 밖에서 끝난 것(제안취소 등)은
+    // 오른쪽 끝에 떼어 둔다. 그리는 차례는 아래 칩 줄이 정한다.
     return [
       ...흐름.map((k) => ({ 키: k, 수: 셈.get(k) || 0 })),
       ...끝.filter((k) => (셈.get(k) || 0) > 0).map((k) => ({ 키: k, 수: 셈.get(k)! })),
@@ -518,22 +518,36 @@ export default function CompanyProposalsPage() {
           끝난 것(거절·제안취소·공고마감)과 「전체」는 흐름 밖이라 선으로 떼어
           오른쪽에 모은다 — 흐름 앞에 두면 흐름이 왼쪽 끝에서 시작하지 못한다. */}
       <div className="prop-chips">
-        {칩들.map((c, i) => {
-          const 흐름 = !["전체", "거절", "취소", "공고마감"].includes(c.키);
-          const 앞흐름 = i > 0 && !["전체", "거절", "취소", "공고마감"].includes(칩들[i - 1].키);
-          return (
-            <span key={c.키} className="prop-chipwrap">
-              {i > 0 && (흐름 && 앞흐름
-                ? <i className="prop-arrow">›</i>
-                : <i className="prop-sep" />)}
-              <button type="button"
-                className={`prop-chip${고른상태 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
-                onClick={() => set고른상태(c.키 as 상태키 | "전체")}>
-                {c.키 === "전체" ? "전체" : 상태이름[c.키 as 상태키]}<em>{c.수}</em>
-              </button>
-            </span>
+        {(() => {
+          const 끝키 = ["거절", "취소", "공고마감"];
+          const 칩 = (c: { 키: string; 수: number }) => (
+            <button type="button"
+              className={`prop-chip${고른상태 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
+              onClick={() => set고른상태(c.키 as 상태키 | "전체")}>
+              {c.키 === "전체" ? "전체" : 상태이름[c.키 as 상태키]}<em>{c.수}</em>
+            </button>
           );
-        })}
+          const 전체칩 = 칩들.find((c) => c.키 === "전체");
+          const 흐름칩 = 칩들.filter((c) => c.키 !== "전체" && !끝키.includes(c.키));
+          const 끝칩 = 칩들.filter((c) => 끝키.includes(c.키));
+          return (
+            <>
+              {/* 전체 | 흐름(화살표로 잇는다) ……… 끝난 것 */}
+              {전체칩 && <span className="prop-chipwrap">{칩(전체칩)}</span>}
+              {흐름칩.map((c, i) => (
+                <span key={c.키} className="prop-chipwrap">
+                  {i === 0 ? <i className="prop-sep" /> : <i className="prop-arrow">›</i>}
+                  {칩(c)}
+                </span>
+              ))}
+              {끝칩.length > 0 && (
+                <span className="prop-chips-end">
+                  {끝칩.map((c) => <span key={c.키} className="prop-chipwrap">{칩(c)}</span>)}
+                </span>
+              )}
+            </>
+          );
+        })()}
       </div>
 
       {로딩 ? (

@@ -15255,6 +15255,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: -8px; }
 .prop-chipwrap { display: inline-flex; align-items: center; }
+/* 흐름 밖에서 끝난 것(제안취소·거절·공고마감)은 칩 줄 오른쪽 끝에 떼어 둔다. */
+.prop-chips-end { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
 /* 흐름을 잇는 화살표. 누르는 것이 아니라 방향만 말한다. */
 .prop-arrow { font-style: normal; padding: 0 4px; color: var(--color-text); font-size: 18px; line-height: 1; }
 /* 흐름 밖(전체·거절·기간지남)과 떼어 두는 자리. */
