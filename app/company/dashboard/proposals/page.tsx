@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -435,6 +436,14 @@ export default function CompanyProposalsPage() {
           <span className="co-jobitem-n">{스크랩수(g.id)}</span>
         </button>
       ))}
+      {/* 진행 중인 공고가 없으면 공고별 스크랩 아래가 비어 보인다. 머리줄의 「공고 등록」과
+          같은 단추 하나만 둔다 — 설명은 붙이지 않는다. */}
+      {!스크랩로딩 && 진행공고.length === 0 && (
+        <Link href={`${base}/jobs/new`} className="co-top-post"
+          style={{ justifyContent: "center", margin: "4px 12px 0" }}>
+          채용공고 등록
+        </Link>
+      )}
     </>
   );
 

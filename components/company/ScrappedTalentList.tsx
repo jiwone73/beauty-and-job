@@ -69,7 +69,7 @@ export default function ScrappedTalentList({
               onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)}
               onToggleScrap={() => {}}
               onPropose={(x) => router.push(`${base}/talent?propose=${x.id}${proposeJobId ? `&job=${proposeJobId}` : ""}`)}
-              scrapJobs={scrapJobs} onScrapJob={onScrapJob} linkLabel={연결표시(t)} />
+              scrapJobs={scrapJobs} onScrapJob={onScrapJob} linkLabel={연결표시(t)} scrapAsText />
           ))}
         </div>
       )}
