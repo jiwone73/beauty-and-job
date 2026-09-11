@@ -44,6 +44,12 @@ const 날짜 = (iso: string) => {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 };
 
+// 카드 아래 이력서 날짜는 짧게 — 「26-07-04」.
+const 업데이트날 = (iso: string) => {
+  const d = new Date(iso);
+  return `${String(d.getFullYear()).slice(2)}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 export default function TalentCard({
   t, base, onOpenResume, onToggleScrap, onPropose,
 }: {
@@ -120,7 +126,8 @@ export default function TalentCard({
       {/* 연락처는 카드에 두지 않는다 — 이력서를 열면 나오고, 공고를 올린 곳에만 열린다. */}
       <div className="tal-foot">
         <span className="tal-tags">{태그.map((g) => `#${g}`).join(" ")}</span>
-        {t.resumeUpdatedAt && <span className="tal-when">{날짜(t.resumeUpdatedAt)}</span>}
+        {/* 무슨 날짜인지 이름표가 없어 헷갈렸다 — 사람인처럼 「26-07-04 업데이트」로 적는다. */}
+        {t.resumeUpdatedAt && <span className="tal-when">{업데이트날(t.resumeUpdatedAt)} 업데이트</span>}
       </div>
     </div>
   );

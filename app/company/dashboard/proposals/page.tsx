@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
+import ScrappedTalentList from "@/components/company/ScrappedTalentList";
 import { 마감인가 } from "@/lib/jobClosed";
 import { 님 } from "@/lib/josa";
 import { 모집분야한줄 } from "@/lib/positionLine";
@@ -192,6 +193,9 @@ export default function CompanyProposalsPage() {
   const base = pathname.split("/").filter(Boolean)[0] === "company"
     ? "/company/dashboard" : `/${pathname.split("/").filter(Boolean)[0]}`;
   const 이력서열기 = (p: 제안) => router.push(`${base}/talent/${p.userId}`);
+  // 스크랩 인재도 이 화면이 그린다. 왼쪽 공고 목록은 보낸 제안과 똑같이 두고
+  // 본문만 스크랩 목록으로 바꾼다 — 두 갈래를 오갈 때 왼쪽이 흔들리지 않는다.
+  const 스크랩모드 = pathname.endsWith("/proposals/scrapped");
 
   const 불러오기 = useCallback(async () => {
     const token = localStorage.getItem("access_token");
@@ -234,9 +238,16 @@ export default function CompanyProposalsPage() {
   const 보일공고 = 공고들.filter((g) => !g.마감 || g.살아있나);
   const 접힌공고 = 공고들.filter((g) => g.마감 && !g.살아있나);
 
-  // 처음 열릴 때 첫 공고를 고른다.
+  // 다른 화면에서 공고를 짚고 들어오면(?job=) 그 공고를 고른 채로 연다.
+  // 스크랩 인재 옆 공고 목록을 누르면 이 길로 온다.
   useEffect(() => {
-    if (고른공고 || !보일공고.length) return;
+    const j = new URLSearchParams(window.location.search).get("job");
+    if (j) set고른공고(j);
+  }, []);
+
+  // 처음 열릴 때 첫 공고를 고른다. 스크랩 인재에서는 고른 공고가 없다.
+  useEffect(() => {
+    if (스크랩모드 || 고른공고 || !보일공고.length) return;
     set고른공고(보일공고[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [보일공고.length]);
@@ -314,13 +325,20 @@ export default function CompanyProposalsPage() {
   }, [목록, 고른공고]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
 
+  // 공고를 누르면 — 보낸 제안에서는 그 공고로 바꾸고, 스크랩 인재에서는 그 공고의
+  // 보낸 제안으로 넘어간다. 스크랩은 공고에 매인 것이 아니라 거를 것이 없다.
+  const 공고고르기 = (id: string) => {
+    if (스크랩모드) { router.push(`${base}/proposals?job=${id}`); return; }
+    set고른공고(id); set고른상태("전체");
+  };
+
   const 사이드 = (
     <div className="prop-side">
       <input className="prop-side-search" placeholder="공고명 검색"
         value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
       {보일공고.map((g) => (
         <button key={g.id} type="button" className={`prop-side-item${고른공고 === g.id ? " on" : ""}`}
-          onClick={() => { set고른공고(g.id); set고른상태("전체"); }}>
+          onClick={() => 공고고르기(g.id)}>
           <span>{g.제목}{g.마감 && <i> 마감</i>}</span>
           {/* 내 차례가 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
               어느 공고에 할 일이 있는지 훑어서 알 수 있다. */}
@@ -336,7 +354,7 @@ export default function CompanyProposalsPage() {
           </button>
           {지난것펼침 && 접힌공고.map((g) => (
             <button key={g.id} type="button" className={`prop-side-item done${고른공고 === g.id ? " on" : ""}`}
-              onClick={() => { set고른공고(g.id); set고른상태("전체"); }}>
+              onClick={() => 공고고르기(g.id)}>
               <span>{g.제목}<i> 마감</i></span><em>{g.수}</em>
             </button>
           ))}
@@ -346,7 +364,8 @@ export default function CompanyProposalsPage() {
   );
 
   return (
-    <CompanyLayout activePage="proposals" sideExtra={사이드}>
+    <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"} sideExtra={사이드}>
+      {스크랩모드 ? <ScrappedTalentList base={base} /> : (<>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
           다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸
@@ -537,6 +556,7 @@ export default function CompanyProposalsPage() {
           onClose={() => { set대화(null); 불러오기(); }}
         />
       )}
+      </>)}
     </CompanyLayout>
   );
 }
