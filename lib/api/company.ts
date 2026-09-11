@@ -111,6 +111,7 @@ export type TalentItem = {
   jobSearchStatus: "SEEKING" | "OPEN" | "CLOSED";
   jobSearchStatusAt: string | null;
   scrapped: boolean;
+  scrapJobIds?: string[];       // 어느 공고로 담았나 — 공고 id, 공고 없이 담은 것은 "none"
   resumeUpdatedAt?: string | null;    // 이력서를 마지막으로 손본 때
   proposedAt?: string | null;   // 이미 제안한 사람이면 마지막 제안 시각
   interestedAt?: string | null;   // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
@@ -130,6 +131,7 @@ export const companyTalentApi = {
     jobSearchStatus?: string;
     interested?: boolean;   // 제안에 「관심 있어요」를 누른 사람만
     scrapped?: boolean;     // 스크랩해 둔 사람만 — 스크랩 인재 화면
+    scrapJob?: string;      // 그 공고로 담은 사람만 — 공고 id 또는 "none"
     page?: number;
     limit?: number;
   }) => {
@@ -148,15 +150,20 @@ export const companyTalentApi = {
       qs.set("jobSearchStatus", params.jobSearchStatus);
     if (params?.interested) qs.set("interested", "1");
     if (params?.scrapped) qs.set("scrapped", "1");
+    if (params?.scrapJob) qs.set("scrapJob", params.scrapJob);
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const query = qs.toString() ? `?${qs}` : "";
     return api.get<ApiResponse<TalentItem[]>>(`/api/company/talent${query}`);
   },
-  scrap: (userId: string) =>
-    api.post<ApiResponse<{ scrapped: boolean }>>(`/api/company/talent/${userId}/scrap`, {}),
-  unscrap: (userId: string) =>
-    api.delete<ApiResponse<{ scrapped: boolean }>>(`/api/company/talent/${userId}/scrap`),
+  // 어느 공고로 담을지. 비워 두면 「공고 없이 담은 사람」으로 들어간다.
+  scrap: (userId: string, jobPostingId?: string | null) =>
+    api.post<ApiResponse<{ scrapped: boolean; scrapJobIds: string[] }>>(
+      `/api/company/talent/${userId}/scrap`, { jobPostingId: jobPostingId ?? null }),
+  // job 을 주면 그 공고에서만 뺀다("none" = 공고 없이 담은 것). 안 주면 그 사람을 통째로 뺀다.
+  unscrap: (userId: string, job?: string) =>
+    api.delete<ApiResponse<{ scrapped: boolean; scrapJobIds: string[] }>>(
+      `/api/company/talent/${userId}/scrap${job ? `?job=${encodeURIComponent(job)}` : ""}`),
   propose: (userId: string, body: { jobPostingId: string; positionIndex?: number | null; message: string }) =>
     api.post<ApiResponse<{ sent: boolean }>>(`/api/company/talent/${userId}/propose`, body),
 };

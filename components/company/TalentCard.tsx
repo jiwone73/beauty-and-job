@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { Bookmark, BookmarkCheck } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bookmark, BookmarkCheck, Check } from "lucide-react";
 import type { TalentItem } from "@/lib/api/company";
 
 // 인재 카드. 인재 검색과 스크랩 인재가 같은 카드를 쓴다.
@@ -51,7 +52,7 @@ const 업데이트날 = (iso: string) => {
 };
 
 export default function TalentCard({
-  t, base, onOpenResume, onToggleScrap, onPropose,
+  t, base, onOpenResume, onToggleScrap, onPropose, scrapJobs, onScrapJob,
 }: {
   t: TalentItem;
   /** 「보낸 제안」으로 가는 길. 회원 유형에 따라 앞자리가 갈린다. */
@@ -59,7 +60,31 @@ export default function TalentCard({
   onOpenResume: (t: TalentItem) => void;
   onToggleScrap: (t: TalentItem) => void;
   onPropose: (t: TalentItem) => void;
+  /** 스크랩을 담을 수 있는 공고(진행 중). 주면 북마크가 공고를 고르게 한다. */
+  scrapJobs?: { id: string; title: string }[];
+  /** 한 공고에 담거나 뺀다. key 는 공고 id, 공고 없이 담는 것은 "none". */
+  onScrapJob?: (t: TalentItem, key: string, on: boolean) => void;
 }) {
+  // 공고 고르기 — 스크랩은 공고별로 담는다. 바깥을 누르면 닫는다.
+  const [담기열림, set담기열림] = useState(false);
+  const 담기Ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!담기열림) return;
+    const 닫기 = (e: MouseEvent) => {
+      if (담기Ref.current && !담기Ref.current.contains(e.target as Node)) set담기열림(false);
+    };
+    document.addEventListener("mousedown", 닫기);
+    return () => document.removeEventListener("mousedown", 닫기);
+  }, [담기열림]);
+  const 담은것 = t.scrapJobIds || [];
+  // 공고가 없거나 하나뿐이면 고를 것이 없다 — 누르는 즉시 담기고 다시 누르면 빠진다.
+  const 스크랩누름 = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onScrapJob || !scrapJobs) { onToggleScrap(t); return; }
+    if (scrapJobs.length === 0) { onScrapJob(t, "none", !담은것.includes("none")); return; }
+    if (scrapJobs.length === 1) { const k = scrapJobs[0].id; onScrapJob(t, k, !담은것.includes(k)); return; }
+    set담기열림((v) => !v);
+  };
   const 나이성별 = [genderLabel(t.gender), t.age ? `만 ${t.age}세` : null].filter(Boolean).join(", ");
   const 지역 = shortenRegion(t.regionPrefer);
   // 태그는 사람을 거르는 값 셋 — 무슨 일을, 얼마나 해 봤고, 어떻게 일하고 싶은가.
@@ -102,12 +127,32 @@ export default function TalentCard({
             며칠 남았는지는 보낸 제안이 맡는다. 다만 이미 보냈다는 표시는 여기 남긴다.
             같은 사람에게 또 보내는 실수가 일어나는 자리가 정확히 여기다. */}
         <div className="tal-acts">
-          <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
-            className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(t); }}>
-            {t.scrapped
-              ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-              : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
-          </button>
+          <span className="tal-scrapwrap" ref={담기Ref}>
+            <button type="button" title={t.scrapped ? "스크랩 — 담은 공고 보기" : "스크랩"}
+              className="tal-scrap" onClick={스크랩누름}>
+              {t.scrapped
+                ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
+                : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+            </button>
+            {담기열림 && scrapJobs && onScrapJob && (
+              <div className="tal-scrappop" onClick={(e) => e.stopPropagation()}>
+                <div className="tal-scrappop-head">어느 공고로 담을까요?</div>
+                {scrapJobs.map((j) => {
+                  const on = 담은것.includes(j.id);
+                  return (
+                    <button key={j.id} type="button" className={`tal-scrappop-item${on ? " on" : ""}`}
+                      onClick={() => onScrapJob(t, j.id, !on)}>
+                      <span>{j.title}</span>{on && <Check size={14} />}
+                    </button>
+                  );
+                })}
+                <button type="button" className={`tal-scrappop-item none${담은것.includes("none") ? " on" : ""}`}
+                  onClick={() => onScrapJob(t, "none", !담은것.includes("none"))}>
+                  <span>공고 없이 담기</span>{담은것.includes("none") && <Check size={14} />}
+                </button>
+              </div>
+            )}
+          </span>
           {t.proposedAt || t.interestedAt ? (
             <Link className="tal-sent" href={`${base}/proposals`}
               title={t.proposedAt

@@ -1,43 +1,27 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TalentCard from "@/components/company/TalentCard";
 import { Search } from "lucide-react";
-import { companyTalentApi, type TalentItem } from "@/lib/api/company";
+import type { TalentItem } from "@/lib/api/company";
 
-// 스크랩 인재 목록. 채용제안 화면의 본문 자리에 들어간다 — 왼쪽 공고 목록은
-// 보낸 제안과 같은 것을 그대로 쓰고, 오른쪽만 이 목록으로 바뀐다.
-//
-// 나중에 제안하려고 담아 둔 사람들이라 보는 눈은 인재 검색과 같다 — 카드도,
-// 부르는 API 도(scrapped=1) 인재 검색과 같은 것을 쓴다. 목록이 두 벌이면 곧 어긋난다.
-export default function ScrappedTalentList({ base }: { base: string }) {
+// 스크랩 인재 목록 — 채용제안 화면의 본문 자리. 왼쪽에서 공고를 고르면 화면이
+// 그 공고로 담은 사람만 추려 넘겨준다. 목록을 부르고 공고별로 세는 일은 화면이 한 번에
+// 한다(왼쪽 숫자와 오른쪽 목록이 같은 데이터에서 나와야 어긋나지 않는다).
+// 카드는 인재 검색과 같은 것 — 북마크로 다른 공고에 더 담거나 뺄 수 있다.
+export default function ScrappedTalentList({
+  base, talents, loading, scrapJobs, onScrapJob, heading,
+}: {
+  base: string;
+  talents: TalentItem[];
+  loading: boolean;
+  scrapJobs: { id: string; title: string }[];
+  onScrapJob: (t: TalentItem, key: string, on: boolean) => void;
+  /** 고른 공고 이름 */
+  heading?: string;
+}) {
   const router = useRouter();
-  const [talents, setTalents] = useState<TalentItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
-  const 불러오기 = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res: any = await companyTalentApi.list({ scrapped: true, limit: 200 });
-      if (res?.success) setTalents(res.data || []);
-    } catch (e) {
-      console.error("[scrapped]", e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  useEffect(() => { 불러오기(); }, [불러오기]);
-
-  // 여기서 스크랩을 풀면 그 줄은 목록에서 빠진다 — 스크랩한 사람만 모은 자리다.
-  const 스크랩풀기 = async (t: TalentItem) => {
-    try {
-      await companyTalentApi.unscrap(t.id);
-      setTalents((prev) => prev.filter((x) => x.id !== t.id));
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   const filtered = talents.filter((t) =>
     !search
@@ -54,19 +38,22 @@ export default function ScrappedTalentList({ base }: { base: string }) {
           value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#555" }}>{filtered.length}</strong>명</div>
+      <div style={{ fontSize: 14, color: "#555", margin: "0 0 8px" }}>
+        {heading && <span>{heading} · </span>}총 <strong>{filtered.length}</strong>명
+      </div>
 
       {loading ? (
         <div className="admin-empty">불러오는 중...</div>
       ) : filtered.length === 0 ? (
-        <div className="admin-empty">스크랩한 인재가 없습니다.</div>
+        <div className="admin-empty">이 공고로 담은 인재가 없습니다.</div>
       ) : (
         <div className="tal-list">
           {filtered.map((t) => (
             <TalentCard key={t.id} t={t} base={base}
               onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)}
-              onToggleScrap={스크랩풀기}
-              onPropose={(x) => router.push(`${base}/talent?propose=${x.id}`)} />
+              onToggleScrap={() => {}}
+              onPropose={(x) => router.push(`${base}/talent?propose=${x.id}`)}
+              scrapJobs={scrapJobs} onScrapJob={onScrapJob} />
           ))}
         </div>
       )}

@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import ScrappedTalentList from "@/components/company/ScrappedTalentList";
+import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import { 마감인가 } from "@/lib/jobClosed";
 import { 님 } from "@/lib/josa";
 import { 모집분야한줄 } from "@/lib/positionLine";
@@ -197,6 +198,55 @@ export default function CompanyProposalsPage() {
   // 본문만 스크랩 목록으로 바꾼다 — 두 갈래를 오갈 때 왼쪽이 흔들리지 않는다.
   const 스크랩모드 = pathname.endsWith("/proposals/scrapped");
 
+  // ── 스크랩 인재 ──
+  // 왼쪽은 진행 중인 공고 전부(담은 사람이 없으면 0) + 「공고 없이 담은 사람」.
+  // 공고를 누르면 오른쪽이 그 공고로 담은 사람만 보인다 — 보낸 제안과 같은 짜임.
+  // 왼쪽 숫자와 오른쪽 목록이 한 데이터에서 나오도록 여기서 한 번에 부른다.
+  const [스크랩인재, set스크랩인재] = useState<TalentItem[]>([]);
+  const [스크랩로딩, set스크랩로딩] = useState(true);
+  const [진행공고, set진행공고] = useState<{ id: string; title: string }[]>([]);
+  const [고른스크랩, set고른스크랩] = useState<string | null>(null); // 공고 id 또는 "none"
+  useEffect(() => {
+    if (!스크랩모드) return;
+    (async () => {
+      set스크랩로딩(true);
+      try {
+        const [잡, 인]: any[] = await Promise.all([
+          companyJobsApi.list({ status: "ACTIVE", limit: 100 }),
+          companyTalentApi.list({ scrapped: true, limit: 200 }),
+        ]);
+        const 공고 = (잡?.success && 잡.data ? 잡.data : [])
+          .filter((j: any) => !j.deadline || new Date(j.deadline) >= new Date(new Date().toDateString()))
+          .map((j: any) => ({ id: j.id, title: j.title }));
+        set진행공고(공고);
+        set스크랩인재(인?.success ? (인.data || []) : []);
+        set고른스크랩((v) => v ?? (공고[0]?.id || "none"));
+      } catch (e) {
+        console.error("[scrapped]", e);
+      } finally {
+        set스크랩로딩(false);
+      }
+    })();
+  }, [스크랩모드]);
+  const 스크랩수 = (key: string) => 스크랩인재.filter((t) => (t.scrapJobIds || []).includes(key)).length;
+  // 공고 하나에 담거나 뺀다. 화면을 먼저 바꾸고 서버가 알려 준 담은 공고로 맞춘다.
+  // 모든 공고에서 빠진 사람도 목록 데이터에는 남겨 둔다 — 실수로 뺐을 때 바로 되담을 수 있게.
+  const 스크랩담기 = async (item: TalentItem, key: string, on: boolean) => {
+    const 앞 = item.scrapJobIds || [];
+    const 뒤 = on ? Array.from(new Set([...앞, key])) : 앞.filter((k) => k !== key);
+    const 맞추기 = (ids: string[]) => set스크랩인재((prev) => prev.map((t) =>
+      t.id === item.id ? { ...t, scrapJobIds: ids, scrapped: ids.length > 0 } : t));
+    맞추기(뒤);
+    try {
+      const res: any = on
+        ? await companyTalentApi.scrap(item.id, key === "none" ? null : key)
+        : await companyTalentApi.unscrap(item.id, key);
+      if (res?.success && Array.isArray(res.data?.scrapJobIds)) 맞추기(res.data.scrapJobIds);
+    } catch {
+      맞추기(앞);
+    }
+  };
+
   const 불러오기 = useCallback(async () => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -325,12 +375,25 @@ export default function CompanyProposalsPage() {
   }, [목록, 고른공고]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
 
-  // 공고를 누르면 — 보낸 제안에서는 그 공고로 바꾸고, 스크랩 인재에서는 그 공고의
-  // 보낸 제안으로 넘어간다. 스크랩은 공고에 매인 것이 아니라 거를 것이 없다.
-  const 공고고르기 = (id: string) => {
-    if (스크랩모드) { router.push(`${base}/proposals?job=${id}`); return; }
-    set고른공고(id); set고른상태("전체");
-  };
+  const 공고고르기 = (id: string) => { set고른공고(id); set고른상태("전체"); };
+
+  // 스크랩 인재의 왼쪽 — 보낸 제안과 같은 모양의 공고 목록. 숫자는 그 공고로 담은 사람 수.
+  const 스크랩사이드 = (
+    <div className="prop-side">
+      <input className="prop-side-search" placeholder="공고명 검색"
+        value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
+      {진행공고.filter((g) => !공고검색.trim() || g.title.includes(공고검색.trim())).map((g) => (
+        <button key={g.id} type="button" className={`prop-side-item${고른스크랩 === g.id ? " on" : ""}`}
+          onClick={() => set고른스크랩(g.id)}>
+          <span>{g.title}</span><em>{스크랩수(g.id)}</em>
+        </button>
+      ))}
+      <button type="button" className={`prop-side-item done${고른스크랩 === "none" ? " on" : ""}`}
+        onClick={() => set고른스크랩("none")}>
+        <span>공고 없이 담은 사람</span><em>{스크랩수("none")}</em>
+      </button>
+    </div>
+  );
 
   const 사이드 = (
     <div className="prop-side">
@@ -364,8 +427,13 @@ export default function CompanyProposalsPage() {
   );
 
   return (
-    <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"} sideExtra={사이드}>
-      {스크랩모드 ? <ScrappedTalentList base={base} /> : (<>
+    <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"} sideExtra={스크랩모드 ? 스크랩사이드 : 사이드}>
+      {스크랩모드 ? (
+        <ScrappedTalentList base={base} loading={스크랩로딩}
+          talents={스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩 || ""))}
+          scrapJobs={진행공고} onScrapJob={스크랩담기}
+          heading={고른스크랩 === "none" ? "공고 없이 담은 사람" : 진행공고.find((g) => g.id === 고른스크랩)?.title} />
+      ) : (<>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
           다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸

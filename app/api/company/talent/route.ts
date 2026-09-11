@@ -22,6 +22,10 @@ export async function GET(req: NextRequest) {
   // 스크랩해 둔 사람만. 스크랩 목록도 인재 검색과 같은 카드를 쓰려면 같은 모양으로
   // 내려와야 한다 — 따로 만든 쿼리는 이름 가리기도, 제안 이력도 빠져 있었다.
   const onlyScrapped = searchParams.get("scrapped") === "1";
+  // 스크랩 인재에서 공고를 고르면 그 공고로 담은 사람만. "none" 은 공고 없이 담은 사람.
+  // 쿼리에 바로 넣으므로 모양을 엄격히 본다(공고 id 모양이거나 none 이 아니면 버린다).
+  const scrapJobRaw = (searchParams.get("scrapJob") || "").trim();
+  const scrapJob = scrapJobRaw === "none" || /^[0-9a-f-]{36}$/i.test(scrapJobRaw) ? scrapJobRaw : "";
   const page        = parseInt(searchParams.get("page") || "1");
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
@@ -214,6 +218,11 @@ export async function GET(req: NextRequest) {
         EXISTS(
           SELECT 1 FROM company_talent_scraps WHERE company_id = $1 AND user_id = u.id
         ) AS scrapped,
+        -- 어느 공고로 담았나. 공고 없이 담은 것은 "none". 북마크의 공고 고르기에 체크로 뜬다.
+        (
+          SELECT COALESCE(array_agg(COALESCE(job_posting_id::text, 'none')), '{}')
+            FROM company_talent_scraps WHERE company_id = $1 AND user_id = u.id
+        ) AS scrap_job_ids,
         -- 이미 제안한 사람인지. 모르면 같은 사람에게 또 보내게 된다.
         (
           SELECT MAX(created_at) FROM proposals
@@ -250,6 +259,8 @@ export async function GET(req: NextRequest) {
         ${onlyScrapped ? `AND EXISTS (
           SELECT 1 FROM company_talent_scraps cs
            WHERE cs.company_id = $1 AND cs.user_id = u.id
+           ${scrapJob === "none" ? "AND cs.job_posting_id IS NULL"
+             : scrapJob ? `AND cs.job_posting_id = '${scrapJob}'::uuid` : ""}
         )` : ""}
         ${jobTypeClause}
         ${jobGroupClause}
@@ -320,6 +331,7 @@ export async function GET(req: NextRequest) {
       jobSearchStatus: r.job_search_status || "SEEKING",
       jobSearchStatusAt: r.job_search_status_at || null,
       scrapped: r.scrapped,
+      scrapJobIds: r.scrap_job_ids || [],
       proposedAt: r.proposed_at || null,
       resumeUpdatedAt: r.resume_updated_at || null,
     }));
