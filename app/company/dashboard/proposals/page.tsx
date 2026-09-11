@@ -200,13 +200,16 @@ export default function CompanyProposalsPage() {
   const 스크랩모드 = pathname.endsWith("/proposals/scrapped");
 
   // ── 스크랩 인재 ──
-  // 왼쪽은 진행 중인 공고 전부(담은 사람이 없으면 0) + 「공고 없이 담은 사람」.
-  // 공고를 누르면 오른쪽이 그 공고로 담은 사람만 보인다 — 보낸 제안과 같은 짜임.
+  // 왼쪽 맨 위는 「전체 스크랩」, 그 아래 「공고별 스크랩」으로 진행 중인 공고 전부
+  // (담은 사람이 없으면 0). 공고를 누르면 오른쪽이 그 공고로 담은 사람만 보인다.
+  // 공고 없이 담은 사람은 따로 칸을 두지 않는다 — 공고 목록 사이에 공고가 아닌 칸이
+  // 끼면 어색했다. 전체 스크랩에서 「공고 미연결」 칩으로 추려 본다.
   // 왼쪽 숫자와 오른쪽 목록이 한 데이터에서 나오도록 여기서 한 번에 부른다.
   const [스크랩인재, set스크랩인재] = useState<TalentItem[]>([]);
   const [스크랩로딩, set스크랩로딩] = useState(true);
   const [진행공고, set진행공고] = useState<{ id: string; title: string; raw?: any }[]>([]);
-  const [고른스크랩, set고른스크랩] = useState<string | null>(null); // 공고 id 또는 "none"
+  const [고른스크랩, set고른스크랩] = useState(""); // "" 이면 전체 스크랩, 아니면 공고 id
+  const [연결칩, set연결칩] = useState<"전체" | "연결" | "미연결">("전체");
   useEffect(() => {
     if (!스크랩모드) return;
     (async () => {
@@ -221,7 +224,6 @@ export default function CompanyProposalsPage() {
           .map((j: any) => ({ id: j.id, title: j.title, raw: j }));
         set진행공고(공고);
         set스크랩인재(인?.success ? (인.data || []) : []);
-        set고른스크랩((v) => v ?? (공고[0]?.id || "none"));
       } catch (e) {
         console.error("[scrapped]", e);
       } finally {
@@ -230,6 +232,18 @@ export default function CompanyProposalsPage() {
     })();
   }, [스크랩모드]);
   const 스크랩수 = (key: string) => 스크랩인재.filter((t) => (t.scrapJobIds || []).includes(key)).length;
+  // 전체 스크랩 — 어디로든 담겨 있는 사람. 공고에 하나라도 담겼으면 「공고 연결」,
+  // 공고 없이만 담겼으면 「공고 미연결」이다. 둘을 더하면 전체가 된다.
+  const 담긴사람 = 스크랩인재.filter((t) => (t.scrapJobIds || []).length > 0);
+  const 연결됨 = (t: TalentItem) => (t.scrapJobIds || []).some((k) => k !== "none");
+  const 연결칩들 = [
+    { 키: "전체" as const, 이름: "전체", 수: 담긴사람.length },
+    { 키: "연결" as const, 이름: "공고 연결", 수: 담긴사람.filter(연결됨).length },
+    { 키: "미연결" as const, 이름: "공고 미연결", 수: 담긴사람.filter((t) => !연결됨(t)).length },
+  ];
+  const 보일스크랩 = 고른스크랩
+    ? 스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩))
+    : 담긴사람.filter((t) => 연결칩 === "전체" || (연결칩 === "연결") === 연결됨(t));
   // 공고 하나에 담거나 뺀다. 화면을 먼저 바꾸고 서버가 알려 준 담은 공고로 맞춘다.
   // 모든 공고에서 빠진 사람도 목록 데이터에는 남겨 둔다 — 실수로 뺐을 때 바로 되담을 수 있게.
   const 스크랩담기 = async (item: TalentItem, key: string, on: boolean) => {
@@ -408,6 +422,12 @@ export default function CompanyProposalsPage() {
     <>
       <input className="prop-side-search" placeholder="공고명 검색"
         value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
+      <button type="button" className={`co-set-item co-jobitem${고른스크랩 === "" ? " on" : ""}`}
+        onClick={() => set고른스크랩("")}>
+        <span className="co-jobitem-t">전체 스크랩</span>
+        <span className="co-jobitem-n">{담긴사람.length}</span>
+      </button>
+      <p className="jobs-side-t prop-side-group">공고별 스크랩</p>
       {진행공고.filter((g) => !공고검색.trim() || g.title.includes(공고검색.trim())).map((g) => (
         <button key={g.id} type="button" className={`co-set-item co-jobitem${고른스크랩 === g.id ? " on" : ""}`}
           onClick={() => set고른스크랩(g.id)} title={g.title}>
@@ -415,11 +435,6 @@ export default function CompanyProposalsPage() {
           <span className="co-jobitem-n">{스크랩수(g.id)}</span>
         </button>
       ))}
-      <button type="button" className={`co-set-item co-jobitem${고른스크랩 === "none" ? " on" : ""}`}
-        onClick={() => set고른스크랩("none")}>
-        <span className="co-jobitem-t">공고 없이 담은 사람</span>
-        <span className="co-jobitem-n">{스크랩수("none")}</span>
-      </button>
     </>
   );
 
@@ -495,10 +510,22 @@ export default function CompanyProposalsPage() {
         <>
           {스크랩머리 && 머리판(스크랩머리, 고른스크랩)}
           <ScrappedTalentList base={base} loading={스크랩로딩}
-            talents={스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩 || ""))}
+            talents={보일스크랩}
             scrapJobs={진행공고} onScrapJob={스크랩담기}
-            heading={고른스크랩 === "none" ? "공고 없이 담은 사람" : undefined}
-            proposeJobId={고른스크랩 && 고른스크랩 !== "none" ? 고른스크랩 : undefined} />
+            proposeJobId={고른스크랩 || undefined}
+            chips={고른스크랩 ? undefined : (
+              <div className="prop-chips">
+                {연결칩들.map((c) => (
+                  <span key={c.키} className="prop-chipwrap">
+                    <button type="button"
+                      className={`prop-chip${연결칩 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
+                      onClick={() => set연결칩(c.키)}>
+                      {c.이름}<em>{c.수}</em>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )} />
         </>
       ) : (<>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을

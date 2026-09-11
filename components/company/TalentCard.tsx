@@ -52,7 +52,7 @@ const 업데이트날 = (iso: string) => {
 };
 
 export default function TalentCard({
-  t, base, onOpenResume, onToggleScrap, onPropose, scrapJobs, onScrapJob,
+  t, base, onOpenResume, onToggleScrap, onPropose, scrapJobs, onScrapJob, linkLabel,
 }: {
   t: TalentItem;
   /** 「보낸 제안」으로 가는 길. 회원 유형에 따라 앞자리가 갈린다. */
@@ -64,6 +64,8 @@ export default function TalentCard({
   scrapJobs?: { id: string; title: string }[];
   /** 한 공고에 담거나 뺀다. key 는 공고 id, 공고 없이 담는 것은 "none". */
   onScrapJob?: (t: TalentItem, key: string, on: boolean) => void;
+  /** 전체 스크랩에서 이 사람이 어느 공고에 담겼는지(「공고 미연결」 또는 공고 이름). */
+  linkLabel?: string;
 }) {
   // 공고 고르기 — 스크랩은 공고별로 담는다. 바깥을 누르면 닫는다.
   const [담기열림, set담기열림] = useState(false);
@@ -172,7 +174,9 @@ export default function TalentCard({
       <div className="tal-foot">
         <span className="tal-tags">{태그.map((g) => `#${g}`).join(" ")}</span>
         {/* 무슨 날짜인지 이름표가 없어 헷갈렸다 — 사람인처럼 「26-07-04 업데이트」로 적는다. */}
-        {t.resumeUpdatedAt && <span className="tal-when">{업데이트날(t.resumeUpdatedAt)} 업데이트</span>}
+        {linkLabel && <span className="tal-badge" title={linkLabel}
+          style={{ marginLeft: "auto", maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis" }}>{linkLabel}</span>}
+        {t.resumeUpdatedAt && <span className="tal-when" style={linkLabel ? { marginLeft: 8 } : undefined}>{업데이트날(t.resumeUpdatedAt)} 업데이트</span>}
       </div>
     </div>
   );
