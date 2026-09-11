@@ -9,7 +9,7 @@ import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/com
 import { 마감인가 } from "@/lib/jobClosed";
 import { 님 } from "@/lib/josa";
 import { 모집분야한줄 } from "@/lib/positionLine";
-import { Send, ChevronRight } from "lucide-react";
+import { ChevronDown, Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
 //
@@ -519,6 +519,9 @@ export default function CompanyProposalsPage() {
                   </button>
                 )}
               </div>
+              {/* 아래 목록이 이 공고의 보낸 제안·스크랩이라는 표시. 누르는 단추가 아니다 —
+                  늘 아래를 가리키고 접히지 않는다. */}
+              <ChevronDown className="co-pane-arrow" size={18} aria-hidden="true" />
             </div>
   );
 

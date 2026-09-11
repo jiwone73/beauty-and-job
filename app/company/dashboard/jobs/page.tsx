@@ -638,6 +638,9 @@ function CompanyJobsContent() {
                         )}
                       </span>
                     </div>
+                    {/* 아래 목록이 이 공고의 지원자라는 표시 — 보낸 제안·스크랩과 같다.
+                        누르는 단추가 아니고 접히지 않는다. */}
+                    <ChevronDown className="co-pane-arrow" size={18} aria-hidden="true" />
                   </div>
 
                   <div className="co-pane-list">

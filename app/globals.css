@@ -15167,7 +15167,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    카드는 그 아래 하나만 선다. */
 /* 지원자 쪽을 다시 상자로 감싸지 않는다 — 카드는 사람 하나마다 하나다.
    여기서는 자리만 잡고, 왼쪽 끝은 공고 글과 같은 22px 에 선다. */
-.co-pane-list { margin-top: 22px; }
+.co-pane-list { margin-top: 30px; }
 .co-pane-card,
 .co-pane .apl-bar,
 .co-pane-apps { background: transparent; }
@@ -15250,7 +15250,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 공고 머리 — 공고·지원자 관리의 .co-pane-card 를 그대로 쓴다. 이 화면에서는
    카드 안이 아니라 판 위에 바로 놓이므로 좌우 여백만 걷는다. */
-.prop-jobhead { padding: 0 0 16px; margin-bottom: 14px; }
+.prop-jobhead { padding: 0 0 16px; margin-bottom: 30px; }
+/* 공고 머리 구분선 밑 가운데의 아래 화살표 — 아래 목록(지원자·보낸 제안·스크랩)이
+   이 공고에 딸린 것이라는 표시. 누르는 단추가 아니고 늘 아래를 가리킨다. */
+.co-pane-arrow { position: absolute; left: 50%; bottom: -22px; transform: translateX(-50%); color: #555; pointer-events: none; }
 .prop-jobhead::after { left: 0; right: 0; }
 
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: -8px; }
