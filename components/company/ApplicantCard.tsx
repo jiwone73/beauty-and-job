@@ -180,7 +180,7 @@ export default function ApplicantCard({
               {a.job_title}
               {/* 모집부문이 넷인 공고에서는 「지원했다」만으로 무엇을 받았는지
                   알 수 없다. 지원 때 고른 자리를 공고 이름 뒤에 붙인다. */}
-              {(a as any).position_title && <span style={{ color: "#8a8a90" }}> · {(a as any).position_title}</span>}
+              {(a as any).position_title && <span style={{ color: "#555" }}> · {(a as any).position_title}</span>}
               {마감(a) && <span className="job-closed-tag">마감</span>}
             </span>
           )}
