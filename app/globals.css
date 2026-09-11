@@ -14804,7 +14804,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13.5px; color: #555; cursor: pointer; }
 .co-pane-acts button:hover { color: var(--color-primary); }
 .co-pane-acts i { font-style: normal; color: #dcdce2; }
-.co-pane-pos { display: flex; align-items: baseline; gap: 14px; margin-top: 8px; }
+/* 공고명과 조건 줄 사이는 조금 띄운다 — 붙어 있으면 공고명 아래 부제처럼 읽혔다. */
+.co-pane-pos { display: flex; align-items: baseline; gap: 14px; margin-top: 12px; }
 .co-pane-posline { font-size: 14px; color: #555; line-height: 1.8; }
 /* 테두리 없이 글자만 — 카드 안에 단추가 셋(수정·마감·재등록)이면 시끄럽다. */
 /* 재등록·수정·마감은 같은 결의 길이다 — 글자 크기도 색도 같이 간다. */
