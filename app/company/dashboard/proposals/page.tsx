@@ -523,7 +523,9 @@ export default function CompanyProposalsPage() {
             scrapJobs={진행공고} onScrapJob={스크랩담기}
             proposeJobId={고른스크랩 || undefined}
             chips={고른스크랩 ? undefined : (
-              <div className="prop-chips">
+              // .prop-chips 는 보낸 제안 표에 붙으려고 아래 여백이 -8px 이다. 여기는
+              // 바로 밑이 「총 N명」 줄이라 그대로 두면 글자를 덮는다.
+              <div className="prop-chips" style={{ marginBottom: 10 }}>
                 {연결칩들.map((c) => (
                   <span key={c.키} className="prop-chipwrap">
                     <button type="button"
