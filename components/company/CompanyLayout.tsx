@@ -158,7 +158,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base, group: "home" },
     { id: "jobs",      label: "채용공고",       icon: FileText,     href: `${base}/jobs`, group: "jobs" },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
-    { id: "proposals", label: "채용제안",     icon: Send,         href: `${base}/proposals`, group: "proposals" },
+    { id: "proposals", label: "제안·스크랩",  icon: Send,         href: `${base}/proposals`, group: "proposals" },
     { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/proposals/scrapped`, group: "proposals" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
@@ -183,7 +183,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     // 인재풀과 하는 일이 다르다. 인재풀은 「누구에게 보낼까」, 보낸 제안은
     // 「보낸 뒤 어떻게 되고 있나」다.
     //
-    // 머리줄은 「채용제안」, 화면 제목은 「보낸 제안」이다. 공고·지원자도 같은
+    // 머리줄은 「제안·스크랩」, 화면 제목은 「보낸 제안」이다. 공고·지원자도 같은
     // 방식이다(머리줄 「공고·지원자」, 제목 「공고·지원자 관리」) — 머리줄은
     // 어느 갈래인지를, 제목은 그 안에서 무엇을 보는지를 말한다.
     //
@@ -191,7 +191,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     //   「채용」은 우리가 모은 공고 256건 중 68%가 쓰는 말이고, 「스카웃」은 한
     //   건도 없었다(리멤버 말투다). 사람인 「후보자 관리」·잡코리아 「포지션
     //   제안」은 경력직 사무직 말투라 헤어 스텝·네일 인턴에는 무겁다.
-    { id: "proposals",  label: "채용제안",     href: `${base}/proposals` },
+    { id: "proposals",  label: "제안·스크랩",  href: `${base}/proposals` },
     { id: "ads",        label: "채용상품",     href: "/company/ads" },
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
@@ -206,7 +206,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
       { id: "jobs",     label: () => "공고·지원자 관리", title: () => "공고·지원자 관리", href: `${base}/jobs` },
       { id: "jobs-new", label: () => "공고 등록",        title: () => "공고 등록",        href: `${base}/jobs/new` },
     ],
-    // 채용제안 — 모아 둔 사람과 보낸 사람. 인재풀은 찾는 데서 끝나고(카드의 북마크로
+    // 제안·스크랩 — 모아 둔 사람과 보낸 사람. 인재풀은 찾는 데서 끝나고(카드의 북마크로
     //   담는 데까지), 담아 둔 사람을 보는 일은 여기서 한다. 사람인도 인재풀 화면에는
     //   저장 목록을 두지 않고 「후보자 저장」 버튼만 둔 뒤 저장한 사람은 따로 관리한다.
     //   셀렉미도 「찜한 인재」를 「보낸제안」 옆에 둔다. 보낸 제안이 이 갈래의 첫 화면이라 앞에 둔다.
@@ -227,7 +227,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
   const 묶음 = Object.keys(SIDE_NAV).find((k) => SIDE_NAV[k].some((m) => m.id === activePage));
   const 사이드 = 묶음 ? SIDE_NAV[묶음] : null;
   const 사이드있나 = !!(사이드 || side);
-  // 스크랩 인재는 채용제안의 갈래라 '채용제안'이 켜져 있어야 한다.
+  // 스크랩 인재는 제안·스크랩의 갈래라 '제안·스크랩'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new" || activePage === "applicants")
@@ -572,7 +572,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
                 ? side
                 : 묶음 === "proposals"
                   ? (
-                    /* 채용제안은 두 갈래를 한 줄로 — 「보낸 제안 | 스크랩 인재」. 그 아래로
+                    /* 제안·스크랩은 두 갈래를 한 줄로 — 「보낸 제안 | 스크랩 인재」. 그 아래로
                        고른 화면의 판(공고 목록)이 이어지고, 고른 쪽이 오른쪽 제목이 된다. */
                     <div className="co-set-seg">
                       {사이드?.map((m, i) => (
