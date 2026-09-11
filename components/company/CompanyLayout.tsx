@@ -211,8 +211,8 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     //   저장 목록을 두지 않고 「후보자 저장」 버튼만 둔 뒤 저장한 사람은 따로 관리한다.
     //   셀렉미도 「찜한 인재」를 「보낸제안」 옆에 둔다. 보낸 제안이 이 갈래의 첫 화면이라 앞에 둔다.
     proposals: [
-      { id: "proposals", label: () => "보낸 제안",   title: () => "공고별 보낸 제안", href: `${base}/proposals` },
-      { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재",     href: `${base}/proposals/scrapped` },
+      { id: "proposals", label: () => "보낸 제안",   title: () => "보낸 제안",   href: `${base}/proposals` },
+      { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재", href: `${base}/proposals/scrapped` },
     ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
@@ -452,6 +452,12 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
            세워 두면 화면 한쪽이 이유 없이 비어 보인다. */
         .co-tal-body { display: flex; align-items: flex-start; gap: 28px; }
         .co-tal-side { position: sticky; top: 92px; }
+        .co-set-seg { display: flex; align-items: center; padding: 2px 4px 12px; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+        .co-set-seg-item { display: flex; align-items: center; }
+        .co-set-seg i { width: 1px; height: 12px; background: #dcdce0; margin: 0 12px; }
+        .co-set-seg a { font-size: 15px; color: #555; text-decoration: none; white-space: nowrap; }
+        .co-set-seg a:hover { color: var(--color-primary); }
+        .co-set-seg a.on { color: var(--color-primary); font-weight: 700; }
         /* 아래 .co-top-body .co-set-main 규칙이 !important 로 안쪽 여백을 못 박으므로
            같은 무게로 되돌린다 — 기둥이 없으면 세로 구분선도 그 여백도 쓸 데가 없다. */
         .co-top-body .co-tal-solo { border-left: none; margin-left: 0; padding-left: 0 !important; }
@@ -542,21 +548,9 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
         {!사이드있나 && (
           <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
-        {(묶음 === "proposals" || activePage === "talent") ? (
-          /* 채용제안은 두 갈래(보낸 제안 · 스크랩 인재)라 탭이 곧 제목이다 — 탭에 이름을
-             적어 두고 그 옆에 또 같은 제목을 세우면 같은 말이 두 번 나온다.
-             탭을 본문 위 한 줄로 올리고, 왼쪽 기둥은 그 화면의 판(공고 목록·필터)에게 내준다.
-             인재 검색은 이제 한 갈래라 탭 없이 제목 아래 필터 기둥만 선다. */
+        {activePage === "talent" ? (
+          /* 인재 검색은 한 갈래라 탭 없이, 제목 아래 필터 기둥과 목록만 선다. */
           <div className="co-set-wrap co-tal">
-            {사이드 && (
-              <nav className="co-tal-tabrow">
-                {사이드.map((m) => (
-                  <Link key={m.id} href={m.href} className={`co-tal-tab ${activePage === m.id ? "on" : ""}`}>
-                    {m.label(infoLabel(companyInfo.type))}
-                  </Link>
-                ))}
-              </nav>
-            )}
             <div className="co-tal-body">
               {sideExtra && <aside className="co-set-side co-tal-side">{sideExtra}</aside>}
               <main className={`company-content co-set-main${sideExtra ? "" : " co-tal-solo"}`}>{children}</main>
@@ -571,7 +565,22 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
                   넘겨준 사이드가 조용히 무시된다. */}
               {side
                 ? side
-                : 사이드?.map((m) => (
+                : 묶음 === "proposals"
+                  ? (
+                    /* 채용제안은 두 갈래를 한 줄로 — 「보낸 제안 | 스크랩 인재」. 그 아래로
+                       고른 화면의 판(공고 목록)이 이어지고, 고른 쪽이 오른쪽 제목이 된다. */
+                    <div className="co-set-seg">
+                      {사이드?.map((m, i) => (
+                        <span key={m.id} className="co-set-seg-item">
+                          {i > 0 && <i aria-hidden="true" />}
+                          <Link href={m.href} className={activePage === m.id ? "on" : ""}>
+                            {m.label(infoLabel(companyInfo.type))}
+                          </Link>
+                        </span>
+                      ))}
+                    </div>
+                  )
+                  : 사이드?.map((m) => (
                     <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>
