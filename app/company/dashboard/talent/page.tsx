@@ -253,42 +253,17 @@ export default function TalentPage() {
       .catch((e) => console.error("[company me]", e));
   }, []);
 
+  // 스크랩 목록도 인재 검색과 같은 API 로 받는다(scrapped=1). 예전에는 따로 만든
+  // /api/company/talent/scrapped 를 불렀는데, 거기에는 열람권 잠금이 없어 유료가 아닌
+  // 기업에도 스크랩한 사람의 실명이 보였고 응답에는 전화번호까지 실려 있었다.
+  // 목록이 두 벌이면 곧 어긋난다 — 스크랩 인재 화면과 같은 한 벌을 쓴다.
   const fetchScrapped = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("access_token");
-      const res = await fetch("/api/company/talent/scrapped", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      const rows = data?.data?.talents || data?.talents || [];
-      const mapped: TalentItem[] = rows.map((r: any) => ({
-        id: r.user_id,
-        name: r.name,
-        email: null,
-        phone: r.phone ?? null,
-        avatarUrl: r.avatar_url ?? null,
-        portfolioImages: null,
-        gender: r.gender ?? null,
-        age: r.age ?? null,
-        intro: r.headline ?? null,
-        mainJobGroup: r.job_category ?? null,
-        subJob: r.sub_job ?? null,
-        skills: r.skills || [],
-        skillAreas: [],
-        officeJobAreas: [],
-        regionPrefer: r.location ?? null,
-        workTypePrefer: null,
-        careerYears: r.career_years ?? null,
-        careerCount: r.career_count ?? 0,
-        educationDetail: r.educationDetail ?? null,
-        careerDetail: r.careerDetail ?? null,
-        jobSearchStatus: r.job_search_status ?? "SEEKING",
-        jobSearchStatusAt: r.job_search_status_at ?? null,
-        scrapped: true,
-      }));
-      setTalents(mapped);
-      setTotal(mapped.length);
+      const res: any = await companyTalentApi.list({ scrapped: true, limit: 200 });
+      const rows: TalentItem[] = res?.success ? (res.data || []) : [];
+      setTalents(rows);
+      setTotal(rows.length);
     } catch (e) {
       console.error("[talent scrapped fetch]", e);
     } finally {
