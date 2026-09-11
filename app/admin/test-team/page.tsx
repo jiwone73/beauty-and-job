@@ -15,7 +15,7 @@ type Run = { case_id: string; area: Area; result: "pass" | "fail" | "blocked"; n
 type Report = { id: string; area: Area; title: string; severity: string; status: string; case_id: string | null; decided_by: string | null };
 
 const 결과이름: Record<string, string> = { pass: "맞음", fail: "어긋남", blocked: "막힘" };
-const 결과색: Record<string, string> = { pass: "#2f7a4d", fail: "#c0392b", blocked: "#c0392b" };
+const 결과색: Record<string, string> = { pass: "#555", fail: "#555", blocked: "#555" };
 
 const 언제 = (iso: string) => {
   const d = new Date(iso);
@@ -71,11 +71,11 @@ export default function TestTeamPage() {
   return (
     <AdminLayout activeMenu="test-team">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <p style={{ margin: 0, fontSize: 13, color: "#777" }}>
+        <p style={{ margin: 0, fontSize: 13, color: "#555" }}>
           오픈 <b style={{ color: "#582681" }}>2026.10.01</b> · 남은 <b style={{ color: "#582681" }}>{남은날}일</b> ·
           {" "}케이스 {전체케이스}건 중 {해본것}건 돌림
           {기다리는수 > 0 && ` · PG·요금제 기다리는 것 ${기다리는수}건`}
-          {정해야할것 > 0 && <span style={{ marginLeft: 8, color: "#c0392b" }}>● 정해 주셔야 할 것 {정해야할것}건</span>}
+          {정해야할것 > 0 && <span style={{ marginLeft: 8, color: "#555" }}>● 정해 주셔야 할 것 {정해야할것}건</span>}
         </p>
         <button onClick={load} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}>
           <RefreshCw size={14} /> 새로고침
@@ -90,19 +90,19 @@ export default function TestTeamPage() {
             <div key={m.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", borderBottom: "1px solid #f6f6f8" }}>
               <div style={{ width: 150, flexShrink: 0 }}>
                 <div style={{ fontSize: 14.5, color: "#555" }}>{m.name}</div>
-                <div style={{ fontSize: 12.5, color: "#9a9aa0" }}>{m.area}</div>
+                <div style={{ fontSize: 12.5, color: "#555" }}>{m.area}</div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, color: "#9a9aa0", marginBottom: 5 }}>{m.role}</div>
+                <div style={{ fontSize: 13, color: "#555", marginBottom: 5 }}>{m.role}</div>
                 <div style={{ height: 8, borderRadius: 4, background: "#f2f2f4", overflow: "hidden" }}>
                   <div style={{ width: `${pct}%`, height: "100%", background: m.어긋남 ? "#c0392b" : "#582681" }} />
                 </div>
               </div>
               <div style={{ width: 96, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: "#555" }}>{m.해봄} / {m.전체}</div>
-              <div style={{ width: 92, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: m.정해야 ? "#c0392b" : "#b3adbd" }}>
+              <div style={{ width: 92, flexShrink: 0, textAlign: "right", fontSize: 13.5, color: "#555" }}>
                 {m.정해야 ? `정해야 ${m.정해야}` : m.어긋남 ? `어긋남 ${m.어긋남}` : m.대기 ? `대기 ${m.대기}` : "—"}
               </div>
-              <div style={{ width: 74, flexShrink: 0, textAlign: "right", fontSize: 12.5, color: "#b3adbd" }}>
+              <div style={{ width: 74, flexShrink: 0, textAlign: "right", fontSize: 12.5, color: "#555" }}>
                 {m.마지막 ? 언제(m.마지막) : "대기"}
               </div>
             </div>
@@ -122,14 +122,14 @@ export default function TestTeamPage() {
         ) : (
           최근.map((r) => (
             <div key={r.case_id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 20px", borderBottom: "1px solid #f6f6f8" }}>
-              <span style={{ width: 84, flexShrink: 0, fontSize: 12.5, color: "#9a9aa0" }}>{r.case_id}</span>
-              <span style={{ width: 104, flexShrink: 0, fontSize: 13, color: "#9a9aa0" }}>{r.area}</span>
+              <span style={{ width: 84, flexShrink: 0, fontSize: 12.5, color: "#555" }}>{r.case_id}</span>
+              <span style={{ width: 104, flexShrink: 0, fontSize: 13, color: "#555" }}>{r.area}</span>
               <span style={{ flex: 1, minWidth: 0, fontSize: 14, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {케이스이름(r.case_id)}
-                {r.note && <span style={{ color: "#9a9aa0" }}> · {r.note}</span>}
+                {r.note && <span style={{ color: "#555" }}> · {r.note}</span>}
               </span>
               <span style={{ width: 60, flexShrink: 0, textAlign: "right", fontSize: 13, color: 결과색[r.result] }}>{결과이름[r.result]}</span>
-              <span style={{ width: 74, flexShrink: 0, textAlign: "right", fontSize: 12.5, color: "#b3adbd" }}>{언제(r.ran_at)}</span>
+              <span style={{ width: 74, flexShrink: 0, textAlign: "right", fontSize: 12.5, color: "#555" }}>{언제(r.ran_at)}</span>
             </div>
           ))
         )}
