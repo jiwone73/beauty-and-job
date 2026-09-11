@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 인재열람가능, 이름가리기, 회사에지원함 } from "@/lib/companyEntitlement";
 
 // 제안 열어봄 표시. 기업 쪽 성과(제안→열람)가 여기서 나온다.
 export async function PATCH(
@@ -55,6 +56,9 @@ export async function POST(
     const r = rows[0];
     // 알림은 처음 누를 때 한 번만. 다시 눌러도 기업을 두 번 부르지 않는다.
     if (r.interested_at) {
+      // 무료 기업회원이면 이름을 가리고, 연락처가 열린다는 말도 하지 않는다 — 지원자만 예외.
+      const 보임 = (await 인재열람가능(r.company_id)) || (await 회사에지원함(r.company_id, auth!.sub));
+      const 이름 = (보임 ? r.user_name : 이름가리기(r.user_name)) || "구직자";
       await pool.query(
         `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
          SELECT $1, 'PROPOSAL_INTEREST', $2, $3, $4, 'proposal'
@@ -63,10 +67,10 @@ export async function POST(
              WHERE company_id = $1 AND related_id = $4 AND related_type = 'proposal')`,
         [
           r.company_id,
-          `${r.user_name || "구직자"}님이 관심을 보였어요`,
+          `${이름}님이 관심을 보였어요`,
           r.interest_message
-            ? `${r.user_name || "구직자"}님: "${r.interest_message}"`
-            : `${r.user_name || "구직자"}님이 '${r.job_title || "제안하신 공고"}'에 관심 있어요. 연락처를 확인할 수 있어요.`,
+            ? `${이름}님: "${r.interest_message}"`
+            : `${이름}님이 '${r.job_title || "제안하신 공고"}'에 관심 있어요.${보임 ? " 연락처를 확인할 수 있어요." : ""}`,
           params.id,
         ]
       ).catch((e) => console.error("[proposal interest notify]", e));

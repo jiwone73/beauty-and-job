@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 인재열람가능, 이름가리기, 회사에지원함 } from "@/lib/companyEntitlement";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 실을 쓴다 — 그래서 owner 를 지정하지 않고
 // 받은 뒤에 이 제안의 당사자인지 따진다. 남의 스레드는 404 로 돌려보낸다(있는지
@@ -129,10 +130,13 @@ async function 알림(proposalId: string, 보낸쪽: "USER" | "COMPANY", 미리�
   const r = rows[0];
   const 줄임 = 미리보기.length > 40 ? `${미리보기.slice(0, 40)}…` : 미리보기;
   if (보낸쪽 === "USER") {
+    // 무료 기업회원이면 알림에도 이름을 가린다 — 지원자만 예외(인재 목록과 같은 규칙).
+    const 보임 = (await 인재열람가능(r.company_id)) || (await 회사에지원함(r.company_id, r.user_id));
+    const 이름 = 보임 ? r.user_name : 이름가리기(r.user_name);
     await pool.query(
       `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
        VALUES ($1, 'PROPOSAL_INTEREST', $2, $3, $4, 'proposal')`,
-      [r.company_id, `${r.user_name || "구직자"}님이 답했어요`, 줄임, proposalId]
+      [r.company_id, `${이름 || "구직자"}님이 답했어요`, 줄임, proposalId]
     ).catch((e) => console.error("[proposal msg notify company]", e));
   } else {
     await pool.query(

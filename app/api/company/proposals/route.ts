@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { 제안분야들 } from "@/lib/positionLine";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 인재열람가능, 이름가리기, 지원함SQL } from "@/lib/companyEntitlement";
 
 // 매장이 보낸 제안 목록.
 //
@@ -16,6 +17,8 @@ export async function GET(req: NextRequest) {
     const { rows } = await pool.query(
       `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.canceled_at, p.position_index, p.note,
               u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
+              -- 우리 공고에 지원한 사람인가. 무료 기업회원에게 이름이 열리는 단 하나의 경우다.
+              ${지원함SQL("p.user_id", "p.company_id")} AS applied_here,
               -- 누구인지 알아야 「이 사람에게 왜 보냈더라」가 풀린다. 이름만으로는
               -- 열 명 중 누구였는지 떠오르지 않는다. 인재검색 카드가 쓰는 값과
               -- 같은 것들이다 — 이미 열람한 사람들이라 새로 여는 정보가 아니다.
@@ -65,6 +68,9 @@ export async function GET(req: NextRequest) {
         LIMIT 200`,
       [auth!.sub]
     );
+    // 무료 기업회원이면 지원자만 빼고 이름을 가린다. 제안할 때 이미 본 이름이라도
+    // 기간이 끝나면 스크랩·인재 목록과 똑같이 닫힌다.
+    const 열람가능 = await 인재열람가능(auth!.sub);
     return ok(rows.map((r) => ({
       id: r.id,
       createdAt: r.created_at,
@@ -79,7 +85,7 @@ export async function GET(req: NextRequest) {
         (r.job_type || "") === "OFFICE").join(" / ") || null,
       interestMessage: r.interest_message,
       userId: r.user_id,
-      userName: r.user_name,
+      userName: (열람가능 || r.applied_here) ? r.user_name : 이름가리기(r.user_name),
       // 사진만 감춘 사람은 아예 내려보내지 않는다 — 화면에서 가리면 응답에 남는다.
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,
       gender: r.gender || null,

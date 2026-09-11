@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 인재열람가능, 이름가리기, 재직가리기 } from "@/lib/companyEntitlement";
+import { 인재열람가능, 이름가리기, 재직가리기, 지원함SQL } from "@/lib/companyEntitlement";
 
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
@@ -39,6 +39,9 @@ export async function GET(req: NextRequest) {
   const 볼유형 = 내유형 === "BOTH" || !내유형 ? jobType : 내유형;
 
   const params: any[] = [auth!.sub]; // $1 = company_id
+  // 유료 기간인가. 무료 기업회원에게는 우리 공고에 지원한 사람만 빼고 이름·연락처를
+  // 가린다 — 검색 조건(이름 검색)도 이것을 따르므로 쿼리를 짜기 전에 본다.
+  const 열람가능 = await 인재열람가능(auth!.sub);
   let idx = 2;
 
   // job_type
@@ -65,9 +68,10 @@ export async function GET(req: NextRequest) {
   // 키워드 (이름 / 포지션 / 스킬)
   let searchClause = "";
   if (search) {
+    // 이름 검색은 유료 기간에만 — 가린 이름을 검색으로 맞혀 볼 수 있으면 가린 것이 아니다.
     searchClause = `AND (
-      u.name ILIKE $${idx}
-      OR EXISTS (
+      ${열람가능 ? `u.name ILIKE $${idx} OR` : ""}
+      EXISTS (
         SELECT 1 FROM user_careers uc
         WHERE uc.user_id = u.id AND uc.position ILIKE $${idx}
       )
@@ -218,6 +222,8 @@ export async function GET(req: NextRequest) {
         EXISTS(
           SELECT 1 FROM company_talent_scraps WHERE company_id = $1 AND user_id = u.id
         ) AS scrapped,
+        -- 우리 공고에 지원한 사람인가. 무료 기업회원에게 이름·연락처가 열리는 단 하나의 경우.
+        ${지원함SQL("u.id", "$1")} AS applied_here,
         -- 어느 공고로 담았나. 공고 없이 담은 것은 "none". 북마크의 공고 고르기에 체크로 뜬다.
         (
           SELECT COALESCE(array_agg(COALESCE(job_posting_id::text, 'none')), '{}')
@@ -279,21 +285,17 @@ export async function GET(req: NextRequest) {
   params.push(limit, offset);
 
   try {
-    const [{ rows }, 열람가능] = await Promise.all([
-      pool.query(query, params),
-      인재열람가능(auth!.sub),
-    ]);
+    const { rows } = await pool.query(query, params);
     const total = rows[0]?.total_count ?? 0;
     const data = rows.map((r) => ({
       id: r.id,
-      // 관심을 보낸 사람은 스스로 문을 연 것이라 열람권과 무관하게 그대로 보인다.
-      name: (열람가능 || r.interested_at) ? r.name : 이름가리기(r.name),
+      // 무료 기업회원에게는 우리 공고에 지원한 사람만 실명 — 제안을 수락한 사람도 가린다.
+      name: (열람가능 || r.applied_here) ? r.name : 이름가리기(r.name),
       // 연락처는 채용을 실제로 하고 있는 곳(공고 보유)에만 연다. 화면에서만
       // 가리면 응답에 남아 개발자 도구로 그대로 보이므로 여기서 지워 보낸다.
-      // 「관심 있어요」를 누른 사람은 스스로 문을 연 것이라 열람권과 무관하게 보여 준다.
-      // 그래야 제안을 받은 사람이 답했는데 연락할 길이 없는 일이 안 생긴다.
-      email: (열람가능 || r.interested_at) ? (r.email || null) : null,
-      phone: (열람가능 || r.interested_at) ? (r.phone || null) : null,
+      // 제안을 수락한 사람과는 대화로 이어 가면 된다 — 연락처는 지원했거나 유료일 때만.
+      email: (열람가능 || r.applied_here) ? (r.email || null) : null,
+      phone: (열람가능 || r.applied_here) ? (r.phone || null) : null,
       interestedAt: r.interested_at || null,
       interestMessage: r.interest_message || null,
       interestProposalId: r.interest_proposal_id || null,
@@ -302,8 +304,8 @@ export async function GET(req: NextRequest) {
       avatarUrl: r.avatar_public === false ? null : r.avatar_url,
       // 작업물은 자기소개서와 같은 잠금 — 미용은 인스타그램이 곧 포트폴리오라
       // 사진만 막고 링크를 열어 두면 막은 것이 아니다.
-      portfolioImages: (열람가능 || r.interested_at) ? (r.portfolio_images || null) : null,
-      snsUrl: (열람가능 || r.interested_at) ? (r.sns_url || null) : null,
+      portfolioImages: (열람가능 || r.applied_here) ? (r.portfolio_images || null) : null,
+      snsUrl: (열람가능 || r.applied_here) ? (r.sns_url || null) : null,
       gender: r.gender,
       age: r.age,
       // 한줄소개는 자기 PR 한 줄이라 열어 둔다 — 무료로도 판단할 수 있어야 목록이
@@ -323,7 +325,7 @@ export async function GET(req: NextRequest) {
       careerCount: r.career_count,
       educationDetail: r.education_detail,
       // 재직 매장 이름은 연락할 수 있게 된 다음에 알면 된다. 그전에는 직책만.
-      careerDetail: (열람가능 || r.interested_at)
+      careerDetail: (열람가능 || r.applied_here)
         ? r.career_detail
         : (r.career_detail
             ? { ...r.career_detail, company: 재직가리기(r.career_detail.position) || "일하는 중", position: null }

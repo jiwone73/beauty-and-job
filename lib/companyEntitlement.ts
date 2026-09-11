@@ -23,6 +23,28 @@ export async function 인재열람가능(companyId: string): Promise<boolean> {
   return rows.length > 0;
 }
 
+/**
+ * 이 사람이 이 기업의 공고에 지원했는가(지원 취소는 빼고).
+ *
+ * 무료 기업회원에게 인재의 이름·연락처가 열리는 단 하나의 경우다. 지원은 본인이
+ * 그 매장에 자기 이력서를 직접 낸 것이라, 유료 여부와 상관없이 지원자 관리에서
+ * 실명으로 본다. 제안을 수락한 것은 여기 들지 않는다 — 수락은 「더 얘기해 보자」지
+ * 이력서를 낸 것이 아니다.
+ */
+export async function 회사에지원함(companyId: string, userId: string): Promise<boolean> {
+  const { rows } = await pool.query(
+    `SELECT 1 FROM applications a JOIN job_postings j ON j.id = a.job_posting_id
+      WHERE a.user_id = $2 AND j.company_id = $1 AND a.status <> 'WITHDRAWN' LIMIT 1`,
+    [companyId, userId]
+  );
+  return rows.length > 0;
+}
+
+/** SQL 조각 — 위와 같은 뜻. userCol 은 사람 id 칸, companyRef 는 기업 id(자리표나 칸). */
+export const 지원함SQL = (userCol: string, companyRef: string) =>
+  `EXISTS (SELECT 1 FROM applications a_ JOIN job_postings j_ ON j_.id = a_.job_posting_id
+            WHERE a_.user_id = ${userCol} AND j_.company_id = ${companyRef} AND a_.status <> 'WITHDRAWN')`;
+
 /** 잠겼을 때 화면에 대신 보여줄 값. 서버에서 지워 보낸다 — 화면에서만 가리면
  *  응답에 남아 개발자 도구로 그대로 보인다. */
 export const 잠긴값 = null;

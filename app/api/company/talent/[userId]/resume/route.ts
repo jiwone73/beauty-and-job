@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 인재열람가능, 이름가리기 } from "@/lib/companyEntitlement";
+import { 인재열람가능, 이름가리기, 회사에지원함 } from "@/lib/companyEntitlement";
 
 // 기업 인재검색: userId로 지원자 풀 이력서 조회 (ResumePreview용)
 export async function GET(
@@ -40,9 +40,12 @@ export async function GET(
   // 셀렉미와 같은 잠금 — 연락처·자기소개서·작업물은 공고를 등록한 곳에만 연다.
   // 경력·학력·자격증·희망조건은 그대로 보여 준다(볼 수 있어야 제안할지 정한다).
   const 열람가능 = await 인재열람가능(auth!.sub);
+  // 무료 기업회원이라도 우리 공고에 지원한 사람은 실명으로 본다 — 지원자 관리와 같다.
+  // 그 밖에는 제안을 수락한 사람이라도 가린다(인재 목록과 같은 규칙).
+  const 지원함 = 열람가능 ? false : await 회사에지원함(auth!.sub, userId);
   const u = { ...userRes.rows[0] };
   const p = { ...(profile.rows[0] || {}) };
-  if (!열람가능) {
+  if (!열람가능 && !지원함) {
     // 목록에서 「하OO」로 보이던 사람이 이력서를 열면 실명이 나오면 가린 것이 아니다.
     u.name = 이름가리기(u.name);
     u.email = null;
@@ -74,7 +77,7 @@ export async function GET(
     educations: educations.rows,
     experiences: experiences.rows,
     languages: languages.rows,
-    links: 열람가능 ? links.rows : [],
+    links: (열람가능 || 지원함) ? links.rows : [],
     certificates: certificates.rows,
   });
 }
