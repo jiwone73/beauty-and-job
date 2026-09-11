@@ -158,8 +158,8 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     { id: "dashboard", label: "대시보드",      icon: Briefcase,    href: base, group: "home" },
     { id: "jobs",      label: "채용공고",       icon: FileText,     href: `${base}/jobs`, group: "jobs" },
     { id: "talent",    label: "인재 검색",     icon: Search,       href: `${base}/talent`, group: "talent" },
-    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/talent/scrapped`, group: "talent" },
     { id: "proposals", label: "채용제안",     icon: Send,         href: `${base}/proposals`, group: "proposals" },
+    { id: "scrapped",  label: "스크랩 인재",   icon: BookmarkCheck,href: `${base}/proposals/scrapped`, group: "proposals" },
     { id: "applicants",label: "지원자 관리",   icon: Users,        href: `${base}/applicants`, group: "talent" },
     { id: "settings",  label: infoLabel(companyInfo.type), icon: Settings,     href: `${base}/settings`, group: "settings" },
     // 계정의 책임자는 담당자다 — 담당자 정보를 매장정보(프로필)에서 계정 설정으로 옮긴다
@@ -206,12 +206,13 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
       { id: "jobs",     label: () => "공고·지원자 관리", title: () => "공고·지원자 관리", href: `${base}/jobs` },
       { id: "jobs-new", label: () => "공고 등록",        title: () => "공고 등록",        href: `${base}/jobs/new` },
     ],
-    // 인재풀 — 찾는 곳과 담아 둔 곳. 인재 검색은 끝까지 검색이라 제안을 보내는
-    //   데서 끝난다. 보낸 뒤는 머리줄의 보낸 제안가 맡는다 — 공고를 골라 그 공고로
-    //   보낸 사람들을 보는 일이라 인재를 찾는 일과 결이 다르다.
-    talent: [
-      { id: "talent",    label: () => "인재 검색",   title: () => "인재 검색",   href: `${base}/talent` },
-      { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재", href: `${base}/talent/scrapped` },
+    // 채용제안 — 모아 둔 사람과 보낸 사람. 인재풀은 찾는 데서 끝나고(카드의 북마크로
+    //   담는 데까지), 담아 둔 사람을 보는 일은 여기서 한다. 사람인도 인재풀 화면에는
+    //   저장 목록을 두지 않고 「후보자 저장」 버튼만 둔 뒤 저장한 사람은 따로 관리한다.
+    //   셀렉미도 「찜한 인재」를 「보낸제안」 옆에 둔다. 보낸 제안이 이 갈래의 첫 화면이라 앞에 둔다.
+    proposals: [
+      { id: "proposals", label: () => "보낸 제안",   title: () => "공고별 보낸 제안", href: `${base}/proposals` },
+      { id: "scrapped",  label: () => "스크랩 인재", title: () => "스크랩 인재",     href: `${base}/proposals/scrapped` },
     ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
@@ -226,11 +227,12 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
   const 묶음 = Object.keys(SIDE_NAV).find((k) => SIDE_NAV[k].some((m) => m.id === activePage));
   const 사이드 = 묶음 ? SIDE_NAV[묶음] : null;
   const 사이드있나 = !!(사이드 || side);
-  // 스크랩 인재는 인재풀의 갈래라 '인재풀'이 켜져 있어야 한다.
+  // 스크랩 인재는 채용제안의 갈래라 '채용제안'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
     id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new" || activePage === "applicants")
-    : id === "talent" ? (activePage === "talent" || activePage === "scrapped")
+    : id === "talent" ? activePage === "talent"
+    : id === "proposals" ? (activePage === "proposals" || activePage === "scrapped")
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
@@ -540,20 +542,21 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
         {!사이드있나 && (
           <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
-        {묶음 === "talent" ? (
-          /* 인재풀은 두 갈래뿐이라 탭이 곧 제목이다 — 탭에 「스크랩 인재」라 적어 두고
-             그 옆에 또 같은 제목을 세우면 같은 말이 두 번 나온다.
-             탭을 본문 위 한 줄로 올리고, 왼쪽 기둥은 필터에게만 내준다. 예전에는
-             탭이 기둥에 얹혀 있어서, 필터가 없는 스크랩 인재에서는 기둥이 텅 빈 채로
-             서 있었다. */
+        {(묶음 === "proposals" || activePage === "talent") ? (
+          /* 채용제안은 두 갈래(보낸 제안 · 스크랩 인재)라 탭이 곧 제목이다 — 탭에 이름을
+             적어 두고 그 옆에 또 같은 제목을 세우면 같은 말이 두 번 나온다.
+             탭을 본문 위 한 줄로 올리고, 왼쪽 기둥은 그 화면의 판(공고 목록·필터)에게 내준다.
+             인재 검색은 이제 한 갈래라 탭 없이 제목 아래 필터 기둥만 선다. */
           <div className="co-set-wrap co-tal">
-            <nav className="co-tal-tabrow">
-              {사이드?.map((m) => (
-                <Link key={m.id} href={m.href} className={`co-tal-tab ${activePage === m.id ? "on" : ""}`}>
-                  {m.label(infoLabel(companyInfo.type))}
-                </Link>
-              ))}
-            </nav>
+            {사이드 && (
+              <nav className="co-tal-tabrow">
+                {사이드.map((m) => (
+                  <Link key={m.id} href={m.href} className={`co-tal-tab ${activePage === m.id ? "on" : ""}`}>
+                    {m.label(infoLabel(companyInfo.type))}
+                  </Link>
+                ))}
+              </nav>
+            )}
             <div className="co-tal-body">
               {sideExtra && <aside className="co-set-side co-tal-side">{sideExtra}</aside>}
               <main className={`company-content co-set-main${sideExtra ? "" : " co-tal-solo"}`}>{children}</main>

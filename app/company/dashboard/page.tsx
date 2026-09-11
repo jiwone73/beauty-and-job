@@ -114,7 +114,7 @@ export default function CompanyDashboard() {
     { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/jobs?status=미열람" },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
     { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals" },
-    { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/talent/scrapped" },
+    { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/proposals/scrapped" },
   ];
 
 

@@ -346,7 +346,7 @@ export default function CompanyProposalsPage() {
   );
 
   return (
-    <CompanyLayout activePage="proposals" side={사이드}>
+    <CompanyLayout activePage="proposals" sideExtra={사이드}>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
           다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸
