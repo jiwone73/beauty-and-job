@@ -534,8 +534,12 @@ export default function CompanyProposalsPage() {
     <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"} sideExtra={스크랩모드 ? 스크랩사이드 : 사이드}>
       {스크랩모드 ? (
         <>
-          {스크랩머리 && 머리판(스크랩머리, 고른스크랩)}
-          {스크랩머리 && 띠(`이 공고로 스크랩한 인재 ${보일스크랩.length}명`)}
+          {스크랩머리 && (
+            <div className="co-pane">
+              {머리판(스크랩머리, 고른스크랩)}
+              {띠(`이 공고로 스크랩한 인재 ${보일스크랩.length}명`)}
+            </div>
+          )}
           <ScrappedTalentList base={base} loading={스크랩로딩}
             talents={보일스크랩}
             scrapJobs={진행공고} onScrapJob={스크랩담기}
@@ -562,13 +566,14 @@ export default function CompanyProposalsPage() {
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
           다만 수정·마감·재등록은 두지 않는다. 여기서 공고를 고치면 이미 보낸
           제안의 조건이 바뀐다 — 고치는 일은 공고·지원자에서 한다. */}
-      {공고머리 && 머리판(공고머리, 고른공고)}
-
-      {/* 표 머리줄 — 공고 블록과 아래 표를 갈라 준다. 이것이 없으면 상태 칩이
-          공고에 딸린 것인지 표에 딸린 것인지 안 갈렸다. 공고·지원자의
-          「지원자 총 N명」과 같은 자리·같은 짜임이다. */}
-      {띠(공고머리 ? `이 공고로 제안한 인재 ${공고고른것.length}명` : `보낸 제안 ${공고고른것.length}명`,
-        우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">내 차례 {우리차례수}</span></> : null)}
+      {/* 공고 머리와 띠는 한 묶음(.co-pane) — 판의 20px 간격이 둘 사이에 끼지 않아
+          공고·지원자와 같은 간격이 된다. 띠는 아래 표가 이 공고의 것이라는 것과
+          몇 명인지를 말한다. */}
+      <div className="co-pane">
+        {공고머리 && 머리판(공고머리, 고른공고)}
+        {띠(공고머리 ? `이 공고로 제안한 인재 ${공고고른것.length}명` : `보낸 제안 ${공고고른것.length}명`,
+          우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">내 차례 {우리차례수}</span></> : null)}
+      </div>
 
       {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
           어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
