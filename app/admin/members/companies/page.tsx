@@ -96,15 +96,6 @@ function 오늘() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
-/** 기간이 며칠 남았나. 오늘까지면 0, 지났으면 null. */
-function 남은날(until: string | null): number | null {
-  if (!until) return null;
-  const 하루 = 86400000;
-  const t = new Date(until.slice(0, 10)); t.setHours(0, 0, 0, 0);
-  const 오늘날 = new Date(); 오늘날.setHours(0, 0, 0, 0);
-  const n = Math.round((t.getTime() - 오늘날.getTime()) / 하루);
-  return n >= 0 ? n : null;
-}
 
 function AdminCompaniesContent() {
   const searchParams = useSearchParams();
@@ -522,26 +513,14 @@ function AdminCompaniesContent() {
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                   {/* 최종로그인 — 2026-09-12 부터 쌓인다. 그 전에 들어온 것은 남은 기록이 없다. */}
                   <td className="admin-td-date">{c.last_login_at ? fmtDate(c.last_login_at) : "-"}</td>
-                  {/* 가입상품 — 1행은 무엇에 들어 있나, 2행은 언제까지인가.
-                      상품을 팔기 시작하면 1행에 상품명이 들어선다. 기간은 결제가
-                      붙기 전까지 여기서 손으로 넣어 유료 동작을 본다. */}
+                  {/* 가입상품 — 상품을 팔기 시작하면 여기 상품명이 들어선다.
+                      그때까지는 기간을 손으로 넣어 유료 동작을 본다. */}
                   <td className="admin-td-date">
-                    <div>{isPaid(c) ? "유료" : "무료"}</div>
-                    <div style={{ marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
-                      <input type="date" value={(c.paid_until || "").slice(0, 10)}
-                        onChange={(e) => 유료기간저장(c.id, e.target.value)}
-                        style={{ border: "1px solid #e8e8ea", borderRadius: 6, padding: "3px 6px",
-                          fontSize: 12.5, fontFamily: "inherit",
-                          color: "#555" }} />
-                      {(() => {
-                        const n = 남은날(c.paid_until);
-                        if (n === null) return null;
-                        // 열흘 안쪽이면 곧 끊긴다 — 그때만 눈에 걸리게 한다.
-                        return <span style={{ fontSize: 12, color: n <= 10 ? "#c0504d" : "#a5a5ab" }}>
-                          {n === 0 ? "오늘까지" : `${n}일 남음`}
-                        </span>;
-                      })()}
-                    </div>
+                    <input type="date" value={(c.paid_until || "").slice(0, 10)}
+                      onChange={(e) => 유료기간저장(c.id, e.target.value)}
+                      style={{ border: "1px solid #e8e8ea", borderRadius: 6, padding: "3px 6px",
+                        fontSize: 12.5, fontFamily: "inherit",
+                        color: "#555" }} />
                   </td>
                   {/* 상태 */}
                   <td>
