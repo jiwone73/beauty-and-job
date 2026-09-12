@@ -7,7 +7,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Search, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight
+  Users, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
@@ -62,7 +62,6 @@ function CompanyJobsContent() {
   const initialStatus = searchParams.get("status");
   const [jobs, setJobs] = useState<CompanyJob[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
   // 기본은 진행중 + 마감일순 — 이 화면에서 할 일은 대개 "곧 내려가는 진행 공고"를 손보는 것이다.
   const [statusFilter, setStatusFilter] = useState(
     initialStatus && ["전체", "진행중", "마감임박", "마감", "지원자", "미열람"].includes(initialStatus) ? initialStatus : "진행중"
@@ -197,7 +196,6 @@ function CompanyJobsContent() {
     const matchGroup = jobGroupFilter === "전체" ||
       (jobGroupFilter === "본사" && j.job_type === "OFFICE") ||
       (jobGroupFilter === "매장" && j.job_type === "STORE");
-    const matchSearch = !search || j.title.includes(search);
     const dl = daysLeft(j.deadline);
     const matchStatus =
       statusFilter === "전체" ? true :
@@ -209,7 +207,7 @@ function CompanyJobsContent() {
       statusFilter === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
       statusFilter === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
       STATUS_LABEL[j.status] === statusFilter;
-    return matchGroup && matchSearch && matchStatus;
+    return matchGroup && matchStatus;
   }).sort((a, b) => {
     // 늘 최신이 위다 — 진행중이든 마감이든 방금 올린 것부터 본다.
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -329,11 +327,6 @@ function CompanyJobsContent() {
   // 등록이 머리줄에 이미 있고, 관리 화면은 지금 보고 있는 이 화면이라 같은 말이었다.
   const 사이드 = isMobile ? null : (
     <div className="co-side">
-      <div className="admin-search-wrap co-side-find">
-        <Search size={16} className="admin-search-icon" />
-        <input className="admin-search-input" placeholder="공고명 검색"
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
       <div className="co-side-tabs">
         {(["진행중", "마감"] as const).map((t) => (
           <button key={t} type="button"

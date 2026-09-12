@@ -190,7 +190,6 @@ export default function CompanyProposalsPage() {
   // 안 읽혔다. 여러 공고에 걸친 「답할 것」은 사이드에 숫자로 붙는다.
   const [고른공고, set고른공고] = useState<string | null>(null);
   const [고른상태, set고른상태] = useState<상태키 | "전체">("전체");
-  const [공고검색, set공고검색] = useState("");
   const router = useRouter();
   const pathname = usePathname();
   const base = pathname.split("/").filter(Boolean)[0] === "company"
@@ -293,11 +292,10 @@ export default function CompanyProposalsPage() {
       });
     }
     return [...표.values()]
-      .filter((g) => !공고검색.trim() || g.제목.includes(공고검색.trim()))
       // 내 차례가 있는 공고가 먼저. 그다음 진행중, 마감은 아래로.
       .sort((a, b) => Number(b.내차례 > 0) - Number(a.내차례 > 0)
         || Number(a.마감) - Number(b.마감) || b.수 - a.수);
-  }, [목록, 공고검색]);
+  }, [목록]);
 
   // 끝난 제안만 남은 마감 공고는 접어 둔다. 볼 일이 없는데 목록만 길어진다.
   const [지난것펼침, set지난것펼침] = useState(false);
@@ -430,15 +428,13 @@ export default function CompanyProposalsPage() {
   // 공고 목록은 공고 지원자 화면(ApplicantsScreen)과 같은 부품이다 — 제목 두 줄까지.
   const 스크랩사이드 = (
     <>
-      <input className="prop-side-search" placeholder="공고명 검색"
-        value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
       <button type="button" className={`co-set-item co-jobitem${고른스크랩 === "" ? " on" : ""}`}
         onClick={() => set고른스크랩("")}>
         <span className="co-jobitem-t">전체 스크랩</span>
         <span className="co-jobitem-n">{담긴사람.length}</span>
       </button>
       <p className="jobs-side-t prop-side-group">공고별 스크랩</p>
-      {진행공고.filter((g) => !공고검색.trim() || g.title.includes(공고검색.trim())).map((g) => (
+      {진행공고.map((g) => (
         <button key={g.id} type="button" className={`co-set-item co-jobitem${고른스크랩 === g.id ? " on" : ""}`}
           onClick={() => set고른스크랩(g.id)} title={g.title}>
           <span className="co-jobitem-t">{g.title}</span>
@@ -458,8 +454,6 @@ export default function CompanyProposalsPage() {
 
   const 사이드 = (
     <>
-      <input className="prop-side-search" placeholder="공고명 검색"
-        value={공고검색} onChange={(e) => set공고검색(e.target.value)} />
       {보일공고.map((g) => (
         <button key={g.id} type="button" className={`co-set-item co-jobitem${고른공고 === g.id ? " on" : ""}`}
           onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
