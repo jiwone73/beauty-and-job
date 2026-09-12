@@ -353,22 +353,22 @@ function AdminJobsPageInner() {
                         <img
                           src={job.thumb_url}
                           alt={job.company_name}
-                          style={{ width: 26, height: 26, borderRadius: 6, objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
+                          style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
                         />
                       ) : (
                         <div style={{
-                          width: 26, height: 26, borderRadius: 6, background: "#f7f7f8",
+                          width: 56, height: 56, borderRadius: 10, background: "#f7f7f8",
                           display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 12, color: "#555", flexShrink: 0
+                          fontSize: 17, color: "#555", flexShrink: 0
                         }}>
                           {job.company_name.charAt(0)}
                         </div>
                       )}
                       {/* 매장명은 읽는 값이다 — 누를 자리는 아래 공고명 하나로 둔다.
                           한 칸에 갈 곳이 둘이면 어디를 눌러야 할지 매번 겨냥하게 된다. */}
-                      <div className="admin-td-brand"
+                      <div className="admin-td-brand adm-shop"
                         title={job.company_name}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", fontWeight: 400,
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, fontWeight: 400,
                           maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {job.company_name}
                       </div>
@@ -394,7 +394,7 @@ function AdminJobsPageInner() {
                         맞춘다 — 어긋나 있으면 두 줄이 한 덩어리로 안 읽힌다. */}
                     <div className="adm-td2"
                       title={job.title}
-                      style={{ marginLeft: 34, marginTop: 3, maxWidth: 380, color: "#555", cursor: "pointer" }}
+                      style={{ marginLeft: 64, marginTop: 3, maxWidth: 380, color: "#555", cursor: "pointer" }}
                       onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
                       {job.title}
                     </div>

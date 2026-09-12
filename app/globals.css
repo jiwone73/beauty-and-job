@@ -5809,7 +5809,11 @@ div:has(> table.admin-table),
   border-radius: 12px;
 }
 .admin-td-type { white-space: nowrap; }
-.admin-td-brand { font-weight: 400; color: #555 !important; }
+.admin-td-brand { font-weight: 400; color: #555; }
+/* 공고 목록의 매장명만 예외 — 한 칸에 매장과 공고가 위아래로 있고, 주인공은
+   아래의 공고명이다. 매장은 딸린 값이라 한 단계 물려 둔다. 이 표에서 #555 가
+   아닌 글자는 여기 하나뿐이다. */
+.admin-table .adm-shop { font-size: 14px; color: #8a8a90; }
 .admin-td-title {
   max-width: 200px;
   overflow: hidden;
