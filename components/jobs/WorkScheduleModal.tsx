@@ -34,7 +34,9 @@ interface Props {
 // "(협의)" 로 끝나면 시간은 정해 두고 조율 여지만 남긴 값이다.
 // 그 꼬리를 떼어 draft(시간 부분)와 nego(체크 여부)로 나눈다.
 type QuickType = "weeks" | "hours" | "weekday" | "weekend" | "custom" | "nego";
-const WEEK_DAY_COUNTS = [2, 3, 4, 5, 6];
+// 주 1일(주말 알바)부터 주 7일(연중무휴 매장)까지 — 미용실은 주말만 쓰는 자리도, 매일
+// 나오는 자리도 있다.
+const WEEK_DAY_COUNTS = [1, 2, 3, 4, 5, 6, 7];
 const splitNego = (v: string): [string, boolean] => {
   const m = (v || "").match(/^(.*?)\s*\(\+?협의\)$/s);
   return m ? [m[1], true] : [v || "", false];
