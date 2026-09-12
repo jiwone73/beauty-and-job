@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
-import { Search, FileText, Paperclip, Instagram, UserRound } from "lucide-react";
+import { Search, FileText, Paperclip, Instagram, PenLine } from "lucide-react";
 import LinkCell from "@/components/company/LinkCell";
 import { shortenRegion } from "@/lib/memberFormat";
 
@@ -106,7 +106,8 @@ function 지금(a: App): { 글: string; 급함: boolean } {
     const n = 지난날(a.applied_at);
     return { 글: n === 0 ? "오늘 지원" : `${n}일째 미열람`, 급함: n >= 3 };
   }
-  return { 글: STATUS_TO_LABEL[a.status] || a.status, 급함: false };
+  if (a.status === "VIEWED") return { 글: "열람됨", 급함: false };
+  return { 글: "", 급함: false };
 }
 
 function AdminApplicationsPageInner() {
@@ -320,7 +321,7 @@ function AdminApplicationsPageInner() {
                     <td>
                       <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "4px 12px", justifyContent: "start" }}>
                         <LinkCell url={a.resume_id} icon={<FileText size={13} />} label="이력서" />
-                        <LinkCell url={a.avatar_url} icon={<UserRound size={13} />} label="사진" />
+                        <LinkCell url={a.cover_letter} icon={<PenLine size={13} />} label="자소서" />
                         <LinkCell url={a.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포폴" />
                         <LinkCell url={a.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>

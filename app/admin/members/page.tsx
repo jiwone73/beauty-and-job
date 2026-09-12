@@ -22,7 +22,7 @@ function ageGroupOf(birth: string | null | undefined): string | null {
 import BroadcastModal from "@/components/admin/BroadcastModal";
 import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2, FileText, Paperclip, Instagram, UserRound } from "lucide-react";
+import { Search, Trash2, FileText, Paperclip, Instagram, PenLine } from "lucide-react";
 import LinkCell from "@/components/company/LinkCell";
 import { JS_LABEL, statusAge } from "@/lib/jobSearchStatus";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
@@ -112,6 +112,7 @@ type Member = {
   portfolio_images: { url: string }[] | null;
   resume_file_url: string | null;
   sns_url: string | null;
+  cover_letter: string | null;
   job_search_status: string | null;
   job_search_status_at: string | null;
   last_login_at: string | null;
@@ -541,7 +542,7 @@ function AdminMembersPageInner() {
                     <td>
                       <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "4px 12px", justifyContent: "start" }}>
                         <LinkCell url={m.resume_id} icon={<FileText size={13} />} label="이력서" />
-                        <LinkCell url={m.avatar_url} icon={<UserRound size={13} />} label="사진" />
+                        <LinkCell url={m.cover_letter} icon={<PenLine size={13} />} label="자소서" />
                         <LinkCell url={m.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포폴" />
                         <LinkCell url={m.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>
