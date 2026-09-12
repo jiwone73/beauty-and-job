@@ -46,6 +46,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   const [draft, setDraft] = useState(initDraft);
   const [nego, setNego] = useState(initNego);
   const [quickType, setQuickType] = useState<QuickType | null>(null);
+  // 「어느 항목을 펼쳤나」와 「어느 항목으로 정했나」를 나눈다.
+  //
+  // 예전에는 항목을 누르는 순간 나머지가 잠겼다. 주 N일을 눌러 보고 지정 요일이
+  // 낫겠다 싶으면 창을 닫았다 다시 열어야 했다. 펼치는 것만으로는 아무것도 정하지
+  // 않은 것으로 보고, 그 항목 안에서 실제로 값을 고른 때(요일·일수·시간·주말·협의)
+  // 비로소 정해진 것으로 본다. 정해지면 나머지 항목이 잠긴다.
+  const [확정, set확정] = useState<QuickType | null>(null);
   // 「주 5~6일」처럼 걸쳐 뽑는 매장이 많다 — 하나만 고르게 하면 그런 자리를 못 적는다.
   const [qWeekDays, setQWeekDays] = useState<number[]>([5]);
   const [qBiweekly, setQBiweekly] = useState(false); // 매장: 격주 가능
@@ -70,11 +77,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   useEffect(() => {
     if (되짚음.current) return;
     되짚음.current = true;
+    // 저장된 값으로 다시 열면 그 항목은 이미 정해진 것이다.
+    const 되살림 = (t: QuickType) => { 되살림(t); set확정(t); };
     const [본문] = splitNego(value);
     if (!본문.trim()) return;
     const [첫줄, ...나머지] = 본문.split("\n");
 
-    if (첫줄.includes("협의") && !첫줄.includes("주 ")) { setQuickType("nego"); return; }
+    if (첫줄.includes("협의") && !첫줄.includes("주 ")) { 되살림("nego"); return; }
 
     // 주 N일 / 주 N~M일 / 주 N·M일
     const 일수 = 첫줄.match(/주\s*([\d~·,]+)\s*일/);
@@ -85,15 +94,15 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
       if (물결) { for (let i = Number(물결[1]); i <= Number(물결[2]); i++) ns.push(i); }
       else ns = 값.split(/[·,]/).map(Number).filter((n) => n > 0);
       if (ns.length) setQWeekDays(ns);
-      setQuickType("weeks");
+      되살림("weeks");
     } else if (/^(평일|주말)\(/.test(첫줄)) {
-      setQuickType(첫줄.startsWith("평일") ? "weekday" : "weekend");
+      되살림(첫줄.startsWith("평일") ? "weekday" : "weekend");
     } else if (첫줄.includes("근무") && /[토일]/.test(첫줄)) {
-      setQuickType("weeks");
+      되살림("weeks");
     } else if (/^\d/.test(첫줄)) {
-      setQuickType("hours");
+      되살림("hours");
     } else if (첫줄.trim()) {
-      setQuickType("custom");
+      되살림("custom");
       setQDays(첫줄.split(/[,·]/).map((x) => x.trim()).filter((x) => DAY_OPTIONS.includes(x)));
     }
 
@@ -184,6 +193,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   const toggleQDay = (d: string) => {
     const next = qDays.includes(d) ? qDays.filter((x) => x !== d) : [...qDays, d].sort((a, b) => DAY_OPTIONS.indexOf(a) - DAY_OPTIONS.indexOf(b));
     setQDays(next);
+    set확정(next.length ? "custom" : null);
     applyQuick("custom", next, qStart, qStartMin, qEnd, qEndMin);
   };
 
@@ -242,10 +252,12 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 return (
                   <div key={r.type}>
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
-                      disabled={quickType !== null && quickType !== r.type}
+                      disabled={확정 !== null && 확정 !== r.type}
                       onClick={() => {
-                        if (on) { setQuickType(null); setDraft(""); return; }
+                        if (on) { setQuickType(null); set확정(null); setDraft(""); return; }
                         applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin);
+                        // 협의는 펼칠 카드가 없다 — 고른 순간 정해진 것이다.
+                        if (r.type === "nego") set확정("nego");
                       }}>
                       <r.icon size={13} style={{ color: on ? "#fff" : "#582681", flexShrink: 0 }} />{r.label}
                     </button>
@@ -266,6 +278,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                                 onClick={() => {
                                   const 다음 = qWeekDays.includes(n) ? qWeekDays.filter((x) => x !== n) : [...qWeekDays, n].sort((a, b) => a - b);
                                   setQWeekDays(다음);
+                                  set확정(다음.length ? "weeks" : null);
                                   applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, 다음, qBiweekly);
                                 }}>
                                 주 {n}일
@@ -273,24 +286,24 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             ))}
                             <label style={{ display: "inline-flex", alignItems: "center", gap: 5, marginLeft: 4, fontSize: 13, color: "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
                               <input type="checkbox" checked={qBiweekly}
-                                onChange={(e) => { setQBiweekly(e.target.checked); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, e.target.checked); }}
+                                onChange={(e) => { setQBiweekly(e.target.checked); set확정("weeks"); applyQuick("weeks", [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, e.target.checked); }}
                                 style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
                               격주 가능
                             </label>
                           </div>
                         )}
                         <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
-                          <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
+                          <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                           </select>
-                          <select className="ws-hourSel" value={qStartMin} onChange={(e) => { const m = Number(e.target.value); setQStartMin(m); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, m, qEnd, qEndMin); }}>
+                          <select className="ws-hourSel" value={qStartMin} onChange={(e) => { const m = Number(e.target.value); setQStartMin(m); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, m, qEnd, qEndMin); }}>
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
                           <span style={{ color: "#888", fontSize: 13 }}>~</span>
-                          <select className="ws-hourSel" value={qEnd} onChange={(e) => { const en = Number(e.target.value); setQEnd(en); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, en, qEndMin); }}>
+                          <select className="ws-hourSel" value={qEnd} onChange={(e) => { const en = Number(e.target.value); setQEnd(en); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, en, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                           </select>
-                          <select className="ws-hourSel" value={qEndMin} onChange={(e) => { const m = Number(e.target.value); setQEndMin(m); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, m); }}>
+                          <select className="ws-hourSel" value={qEndMin} onChange={(e) => { const m = Number(e.target.value); setQEndMin(m); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, m); }}>
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
                         </div>
@@ -306,6 +319,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                                 onClick={() => {
                                   const 다음 = on ? q주말.filter((x) => x !== d) : [...q주말, d].sort((a, b) => (a === "토" ? -1 : 1));
                                   setQ주말(다음);
+                                  set확정(r.type);
                                   주말반영(r.type, q주말시작, q주말시작분, q주말끝, q주말끝분, 다음);
                                 }}>{d}</button>
                             );
@@ -315,17 +329,17 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         {q주말.length > 0 && (
                           <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
                             <span style={{ fontSize: 12.5, color: "#888", marginRight: 2 }}>{q주말.join("·")}</span>
-                            <select className="ws-hourSel" value={q주말시작} onChange={(e) => { const v = Number(e.target.value); setQ주말시작(v); 주말반영(r.type, v, q주말시작분, q주말끝, q주말끝분); }}>
+                            <select className="ws-hourSel" value={q주말시작} onChange={(e) => { const v = Number(e.target.value); setQ주말시작(v); set확정(r.type); 주말반영(r.type, v, q주말시작분, q주말끝, q주말끝분); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                             </select>
-                            <select className="ws-hourSel" value={q주말시작분} onChange={(e) => { const v = Number(e.target.value); setQ주말시작분(v); 주말반영(r.type, q주말시작, v, q주말끝, q주말끝분); }}>
+                            <select className="ws-hourSel" value={q주말시작분} onChange={(e) => { const v = Number(e.target.value); setQ주말시작분(v); set확정(r.type); 주말반영(r.type, q주말시작, v, q주말끝, q주말끝분); }}>
                               {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                             </select>
                             <span style={{ color: "#888", fontSize: 13 }}>~</span>
-                            <select className="ws-hourSel" value={q주말끝} onChange={(e) => { const v = Number(e.target.value); setQ주말끝(v); 주말반영(r.type, q주말시작, q주말시작분, v, q주말끝분); }}>
+                            <select className="ws-hourSel" value={q주말끝} onChange={(e) => { const v = Number(e.target.value); setQ주말끝(v); set확정(r.type); 주말반영(r.type, q주말시작, q주말시작분, v, q주말끝분); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                             </select>
-                            <select className="ws-hourSel" value={q주말끝분} onChange={(e) => { const v = Number(e.target.value); setQ주말끝분(v); 주말반영(r.type, q주말시작, q주말시작분, q주말끝, v); }}>
+                            <select className="ws-hourSel" value={q주말끝분} onChange={(e) => { const v = Number(e.target.value); setQ주말끝분(v); set확정(r.type); 주말반영(r.type, q주말시작, q주말시작분, q주말끝, v); }}>
                               {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                             </select>
                           </div>
@@ -333,7 +347,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         {/* 조율 여지는 시간에 걸리는 값이라 시간 바로 밑, 이 카드 안에 둔다.
                             팝오버 맨 아래에 두면 어느 항목에 걸리는지 자리로 알 수 없었다. */}
                         <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
-                          <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
+                          <input type="checkbox" checked={nego} onChange={(e) => { setNego(e.target.checked); set확정(r.type); }}
                             style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
                           협의 가능
                         </label>
