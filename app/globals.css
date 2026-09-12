@@ -15329,7 +15329,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 열 폭은 정한 대로 지킨다. 그냥 두면 브라우저가 「제안」처럼 내용 긴 열에
    자리를 더 떼어 주고, 그만큼 진행 상황이 눌린다. 말줄임(…)도 폭이 고정돼야 든다. */
-.prop-table { width: 100%; min-width: 760px; table-layout: fixed; border-collapse: collapse; font-size: 14.5px; }
+.prop-table { width: 100%; min-width: 800px; table-layout: fixed; border-collapse: collapse; font-size: 14.5px; }
 .prop-table th {
   padding: 8px 10px; text-align: left; font-weight: 500; font-size: 14.5px;
   color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;
@@ -15341,11 +15341,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 한 줄에 한 값 — 칸 안에서 글이 접히면 줄 높이가 사람마다 달라 표가 들쭉날쭉해진다.
    넘치면 접지 말고 말줄임으로 자른다. */
 .prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
-.prop-table .c-who { width: 190px; }
+.prop-table .c-who { width: 180px; }
 /* 날짜·상태도 폭을 못 박는다 — 비워 두면 남은 자리를 진행 상황과 똑같이 나눠 갖고,
    정작 글이 긴 진행 상황이 좁아진다. */
-.prop-table .c-date { width: 88px; }
-.prop-table .c-st { width: 80px; }
+.prop-table .c-date { width: 120px; }
+.prop-table .c-st { width: 130px; }
 .prop-whoinfo b, .prop-whoinfo i, .prop-whoinfo em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
    머리 글자와 단추 글자가 12px 어긋나 보인다. */
@@ -15357,7 +15357,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 시각은 따로 선다 — 활동 글자와 한 칸에 두면 긴 문구에서 시각이 아래로 떨어졌다. */
 /* 업데이트 열 — 머리글자와 시간 모두 표 본문과 같은 #555. 옅은 회색으로 두었더니
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
-.prop-table .c-time { width: 88px; white-space: nowrap; color: #555; }
+.prop-table .c-time { width: 86px; white-space: nowrap; color: #555; }
 .prop-table th.c-time { color: #555; }
 /* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
 .prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
