@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
         c.logo_url, c.cover_images, c.description, c.website_url, c.address,
         c.company_size, c.founded_year, c.region_sido, c.region_sigungu,
         c.status, c.is_member, c.business_license_path, c.created_at, c.paid_until,
+        c.last_login_at,
         COALESCE(j.cnt, 0) AS job_count,
         COALESCE(j.jobs, '[]'::json) AS jobs,
         -- 매장은 로고를 받지 않는다. 매장 배너 → 최근 공고 배너 첫 장 순으로 쓴다.

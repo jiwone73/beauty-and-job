@@ -56,6 +56,7 @@ type Company = {
   website_url: string | null;
   address: string | null;
   company_size: string | null;
+  last_login_at: string | null;
   founded_year: number | null;
   business_license_url: string | null;
   status: string;
@@ -321,7 +322,9 @@ function AdminCompaniesContent() {
       {!blockedMode && (
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <span style={{ fontSize: 14, color: "#555" }}>회원 구분</span>
-          {(["전체", "매장", "오피스", "매장·오피스"] as const).map((opt) => (
+          {/* 「매장·오피스」는 지웠다 — 그런 유형으로 저장되는 값이 없어(STORE 207·
+              OFFICE 22 뿐) 고르면 늘 0건이었다. */}
+          {(["전체", "매장", "오피스"] as const).map((opt) => (
             <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: typeFilter === opt ? "#582681" : "#555" }}>
               <input type="radio" name="companyTrack" checked={typeFilter === opt}
                 onChange={() => { setTypeFilter(opt); setPage(1); }}
@@ -438,10 +441,10 @@ function AdminCompaniesContent() {
                 </th>
                 <th>매장/기업명</th>
                 <th>지역</th>
-                <th>직원수</th>
                 <th>연락처</th>
                 <th>공고</th>
                 <th>가입일</th>
+                <th>최종로그인</th>
                 <th>유료 기간</th>
                 <th>상태</th>
               </tr>
@@ -481,8 +484,6 @@ function AdminCompaniesContent() {
                   </td>
                   {/* 지역 */}
                   <td className="admin-td-date">{c.region_sido ? [c.region_sido, c.region_sigungu].filter(Boolean).join(" ") : (regionFromAddress(c.address) || "-")}</td>
-                  {/* 직원수 */}
-                  <td className="admin-td-date">{c.company_size || "-"}</td>
                   {/* 연락처 + 이메일 */}
                   <td className="admin-td-date">
                     <div>{c.phone ? formatPhone(c.phone) : "-"}</div>
@@ -502,6 +503,8 @@ function AdminCompaniesContent() {
                   </td>
                   {/* 가입일 */}
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
+                  {/* 최종로그인 — 2026-09-12 부터 쌓인다. 그 전에 들어온 것은 남은 기록이 없다. */}
+                  <td className="admin-td-date">{c.last_login_at ? fmtDate(c.last_login_at) : "-"}</td>
                   {/* 유료 기간 — 오늘 이후면 유료. 비우면 무료로 되돌아간다. */}
                   <td className="admin-td-date">
                     <input type="date" value={(c.paid_until || "").slice(0, 10)}
