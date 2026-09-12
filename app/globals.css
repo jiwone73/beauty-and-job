@@ -15202,6 +15202,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    뒤에 있어 .tal-name 의 크기를 덮고 부모(16px)를 물려받았다 — 두 클래스를 함께
    짚어 크기를 못 박는다. */
 .tal-name.tal-open { color: #555; font-size: 17px; }
+/* 이름은 굵게 — 카드에서 사람을 가리키는 값이라 한눈에 잡혀야 한다. 네 화면
+   (공고·지원자·인재풀·스크랩 인재·보낸 제안)이 같은 크기 14.5px·색 #555·굵기 600 이다.
+   위 .tal-open 의 font: inherit 이 굵기를 부모 값으로 되돌리므로 그 뒤에서 못 박는다. */
+.tal-who .tal-open, .tal-line2 .tal-open { font-weight: 600 !important; }
 .tal-open:hover { color: var(--color-primary); }
 
 
@@ -15367,7 +15371,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left;
 }
 .prop-av {
-  width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
   background: #f5f5f5; color: var(--color-primary); font-size: 13px;
   display: flex; align-items: center; justify-content: center;
 }
@@ -15552,7 +15556,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    위아래 여백까지 붙어 줄이 통째로 늘어졌다. */
 .prop-whoinfo { display: flex; flex-direction: column; justify-content: center;
   min-height: 34px; }
-.prop-whoinfo b { font-weight: 600; color: var(--color-text-strong); line-height: 1.35; }
+.prop-whoinfo b { font-weight: 600; font-size: 14.5px; color: #555; line-height: 1.35; }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
   font-size: 14px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
 /* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
