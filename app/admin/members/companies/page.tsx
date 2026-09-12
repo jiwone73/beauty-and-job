@@ -299,7 +299,7 @@ function AdminCompaniesContent() {
       <div style={{ display: "flex", gap: 8, marginBottom: 2, borderBottom: "1px solid #eee" }}>
         {([["member", "회원 기업"], ["external", "비회원 기업"]] as const).map(([key, label]) => (
           <button key={key} onClick={() => setTab(key)}
-            style={{ padding: "10px 16px", border: "none", background: "none", cursor: "pointer", fontSize: 14, fontWeight: tab === key ? 700 : 500, color: tab === key ? "#582681" : "#888", borderBottom: tab === key ? "2px solid #582681" : "2px solid transparent", marginBottom: -1 }}>
+            style={{ padding: "10px 16px", border: "none", background: "none", cursor: "pointer", fontSize: 16, fontWeight: tab === key ? 700 : 500, color: tab === key ? "#582681" : "#555", borderBottom: tab === key ? "2px solid #582681" : "2px solid transparent", marginBottom: -1 }}>
             {label}
           </button>
         ))}

@@ -315,7 +315,7 @@ export default function AlbaPage() {
                   </Link>
                 </td>
                 <td style={{ padding: "10px 14px", color: "#555" }}>{p.company_name || "—"}</td>
-                <td style={{ padding: "10px 14px", whiteSpace: "nowrap", color: p.status === "ACTIVE" ? "#0f6e56" : "#999" }}>{p.status}</td>
+                <td style={{ padding: "10px 14px", whiteSpace: "nowrap", color: p.status === "ACTIVE" ? "#0f6e56" : "#555" }}>{p.status}</td>
               </tr>
             ))}
           </tbody>

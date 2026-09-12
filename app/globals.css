@@ -6452,7 +6452,7 @@ div:has(> table.admin-table),
 }
 .admin-subtab {
   padding: 10px 20px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #555;
   text-decoration: none;
@@ -6478,7 +6478,7 @@ div:has(> table.admin-table),
 }
 .admin-tab1 {
   padding: 10px 24px;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: #555;
   text-decoration: none;
@@ -6498,7 +6498,7 @@ div:has(> table.admin-table),
 }
 .admin-tab2 {
   padding: 7px 16px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #555;
   text-decoration: none;
@@ -6973,7 +6973,7 @@ div:has(> table.admin-table),
 }
 .admin-modal-tab {
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: #555;
   background: none;
