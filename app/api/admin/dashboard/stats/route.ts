@@ -53,6 +53,16 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM applications) AS total_applications,
         (SELECT COUNT(*) FROM resumes WHERE status = 'PUBLISHED') AS published_resumes,
         (SELECT COUNT(*) FROM resumes) AS total_resumes,
+        -- 오늘 쓴 이력서. 가입만 하고 마는 사람이 많은 자리라, 오늘 몇 명이
+        -- 실제로 이력서까지 갔는지가 가입 수보다 더 말해 준다.
+        (SELECT COUNT(*) FROM resumes
+          WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date) AS today_resumes,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id
+          WHERE u.job_type = 'STORE'
+            AND (r.created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date) AS today_resumes_store,
+        (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id
+          WHERE u.job_type = 'OFFICE'
+            AND (r.created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date) AS today_resumes_office,
         (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'STORE') AS total_resumes_store,
         (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'OFFICE') AS total_resumes_office,
         (SELECT COUNT(*) FROM resumes WHERE is_public = true) AS public_resumes,

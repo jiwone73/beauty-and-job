@@ -69,7 +69,7 @@ export default function AdminDashboardUsers() {
       </div>
 
       {/* 카운터 — 대시보드 요약 카드와 같은 부품(.co-counts) */}
-      <div className="co-counts" style={{ ["--co-counts-n" as any]: 6 }}>
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: 7 }}>
         {[
           { label: "개인회원", value: fmtNum(tab === "STORE" ? c?.store_users : tab === "OFFICE" ? c?.office_users : c?.total_users), href: `/admin/members?type=${tab}` },
           { label: "오늘 신규 가입", value: fmtNum(tab === "STORE" ? c?.today_users_store : tab === "OFFICE" ? c?.today_users_office : c?.today_users), href: `/admin/members?type=${tab}&date=today` },
@@ -77,6 +77,7 @@ export default function AdminDashboardUsers() {
           { label: "오늘 방문", value: fmtNum(c?.today_visitors) },
           { label: "오늘 로그인", value: fmtNum(c?.today_logins) },
           { label: "오늘 입사지원", value: fmtNum(tab === "STORE" ? c?.today_applications_store : tab === "OFFICE" ? c?.today_applications_office : c?.today_applications), href: "/admin/resumes/applications?date=today" },
+          { label: "오늘 이력서 등록", value: fmtNum(tab === "STORE" ? c?.today_resumes_store : tab === "OFFICE" ? c?.today_resumes_office : c?.today_resumes), href: "/admin/members" },
           { label: "전체 이력서", value: fmtNum(tab === "STORE" ? c?.total_resumes_store : tab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes), href: "/admin/members" },
         ].map((s) => (
           s.href ? (
