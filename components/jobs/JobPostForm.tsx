@@ -2850,20 +2850,8 @@ export default function JobPostForm({
         </div>
       )}
 
-      {restored && (
-        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box",
-          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-          padding: "10px 14px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10 }}>
-          <span style={{ fontSize: 13.5, color: "#4a4453" }}>
-            쓰던 내용을 되살렸어요{restored ? ` (${new Date(restored).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })} 기준)` : ""}.
-          </span>
-          <button type="button"
-            onClick={() => { if (confirm("쓰던 내용을 지우고 빈 화면에서 새로 쓸까요?")) { clearAutosave(); location.reload(); } }}
-            style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#582681", fontSize: 13, cursor: "pointer" }}>
-            새로 쓰기
-          </button>
-        </div>
-      )}
+      {/* 「쓰던 내용을 되살렸어요」 띠는 걷었다. 되살아난 것은 화면에 적힌 값으로 이미
+          보이고, 비우는 길은 위 액션줄의 「초기화」 하나로 모았다. */}
 
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
