@@ -308,18 +308,6 @@ function AdminCompaniesContent() {
       {tab === "external" && <ExternalCompaniesPanel />}
       {tab === "member" && (<>
       {!blockedMode && (
-        <div className="admin-mini-stats">
-          {Object.entries(counts).map(([label, count]) => (
-            <div key={label} className="admin-mini-stat"
-              onClick={() => { setStatusFilter(label); setPage(1); }}
-              style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #582681", outlineOffset: "-2px" } : {}) }}>
-              <span className="admin-mini-stat-label">{label}</span>
-              <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">개사</span></span>
-            </div>
-          ))}
-        </div>
-      )}
-      {!blockedMode && (
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <span style={{ fontSize: 14, color: "#555" }}>회원 구분</span>
           {/* 「매장·오피스」는 지웠다 — 그런 유형으로 저장되는 값이 없어(STORE 207·
@@ -371,7 +359,22 @@ function AdminCompaniesContent() {
 
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>총 <strong>{filtered.length}</strong>개사</span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <span>총 <strong>{filtered.length}</strong>개사</span>
+            {!blockedMode && Object.entries(counts)
+              .filter(([label, count]) => label === "전체" || count > 0)
+              .map(([label, count]) => (
+                <span key={label} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ color: "#e2e2e6" }}>│</span>
+                  <button type="button"
+                    onClick={() => { setStatusFilter(label); setPage(1); }}
+                    style={{ border: "none", background: "none", padding: 0, cursor: "pointer",
+                      font: "inherit", color: statusFilter === label ? "#582681" : "#555" }}>
+                    {label} {count}
+                  </button>
+                </span>
+              ))}
+          </span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {selectedIds.length > 0 && (["ACTIVE", "PENDING", "SUSPENDED", "REJECTED"] as const).map((key) => {
               const label = STATUS_TO_LABEL[key];
