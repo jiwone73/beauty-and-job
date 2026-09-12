@@ -5840,7 +5840,7 @@ div:has(> table.admin-table),
 .admin-badge-warning { background: #fef3c7; color: #582681; }
 .admin-badge-danger { background: #fee2e2; color: #991b1b; }
 .admin-badge-info { background: #f7f7f8; color: #1e40af; }
-.admin-badge-neutral { background: #f3f4f6; color: #374151; }
+.admin-badge-neutral { background: #f3f4f6; color: #555; }
 
 /* 액션 버튼 */
 .admin-actions { display: flex; align-items: center; gap: 6px; }
@@ -7674,9 +7674,9 @@ div:has(> table.admin-table),
   font-weight: 600;
 }
 .company-badge.active { background: #f7f7f8; color: #582681; }
-.company-badge.closed { background: #f3f4f6; color: #374151; }
+.company-badge.closed { background: #f3f4f6; color: #555; }
 .company-badge.new { background: #fee2e2; color: #991b1b; }
-.company-badge.viewed { background: #f3f4f6; color: #374151; }
+.company-badge.viewed { background: #f3f4f6; color: #555; }
 .company-badge-warning { background: #fef3c7; color: #582681; }
 .company-badge-info { background: #f7f7f8; color: #1e40af; }
 .company-badge-purple { background: #f7f7f8; color: #582681; }

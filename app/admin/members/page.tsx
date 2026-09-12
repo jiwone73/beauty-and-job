@@ -282,7 +282,7 @@ function AdminMembersPageInner() {
 
       {/* 회원 구분 — 매장/오피스 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-        <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
+        <span style={{ fontSize: 14, color: "#555" }}>회원 구분</span>
         {(["전체", "매장", "오피스"] as const).map((opt) => {
           const active = (jobTypeFilter === "전체" && opt === "전체") || (jobTypeFilter === "매장기술직" && opt === "매장") || (jobTypeFilter === "기업사무직" && opt === "오피스");
           return (
@@ -452,11 +452,11 @@ function AdminMembersPageInner() {
                               <span className="admin-name-b">{m.name}</span>
                             )}
                             {gender && (
-                              <span style={{ fontSize: 13, color: "#888" }}>{gender}</span>
+                              <span style={{ fontSize: 13, color: "#555" }}>{gender}</span>
                             )}
                           </div>
                           {/* 2행: 나이 · 경력 */}
-                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
+                          <div style={{ fontSize: 13, color: "#555", marginTop: 2 }}>
                             {age ? `${age}세` : ""}
                             {age && careerYears ? " · " : ""}
                             {careerYears || ""}
@@ -485,7 +485,7 @@ function AdminMembersPageInner() {
                     {/* 연락처: 이메일 / 전화 */}
                     <td className="admin-td-date" >
                       <div className="adm-w-md" style={{ overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto", whiteSpace: "nowrap" }} title={m.email || ""}>{m.email || "-"}</div>
-                      <div style={{ marginTop: 4, color: "#888" }}>{m.phone ? formatPhone(m.phone) : "-"}</div>
+                      <div style={{ marginTop: 4, color: "#555" }}>{m.phone ? formatPhone(m.phone) : "-"}</div>
                     </td>
 
                     {/* 최근경력: 회사명 / 직무 */}
@@ -494,11 +494,11 @@ function AdminMembersPageInner() {
                         <>
                           <div style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_company}>{m.recent_company}</div>
                           {m.recent_position && (
-                            <div style={{ marginTop: 2, fontSize: 13, color: "#aaa", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_position}>{m.recent_position}</div>
+                            <div style={{ marginTop: 2, fontSize: 13, color: "#555", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_position}>{m.recent_position}</div>
                           )}
                         </>
                       ) : (
-                        <span style={{ color: "#ccc", fontSize: 13 }}>
+                        <span style={{ color: "#555", fontSize: 13 }}>
                           {m.career_type === "NEWCOMER" ? "신입" : "-"}
                         </span>
                       )}
@@ -512,7 +512,7 @@ function AdminMembersPageInner() {
                         return (
                           <>
                             <div style={{ fontSize: 13, color: "#555" }}>{js.text}</div>
-                            {age && <div style={{ color: "#aaa", fontSize: 12, marginTop: 3 }}>{age}</div>}
+                            {age && <div style={{ color: "#555", fontSize: 12, marginTop: 3 }}>{age}</div>}
                           </>
                         );
                       })()}
