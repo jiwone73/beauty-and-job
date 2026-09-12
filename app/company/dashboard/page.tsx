@@ -117,8 +117,9 @@ export default function CompanyDashboard() {
     // 카드를 누르면 같은 숫자가 그대로 보이는 자리로 간다 — 공고 목록이 아니라
     // 지원자 관리의 「미열람」 칸, 보낸 제안의 「채팅중」 칩이다.
     { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants?status=미열람", 할일: true },
-    // 구직자가 마지막으로 말했는데 아직 답하지 않은 제안. 매장이 답해야 대화가 이어진다.
-    { label: "내 차례 제안", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals", 할일: true },
+    // 구직자가 말을 걸었는데 아직 답하지 않은 제안. 옆의 「미열람 지원자」와 같은 말투다 —
+    // 둘 다 매장이 아직 안 한 일이라 「미열람 / 미답변」으로 짝을 맞춘다.
+    { label: "미답변 제안", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals", 할일: true },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
     { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals?status=채팅중" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/proposals/scrapped" },

@@ -14584,7 +14584,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-check { width: 15px; height: 15px; margin: 2px 0 0; accent-color: #582681; flex-shrink: 0; }
 /* 고른 줄의 바탕은 사이드 메뉴 선택색과 같다. */
 .tal-card.on { background: #f7f7f8; border-color: var(--color-primary); }
-/* 아직 안 본 지원자 — 왼쪽에 빨간 띠. 보낸 제안 표의 「내 차례」 줄과 같은 규칙이다. */
+/* 아직 안 본 지원자 — 왼쪽에 빨간 띠. 보낸 제안 표의 「미답변」 줄과 같은 규칙이다. */
 .tal-card.todo { box-shadow: inset 3px 0 0 #c0504d; }
 /* 공고 줄에 붙는 미열람 점 — 숫자 왼쪽에 선다. */
 .co-jobitem-dot { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: #c0504d; }
@@ -15238,8 +15238,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    연보라 바탕을 쓰니 이 화면만 색 덩어리가 하나 더 생겼다. */
 .prop-side-item.on { background: #f7f7f8; color: var(--color-primary); }
 .prop-side-item.on em { color: var(--color-primary); }
-/* 내 차례 건수 — 어느 공고에 할 일이 있는지 훑어서 알게. */
-/* 내 차례 건수 — 답해야 할 것이라 빨강(.co-count.todo 와 같은 색). */
+/* 미답변 건수 — 어느 공고에 할 일이 있는지 훑어서 알게. */
+/* 미답변 건수 — 답해야 할 것이라 빨강(.co-count.todo 와 같은 색). */
 .prop-side-mine {
   flex-shrink: 0; min-width: 17px; padding: 0 5px; border-radius: 9px;
   background: #c0504d; color: #fff; font-size: 11px; font-weight: 400;
@@ -15324,7 +15324,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .prop-table td { padding: 10px 12px; border-top: 1px solid #f4f4f6; color: var(--color-text); vertical-align: middle; }
 .prop-table tbody tr:first-child td { border-top: none; }
-/* 내 차례인 줄만 왼쪽에 띠. 목록을 훑을 때 그 줄만 눈에 걸리면 된다. */
+/* 미답변인 줄만 왼쪽에 띠. 목록을 훑을 때 그 줄만 눈에 걸리면 된다. */
 .prop-table tr.mine td:first-child { box-shadow: inset 2px 0 0 #c0504d; }
 .prop-table .c-no { width: 40px; color: var(--color-text); }
 .prop-table .c-date, .prop-table .c-st { white-space: nowrap; }

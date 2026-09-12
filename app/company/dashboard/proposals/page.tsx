@@ -161,10 +161,13 @@ function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null 
   const st = 상태(p);
   if (st === "거절" || st === "취소" || st === "공고마감") return null;
   // 면접이 잡힌 뒤라도 구직자가 마지막으로 말했으면 답할 차례다 — 약속을 잡았다고
-  // 대화가 끝나지 않는다. 홈의 「내 차례 제안」도 같은 기준으로 센다.
+  // 대화가 끝나지 않는다. 홈의 「미답변 제안」도 같은 기준으로 센다.
   if (st === "면접예정") return { 글: "일정 확인", 우리차례: p.lastSender === "USER" };
   if (st === "채팅중") return { 글: "채팅하기", 우리차례: p.lastSender === "USER" };
-  if (st === "수락") return { 글: "채팅하기", 우리차례: true };
+  // 수락만 하고 아직 말이 오가지 않은 건은 「미답변」이 아니다 — 답할 말이 온 것이
+  // 아니라 매장이 먼저 말을 걸 차례다. 빨간 표시에서는 빼고, 「수락」 칩과
+  // 「채팅하기」 단추로 할 일인 것은 그대로 보인다(홈의 미답변 수와 같아진다).
+  if (st === "수락") return { 글: "채팅하기", 우리차례: false };
   // 답변대기 — 상대가 제안을 받아들이기 전이라 대화가 열리지 않는다.
   // 여기서 할 수 있는 일은 기다리는 것뿐이라 단추를 두지 않는다.
   return null;
@@ -295,7 +298,7 @@ export default function CompanyProposalsPage() {
       });
     }
     return [...표.values()]
-      // 내 차례가 있는 공고가 먼저. 그다음 진행중, 마감은 아래로.
+      // 미답변이 있는 공고가 먼저. 그다음 진행중, 마감은 아래로.
       .sort((a, b) => Number(b.내차례 > 0) - Number(a.내차례 > 0)
         || Number(a.마감) - Number(b.마감) || b.수 - a.수);
   }, [목록]);
@@ -480,7 +483,7 @@ export default function CompanyProposalsPage() {
         <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른공고 === g.id ? " on" : ""}`}
           onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
           <span className="co-jobitem-t">{g.제목}{g.마감 && <span className="co-jobitem-off">마감</span>}</span>
-          {/* 내 차례가 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
+          {/* 미답변이 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
               어느 공고에 할 일이 있는지 훑어서 알 수 있다. */}
           {g.내차례 > 0 && <b className="prop-side-mine">{g.내차례}</b>}
           <span className="co-jobitem-n">{g.수}</span>
@@ -591,7 +594,7 @@ export default function CompanyProposalsPage() {
         <div className="co-pane">
           {머리판(공고머리, 고른공고)}
           {띠(`이 공고로 제안한 인재 ${공고고른것.length}명`,
-            우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">내 차례 {우리차례수}</span></> : null)}
+            우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">미답변 {우리차례수}</span></> : null)}
         </div>
       )}
 
