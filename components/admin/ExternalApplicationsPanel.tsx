@@ -86,7 +86,7 @@ export default function ExternalApplicationsPanel() {
 
   return (
     <>
-      <p style={{ fontSize: 13, color: "#888", margin: "0 0 14px" }}>
+      <p style={{ fontSize: 13, color: "#555", margin: "0 0 14px" }}>
         비회원(미가입) 기업 공고에 들어온 지원을 확인하고, 해당 기업에 전달·상태 관리합니다.
       </p>
 
@@ -136,13 +136,13 @@ export default function ExternalApplicationsPanel() {
                     <tr key={r.id}>
                       <td>
                         <div style={{ fontWeight: 700 }}>{r.applicant_name}</div>
-                        <div style={{ fontSize: 12, color: "#999" }}>{[r.applicant_phone, r.applicant_email].filter(Boolean).join(" · ") || "-"}</div>
+                        <div style={{ fontSize: 12, color: "#555" }}>{[r.applicant_phone, r.applicant_email].filter(Boolean).join(" · ") || "-"}</div>
                       </td>
                       <td>
                         <div style={{ fontWeight: 700 }}>{r.company_name || "—"}
                           {r.claimed_company_id && <span style={{ fontSize: 11, marginLeft: 6, color: "#10b981", fontWeight: 700 }}>가입전환</span>}
                         </div>
-                        <div style={{ fontSize: 12.5, color: "#777" }}>{r.job_title}</div>
+                        <div style={{ fontSize: 12.5, color: "#555" }}>{r.job_title}</div>
                       </td>
                       <td >
                         <span style={{ fontSize: 11.5, fontWeight: 800, padding: "3px 9px", borderRadius: 20, color: m.c, background: m.c + "1a" }}>{m.t}</span>
@@ -150,7 +150,7 @@ export default function ExternalApplicationsPanel() {
                       <td style={{ fontWeight: 800, color: r.third_party_consent ? "#0a9d6e" : "#c0392b" }}>
                         {r.third_party_consent ? "✔ 동의" : "✘ 미동의"}
                       </td>
-                      <td style={{ color: "#888" }}>{fmt(r.applied_at)}</td>
+                      <td style={{ color: "#555" }}>{fmt(r.applied_at)}</td>
                       <td >
                         {st === "FORWARDED" ? (
                           <span style={{ fontSize: 11.5, fontWeight: 800, padding: "3px 9px", borderRadius: 20, color: "#0a7d55", background: "#e9f9f1" }}>
@@ -165,7 +165,7 @@ export default function ExternalApplicationsPanel() {
                       <td style={{ textAlign: "right" }}>
                         {st === "FORWARDED" ? (
                           <button onClick={() => forward(r)} disabled={busy === r.id}
-                            style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 11px", cursor: "pointer", border: "1px solid #ddd", background: "#fff", color: "#666" }}>재전송</button>
+                            style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 11px", cursor: "pointer", border: "1px solid #ddd", background: "#fff", color: "#555" }}>재전송</button>
                         ) : (
                           <button onClick={() => forward(r)} disabled={busy === r.id || !r.third_party_consent}
                             style={{ fontSize: 12.5, fontWeight: 700, borderRadius: 7, padding: "6px 12px", cursor: "pointer", border: "none", background: r.third_party_consent ? "#582681" : "#ccc", color: "#fff" }}>

@@ -18,7 +18,7 @@ const PIE_COLORS = ["#582681", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#8b5
 
 // 차트 좌상단 단위 라벨 (recharts Y축 라벨 대신 — 항상 안정적으로 보임)
 const unitLabelStyle: React.CSSProperties = {
-  position: "absolute", top: 6, left: 12, fontSize: 12, color: "#9ca3af", zIndex: 2,
+  position: "absolute", top: 6, left: 12, fontSize: 12, color: "#555", zIndex: 2,
 };
 const CHART_MARGIN = { top: 14, right: 8, left: 0, bottom: 0 };
 
@@ -50,7 +50,7 @@ function ModeToggle({ mode, onChange }: { mode: string; onChange: (m: "new" | "c
             padding: "3px 12px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600,
             cursor: "pointer", border: "none",
             background: mode === val ? "#fff" : "transparent",
-            color: mode === val ? "#582681" : "#9a92a6",
+            color: mode === val ? "#582681" : "#555",
             boxShadow: mode === val ? "0 1px 2px rgba(0,0,0,0.12)" : "none",
             transition: "all 0.15s",
           }}>
@@ -86,7 +86,7 @@ function PieCard({ title, data, unit, colors, caption }: {
     <div className="admin-card">
       <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 className="admin-card-title">{title}</h2>
-        {caption && <span style={{ fontSize: 12, color: "#9ca3af" }}>{caption}</span>}
+        {caption && <span style={{ fontSize: 12, color: "#555" }}>{caption}</span>}
       </div>
       <div style={{ padding: "16px 8px", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ flex: "0 0 45%" }}>
@@ -146,7 +146,7 @@ function TrendCard({
       <div className="admin-card-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2 className="admin-card-title">{title}</h2>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {subFilter && <span style={{ fontSize: 12, color: "#888" }}>{subFilter}</span>}
+          {subFilter && <span style={{ fontSize: 12, color: "#555" }}>{subFilter}</span>}
           <ModeToggle mode={mode} onChange={setMode} />
           <RangeToggle range={range} onChange={setRange} />
         </div>
@@ -369,7 +369,7 @@ export default function AdminDashboard() {
               <span className="admin-mini-stat-label">{s.label}</span>
               <span className="admin-mini-stat-value">
                 {s.value}<span className="admin-mini-unit">{s.unit}</span>
-                {(s as any).sub && <span style={{ fontSize: 12, color: "#999", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
+                {(s as any).sub && <span style={{ fontSize: 12, color: "#555", fontWeight: 400, marginLeft: 6 }}>({(s as any).sub})</span>}
               </span>
             </>
           );

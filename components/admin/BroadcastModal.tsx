@@ -87,7 +87,7 @@ export default function BroadcastModal({
         <div className="cv-body">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <h2 style={{ fontSize: 18, fontWeight: 400, margin: 0 }}>{channel === "email" ? "이메일 발송" : "문자 발송"}</h2>
-            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#555" }}>✕</button>
           </div>
 
           <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
@@ -95,7 +95,7 @@ export default function BroadcastModal({
             <button style={tabBtn(channel === "sms")} onClick={() => setChannel("sms")}>문자(SMS)</button>
           </div>
 
-          <div style={{ color: "#888", fontSize: 13, marginBottom: 6 }}>
+          <div style={{ color: "#555", fontSize: 13, marginBottom: 6 }}>
             수신 대상 <span style={{ color: "#582681" }}>{valid.length}명</span>
             {missing > 0 && <span style={{ color: "#e74c3c" }}> · {channel === "email" ? "이메일" : "번호"} 없음 {missing}명 제외</span>}
           </div>
@@ -106,7 +106,7 @@ export default function BroadcastModal({
               {valid.map((t) => (
                 <div key={t.id} style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 13, padding: "2px 0" }}>
                   <span style={{ color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name || "이름 없음"}</span>
-                  <span style={{ color: "#999", flexShrink: 0 }}>
+                  <span style={{ color: "#555", flexShrink: 0 }}>
                     {channel === "email" ? t.email : fmtPhone(t.phone)}
                   </span>
                 </div>
@@ -125,7 +125,7 @@ export default function BroadcastModal({
             spellCheck lang="ko"
             style={{ minHeight: 150, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
           {channel === "sms" && (
-            <div style={{ fontSize: 12, color: "#999", textAlign: "right", marginTop: 4 }}>{byteLen}바이트 · {smsType}</div>
+            <div style={{ fontSize: 12, color: "#555", textAlign: "right", marginTop: 4 }}>{byteLen}바이트 · {smsType}</div>
           )}
 
           {result && (
@@ -138,7 +138,7 @@ export default function BroadcastModal({
             style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#f7f7f8" : "#f7f7f8", color: "#582681", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 400, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 ${channel === "email" ? "이메일" : "문자"} 발송`}
           </button>
-          <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>
+          <p style={{ fontSize: 12, color: "#555", textAlign: "center", marginTop: 8 }}>
             {channel === "email"
               ? "발신 전용(noreply)로 나갑니다. 회신은 support@로 받습니다."
               : "안내성 문자만 발송하세요. (광고성은 수신동의·수신거부 표기 필요)"}

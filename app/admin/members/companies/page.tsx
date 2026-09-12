@@ -31,7 +31,7 @@ const STATUS_CHIP: Record<string, { bg: string; color: string }> = {
   ACTIVE: { bg: "#e8f5e9", color: "#1b7a3d" },
   PENDING: { bg: "#fff4e0", color: "#a05a00" },
   SUSPENDED: { bg: "#fdeaea", color: "#c0392b" },
-  REJECTED: { bg: "#f0f0f0", color: "#777" },
+  REJECTED: { bg: "#f0f0f0", color: "#555" },
 };
 
 type Job = { id: string; title: string; status: string; created_at: string };
@@ -287,7 +287,7 @@ function AdminCompaniesContent() {
     반려: companies.filter((c) => c.status === "REJECTED").length,
   };
 
-  const lbl: React.CSSProperties = { color: "#888" };
+  const lbl: React.CSSProperties = { color: "#555" };
   const modalBtn: React.CSSProperties = {
     display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600,
     padding: "6px 10px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff",
@@ -320,7 +320,7 @@ function AdminCompaniesContent() {
       )}
       {!blockedMode && (
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <span style={{ fontSize: 14, color: "#777" }}>회원 구분</span>
+          <span style={{ fontSize: 14, color: "#555" }}>회원 구분</span>
           {(["전체", "매장", "오피스", "매장·오피스"] as const).map((opt) => (
             <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: typeFilter === opt ? "#582681" : "#555" }}>
               <input type="radio" name="companyTrack" checked={typeFilter === opt}
@@ -440,7 +440,6 @@ function AdminCompaniesContent() {
                 <th>지역</th>
                 <th>직원수</th>
                 <th>연락처</th>
-                <th>사업자번호</th>
                 <th>공고</th>
                 <th>가입일</th>
                 <th>유료 기간</th>
@@ -449,9 +448,9 @@ function AdminCompaniesContent() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={9} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : paginated.map((c) => (
                 <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#f7f7f8" : undefined }}>
                   <td >
@@ -474,7 +473,7 @@ function AdminCompaniesContent() {
                       <span className="admin-name-b" onClick={() => setCompanyDetail(c)}
                         style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", cursor: "pointer" }}>
                         {c.company_name}
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: "#555" }}>
                           {TYPE_LABEL[c.company_type] || c.company_type}
                         </span>
                       </span>
@@ -487,23 +486,7 @@ function AdminCompaniesContent() {
                   {/* 연락처 + 이메일 */}
                   <td className="admin-td-date">
                     <div>{c.phone ? formatPhone(c.phone) : "-"}</div>
-                    <div style={{ fontSize: 13, color: "#888", marginTop: 2, wordBreak: "break-all" }}>{c.email || "-"}</div>
-                  </td>
-                  {/* 사업자번호 / 등록증 아이콘 */}
-                  <td className="admin-td-date">
-                    <div>{c.business_number || "-"}</div>
-                    <div style={{ marginTop: 4 }}>
-                      {c.business_license_url ? (
-                        <button onClick={() => setPreviewUrl(c.business_license_url)} title="사업자등록증 보기"
-                          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#555", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 13 }}>
-                          <FileText size={14} /><span>사업자등록증</span>
-                        </button>
-                      ) : (
-                        <span style={{ color: "#ccc", display: "inline-flex", alignItems: "center", gap: 3, fontSize: 13 }} title="미제출">
-                          <FileText size={14} /><span>사업자등록증</span>
-                        </span>
-                      )}
-                    </div>
+                    <div style={{ fontSize: 13, color: "#555", marginTop: 2, wordBreak: "break-all" }}>{c.email || "-"}</div>
                   </td>
                   {/* 공고 → 클릭 시 해당 기업 공고 목록 */}
                   <td className="admin-td-date">
@@ -514,7 +497,7 @@ function AdminCompaniesContent() {
                         {c.job_count}건
                       </a>
                     ) : (
-                      <span style={{ color: "#bbb" }}>0건</span>
+                      <span style={{ color: "#555" }}>0건</span>
                     )}
                   </td>
                   {/* 가입일 */}
@@ -598,9 +581,9 @@ function AdminCompaniesContent() {
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 19, fontWeight: 700, color: "#555" }}>{companyDetail.company_name}</span>
                   <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#555" }}>{TYPE_LABEL[companyDetail.company_type] || companyDetail.company_type}</span>
-                  <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#777" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
+                  <span style={{ fontSize: 12, padding: "3px 9px", borderRadius: 6, ...(STATUS_CHIP[companyDetail.status] ? { background: STATUS_CHIP[companyDetail.status].bg, color: STATUS_CHIP[companyDetail.status].color } : { background: "#f0f0f0", color: "#555" }) }}>{STATUS_TO_LABEL[companyDetail.status] || companyDetail.status}</span>
                 </div>
-                {companyDetail.brand_name && <p style={{ fontSize: 14, color: "#888", margin: "4px 0 0" }}>{companyDetail.brand_name}</p>}
+                {companyDetail.brand_name && <p style={{ fontSize: 14, color: "#555", margin: "4px 0 0" }}>{companyDetail.brand_name}</p>}
               </div>
 
               {/* 기본 정보 그리드 */}
@@ -647,7 +630,7 @@ function AdminCompaniesContent() {
                     })}
                   </div>
                 ) : (
-                  <div style={{ fontSize: 14, color: "#aaa" }}>등록된 공고가 없습니다.</div>
+                  <div style={{ fontSize: 14, color: "#555" }}>등록된 공고가 없습니다.</div>
                 )}
               </div>
             </div>
@@ -705,7 +688,7 @@ function AdminCompaniesContent() {
 }
 export default function AdminCompaniesPage() {
   return (
-    <Suspense fallback={<div style={{ padding: 40, textAlign: "center", color: "#888" }}>불러오는 중...</div>}>
+    <Suspense fallback={<div style={{ padding: 40, textAlign: "center", color: "#555" }}>불러오는 중...</div>}>
       <AdminCompaniesContent />
     </Suspense>
   );

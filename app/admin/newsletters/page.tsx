@@ -202,10 +202,10 @@ export default function AdminNewslettersPage() {
                   <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
                   <button type="button" onClick={() => setPreviewItem(n)}
                     style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
-                    <div style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {n.title}
                     </div>
-                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2 }}>
+                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 2 }}>
                       {STATUS_LABELS[n.status] || n.status}
                       {" · "}{(n.created_at || "").slice(0, 10)}
                       {n.sent_at ? ` · 발송 ${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0})` : ""}
@@ -224,7 +224,7 @@ export default function AdminNewslettersPage() {
           ) : (
             <>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px", borderBottom: "1px solid #f2f2f4" }}>
-                <span style={{ fontSize: 15, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{지금것.title}</span>
+                <span style={{ fontSize: 15, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{지금것.title}</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                   <button onClick={() => testSend(지금것.id)} disabled={busyId === 지금것.id} style={btnPurpleOutline}>테스트 발송</button>
                   {지금것.status !== "sent" && (
@@ -245,6 +245,6 @@ export default function AdminNewslettersPage() {
 
 const th: React.CSSProperties = {};
 const td: React.CSSProperties = {};
-const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#666", fontSize: 13.5, cursor: "pointer" };
+const btnGray: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#555", fontSize: 13.5, cursor: "pointer" };
 const btnPurpleOutline: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 13.5, cursor: "pointer" };
 const btnPurple: React.CSSProperties = { padding: "5px 12px", borderRadius: 6, border: "none", background: "#582681", color: "#fff", fontSize: 13.5, cursor: "pointer" };

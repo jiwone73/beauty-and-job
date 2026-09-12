@@ -155,7 +155,7 @@ export default function AdminBrandsPage() {
                         등록증 보기
                       </button>
                     ) : (
-                      <span style={{ color: "#bbb", fontSize: 14 }}>없음</span>
+                      <span style={{ color: "#555", fontSize: 14 }}>없음</span>
                     )}
                   </td>
                   <td><span className={`admin-badge ${STATUS_BADGE[b.status] || "admin-badge-neutral"}`}>{STATUS_LABEL[b.status] || b.status}</span></td>
@@ -168,7 +168,7 @@ export default function AdminBrandsPage() {
                             승인
                           </button>
                           <button onClick={() => reject(b)}
-                            style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #d6d6d6", background: "#fff", color: "#666", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                            style={{ padding: "5px 12px", borderRadius: 6, border: "1px solid #d6d6d6", background: "#fff", color: "#555", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                             반려
                           </button>
                         </>

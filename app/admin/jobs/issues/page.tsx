@@ -81,7 +81,7 @@ export default function JobIssuesPage() {
       {/* 답글 한 줄이 화면 끝까지 늘어나면 눈이 되돌아올 자리를 잃는다. 900 으로 묶는다. */}
       <div style={{ padding: "4px 4px 40px", maxWidth: 900, margin: "0 auto", width: "100%" }}>
         {/* 제목은 레이아웃이 그린다(.admin-page-title) — 여기선 건수만 적는다. */}
-        <div style={{ marginBottom: 12, fontSize: 14, color: "#9a92a6" }}>
+        <div style={{ marginBottom: 12, fontSize: 14, color: "#555" }}>
           미해결 {미해결수} · 해결 {해결수}
         </div>
 
@@ -103,9 +103,9 @@ export default function JobIssuesPage() {
         </div>
 
         {loading ? (
-          <div style={{ color: "#9a92a6", padding: 30 }}>불러오는 중…</div>
+          <div style={{ color: "#555", padding: 30 }}>불러오는 중…</div>
         ) : filtered.length === 0 ? (
-          <div style={{ color: "#9a92a6", padding: 30, border: "1px dashed #efeff1", borderRadius: 10, textAlign: "center" }}>
+          <div style={{ color: "#555", padding: 30, border: "1px dashed #efeff1", borderRadius: 10, textAlign: "center" }}>
             {list.length ? "검색 결과가 없어요." : "기록된 이슈가 없어요."}
           </div>
         ) : (
@@ -113,9 +113,9 @@ export default function JobIssuesPage() {
             {filtered.map((p) => (
               <div key={p.url} style={{ border: "1px solid #efeff1", background: "#fff", borderRadius: 12, padding: "12px 14px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: "#2b2533", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{p.title || "(제목 없음)"}</span>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{p.title || "(제목 없음)"}</span>
                   <a href={p.url} target="_blank" rel="noreferrer" style={{ flexShrink: 0, fontSize: 13, color: "#582681", textDecoration: "none" }}>원문 ↗</a>
-                  {p.updated_at && <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{fmtDate(p.updated_at)}</span>}
+                  {p.updated_at && <span style={{ flexShrink: 0, fontSize: 12, color: "#555" }}>{fmtDate(p.updated_at)}</span>}
                   <span style={{ marginLeft: "auto", flexShrink: 0, display: "flex", gap: 6 }}>
                     {/* 「불러와 수정」은 없앴다 — 공고를 다시 불러 고치는 일은
                         「외부공고 불러오기」 목록에서 한다. */}
@@ -127,7 +127,7 @@ export default function JobIssuesPage() {
                   {/* 칸 이름(「기타」)은 안 적는다. 일흔여섯 개가 전부 기타였다 —
                       고르는 게 귀찮아 다들 기타를 눌렀고, 그래서 아무것도 안 알려 준다. */}
                   {p.items.map((it, i) => (
-                    <div key={i} style={{ fontSize: 13.5, color: "#4a4453", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+                    <div key={i} style={{ fontSize: 13.5, color: "#555", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
                       {it.field && it.field !== "기타" && (
                         <b style={{ color: "#c0392b", marginRight: 6 }}>{it.field}</b>
                       )}
@@ -142,12 +142,12 @@ export default function JobIssuesPage() {
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
                       {(p.replies || []).map((r, i) => (
                         <div key={i} style={{ display: "flex", gap: 8, alignItems: "baseline", fontSize: 13 }}>
-                          <span style={{ flexShrink: 0, minWidth: 130, color: "#7b7387" }}>
+                          <span style={{ flexShrink: 0, minWidth: 130, color: "#555" }}>
                             {r.by} · {fmtDate(r.at)}
                           </span>
-                          <span style={{ color: "#2b2533", whiteSpace: "pre-wrap", wordBreak: "break-word", flex: 1, minWidth: 0 }}>{r.text}</span>
+                          <span style={{ color: "#555", whiteSpace: "pre-wrap", wordBreak: "break-word", flex: 1, minWidth: 0 }}>{r.text}</span>
                           <button onClick={() => removeReply(p.url, i)} title="코멘트 삭제"
-                            style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#c8c8c8", fontSize: 12 }}>×</button>
+                            style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: "#555", fontSize: 12 }}>×</button>
                         </div>
                       ))}
                     </div>

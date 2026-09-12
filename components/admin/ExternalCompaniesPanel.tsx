@@ -343,7 +343,7 @@ export default function ExternalCompaniesPanel() {
         {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드 안이라 표 콘텐츠 폭에 정확히 맞음 */}
         {selectedItems.length > 0 && (
           <div style={{ padding: "22px 24px", borderBottom: "1px solid #f0f0f0" }}>
-            <div style={{ fontSize: 14, color: "#555", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#999" }}>({selectedItems.length})</span></div>
+            <div style={{ fontSize: 14, color: "#555", marginBottom: 16 }}>선택 기업 진행 단계 <span style={{ color: "#555" }}>({selectedItems.length})</span></div>
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               {selectedItems.map((c) => {
                 const cApps = appsByCompany[c.id] || [];
@@ -352,7 +352,7 @@ export default function ExternalCompaniesPanel() {
                 return (
                   <div key={c.id}>
                     <div style={{ fontSize: 14, color: "#555", marginBottom: 12, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {c.company_name}<span style={{ color: "#aaa" }}> · {jobTitle}</span>
+                      {c.company_name}<span style={{ color: "#555" }}> · {jobTitle}</span>
                     </div>
                     <div style={{ display: "flex", gap: 6 }}>
                       {STAGES.map((label, i) => {
@@ -444,13 +444,13 @@ export default function ExternalCompaniesPanel() {
                                 {jobTitle}
                               </a>
                             ) : jobTitle}
-                            {jobExtra && <span style={{ color: "#aaa" }}>{jobExtra}</span>}
+                            {jobExtra && <span style={{ color: "#555" }}>{jobExtra}</span>}
                           </span>
                           {/* 원문은 따로 — 옮겨 온 값이 맞는지 대조할 때 쓴다. */}
                           {jobUrl && (
                             <a href={jobUrl} target="_blank" rel="noopener noreferrer" title="원문 보기"
                               onClick={(e) => e.stopPropagation()}
-                              style={{ flexShrink: 0, fontSize: 11, color: "#9a92a6", textDecoration: "none", whiteSpace: "nowrap" }}>
+                              style={{ flexShrink: 0, fontSize: 11, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>
                               원문 ↗
                             </a>
                           )}
@@ -464,7 +464,7 @@ export default function ExternalCompaniesPanel() {
                             color: isAlba(j0) ? "#0a7d34" : "#7b7387" }}>
                             {isAlba(j0) ? "알바" : "관리자"}
                           </span>
-                        ) : <span style={{ color: "#ccc" }}>-</span>}
+                        ) : <span style={{ color: "#555" }}>-</span>}
                       </td>
                       <td className="admin-td-brand">
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -484,7 +484,7 @@ export default function ExternalCompaniesPanel() {
                             {cApps.length}
                           </a>
                         ) : (
-                          <span style={{ color: "#bbb" }}>0</span>
+                          <span style={{ color: "#555" }}>0</span>
                         )}
                       </td>
                       <td className="admin-td-date">
@@ -538,7 +538,7 @@ export default function ExternalCompaniesPanel() {
               <button className="admin-modal-close" onClick={() => setLinkTarget(null)}><X size={20} /></button>
             </div>
             <div style={{ padding: 18 }}>
-              <p style={{ fontSize: 12.5, color: "#888", margin: "0 0 10px", lineHeight: 1.5 }}>
+              <p style={{ fontSize: 12.5, color: "#555", margin: "0 0 10px", lineHeight: 1.5 }}>
                 연결하면 이 비회원의 공고 {linkTarget.job_count}건이 선택한 회원 기업의 공고로 이관돼요. 비회원 행은 삭제되지 않고 ‘연결됨’으로 남아요.
               </p>
               <div className="admin-search-wrap" style={{ marginBottom: 10 }}>
@@ -547,15 +547,15 @@ export default function ExternalCompaniesPanel() {
               </div>
               <div style={{ maxHeight: 300, overflow: "auto", border: "1px solid #eee", borderRadius: 8 }}>
                 {linkQuery.trim().length < 1 ? (
-                  <div style={{ padding: 16, color: "#aaa", fontSize: 13, textAlign: "center" }}>연결할 회원 기업을 검색하세요.</div>
+                  <div style={{ padding: 16, color: "#555", fontSize: 13, textAlign: "center" }}>연결할 회원 기업을 검색하세요.</div>
                 ) : linkHits.length === 0 ? (
-                  <div style={{ padding: 16, color: "#aaa", fontSize: 13, textAlign: "center" }}>일치하는 회원 기업이 없어요.</div>
+                  <div style={{ padding: 16, color: "#555", fontSize: 13, textAlign: "center" }}>일치하는 회원 기업이 없어요.</div>
                 ) : (
                   linkHits.map((m) => (
                     <div key={m.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #f3f3f3" }}>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 13.5 }}>{m.company_name}{m.brand_name ? <span style={{ color: "#999", fontWeight: 400 }}> · {m.brand_name}</span> : null}</div>
-                        <div style={{ fontSize: 11.5, color: "#999" }}>{m.business_number || "사업자번호 없음"} · {m.status === "ACTIVE" ? "승인완료" : m.status}</div>
+                        <div style={{ fontWeight: 600, fontSize: 13.5 }}>{m.company_name}{m.brand_name ? <span style={{ color: "#555", fontWeight: 400 }}> · {m.brand_name}</span> : null}</div>
+                        <div style={{ fontSize: 11.5, color: "#555" }}>{m.business_number || "사업자번호 없음"} · {m.status === "ACTIVE" ? "승인완료" : m.status}</div>
                       </div>
                       <button className="admin-page-btn" style={{ background: "#582681", color: "#fff", borderColor: "#582681" }} disabled={busy} onClick={() => doLink(m.id, m.company_name)}>연결</button>
                     </div>

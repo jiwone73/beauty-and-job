@@ -5598,7 +5598,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   position: relative;
   background: none;
   border: none;
-  color: #666;
+  color: #555;
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -5702,7 +5702,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .admin-stat-trend.up { color: #582681; }
 .admin-stat-trend.down { color: #ef4444; }
-.admin-stat-trend.neutral { color: #aaa; }
+.admin-stat-trend.neutral { color: #555; }
 .admin-stat-value {
   font-size: 28px;
   font-weight: 400;
@@ -5813,7 +5813,7 @@ div:has(> table.admin-table),
 /* 공고 목록의 매장명만 예외 — 한 칸에 매장과 공고가 위아래로 있고, 주인공은
    아래의 공고명이다. 매장은 딸린 값이라 한 단계 물려 둔다. 이 표에서 #555 가
    아닌 글자는 여기 하나뿐이다. */
-.admin-table .adm-shop { font-size: 14px; color: #8a8a90; }
+.admin-table .adm-shop { font-size: 14px; color: #555; }
 .admin-td-title {
   max-width: 200px;
   overflow: hidden;
@@ -5870,7 +5870,7 @@ div:has(> table.admin-table),
   background: #f5f5f5;
   border: none;
   border-radius: 6px;
-  color: #666;
+  color: #555;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -5893,7 +5893,7 @@ div:has(> table.admin-table),
 .admin-search-icon {
   position: absolute;
   left: 12px;
-  color: #aaa;
+  color: #555;
 }
 .admin-search-input {
   padding: 9px 12px 9px 36px;
@@ -5934,7 +5934,7 @@ div:has(> table.admin-table),
   padding: 8px 14px;
   font-size: 13px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   background: #fff;
   border: 1.5px solid #e5e5e5;
   border-radius: 8px;
@@ -6000,7 +6000,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  color: #666;
+  color: #555;
   background: none;
   border: none;
   cursor: pointer;
@@ -6029,7 +6029,7 @@ div:has(> table.admin-table),
 /* 항목 아이콘 — 라벨 왼쪽. 값보다 흐리게 두어 글자를 가리지 않는다(프로필과 같은 규칙). */
 .settings-compact .admin-form-label { display: inline-flex; align-items: center; gap: 6px; }
 .settings-compact .admin-form-icon { color: var(--color-primary); opacity: 0.55; }
-.admin-form-icon { flex-shrink: 0; color: #b7b0c0; }
+.admin-form-icon { flex-shrink: 0; color: #555; }
 
 /* ── 채용공고 등록/수정 폼: 프로필 기본정보와 동일한 1행(라벨 좌·내용 우) 레이아웃 ── */
 /* 상세(미리보기) 레이아웃처럼 단일 컬럼(가운데 정렬) — 등록/수정 폼 흐름 통일 */
@@ -6290,7 +6290,7 @@ div:has(> table.admin-table),
   text-align: center;
   padding: 48px;
   font-size: 14px;
-  color: #aaa;
+  color: #555;
 }
 
 /* 관리자 차트 그리드 */
@@ -6319,12 +6319,12 @@ div:has(> table.admin-table),
 }
 .admin-mini-stat-label { font-size: 15px; color: #555; }
 .admin-mini-stat-value { font-size: 20px; font-weight: 400; color: #555; }
-.admin-mini-stat-value .admin-mini-unit { font-size: 13px; font-weight: 400; color: #888; margin-left: 2px; }
+.admin-mini-stat-value .admin-mini-unit { font-size: 13px; font-weight: 400; color: #555; margin-left: 2px; }
 
 .admin-table-meta {
   padding: 12px 16px;
   font-size: 14px;
-  color: #888;
+  color: #555;
   border-bottom: 1px solid #f5f5f5;
 }
 .admin-table-meta strong { color: #555; font-weight: 400; }
@@ -6344,7 +6344,7 @@ div:has(> table.admin-table),
   padding: 0 10px;
   font-size: 13px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
@@ -6384,7 +6384,7 @@ div:has(> table.admin-table),
 .admin-modal-close {
   background: none;
   border: none;
-  color: #888;
+  color: #555;
   cursor: pointer;
   padding: 4px;
   border-radius: 6px;
@@ -6401,7 +6401,7 @@ div:has(> table.admin-table),
   border-bottom: 1px solid #f9f9f9;
   font-size: 14px;
 }
-.admin-detail-label { width: 120px; color: #888; flex-shrink: 0; }
+.admin-detail-label { width: 120px; color: #555; flex-shrink: 0; }
 .admin-detail-value { color: #555; font-weight: 500; }
 .admin-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .admin-danger-btn {
@@ -6438,7 +6438,7 @@ div:has(> table.admin-table),
 .admin-filter-label {
   font-size: 12px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   white-space: nowrap;
   min-width: 52px;
 }
@@ -6454,7 +6454,7 @@ div:has(> table.admin-table),
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   text-decoration: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
@@ -6480,7 +6480,7 @@ div:has(> table.admin-table),
   padding: 10px 24px;
   font-size: 15px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   text-decoration: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
@@ -6500,7 +6500,7 @@ div:has(> table.admin-table),
   padding: 7px 16px;
   font-size: 13px;
   font-weight: 500;
-  color: #888;
+  color: #555;
   text-decoration: none;
   border-radius: 6px 6px 0 0;
   border: 1px solid transparent;
@@ -6537,7 +6537,7 @@ div:has(> table.admin-table),
   gap: 6px;
 }
 .admin-resume-stat:last-child { border-right: none; }
-.admin-resume-stat-label { font-size: 11px; color: #888; text-align: center; }
+.admin-resume-stat-label { font-size: 11px; color: #555; text-align: center; }
 .admin-resume-stat-value { font-size: 20px; font-weight: 800; color: #555; }
 
 /* 이력서 테이블 */
@@ -6573,7 +6573,7 @@ div:has(> table.admin-table),
   gap: 2px;
 }
 .admin-resume-member-info strong { font-size: 14px; color: #555; }
-.admin-resume-member-info span { font-size: 11px; color: #aaa; }
+.admin-resume-member-info span { font-size: 11px; color: #555; }
 .admin-resume-info { display: flex; flex-direction: column; gap: 4px; max-width: 280px; }
 .admin-resume-title {
   font-size: 13px;
@@ -6592,7 +6592,7 @@ div:has(> table.admin-table),
   font-size: 11px;
   border-radius: 4px;
 }
-.admin-resume-job { font-size: 11px; color: #888; }
+.admin-resume-job { font-size: 11px; color: #555; }
 .admin-resume-modal-profile {
   display: flex;
   align-items: center;
@@ -6603,7 +6603,7 @@ div:has(> table.admin-table),
   margin-bottom: 20px;
 }
 .admin-resume-modal-profile h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
-.admin-resume-modal-profile p { font-size: 13px; color: #666; margin: 0; }
+.admin-resume-modal-profile p { font-size: 13px; color: #555; margin: 0; }
 
 /* 관리자 사이드바 인재정보 메뉴 */
 
@@ -6632,7 +6632,7 @@ div:has(> table.admin-table),
 .admin-rsc-label {
   font-size: 12px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -6676,7 +6676,7 @@ div:has(> table.admin-table),
   background: #f0f0f0;
   margin: 0 8px;
 }
-.admin-rsc-split-label { font-size: 11px; color: #aaa; }
+.admin-rsc-split-label { font-size: 11px; color: #555; }
 .admin-rsc-split-value {
   font-size: 22px;
   font-weight: 800;
@@ -6771,7 +6771,7 @@ div:has(> table.admin-table),
 .admin-rsc-label {
   font-size: 12px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -6815,7 +6815,7 @@ div:has(> table.admin-table),
   background: #f0f0f0;
   margin: 0 8px;
 }
-.admin-rsc-split-label { font-size: 11px; color: #aaa; }
+.admin-rsc-split-label { font-size: 11px; color: #555; }
 .admin-rsc-split-value {
   font-size: 22px;
   font-weight: 800;
@@ -6858,7 +6858,7 @@ div:has(> table.admin-table),
 }
 .admin-date-label {
   width: 24px;
-  color: #aaa;
+  color: #555;
   font-weight: 600;
   flex-shrink: 0;
 }
@@ -6903,7 +6903,7 @@ div:has(> table.admin-table),
   font-size: 12px;
 }
 .admin-date-tooltip .admin-date-label {
-  color: #aaa;
+  color: #555;
   width: 28px;
   flex-shrink: 0;
 }
@@ -6975,7 +6975,7 @@ div:has(> table.admin-table),
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #888;
+  color: #555;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
@@ -7029,7 +7029,7 @@ div:has(> table.admin-table),
 .admin-preview { padding: 40px 48px !important; max-width: 760px; margin: 0 auto; }
 .admin-preview-header { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #582681; }
 .admin-preview-title { font-size: 28px; font-weight: 800; color: #555; margin: 12px 0 16px; line-height: 1.4; }
-.admin-preview-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #888; }
+.admin-preview-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; color: #555; }
 .admin-preview-body { line-height: 1.9; }
 
 /* 상태 드롭다운 셀렉트 */
@@ -7085,7 +7085,7 @@ div:has(> table.admin-table),
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: #555;
   background: #f5f5f5;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -7151,7 +7151,7 @@ div:has(> table.admin-table),
 .admin-upload-drop:hover,
 .admin-upload-drop.dragging { border-color: #582681; background: #f7f7f8; }
 .admin-upload-drop-text { font-size: 15px; font-weight: 600; color: #555; margin: 0; }
-.admin-upload-drop-sub { font-size: 13px; color: #aaa; margin: 0; }
+.admin-upload-drop-sub { font-size: 13px; color: #555; margin: 0; }
 .admin-upload-done {
   display: flex;
   align-items: center;
@@ -7162,7 +7162,7 @@ div:has(> table.admin-table),
   margin-bottom: 12px;
 }
 .admin-upload-done-title { font-size: 15px; font-weight: 700; color: #582681; margin: 0 0 4px; }
-.admin-upload-done-file { font-size: 13px; color: #888; margin: 0; }
+.admin-upload-done-file { font-size: 13px; color: #555; margin: 0; }
 
 /* 대시보드 가입자 서브 통계 */
 .admin-stat-sub {
@@ -7178,7 +7178,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #888;
+  color: #555;
   font-weight: 500;
 }
 .admin-stat-sub-icon { font-size: 13px; }
@@ -7236,7 +7236,7 @@ div:has(> table.admin-table),
 /* 전체 요약 카드 서브텍스트 */
 .admin-stat-sub-text {
   font-size: 11px;
-  color: #aaa;
+  color: #555;
   margin-top: 2px;
 }
 
@@ -7632,7 +7632,7 @@ div:has(> table.admin-table),
   .co-m-content .company-stat-icon svg { width: 13px; height: 13px; }
   .co-m-content .company-stat-value { font-size: 16px; font-weight: 600 !important; color: #555; }
   .co-m-content .company-stat-value .company-stat-unit { font-size: 10.5px; font-weight: 600 !important; }
-  .co-m-content .company-stat-label { grid-area: label; font-size: 11px; color: #666; white-space: nowrap; }
+  .co-m-content .company-stat-label { grid-area: label; font-size: 11px; color: #555; white-space: nowrap; }
 
   /* 2열 그리드 → 1열 스택 */
   .co-m-content .company-dashboard-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -8054,7 +8054,7 @@ div:has(> table.admin-table),
 }
 .admin-login-sub {
   font-size: 14px;
-  color: #888;
+  color: #555;
   margin: 0 0 28px;
 }
 .admin-login-field {
@@ -8076,7 +8076,7 @@ div:has(> table.admin-table),
 .admin-login-input-icon {
   position: absolute;
   left: 12px;
-  color: #aaa;
+  color: #555;
 }
 .admin-login-input {
   width: 100%;
@@ -8096,7 +8096,7 @@ div:has(> table.admin-table),
   right: 12px;
   background: none;
   border: none;
-  color: #aaa;
+  color: #555;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -8134,20 +8134,20 @@ div:has(> table.admin-table),
 .admin-login-test-title {
   font-size: 12px;
   font-weight: 700;
-  color: #666;
+  color: #555;
   margin: 0 0 8px;
 }
 .admin-login-test-item {
   display: flex;
   gap: 16px;
   font-size: 12px;
-  color: #666;
+  color: #555;
 }
 .admin-login-test-item strong { color: #582681; }
 .admin-login-footer { text-align: center; }
 .admin-login-back-link {
   font-size: 13px;
-  color: #888;
+  color: #555;
   text-decoration: none;
   transition: color 0.15s;
 }
@@ -12157,11 +12157,11 @@ div:has(> table.admin-table),
   .co-hero-title br, .js-hero-title br,
   .co-hero-desc br, .js-hero-sub br { display: inline; }
 }
-.admin-modal-info-grid label::after { content: ":"; margin: 0 6px 0 3px; color: #999; font-weight: 400; }
+.admin-modal-info-grid label::after { content: ":"; margin: 0 6px 0 3px; color: #555; font-weight: 400; }
 
 .admin-page-subtitle {
   font-size: 13px;
-  color: #888;
+  color: #555;
   margin-top: 2px;
   font-weight: 500;
 }
@@ -14130,7 +14130,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    세로 칸선을 지우고 줄 높이를 키운다. 칸마다 선을 그으면 값이 몇 글자 안 되는
    표가 격자무늬처럼 보여 빽빽해진다(사람인 공고 관리에도 세로선이 없다). */
 .co-joblist .admin-table th { background: #fff; font-size: 14px;
-  color: #9a9aa2; padding: 14px 16px; }
+  color: #555; padding: 14px 16px; }
 .co-joblist .admin-table td { padding: 18px 16px; font-size: 14.5px; }
 .co-joblist .admin-table tbody tr td { border-bottom: 1px solid #f4f4f6; }
 /* 툴바와 표 사이도 벌린다 — 붙어 있으면 한 덩어리로 읽힌다. */

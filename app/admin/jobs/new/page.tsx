@@ -129,7 +129,7 @@ function AdminJobNewForm() {
 
 export default function AdminJobNewPage() {
   return (
-    <Suspense fallback={<div style={{ padding: "40px", textAlign: "center", color: "#888" }}>불러오는 중...</div>}>
+    <Suspense fallback={<div style={{ padding: "40px", textAlign: "center", color: "#555" }}>불러오는 중...</div>}>
       <AdminJobNewForm />
     </Suspense>
   );

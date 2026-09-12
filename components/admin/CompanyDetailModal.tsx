@@ -15,7 +15,7 @@ const STATUS_CHIP: Record<string, { bg: string; color: string }> = {
   ACTIVE: { bg: "#e8f5e9", color: "#1b7a3d" },
   PENDING: { bg: "#fff4e0", color: "#a05a00" },
   SUSPENDED: { bg: "#fdeaea", color: "#c0392b" },
-  REJECTED: { bg: "#f0f0f0", color: "#777" },
+  REJECTED: { bg: "#f0f0f0", color: "#555" },
 };
 
 function fmtDate(d: string | null) {
@@ -30,7 +30,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
   const [pdfLoading, setPdfLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const lbl: React.CSSProperties = { color: "#888" };
+  const lbl: React.CSSProperties = { color: "#555" };
   const modalBtn: React.CSSProperties = {
     display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 600,
     padding: "6px 10px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff",
@@ -89,7 +89,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
     || (company.thumb_url && company.thumb_url !== company.logo_url ? company.thumb_url : null);
   // 매장은 로고를 받지 않는다. 로고가 있는 기업만 배너 안쪽 왼쪽 아래에 얹는다.
   const logo = company.logo_url || null;
-  const chip = STATUS_CHIP[company.status] || { bg: "#f0f0f0", color: "#777" };
+  const chip = STATUS_CHIP[company.status] || { bg: "#f0f0f0", color: "#555" };
 
   return (
     <>
@@ -129,7 +129,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: "#f7f7f8", color: "#582681" }}>{TYPE_LABEL[company.company_type] || company.company_type}</span>
                 <span style={{ fontSize: 11, padding: "3px 9px", borderRadius: 6, background: chip.bg, color: chip.color }}>{STATUS_TO_LABEL[company.status] || company.status}</span>
               </div>
-              {company.brand_name && <p style={{ fontSize: 13, color: "#888", margin: "4px 0 0" }}>{company.brand_name}</p>}
+              {company.brand_name && <p style={{ fontSize: 13, color: "#555", margin: "4px 0 0" }}>{company.brand_name}</p>}
             </div>
 
             <div style={{ padding: "18px 22px 0" }}>
@@ -173,7 +173,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
                   })}
                 </div>
               ) : (
-                <div style={{ fontSize: 13, color: "#aaa" }}>등록된 공고가 없습니다.</div>
+                <div style={{ fontSize: 13, color: "#555" }}>등록된 공고가 없습니다.</div>
               )}
             </div>
           </div>

@@ -62,11 +62,11 @@ export default function SmsModal({
         <div className="cv-body">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>문자 발송</h2>
-            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#999" }}>✕</button>
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#555" }}>✕</button>
           </div>
 
           <div style={{ marginBottom: 16 }}>
-            <div style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>
+            <div style={{ color: "#555", fontSize: 13, marginBottom: 8 }}>
               수신 대상 <strong style={{ color: "#582681" }}>{valid.length}명</strong>
               {noPhone > 0 && <span style={{ color: "#e74c3c" }}> · 번호 없음 {noPhone}명 제외</span>}
             </div>
@@ -83,7 +83,7 @@ export default function SmsModal({
           <textarea className="cv-input" value={message} onChange={(e) => setMessage(e.target.value)}
             placeholder="발송할 안내 문자를 입력해주세요."
             style={{ minHeight: 140, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
-          <div style={{ fontSize: 12, color: "#999", textAlign: "right", marginTop: 4 }}>
+          <div style={{ fontSize: 12, color: "#555", textAlign: "right", marginTop: 4 }}>
             {byteLen}바이트 · {msgType}
           </div>
 
@@ -97,7 +97,7 @@ export default function SmsModal({
             style={{ width: "100%", marginTop: 16, padding: "13px", background: sending ? "#a8a8ad" : "#582681", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: sending ? "default" : "pointer" }}>
             {sending ? "발송 중..." : `${valid.length}명에게 발송`}
           </button>
-          <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 8 }}>
+          <p style={{ fontSize: 12, color: "#555", textAlign: "center", marginTop: 8 }}>
             안내성 문자만 발송하세요. (광고성 문자는 수신동의·수신거부 표기 필요)
           </p>
         </div>

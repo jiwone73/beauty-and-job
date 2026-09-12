@@ -202,12 +202,12 @@ export default function AdminInquiriesPage() {
                   <button type="button" onClick={() => openDetail(item)}
                     style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {item.subject || item.name || "-"}
                       </span>
-                      <span style={{ marginLeft: "auto", flexShrink: 0, fontSize: 12.5, color: "#9a9aa0" }}>{badge(item.status)}</span>
+                      <span style={{ marginLeft: "auto", flexShrink: 0, fontSize: 12.5, color: "#555" }}>{badge(item.status)}</span>
                     </div>
-                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {fmtDate(item.created_at)}{item.email ? ` · ${item.email}` : ""}
                     </div>
                   </button>
@@ -224,30 +224,30 @@ export default function AdminInquiriesPage() {
           ) : (
             <div style={{ padding: 18 }}>
               <div style={{ display: "grid", gridTemplateColumns: "92px 1fr", rowGap: 10, columnGap: 12, fontSize: 14.5, marginBottom: 18 }}>
-                <span style={{ color: "#888" }}>회원구분</span><span style={{ color: "#555" }}>{selected.type}</span>
-                <span style={{ color: "#888" }}>이름</span><span>{selected.name}</span>
-                <span style={{ color: "#888" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
-                <span style={{ color: "#888" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
-                <span style={{ color: "#888" }}>제목</span><span>{selected.subject || "(제목 없음)"}</span>
-                <span style={{ color: "#888" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
-                <span style={{ color: "#888" }}>상태</span><span>{badge(selected.status)}</span>
-                {selected.replied_at && (<><span style={{ color: "#888" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
+                <span style={{ color: "#555" }}>회원구분</span><span style={{ color: "#555" }}>{selected.type}</span>
+                <span style={{ color: "#555" }}>이름</span><span>{selected.name}</span>
+                <span style={{ color: "#555" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
+                <span style={{ color: "#555" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
+                <span style={{ color: "#555" }}>제목</span><span>{selected.subject || "(제목 없음)"}</span>
+                <span style={{ color: "#555" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
+                <span style={{ color: "#555" }}>상태</span><span>{badge(selected.status)}</span>
+                {selected.replied_at && (<><span style={{ color: "#555" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
               </div>
               <div style={{ marginBottom: 18 }}>
-                <div style={{ color: "#888", fontSize: 13.5, marginBottom: 6 }}>문의 내용</div>
+                <div style={{ color: "#555", fontSize: 13.5, marginBottom: 6 }}>문의 내용</div>
                 <div style={{ background: "#f7f7f8", borderRadius: 10, padding: 14, fontSize: 14.5, lineHeight: 1.7, color: "#555", whiteSpace: "pre-wrap" }}>{selected.message}</div>
               </div>
 
               {selected.email ? (
                 <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16 }}>
-                  <div style={{ fontSize: 14.5, color: "#1a1a1a", marginBottom: 10 }}>답변 메일 작성</div>
+                  <div style={{ fontSize: 14.5, color: "#555", marginBottom: 10 }}>답변 메일 작성</div>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
                     spellCheck lang="ko"
                     style={{ minHeight: 320, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
                   <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                     <input type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files || []))} style={{ fontSize: 13 }} />
                     {files.length > 0 && (
-                      <span style={{ fontSize: 12, color: "#888" }}>
+                      <span style={{ fontSize: 12, color: "#555" }}>
                         첨부 {files.length}개 · {(files.reduce((sum, f) => sum + f.size, 0) / 1024 / 1024).toFixed(2)}MB / 3MB
                       </span>
                     )}
@@ -255,12 +255,12 @@ export default function AdminInquiriesPage() {
                       답변 메일 보내기
                     </button>
                   </div>
-                  <p style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 8 }}>
+                  <p style={{ fontSize: 12.5, color: "#555", marginTop: 8 }}>
                     support@beautywork.co.kr 에서 나갑니다. 보내면 상태가 회신완료로 바뀌고 시각이 남습니다. (첨부 3MB 이하)
                   </p>
                 </div>
               ) : (
-                <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16, fontSize: 14, color: "#999" }}>
+                <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16, fontSize: 14, color: "#555" }}>
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해 주세요.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)} className="admin-secondary-btn" style={{ marginLeft: 10 }}>

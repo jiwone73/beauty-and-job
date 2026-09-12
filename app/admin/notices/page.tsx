@@ -138,10 +138,10 @@ export default function AdminNoticesPage() {
                         {TYPE_LABELS[n.type]}
                       </span>
                       {n.is_pinned && <span style={{ fontSize: 12, color: "#555", border: "1px solid #efeff1", borderRadius: 4, padding: "0 5px" }}>고정</span>}
-                      {n.status === "draft" && <span style={{ fontSize: 12, color: "#999", border: "1px solid #efeff1", borderRadius: 4, padding: "0 5px" }}>임시</span>}
-                      <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#9a9aa0" }}>{fmtDate(n.published_at || n.created_at)}</span>
+                      {n.status === "draft" && <span style={{ fontSize: 12, color: "#555", border: "1px solid #efeff1", borderRadius: 4, padding: "0 5px" }}>임시</span>}
+                      <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#555" }}>{fmtDate(n.published_at || n.created_at)}</span>
                     </div>
-                    <div style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {n.title}
                     </div>
                   </button>
@@ -199,9 +199,9 @@ export default function AdminNoticesPage() {
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 720, maxHeight: "86vh", overflow: "auto", padding: 20 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <strong style={{ fontSize: 16, color: "#1a1a1a" }}>새 공지</strong>
+              <strong style={{ fontSize: 16, color: "#555" }}>새 공지</strong>
               <button type="button" onClick={() => set새공지열림(false)} aria-label="닫기"
-                style={{ border: "none", background: "none", fontSize: 20, color: "#aaa", cursor: "pointer" }}>×</button>
+                style={{ border: "none", background: "none", fontSize: 20, color: "#555", cursor: "pointer" }}>×</button>
             </div>
             <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap", alignItems: "center" }}>
               <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} style={selStyle}>

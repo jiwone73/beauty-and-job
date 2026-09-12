@@ -147,7 +147,7 @@ function AdminApplicationsPageInner() {
     <AdminLayout activeMenu="resumes-applications">
       {/* 인재 구분 — 매장/오피스 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-        <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
+        <span style={{ fontSize: 14, color: "#555" }}>인재 구분</span>
         {(["전체", "매장", "오피스"] as const).map((opt) => (
           <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobTypeFilter === opt ? "#582681" : "#555" }}>
             <input type="radio" name="applicantTrack" checked={jobTypeFilter === opt}
@@ -239,9 +239,9 @@ function AdminApplicationsPageInner() {
                             ) : (
                               <span style={{ fontWeight: 600 }}>{a.applicant_name}</span>
                             )}
-                            {gender && <span style={{ fontSize: 13, color: "#888" }}>{gender}</span>}
+                            {gender && <span style={{ fontSize: 13, color: "#555" }}>{gender}</span>}
                           </div>
-                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>
+                          <div style={{ fontSize: 13, color: "#555", marginTop: 2 }}>
                             {[age ? `${age}세` : null, career].filter(Boolean).join(" · ")}
                           </div>
                         </div>
@@ -251,7 +251,7 @@ function AdminApplicationsPageInner() {
                     <td className="admin-td-brand">
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
                         {a.company_name}
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: "#555" }}>
                           {a.job_type === "STORE" ? "매장" : "오피스"}
                         </span>
                       </span>
@@ -282,7 +282,7 @@ function AdminApplicationsPageInner() {
                             <FileText size={15} /><span>이력서</span>
                           </button>
                         ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#ccc", fontSize: 14 }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#555", fontSize: 14 }}>
                             <FileText size={15} /><span>이력서</span>
                           </span>
                         )}

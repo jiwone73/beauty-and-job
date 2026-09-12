@@ -107,23 +107,23 @@ export default function LaunchPage() {
                   <div style={{ minWidth: 132, padding: "10px 12px", borderRadius: 10,
                     border: `1.5px solid ${st === "done" ? "#2f7a4d" : "#c0392b"}`,
                     background: st === "done" ? "#f1f8f3" : "#fff" }}>
-                    <div style={{ fontSize: 12, color: "#9a9aa0", marginBottom: 3 }}>{짧게(t.due)}까지</div>
+                    <div style={{ fontSize: 12, color: "#555", marginBottom: 3 }}>{짧게(t.due)}까지</div>
                     <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.4 }}>{t.title}</div>
                     <div style={{ fontSize: 11.5, color: 상태색[st], marginTop: 4 }}>{상태이름[st]}</div>
                   </div>
-                  {i < 사슬.length - 1 && <span style={{ color: "#c8c8cd", padding: "0 8px", fontSize: 15 }}>→</span>}
+                  {i < 사슬.length - 1 && <span style={{ color: "#555", padding: "0 8px", fontSize: 15 }}>→</span>}
                 </div>
               );
             })}
             <div style={{ display: "flex", alignItems: "center" }}>
-              <span style={{ color: "#c8c8cd", padding: "0 8px", fontSize: 15 }}>→</span>
+              <span style={{ color: "#555", padding: "0 8px", fontSize: 15 }}>→</span>
               <div style={{ minWidth: 92, padding: "10px 12px", borderRadius: 10, border: "1.5px solid #582681", background: "#582681" }}>
-                <div style={{ fontSize: 12, color: "#d8c9e8", marginBottom: 3 }}>{짧게(오픈일)}</div>
+                <div style={{ fontSize: 12, color: "#555", marginBottom: 3 }}>{짧게(오픈일)}</div>
                 <div style={{ fontSize: 13.5, color: "#fff" }}>오픈</div>
               </div>
             </div>
           </div>
-          <div style={{ padding: "0 20px 16px", fontSize: 13, color: "#9a9aa0" }}>
+          <div style={{ padding: "0 20px 16px", fontSize: 13, color: "#555" }}>
             PG 가입이 늦으면 구매안전서비스 확인증이 안 나와 통신판매업 신고가 막히고, 그러면 결제 연동과 결제 시험이 통째로 추석 뒤로 넘어간다.
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function LaunchPage() {
               <div style={{ width: 250, flexShrink: 0 }} />
               <div style={{ flex: 1, position: "relative", height: 16 }}>
                 {눈금.map((g) => (
-                  <span key={g.iso} style={{ position: "absolute", left: `${g.left}%`, fontSize: 11.5, color: "#b3adbd", transform: "translateX(-50%)" }}>
+                  <span key={g.iso} style={{ position: "absolute", left: `${g.left}%`, fontSize: 11.5, color: "#555", transform: "translateX(-50%)" }}>
                     {짧게(g.iso)}
                   </span>
                 ))}
@@ -182,7 +182,7 @@ export default function LaunchPage() {
                 </div>
               );
             })}
-            <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 12, color: "#9a9aa0", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 16, marginTop: 10, fontSize: 12, color: "#555", flexWrap: "wrap" }}>
               <span><span style={{ color: "#c0392b" }}>●</span> 가장 긴 사슬</span>
               <span><span style={{ display: "inline-block", width: 18, height: 9, background: "#f6f6f8", verticalAlign: "middle", marginRight: 4 }} />추석 연휴</span>
               <span><span style={{ display: "inline-block", width: 1, height: 11, background: "#d8c9e8", verticalAlign: "middle", marginRight: 5 }} />오늘</span>
@@ -200,14 +200,14 @@ export default function LaunchPage() {
                 const st = (상태맵[t.id] || "todo") as 상태;
                 return (
                   <div key={t.id} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "11px 20px", borderBottom: "1px solid #f6f6f8" }}>
-                    <span style={{ width: 52, flexShrink: 0, fontSize: 13, color: "#9a9aa0", paddingTop: 1 }}>{짧게(t.due)}</span>
-                    <span style={{ width: 52, flexShrink: 0, fontSize: 12.5, color: "#b3adbd", paddingTop: 2 }}>{t.owner}</span>
+                    <span style={{ width: 52, flexShrink: 0, fontSize: 13, color: "#555", paddingTop: 1 }}>{짧게(t.due)}</span>
+                    <span style={{ width: 52, flexShrink: 0, fontSize: 12.5, color: "#555", paddingTop: 2 }}>{t.owner}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14.5, color: st === "done" ? "#b3adbd" : "#555", textDecoration: st === "done" ? "line-through" : "none" }}>
                         {급한것(t) && <span style={{ color: "#c0392b", marginRight: 4 }}>●</span>}
                         {t.title}
                       </div>
-                      {t.note && <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2 }}>{t.note}</div>}
+                      {t.note && <div style={{ fontSize: 12.5, color: "#555", marginTop: 2 }}>{t.note}</div>}
                     </div>
                     <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                       {(["todo", "doing", "done", "blocked"] as 상태[]).map((v) => (

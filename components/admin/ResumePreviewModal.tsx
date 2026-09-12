@@ -91,7 +91,7 @@ export default function ResumePreviewModal({
         </div>
         <div className="rp-modal-body">
           {loading ? (
-            <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+            <div style={{ padding: "60px", textAlign: "center", color: "#555" }}>불러오는 중...</div>
           ) : data ? (
             <ApplicationDocument
                 제출본
@@ -110,7 +110,7 @@ export default function ResumePreviewModal({
               }}
             />
           ) : (
-            <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>이력서 정보가 없습니다.</div>
+            <div style={{ padding: "60px", textAlign: "center", color: "#555" }}>이력서 정보가 없습니다.</div>
           )}
         </div>
       </div>

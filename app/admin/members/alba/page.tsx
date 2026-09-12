@@ -103,13 +103,13 @@ export default function AlbaPage() {
   const card: React.CSSProperties = {
     background: "#fff", border: "1px solid #eee", borderRadius: 12, padding: 18,
   };
-  const label: React.CSSProperties = { fontSize: 12, color: "#888", marginBottom: 6 };
+  const label: React.CSSProperties = { fontSize: 12, color: "#555", marginBottom: 6 };
   const big: React.CSSProperties = { fontSize: 24, color: "#555" };
 
   return (
     <AdminLayout activeMenu="members-alba">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <p style={{ margin: 0, fontSize: 13, color: "#777" }}>
+        <p style={{ margin: 0, fontSize: 13, color: "#555" }}>
           아이디 <b style={{ color: "#582681" }}>{data.adminId}</b> · {data.startDate} 시작 ·
           {" "}매주 월~일 기준 주 {data.weeklyTargetHours}시간, 합계 {formatMinutes(data.targetMinutes)}
           {data.running && (
@@ -129,7 +129,7 @@ export default function AlbaPage() {
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
             <div style={{ width: `${pct}%`, height: "100%", background: "#582681" }} />
           </div>
-          <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
+          <p style={{ fontSize: 12, color: "#555", marginTop: 6 }}>
             {formatMinutes(data.totalMinutes)} 완료 · {pct}%
             {data.penaltyHours > 0 && (
               <span style={{ color: "#e74c3c" }}>
@@ -147,7 +147,7 @@ export default function AlbaPage() {
           <div style={{ height: 6, background: "#f1f1f1", borderRadius: 999, marginTop: 10, overflow: "hidden" }}>
             <div style={{ width: `${cwPct}%`, height: "100%", background: cwPct >= 100 ? "#0f6e56" : "#582681" }} />
           </div>
-          <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>
+          <p style={{ fontSize: 12, color: "#555", marginTop: 6 }}>
             최소 {formatMinutes(weeklyTargetMin)} · {cw && cw.minutes >= weeklyTargetMin
               ? "달성"
               : `${formatMinutes(Math.max(0, weeklyTargetMin - (cw?.minutes || 0)))} 남음`}
@@ -157,7 +157,7 @@ export default function AlbaPage() {
         <div style={card}>
           <p style={label}>남은 근무시간</p>
           <p style={big}>{formatMinutes(data.remainingMinutes)}</p>
-          <p style={{ fontSize: 12, color: "#888", marginTop: 10 }}>
+          <p style={{ fontSize: 12, color: "#555", marginTop: 10 }}>
             주 {formatMinutes(data.neededPerWeekMinutes)}씩 · {data.weeksLeft}주 더
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function AlbaPage() {
         <div style={card}>
           <p style={label}>등록한 비회원 공고</p>
           <p style={big}>{data.postings.length}건</p>
-          <p style={{ fontSize: 12, color: "#888", marginTop: 10 }}>
+          <p style={{ fontSize: 12, color: "#555", marginTop: 10 }}>
             이번 주 {cw?.postings || 0}건 ·{" "}
             {data.totalMinutes >= 30
               ? `시간당 ${(data.postings.length / (data.totalMinutes / 60)).toFixed(1)}건`
@@ -180,7 +180,7 @@ export default function AlbaPage() {
       <div style={{ ...card, padding: 0, overflowX: "auto", marginBottom: 24 }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 560 }}>
           <thead>
-            <tr style={{ background: "#fafafa", color: "#666" }}>
+            <tr style={{ background: "#fafafa", color: "#555" }}>
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>주차</th>
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>기간 (월~일)</th>
               <th style={{ textAlign: "right", padding: "10px 14px", whiteSpace: "nowrap" }}>근무</th>
@@ -196,14 +196,14 @@ export default function AlbaPage() {
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
                     {w.index}주차{w.isCurrent && <span style={{ marginLeft: 6, fontSize: 11, color: "#582681" }}>이번 주</span>}
                   </td>
-                  <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{fmtDate(w.start)} ~ {fmtDate(w.end)}</td>
+                  <td style={{ padding: "10px 14px", color: "#555", whiteSpace: "nowrap" }}>{fmtDate(w.start)} ~ {fmtDate(w.end)}</td>
                   <td style={{ padding: "10px 14px", textAlign: "right" }}>{w.minutes ? formatMinutes(w.minutes) : "—"}</td>
                   <td style={{ padding: "10px 14px", textAlign: "right" }}>{w.postings || "—"}</td>
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
-                    {w.isFuture ? <span style={{ color: "#bbb" }}>예정</span>
+                    {w.isFuture ? <span style={{ color: "#555" }}>예정</span>
                       : done ? <span style={{ color: "#0f6e56" }}>달성</span>
                       : w.isCurrent ? <span style={{ color: "#582681" }}>{formatMinutes(weeklyTargetMin - w.minutes)} 남음</span>
-                      : data.blockedWeeks?.[w.index] ? <span style={{ color: "#8a8a90" }}>
+                      : data.blockedWeeks?.[w.index] ? <span style={{ color: "#555" }}>
                           미달 {formatMinutes(weeklyTargetMin - w.minutes)} · {data.blockedWeeks[w.index]}
                         </span>
                       : <span style={{ color: "#e74c3c" }}>
@@ -226,7 +226,7 @@ export default function AlbaPage() {
           </button>
         )}
       </div>
-      <p style={{ fontSize: 12, color: "#999", margin: "0 0 10px" }}>
+      <p style={{ fontSize: 12, color: "#555", margin: "0 0 10px" }}>
         관리자 창이 화면에 떠 있는 동안 자동으로 쌓입니다. {ALBA_IDLE_GAP_MIN}분 넘게 조작이 없으면
         마지막 활동 시각에서 끊깁니다.
         {canEdit
@@ -240,7 +240,7 @@ export default function AlbaPage() {
             style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
           <input type="time" value={form.start} onChange={(e) => setForm({ ...form, start: e.target.value })}
             style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
-          <span style={{ color: "#999" }}>~</span>
+          <span style={{ color: "#555" }}>~</span>
           <input type="time" value={form.end} onChange={(e) => setForm({ ...form, end: e.target.value })}
             style={{ height: 36, padding: "0 10px", border: "1px solid #ddd", borderRadius: 8, fontSize: 13 }} />
           <input type="text" placeholder="사유 (선택)" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
@@ -252,7 +252,7 @@ export default function AlbaPage() {
       <div style={{ ...card, padding: 0, overflowX: "auto", marginBottom: 24 }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 560 }}>
           <thead>
-            <tr style={{ background: "#fafafa", color: "#666" }}>
+            <tr style={{ background: "#fafafa", color: "#555" }}>
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>날짜</th>
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>시작~종료</th>
               <th style={{ textAlign: "right", padding: "10px 14px", whiteSpace: "nowrap" }}>시간</th>
@@ -262,7 +262,7 @@ export default function AlbaPage() {
           </thead>
           <tbody>
             {data.sessions.length === 0 && (
-              <tr><td colSpan={canEdit ? 5 : 4} style={{ padding: 20, color: "#999" }}>아직 기록이 없어요.</td></tr>
+              <tr><td colSpan={canEdit ? 5 : 4} style={{ padding: 20, color: "#555" }}>아직 기록이 없어요.</td></tr>
             )}
             {data.sessions.map((s) => (
               <tr key={s.id} style={{ borderTop: "1px solid #f2f2f2" }}>
@@ -270,13 +270,13 @@ export default function AlbaPage() {
                   {fmtDate(s.date)}
                   {s.isRunning && <span style={{ marginLeft: 6, fontSize: 11, color: "#0f6e56" }}>● 진행 중</span>}
                 </td>
-                <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{fmtClock(s.started_at)} ~ {fmtClock(s.ended_at)}</td>
+                <td style={{ padding: "10px 14px", color: "#555", whiteSpace: "nowrap" }}>{fmtClock(s.started_at)} ~ {fmtClock(s.ended_at)}</td>
                 <td style={{ padding: "10px 14px", textAlign: "right" }}>{formatMinutes(s.minutes)}</td>
-                <td style={{ padding: "10px 14px", color: "#888" }}>{s.note || ""}</td>
+                <td style={{ padding: "10px 14px", color: "#555" }}>{s.note || ""}</td>
                 {canEdit && (
                   <td style={{ padding: "10px 6px" }}>
                     <button onClick={() => removeSession(s.id)} title="삭제"
-                      style={{ background: "none", border: "none", cursor: "pointer", color: "#c8c8c8" }}>
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#555" }}>
                       <Trash2 size={15} />
                     </button>
                   </td>
@@ -292,7 +292,7 @@ export default function AlbaPage() {
       <div style={{ ...card, padding: 0, overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 620 }}>
           <thead>
-            <tr style={{ background: "#fafafa", color: "#666" }}>
+            <tr style={{ background: "#fafafa", color: "#555" }}>
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>등록일</th>
               <th style={{ textAlign: "left", padding: "10px 14px", whiteSpace: "nowrap" }}>주차</th>
               <th style={{ textAlign: "left", padding: "10px 14px", minWidth: 220 }}>공고명</th>
@@ -302,19 +302,19 @@ export default function AlbaPage() {
           </thead>
           <tbody>
             {data.postings.length === 0 && (
-              <tr><td colSpan={5} style={{ padding: 20, color: "#999" }}>아직 등록한 공고가 없어요.</td></tr>
+              <tr><td colSpan={5} style={{ padding: 20, color: "#555" }}>아직 등록한 공고가 없어요.</td></tr>
             )}
             {data.postings.map((p) => (
               <tr key={p.id} style={{ borderTop: "1px solid #f2f2f2" }}>
-                <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{fmtDate(p.date)} {fmtClock(p.created_at)}</td>
-                <td style={{ padding: "10px 14px", color: "#666", whiteSpace: "nowrap" }}>{p.week}주차</td>
+                <td style={{ padding: "10px 14px", color: "#555", whiteSpace: "nowrap" }}>{fmtDate(p.date)} {fmtClock(p.created_at)}</td>
+                <td style={{ padding: "10px 14px", color: "#555", whiteSpace: "nowrap" }}>{p.week}주차</td>
                 <td style={{ padding: "10px 14px" }}>
                   <Link href={`/jobs/${p.id}`} target="_blank"
                     style={{ color: "#582681", display: "inline-flex", alignItems: "center", gap: 4 }}>
                     {p.title} <ExternalLink size={12} />
                   </Link>
                 </td>
-                <td style={{ padding: "10px 14px", color: "#666" }}>{p.company_name || "—"}</td>
+                <td style={{ padding: "10px 14px", color: "#555" }}>{p.company_name || "—"}</td>
                 <td style={{ padding: "10px 14px", whiteSpace: "nowrap", color: p.status === "ACTIVE" ? "#0f6e56" : "#999" }}>{p.status}</td>
               </tr>
             ))}

@@ -249,7 +249,7 @@ function AdminJobsPageInner() {
       <div style={{ width: "fit-content", maxWidth: "100%" }}>
       {/* 공고 구분 — 매장/오피스 라디오 (fit-content 래퍼 안이라 gap이 안 먹어 marginBottom으로 간격 확보) */}
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
-        <span style={{ fontSize: 14, color: "#777" }}>공고 구분</span>
+        <span style={{ fontSize: 14, color: "#555" }}>공고 구분</span>
         {(["전체", "매장", "오피스"] as const).map((opt) => (
           <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: jobGroupFilter === opt ? "#582681" : "#555" }}>
             <input type="radio" name="jobTrack" checked={jobGroupFilter === opt}
@@ -468,9 +468,9 @@ function AdminJobsPageInner() {
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 560, maxHeight: "80vh", overflow: "auto", padding: 20 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <strong style={{ fontSize: 16, color: "#1a1a1a" }}>고용24 가져오기</strong>
+              <strong style={{ fontSize: 16, color: "#555" }}>고용24 가져오기</strong>
               <button type="button" onClick={() => set가져오기열림(false)} aria-label="닫기"
-                style={{ border: "none", background: "none", fontSize: 20, color: "#aaa", cursor: "pointer" }}>×</button>
+                style={{ border: "none", background: "none", fontSize: 20, color: "#555", cursor: "pointer" }}>×</button>
             </div>
             <textarea value={가져오기주소} onChange={(e) => set가져오기주소(e.target.value)}
               rows={4}
@@ -490,13 +490,13 @@ function AdminJobsPageInner() {
                 ) : (
                   <>
                     <p style={{ margin: "0 0 8px" }}>
-                      공고 {가져온결과.본것}건을 보고 <strong style={{ color: "#1a1a1a" }}>{가져온결과.담음.length}건</strong>을 임시저장에 담았습니다.
+                      공고 {가져온결과.본것}건을 보고 <strong style={{ color: "#555" }}>{가져온결과.담음.length}건</strong>을 임시저장에 담았습니다.
                     </p>
                     {가져온결과.담음.map((x: any, i: number) => (
-                      <div key={`y${i}`} style={{ color: "#1a1a1a" }}>· {x.company} — {x.title}</div>
+                      <div key={`y${i}`} style={{ color: "#555" }}>· {x.company} — {x.title}</div>
                     ))}
                     {가져온결과.건너뜀.length > 0 && (
-                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f2f2f4", color: "#9a9aa0" }}>
+                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f2f2f4", color: "#555" }}>
                         {가져온결과.건너뜀.map((x: any, i: number) => (
                           <div key={`n${i}`}>· {x.title} — {x.사유}</div>
                         ))}

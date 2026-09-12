@@ -251,7 +251,7 @@ export default function AdminStoriesPage() {
 
           {checked.length > 0 && (
             <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderBottom: "1px solid #f2f2f4" }}>
-              <span style={{ fontSize: 13, color: "#9a9aa0" }}>{checked.length}건</span>
+              <span style={{ fontSize: 13, color: "#555" }}>{checked.length}건</span>
               <button onClick={() => bulkChangeStatus("hidden")} disabled={busy} className="admin-secondary-btn" style={{ marginLeft: "auto" }}>숨김</button>
               <button onClick={() => bulkChangeStatus("published")} disabled={busy} className="admin-secondary-btn">복구</button>
               <button onClick={handleBulkDelete} disabled={busy}
@@ -276,10 +276,10 @@ export default function AdminStoriesPage() {
                   <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
                   <button type="button" onClick={() => openExpand(p)}
                     style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
-                    <div style={{ fontSize: 14.5, color: "#1a1a1a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {p.title || p.body?.slice(0, 40) || "(제목 없음)"}
                     </div>
-                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 2 }}>
+                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 2 }}>
                       {p.category}
                       {" · "}{p.source === "ai" ? "AI" : p.source === "user_story" ? "사용자" : "운영자"}
                       {" · "}{STATUS_LABELS[p.status] || p.status}
@@ -358,9 +358,9 @@ export default function AdminStoriesPage() {
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 640, padding: 20 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <strong style={{ fontSize: 16, color: "#1a1a1a" }}>발제 글</strong>
+              <strong style={{ fontSize: 16, color: "#555" }}>발제 글</strong>
               <button type="button" onClick={() => setWriting(false)} aria-label="닫기"
-                style={{ border: "none", background: "none", fontSize: 20, color: "#aaa", cursor: "pointer" }}>×</button>
+                style={{ border: "none", background: "none", fontSize: 20, color: "#555", cursor: "pointer" }}>×</button>
             </div>
             <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
               {CATEGORIES.map((c) => (

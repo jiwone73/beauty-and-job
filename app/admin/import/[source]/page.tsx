@@ -134,7 +134,7 @@ export default function ImportListPage() {
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span>
             {이름[source]} <strong>{목록.length}</strong>건
-            <span style={{ color: "#9a9aa0", marginLeft: 10 }}>마지막 업데이트 {시각(마지막)}</span>
+            <span style={{ color: "#555", marginLeft: 10 }}>마지막 업데이트 {시각(마지막)}</span>
           </span>
           {/* 고용24는 「업데이트」가 없다. 조건을 건 목록이 로그인 뒤에 있어 우리가 받아 올 수
               있는 건 조건 없는 최신순뿐인데, 거기 뷰티는 이백 건에 한둘이라 눌러 봐야
@@ -149,7 +149,7 @@ export default function ImportListPage() {
         {결과 && (
           <div style={{ padding: "10px 16px", borderBottom: "1px solid #f2f2f4", fontSize: 13.5, color: 결과.오류 ? "#c0392b" : "#555" }}>
             {결과.오류 ? 결과.오류 : (
-              <>공고 {결과.본것}건을 보고 <strong style={{ color: "#1a1a1a" }}>{결과.담음}건</strong>을 새로 받았습니다
+              <>공고 {결과.본것}건을 보고 <strong style={{ color: "#555" }}>{결과.담음}건</strong>을 새로 받았습니다
                 {결과.뷰티아님 ? ` · 뷰티 아님 ${결과.뷰티아님}건` : ""}
                 {결과.연락처없음 ? ` · 연락처 없어 뺀 것 ${결과.연락처없음}건` : ""}
                 {결과.마감 ? ` · 마감돼 지운 것 ${결과.마감}건` : ""}
@@ -170,10 +170,10 @@ export default function ImportListPage() {
                 ⇱ 주소 모으기
               </a>
             </div>
-            <ol style={{ margin: "0 0 12px", padding: "0 0 0 18px", fontSize: 13, color: "#6f6f75", lineHeight: 1.9 }}>
-              <li><b style={{ color: "#1a1a1a" }}>⇱ 주소 모으기</b> 버튼을 즐겨찾기 줄로 끌어다 놓으세요. <span style={{ color: "#9a9aa0" }}>(처음 1회만)</span></li>
-              <li><b style={{ color: "#1a1a1a" }}>고용24 목록 열기</b> 버튼을 누르면 고용24 페이지 새창이 열리며, 열린 새창에서 <b style={{ color: "#1a1a1a" }}>주소 모으기</b> 버튼을 클릭하시면 전체 목록이 복사됩니다.</li>
-              <li>아래 박스에 붙여넣기 한 후 <b style={{ color: "#1a1a1a" }}>붙여넣은 주소로 가져오기</b> 버튼을 누르면 공고 목록이 업데이트됩니다.</li>
+            <ol style={{ margin: "0 0 12px", padding: "0 0 0 18px", fontSize: 13, color: "#555", lineHeight: 1.9 }}>
+              <li><b style={{ color: "#555" }}>⇱ 주소 모으기</b> 버튼을 즐겨찾기 줄로 끌어다 놓으세요. <span style={{ color: "#555" }}>(처음 1회만)</span></li>
+              <li><b style={{ color: "#555" }}>고용24 목록 열기</b> 버튼을 누르면 고용24 페이지 새창이 열리며, 열린 새창에서 <b style={{ color: "#555" }}>주소 모으기</b> 버튼을 클릭하시면 전체 목록이 복사됩니다.</li>
+              <li>아래 박스에 붙여넣기 한 후 <b style={{ color: "#555" }}>붙여넣은 주소로 가져오기</b> 버튼을 누르면 공고 목록이 업데이트됩니다.</li>
             </ol>
             <textarea value={붙임} onChange={(e) => set붙임(e.target.value)} rows={3}
               placeholder={"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\nhttps://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo=…\n\n고용24 목록에서 복사한 공고 주소를 이렇게 여러 줄 붙여넣으세요"}
@@ -214,7 +214,7 @@ export default function ImportListPage() {
                       onClick={() => 열기(x)}>
                       {x.title}
                     </span>
-                    <div style={{ fontSize: 12.5, color: "#9a9aa0", marginTop: 3 }}>{x.categories.join(" · ")}</div>
+                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>{x.categories.join(" · ")}</div>
                   </td>
                   <td>{x.company || "-"}</td>
                   <td>{x.region || "-"}</td>

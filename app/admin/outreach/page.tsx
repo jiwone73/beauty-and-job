@@ -320,7 +320,7 @@ export default function AdminOutreachPage() {
     setSelected(allVisibleSelected ? new Set() : new Set(items.map((r) => r.id)));
 
   // 스타일
-  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#6b6473", fontWeight: 400, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#f7f7f8" };
+  const th: React.CSSProperties = { padding: "8px 8px", fontSize: 13, color: "#555", fontWeight: 400, textAlign: "left", whiteSpace: "nowrap", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 2, background: "#f7f7f8" };
   const td: React.CSSProperties = { padding: "6px 8px", fontSize: 14, verticalAlign: "top", borderBottom: "1px solid #f7f7f8" };
   const inp: React.CSSProperties = { width: "100%", minWidth: 90, padding: "5px 7px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13.5, boxSizing: "border-box" };
   const clamp2: React.CSSProperties = { display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", textOverflow: "ellipsis" };
@@ -348,7 +348,7 @@ export default function AdminOutreachPage() {
       <div style={{ padding: "4px 4px 40px" }}>
         {/* 제목은 레이아웃이 그린다(.admin-page-title · 가운데) — 여기선 건수만 적는다. */}
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
-          <span style={{ fontSize: 14, color: "#9a92a6" }}>
+          <span style={{ fontSize: 14, color: "#555" }}>
             활성공고 총 {totalActive.toLocaleString()}건
             {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 오피스 {globalSO.office.toLocaleString()})</span>}
             {" · "}업체 {totalCount}개
@@ -406,7 +406,7 @@ export default function AdminOutreachPage() {
 
         {/* 탭별 총 활성공고 건수(+중복) — 테이블 위 왼쪽 */}
         <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 2px 8px" }}>
-          <span style={{ fontSize: 14, color: "#2b2533", fontWeight: 600 }}>
+          <span style={{ fontSize: 14, color: "#555", fontWeight: 600 }}>
             {group} · 활성공고 <span style={{ color: PURPLE }}>{tabStats.total.toLocaleString()}</span>건
           </span>
           {tabStats.dup > 0 && <span style={{ fontSize: 12.5, color: "#c2410c" }} title="같은 브랜드·지점이 여러 번 잡힌 추정 중복 건수(제목의 지점명으로 매칭)">· 중복(추정) {tabStats.dup.toLocaleString()}건</span>}
@@ -421,7 +421,7 @@ export default function AdminOutreachPage() {
                   <input type="checkbox" checked={allVisibleSelected} onChange={toggleAll} />
                 </th>
                 <th style={{ ...th, width: 34 }}>#</th>
-                <th style={{ ...th, minWidth: 230 }}>브랜드명 <span style={{ fontWeight: 400, color: "#b7b0c0" }}>(클릭=홈페이지)</span></th>
+                <th style={{ ...th, minWidth: 230 }}>브랜드명 <span style={{ fontWeight: 400, color: "#555" }}>(클릭=홈페이지)</span></th>
                 <th style={{ ...th, width: 110 }}>채용유무</th>
                 <th style={{ ...th, minWidth: 130 }}>총 활성공고</th>
                 <th style={{ ...th, width: 120 }}>뷰티워크 공고</th>
@@ -432,9 +432,9 @@ export default function AdminOutreachPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} style={{ ...td, padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={9} style={{ ...td, padding: 30, color: "#555" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={9} style={{ ...td, padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={9} style={{ ...td, padding: 30, color: "#555" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row, rowIdx) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
@@ -446,7 +446,7 @@ export default function AdminOutreachPage() {
                   <Fragment key={row.id}>
                     <tr style={{ background: selected.has(row.id) ? "#f7f7f8" : "#fff" }}>
                       <td style={td}><input type="checkbox" checked={selected.has(row.id)} onChange={() => toggleSel(row.id)} /></td>
-                      <td style={{ ...td, color: "#9a92a6" }}>{rowIdx + 1}</td>
+                      <td style={{ ...td, color: "#555" }}>{rowIdx + 1}</td>
                       {/* 브랜드명 = 홈페이지 링크, ✎로 URL 편집 */}
                       <td style={td}>
                         {editHomeId === row.id ? (
@@ -462,13 +462,13 @@ export default function AdminOutreachPage() {
                                 {row.brand_name} <span style={{ fontSize: 12 }}>↗</span>
                               </a>
                             ) : (
-                              <span style={{ fontWeight: 400, color: "#2b2533" }}>{row.brand_name}</span>
+                              <span style={{ fontWeight: 400, color: "#555" }}>{row.brand_name}</span>
                             )}
                             <button onClick={() => setEditHomeId(row.id)} title={home ? "홈페이지 수정" : "홈페이지 링크 추가"}
-                              style={{ border: "none", background: "none", cursor: "pointer", color: "#b7b0c0", fontSize: 13, padding: 0 }}>✎</button>
+                              style={{ border: "none", background: "none", cursor: "pointer", color: "#555", fontSize: 13, padding: 0 }}>✎</button>
                           </div>
                         )}
-                        {subtitle && <div style={{ fontSize: 12.5, color: "#9a92a6", marginTop: 2, maxWidth: 220 }}>{subtitle}</div>}
+                        {subtitle && <div style={{ fontSize: 12.5, color: "#555", marginTop: 2, maxWidth: 220 }}>{subtitle}</div>}
                         {/* 인스타 — 매장 구인글은 채용 사이트보다 여기에 먼저 올라온다.
                             한 번 적어 두면 다음부터 클릭 한 번으로 그 계정으로 간다. */}
                         {editInstaId === row.id ? (
@@ -485,10 +485,10 @@ export default function AdminOutreachPage() {
                                 @{insta} <span style={{ fontSize: 11 }}>↗</span>
                               </a>
                             ) : (
-                              <span style={{ fontSize: 12.5, color: "#e3e3e6" }}>인스타 없음</span>
+                              <span style={{ fontSize: 12.5, color: "#555" }}>인스타 없음</span>
                             )}
                             <button onClick={() => setEditInstaId(row.id)} title={insta ? "인스타 수정" : "인스타 계정 추가"}
-                              style={{ border: "none", background: "none", cursor: "pointer", color: "#e3e3e6", fontSize: 12, padding: 0 }}>✎</button>
+                              style={{ border: "none", background: "none", cursor: "pointer", color: "#555", fontSize: 12, padding: 0 }}>✎</button>
                           </div>
                         )}
                       </td>
@@ -520,14 +520,14 @@ export default function AdminOutreachPage() {
                               )}
                             </div>
                           );
-                        })() : <span style={{ color: "#c8c8ce" }}>—</span>}
+                        })() : <span style={{ color: "#555" }}>—</span>}
                       </td>
                       {/* 뷰티워크 공고 — 이 브랜드 공고 중 우리가 이미 올린 것.
                           누르면 채용공고 목록이 그 브랜드로 걸러진 채 열린다. */}
                       <td style={td}>
                         {(() => {
                           const 올린수 = (row.found_jobs || []).filter((j) => isRegistered(j.url)).length;
-                          if (!올린수) return <span style={{ color: "#c8c8ce" }}>—</span>;
+                          if (!올린수) return <span style={{ color: "#555" }}>—</span>;
                           return (
                             <a href={`/admin/jobs?search=${encodeURIComponent(row.brand_name)}`}
                               style={{ ...badge(PURPLE), textDecoration: "none" }}>
@@ -573,8 +573,8 @@ export default function AdminOutreachPage() {
                       return (
                       <tr>
                         <td style={{ ...td, background: "#f7f7f8" }} colSpan={9}>
-                          <div style={{ fontSize: 13, color: "#6b6473", marginBottom: 6 }}>
-                            조회된 활성 공고 <span style={{ color: "#9a92a6" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
+                          <div style={{ fontSize: 13, color: "#555", marginBottom: 6 }}>
+                            조회된 활성 공고 <span style={{ color: "#555" }}>· 라디오 선택 후 상단 &quot;선택 공고 등록&quot;</span>
                           </div>
                           {/* 사이트별 탭 */}
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
@@ -597,7 +597,7 @@ export default function AdminOutreachPage() {
                                   <span style={{ ...badge("#c2410c"), flexShrink: 0, fontWeight: 700 }}
                                     title={`${jb.first_seen}에 새로 올라온 공고예요`}>NEW</span>
                                 )}
-                                {jb.date && <span style={{ fontSize: 12.5, color: "#9a92a6", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{jb.date}</span>}
+                                {jb.date && <span style={{ fontSize: 12.5, color: "#555", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{jb.date}</span>}
                                 {/* 이미 올린 공고는 흐리게 — 남은 일감만 눈에 들어오게 한다 */}
                                 <span style={{ color: isRegistered(jb.url) ? "#bdb8c4" : "#2b2533" }}>{jb.title}</span>
                                 {isRegistered(jb.url) && (
