@@ -5785,7 +5785,7 @@ div:has(> table.admin-table),
   padding: 12px 16px;
   font-size: 16px;
   font-weight: 400;
-  color: #888;
+  color: #555;
   text-align: left;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
@@ -5816,7 +5816,7 @@ div:has(> table.admin-table),
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.admin-td-date { color: #888 !important; white-space: nowrap; }
+.admin-td-date { color: #555 !important; white-space: nowrap; }
 /* 관리자 테이블 내용 폰트 통일(평체) */
 .admin-table td, .admin-table td * { font-weight: 400 !important; }
 /* 이름만 예외 — 표를 훑을 때 잡고 가는 값이다. 위 규칙이 !important 라 여기도 같이 건다.
@@ -15370,7 +15370,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table th.c-time { color: #555; }
 /* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
 .prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
-  font-family: inherit; font-size: 12.5px; color: #9a9aa3; cursor: pointer;
+  font-family: inherit; font-size: 12.5px; color: #555; cursor: pointer;
   text-decoration: underline; text-decoration-color: #dcdce0; text-underline-offset: 3px; }
 .prop-cancel:hover { color: #c0504d; }
 /* 테두리 없이 글자로 — 공고 관리의 「수정 | 마감」과 같은 꼴이다. */
@@ -15426,7 +15426,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   text-decoration: underline; text-decoration-color: #a5a5ae; text-underline-offset: 3px; }
 .c-recent button:hover { text-decoration-color: currentColor; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
-  color: #9a9aa3; white-space: nowrap; }
+  color: #555; white-space: nowrap; }
 
 .prop-act {
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 7px;
@@ -15584,7 +15584,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
   font-weight: 400; color: var(--color-text); line-height: 1.35; }
 .prop-whoinfo em { display: block; min-height: 16px; font-style: normal;
-  font-weight: 400; color: #8a8a93; line-height: 1.35; }
+  font-weight: 400; color: #555; line-height: 1.35; }
 /* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
    낱말 가운데서 끊기지 않게 keep-all 을 준다. */
 /* 직군은 세 줄까지 쓴다 — 한 줄로 묶었더니 「속눈썹·반영구 아티스트」가 잘려

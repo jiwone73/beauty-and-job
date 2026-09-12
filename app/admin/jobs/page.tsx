@@ -377,7 +377,7 @@ function AdminJobsPageInner() {
                       {job.source_url && (
                         <a href={job.source_url} target="_blank" rel="noopener noreferrer"
                           title="원문 보기" onClick={(e) => e.stopPropagation()}
-                          style={{ fontSize: 11, color: "#9a92a6", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
+                          style={{ fontSize: 11, color: "#555", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
                           원문 ↗
                         </a>
                       )}
@@ -427,7 +427,7 @@ function AdminJobsPageInner() {
                       const isAlways = label === "상시";
                       return (
                         <span style={{
-                          color: isClosed ? "#bbb" : isAlways ? "#888" : "#582681",
+                          color: isClosed || isAlways ? "#555" : "#582681",
                           fontWeight: isClosed || isAlways ? 400 : 600,
                         }}>{label}</span>
                       );
