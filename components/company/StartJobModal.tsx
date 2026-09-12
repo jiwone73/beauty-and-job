@@ -71,9 +71,9 @@ export default function StartJobModal({
         style={{ background: "#fff", borderRadius: 14, width: "100%", maxWidth: 520, maxHeight: "80vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
         <div style={{ display: "flex", alignItems: "center", padding: "18px 20px 14px" }}>
-          <h2 style={{ margin: 0, marginRight: "auto", fontSize: 17, fontWeight: 600, color: "#222" }}>이전 공고 불러오기</h2>
+          <h2 style={{ margin: 0, marginRight: "auto", fontSize: 17, fontWeight: 600, color: "#555" }}>이전 공고 불러오기</h2>
           <button type="button" onClick={onClose} aria-label="닫기"
-            style={{ border: "none", background: "transparent", cursor: "pointer", color: "#999", padding: 4, display: "flex" }}>
+            style={{ border: "none", background: "transparent", cursor: "pointer", color: "#555", padding: 4, display: "flex" }}>
             <X size={20} />
           </button>
         </div>
@@ -81,14 +81,14 @@ export default function StartJobModal({
         <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 4px" }}>
           {임시저장.length > 0 && (
             <div style={{ marginBottom: 18 }}>
-              <div style={{ fontSize: 13, color: "#999", marginBottom: 8 }}>임시저장 {임시저장.length}</div>
+              <div style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>임시저장 {임시저장.length}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {임시저장.map((j) => (
                   <button key={j.id} type="button" style={{ ...줄, textAlign: "left", width: "100%" }}
                     onClick={() => onPick(`/company/dashboard/jobs/new?id=${j.id}`)}>
                     <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#555", lineHeight: 1.45 }}>
                       {j.title || "제목 없음"}
-                      <span style={{ display: "block", fontSize: 12.5, color: "#aaa", marginTop: 3 }}>{날짜(j.created_at)}</span>
+                      <span style={{ display: "block", fontSize: 12.5, color: "#555", marginTop: 3 }}>{날짜(j.created_at)}</span>
                     </span>
                     <span style={뱃지("#582681", "#f7f7f8")}>이어서 작성</span>
                   </button>
@@ -99,7 +99,7 @@ export default function StartJobModal({
 
           {지난공고.length > 0 && (
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 13, color: "#999", marginBottom: 8 }}>최근 등록한 공고 {지난공고.length}</div>
+              <div style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>최근 등록한 공고 {지난공고.length}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {지난공고.map((j) => {
                   const 고름 = 고른것 === j.id;
@@ -111,7 +111,7 @@ export default function StartJobModal({
                         style={{ marginTop: 3, accentColor: "#582681", flexShrink: 0 }} />
                       <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#555", lineHeight: 1.45 }}>
                         {j.title || "제목 없음"}
-                        <span style={{ display: "block", fontSize: 12.5, color: "#aaa", marginTop: 3 }}>
+                        <span style={{ display: "block", fontSize: 12.5, color: "#555", marginTop: 3 }}>
                           {j.deadline ? `마감일 ${날짜(j.deadline)}` : "상시채용"}
                         </span>
                       </span>

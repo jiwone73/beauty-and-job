@@ -609,7 +609,7 @@ export default function TalentPage() {
       {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. 매장·본사는 제 유형으로 묶인다. */}
       {companyType === "BOTH" && isMobile && view === "search" && (
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
-          <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
+          <span style={{ fontSize: 14, color: "#555" }}>인재 구분</span>
           {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
             <label key={tab} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: activeTab === tab ? "#582681" : "#555" }}>
               <input type="radio" name="talentTrackM" checked={activeTab === tab}
@@ -633,14 +633,14 @@ export default function TalentPage() {
               border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, outline: "none",
             }}
           />
-          <Search size={18} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", color: "#aaa", pointerEvents: "none" }} />
+          <Search size={18} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", color: "#555", pointerEvents: "none" }} />
         </div>
       )}
 
       {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. */}
       {companyType === "BOTH" && !isMobile && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-          <span style={{ fontSize: 14, color: "#777" }}>인재 구분</span>
+          <span style={{ fontSize: 14, color: "#555" }}>인재 구분</span>
           <div style={{ display: "inline-flex", background: "#efeff1", borderRadius: 10, padding: 3 }}>
             {(["STORE", "OFFICE"] as JobTab[]).map((tab) => (
               <button key={tab} onClick={() => handleTabSwitch(tab)}
@@ -664,7 +664,7 @@ export default function TalentPage() {
         <>
           <style>{`
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-            .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
+            .co-mbar-count { font-size: 13.5px; color: #555; line-height: 1; position: relative; top: 2px; }
             .co-mbar-count strong { color: #555; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; }
@@ -675,14 +675,14 @@ export default function TalentPage() {
             .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
             .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
             .co-sheet-title { font-size: 17px; font-weight: 400; color: #555; }
-            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; font-weight: 400; cursor: pointer; }
+            .co-sheet-reset { background: none; border: none; color: #555; font-size: 13.5px; font-weight: 400; cursor: pointer; }
             .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
             .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; font-weight: 400; cursor: pointer; }
             .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
             .co-fsel-btn { display: flex; align-items: center; gap: 6px; width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; font-weight: 400; cursor: pointer; text-align: left; }
-            .co-fsel-btn .ph { color: #aaa; }
+            .co-fsel-btn .ph { color: #555; }
             .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
             .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
             .co-selbar-count { font-size: 14px; font-weight: 600; color: #555; }
@@ -822,7 +822,7 @@ export default function TalentPage() {
 
       {/* 결과 수 (데스크톱 — 모바일은 컨트롤 바에 표시) */}
       {!isMobile && (
-        <div style={{ fontSize: 14, color: "#888", margin: "0 0 8px" }}>총 <strong style={{ color: "#555" }}>{total}</strong>명</div>
+        <div style={{ fontSize: 14, color: "#555", margin: "0 0 8px" }}>총 <strong style={{ color: "#555" }}>{total}</strong>명</div>
       )}
 
       {/* 리스트 */}
@@ -847,8 +847,8 @@ export default function TalentPage() {
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
             .co-li-name { font-size: 15.5px; font-weight: 600; color: #555; flex-shrink: 0; }
-            .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
+            .co-li-ageg { font-size: 12.5px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-meta2 { font-size: 12.5px; color: #555; margin-top: 2px; }
             .co-li-job { font-size: 15.5px; color: #582681; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           `}</style>
           {talents.map((t) => {
@@ -877,7 +877,7 @@ export default function TalentPage() {
                           onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
                           {t.scrapped
                             ? <BookmarkCheck size={19} style={{ color: "#582681" }} />
-                            : <Bookmark size={19} style={{ color: "#c8c8c8" }} />}
+                            : <Bookmark size={19} style={{ color: "#555" }} />}
                         </button>
                       </div>
                       <div className="co-li-meta2">{meta2}</div>
@@ -885,7 +885,7 @@ export default function TalentPage() {
                   </div>
                   {t.proposedAt || t.interestedAt ? (
                     <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
-                      style={{ display: "inline-block", marginTop: 10, fontSize: 13, color: "#a0a0a6", textDecoration: "none" }}>
+                      style={{ display: "inline-block", marginTop: 10, fontSize: 13, color: "#555", textDecoration: "none" }}>
                       제안완료
                     </Link>
                   ) : (
@@ -941,7 +941,7 @@ export default function TalentPage() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <strong style={{ fontSize: 16 }}>{proposeTarget.name} 님에게 제안하기</strong>
               <button type="button" onClick={() => !proposeSending && setProposeTarget(null)}
-                style={{ border: "none", background: "none", cursor: "pointer", color: "#999", display: "flex" }}>
+                style={{ border: "none", background: "none", cursor: "pointer", color: "#555", display: "flex" }}>
                 <X size={20} />
               </button>
             </div>
@@ -949,8 +949,8 @@ export default function TalentPage() {
             {/* 이미 보낸 사람이면 먼저 알려 준다 — 모르고 또 보내면 스팸이 된다 */}
             {proposeTarget.proposedAt && (
               <div style={{ display: "flex", gap: 7, alignItems: "flex-start", marginBottom: 14, padding: "10px 12px",
-                background: "#f7f7f8", borderRadius: 8, fontSize: 12.5, color: "#666", lineHeight: 1.55 }}>
-                <Send size={13} style={{ marginTop: 2, flexShrink: 0, color: "#999" }} />
+                background: "#f7f7f8", borderRadius: 8, fontSize: 12.5, color: "#555", lineHeight: 1.55 }}>
+                <Send size={13} style={{ marginTop: 2, flexShrink: 0, color: "#555" }} />
                 <span>{new Date(proposeTarget.proposedAt).toLocaleDateString("ko-KR")}에 이미 제안을 보냈어요.</span>
               </div>
             )}
@@ -960,9 +960,9 @@ export default function TalentPage() {
                 사정으로) 말하고, 등록 화면까지 데려다준다. */}
             {!proposeJobsLoading && proposeJobs.length === 0 ? (
               <div style={{ padding: "18px 16px", background: "#f9f9fa", borderRadius: 10, textAlign: "center" }}>
-                <Lock size={20} style={{ color: "#b4b4b9" }} />
-                <p style={{ fontSize: 14.5, color: "#2b2b2b", margin: "8px 0 6px" }}>제안하려면 공고가 필요해요</p>
-                <p style={{ fontSize: 13, color: "#888", margin: "0 0 14px", lineHeight: 1.6 }}>
+                <Lock size={20} style={{ color: "#555" }} />
+                <p style={{ fontSize: 14.5, color: "#555", margin: "8px 0 6px" }}>제안하려면 공고가 필요해요</p>
+                <p style={{ fontSize: 13, color: "#555", margin: "0 0 14px", lineHeight: 1.6 }}>
                   받는 분이 근무지·급여·근무형태를 봐야<br />지원할지 판단할 수 있어요.
                 </p>
                 <button type="button"
@@ -974,9 +974,9 @@ export default function TalentPage() {
               </div>
             ) : (
             <>
-            <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>제안할 공고</label>
+            <label style={{ display: "block", fontSize: 13, color: "#555", marginBottom: 6 }}>제안할 공고</label>
             {proposeJobsLoading ? (
-              <div style={{ fontSize: 13.5, color: "#999", padding: "10px 0" }}>불러오는 중...</div>
+              <div style={{ fontSize: 13.5, color: "#555", padding: "10px 0" }}>불러오는 중...</div>
             ) : (
               <select value={proposeJobId} onChange={(e) => 공고고르기(e.target.value)}
                 style={{ width: "100%", height: 42, borderRadius: 8, border: "1px solid #ddd", padding: "0 10px", fontSize: 14, marginBottom: 10, boxSizing: "border-box" }}>
@@ -993,7 +993,7 @@ export default function TalentPage() {
                 어느 자리를 제안받은 것인지 알 수 없다. */}
             {(고른공고?.positions?.length || 0) > 1 && (
               <>
-                <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>모집분야</label>
+                <label style={{ display: "block", fontSize: 13, color: "#555", marginBottom: 6 }}>모집분야</label>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
                   {고른공고!.positions!.map((pos: any, i: number) => (
                     <button key={i} type="button"
@@ -1011,12 +1011,12 @@ export default function TalentPage() {
             {고른공고 && (
               <div style={{ marginBottom: 지역어긋남 ? 8 : 14, padding: "11px 13px", background: "#faf9fc",
                 border: "1px solid #eee7f5", borderRadius: 9 }}>
-                <p style={{ margin: "0 0 7px", fontSize: 11.5, color: "#a8a0b4" }}>받는 분에게 이렇게 보여요</p>
+                <p style={{ margin: "0 0 7px", fontSize: 11.5, color: "#555" }}>받는 분에게 이렇게 보여요</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px", fontSize: 12.5, color: "#555" }}>
-                  {고른공고.location && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><MapPin size={12} style={{ color: "#b4b4b9" }} />{고른공고.location}</span>}
-                  {고른공고.employment_type && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Briefcase size={12} style={{ color: "#b4b4b9" }} />{고른공고.employment_type}</span>}
+                  {고른공고.location && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><MapPin size={12} style={{ color: "#555" }} />{고른공고.location}</span>}
+                  {고른공고.employment_type && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Briefcase size={12} style={{ color: "#555" }} />{고른공고.employment_type}</span>}
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    <Wallet size={12} style={{ color: "#b4b4b9" }} />
+                    <Wallet size={12} style={{ color: "#555" }} />
                     {고른공고.salary_min ? formatSalaryWon(고른공고.salary_min, 고른공고.salary_type) : "급여 협의"}
                   </span>
                 </div>
@@ -1032,18 +1032,18 @@ export default function TalentPage() {
               </div>
             )}
 
-            <label style={{ display: "block", fontSize: 13, color: "#666", marginBottom: 6 }}>제안 메시지</label>
+            <label style={{ display: "block", fontSize: 13, color: "#555", marginBottom: 6 }}>제안 메시지</label>
             {/* 빈 칸을 두고 '문구 채우기' 버튼을 옆에 달아 뒀더니, 버튼을 못 찾으면
                 결국 빈 칸이었다. 공고를 고르는 순간 채워 두고 고쳐 쓰게 한다. */}
             <textarea value={proposeMessage} onChange={(e) => setProposeMessage(e.target.value.slice(0, 1000))}
               placeholder="보낼 메시지"
               rows={5}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, resize: "vertical", outline: "none", marginBottom: 4 }} />
-            <p style={{ fontSize: 11.5, color: "#bbb", margin: "0 0 16px", textAlign: "right" }}>{proposeMessage.length}/1000</p>
+            <p style={{ fontSize: 11.5, color: "#555", margin: "0 0 16px", textAlign: "right" }}>{proposeMessage.length}/1000</p>
 
             <div style={{ display: "flex", gap: 8 }}>
               <button type="button" onClick={() => setProposeTarget(null)} disabled={proposeSending}
-                style={{ flex: 1, height: 44, borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#666", fontSize: 14, cursor: "pointer" }}>
+                style={{ flex: 1, height: 44, borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#555", fontSize: 14, cursor: "pointer" }}>
                 취소
               </button>
               <button type="button" onClick={sendPropose}

@@ -63,7 +63,7 @@ export default function CompanyPasswordPage() {
               value={form.confirm_password} onChange={고치기("confirm_password")}
               onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }} />
             <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10,
-              fontSize: 15, color: "#888", cursor: "pointer" }}>
+              fontSize: 15, color: "#555", cursor: "pointer" }}>
               <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
               비밀번호 표시
             </label>

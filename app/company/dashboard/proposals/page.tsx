@@ -641,13 +641,13 @@ export default function CompanyProposalsPage() {
       </div>
 
       {로딩 ? (
-        <p style={{ padding: "48px 0", textAlign: "center", color: "#9a9a9a", fontSize: 14 }}>불러오는 중…</p>
+        <p style={{ padding: "48px 0", textAlign: "center", color: "#555", fontSize: 14 }}>불러오는 중…</p>
       ) : 줄들.length === 0 ? (
-        <div style={{ padding: "48px 24px", textAlign: "center", color: "#9a9a9a" }}>
-          <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#bfbfbf", marginBottom: 12 }}>
+        <div style={{ padding: "48px 24px", textAlign: "center", color: "#555" }}>
+          <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#555", marginBottom: 12 }}>
             <Send size={30} />
           </div>
-          <p style={{ fontSize: 15, color: "#3a3a3a", margin: 0 }}>
+          <p style={{ fontSize: 15, color: "#555", margin: 0 }}>
             {목록.length === 0 ? "아직 보낸 제안이 없어요" : "이 상태인 제안이 없어요"}
           </p>
           {목록.length === 0 && (

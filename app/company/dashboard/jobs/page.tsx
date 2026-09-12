@@ -368,7 +368,7 @@ function CompanyJobsContent() {
         <>
           <style>{`
             .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #555; cursor: pointer; }
-            .co-sumtog .chev { transition: transform .2s; color: #999; }
+            .co-sumtog .chev { transition: transform .2s; color: #555; }
             .co-sumtog .chev.open { transform: rotate(180deg); }
             .company-stat-grid.co-4 { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 12px; }
             .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
@@ -378,13 +378,13 @@ function CompanyJobsContent() {
             .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; padding: 0 15px; flex-shrink: 0; border-radius: 9px; border: none; background: #582681; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
             .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
             .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
-            .co-stat .l { font-size: 11px; color: #888; white-space: nowrap; }
-            .co-stat .n { font-size: 17px; line-height: 1; color: #c8c8ce; }
+            .co-stat .l { font-size: 11px; color: #555; white-space: nowrap; }
+            .co-stat .n { font-size: 17px; line-height: 1; color: #555; }
             .co-stat.has .n { color: #582681; }
             .co-stat.on { border-color: #582681; background: #f7f7f8; }
             .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
             .co-mbar-left { display: flex; align-items: center; gap: 11px; }
-            .co-mbar-count { font-size: 13.5px; color: #888; line-height: 1; position: relative; top: 2px; }
+            .co-mbar-count { font-size: 13.5px; color: #555; line-height: 1; position: relative; top: 2px; }
             .co-mbar-count strong { color: #582681; }
             .co-mbar-actions { display: flex; gap: 8px; }
             .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
@@ -397,7 +397,7 @@ function CompanyJobsContent() {
             .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
             .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
             .co-sheet-title { font-size: 17px; font-weight: 400; color: #555; }
-            .co-sheet-reset { background: none; border: none; color: #888; font-size: 13.5px; font-weight: 400; cursor: pointer; }
+            .co-sheet-reset { background: none; border: none; color: #555; font-size: 13.5px; font-weight: 400; cursor: pointer; }
             .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
             .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
             .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -449,14 +449,14 @@ function CompanyJobsContent() {
 
       {/* 로딩 */}
       {loading && (
-        <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
+        <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
           불러오는 중...
         </div>
       )}
 
       {/* 빈 상태 */}
       {!loading && filtered.length === 0 && (
-        <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
+        <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
           {jobs.length === 0
             ? "등록된 공고가 없어요. 첫 공고를 등록해보세요!"
             : "조건에 맞는 공고가 없어요."}
@@ -468,7 +468,7 @@ function CompanyJobsContent() {
         <div className="co-list">
           <style>{`
             .co-list { display: flex; flex-direction: column; gap: 10px; }
-            .co-list-meta { font-size: 12.5px; color: #888; padding: 2px 2px 4px; }
+            .co-list-meta { font-size: 12.5px; color: #555; padding: 2px 2px 4px; }
             .co-list-meta strong { color: #582681; }
             .co-row { display: flex; align-items: center; gap: 10px; }
             .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
@@ -479,8 +479,8 @@ function CompanyJobsContent() {
             .co-li-r1r { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
             .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
             .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #582681; background: #fff; color: #582681; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
-            .co-closebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ddd; background: #fff; color: #666; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
-            .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #777; }
+            .co-closebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ddd; background: #fff; color: #555; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+            .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #555; }
             .co-li-r2 b { color: #555; font-weight: 500; }
           `}</style>
           {filtered.map((job) => {
@@ -540,7 +540,7 @@ function CompanyJobsContent() {
       {!loading && !isMobile && (
           <section className="co-pane">
             {!지금공고 ? (
-              <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
+              <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
                 왼쪽에서 공고를 골라 주세요.
               </div>
             ) : (() => {

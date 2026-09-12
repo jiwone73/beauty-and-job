@@ -84,14 +84,14 @@ export default function CompanyNotificationsPage() {
   );
 
   const 묶음제목 = { fontSize: 16, color: "#555", margin: "0 0 4px" } as const;
-  const 묶음설명 = { fontSize: 15, color: "#8a8a90", margin: "0 0 12px", lineHeight: 1.6 } as const;
+  const 묶음설명 = { fontSize: 15, color: "#555", margin: "0 0 12px", lineHeight: 1.6 } as const;
   const 두칸 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } as const;
 
   return (
     <CompanyLayout activePage="notifications">
       <div>
         {loading ? (
-          <p style={{ fontSize: 15, color: "#999", padding: "40px 0", textAlign: "center", margin: 0 }}>불러오는 중…</p>
+          <p style={{ fontSize: 15, color: "#555", padding: "40px 0", textAlign: "center", margin: 0 }}>불러오는 중…</p>
         ) : (
           <>
             <section style={{ marginBottom: 34 }}>

@@ -287,7 +287,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 400; }
           .co-m-notif-item { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 12px 16px; border: none; border-bottom: 1px solid #f5f5f5; background: none; cursor: pointer; }
           .co-m-notif-item.unread { background: #f7f7f8; }
-          .co-m-notif-empty { padding: 28px; text-align: center; color: #aaa; font-size: 13px; }
+          .co-m-notif-empty { padding: 28px; text-align: center; color: #555; font-size: 13px; }
         `}</style>
 
         <header className="co-m-header">
@@ -335,8 +335,8 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
                 notifs.map((n) => (
                   <button key={n.id} className={`co-m-notif-item ${n.is_read ? "" : "unread"}`} onClick={() => handleNotifClick(n)}>
                     <span style={{ fontSize: 13.5, fontWeight: 400, color: "#555" }}>{n.title}</span>
-                    <span style={{ fontSize: 12.5, color: "#777" }}>{n.message}</span>
-                    <span style={{ fontSize: 11, color: "#aaa" }}>{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                    <span style={{ fontSize: 12.5, color: "#555" }}>{n.message}</span>
+                    <span style={{ fontSize: 11, color: "#555" }}>{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
                   </button>
                 ))
               )}

@@ -112,7 +112,7 @@ export default function ApplicationModal({
               <Printer size={20} />
             </button>
             <button onClick={onClose} title="닫기"
-              style={{ display: "inline-flex", padding: 4, border: "none", background: "none", color: "#888", cursor: "pointer" }}>
+              style={{ display: "inline-flex", padding: 4, border: "none", background: "none", color: "#555", cursor: "pointer" }}>
               <X size={20} />
             </button>
           </div>

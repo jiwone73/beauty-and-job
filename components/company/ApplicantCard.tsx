@@ -165,7 +165,7 @@ export default function ApplicantCard({
               className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
               {(a as any).scrapped
                 ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-                : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+                : <Bookmark size={18} style={{ color: "#555" }} />}
             </button>
           </div>
         )}

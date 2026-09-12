@@ -359,7 +359,7 @@ export default function CompanySettingsPage() {
   if (loading) {
     return (
       <CompanyLayout activePage="settings">
-        <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#888" }}>
+        <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
           불러오는 중...
         </div>
       </CompanyLayout>
@@ -415,7 +415,7 @@ export default function CompanySettingsPage() {
                           /* 빈 칸이 곧 올리기 단추다. 무엇을 올리는 자리인지만 적고,
                              누르면 된다는 신호는 아래 연필 단추가 맡는다. */
                           <span style={{position:"absolute", inset:0, display:"flex", flexDirection:"column",
-                            alignItems:"center", justifyContent:"center", gap:2, color:"#a99bbd"}}>
+                            alignItems:"center", justifyContent:"center", gap:2, color:"#555"}}>
                             {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
                               <>
                                 {/* 칸 이름이 '썸네일' 이라 말하니, 여기서는 무엇을 올리는지만 */}
@@ -447,7 +447,7 @@ export default function CompanySettingsPage() {
                           해서 글자 칸을 얇게 잡았다 — 여기 여백을 키우면 아래끝이 어긋난다. */}
                       <div className="jobcard-body" style={{padding:"3px 6px 4px"}}>
                         <p className="jobcard-title" style={{fontSize:9.5, fontWeight:500,
-                          color:"#a99bbd", margin:0, textAlign:"center", lineHeight:1.3}}>
+                          color:"#555", margin:0, textAlign:"center", lineHeight:1.3}}>
                           채용공고
                         </p>
                       </div>
@@ -671,9 +671,9 @@ export default function CompanySettingsPage() {
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 480, height: "min(560px, 85vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #f0f0f0", flexShrink: 0 }}>
-              <span style={{ fontSize: 16, color: "#222" }}>주소 검색</span>
+              <span style={{ fontSize: 16, color: "#555" }}>주소 검색</span>
               <button type="button" onClick={() => setAddrOpen(false)}
-                style={{ border: "none", background: "none", fontSize: 22, lineHeight: 1, color: "#999", cursor: "pointer", padding: "0 4px" }} aria-label="닫기">×</button>
+                style={{ border: "none", background: "none", fontSize: 22, lineHeight: 1, color: "#555", cursor: "pointer", padding: "0 4px" }} aria-label="닫기">×</button>
             </div>
             <div ref={addrBoxRef} style={{ flex: 1, minHeight: 0 }} />
           </div>

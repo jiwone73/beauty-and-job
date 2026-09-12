@@ -399,7 +399,7 @@ function ApplicantsContent() {
                 style={{ background: "none", border: "none", padding: 2, cursor: "pointer", display: "inline-flex", flexShrink: 0 }}>
                 {(a as any).scrapped
                                 ? <BookmarkCheck size={15} style={{ color: "#582681" }} />
-                                : <Bookmark size={15} style={{ color: "#c8c8c8" }} />}
+                                : <Bookmark size={15} style={{ color: "#555" }} />}
               </button>
             );
             return (

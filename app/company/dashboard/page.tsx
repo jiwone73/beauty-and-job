@@ -246,11 +246,11 @@ export default function CompanyDashboard() {
 
 function EmptyState({ icon, message, hint, cta }: { icon: React.ReactNode; message: string; hint?: string; cta?: React.ReactNode }) {
   return (
-    <div style={{ padding: "48px 24px", textAlign: "center", color: "#9a9a9a" }}>
-      <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#bfbfbf", marginBottom: 12 }}>
+    <div style={{ padding: "48px 24px", textAlign: "center", color: "#555" }}>
+      <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#555", marginBottom: 12 }}>
         {icon}
       </div>
-      <p style={{ fontSize: 15, color: "#3a3a3a", fontWeight: 500, margin: 0 }}>{message}</p>
+      <p style={{ fontSize: 15, color: "#555", fontWeight: 500, margin: 0 }}>{message}</p>
       {hint && <p style={{ fontSize: 13, marginTop: 6, marginBottom: 0 }}>{hint}</p>}
       {cta}
     </div>

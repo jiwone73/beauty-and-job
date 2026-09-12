@@ -148,7 +148,7 @@ export default function TalentCard({
                 className="tal-scrap" onClick={스크랩누름}>
                 {t.scrapped
                   ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-                  : <Bookmark size={18} style={{ color: "#c8c8c8" }} />}
+                  : <Bookmark size={18} style={{ color: "#555" }} />}
               </button>
             )}
             {담기열림 && scrapJobs && onScrapJob && (

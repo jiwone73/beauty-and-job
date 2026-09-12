@@ -2489,7 +2489,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 지원 안내: 라벨 + 값 한 줄 */
 .jd-guide-row { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0; font-size: 15px; color: var(--color-text); }
 /* 지원방법 아래 한마디 — 값에 붙이면 방법 이름의 일부처럼 읽힌다. 줄을 내리고 톤을 낮춘다. */
-.jd-guide-note { margin-top: 3px; font-size: 13px; color: #8a8a90; }
+.jd-guide-note { margin-top: 3px; font-size: 13px; color: #555; }
 .jd-guide-label { width: 76px; flex-shrink: 0; color: var(--color-text-mute); white-space: nowrap; }
 /* 채용 담당자 · 채용 절차 2열 배치 */
 .jd-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; align-items: start; }
@@ -5298,7 +5298,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .prop-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
 .prop-meta span { display: inline-flex; align-items: center; gap: 4px; font-size: var(--card-meta); color: var(--card-meta-c); }
-.prop-meta svg { color: #b4b4b9; flex-shrink: 0; }
+.prop-meta svg { color: #555; flex-shrink: 0; }
 /* 내 희망 조건과 겹치는 것 — 기업이 안 써도 붙는다 */
 .prop-match { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
 .prop-match span {
@@ -5316,7 +5316,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   border: 1px solid #e2d9ee; border-radius: 7px; padding: 3px 10px; background: #fff;
 }
 
-.prop-how { font-size: 12px; color: #b4b4b9; }
+.prop-how { font-size: 12px; color: #555; }
 .prop-del {
   position: absolute; top: 14px; right: 14px; border: none; background: none;
   color: #c4c4c9; cursor: pointer; padding: 2px; line-height: 0;
@@ -7316,7 +7316,7 @@ div:has(> table.admin-table),
 .company-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
 .company-logo-info { display: flex; flex-direction: column; gap: 2px; }
 .company-logo-name { font-size: 14px; font-weight: 700; color: #555; }
-.company-logo-category { font-size: 13px; color: #888; }
+.company-logo-category { font-size: 13px; color: #555; }
 .company-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
 .company-nav-item {
   display: flex;
@@ -7345,7 +7345,7 @@ div:has(> table.admin-table),
 }
 /* 채용공고 등록 — '채용공고 관리' 밑에 하위 메뉴로. 아이콘이 없는 만큼
    부모 글자(아이콘 20px+간격 10px=30px) 밑으로 들여써 글자 시작점을 맞춘다. */
-.company-nav-subitem { padding: 8px 12px 8px 42px; font-size: 14.5px; color: #888; }
+.company-nav-subitem { padding: 8px 12px 8px 42px; font-size: 14.5px; color: #555; }
 .company-nav-subitem.active { font-weight: 700; }
 .company-sidebar-bottom { padding: 12px 8px; border-top: 1px solid #f0f0f0; }
 .company-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -7367,7 +7367,7 @@ div:has(> table.admin-table),
   position: relative;
   background: none;
   border: none;
-  color: #666;
+  color: #555;
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -7447,7 +7447,7 @@ div:has(> table.admin-table),
 .company-notif-empty {
   padding: 30px 14px;
   text-align: center;
-  color: #aaa;
+  color: #555;
   font-size: 13px;
   margin: 0;
 }
@@ -7467,8 +7467,8 @@ div:has(> table.admin-table),
 .company-notif-item:hover { background: #f7f7f8; }
 .company-notif-item.unread { background: #f7f7f8; }
 .company-notif-title { font-size: 13px; font-weight: 400; color: #555; }
-.company-notif-msg { font-size: 12px; color: #666; line-height: 1.4; }
-.company-notif-time { font-size: 11px; color: #aaa; margin-top: 2px; }
+.company-notif-msg { font-size: 12px; color: #555; line-height: 1.4; }
+.company-notif-time { font-size: 11px; color: #555; margin-top: 2px; }
 .company-profile { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .company-avatar {
   width: 32px; height: 32px;
@@ -7537,7 +7537,7 @@ div:has(> table.admin-table),
 }
 .company-stat-value { font-size: 18px; font-weight: 700; color: #555; line-height: 1.1; }
 .company-stat-unit { font-size: 12px; font-weight: 500; margin-left: 2px; }
-.company-stat-label { font-size: 12px; color: #888; }
+.company-stat-label { font-size: 12px; color: #555; }
 
 /* 대시보드 그리드 */
 .company-dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -7563,7 +7563,7 @@ div:has(> table.admin-table),
 .company-table { width: auto; max-width: 100%; border-collapse: collapse; }
 .company-table th {
   padding: 12px 16px;
-  font-size: 16px; font-weight: 400; color: #888;
+  font-size: 16px; font-weight: 400; color: #555;
   text-align: center;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
@@ -7583,7 +7583,7 @@ div:has(> table.admin-table),
 .company-table tr:last-child td { border-bottom: none; }
 .company-table tr:hover td { background: #fafafa; }
 .company-td-name { font-weight: 400; color: #555 !important; }
-.company-td-sub { color: #888 !important; white-space: nowrap; }
+.company-td-sub { color: #555 !important; white-space: nowrap; }
 /* 공고명처럼 긴 값은 칸이 모자라면 두 줄까지 감싸고, 넘치면 말줄임(…). 한 줄로 버티며 표를 밀어내지 않는다. */
 .company-table .td-clamp2 {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -7847,7 +7847,7 @@ div:has(> table.admin-table),
 .company-sidebar-toggle {
   background: none;
   border: none;
-  color: #aaa;
+  color: #555;
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
@@ -10014,7 +10014,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 12px;
   margin: 20px 0;
-  color: #bbb;
+  color: #555;
   font-size: 13px;
 }
 .company-wizard-divider::before,
@@ -10061,7 +10061,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-service-list-title {
   font-size: 13px;
-  color: #888;
+  color: #555;
   margin-bottom: 4px;
   text-align: center;
 }
@@ -10075,7 +10075,7 @@ div:has(> table.admin-table),
   border: 1.5px solid #e5e7eb;
   border-radius: 12px;
   text-decoration: none;
-  color: #222;
+  color: #555;
   background: #fff;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -10141,7 +10141,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 12px;
   margin: 20px 0;
-  color: #bbb;
+  color: #555;
   font-size: 13px;
 }
 .company-wizard-divider::before,
@@ -10185,7 +10185,7 @@ div:has(> table.admin-table),
 }
 .company-wizard-service-list-title {
   font-size: 13px;
-  color: #888;
+  color: #555;
   margin-bottom: 4px;
   text-align: center;
 }
@@ -10198,7 +10198,7 @@ div:has(> table.admin-table),
   border: 1.5px solid #e5e7eb;
   border-radius: 12px;
   text-decoration: none;
-  color: #222;
+  color: #555;
   background: #fff;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -10260,7 +10260,7 @@ div:has(> table.admin-table),
   font-size: clamp(26px, 5vw, 40px);
   font-weight: 800;
   line-height: 1.3;
-  color: #111;
+  color: #555;
   margin-bottom: 18px;
 }
 .co-hero-point { color: #582681; }
@@ -10354,12 +10354,12 @@ div:has(> table.admin-table),
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
   text-align: center;
-  color: #111;
+  color: #555;
   margin-bottom: 8px;
 }
 .co-section-sub {
   font-size: 14px;
-  color: #888;
+  color: #555;
   text-align: center;
   margin-bottom: 40px;
 }
@@ -10401,8 +10401,8 @@ div:has(> table.admin-table),
   white-space: nowrap;
 }
 .co-type-icon { color: #582681; margin-bottom: 4px; }
-.co-type-name { font-size: 18px; font-weight: 700; color: #111; }
-.co-type-desc { font-size: 13px; color: #666; line-height: 1.7; }
+.co-type-name { font-size: 18px; font-weight: 700; color: #555; }
+.co-type-desc { font-size: 13px; color: #555; line-height: 1.7; }
 .co-type-list {
   list-style: none;
   padding: 0;
@@ -10470,8 +10470,8 @@ div:has(> table.admin-table),
   width: fit-content;
   letter-spacing: 0.04em;
 }
-.co-service-title { font-size: 14px; font-weight: 700; color: #111; }
-.co-service-desc { font-size: 12px; color: #777; line-height: 1.6; }
+.co-service-title { font-size: 14px; font-weight: 700; color: #555; }
+.co-service-desc { font-size: 12px; color: #555; line-height: 1.6; }
 
 /* ── 좌우 분할 섹션 ── */
 .co-split {
@@ -10506,7 +10506,7 @@ div:has(> table.admin-table),
   display: inline-block;
   font-size: 12px;
   font-weight: 700;
-  color: #888;
+  color: #555;
   background: #f3f4f6;
   padding: 3px 12px;
   border-radius: 20px;
@@ -10517,11 +10517,11 @@ div:has(> table.admin-table),
 .co-split-title {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
-  color: #111;
+  color: #555;
   line-height: 1.35;
   margin-bottom: 12px;
 }
-.co-split-desc { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 16px; }
+.co-split-desc { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 16px; }
 
 .co-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
 .co-job-tag {
@@ -10555,8 +10555,8 @@ div:has(> table.admin-table),
 }
 .co-ad-card:hover { border-color: #a78bfa; box-shadow: 0 4px 16px rgba(124,58,237,0.08); }
 .co-ad-icon { font-size: 26px; margin-bottom: 4px; }
-.co-ad-title { font-size: 14px; font-weight: 700; color: #111; }
-.co-ad-desc { font-size: 12px; color: #777; line-height: 1.6; flex: 1; }
+.co-ad-title { font-size: 14px; font-weight: 700; color: #555; }
+.co-ad-desc { font-size: 12px; color: #555; line-height: 1.6; flex: 1; }
 .co-ad-price {
   font-size: 13px;
   font-weight: 700;
@@ -10588,8 +10588,8 @@ div:has(> table.admin-table),
   color: #f7f7f8;
   line-height: 1;
 }
-.co-step-title { font-size: 15px; font-weight: 700; color: #111; }
-.co-step-desc { font-size: 12px; color: #777; line-height: 1.6; }
+.co-step-title { font-size: 15px; font-weight: 700; color: #555; }
+.co-step-desc { font-size: 12px; color: #555; line-height: 1.6; }
 
 /* ── 요금 안내 ── */
 .co-pricing-grid {
@@ -10613,7 +10613,7 @@ div:has(> table.admin-table),
   border-color: #582681;
   background: #f7f7f8;
 }
-.co-pricing-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+.co-pricing-label { font-size: 13px; color: #555; margin-bottom: 8px; }
 .co-pricing-price { font-size: 18px; font-weight: 800; }
 
 /* ── FAQ ── */
@@ -10639,14 +10639,14 @@ div:has(> table.admin-table),
   align-items: center;
   font-size: 14px;
   font-weight: 600;
-  color: #222;
+  color: #555;
   gap: 12px;
 }
 .co-faq-q svg { flex-shrink: 0; color: #582681; }
 .co-faq-a {
   margin-top: 12px;
   font-size: 13px;
-  color: #666;
+  color: #555;
   line-height: 1.7;
   border-top: 1px solid #f0f0f0;
   padding-top: 12px;
@@ -10690,7 +10690,7 @@ div:has(> table.admin-table),
   font-size: clamp(26px, 5vw, 40px);
   font-weight: 800;
   line-height: 1.3;
-  color: #111;
+  color: #555;
   margin-bottom: 18px;
 }
 .co-hero-point { color: #582681; }
@@ -10784,12 +10784,12 @@ div:has(> table.admin-table),
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
   text-align: center;
-  color: #111;
+  color: #555;
   margin-bottom: 8px;
 }
 .co-section-sub {
   font-size: 14px;
-  color: #888;
+  color: #555;
   text-align: center;
   margin-bottom: 40px;
 }
@@ -10831,8 +10831,8 @@ div:has(> table.admin-table),
   white-space: nowrap;
 }
 .co-type-icon { color: #582681; margin-bottom: 4px; }
-.co-type-name { font-size: 18px; font-weight: 700; color: #111; }
-.co-type-desc { font-size: 13px; color: #666; line-height: 1.7; }
+.co-type-name { font-size: 18px; font-weight: 700; color: #555; }
+.co-type-desc { font-size: 13px; color: #555; line-height: 1.7; }
 .co-type-list {
   list-style: none;
   padding: 0;
@@ -10900,8 +10900,8 @@ div:has(> table.admin-table),
   width: fit-content;
   letter-spacing: 0.04em;
 }
-.co-service-title { font-size: 14px; font-weight: 700; color: #111; }
-.co-service-desc { font-size: 12px; color: #777; line-height: 1.6; }
+.co-service-title { font-size: 14px; font-weight: 700; color: #555; }
+.co-service-desc { font-size: 12px; color: #555; line-height: 1.6; }
 
 /* ── 좌우 분할 섹션 ── */
 .co-split {
@@ -10936,7 +10936,7 @@ div:has(> table.admin-table),
   display: inline-block;
   font-size: 12px;
   font-weight: 700;
-  color: #888;
+  color: #555;
   background: #f3f4f6;
   padding: 3px 12px;
   border-radius: 20px;
@@ -10947,11 +10947,11 @@ div:has(> table.admin-table),
 .co-split-title {
   font-size: clamp(20px, 3vw, 28px);
   font-weight: 800;
-  color: #111;
+  color: #555;
   line-height: 1.35;
   margin-bottom: 12px;
 }
-.co-split-desc { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 16px; }
+.co-split-desc { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 16px; }
 
 .co-tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
 .co-job-tag {
@@ -10985,8 +10985,8 @@ div:has(> table.admin-table),
 }
 .co-ad-card:hover { border-color: #a78bfa; box-shadow: 0 4px 16px rgba(124,58,237,0.08); }
 .co-ad-icon { font-size: 26px; margin-bottom: 4px; }
-.co-ad-title { font-size: 14px; font-weight: 700; color: #111; }
-.co-ad-desc { font-size: 12px; color: #777; line-height: 1.6; flex: 1; }
+.co-ad-title { font-size: 14px; font-weight: 700; color: #555; }
+.co-ad-desc { font-size: 12px; color: #555; line-height: 1.6; flex: 1; }
 .co-ad-price {
   font-size: 13px;
   font-weight: 700;
@@ -11018,8 +11018,8 @@ div:has(> table.admin-table),
   color: #f7f7f8;
   line-height: 1;
 }
-.co-step-title { font-size: 15px; font-weight: 700; color: #111; }
-.co-step-desc { font-size: 12px; color: #777; line-height: 1.6; }
+.co-step-title { font-size: 15px; font-weight: 700; color: #555; }
+.co-step-desc { font-size: 12px; color: #555; line-height: 1.6; }
 
 /* ── 요금 안내 ── */
 .co-pricing-grid {
@@ -11043,7 +11043,7 @@ div:has(> table.admin-table),
   border-color: #582681;
   background: #f7f7f8;
 }
-.co-pricing-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+.co-pricing-label { font-size: 13px; color: #555; margin-bottom: 8px; }
 .co-pricing-price { font-size: 18px; font-weight: 800; }
 
 /* ── FAQ ── */
@@ -11069,14 +11069,14 @@ div:has(> table.admin-table),
   align-items: center;
   font-size: 14px;
   font-weight: 600;
-  color: #222;
+  color: #555;
   gap: 12px;
 }
 .co-faq-q svg { flex-shrink: 0; color: #582681; }
 .co-faq-a {
   margin-top: 12px;
   font-size: 13px;
-  color: #666;
+  color: #555;
   line-height: 1.7;
   border-top: 1px solid #f0f0f0;
   padding-top: 12px;
@@ -11546,10 +11546,10 @@ div:has(> table.admin-table),
 }
 }
 .co-combined-title {
-  font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #111; margin-bottom: 4px;
+  font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: #555; margin-bottom: 4px;
 }
 .co-combined-sub {
-  font-size: 13px; color: #888; margin-bottom: 20px;
+  font-size: 13px; color: #555; margin-bottom: 20px;
 }
 .co-combined-left {
   flex: 1;
@@ -11581,15 +11581,15 @@ div:has(> table.admin-table),
 .co-type-featured-badge { display: none; }
 .co-type-icon { color: #582681; flex-shrink: 0; }
 .co-type-body { flex: 1; min-width: 0; }
-.co-type-name { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 3px; }
-.co-type-desc { font-size: 12px; color: #777; line-height: 1.5; margin-bottom: 6px; }
+.co-type-name { font-size: 15px; font-weight: 700; color: #555; margin-bottom: 3px; }
+.co-type-desc { font-size: 12px; color: #555; line-height: 1.5; margin-bottom: 6px; }
 .co-type-list {
   list-style: none; padding: 0; margin: 0;
   display: flex; flex-direction: column; gap: 3px;
 }
 .co-type-list li {
   display: flex; align-items: center; gap: 5px;
-  font-size: 11px; color: #666;
+  font-size: 11px; color: #555;
 }
 .co-type-list li svg { color: #582681; flex-shrink: 0; }
 .co-type-btn {
@@ -11627,8 +11627,8 @@ div:has(> table.admin-table),
   background: #e5e7eb; margin: 4px 0;
 }
 .co-step-v-content { padding-bottom: 24px; }
-.co-step-v-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 4px; margin-top: 6px; }
-.co-step-v-desc { font-size: 12px; color: #888; line-height: 1.6; }
+.co-step-v-title { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 4px; margin-top: 6px; }
+.co-step-v-desc { font-size: 12px; color: #555; line-height: 1.6; }
 
 /* 광고 섹션 하단 버튼 - 랜딩페이지 색상 일치 */
 .co-cta-product-btn {
@@ -12146,7 +12146,7 @@ div:has(> table.admin-table),
 .co-hero-point { color: #582681 !important; }
 .co-hero-desc, .js-hero-sub {
   font-size: clamp(15px, 3.6vw, 17px) !important;
-  color: #666 !important;
+  color: #555 !important;
   line-height: 1.7 !important;
   margin: 0 !important;
 }
@@ -14100,11 +14100,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    같은 말을 두 번 하고 있었다. 남길 것은 얼마나 왔는지 하나뿐이다. */
 .jp-prog { display: flex; align-items: center; gap: 12px;
   margin: 18px 0 24px; padding: 0 2px; }
-.jp-prog-label { font-size: 13px; color: #8a8a90; flex-shrink: 0; }
+.jp-prog-label { font-size: 13px; color: #555; flex-shrink: 0; }
 .jp-prog-bar { flex: 1; height: 5px; background: #ececf0; border-radius: 3px; overflow: hidden; }
 .jp-prog-bar span { display: block; height: 5px; background: var(--color-primary);
   border-radius: 3px; transition: width .2s; }
-.jp-prog-count { font-size: 13px; color: #8a8a90; flex-shrink: 0;
+.jp-prog-count { font-size: 13px; color: #555; flex-shrink: 0;
   font-variant-numeric: tabular-nums; }
 
 /* 모집분야 ＋ — 이 화면에서 가장 먼저 누르는 것이라 제목보다 크게 세운다.
@@ -14119,11 +14119,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    켜진 것은 밑줄로 말하고, 수는 한 톤 진하게 두어 이름보다 먼저 읽히지 않게 한다. */
 .co-jobtabs { display: flex; gap: 26px; border-bottom: 1px solid #ececf0; margin-bottom: 20px; }
 .co-jobtab { background: none; border: none; font-family: inherit; cursor: pointer;
-  padding: 0 2px 12px; font-size: 15px; color: #8a8a90; display: inline-flex; align-items: center;
+  padding: 0 2px 12px; font-size: 15px; color: #555; display: inline-flex; align-items: center;
   gap: 7px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s; }
 .co-jobtab:hover { color: #555; }
 .co-jobtab.on { color: var(--color-primary); border-bottom-color: var(--color-primary); }
-.co-jobtab-n { font-size: 14px; color: #b0b0b6; font-variant-numeric: tabular-nums; }
+.co-jobtab-n { font-size: 14px; color: #555; font-variant-numeric: tabular-nums; }
 .co-jobtab.on .co-jobtab-n { color: var(--color-primary); }
 
 /* 채용공고 목록 — 표를 성기게.
@@ -14139,7 +14139,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 채용공고 관리 — 공고 카드.
    표에서 카드로 바꾼 이유는 이 화면에서 할 일(수정·복사·마감)이 표에 없었기 때문이다.
    카드 하나가 공고 하나이고, 그 안에 상태·기간·성적·할 일이 다 들어 있다. */
-.co-jc-count { font-size: 13.5px; color: #8a8a90; margin: 0 2px 12px; }
+.co-jc-count { font-size: 13.5px; color: #555; margin: 0 2px 12px; }
 .co-jc-count strong { color: var(--color-primary); font-weight: 400; }
 /* 한 줄에 다 담는다 — 왼쪽은 상태와 제목, 오른쪽은 성적과 할 일.
    아래에 단추 줄을 따로 두면 카드가 두 배로 길어지는데, 정작 가로는 절반이 비어 있었다. */
@@ -14166,7 +14166,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 18px; color: var(--color-text-strong); text-align: left; cursor: pointer; line-height: 1.4;
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .co-jc-title:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
-.co-jc.off .co-jc-title { color: #8a8a90; }
+.co-jc.off .co-jc-title { color: #555; }
 /* 0 은 흐리게 두어 사람이 들어온 공고가 먼저 눈에 들어온다. */
 .co-jc-acts { display: flex; gap: 6px; flex-shrink: 0; }
 /* 선 아래 — 왼쪽에 다시 올리기, 오른쪽 끝에 성적. */
@@ -14174,7 +14174,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
   margin-top: 12px; padding: 14px 0; border-top: 1px solid #f4f4f6; }
 /* 숫자는 늘 보이되 먼저 읽힐 필요는 없다 — 작게, 0 은 더 흐리게. */
-.co-jc-nums { font-size: 12px; color: #a0a0a6; white-space: nowrap;
+.co-jc-nums { font-size: 12px; color: #555; white-space: nowrap;
   font-variant-numeric: tabular-nums; }
 .co-jc-nums b { font-weight: 400; color: #555; }
 .co-jc-nums b.zero { color: #c6c6cb; }
@@ -14203,7 +14203,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-pick-g.open { border-color: var(--color-primary); color: var(--color-primary); }
 .jp-pick-g.on { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
 .jp-pick-g.on:hover { background: var(--color-primary-hover); }
-.jp-pick-g .n { font-size: 11.5px; color: #b8b8be; font-variant-numeric: tabular-nums; }
+.jp-pick-g .n { font-size: 11.5px; color: #555; font-variant-numeric: tabular-nums; }
 .jp-pick-g.on .n { color: rgba(255,255,255,0.7); }
 .jp-pick-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px;
   margin: 8px 0 4px; padding-left: 12px; border-left: 2px solid #f2eff6; }
@@ -14222,7 +14222,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-item { display: block; line-height: 1.35; }
 .jp-job-steps { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
 .jp-step { border: 1px solid #ececf0; border-radius: 7px; padding: 5px 11px; background: #fff;
-  font-family: inherit; font-size: 13px; color: #666; cursor: pointer;
+  font-family: inherit; font-size: 13px; color: #555; cursor: pointer;
   transition: border-color .15s, color .15s; white-space: nowrap; }
 .jp-step:hover { border-color: var(--color-primary); }
 .jp-step.on { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
@@ -14231,17 +14231,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-x:hover { color: var(--color-primary); }
 .jp-job-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 9px 0 2px;
   margin-top: 9px; border-top: 1px solid #f4f4f6; }
-.jp-job-lab { width: 78px; flex-shrink: 0; font-size: 13px; color: #8a8a90; }
+.jp-job-lab { width: 78px; flex-shrink: 0; font-size: 13px; color: #555; }
 /* 인원 — 숫자를 치는 대신 올리고 내린다. 대개 1~2명이라 두어 번 누르면 끝난다. */
 .jp-step-num { display: inline-flex; align-items: center; border: 1px solid #ececf0;
   border-radius: 7px; height: 34px; overflow: hidden; flex-shrink: 0; }
 .jp-step-num button { width: 30px; height: 100%; border: none; background: #fff;
-  font-family: inherit; font-size: 14px; color: #666; cursor: pointer; line-height: 1; }
+  font-family: inherit; font-size: 14px; color: #555; cursor: pointer; line-height: 1; }
 .jp-step-num button:hover:not(:disabled) { background: var(--color-primary); color: #fff; }
 .jp-step-num button:disabled { color: #d8d8dd; cursor: not-allowed; }
 .jp-step-num b { min-width: 26px; text-align: center; font-weight: 400; font-size: 13px;
   font-variant-numeric: tabular-nums; }
-.jp-job-unit { font-size: 13px; color: #8a8a90; margin-right: 8px; }
+.jp-job-unit { font-size: 13px; color: #555; margin-right: 8px; }
 /* 급여 — 형태·금액·기준을 테두리 하나로 묶는다. 따로 떨어진 상자 셋이 어수선했다. */
 .jp-sal { display: inline-flex; align-items: center; height: 34px; border: 1px solid #ececf0;
   border-radius: 8px; overflow: hidden; background: #fff; flex-shrink: 0; }
@@ -14256,7 +14256,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal-amt { display: inline-flex; align-items: baseline; gap: 3px; height: 100%;
   padding: 0 10px; border-left: 1px solid #f0f0f2; }
 .jp-sal-amt input { width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
-.jp-sal-amt em { font-style: normal; font-size: 13px; color: #8a8a90; }
+.jp-sal-amt em { font-style: normal; font-size: 13px; color: #555; }
 .jp-sal-basis { padding: 0 24px 0 10px; border-left: 1px solid #f0f0f2; color: #555; }
 /* 섹션 제목 줄 오른쪽 끝에 서는 단추 — 글자만 두면 눌러도 되는지 알기 어렵다. */
 .jp-add-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
@@ -14275,7 +14275,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-cond { flex: 1 0 100%; display: flex; flex-wrap: wrap; gap: 8px 10px;
   margin: 4px 0; }
 .jp-cond-f { display: inline-flex; flex-direction: column; gap: 4px; }
-.jp-cond-f > span { font-size: 13px; color: #9a9aa2; padding-left: 1px; }
+.jp-cond-f > span { font-size: 13px; color: #555; padding-left: 1px; }
 .jp-cond-sel { min-height: 34px; border: 1px solid #ececf0; border-radius: 8px; background: #fff
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
   no-repeat right 9px center; appearance: none; -webkit-appearance: none;
@@ -14286,19 +14286,19 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding-top: 7px; padding-bottom: 7px; height: auto;
   display: flex; flex-direction: column; justify-content: center;
 }
-.jp-cond-shift.ph { color: #b4b4b9; }
+.jp-cond-shift.ph { color: #555; }
 
 /* 담긴 부문은 보라 테두리로 남는다 — 잠깐 켰다 끄면 무엇이 담겼는지 다시 알 수 없다. */
 .jp-job { border-color: var(--color-primary); }
 
 /* 직급을 고르기 전에는 아래를 못 만진다. */
 .jp-req { color: #e74c3c; font-weight: 400; margin-right: 2px; }
-.jp-job-row.off .jp-job-lab, .jp-job-cond.off .jp-cond-f > span { color: #c8c8ce; }
+.jp-job-row.off .jp-job-lab, .jp-job-cond.off .jp-cond-f > span { color: #555; }
 .jp-job-row.off .jp-step-num, .jp-sal.off { background: #fafafb; border-color: #f0f0f2; }
-.jp-job-row.off .jp-step-num b, .jp-job-row.off .jp-job-unit { color: #c8c8ce; }
+.jp-job-row.off .jp-step-num b, .jp-job-row.off .jp-job-unit { color: #555; }
 .jp-cond-sel:disabled, .jp-sal select:disabled, .jp-sal input:disabled {
   color: #c8c8ce; background-color: #fafafb; cursor: not-allowed; }
-.jp-sal.off .jp-sal-amt em { color: #c8c8ce; }
+.jp-sal.off .jp-sal-amt em { color: #555; }
 
 /* ── 설정 갈래(매장정보·계정정보·비밀번호·알림) 본문 글자 크기 ──
    같은 판을 쓰는 채용공고 갈래는 그대로 두려고 .co-set-settings 안으로만 건다. */
@@ -14328,13 +14328,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    몇 단계인지, 어느 차례인지가 한눈에 보인다. */
 .jp-proc { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .jp-proc-item { display: inline-flex; align-items: center; gap: 6px; }
-.jp-proc-item:last-of-type i, .jp-proc-item i { font-style: normal; color: #c8c8ce; font-size: 13px; }
+.jp-proc-item:last-of-type i, .jp-proc-item i { font-style: normal; color: #555; font-size: 13px; }
 .jp-proc-step { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 8px 0 12px;
   border: 1px solid #ececf0; border-radius: 8px; background: #fff; font-size: 13px; color: #555; }
 .jp-proc-step button { border: none; background: none; padding: 0 2px; color: #c4c4c9;
   font-size: 13px; line-height: 1; cursor: pointer; }
 .jp-proc-step button:hover { color: var(--color-primary); }
-.jp-proc-ph { font-size: 13px; color: #c8c8ce; margin-right: 2px; }
+.jp-proc-ph { font-size: 13px; color: #555; margin-right: 2px; }
 .jp-proc-add { width: 34px; height: 34px; border: 1px dashed #d8d8de; border-radius: 8px;
   background: #fff; font-family: inherit; font-size: 15px; color: #8a8a90; cursor: pointer; line-height: 1; }
 .jp-proc-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
@@ -14501,7 +14501,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 13.5px; color: #a0a0a6; text-align: center;
 }
 /* 남은 날은 사흘 안쪽일 때만 말한다 — 일주일 내내 세고 있으면 재촉으로 읽힌다. */
-.prop-interest-left { margin-left: 6px; font-size: 12.5px; color: #a0a0a6; }
+.prop-interest-left { margin-left: 6px; font-size: 12.5px; color: #555; }
 
 /* 약속 장소 — 언제만 있고 어디가 없으면 면접에 못 간다. 누르면 지도로 간다. */
 .pth-appt-place {
@@ -14584,7 +14584,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    고른 표시가 더 붙는다. */
 .tal-listhead {
   display: flex; align-items: center; gap: 12px;
-  margin: 0 2px 10px; font-size: 13.5px; color: #8a8a90;
+  margin: 0 2px 10px; font-size: 13.5px; color: #555;
 }
 .tal-all { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 .tal-all input { width: 14px; height: 14px; margin: 0; accent-color: #582681; }
@@ -14698,7 +14698,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-count:first-child { border-left: none; }
 .co-count-label { font-size: 16px; color: #555; white-space: nowrap; }
 /* 0 은 할 일이 없다는 뜻이라 조용해야 한다. 숫자가 있는 칸만 눈에 든다. */
-.co-count-value { font-size: 26px; color: #c8c8ce; line-height: 1.1; }
+.co-count-value { font-size: 26px; color: #555; line-height: 1.1; }
 /* 지금 손대야 할 것은 빨강, 그냥 현황은 회색. 색이 곧 「답해야 하나」를 말한다.
    마감임박 뱃지(.co-jc-badge.soon)에서 쓰던 빨강을 그대로 쓴다 — 새 색을 늘리지 않는다. */
 .co-count.todo .co-count-value { color: #c0504d; }
@@ -14741,9 +14741,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: none; }
 .co-jobitem-t { flex: 1; min-width: 0; font-size: 14.5px; line-height: 1.45;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.co-jobitem-n { flex-shrink: 0; font-size: 13px; color: #a0a0a6; padding-top: 1px; }
+.co-jobitem-n { flex-shrink: 0; font-size: 13px; color: #555; padding-top: 1px; }
 .co-jobitem.on .co-jobitem-n { color: var(--color-primary); }
-.co-jobitem-off { margin-left: 5px; font-size: 11px; color: #999;
+.co-jobitem-off { margin-left: 5px; font-size: 11px; color: #555;
   background: #f2f2f4; border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
 
 /* 공고 카드 안의 지원자. 공고를 올리는 이유가 지원자를 받는 것이라, 그 공고에
@@ -14775,11 +14775,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   flex: 1; padding: 12px 0; border: none; background: none; font-family: inherit;
   font-size: 14px; color: #8a8a90; cursor: pointer; border-bottom: 2px solid transparent;
 }
-.co-side-tab span { margin-left: 5px; font-size: 12.5px; color: #b4b4b9; }
+.co-side-tab span { margin-left: 5px; font-size: 12.5px; color: #555; }
 .co-side-tab.on { color: var(--color-primary); border-bottom-color: var(--color-primary); }
 .co-side-tab.on span { color: var(--color-primary); }
 .co-side-list { max-height: calc(100vh - 230px); overflow-y: auto; padding: 4px 0; }
-.co-side-none { padding: 22px 10px; font-size: 13px; color: #a0a0a6; text-align: center; }
+.co-side-none { padding: 22px 10px; font-size: 13px; color: #555; text-align: center; }
 .co-side-item {
   position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
   border: none; background: none; font-family: inherit; padding: 10px 22px 10px 10px;
@@ -14842,7 +14842,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 0 0 22px; display: flex; flex-direction: column; gap: 8px; }
 
 /* 공고 조건 한 줄 — 근무지·경력·고용형태·인원. 여러 공고를 가려내는 값이다. */
-.co-jc-cond { margin-top: 5px; font-size: 13px; color: #8a8a90;
+.co-jc-cond { margin-top: 5px; font-size: 13px; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* 이름 줄 오른쪽 끝에 지원일, 지역 줄 오른쪽 끝에 상태값. 오른쪽 끝은
@@ -14858,7 +14858,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   display: flex; align-items: center; justify-content: center;
   width: calc(100% + 36px); margin: 0 -18px; padding: 5px 0;
   border: none; border-top: 1px solid #f0f0f3; background: #fcfcfd;
-  color: #a0a0a6; cursor: pointer;
+  color: #555; cursor: pointer;
 }
 .apl-fold:hover { background: #f4f4f6; color: #6b6570; }
 /* 펼쳐져 있으면 아래를 가리킨다 — 화살표가 내용이 있는 쪽을 가리킨다. */
@@ -14898,13 +14898,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background-repeat: no-repeat; background-position: right 2px center;
 }
 .apl-state:focus { outline: none; }
-.apl-find { display: flex; align-items: center; gap: 6px; min-width: 0; color: #b4b4b9;
+.apl-find { display: flex; align-items: center; gap: 6px; min-width: 0; color: #555;
   background: #fff; border: 1px solid #e6e6ea; border-radius: 8px; padding: 6px 10px; }
 .apl-find input { border: none; outline: none; background: none; font-family: inherit; font-size: 13px;
   color: #555; width: 200px; min-width: 0; }
 .apl-find input::placeholder { color: #c4c4c9; }
 @media (max-width: 1000px) { .apl-find input { width: 110px; } }
-.apl-none { padding: 22px 18px; font-size: 13px; color: #a0a0a6; }
+.apl-none { padding: 22px 18px; font-size: 13px; color: #555; }
 
 .apl-row {
   display: flex; align-items: center; gap: 14px; min-width: 0;
@@ -14928,19 +14928,19 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .apl-av {
   width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
   background: #efeff1; display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #8a8a90;
+  font-size: 14px; color: #555;
 }
 .apl-av img { width: 100%; height: 100%; object-fit: cover; }
 .apl-who { width: 160px; flex-shrink: 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .apl-who b { font-weight: 400; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.apl-who i { font-style: normal; font-size: 12.5px; color: #a0a0a6; }
+.apl-who i { font-style: normal; font-size: 12.5px; color: #555; }
 /* 한 줄 소개가 이 줄의 주인공이다. 남는 자리를 다 쓰고, 길면 여기서 줄인다. */
 .apl-mid { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .apl-mid b { font-weight: 400; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apl-mid i { font-style: normal; font-size: 12.5px; color: var(--color-primary); opacity: .75;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 오른쪽 칸은 폭을 못 박는다 — 줄마다 다르면 세로줄이 어긋나 목록이 흔들린다. */
-.apl-when { width: 108px; flex-shrink: 0; text-align: right; color: #b4b4b9; font-size: 12.5px; white-space: nowrap; }
+.apl-when { width: 108px; flex-shrink: 0; text-align: right; color: #555; font-size: 12.5px; white-space: nowrap; }
 .apl-go {
   flex-shrink: 0; width: 92px; padding: 7px 0; border-radius: 8px; font-size: 13px; font-family: inherit;
   border: 1px solid #e0dced; background: #fff; color: var(--color-primary); cursor: pointer;
@@ -14986,7 +14986,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    기다렸다 — 거절은 상대에게 전해진다. */
 .prop-decline {
   margin-left: auto; border: 1px solid #e2e2e6; background: #fff; border-radius: 8px;
-  padding: 6px 12px; font-family: inherit; font-size: 13px; color: #8a8a90; cursor: pointer;
+  padding: 6px 12px; font-family: inherit; font-size: 13px; color: #555; cursor: pointer;
 }
 .prop-decline:hover { border-color: #b4b4b9; color: #555; }
 .prop-dec {
@@ -15480,7 +15480,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 14px; color: var(--color-text); cursor: pointer; font-family: inherit;
   transition: border-color .15s, color .15s; }
 .ap-tab:hover { border-color: var(--color-primary); }
-.ap-tab em { font-style: normal; color: #9a9aa3; }
+.ap-tab em { font-style: normal; color: #555; }
 .ap-tab.on { border-color: var(--color-primary); color: var(--color-primary); background: #f7f7f8; }
 .ap-tab.on em { color: var(--color-primary); }
 
@@ -15504,7 +15504,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ap-logo { width: 40px; height: 40px; flex-shrink: 0; border-radius: var(--chip-radius);
   border: 1px solid var(--card-line); background: #f7f7f8; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 600; color: #9a9aa3; }
+  font-size: 14px; font-weight: 600; color: #555; }
 .ap-logo img { width: 100%; height: 100%; object-fit: cover; }
 .ap-job-t { display: block; color: var(--color-text-strong); text-decoration: none;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -15520,7 +15520,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ap-st.off { background: transparent; color: #b4b4b9; padding-left: 0; }
 /* 공고 상태 — 매장 사정이라 색을 쓰지 않는다. 마감은 옅게 내린다. */
 .ap-jst { font-size: 13px; color: var(--color-text); white-space: nowrap; }
-.ap-jst.closed { color: #b4b4b9; }
+.ap-jst.closed { color: #555; }
 
 .ap-acts { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
 .ap-view { padding: 7px 14px; border: 1px solid var(--color-border); border-radius: var(--chip-radius);
@@ -15553,7 +15553,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .prop-main { flex: 1; min-width: 0; }
 .prop-period { margin: 0; font-size: 12.5px; color: var(--color-text); }
 .prop-period .on { color: var(--color-primary); margin-right: 6px; }
-.prop-period .off { color: #b4b4b9; margin-right: 6px; }
+.prop-period .off { color: #555; margin-right: 6px; }
 .prop-title2 { margin: 3px 0 0; font-size: 16px; color: var(--color-text-strong); }
 .prop-co2 { margin: 4px 0 0; font-size: 13px; color: var(--color-text); }
 .prop-pos2 { margin: 6px 0 0; font-size: 13px; color: var(--color-text); line-height: 1.6; word-break: keep-all; }

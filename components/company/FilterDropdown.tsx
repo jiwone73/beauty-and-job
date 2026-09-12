@@ -27,7 +27,7 @@ export default function FilterDropdown({ label, value, options, onChange }: Filt
     <div ref={ref} style={{ position: "relative" }}>
       <button type="button" className="filter-dd-btn" onClick={() => setOpen((v) => !v)}>
         <span>{label} · {value}</span>
-        <ChevronDown size={14} style={{ color: "#999", transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
+        <ChevronDown size={14} style={{ color: "#555", transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
       </button>
       {open && (
         <div className="filter-dd-menu">
