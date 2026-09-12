@@ -565,7 +565,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
           <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
-            <nav className="co-set-side">
+            <nav className={`co-set-side${묶음 === "proposals" ? " co-side-prop" : ""}`}>
               {/* 화면이 제 사이드를 주면 그것이 먼저다 — 고정 메뉴를 우선하면
                   넘겨준 사이드가 조용히 무시된다. */}
               {side

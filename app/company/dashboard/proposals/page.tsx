@@ -447,9 +447,9 @@ export default function CompanyProposalsPage() {
         <span className="co-jobitem-t">전체 스크랩</span>
         <span className="co-jobitem-n">{담긴사람.length}</span>
       </button>
-      <p className="jobs-side-t prop-side-group">공고별 스크랩</p>
+      <p className="prop-side-group">공고별 스크랩</p>
       {진행공고.map((g) => (
-        <button key={g.id} type="button" className={`co-set-item co-jobitem${고른스크랩 === g.id ? " on" : ""}`}
+        <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른스크랩 === g.id ? " on" : ""}`}
           onClick={() => set고른스크랩(g.id)} title={g.title}>
           <span className="co-jobitem-t">{g.title}</span>
           <span className="co-jobitem-n">{스크랩수(g.id)}</span>
@@ -473,9 +473,9 @@ export default function CompanyProposalsPage() {
         <span className="co-jobitem-t">전체 보낸 제안</span>
         <span className="co-jobitem-n">{목록.length}</span>
       </button>
-      <p className="jobs-side-t prop-side-group">공고별 보낸 제안</p>
+      <p className="prop-side-group">공고별 보낸 제안</p>
       {보일공고.map((g) => (
-        <button key={g.id} type="button" className={`co-set-item co-jobitem${고른공고 === g.id ? " on" : ""}`}
+        <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른공고 === g.id ? " on" : ""}`}
           onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
           <span className="co-jobitem-t">{g.제목}{g.마감 && <span className="co-jobitem-off">마감</span>}</span>
           {/* 내 차례가 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
@@ -491,7 +491,7 @@ export default function CompanyProposalsPage() {
             지난 공고 {접힌공고.length}
           </button>
           {지난것펼침 && 접힌공고.map((g) => (
-            <button key={g.id} type="button" className={`co-set-item co-jobitem${고른공고 === g.id ? " on" : ""}`}
+            <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른공고 === g.id ? " on" : ""}`}
               onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
               <span className="co-jobitem-t">{g.제목}<span className="co-jobitem-off">마감</span></span>
               <span className="co-jobitem-n">{g.수}</span>
