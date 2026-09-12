@@ -144,7 +144,7 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   // 답해야 할 것이 무엇인지가 이 칸에 떠 있어야 한다(빨간 글자가 곧 미답변이다).
   if (p.appointmentAt && p.lastSender !== "USER") {
     const d = new Date(p.appointmentAt);
-    return { 글: `${d.getMonth() + 1}.${d.getDate()} 면접 약속`, 때: p.lastMessageAt };
+    return { 글: `${d.getMonth() + 1}.${d.getDate()} 면접 약속 되었습니다`, 때: p.lastMessageAt };
   }
   // 우리가 한 일에도 주체를 밝힌다. 「메시지를 보냈습니다」만 있으면 그 줄이
   // 누구의 줄인지 알면서도 누가 보냈는지는 모른다.
