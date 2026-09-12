@@ -269,7 +269,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           .co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
           .co-m-nametype { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
           .co-m-name { font-size: 15px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-          .co-m-type { font-size: 11px; color: #999; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+          .co-m-type { font-size: 11px; color: #555; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
           .co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
           .co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
           .co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #555; cursor: pointer; }
@@ -281,7 +281,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           .co-m-content { padding: 6px 14px 20px; }
           .co-m-content .company-content { padding: 0 !important; }
           .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
-          .co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #9a9a9a; font-size: 11px; }
+          .co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #555; font-size: 11px; }
           .co-m-tab.on { color: #582681; }
           .co-m-notif { position: fixed; left: 0; right: 0; top: 55px; z-index: 61; background: #fff; border-bottom: 1px solid #eee; max-height: 62vh; overflow-y: auto; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
           .co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 400; }
