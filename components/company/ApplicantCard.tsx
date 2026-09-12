@@ -124,7 +124,7 @@ export default function ApplicantCard({
   }
 
   return (
-    <div className={`tal-card${checked ? " on" : ""}`}>
+    <div className={`tal-card${checked ? " on" : ""}${a.status === "APPLIED" && !마감(a) ? " todo" : ""}`}>
       <div className="tal-top">
         {onCheck && (
           <input type="checkbox" className="tal-check" checked={!!checked} onChange={() => onCheck(a.id)} />

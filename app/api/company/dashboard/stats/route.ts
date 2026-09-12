@@ -84,12 +84,17 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 답 안 한 문의 — 구직자가 말을 걸었는데 매장이 아직 답하지 않은 대화.
-  // 답하고 말고는 매장의 몫이지만, 몇 건이 기다리는지는 보여야 판단이 선다.
+  // 내 차례 제안 — 구직자가 마지막으로 말했는데 매장이 아직 답하지 않은 대화.
+  //
+  // 끝난 것은 세지 않는다 — 거둔 제안·거절된 제안·차단된 상대. 다만 공고가 마감된
+  // 건은 뺀 적이 있었는데, 면접까지 잡고 대화 중인 사람에게는 공고가 내려갔어도
+  // 답해야 한다. 보낸 제안 화면의 「내 차례」 표시와 같은 기준으로 둔다 — 홈의 숫자와
+  // 화면의 빨간 줄이 다르면 어느 쪽을 믿을지 알 수 없다.
   const unansweredRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt
        FROM proposals p
       WHERE p.company_id = $1
+        AND p.declined_at IS NULL AND p.canceled_at IS NULL
         AND EXISTS (SELECT 1 FROM proposal_messages m WHERE m.proposal_id = p.id)
         AND (SELECT sender FROM proposal_messages m
               WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) = 'USER'

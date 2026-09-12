@@ -10,6 +10,7 @@ interface Stats {
   deadline_today: number;
   scrapped_talents: number;
   unviewed_applications: number;
+  unanswered_chats: number;
   sent_proposals: number;
   chats: number;
 }
@@ -107,13 +108,17 @@ export default function CompanyDashboard() {
   // 수락해야 말을 걸 수 있으므로(PROP_MSG_007) 수락한 사람은 곧 채팅 칸에서
   // 세어진다. 두 칸이 늘 같은 사람을 가리켜서 하나는 읽을 것이 없었다.
   // 한 사람이 지금 어디까지 왔는지는 채용제안 화면이 맡는다.
-  const statCards = [
+  // 할 일과 현황을 가른다. 예전에는 숫자가 있으면 다 보라라서, 진행중 공고 7건처럼
+  // 그냥 현황인 것도 손대야 할 것처럼 보였다. 지금 답해야 하는 것만 보라로 든다.
+  const statCards: { label: string; value: number; href: string; 할일?: boolean }[] = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
     { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=마감임박" },
     // 공고 → 지원 → 제안 순으로 세운다. 아래 카드 제목과 같은 이름을 쓴다.
     // 카드를 누르면 같은 숫자가 그대로 보이는 자리로 간다 — 공고 목록이 아니라
     // 지원자 관리의 「미열람」 칸, 보낸 제안의 「채팅중」 칩이다.
-    { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants?status=미열람" },
+    { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants?status=미열람", 할일: true },
+    // 구직자가 마지막으로 말했는데 아직 답하지 않은 제안. 매장이 답해야 대화가 이어진다.
+    { label: "내 차례 제안", value: stats?.unanswered_chats ?? 0, href: "/company/dashboard/proposals", 할일: true },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
     { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals?status=채팅중" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/proposals/scrapped" },
@@ -129,7 +134,7 @@ export default function CompanyDashboard() {
       <div className="co-counts" style={{ ["--co-counts-n" as any]: statCards.length }}>
         {statCards.map((stat) => (
           <button key={stat.label} type="button"
-            className={`co-count${stat.value > 0 ? " on" : ""}`}
+            className={`co-count${stat.할일 && stat.value > 0 ? " todo" : ""}`}
             onClick={() => router.push(stat.href)}>
             <span className="co-count-label">{stat.label}</span>
             <span className="co-count-value">{stat.value}</span>

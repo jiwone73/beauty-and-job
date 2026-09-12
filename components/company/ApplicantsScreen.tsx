@@ -196,6 +196,11 @@ function ApplicantsContent() {
             {j.title}
             {j.closed && <span className="co-jobitem-off">마감</span>}
           </span>
+          {/* 아직 안 본 지원자가 있는 공고 — 빨간 점 하나로 알린다. */}
+          {applicants.some((a) => ((a as any).job_id ?? (a as any).job_posting_id) === j.id
+            && a.status === "APPLIED" && !isJobClosed(a)) && (
+            <span className="co-jobitem-dot" aria-label="미열람 있음" />
+          )}
           <span className="co-jobitem-n">{j.applicationCount}</span>
         </button>
       ))}

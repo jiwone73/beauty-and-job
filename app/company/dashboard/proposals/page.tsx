@@ -160,7 +160,9 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
 function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null {
   const st = 상태(p);
   if (st === "거절" || st === "취소" || st === "공고마감") return null;
-  if (st === "면접예정") return { 글: "일정 확인", 우리차례: false };
+  // 면접이 잡힌 뒤라도 구직자가 마지막으로 말했으면 답할 차례다 — 약속을 잡았다고
+  // 대화가 끝나지 않는다. 홈의 「내 차례 제안」도 같은 기준으로 센다.
+  if (st === "면접예정") return { 글: "일정 확인", 우리차례: p.lastSender === "USER" };
   if (st === "채팅중") return { 글: "채팅하기", 우리차례: p.lastSender === "USER" };
   if (st === "수락") return { 글: "채팅하기", 우리차례: true };
   // 답변대기 — 상대가 제안을 받아들이기 전이라 대화가 열리지 않는다.
