@@ -83,6 +83,32 @@ function fmtDate(d: string | null) {
   return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, "0")}.${String(dt.getDate()).padStart(2, "0")}`;
 }
 
+/** 지원일로부터 며칠 지났나. 오늘이면 0. */
+function 지난날(d: string | null): number {
+  if (!d) return 0;
+  const 하루 = 86400000;
+  const t = new Date(d); t.setHours(0, 0, 0, 0);
+  const 오늘 = new Date(); 오늘.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((오늘.getTime() - t.getTime()) / 하루));
+}
+
+/**
+ * 이 지원이 지금 어디 걸려 있나.
+ *
+ * 급한 순서대로 본다 — 거둬진 것은 더 볼 것이 없고, 연결은 관리자만 할 수 있으며,
+ * 미열람은 기업을 찔러야 하는 일이다. 빨강은 손이 가야 하는 둘에만 준다.
+ * 사흘은 주말을 한 번 넘긴 셈이라, 그 전까지는 기다리는 중으로 본다.
+ */
+function 지금(a: App): { 글: string; 급함: boolean } {
+  if (a.status === "WITHDRAWN") return { 글: "지원취소", 급함: false };
+  if (!a.company_is_member && !a.linked_at) return { 글: "연결 대기", 급함: true };
+  if (a.status === "APPLIED") {
+    const n = 지난날(a.applied_at);
+    return { 글: n === 0 ? "오늘 지원" : `${n}일째 미열람`, 급함: n >= 3 };
+  }
+  return { 글: STATUS_TO_LABEL[a.status] || a.status, 급함: false };
+}
+
 function AdminApplicationsPageInner() {
   const searchParams = useSearchParams();
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
@@ -209,11 +235,8 @@ function AdminApplicationsPageInner() {
                   ? `경력 ${calcCareerYears(a.recent_career?.start_date || null) || ""}`
                   : "신입";
                 const hasResume = a.resume_id || a.cover_letter || a.resume_snapshot;
-                // 외부(비회원) 기업 지원 중 아직 '지원서 연결' 전 → 연한 그레이로 구분
-                const notConnected = !a.company_is_member && !a.linked_at;
                 return (
-                  <tr key={a.id} style={notConnected ? { background: "#e6e8eb" } : undefined}
-                    title={notConnected ? "아직 지원서 연결(회원 기업 연결) 전 지원이에요" : undefined}>
+                  <tr key={a.id}>
                     {/* 지원자: 아바타 + 이름·성별 / 나이·경력 */}
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -278,8 +301,18 @@ function AdminApplicationsPageInner() {
                     <td className="admin-td-date">
                       {shortenRegion([a.region_sido, a.region_sigungu].filter(Boolean).join(" ")) || "-"}
                     </td>
-                    {/* 지원일 */}
-                    <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
+                    {/* 지원일 / 지금 — 날짜만으로는 묵힌 지원이 안 보인다. */}
+                    <td className="admin-td-date">
+                      <div>{fmtDate(a.applied_at)}</div>
+                      {(() => {
+                        const z = 지금(a);
+                        return (
+                          <div style={{ marginTop: 3, fontSize: 13.5, color: z.급함 ? "#c0504d" : "#a5a5ab" }}>
+                            {z.글}
+                          </div>
+                        );
+                      })()}
+                    </td>
                     {/* 자소서 · 포폴 · SNS — 얼마나 갖춘 지원인가가 한 칸에 모인다.
                         이력서는 뺐다. 이름을 눌러도 같은 이력서가 열려 한 줄에 같은
                         문이 둘이었다. 색이 있다/없다를 말한다. */}
