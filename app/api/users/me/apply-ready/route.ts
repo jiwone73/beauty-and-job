@@ -13,8 +13,11 @@ export async function GET(req: NextRequest) {
 
   const [me, resume] = await Promise.all([
     pool.query(
-      `SELECT phone, birth_date, gender, email, region_sido, preferred_regions, job_type
-         FROM users WHERE id = $1`,
+      // 희망급여는 프로필(user_profiles)에 있다 — 지원을 막는 조건에 들어가므로 같이 읽는다.
+      `SELECT u.phone, u.birth_date, u.gender, u.email, u.region_sido, u.preferred_regions, u.job_type,
+              p.salary_min
+         FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+        WHERE u.id = $1`,
       [auth!.sub]
     ),
     pool.query(`SELECT 1 FROM resumes WHERE user_id = $1 LIMIT 1`, [auth!.sub]),

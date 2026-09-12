@@ -58,9 +58,12 @@ export async function POST(
   const reactivateId: string | null =
     existingApp && existingApp.status === 'WITHDRAWN' ? existingApp.id : null
   const profileCheck = await pool.query(
-    `SELECT name, phone, birth_date, gender, email, region_sido, preferred_regions, job_type,
-            resume_file_url, resume_file_name, resume_file_size
-     FROM users WHERE id = $1`,
+    // 희망급여는 프로필(user_profiles)에 있다 — 지원을 막는 조건이라 같이 읽는다.
+    `SELECT u.name, u.phone, u.birth_date, u.gender, u.email, u.region_sido, u.preferred_regions, u.job_type,
+            u.resume_file_url, u.resume_file_name, u.resume_file_size,
+            p.salary_min
+     FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+     WHERE u.id = $1`,
     [auth!.sub]
   )
   const p = profileCheck.rows[0] || {}
