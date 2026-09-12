@@ -310,6 +310,12 @@ export default function CompanyProposalsPage() {
     if (j) set고른공고(j);
   }, []);
 
+  // 대시보드 카드에서 넘어오면 그 상태 칩이 골라진 채로 열린다(?status=채팅중).
+  useEffect(() => {
+    const s = new URLSearchParams(window.location.search).get("status");
+    if (s && (s === "전체" || Object.keys(상태이름).includes(s))) set고른상태(s as 상태키 | "전체");
+  }, []);
+
   const 공고고른것 = 고른공고
     ? 목록.filter((p) => (p.jobPostingId || "none") === 고른공고)
     : 목록;

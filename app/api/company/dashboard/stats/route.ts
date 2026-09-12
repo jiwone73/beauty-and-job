@@ -22,8 +22,11 @@ export async function GET(req: NextRequest) {
   // 상단 통계 카운터 한 번에 조회
   const [activeJobs, totalApplications, todayApplications] = await Promise.all([
     pool.query(
+      // 마감일이 지난 공고는 화면에서 「마감」으로 보인다(lib/jobClosed.ts). 여기만
+      // status 로만 세던 탓에 대시보드가 화면보다 많았다 — 같은 규칙으로 센다.
       `SELECT COUNT(*)::int AS cnt FROM job_postings 
-       WHERE company_id = $1 AND status = 'ACTIVE'${jobTypeFilterNoAlias}`,
+       WHERE company_id = $1 AND status = 'ACTIVE'
+         AND (deadline IS NULL OR deadline::date >= CURRENT_DATE)${jobTypeFilterNoAlias}`,
       [companyId]
     ),
     pool.query(
@@ -96,8 +99,9 @@ export async function GET(req: NextRequest) {
   )
 
   // 찜한 인재 — 제안하려고 담아 둔 사람. 쌓인 숫자가 아니라 아직 안 보낸 할 일이다.
+  // 한 사람을 여러 공고로 담을 수 있으므로 사람 수로 센다 — 스크랩 인재 화면과 같다.
   const scrapRes = await pool.query(
-    `SELECT COUNT(*)::int AS cnt FROM company_talent_scraps WHERE company_id = $1`,
+    `SELECT COUNT(DISTINCT user_id)::int AS cnt FROM company_talent_scraps WHERE company_id = $1`,
     [companyId]
   )
   // 회신 대기 — 보냈는데 아직 답이 없는 제안. 예전에는 7일 안쪽만 셌는데,

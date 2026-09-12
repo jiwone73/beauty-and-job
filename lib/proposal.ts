@@ -10,18 +10,21 @@
 
 // 홈의 「채팅」 칸이 세는 것 — 지금 대화가 열려 있는 제안.
 //
-// 채용제안 화면은 제안 하나가 어디까지 왔는지를 단계로 적는다
-// (대기 → 수락 → 채팅중 → 면접예정). 그 단계 중 「채팅중」과
-// 「면접예정」이 여기 해당한다. 약속을 잡았다고 대화가 끝나지 않는다 —
-// 오히려 그 뒤로 더 오간다. 단계로는 앞으로 나아간 것이지만 채팅은
-// 그대로 열려 있다.
+// 제안·스크랩 화면은 제안 하나가 어디까지 왔는지를 단계로 적는다
+// (대기 → 수락 → 채팅중 → 면접예정). 여기서 세는 것은 그중 「채팅중」 하나다 —
+// 대시보드 카드와 화면의 칩이 같은 수를 말해야 매장이 숫자를 믿는다.
 //
-// 빠지는 것: 아직 말이 없는 것(대기·수락), 끝난 것(거절·차단).
+// 빠지는 것: 아직 말이 없는 것(대기·수락), 끝난 것(거절·차단·거둔 제안),
+// 그리고 면접 약속이 잡힌 것(그건 「면접예정」 칸이 맡는다).
 // 지원서가 합격인지는 보지 않는다 — 제안은 지원서와 잇지 않는다.
 // p 는 proposals 를 가리키는 별칭이어야 한다.
 export const 채팅열림SQL = `
   p.interested_at IS NOT NULL
   AND p.declined_at IS NULL
+  AND p.canceled_at IS NULL
+  AND NOT EXISTS (SELECT 1 FROM proposal_messages m
+                   WHERE m.proposal_id = p.id AND m.kind = 'APPOINTMENT'
+                     AND m.appointment_status = 'ACCEPTED')
   AND NOT EXISTS (SELECT 1 FROM user_company_blocks b
                    WHERE b.user_id = p.user_id AND b.company_id = p.company_id)
   AND EXISTS (SELECT 1 FROM proposal_messages m

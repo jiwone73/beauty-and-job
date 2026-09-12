@@ -111,9 +111,11 @@ export default function CompanyDashboard() {
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
     { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=마감임박" },
     // 공고 → 지원 → 제안 순으로 세운다. 아래 카드 제목과 같은 이름을 쓴다.
-    { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/jobs?status=미열람" },
+    // 카드를 누르면 같은 숫자가 그대로 보이는 자리로 간다 — 공고 목록이 아니라
+    // 지원자 관리의 「미열람」 칸, 보낸 제안의 「채팅중」 칩이다.
+    { label: "미열람 지원자", value: stats?.unviewed_applications ?? 0, href: "/company/dashboard/applicants?status=미열람" },
     { label: "보낸제안", value: stats?.sent_proposals ?? 0, href: "/company/dashboard/proposals" },
-    { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals" },
+    { label: "채팅", value: stats?.chats ?? 0, href: "/company/dashboard/proposals?status=채팅중" },
     { label: "스크랩 인재", value: stats?.scrapped_talents ?? 0, href: "/company/dashboard/proposals/scrapped" },
   ];
 
@@ -142,7 +144,7 @@ export default function CompanyDashboard() {
           <div className="company-card-head">
             <h2 className="company-card-title">미열람 지원자{안본전체.length > 0 && <span style={{ marginLeft: 8, color: "#582681" }}>{안본전체.length}</span>}</h2>
             {applicants.length > 0 && (
-              <Link href="/company/dashboard/jobs?status=미열람" className="company-card-more">전체보기 →</Link>
+              <Link href="/company/dashboard/applicants?status=미열람" className="company-card-more">전체보기 →</Link>
             )}
           </div>
           {안본지원자.length === 0 ? (
