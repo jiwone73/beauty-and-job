@@ -10,7 +10,13 @@ import {
 const NAV_ITEMS = [
   // 오픈까지 남은 일이 제일 먼저 보여야 한다.
   { id: "launch", label: "상용화 일정", icon: Rocket, href: "/admin/launch" },
-  { id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin" },
+  {
+    id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin",
+    children: [
+      { id: "dashboard-users", label: "개인회원", href: "/admin/dashboard/users" },
+      { id: "dashboard-companies", label: "기업회원", href: "/admin/dashboard/companies" },
+    ]
+  },
   
   {
     id: "members", label: "회원관리", icon: Users, href: "/admin/members",
@@ -51,6 +57,8 @@ const NAV_ITEMS = [
 const PAGE_SUBTITLES: Record<string, string> = {
   "launch": "상용화 일정",
   "dashboard": "대시보드",
+  "dashboard-users": "개인회원 현황",
+  "dashboard-companies": "기업회원 현황",
   "members": "개인회원",
   "members-companies": "기업회원",
   "members-alba": "알바 근무현황",
@@ -83,7 +91,7 @@ export default function AdminLayout({ children, activeMenu, pageTitle }: {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "import"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["dashboard", "jobs", "members", "import"]);
   const [authChecked, setAuthChecked] = useState(false);
   const [newInquiries, setNewInquiries] = useState(0);
   const [newSupportInquiries, setNewSupportInquiries] = useState(0);
