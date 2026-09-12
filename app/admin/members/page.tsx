@@ -407,7 +407,6 @@ function AdminMembersPageInner() {
                 <th >구직 직군</th>
                 <th>지역</th>
                 <th >연락처</th>
-                <th>최근경력</th>
                 <th>인재검색</th>
                 <th>가입</th>
                 <th>최종로그인</th>
@@ -417,9 +416,9 @@ function AdminMembersPageInner() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={12} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={12} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : paginated.map((m) => {
                 const age = calcAge(m.birth_date);
                 const gender = genderLabel(m.gender);
@@ -490,21 +489,6 @@ function AdminMembersPageInner() {
                     </td>
 
                     {/* 최근경력: 회사명 / 직무 */}
-                    <td className="admin-td-date">
-                      {m.recent_company ? (
-                        <>
-                          <div style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_company}>{m.recent_company}</div>
-                          {m.recent_position && (
-                            <div style={{ marginTop: 2, fontSize: 13, color: "#555", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }} title={m.recent_position}>{m.recent_position}</div>
-                          )}
-                        </>
-                      ) : (
-                        <span style={{ color: "#555", fontSize: 13 }}>
-                          {m.career_type === "NEWCOMER" ? "신입" : "-"}
-                        </span>
-                      )}
-                    </td>
-
                     {/* 인재검색 공개 여부 — 본인이 고른 값이다. 비공개면 기업 검색에 안 나온다. */}
                     <td className="admin-td-date">
                       {(() => {
