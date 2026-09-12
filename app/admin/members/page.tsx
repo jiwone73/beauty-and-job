@@ -270,17 +270,6 @@ function AdminMembersPageInner() {
 
   return (
     <AdminLayout activeMenu="members">
-      <div className="admin-mini-stats">
-        {Object.entries(counts).map(([label, count]) => (
-          <div key={label} className="admin-mini-stat"
-            onClick={() => { setStatusFilter(label); setPage(1); }}
-            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #582681", outlineOffset: "-2px" } : {}) }}>
-            <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">명</span></span>
-          </div>
-        ))}
-      </div>
-
       {/* 회원 구분 — 매장/본사 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <span style={{ fontSize: 14, color: "#555" }}>회원 구분</span>
@@ -337,7 +326,24 @@ function AdminMembersPageInner() {
 
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>총 <strong>{filtered.length.toLocaleString()}</strong>명</span>
+          {/* 상태별 수는 여기 글자로 둔다. 0건은 숨긴다 — 정지·탈퇴가 나타난다는
+              것 자체가 들여다볼 일이 생겼다는 신호가 된다. */}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <span>총 <strong>{filtered.length.toLocaleString()}</strong>명</span>
+            {Object.entries(counts)
+              .filter(([label, count]) => label === "전체" || count > 0)
+              .map(([label, count]) => (
+                <span key={label} style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ color: "#e2e2e6" }}>│</span>
+                  <button type="button"
+                    onClick={() => { setStatusFilter(label); setPage(1); }}
+                    style={{ border: "none", background: "none", padding: 0, cursor: "pointer",
+                      font: "inherit", color: statusFilter === label ? "#582681" : "#555" }}>
+                    {label} {count}
+                  </button>
+                </span>
+              ))}
+          </span>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {checked.length > 0 && (["ACTIVE", "INACTIVE", "SUSPENDED"] as const).map((key) => {
             const label = STATUS_TO_LABEL[key];
