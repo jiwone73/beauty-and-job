@@ -460,7 +460,7 @@ function AdminCompaniesContent() {
                   {/* 매장/기업명 → 클릭 시 기업정보 모달 */}
                   <td className="admin-td-brand">
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f0eef4", color: "#555", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 10, background: "#f0eef4", color: "#555", fontSize: 17, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                         {(() => {
                           const cover = Array.isArray(c.cover_images) && c.cover_images[0]?.url ? c.cover_images[0].url : null;
                           const img = c.thumb_url || c.logo_url || cover;
@@ -471,8 +471,8 @@ function AdminCompaniesContent() {
                           );
                         })()}
                       </div>
-                      <span onClick={() => setCompanyDetail(c)}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", cursor: "pointer", fontWeight: 400 }}>
+                      <span className="admin-name-b" onClick={() => setCompanyDetail(c)}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", cursor: "pointer" }}>
                         {c.company_name}
                         <span style={{ fontSize: 12, fontWeight: 500, color: "#999" }}>
                           {TYPE_LABEL[c.company_type] || c.company_type}

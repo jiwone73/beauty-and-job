@@ -436,7 +436,7 @@ function AdminMembersPageInner() {
                     {/* 이름: 아바타 + 이름·성별(1행) / 나이·경력(2행) */}
                     <td className="admin-td-brand">
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#f0eef4", color: "#555", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
+                        <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#f0eef4", color: "#555", fontSize: 17, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                           {m.avatar_url ? (
                             <img src={m.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
@@ -447,9 +447,9 @@ function AdminMembersPageInner() {
                           {/* 1행: 이름 + 성별 */}
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                             {m.resume_id ? (
-                              <button onClick={() => setSelected(m)} style={{ color: "#555", fontWeight: 400, background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}>{m.name}</button>
+                              <button className="admin-name-b" onClick={() => setSelected(m)} style={{ color: "#555", background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit" }}>{m.name}</button>
                             ) : (
-                              <span style={{ fontWeight: 600 }}>{m.name}</span>
+                              <span className="admin-name-b">{m.name}</span>
                             )}
                             {gender && (
                               <span style={{ fontSize: 13, color: "#888" }}>{gender}</span>

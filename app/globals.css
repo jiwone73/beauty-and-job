@@ -5819,6 +5819,11 @@ div:has(> table.admin-table),
 .admin-td-date { color: #888 !important; white-space: nowrap; }
 /* 관리자 테이블 내용 폰트 통일(평체) */
 .admin-table td, .admin-table td * { font-weight: 400 !important; }
+/* 이름만 예외 — 표를 훑을 때 잡고 가는 값이다. 위 규칙이 !important 라 여기도 같이 건다.
+   자식까지 굵히면 이름 옆 꼬리표(「매장」·「오피스」)가 같이 굵어져 둘이 한 덩어리로
+   읽힌다 — 굵기는 이름 그 자체에만 준다. */
+.admin-table td .admin-name-b { font-weight: 600 !important; }
+.admin-table td .admin-name-b * { font-weight: 400 !important; }
 /* 공지사항 페이지 전체 평체 */
 .notices-plain, .notices-plain * { font-weight: 400 !important; }
 
