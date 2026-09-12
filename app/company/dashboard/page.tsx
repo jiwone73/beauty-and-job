@@ -227,7 +227,7 @@ export default function CompanyDashboard() {
                         const dl = job.deadline ? Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000) : null;
                         const closed = job.status === "CLOSED" || (dl !== null && dl < 0);
                         const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지" : closed ? "마감" : "진행중";
-                        const color = job.status === "DRAFT" ? "#999" : job.status === "PAUSED" ? "#f59e0b" : closed ? "#888" : "#10b981";
+                        const color = job.status === "DRAFT" ? "#555" : job.status === "PAUSED" ? "#f59e0b" : closed ? "#555" : "#10b981";
                         return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
                       })()}
                     </td>

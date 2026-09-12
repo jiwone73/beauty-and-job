@@ -115,7 +115,7 @@ export default function StartJobModal({
                           {j.deadline ? `마감일 ${날짜(j.deadline)}` : "상시채용"}
                         </span>
                       </span>
-                      <span style={마감 ? 뱃지("#8a8a8f", "#f2f2f4") : 뱃지("#1f7a4d", "#e8f5ee")}>{마감 ? "마감" : "진행중"}</span>
+                      <span style={마감 ? 뱃지("#555", "#f2f2f4") : 뱃지("#1f7a4d", "#e8f5ee")}>{마감 ? "마감" : "진행중"}</span>
                     </label>
                   );
                 })}

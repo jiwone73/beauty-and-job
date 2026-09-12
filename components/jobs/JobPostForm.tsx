@@ -399,7 +399,7 @@ export default function JobPostForm({
     // 제목 글자 높이를 넘지 않게 작게: 테두리만 남기고 아이콘·여백을 줄인다.
     ? { display: "inline-flex", alignItems: "center", justifyContent: "center", height: 18, padding: "0 6px",
         borderRadius: 5, border: "1px solid #dcdce0", background: on ? "#f4f4f6" : "#fff",
-        color: on ? "#582681" : "#777", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
+        color: on ? "#582681" : "#555", fontSize: 11.5, lineHeight: 1, fontWeight: 500,
         cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" }
     : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
         border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#555",
