@@ -149,7 +149,7 @@ function AdminApplicationsPageInner() {
   });
 
   return (
-    <AdminLayout activeMenu="resumes-applications">
+    <AdminLayout activeMenu="resumes">
       {/* 인재 구분 — 매장/오피스 라디오 */}
       <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
         <span style={{ fontSize: 14, color: "#555" }}>인재 구분</span>
@@ -311,7 +311,7 @@ function AdminApplicationsPageInner() {
 
 export default function AdminApplicationsPage() {
   return (
-    <Suspense fallback={<AdminLayout activeMenu="resumes-applications"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
+    <Suspense fallback={<AdminLayout activeMenu="resumes"><div className="admin-empty">불러오는 중...</div></AdminLayout>}>
       <AdminApplicationsPageInner />
     </Suspense>
   );

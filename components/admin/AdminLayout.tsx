@@ -23,12 +23,7 @@ const NAV_ITEMS = [
   // 고른 뒤 열리는 폼 하나뿐이라, 빈 폼을 따로 여는 자리가 필요 없다.
   // (/admin/jobs/new 는 그대로 살아 있다 — 그 폼으로 가는 길이다.)
   { id: "jobs", label: "채용공고", icon: Briefcase, href: "/admin/jobs" },
-  {
-    id: "resumes", label: "입사지원", icon: Users, href: "/admin/resumes/applications",
-    children: [
-      { id: "resumes-applications", label: "입사지원 목록", href: "/admin/resumes/applications" },
-    ]
-  },
+  { id: "resumes", label: "입사지원", icon: Users, href: "/admin/resumes/applications" },
   { id: "members-alba", label: "알바 근무현황", icon: Clock, href: "/admin/members/alba" },
   // 시험하다 나온 것을 모으는 자리. 공고 등록 이슈도 여기 「공고등록」 영역으로 들어온다.
   { id: "test-team", label: "클로드 테스트팀", icon: Bug, href: "/admin/test-team" },
@@ -61,7 +56,7 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "members-alba": "알바 근무현황",
   "jobs": "채용공고 목록",
   "jobs-new": "공고 직접 등록",
-  "resumes-applications": "입사지원 목록",
+  "resumes": "입사지원",
   // 외부공고 불러오기는 소스마다 화면이 달라, 어느 소스를 보고 있는지 제목이 말해 준다.
   "import-hairinjob": "헤어인잡 공고 불러오기",
   "import-selectme": "셀렉미 공고 불러오기",
@@ -88,7 +83,7 @@ export default function AdminLayout({ children, activeMenu, pageTitle }: {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "resumes", "import"]);
+  const [openMenus, setOpenMenus] = useState<string[]>(["jobs", "members", "import"]);
   const [authChecked, setAuthChecked] = useState(false);
   const [newInquiries, setNewInquiries] = useState(0);
   const [newSupportInquiries, setNewSupportInquiries] = useState(0);
