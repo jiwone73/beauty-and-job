@@ -248,13 +248,12 @@ export default function AdminDashboard() {
           하는데 생김새가 달라 손이 두 번 익어야 했다.
           아이콘·단위·설명줄은 걷었다 — 저 카드에 없는 것들이고, 자세한 값은 카드를
           눌러 들어간 화면이 말한다. */}
-      <div className="co-counts" style={{ ["--co-counts-n" as any]: 5 }}>
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: 6 }}>
         {[
-          {
-            label: "총 가입자",
-            value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null),
-            href: "/admin/members",
-          },
+          // 개인이 늘면 기업을 불러와야 하고, 기업이 늘면 구직자를 불러와야 한다.
+          // 합쳐 놓으면 어느 쪽이 모자란지가 가려져 할 일이 안 보인다.
+          { label: "개인회원", value: fmt(c?.total_users), href: "/admin/members" },
+          { label: "기업회원", value: fmt(c?.total_companies), href: "/admin/members/companies" },
           { label: "진행중 채용공고", value: fmt(c?.active_jobs), href: "/admin/jobs?status=active" },
           { label: "오늘 지원수", value: fmt(c?.today_applications), href: "/admin/resumes/applications?date=today" },
           // 승인 대기는 관리자가 손대야 풀리는 것이라 빨강으로 선다.
@@ -299,12 +298,6 @@ export default function AdminDashboard() {
       {/* 미니통계 */}
       <div className="admin-mini-stat-row">
         {[
-          {
-            label: "전체 개인회원",
-            value: fmt(indivTab === "STORE" ? c?.store_users : indivTab === "OFFICE" ? c?.office_users : c?.total_users),
-            unit: "명",
-            href: `/admin/members?type=${indivTab}`,
-          },
           {
             label: "오늘 신규 가입",
             value: fmt(indivTab === "STORE" ? c?.today_users_store : indivTab === "OFFICE" ? c?.today_users_office : c?.today_users),
@@ -484,12 +477,6 @@ export default function AdminDashboard() {
       {/* 미니통계 */}
       <div className="admin-mini-stat-row">
         {[
-          {
-            label: "전체 기업회원",
-            value: fmt(corpTab === "STORE" ? c?.store_companies : corpTab === "OFFICE" ? c?.office_companies : c?.total_companies),
-            unit: "개사",
-            href: `/admin/members/companies?type=${corpTab}`,
-          },
           {
             label: "오늘 신규 가입",
             value: fmt(corpTab === "STORE" ? c?.today_companies_store : corpTab === "OFFICE" ? c?.today_companies_office : c?.today_companies),
