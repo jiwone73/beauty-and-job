@@ -29,6 +29,13 @@ export async function GET(req: NextRequest) {
           ORDER BY uc.start_date DESC LIMIT 1
         ) AS recent_career,
         (SELECT COUNT(*)::int FROM user_careers uc WHERE uc.user_id = u.id) AS career_count,
+        -- 목록에서 사람을 가릴 때 보는 값들. 개인회원 표와 같은 것을 쓴다.
+        u.portfolio_images,
+        u.region_sido, u.region_sigungu,
+        (SELECT ul.url FROM user_links ul
+          WHERE ul.user_id = u.id AND COALESCE(ul.url, '') <> ''
+          ORDER BY (ul.url ILIKE '%instagram%') DESC, ul.created_at
+          LIMIT 1) AS sns_url,
         COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
         jp.title AS position,
         jp.job_type,

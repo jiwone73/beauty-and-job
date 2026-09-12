@@ -4,7 +4,9 @@ import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
-import { Search, FileText, Paperclip } from "lucide-react";
+import { Search, FileText, Paperclip, Instagram } from "lucide-react";
+import LinkCell from "@/components/company/LinkCell";
+import { shortenRegion } from "@/lib/memberFormat";
 
 const DATE_LABELS: Record<string, string> = { "전체": "전체", today: "오늘", "7d": "최근 7일", "1m": "최근 1개월", "3m": "최근 3개월", "1y": "최근 1년" };
 const DATE_VALUES: Record<string, string> = { "전체": "전체", "오늘": "today", "최근 7일": "7d", "최근 1개월": "1m", "최근 3개월": "3m", "최근 1년": "1y" };
@@ -48,6 +50,9 @@ type App = {
   applicant_sub_job: string | null;
   cover_letter: string | null;
   resume_snapshot: any | null;
+  sns_url: string | null;
+  region_sido: string | null;
+  region_sigungu: string | null;
 };
 
 function calcAge(birth: string | null) {
@@ -185,19 +190,18 @@ function AdminApplicationsPageInner() {
             <thead>
               <tr>
                 <th>지원자</th>
-                <th>매장/기업명</th>
-                <th>공고명</th>
-                <th>구직 직군</th>
+                <th>매장 · 공고</th>
+                <th>모집분야</th>
+                <th>희망지역</th>
                 <th>지원일</th>
-                <th>이력서/포트폴리오</th>
-                <th>상태</th>
+                <th>자소서 · 포폴 · SNS</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={6} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={6} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : filtered.map((a) => {
                 const age = calcAge(a.birth_date);
                 const gender = genderLabel(a.gender);
@@ -217,13 +221,13 @@ function AdminApplicationsPageInner() {
                           <img
                             src={a.avatar_url}
                             alt={a.applicant_name}
-                            style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
+                            style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "1px solid #f0f0f0", flexShrink: 0 }}
                           />
                         ) : (
                           <div style={{
-                            width: 32, height: 32, borderRadius: "50%", background: "#f7f7f8",
+                            width: 44, height: 44, borderRadius: "50%", background: "#f7f7f8",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 14, fontWeight: 700, color: "#7c3aed", flexShrink: 0
+                            fontSize: 17, fontWeight: 700, color: "#582681", flexShrink: 0
                           }}>
                             {(a.applicant_name || "?").charAt(0)}
                           </div>
@@ -233,11 +237,12 @@ function AdminApplicationsPageInner() {
                             {hasResume ? (
                               <button
                                 onClick={() => setSelected(a)}
-                                style={{ color: "#555", fontWeight: 400, background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
+                                className="admin-name-b"
+                                style={{ color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}>
                                 {a.applicant_name}
                               </button>
                             ) : (
-                              <span style={{ fontWeight: 600 }}>{a.applicant_name}</span>
+                              <span className="admin-name-b">{a.applicant_name}</span>
                             )}
                             {gender && <span style={{ fontSize: 13, color: "#555" }}>{gender}</span>}
                           </div>
@@ -247,62 +252,43 @@ function AdminApplicationsPageInner() {
                         </div>
                       </div>
                     </td>
-                    {/* 매장/기업명 */}
-                    <td className="admin-td-brand">
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                        {a.company_name}
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "#555" }}>
-                          {a.job_type === "STORE" ? "매장" : "오피스"}
+                    {/* 매장 · 공고 — 1행 매장, 2행 공고명. 둘 다 「어느 자리에 지원했나」
+                        하나를 말하는 값이라 갈라 두면 눈이 두 번 움직인다. */}
+                    <td>
+                      <div className="adm-shop" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {a.company_name}
                         </span>
-                      </span>
-                    </td>
-                    {/* 공고명 (길면 2줄) */}
-                    <td className="admin-td-title">
-                      <div className="adm-td2 adm-w-lg" style={{ margin: 0 }} title={a.position}>
+                        <span style={{ flexShrink: 0 }}>{a.job_type === "STORE" ? "매장" : "오피스"}</span>
+                      </div>
+                      <div className="adm-td2 adm-w-lg" style={{ margin: "3px 0 0" }} title={a.position}>
                         {a.position}
                       </div>
                     </td>
-                    {/* 구직 직군 (지원자 프로필 직군: 대분류 · 소분류, 길면 2줄) */}
+                    {/* 모집분야 — 지원한 공고가 뽑는 자리다. 지원자 프로필 직군을 적으면
+                        제목과 값이 어긋난다(그건 개인회원 표가 맡는다). */}
                     <td className="admin-td-date">
-                      {(a.applicant_main_job_group || a.applicant_sub_job) ? (
-                        <div className="adm-td2 adm-w-md"
-                          title={[a.applicant_main_job_group, a.applicant_sub_job].filter(Boolean).join(" · ")}>
-                          {[a.applicant_main_job_group, a.applicant_sub_job].filter(Boolean).join(" · ")}
+                      {a.job_categories && a.job_categories.length > 0 ? (
+                        <div className="adm-td2 adm-w-md" title={a.job_categories.join(" · ")}>
+                          {a.job_categories.join(" · ")}
                         </div>
                       ) : "-"}
                     </td>
+                    {/* 희망지역 — 공고 자리와 멀어진 지원이 여기서 드러난다. */}
+                    <td className="admin-td-date">
+                      {shortenRegion([a.region_sido, a.region_sigungu].filter(Boolean).join(" ")) || "-"}
+                    </td>
                     {/* 지원일 */}
                     <td className="admin-td-date">{fmtDate(a.applied_at)}</td>
-                    {/* 이력서/포트폴리오 */}
+                    {/* 자소서 · 포폴 · SNS — 얼마나 갖춘 지원인가가 한 칸에 모인다.
+                        이력서는 뺐다. 이름을 눌러도 같은 이력서가 열려 한 줄에 같은
+                        문이 둘이었다. 색이 있다/없다를 말한다. */}
                     <td>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                        {hasResume ? (
-                          <button onClick={() => setSelected(a)} title="이력서 보기"
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", color: "#582681", fontSize: 14, fontWeight: 500, padding: 0 }}>
-                            <FileText size={15} /><span>이력서</span>
-                          </button>
-                        ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#555", fontSize: 14 }}>
-                            <FileText size={15} /><span>이력서</span>
-                          </span>
-                        )}
-                        {a.portfolio_images?.length ? (
-                          <a href={a.portfolio_images[0].url} target="_blank" rel="noopener noreferrer" title="포트폴리오 보기"
-                            style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#582681", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>
-                            <Paperclip size={13} /><span>포트폴리오</span>
-                          </a>
-                        ) : (
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#d0d0d0", fontSize: 13 }}>
-                            <Paperclip size={13} /><span>포트폴리오</span>
-                          </span>
-                        )}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <LinkCell url={a.cover_letter ? "있음" : null} icon={<FileText size={13} />} label="자소서" />
+                        <LinkCell url={a.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포폴" />
+                        <LinkCell url={a.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>
-                    </td>
-                    {/* 상태 (읽기 전용) */}
-                    <td>
-                      <span style={{ fontWeight: 500, color: "#582681" }}>
-                        {STATUS_TO_LABEL[a.status] || a.status}
-                      </span>
                     </td>
                   </tr>
                 );
