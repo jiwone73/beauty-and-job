@@ -2700,8 +2700,9 @@ export default function JobPostForm({
                 기업 폼에만 둔다 — 한 화면에 같은 링크가 둘이면 어느 것이 무엇을 비우는지 흐려진다. */}
             {기업폼 && (
               <button type="button" onClick={초기화}
-                style={{ marginRight: "auto", border: "none", background: "none", color: "#555",
-                  fontSize: 13.5, fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
+                style={{ border: "none", background: "none", color: "#555", fontSize: 13.5,
+                  fontFamily: "inherit", cursor: "pointer", padding: "0 4px",
+                  textDecoration: "underline", textDecorationColor: "#dcdce0", textUnderlineOffset: 3 }}>
                 초기화
               </button>
             )}
@@ -2893,7 +2894,9 @@ export default function JobPostForm({
             {/* 새로고침해도 브라우저에 남은 내용이 되살아나, 빈 화면에서 다시 시작할 길이 없었다.
                 불러오기 줄 끝에 둔다 — 불러온 것을 물리는 자리라 여기가 맞다. */}
             <button type="button" onClick={초기화}
-              style={{ marginLeft: "auto", border: "none", background: "none", color: "#555", fontSize: 13.5, fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
+              style={{ marginLeft: "auto", border: "none", background: "none", color: "#555", fontSize: 13.5,
+                fontFamily: "inherit", cursor: "pointer", padding: 0,
+                textDecoration: "underline", textDecorationColor: "#dcdce0", textUnderlineOffset: 3 }}>
               초기화
             </button>
           </div>
