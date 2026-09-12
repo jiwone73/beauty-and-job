@@ -404,7 +404,7 @@ function AdminMembersPageInner() {
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} />
                 </th>
                 <th>이름</th>
-                <th style={{ width: 250 }}>희망직군</th>
+                <th style={{ width: 180 }}>희망직군</th>
                 <th>지역</th>
                 <th >연락처</th>
                 <th>인재검색</th>
@@ -468,7 +468,7 @@ function AdminMembersPageInner() {
                     {/* 직군: 대분류 · 소분류 (프로필 직군) */}
                     <td className="admin-td-date" >
                       {(m.main_job_group || m.sub_job) ? (
-                        <div style={{ maxWidth: 250, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                        <div className="adm-td2" style={{ maxWidth: 180 }}
                           title={[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}>
                           {[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}
                         </div>
