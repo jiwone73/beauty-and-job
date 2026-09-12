@@ -516,6 +516,9 @@ export default function ProfilePage() {
   if (dbJobType === "OFFICE" && officeJobAreas.length === 0) missingRequired.push("희망직군");
   if (dbJobType === "STORE" && skillAreas.length === 0) missingRequired.push("희망직군");
   if (!preferredRegions || preferredRegions.length === 0) missingRequired.push("희망 근무지역");
+  // 희망급여 — 매장이 제안할 때 가장 먼저 맞춰 보는 값이라 비워 두면 서로 헛돈다.
+  // 금액을 적었거나 「협의」를 골랐으면 채운 것이다(협의는 0원 자리를 빌려 쓴다).
+  if (!협의 && !salaryMan) missingRequired.push("희망급여");
 
   // 직군/지역 한 줄 요약값
   const jobAreaSummary = (arr: string[]) => (arr.length ? arr.join(", ") : "선택해주세요");
