@@ -318,11 +318,10 @@ function AdminJobsPageInner() {
                 <th style={{ width: 40 }}>
                   <input type="checkbox" checked={allChecked} onChange={toggleAll} />
                 </th>
-                {/* 공고명이 두 줄로 접혀 읽기 어려웠다. 매장명은 대개 짧으니 폭을
-                    넘겨준다. 표가 auto 라 이 값은 「이만큼 쓰고 싶다」는 뜻이고,
-                    내용이 더 길면 알아서 늘어난다. */}
-                <th style={{ width: 340 }}>공고명</th>
-                <th style={{ width: 250 }}>매장/오피스명</th>
+                {/* 매장과 공고를 한 칸에 위아래로 둔다. 둘 다 「누구의 어떤 자리인가」
+                    하나를 말하는 값이라, 열을 갈라 두면 눈이 두 번 움직였다.
+                    표가 auto 라 이 폭은 「이만큼 쓰고 싶다」는 뜻이다. */}
+                <th style={{ width: 420 }}>매장 · 공고</th>
                 <th>등록상품</th>
                 <th>채용 직군</th>
                 <th>지역</th>
@@ -335,27 +334,19 @@ function AdminJobsPageInner() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={11} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={11} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : filtered.map((job) => (
                 <tr key={job.id}>
                   <td>
                     <input type="checkbox" checked={checkedIds.has(job.id)}
                       onChange={() => toggleCheck(job.id)} />
                   </td>
-                  {/* 공고명 (길면 2줄) — noopener 를 빼면 크롬이 새 탭을 이 목록과 같은
-                      렌더러에 붙인다. 목록은 공고를 전부 그려 무거워서, 새 탭이 그
-                      메인 스레드를 기다리느라 몇 초씩 '무제'로 멈춰 있었다. */}
-                  <td>
-                    <span className="adm-td2"
-                      title={job.title}
-                      style={{ maxWidth: 330, color: "#555", cursor: "pointer", fontWeight: 400 }}
-                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
-                      {job.title}
-                    </span>
-                  </td>
-                  {/* 기업 (+ 유형 텍스트) */}
+                  {/* 매장 · 공고 — 1행 매장, 2행 공고명.
+                      공고명에 noopener 를 빼면 크롬이 새 탭을 이 목록과 같은 렌더러에
+                      붙인다. 목록은 공고를 전부 그려 무거워서, 새 탭이 그 메인 스레드를
+                      기다리느라 몇 초씩 '무제'로 멈춰 있었다. */}
                   <td>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       {job.thumb_url ? (
@@ -373,11 +364,12 @@ function AdminJobsPageInner() {
                           {job.company_name.charAt(0)}
                         </div>
                       )}
+                      {/* 매장명은 읽는 값이다 — 누를 자리는 아래 공고명 하나로 둔다.
+                          한 칸에 갈 곳이 둘이면 어디를 눌러야 할지 매번 겨냥하게 된다. */}
                       <div className="admin-td-brand"
                         title={job.company_name}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", cursor: "pointer", fontWeight: 400,
-                          maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-                        onClick={() => job.company_id && openCompany(job.company_id)}>
+                        style={{ display: "inline-flex", alignItems: "center", gap: 5, color: "#555", fontWeight: 400,
+                          maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {job.company_name}
                       </div>
                       {/* 옮겨 온 공고는 원문으로 갈 수 있어야 한다 — 값이 맞는지 대조하고,
@@ -397,6 +389,14 @@ function AdminJobsPageInner() {
                           </span>
                         );
                       })()}
+                    </div>
+                    {/* 2행: 공고명. 로고 폭(26)과 사이(8)만큼 들여써 매장명과 첫 글자를
+                        맞춘다 — 어긋나 있으면 두 줄이 한 덩어리로 안 읽힌다. */}
+                    <div className="adm-td2"
+                      title={job.title}
+                      style={{ marginLeft: 34, marginTop: 3, maxWidth: 380, color: "#555", cursor: "pointer" }}
+                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
+                      {job.title}
                     </div>
                   </td>
                   {/* 등록상품 */}
