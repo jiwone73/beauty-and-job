@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
 import ResumePreviewModal from "@/components/admin/ResumePreviewModal";
 import FilterDropdown from "@/components/company/FilterDropdown";
-import { Search, FileText, Paperclip, Instagram } from "lucide-react";
+import { Search, FileText, Paperclip, Instagram, UserRound } from "lucide-react";
 import LinkCell from "@/components/company/LinkCell";
 import { shortenRegion } from "@/lib/memberFormat";
 
@@ -220,7 +220,7 @@ function AdminApplicationsPageInner() {
                 <th>모집분야</th>
                 <th>희망지역</th>
                 <th>지원일</th>
-                <th>자소서 · 포폴 · SNS</th>
+                <th>등록 자료</th>
               </tr>
             </thead>
             <tbody>
@@ -313,12 +313,14 @@ function AdminApplicationsPageInner() {
                         );
                       })()}
                     </td>
-                    {/* 자소서 · 포폴 · SNS — 얼마나 갖춘 지원인가가 한 칸에 모인다.
-                        이력서는 뺐다. 이름을 눌러도 같은 이력서가 열려 한 줄에 같은
-                        문이 둘이었다. 색이 있다/없다를 말한다. */}
+                    {/* 등록 자료 — 이 사람이 무엇을 갖췄나가 한 칸에 모인다. 개인회원
+                        표와 같은 넷을 같은 차례로 둔다. 누르는 자리가 아니라 색이
+                        있다/없다만 말한다(이력서는 이름을 누르면 열린다).
+                        두 줄씩 두 칸으로 앉힌다 — 넷을 세로로 세우면 줄이 길어진다. */}
                     <td>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <LinkCell url={a.cover_letter ? "있음" : null} icon={<FileText size={13} />} label="자소서" />
+                      <div style={{ display: "grid", gridTemplateColumns: "auto auto", gap: "4px 12px", justifyContent: "start" }}>
+                        <LinkCell url={a.resume_id} icon={<FileText size={13} />} label="이력서" />
+                        <LinkCell url={a.avatar_url} icon={<UserRound size={13} />} label="사진" />
                         <LinkCell url={a.portfolio_images?.[0]?.url ?? null} icon={<Paperclip size={13} />} label="포폴" />
                         <LinkCell url={a.sns_url} icon={<Instagram size={13} />} label="SNS" />
                       </div>
