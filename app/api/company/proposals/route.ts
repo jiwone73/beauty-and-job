@@ -10,6 +10,24 @@ import { 인재열람가능, 이름가리기, 지원함SQL } from "@/lib/company
 // 지금까지 볼 데가 없었다. 누구에게 언제 보냈는지, 읽기는 했는지, 며칠 남았는지를
 // 알려면 인재 목록을 뒤져야 했다 — 7일 기한을 정해 놓고 정작 그 기한을 보는
 // 화면이 없었다.
+/** 「인천광역시 연수구」는 표 한 칸에 안 들어간다. 시도 꼬리를 뗀다 —
+ *  인재 카드·공고 지원자가 이미 같은 규칙으로 줄여 쓰고 있다. */
+const 시도짧게: Record<string, string> = {
+  경기도: "경기", 충청북도: "충북", 충청남도: "충남",
+  전라남도: "전남", 경상북도: "경북", 경상남도: "경남",
+};
+function 짧은지역(v?: string | null): string {
+  const t = (v || "")
+    .replace(/특별자치도|특별자치시|특별시|광역시/g, "")
+    .replace(/^(경기도|충청북도|충청남도|전라남도|경상북도|경상남도)/, (m) => 시도짧게[m])
+    .replace(/\s+/g, " ")
+    .trim();
+  // 「경기 성남시 분당구」처럼 시 밑에 구가 또 있는 데는 세 토막이라 어떤 폭에도
+  // 안 들어간다. 구 이름은 전국에서 겹치지 않으니 구만 남긴다 — 「경기 분당구」.
+  const 조각 = t.split(" ");
+  return 조각.length > 2 ? `${조각[0]} ${조각[조각.length - 1]}` : t;
+}
+
 export async function GET(req: NextRequest) {
   const { auth, res } = requireAuth(req, "company");
   if (res) return res;
@@ -26,6 +44,8 @@ export async function GET(req: NextRequest) {
               CASE WHEN u.birth_date IS NULL THEN NULL
                    ELSE EXTRACT(YEAR FROM AGE(u.birth_date))::int END AS age,
               up.sub_job, up.main_job_group,
+              -- 희망지역. 표에서 사람을 가릴 때 직군만큼이나 먼저 보는 값이다.
+              u.region_sido, u.region_sigungu, up.region_prefer,
               jp.title AS job_title,
               -- 상대가 마지막으로 말을 걸었는데 아직 답하지 않았는가
               (SELECT sender FROM proposal_messages m
@@ -92,6 +112,7 @@ export async function GET(req: NextRequest) {
       age: r.age ?? null,
       // 직군은 소분류가 먼저다 — 「속눈썹·반영구 아티스트」가 「네일·속눈썹」보다 말이 된다.
       subJob: r.sub_job || r.main_job_group || null,
+      regionPrefer: 짧은지역([r.region_sido, r.region_sigungu].filter(Boolean).join(" ")) || 짧은지역(r.region_prefer) || null,
       jobTitle: r.job_title,
       lastSender: r.last_sender,
       blocked: r.blocked,

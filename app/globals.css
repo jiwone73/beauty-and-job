@@ -15327,17 +15327,27 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: var(--card-bg); border: 1px solid var(--card-line); border-radius: 10px;
   box-shadow: var(--card-shadow); overflow-x: auto;
 }
-.prop-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+/* 열 폭은 정한 대로 지킨다. 그냥 두면 브라우저가 「제안」처럼 내용 긴 열에
+   자리를 더 떼어 주고, 그만큼 진행 상황이 눌린다. 말줄임(…)도 폭이 고정돼야 든다. */
+.prop-table { width: 100%; min-width: 760px; table-layout: fixed; border-collapse: collapse; font-size: 15px; }
 .prop-table th {
-  padding: 10px 12px; text-align: left; font-weight: 500; font-size: 14.5px;
+  padding: 8px 10px; text-align: left; font-weight: 500; font-size: 14.5px;
   color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;
 }
-.prop-table td { padding: 10px 12px; border-top: 1px solid #f4f4f6; color: var(--color-text); vertical-align: middle; }
+.prop-table td { padding: 8px 10px; border-top: 1px solid #f4f4f6; color: var(--color-text); vertical-align: middle; }
 .prop-table tbody tr:first-child td { border-top: none; }
 /* 미답변인 줄만 왼쪽에 띠. 목록을 훑을 때 그 줄만 눈에 걸리면 된다. */
 .prop-table tr.mine td:first-child { box-shadow: inset 2px 0 0 #c0504d; }
-.prop-table .c-no { width: 40px; color: var(--color-text); }
-.prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
+/* 한 줄에 한 값 — 칸 안에서 글이 접히면 줄 높이가 사람마다 달라 표가 들쭉날쭉해진다.
+   넘치면 접지 말고 말줄임으로 자른다. */
+.prop-table .c-date, .prop-table .c-st, .prop-table .c-region { white-space: nowrap; }
+.prop-table .c-region { width: 104px; overflow: hidden; text-overflow: ellipsis; }
+.prop-table .c-who { width: 148px; }
+/* 날짜·상태도 폭을 못 박는다 — 비워 두면 남은 자리를 진행 상황과 똑같이 나눠 갖고,
+   정작 글이 긴 진행 상황이 좁아진다. */
+.prop-table .c-date { width: 78px; }
+.prop-table .c-st { width: 80px; }
+.prop-whoinfo b, .prop-whoinfo i { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
    머리 글자와 단추 글자가 12px 어긋나 보인다. */
  /* 왼쪽 정렬이다. 오른쪽에 붙이면 「채팅하기」가 없는 줄에서 「제안 취소」가
@@ -15348,7 +15358,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 시각은 따로 선다 — 활동 글자와 한 칸에 두면 긴 문구에서 시각이 아래로 떨어졌다. */
 /* 업데이트 열 — 머리글자와 시간 모두 표 본문과 같은 #555. 옅은 회색으로 두었더니
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
-.prop-table .c-time { width: 96px; white-space: nowrap; font-size: 13.5px; color: #555; }
+.prop-table .c-time { width: 80px; white-space: nowrap; font-size: 13.5px; color: #555; }
 .prop-table th.c-time { color: #555; }
 /* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
 .prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
@@ -15394,7 +15404,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    주체가 글 안에 들어가면서 줄이 길어져 시각을 옆에 두면 밀려난다. */
 /* 글이 길면 다음 줄로 넘어간다 — 한 줄에 밀어 넣으려고 폭을 넓게 잡으면 정작
    이름·직군 칸이 좁아져 거기가 두 줄로 접혔다. 낱말 중간에서 끊지 않는다. */
-.prop-table .c-recent { width: 232px; }
+.prop-table .c-recent { width: auto; }
 /* 시각은 문구 뒤에 이어 붙는다 — 자리가 있으면 같은 줄에, 모자라면 그때 넘어간다.
    예전에는 둘 다 블록이라 짧은 문구에서도 시각이 늘 아랫줄로 떨어졌다. */
 .c-recent span { display: inline; white-space: normal; word-break: keep-all; line-height: 1.45; }
@@ -15405,7 +15415,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    자세한 말은 이 칸에 늘어놓지 않는다(채팅창에서 본다). */
 .c-recent button { display: inline; border: none; background: none; padding: 0;
   font: inherit; color: inherit; text-align: left; cursor: pointer;
-  text-decoration: underline; text-decoration-color: #dcdce0; text-underline-offset: 3px; }
+  text-decoration: underline; text-decoration-color: #a5a5ae; text-underline-offset: 3px; }
 .c-recent button:hover { text-decoration-color: currentColor; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
   font-size: 13.5px; color: #9a9aa3; white-space: nowrap; }
@@ -15567,7 +15577,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 14px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
 /* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
    낱말 가운데서 끊기지 않게 keep-all 을 준다. */
-.prop-table .c-job { width: 125px; font-size: 14.5px; color: var(--color-text);
-  line-height: 1.45; word-break: keep-all; }
+/* 직군도 한 줄로 — 접히면 사람마다 줄 수가 달라 표가 들쭉날쭉해진다. 넘치면 말줄임. */
+.prop-table .c-job { width: 140px; max-width: 140px; font-size: 14.5px; color: var(--color-text);
+  line-height: 1.45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }
