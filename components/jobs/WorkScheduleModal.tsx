@@ -8,6 +8,11 @@ const HOUR_OPTIONS = Array.from({ length: 17 }, (_, i) => i + 7); // 7시~23시 
 const MIN_OPTIONS = [0, 30]; // 30분 단위만 — 매장 근무시간엔 이 이상 잘게 쪼갤 일이 없다
 const FORMAT_EXAMPLES = ["월, 수 10시-18시 / 금 12시-20시", "평일 10시-18시, 토 10시-17시", "협의"];
 const fmtT = (h: number, m: number) => (m ? `${h}시${m}분` : `${h}시`);
+// 받침이 있으면 은, 없으면 는 — 「토은 시간 다르게」처럼 적히지 않게.
+const 은는 = (w: string) => {
+  const c = (w || "").charCodeAt((w || "").length - 1);
+  return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 ? "은" : "는";
+};
 
 interface Props {
   value: string;
@@ -59,6 +64,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   const [qWeekDays, setQWeekDays] = useState<number[]>([5]);
   const [qBiweekly, setQBiweekly] = useState(false); // 매장: 격주 가능
   const [qDays, setQDays] = useState<string[]>([]);
+  // 지정 요일에서 「토·일은 시간 다르게」를 켰나. 주말 시간을 따로 받을지만 정한다 —
+  // 어느 요일이 주말인지는 위에서 고른 요일이 이미 말한다.
+  const [주말따로, set주말따로] = useState(false);
   const [qStart, setQStart] = useState(defaultStart);
   const [qStartMin, setQStartMin] = useState(0);
   const [qEnd, setQEnd] = useState(defaultEnd);
@@ -158,11 +166,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   };
 
   // 주말 요일·시간이 바뀔 때 값을 다시 만든다. 상태 반영은 다음 렌더라 새 값을 직접 받는다.
-  const 주말반영 = (type: QuickType, sh: number, sm: number, eh: number, em: number, 주말 = q주말) => {
+  const 주말반영 = (type: QuickType, sh: number, sm: number, eh: number, em: number, 주말 = q주말, days = qDays) => {
     const 주말시간 = `${주말.join("·")} ${fmtT(sh, sm)} ~ ${fmtT(eh, em)}`;
+    // 지정 요일은 고른 요일에서 주말을 뺀 수가 평일 수다. 평일을 하나도 안 골랐으면
+    // 「평일」 줄 없이 주말 시간만 적는다(토·일만 나오는 자리).
+    const 기준 = type === "custom" ? [days.filter((d) => !["토", "일"].includes(d)).length] : qWeekDays;
     const 줄 = !주말.length
       ? `${fmtT(qStart, qStartMin)} ~ ${fmtT(qEnd, qEndMin)}`
-      : ((qWeekDays.length ? Math.min(...qWeekDays) : 0) - 주말.length <= 0
+      : ((기준.length ? Math.min(...기준) : 0) - 주말.length <= 0
           ? 주말시간
           : `평일 ${fmtT(qStart, qStartMin)} ~ ${fmtT(qEnd, qEndMin)}\n${주말시간}`);
     if (type === "weeks") setDraft(`${요일줄(qWeekDays, qBiweekly, 주말)}\n${줄}`);
@@ -174,7 +185,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   };
 
   const applyQuick = (type: QuickType, days: string[], startH: number, startM: number, endH: number, endM: number,
-    weekDays: number[] = qWeekDays, biweekly = qBiweekly) => {
+    weekDays: number[] = qWeekDays, biweekly = qBiweekly, 주말 = q주말) => {
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
@@ -186,7 +197,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
     // 값 자체에 적어 둔다.
-    const label = type === "weekday" ? "평일(월~금)" : type === "weekend" ? "주말(토~일)" : days.join(", ");
+    if (type === "custom") {
+      // 고른 요일에서 주말을 뺀 수가 평일 수다 — 토·일만 고르면 「평일」 줄이 안 선다.
+      const 평일수 = days.filter((d) => !["토", "일"].includes(d)).length;
+      setDraft(`${days.join(", ")}\n${시간줄(startH, startM, endH, endM, 주말, [평일수])}`);
+      return;
+    }
+    const label = type === "weekday" ? "평일(월~금)" : "주말(토~일)";
     // 요일과 시간을 한 줄에 붙이면 길어서 표·칸에서 줄바꿈 없이 한 줄로 늘어졌다
     // ("시간 줄바꿈 안되어 있어") — 요일 다음 줄에 시간을 따로 둔다.
     setDraft(`${label}\n${시간줄(startH, startM, endH, endM)}`);
@@ -196,7 +213,10 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     const next = qDays.includes(d) ? qDays.filter((x) => x !== d) : [...qDays, d].sort((a, b) => DAY_OPTIONS.indexOf(a) - DAY_OPTIONS.indexOf(b));
     setQDays(next);
     set확정(next.length ? "custom" : null);
-    applyQuick("custom", next, qStart, qStartMin, qEnd, qEndMin);
+    // 시간을 따로 받기로 했으면 주말 목록은 고른 요일에서 그대로 따라온다.
+    const 다음주말 = 주말따로 ? next.filter((x) => ["토", "일"].includes(x)) : [];
+    setQ주말(다음주말);
+    applyQuick("custom", next, qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, 다음주말);
   };
 
   const quickRows: { type: QuickType; icon: any; label: string }[] = store
@@ -256,7 +276,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
                       disabled={확정 !== null && 확정 !== r.type}
                       onClick={() => {
-                        if (on) { setQuickType(null); set확정(null); setDraft(""); return; }
+                        // 풀 때는 주말 선택도 같이 비운다 — 남겨 두면 다른 항목을 열었을 때
+                        // 고른 적 없는 토·일이 이미 골라진 채로 나온다.
+                        if (on) { setQuickType(null); set확정(null); setDraft(""); setQ주말([]); set주말따로(false); return; }
                         applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin);
                         // 협의는 펼칠 카드가 없다 — 고른 순간 정해진 것이다.
                         if (r.type === "nego") set확정("nego");
@@ -312,6 +334,30 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         {/* 「주 5일」만으로는 평일 5일인지 평일 4일＋토인지 알 수 없다.
                             주말에 나오는지부터 묻고, 고르면 그 요일 시간 줄이 따라 선다 —
                             주말 시간이 다른 매장이 많아 어차피 갈려야 한다. */}
+                        {/* 지정 요일은 위에서 토·일을 이미 골랐다 — 여기서 또 고르게 하면
+                            어느 쪽이 진짜인지 값이 어긋난다. 고른 요일에 주말이 있을 때만
+                            「시간 다르게」를 묻는다. 주 N일은 요일을 안 고르므로 그대로 묻는다. */}
+                        {r.type === "custom" ? (
+                          (() => {
+                            const 주말후보 = qDays.filter((d) => ["토", "일"].includes(d));
+                            if (!주말후보.length) return null;
+                            return (
+                              <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
+                                <input type="checkbox" checked={주말따로}
+                                  onChange={(e) => {
+                                    const 켬 = e.target.checked;
+                                    set주말따로(켬);
+                                    const 다음 = 켬 ? 주말후보 : [];
+                                    setQ주말(다음);
+                                    set확정("custom");
+                                    주말반영("custom", q주말시작, q주말시작분, q주말끝, q주말끝분, 다음, qDays);
+                                  }}
+                                  style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                                {주말후보.join("·")}{은는(주말후보[주말후보.length - 1])} 시간 다르게
+                              </label>
+                            );
+                          })()
+                        ) : (
                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                           <span style={{ fontSize: 12.5, color: "#888" }}>주말 근무</span>
                           {["토", "일"].map((d) => {
@@ -326,8 +372,10 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                                 }}>{d}</button>
                             );
                           })}
-                          {q주말.length === 0 && <span style={{ fontSize: 12, color: "#b8b8be" }}>안 하면 비워 두세요</span>}
+                          {/* 눌러 보기 전에는 주말 시간을 따로 잡을 수 있다는 걸 알 수 없었다. */}
+                          {q주말.length === 0 && <span style={{ fontSize: 12, color: "#b8b8be" }}>고르면 시간 따로 정해요</span>}
                         </div>
+                        )}
                         {q주말.length > 0 && (
                           <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
                             <span style={{ fontSize: 12.5, color: "#888", marginRight: 2 }}>{q주말.join("·")}</span>
