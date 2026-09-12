@@ -251,13 +251,18 @@ export async function GET(req: NextRequest) {
     const companySizeBoth = await client.query(companySizeQuery("c.company_type = 'BOTH'"))
 
     let today_visitors: number | null = null
+    let today_logins: number | null = null
     try {
-      const v = await client.query(`SELECT COUNT(*)::int AS n FROM site_visits WHERE visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date`)
+      const v = await client.query(`
+        SELECT COUNT(*)::int AS n,
+               COUNT(*) FILTER (WHERE user_id IS NOT NULL)::int AS logins
+          FROM site_visits WHERE visit_date = (now() AT TIME ZONE 'Asia/Seoul')::date`)
       today_visitors = v.rows[0]?.n ?? 0
+      today_logins = v.rows[0]?.logins ?? 0
     } catch {}
 
     return ok({
-      counts: { ...counts.rows[0], today_visitors },
+      counts: { ...counts.rows[0], today_visitors, today_logins },
       job_dist_store: jobDistStore.rows,
       job_dist_office: jobDistOffice.rows,
       job_dist_both: jobDistBoth.rows,

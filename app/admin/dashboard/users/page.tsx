@@ -69,16 +69,27 @@ export default function AdminDashboardUsers() {
       </div>
 
       {/* 카운터 — 대시보드 요약 카드와 같은 부품(.co-counts) */}
-      <div className="co-counts" style={{ ["--co-counts-n" as any]: 3 }}>
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: 6 }}>
         {[
           { label: "개인회원", value: fmtNum(tab === "STORE" ? c?.store_users : tab === "OFFICE" ? c?.office_users : c?.total_users), href: `/admin/members?type=${tab}` },
           { label: "오늘 신규 가입", value: fmtNum(tab === "STORE" ? c?.today_users_store : tab === "OFFICE" ? c?.today_users_office : c?.today_users), href: `/admin/members?type=${tab}&date=today` },
+          // 방문·로그인은 사이트 전체 수라 매장/본사로 갈리지 않는다 — 고르개를 따르지 않는다.
+          { label: "오늘 방문", value: fmtNum(c?.today_visitors) },
+          { label: "오늘 로그인", value: fmtNum(c?.today_logins) },
+          { label: "오늘 입사지원", value: fmtNum(tab === "STORE" ? c?.today_applications_store : tab === "OFFICE" ? c?.today_applications_office : c?.today_applications), href: "/admin/resumes/applications?date=today" },
           { label: "전체 이력서", value: fmtNum(tab === "STORE" ? c?.total_resumes_store : tab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes), href: "/admin/members" },
         ].map((s) => (
-          <Link key={s.label} href={s.href} className="co-count" style={{ textDecoration: "none" }}>
-            <span className="co-count-label">{s.label}</span>
-            <span className="co-count-value">{s.value}</span>
-          </Link>
+          s.href ? (
+            <Link key={s.label} href={s.href} className="co-count" style={{ textDecoration: "none" }}>
+              <span className="co-count-label">{s.label}</span>
+              <span className="co-count-value">{s.value}</span>
+            </Link>
+          ) : (
+            <div key={s.label} className="co-count" style={{ cursor: "default" }}>
+              <span className="co-count-label">{s.label}</span>
+              <span className="co-count-value">{s.value}</span>
+            </div>
+          )
         ))}
       </div>
 
