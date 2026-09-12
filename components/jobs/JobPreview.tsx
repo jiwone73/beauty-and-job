@@ -25,8 +25,8 @@ interface JobPreviewProps {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: "flex", padding: "7px 0", fontSize: "14px", borderBottom: "1px solid #f5f5f5" }}>
-      <span style={{ width: "90px", color: "#888", flexShrink: 0 }}>{label}</span>
-      <span style={{ color: "#222" }}>{value}</span>
+      <span style={{ width: "90px", color: "#555", flexShrink: 0 }}>{label}</span>
+      <span style={{ color: "#555" }}>{value}</span>
     </div>
   );
 }

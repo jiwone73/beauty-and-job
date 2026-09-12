@@ -183,7 +183,7 @@ export default function ImageCropModal({ file, aspect, guides, minLongEdge, canc
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #eee" }}>
           <strong style={{ fontSize: 15 }}>사진 자르기</strong>
           <button type="button" onClick={onCancel} aria-label="닫기"
-            style={{ border: "none", background: "none", cursor: "pointer", color: "#999", display: "flex" }}>
+            style={{ border: "none", background: "none", cursor: "pointer", color: "#555", display: "flex" }}>
             <X size={20} />
           </button>
         </div>
@@ -225,7 +225,7 @@ export default function ImageCropModal({ file, aspect, guides, minLongEdge, canc
             )}
           </div>
         </div>
-        <p style={{ fontSize: 12.5, color: "#999", margin: "0 16px 4px", textAlign: "center" }}>
+        <p style={{ fontSize: 12.5, color: "#555", margin: "0 16px 4px", textAlign: "center" }}>
           박스를 끌어 옮기고, 모서리나 변을 끌어 크기를 바꾸세요
         </p>
         <div style={{ margin: "0 16px 12px", textAlign: "center" }}>
@@ -249,7 +249,7 @@ export default function ImageCropModal({ file, aspect, guides, minLongEdge, canc
                       background: 켬 ? "#f7f7f8" : "#fff",
                       border: `1px solid ${켬 ? "#582681" : "#e6e6ea"}`,
                       borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontWeight: 500 }}>
-                    {g.key}에 맞추기{g.note && <span style={{ color: "#bbb", fontWeight: 400 }}> · {g.note}</span>}
+                    {g.key}에 맞추기{g.note && <span style={{ color: "#555", fontWeight: 400 }}> · {g.note}</span>}
                   </button>
                 );
               })}
@@ -258,18 +258,18 @@ export default function ImageCropModal({ file, aspect, guides, minLongEdge, canc
           {/* 권하는 최소 크기는 쓰는 자리마다 다르다(카드에 크게 실리는 사진과
               작은 아바타가 같을 리 없다). 부르는 쪽이 정해서 넘긴다. */}
           {minLongEdge && (
-            <p style={{ fontSize: 12, color: "#bbb", margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: "#555", margin: 0, lineHeight: 1.5 }}>
               {minLongEdge}px 이상이면 화면에서 또렷하게 보여요
             </p>
           )}
         </div>
         {주의 && (
           <p style={{ margin: "0 16px 12px", padding: "10px 12px", borderRadius: 8, background: "#f7f7f8",
-            fontSize: 12.5, color: "#6b6570", lineHeight: 1.6 }}>{주의}</p>
+            fontSize: 12.5, color: "#555", lineHeight: 1.6 }}>{주의}</p>
         )}
         <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
           <button type="button" onClick={onCancel}
-            style={{ flex: 1, padding: "11px 0", borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#666", fontSize: 14, cursor: "pointer" }}>
+            style={{ flex: 1, padding: "11px 0", borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#555", fontSize: 14, cursor: "pointer" }}>
             {cancelLabel}
           </button>
           <button type="button" onClick={confirm} disabled={working}

@@ -163,7 +163,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const posColWeightTotal = posColBlended.reduce((s, w) => s + w, 0) || 1;
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#b7b0c0", flexShrink: 0 }} />모집부문</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#555", flexShrink: 0 }} />모집부문</h2>
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
       {/* 가로 스크롤 없이 카드 폭에 무조건 맞춘다("좌우 스크롤 되면 안 돼 · 다
@@ -253,7 +253,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
           복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
       {(job.benefits || []).length > 0 && (<>
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 18 }}><Tag size={16} style={{ color: "#b7b0c0", flexShrink: 0 }} />복리후생</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 18 }}><Tag size={16} style={{ color: "#555", flexShrink: 0 }} />복리후생</h2>
       <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{(job.benefits || []).join(", ")}</div>
       </>)}
     </div>
@@ -285,7 +285,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const locationSection = hasMap ? (
     <div className="jd-subblock" key="location">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#b7b0c0", flexShrink: 0 }} />근무지역</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#555", flexShrink: 0 }} />근무지역</h2>
       {/* 근무지가 여럿이면 다 적는다. 폼의 「근무지 추가」로 넣은 지점이 여태
           지원 창에서 고를 때만 보여, 폼과 공고가 갈렸다. 지도는 첫 주소로 그린다. */}
       {[job.companyAddress, ...(((job as any).workLocations || []) as any[])
@@ -342,7 +342,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const applyGuideBlock = (hasContact || hasMethods || hasProcess || job.deadline) ? (
     <div className="jd-subblock" key="apply-guide">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#b7b0c0", flexShrink: 0 }} />지원 안내</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#555", flexShrink: 0 }} />지원 안내</h2>
       {(hasContact || hasMethods) && (
         <div className="jd-2col">
           <div>{methodsInner}</div>

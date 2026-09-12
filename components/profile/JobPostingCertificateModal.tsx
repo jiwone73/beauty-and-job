@@ -107,7 +107,7 @@ export default function JobPostingCertificateModal({
         </div>
         <div className="rp-modal-body" style={{ overflowY: "auto", flex: 1 }}>
           {loading ? (
-            <div style={{ padding: 60, textAlign: "center", color: "#888" }}>불러오는 중...</div>
+            <div style={{ padding: 60, textAlign: "center", color: "#555" }}>불러오는 중...</div>
           ) : (
             <CertificateSheet ref={captureRef} docNo={docNo} todayStr={todayStr} compact={isMobile}>
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 18 }}>
@@ -151,12 +151,12 @@ export default function JobPostingCertificateModal({
 
               {job?.description && (
                 <div style={{ border: "1px solid #ddd", borderTop: "none", padding: isMobile ? "8px 8px 10px" : "12px 12px 14px", marginBottom: 0 }}>
-                  <p style={{ fontSize: isMobile ? 10 : 12, fontWeight: 700, color: "#666", margin: "0 0 6px" }}>모집 내용</p>
+                  <p style={{ fontSize: isMobile ? 10 : 12, fontWeight: 700, color: "#555", margin: "0 0 6px" }}>모집 내용</p>
                   <p style={{ fontSize: isMobile ? 10.5 : 13, color: "#555", lineHeight: isMobile ? 1.55 : 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{job.description}</p>
                 </div>
               )}
 
-              <p style={{ fontSize: isMobile ? 9 : 12, color: "#888", lineHeight: 1.6, margin: isMobile ? "12px 0 0" : "18px 0 0" }}>
+              <p style={{ fontSize: isMobile ? 9 : 12, color: "#555", lineHeight: 1.6, margin: isMobile ? "12px 0 0" : "18px 0 0" }}>
                 {isSnapshot && (
                   <>※ 위 채용공고 내용은 지원일({fmt(app.applied_at)}) 시점 기준으로 보관된 자료입니다.<br /></>
                 )}

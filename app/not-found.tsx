@@ -33,7 +33,7 @@ export default function NotFound() {
       </h1>
       <p style={{
         fontSize: "15px",
-        color: "#666",
+        color: "#555",
         textAlign: "center",
         marginBottom: "32px",
         lineHeight: 1.6,

@@ -136,7 +136,7 @@ export default function JobSearchCertificateModal({
               </tbody>
             </table>
 
-            <p style={{ fontSize: isMobile ? 9 : 12, color: "#888", lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontSize: isMobile ? 9 : 12, color: "#555", lineHeight: 1.6, margin: 0 }}>
               ※ 본 증명서는 구직활동 증빙 자료로 활용하실 수 있으며, 최종 인정 여부는 관할 고용센터의 판단에 따릅니다.<br />
               ※ 실업급여 구직활동 증빙 시, 해당 채용공고문을 함께 제출해야 인정되는 경우가 있습니다. (공고문 포함 개별 증명서는 각 지원 건에서 발급할 수 있습니다.)
             </p>

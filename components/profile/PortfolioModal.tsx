@@ -7,7 +7,7 @@ import { linkLabel, looksLikeUrl, normalizeUrl, MAX_LINKS } from "@/lib/linkLabe
 // 한 줄 규격 — 이 모달의 글자는 모두 이 값을 쓴다. 곳마다 12.5/13/14 로
 // 달랐더니 같은 칸 안에서도 글씨가 들쭉날쭉했다.
 const 글 = { fontSize: 13, lineHeight: 1.6 } as const;
-const 흐린글 = { ...글, color: "#888" } as const;
+const 흐린글 = { ...글, color: "#555" } as const;
 
 // 주소를 통째로 외워 적는 사람은 없다. 몇 글자만 치면 앞부분을 채워 주고
 // 아이디만 이어 적게 한다. 별칭은 한글·영문·줄임말을 모두 받는다.
@@ -130,7 +130,7 @@ export default function PortfolioModal({
             <div className="pf-subhead">
               {고름 ? (
                 <>
-                  <span className="pf-subtitle" style={{ fontSize: 12.5, color: "#888" }}>
+                  <span className="pf-subtitle" style={{ fontSize: 12.5, color: "#555" }}>
                     지울 사진을 고르세요{고른것.size ? ` (${고른것.size}장)` : ""}
                   </span>
                   <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
@@ -204,7 +204,7 @@ export default function PortfolioModal({
             </button>
           </>
         ) : (
-          <p style={{ fontSize: 12.5, color: "#888", margin: "2px 0 0" }}>사진은 {MAX_PHOTOS}장까지 넣을 수 있어요.</p>
+          <p style={{ fontSize: 12.5, color: "#555", margin: "2px 0 0" }}>사진은 {MAX_PHOTOS}장까지 넣을 수 있어요.</p>
         )}
         <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: "none" }}
           onChange={(e) => { const f = Array.from(e.target.files || []); if (f.length) onFiles(f); if (fileRef.current) fileRef.current.value = ""; }} />
@@ -223,7 +223,7 @@ export default function PortfolioModal({
               type="button"
               onClick={() => onDeleteLink(l.id)}
               aria-label={`${linkLabel(l.url)} 주소 삭제`}
-              style={{ marginLeft: "auto", flexShrink: 0, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", color: "#bbb", cursor: "pointer", borderRadius: 6, alignSelf: "center" }}
+              style={{ marginLeft: "auto", flexShrink: 0, width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", color: "#555", cursor: "pointer", borderRadius: 6, alignSelf: "center" }}
             >
               <X size={15} />
             </button>

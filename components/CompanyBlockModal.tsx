@@ -86,7 +86,7 @@ export default function CompanyBlockModal({
 
           <label className="cv-field-label">{noun} 검색</label>
           <div style={{ position: "relative" }}>
-            <Search size={16} style={{ position: "absolute", left: 12, top: 13, color: "#999" }} />
+            <Search size={16} style={{ position: "absolute", left: 12, top: 13, color: "#555" }} />
             <input
               className="cv-input"
               style={{ paddingLeft: 36, width: "100%" }}
@@ -99,12 +99,12 @@ export default function CompanyBlockModal({
           {query.trim() && (
             <div style={{ border: "1px solid #eee", borderRadius: 8, marginTop: 8, maxHeight: 200, overflowY: "auto" }}>
               {searching ? (
-                <div style={{ padding: 16, textAlign: "center", color: "#999", fontSize: 13 }}>검색 중...</div>
+                <div style={{ padding: 16, textAlign: "center", color: "#555", fontSize: 13 }}>검색 중...</div>
               ) : results.length === 0 ? (
                 /* 차단은 상대의 계정에 걸린다. 뷰티워크에 없는 곳은 애초에
                    내 프로필을 볼 수 없으니 막을 것도 없다 — 이름만 적어 두면
                    막았다고 착각하게 되므로, 그 대신 사실을 알린다. */
-                <div style={{ padding: "14px 16px", color: "#888", fontSize: 12.5, lineHeight: 1.6 }}>
+                <div style={{ padding: "14px 16px", color: "#555", fontSize: 12.5, lineHeight: 1.6 }}>
                   검색되지 않는 곳은 아직 뷰티워크에 없어요.
                   <br />없는 곳은 내 이력서를 볼 수 없으니 등록하지 않아도 괜찮아요.
                 </div>
@@ -118,7 +118,7 @@ export default function CompanyBlockModal({
                         {c.companyName}{c.brandName ? ` (${c.brandName})` : ""}
                       </span>
                       {/* 주소가 있어야 '홍대점'이 여럿일 때 내 가게를 고른다. */}
-                      <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, lineHeight: 1.45, overflowWrap: "anywhere" }}>
+                      <span style={{ display: "block", fontSize: 12, color: "#555", marginTop: 2, lineHeight: 1.45, overflowWrap: "anywhere" }}>
                         {c.address || "주소 미등록"}
                       </span>
                     </span>
@@ -131,7 +131,7 @@ export default function CompanyBlockModal({
 
           <label className="cv-field-label" style={{ marginTop: 20 }}>열람 제한 {noun} ({blocked.length})</label>
           {blocked.length === 0 ? (
-            <p style={{ fontSize: 13, color: "#aaa", padding: "12px 0" }}>아직 등록한 {noun}이 없어요.</p>
+            <p style={{ fontSize: 13, color: "#555", padding: "12px 0" }}>아직 등록한 {noun}이 없어요.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
               {blocked.map((b) => (
@@ -142,12 +142,12 @@ export default function CompanyBlockModal({
                       <Ban size={14} color="#582681" style={{ flexShrink: 0 }} /> {b.companyName}
                     </span>
                     {/* 막아 둔 곳이 정말 그곳인지 나중에도 확인할 수 있어야 한다. */}
-                    <span style={{ display: "block", fontSize: 12, color: "#999", marginTop: 2, paddingLeft: 20, lineHeight: 1.45, overflowWrap: "anywhere" }}>
+                    <span style={{ display: "block", fontSize: 12, color: "#555", marginTop: 2, paddingLeft: 20, lineHeight: 1.45, overflowWrap: "anywhere" }}>
                       {b.address || "주소 미등록"}
                     </span>
                   </span>
                   <button onClick={() => removeBlock(b.companyId)}
-                    style={{ background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: 13, textDecoration: "underline", flexShrink: 0 }}>
+                    style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: 13, textDecoration: "underline", flexShrink: 0 }}>
                     해제
                   </button>
                 </div>

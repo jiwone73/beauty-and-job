@@ -78,7 +78,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
             <div style={{ textAlign: "center", padding: "32px 0" }}>
               <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
               <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px", color: "#555" }}>문의가 접수되었습니다</h3>
-              <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6 }}>
+              <p style={{ fontSize: 14, color: "#555", lineHeight: 1.6 }}>
                 남겨주신 이메일로 평일 기준 1~2일 내에 답변드리겠습니다.
               </p>
               <button className="cv-btn-primary" style={{ marginTop: 20 }} onClick={onClose}>확인</button>
@@ -112,7 +112,7 @@ export default function InquiryModal({ isOpen, onClose }: { isOpen: boolean; onC
               <button className="cv-btn-primary" style={{ marginTop: 16, width: "100%", ...(!agreed || submitting ? { opacity: 0.5, cursor: "not-allowed" } : {}) }} disabled={submitting || !agreed} onClick={handleSubmit}>
                 {submitting ? "접수 중..." : "문의 보내기"}
               </button>
-              <p style={{ fontSize: 12, color: "#999", textAlign: "center", marginTop: 10 }}>
+              <p style={{ fontSize: 12, color: "#555", textAlign: "center", marginTop: 10 }}>
                 접수 후 평일 기준 1~2일 내에 이메일로 답변드립니다.
               </p>
             </>

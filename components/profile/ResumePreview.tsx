@@ -294,14 +294,14 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           <h2 className="rp-section-title"><Globe size={16} className="resume-section-icon" />어학</h2>
           {languages.map((lang) => (
             <div key={lang.id} className="rp-item">
-              <p className="rp-text" style={{ fontWeight: 400, fontSize: "13px", color: "#666" }}>
+              <p className="rp-text" style={{ fontWeight: 400, fontSize: "13px", color: "#555" }}>
                 {lang.language}
-                <span style={{ marginLeft: "12px", fontWeight: 400, color: "#666" }}>
+                <span style={{ marginLeft: "12px", fontWeight: 400, color: "#555" }}>
                   {lang.level}
                 </span>
               </p>
               {시험한줄(lang.test) && (
-                <p className="rp-text" style={{ color: "#888", fontSize: "13px" }}>
+                <p className="rp-text" style={{ color: "#555", fontSize: "13px" }}>
                   {시험한줄(lang.test)}
                 </p>
               )}

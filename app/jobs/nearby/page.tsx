@@ -439,7 +439,7 @@ export default function NearbyJobsPage() {
           ))}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 13, color: "#666" }}>반경</span>
+          <span style={{ fontSize: 13, color: "#555" }}>반경</span>
           <div className="seg">
             {RADII.map((r) => (
               <button key={r} onClick={() => setRadius(r)}
@@ -464,9 +464,9 @@ export default function NearbyJobsPage() {
       {/* 리스트 */}
       <div className="nb-list">
         {loading ? (
-          <p style={{ textAlign: "center", color: "#888", padding: "32px 0", fontSize: 14 }}>불러오는 중…</p>
+          <p style={{ textAlign: "center", color: "#555", padding: "32px 0", fontSize: 14 }}>불러오는 중…</p>
         ) : jobs.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#888", padding: "40px 24px", fontSize: 14, lineHeight: 1.6 }}>
+          <p style={{ textAlign: "center", color: "#555", padding: "40px 24px", fontSize: 14, lineHeight: 1.6 }}>
             이 위치 반경 {radius}km 안에 조건에 맞는 공고가 없어요.<br />지도를 옮기거나 반경을 넓혀보세요.
           </p>
         ) : (
@@ -477,9 +477,9 @@ export default function NearbyJobsPage() {
                 {j.logo_url ? <img src={j.logo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#582681", fontWeight: 700 }}>{(jobCompanyName(j.job_type, j.company_name, j.brand_name) || "?")[0]}</span>}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 12.5, color: "#888", margin: 0 }}>{jobCompanyName(j.job_type, j.company_name, j.brand_name)}</p>
+                <p style={{ fontSize: 12.5, color: "#555", margin: 0 }}>{jobCompanyName(j.job_type, j.company_name, j.brand_name)}</p>
                 <p style={{ fontSize: 14.5, fontWeight: 600, margin: "2px 0", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{j.title}</p>
-                <p style={{ fontSize: 12.5, color: "#666", margin: 0 }}>
+                <p style={{ fontSize: 12.5, color: "#555", margin: 0 }}>
                   <span style={{ color: "#582681", fontWeight: 700 }}>{fmtDist(j.distance_km)}</span>
                   {" · "}{fmtExp(j.experience_level)}{" · "}{fmtSalary(j.salary_min)}
                 </p>

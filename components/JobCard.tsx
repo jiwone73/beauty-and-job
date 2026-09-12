@@ -66,9 +66,9 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
           {data.image ? <img src={data.image} alt={data.company} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (data.company?.[0] || "·")}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 600, color: "#222", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</p>
+          <p style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 600, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.title}</p>
           <p style={{ margin: "0 0 4px", fontSize: 13, color: "#555" }}>{data.company}</p>
-          <p style={{ margin: 0, fontSize: 13, color: "#888" }}>{meta}</p>
+          <p style={{ margin: 0, fontSize: 13, color: "#555" }}>{meta}</p>
           <span style={{ display: "inline-block", marginTop: 5, fontSize: 13, fontWeight: 600, color: deadlineColor(deadlineLabel) }}>{deadlineLabel}</span>
         </div>
         <button onClick={onMark} aria-label="스크랩" style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", color: marked ? PURPLE : "#ccc" }}>

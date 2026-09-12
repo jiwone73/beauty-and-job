@@ -14,12 +14,15 @@
   --color-primary-soft: #f7f7f8;
   --color-primary-light: #a8a8ad;
   --color-primary-pale: #f7f7f8;
-  /* 기본 글자색. 진한 먹색은 눈을 때려 화면이 시끄러웠다 — 본문은 이 색으로
-     간다. 더 진해야 하는 것은 화면 제목과 한 줄 소개뿐이다. */
+  /* 글자색은 하나다. 진한 먹색은 눈을 때려 화면이 시끄럽고, 옅은 회색을
+     여럿 두면 화면마다 다른 색이 섞여 같은 표 안에서도 열마다 다른 화면처럼
+     보였다. 단계는 굵기·크기·자리가 가른다.
+     아래 셋은 예전에 진하게/옅게 쓰던 이름이다. 부르는 데가 많아 이름은
+     남기고 값만 기준색으로 모은다. */
   --color-text: #555555;
-  --color-text-strong: #1a1a1a;
-  --color-text-sub: #6b6b6b;
-  --color-text-mute: #9a9a9a;
+  --color-text-strong: #555555;
+  --color-text-sub: #555555;
+  --color-text-mute: #555555;
   --color-border: #ececec;
   --color-border-input: #e5e5e5;
   --color-bg: #ffffff;
@@ -200,10 +203,10 @@
   padding: 12px 14px; border-bottom: 1px solid #f2f2f4; font-size: 14px; color: #2b2b2b;
 }
 .hdr-bell-readall { border: none; background: none; font-size: 12.5px; color: #999; cursor: pointer; padding: 0; }
-.hdr-bell-readall:hover { color: #2b2b2b; }
+.hdr-bell-readall:hover { color: #555; }
 .hdr-bell-list { flex: 1; overflow-y: auto; }
 .hdr-bell-empty { padding: 30px 18px; text-align: center; }
-.hdr-bell-empty p { margin: 0; font-size: 13.5px; color: #b4b4b9; }
+.hdr-bell-empty p { margin: 0; font-size: 13.5px; color: #555; }
 .hdr-bell-empty-sub { margin-top: 6px !important; font-size: 12.5px !important; color: #c8c8ce !important; line-height: 1.55; }
 .hdr-bell-item {
   display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left;
@@ -213,13 +216,13 @@
 .hdr-bell-item:last-child { border-bottom: none; }
 .hdr-bell-item:hover { background: #fafafa; }
 .hdr-bell-item.unread { background: #fdfcff; }
-.hdr-bell-title { font-size: 13.5px; font-weight: 400; color: #2b2b2b; }
+.hdr-bell-title { font-size: 13.5px; font-weight: 400; color: #555; }
 .hdr-bell-msg {
-  font-size: 12.5px; color: #6b6570; line-height: 1.5;
+  font-size: 12.5px; color: #555; line-height: 1.5;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.hdr-bell-item:not(.unread) .hdr-bell-title { color: #999; }
-.hdr-bell-item:not(.unread) .hdr-bell-msg { color: #b4b4b9; }
+.hdr-bell-item:not(.unread) .hdr-bell-title { color: #555; }
+.hdr-bell-item:not(.unread) .hdr-bell-msg { color: #555; }
 .hdr-bell-time { font-size: 11.5px; color: #c0c0c6; }
 .hdr-bell-more {
   border: none; border-top: 1px solid #f2f2f4; background: #fff;
@@ -403,7 +406,7 @@
 .section-title {
   font-size: 26px;
   font-weight: 400;
-  color: #111;
+  color: #555;
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
@@ -419,7 +422,7 @@
 
 .see-all {
   font-size: 14px;
-  color: #777;
+  color: #555;
   cursor: pointer;
   transition: color 0.15s;
 }
@@ -489,7 +492,7 @@
 .bookmark {
   background: transparent;
   border: none;
-  color: #aaa;
+  color: #555;
   padding: 2px;
   cursor: pointer;
   transition: color 0.15s;
@@ -532,7 +535,7 @@
   color: var(--color-text-mute);
   margin-bottom: 12px;
 }
-.dot { color: #ccc; }
+.dot { color: #555; }
 
 .card-deadline {
   font-size: 12px;
@@ -711,7 +714,7 @@
 
 .premium-brand {
   font-size: 13px;
-  color: #a8a8ad;
+  color: #555;
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -744,7 +747,7 @@
 .premium-salary-value {
   font-size: 14px;
   font-weight: 700;
-  color: #a8a8ad;
+  color: #555;
 }
 
 /* ===========================================
@@ -1151,7 +1154,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   margin-bottom: 14px;
 }
 .profile-job { font-weight: 600; color: var(--color-text); }
-.profile-divider { color: #ccc; }
+.profile-divider { color: #555; }
 .profile-career { color: var(--color-text-sub); }
 .profile-leader-badge {
   background: var(--color-primary-soft);
@@ -1162,7 +1165,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border-radius: 4px;
   margin-left: 4px;
 }
-.profile-chevron { color: #999; }
+.profile-chevron { color: #555; }
 
 .profile-tags {
   display: flex;
@@ -1392,7 +1395,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 /* 항목 아이콘 — 라벨 왼쪽. 값보다 흐리게 두어 글자를 가리지 않는다. */
 .profile-info-label { display: inline-flex; align-items: center; gap: 6px; }
-.profile-info-icon { flex-shrink: 0; color: #b7b0c0; }
+.profile-info-icon { flex-shrink: 0; color: #555; }
 /* 값 옆에 붙는 덧말(구직유형이 무엇을 뜻하는지 등). 값보다 흐리게 두어 값이 먼저 읽힌다. */
 .profile-info-note { font-style: normal; font-size: 13.5px; color: var(--color-text); margin-left: 8px; line-height: 1.55; }
 /* 라벨 글자가 시작하는 자리 = 아이콘 폭(16) + 사이(6) = 22px. 값도 그 선에 세운다.
@@ -1408,19 +1411,19 @@ input[type="range"].career-slider::-moz-range-thumb {
 .pf-notif-head { display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #efeff1; }
 .pf-notif-count { font-style: normal; font-size: 12px; font-weight: 700; color: var(--color-primary); margin-left: 5px; }
 .pf-notif-act { border: none; background: none; padding: 0; font: inherit; font-size: 13px; color: #999; cursor: pointer; }
-.pf-notif-act:hover { color: #2b2b2b; }
-.pf-notif-empty { margin: 0; padding: 28px 16px; text-align: center; font-size: 14px; color: #b4b4b9; }
+.pf-notif-act:hover { color: #555; }
+.pf-notif-empty { margin: 0; padding: 28px 16px; text-align: center; font-size: 14px; color: #555; }
 .pf-notif-item {
   position: relative; display: flex; flex-direction: column; gap: 3px;
   padding: 14px 40px 14px 16px; border-bottom: 1px solid #f7f7f8; cursor: pointer;
 }
 .pf-notif-item:last-child { border-bottom: none; }
 .pf-notif-item:hover { background: #fafafa; }
-.pf-notif-title { font-size: 14px; font-weight: 400; color: #2b2b2b; }
-.pf-notif-msg { font-size: 13px; color: #6b6570; line-height: 1.5; }
-.pf-notif-time { font-size: 12px; color: #b4b4b9; }
-.pf-notif-item:not(.unread) .pf-notif-title { color: #999; }
-.pf-notif-item:not(.unread) .pf-notif-msg { color: #b4b4b9; }
+.pf-notif-title { font-size: 14px; font-weight: 400; color: #555; }
+.pf-notif-msg { font-size: 13px; color: #555; line-height: 1.5; }
+.pf-notif-time { font-size: 12px; color: #555; }
+.pf-notif-item:not(.unread) .pf-notif-title { color: #555; }
+.pf-notif-item:not(.unread) .pf-notif-msg { color: #555; }
 .pf-notif-cta {
   align-self: flex-start; margin-top: 2px; padding: 5px 12px; border-radius: 7px;
   border: 1px solid #e2d9ee; background: #fff; color: var(--color-primary); font-size: 12.5px;
@@ -1438,7 +1441,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   font-weight: 400;
 }
 .profile-info-chevron {
-  color: #ccc;
+  color: #555;
   flex-shrink: 0;
 }
 
@@ -1832,7 +1835,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .rp-section-title,
 .apply-info-head span { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; color: #555; text-transform: none; letter-spacing: normal; margin-bottom: 8px; }
 /* 프로필 항목 앞 아이콘(.profile-info-icon)과 같은 값 — 옅은 회색, 채우지 않는다. */
-.resume-section-icon { flex-shrink: 0; color: #b7b0c0; }
+.resume-section-icon { flex-shrink: 0; color: #555; }
 /* 「취업률 상승」 뱃지 — 흰 바탕에 브랜드 보라 테두리·글자. 연보라 덩어리를
    깔지 않는다. 빛이 한 번씩 스쳐 지나가 눈에 걸리게 한다. */
 .badge-up {
@@ -1850,7 +1853,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cl-sec { padding: 16px 0; border-bottom: 1px solid #f2f2f4; }
 .cl-sec:last-child { border-bottom: none; }
 .cl-sec h3 { display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px; font-size: 15px; font-weight: 600; color: #555; }
-.cl-need { font-size: 12px; font-weight: 400; color: #a0a0a6; }
+.cl-need { font-size: 12px; font-weight: 400; color: #555; }
 /* 알약이 아니라 네모. 고르는 칸은 네모가 눈에 덜 튀고 줄이 고르게 떨어진다. */
 .cl-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .cl-chip {
@@ -1884,12 +1887,12 @@ input[type="range"].career-slider::-moz-range-thumb {
 }
 .cl-tool:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .cl-tool:disabled { color: #c4c4c9; cursor: default; }
-.cl-tools-say { margin: 8px 0 0; font-size: 12.5px; color: #8a8a90; line-height: 1.5; }
+.cl-tools-say { margin: 8px 0 0; font-size: 12.5px; color: #555; line-height: 1.5; }
 .cl-fix { margin-top: 10px; border-top: 1px solid #f2f2f4; }
 .cl-fix-row { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid #f7f7f8; }
-.cl-fix-why { flex-shrink: 0; font-size: 11.5px; color: #8a8a90; width: 46px; }
+.cl-fix-why { flex-shrink: 0; font-size: 11.5px; color: #555; width: 46px; }
 .cl-fix-txt { flex: 1; min-width: 0; font-size: 13.5px; color: #555; overflow-wrap: anywhere; }
-.cl-fix-txt s { color: #b0b0b6; }
+.cl-fix-txt s { color: #555; }
 .cl-fix-txt b { font-weight: 400; color: var(--color-primary); }
 .cl-fix-go {
   flex-shrink: 0; padding: 4px 10px; border: 1px solid var(--color-primary); border-radius: 6px;
@@ -2014,7 +2017,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-section .resume-skill-chips { margin-left: 22px; }
 /* 칩(pill) 없이 텍스트만, 가운뎃점 구분 */
 .resume-skill-chip { display: inline; font-size: 14px; line-height: 1.8; color: #555; }
-.resume-skill-chip:not(:last-child)::after { content: " · "; color: #bbb; }
+.resume-skill-chip:not(:last-child)::after { content: " · "; color: #555; }
 
 /* 저장 버튼은 카드가 아니라 낱개 버튼이라, 바깥 여백에 기대고 있었다. 좁은 화면에서
    카드를 화면 끝까지 펴며 그 여백을 없앴더니 버튼까지 끝까지 퍼졌다. 자기 여백을 준다. */
@@ -2605,7 +2608,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .job-detail-aside-brand { font-size: 13px; color: var(--color-text-mute); margin-bottom: 6px; }
 .job-detail-aside-title { font-size: 16px; font-weight: 700; color: var(--color-text); line-height: 1.4; margin-bottom: 8px; }
 .job-detail-aside-meta { font-size: 13px; color: var(--color-text-sub); display: flex; gap: 6px; margin-bottom: 12px; }
-.job-detail-aside-meta .dot { color: #ccc; }
+.job-detail-aside-meta .dot { color: #555; }
 .job-detail-aside-salary { font-size: 14px; font-weight: 600; color: var(--color-primary); background: var(--color-primary-soft); padding: 6px 12px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
 .job-detail-aside-deadline { font-size: 12px; color: var(--color-text-mute); margin-bottom: 16px; }
 .job-detail-aside-deadline strong { color: var(--color-error); }
@@ -2648,7 +2651,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    아래가 왼쪽에 붙어 있으면 두 덩어리가 어긋나 보인다. */
 .apply-info-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; padding-left: 22px; }
 /* 62px 은 「희망 근무지」를 못 담아 글자가 값 쪽으로 넘쳤다. */
-.apply-info-row span { flex: 0 0 78px; font-size: 13px; color: #8a8a90; }
+.apply-info-row span { flex: 0 0 78px; font-size: 13px; color: #555; }
 /* 길면 줄바꿈 대신 말줄임 — 한 줄에 하나씩 읽히는 자리라 두 줄이 되면 이름표와
    값의 짝이 흐트러진다. */
 .apply-info-row b { font-size: 15px; font-weight: 400; color: #555; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2680,7 +2683,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 /* 지원 모달 */
 .apply-modal-job { background: transparent; border-radius: 8px; padding: 0 0 6px; margin-bottom: 8px; }
-.apply-modal-job strong { display: block; font-size: 13px; font-weight: 400; color: #8a8a90; margin-bottom: 4px; }
+.apply-modal-job strong { display: block; font-size: 13px; font-weight: 400; color: #555; margin-bottom: 4px; }
 .apply-modal-job p { font-size: 15px; font-weight: 400; color: #555; }
 .apply-modal-profile-btn { display: block; text-align: center; background: transparent; border: 1.5px solid var(--color-primary); color: var(--color-primary); border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; margin-bottom: 8px; transition: all 0.15s; }
 .apply-modal-profile-btn:hover { background: var(--color-primary-soft); }
@@ -3483,7 +3486,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   background: transparent;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
@@ -3546,7 +3549,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .resume-subheader-badge {
   font-size: 14px;
-  color: #888;
+  color: #555;
 }
 .resume-subheader-title {
   font-size: 22px;
@@ -3627,7 +3630,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: #f5f5f5;
   border-radius: 8px;
   cursor: pointer;
-  color: #666;
+  color: #555;
   transition: background 0.15s;
 }
 .rp-modal-close:hover {
@@ -3745,12 +3748,12 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .rp-period {
   font-size: 14px;
-  color: #888;
+  color: #555;
   white-space: nowrap;
 }
 .rp-item-sub {
   font-size: 14px;
-  color: #666;
+  color: #555;
   margin: 2px 0 0;
 }
 @media (max-width: 640px) {
@@ -3782,7 +3785,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .rp-chip:not(:last-child)::after {
   content: " · ";
-  color: #bbb;
+  color: #555;
 }
 
 /* 링크 */
@@ -3838,7 +3841,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  color: #888;
+  color: #555;
   background: none;
   border: none;
   cursor: pointer;
@@ -3856,7 +3859,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .login-sub {
   font-size: 14px;
-  color: #888;
+  color: #555;
   margin: 0 0 32px;
 }
 
@@ -3895,7 +3898,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #ccc;
+  color: #555;
   font-size: 13px;
   margin: 2px 0;
 }
@@ -3929,7 +3932,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .login-signup-hint {
   text-align: center;
   font-size: 13px;
-  color: #999;
+  color: #555;
   margin: 4px 0 0;
 }
 .login-signup-link {
@@ -4032,7 +4035,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: none;
   border: none;
   font-size: 13px;
-  color: #888;
+  color: #555;
   cursor: pointer;
   text-align: center;
   text-decoration: underline;
@@ -4042,7 +4045,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 .login-notice {
   font-size: 12px;
-  color: #aaa;
+  color: #555;
   text-align: center;
   margin: 4px 0 0;
 }
@@ -4307,7 +4310,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .premium-brand { color: #582681 !important; }
 .premium-title { color: #555 !important; }
-.premium-meta { color: #666 !important; }
+.premium-meta { color: #555 !important; }
 .premium-salary-value { color: #582681 !important; }
 
 /* ============================================
@@ -4354,7 +4357,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   padding: 16px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   text-decoration: none;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
@@ -4374,7 +4377,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-page-title {
   font-size: 22px;
   font-weight: 700;
-  color: #2b2b2b;
+  color: #555;
   margin: 0 0 20px;
   text-align: center;
 }
@@ -4385,7 +4388,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-hero-title {
   font-size: 22px;
   font-weight: 700;
-  color: #2b2b2b;
+  color: #555;
   line-height: 1.4;
   margin: 0 0 14px;
   text-align: center;
@@ -4393,7 +4396,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-hero-title span { color: #582681; }
 .info-hero-desc {
   font-size: 16px;
-  color: #666;
+  color: #555;
   line-height: 1.7;
   margin: 0;
 }
@@ -4430,7 +4433,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .info-value-icon { font-size: 32px; display: block; margin-bottom: 12px; }
 .info-value-card h3 { font-size: 15px; font-weight: 700; color: #555; margin: 0 0 8px; }
-.info-value-card p { font-size: 13px; color: #666; line-height: 1.6; margin: 0; }
+.info-value-card p { font-size: 13px; color: #555; line-height: 1.6; margin: 0; }
 
 /* 고객지원 카드 */
 .support-cards {
@@ -4448,7 +4451,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .support-card-icon { font-size: 36px; display: block; margin-bottom: 12px; }
 .support-card h3 { font-size: 16px; font-weight: 700; color: #555; margin: 0 0 6px; }
-.support-card p { font-size: 13px; color: #888; margin: 0 0 16px; }
+.support-card p { font-size: 13px; color: #555; margin: 0 0 16px; }
 .support-card-btn {
   padding: 8px 20px;
   font-size: 13px;
@@ -4788,7 +4791,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .apply-modal-sub {
   font-size: 14px;
-  color: #888;
+  color: #555;
   margin: 0 0 24px;
 }
 .apply-modal-info {
@@ -4817,7 +4820,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
-  color: #666;
+  color: #555;
   cursor: pointer;
 }
 .apply-modal-submit {
@@ -4839,7 +4842,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .apply-modal-done-icon { font-size: 48px; margin-bottom: 12px; }
 .apply-modal-done h3 { font-size: 20px; font-weight: 800; margin: 0 0 8px; }
-.apply-modal-done p { font-size: 14px; color: #666; line-height: 1.7; margin: 0 0 20px; }
+.apply-modal-done p { font-size: 14px; color: #555; line-height: 1.7; margin: 0 0 20px; }
 
 /* ===========================================
    4순위: 대표 직무 선택 모달
@@ -4972,7 +4975,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   }
   .footer-new-tagline {
     font-size: 12px;
-    color: #888;
+    color: #555;
   }
   .footer-new-links {
     display: grid;
@@ -4987,7 +4990,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .footer-new-col a {
     display: block;
     font-size: 13px;
-    color: #666;
+    color: #555;
     margin-bottom: 8px;
     text-decoration: none;
   }
@@ -5021,7 +5024,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     flex-wrap: wrap;
     gap: 4px 12px;
     font-size: 11px;
-    color: #aaa;
+    color: #555;
     margin-bottom: 12px;
   }
   .footer-new-copy {
@@ -5029,7 +5032,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     flex-direction: column;
     gap: 6px;
     font-size: 11px;
-    color: #aaa;
+    color: #555;
   }
   .footer-new-policies {
     display: flex;
@@ -5060,7 +5063,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .footer-new-logo { margin-bottom: 6px; }
   .footer-new-tagline {
     font-size: 12px;
-    color: #999;
+    color: #555;
     margin: 0;
   }
 
@@ -5081,7 +5084,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .footer-new-col a {
     display: block;
     font-size: 13px;
-    color: #666;
+    color: #555;
     text-decoration: none;
     margin-bottom: 8px;
     line-height: 1.4;
@@ -5129,7 +5132,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     flex-direction: column !important;
     gap: 3px !important;
     font-size: 11px !important;
-    color: #aaa !important;
+    color: #555 !important;
     margin-bottom: 12px;
     line-height: 1.6;
   }
@@ -5138,7 +5141,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     flex-direction: column !important;
     gap: 6px !important;
     font-size: 11px;
-    color: #bbb;
+    color: #555;
   }
   .footer-new-policies {
     display: flex;
@@ -5146,7 +5149,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   }
   .footer-new-info-link {
     font-size: 11px !important;
-    color: #888 !important;
+    color: #555 !important;
   }
 }
 
@@ -5178,7 +5181,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     justify-content: center;
     gap: 3px;
     text-decoration: none;
-    color: #aaa;
+    color: #555;
     font-size: 10px;
     font-weight: 500;
     transition: color 0.15s;
@@ -5217,7 +5220,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .profile-empty-tab {
   text-align: center;
   padding: 60px 20px;
-  color: #888;
+  color: #555;
 }
 .profile-empty-icon { font-size: 40px; margin-bottom: 12px; }
 .profile-empty-tab p { font-size: 14px; line-height: 1.7; margin: 0 0 16px; }
@@ -5357,7 +5360,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 아이콘이 글자보다 안으로 들어가면 회사명과 줄머리가 어긋난다 —
    아이콘을 줄머리에 붙이고 글자만 간격만큼 띄운다. */
 .bookmark-location { font-size: var(--card-meta); color: var(--card-meta-c); display: inline-flex; align-items: center; gap: 4px; }
-.bookmark-location svg { flex-shrink: 0; color: #b7b0c0; }
+.bookmark-location svg { flex-shrink: 0; color: #555; }
 .bookmark-deadline {
   font-size: 14px;
   font-weight: 700;
@@ -5399,7 +5402,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   gap: 3px;
 }
 .brand-follow-info strong { font-size: 15px; color: #555; }
-.brand-follow-info span { font-size: 12px; color: #888; }
+.brand-follow-info span { font-size: 12px; color: #555; }
 .brand-follow-jobs {
   font-size: 12px;
   font-weight: 600;
@@ -7791,7 +7794,7 @@ div:has(> table.admin-table),
   border: none;
   padding: 4px;
   cursor: pointer;
-  color: #999;
+  color: #555;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -7810,7 +7813,7 @@ div:has(> table.admin-table),
   padding: 7px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   background: #f5f5f5;
   border: 2px solid transparent;
   border-radius: 20px;
@@ -7825,7 +7828,7 @@ div:has(> table.admin-table),
   padding: 5px 12px;
   font-size: 12px;
   font-weight: 500;
-  color: #666;
+  color: #555;
   background: #f5f5f5;
   border: 1.5px solid #e5e5e5;
   border-radius: 20px;
@@ -7896,12 +7899,12 @@ div:has(> table.admin-table),
 }
 .talent-info { flex: 1; }
 .talent-name { font-size: 15px; font-weight: 700; color: #555; margin: 0 0 2px; }
-.talent-meta { font-size: 12px; color: #888; margin: 0 0 2px; }
-.talent-location { font-size: 12px; color: #aaa; margin: 0; }
+.talent-meta { font-size: 12px; color: #555; margin: 0 0 2px; }
+.talent-location { font-size: 12px; color: #555; margin: 0; }
 .talent-scrap-btn {
   background: none;
   border: none;
-  color: #ccc;
+  color: #555;
   cursor: pointer;
   padding: 6px;
   border-radius: 8px;
@@ -7942,10 +7945,10 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #888;
+  color: #555;
   flex-wrap: wrap;
 }
-.talent-scrap-date { color: #aaa; }
+.talent-scrap-date { color: #555; }
 
 /* ============================================
    로그인 페이지 개선
@@ -7963,7 +7966,7 @@ div:has(> table.admin-table),
   padding: 10px;
   font-size: 14px;
   font-weight: 600;
-  color: #888;
+  color: #555;
   background: none;
   border: none;
   border-radius: 8px;
@@ -7987,7 +7990,7 @@ div:has(> table.admin-table),
 .login-test-title {
   font-size: 12px;
   font-weight: 700;
-  color: #666;
+  color: #555;
   margin: 0 0 10px;
 }
 .login-test-list {
@@ -8000,7 +8003,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #666;
+  color: #555;
 }
 .login-test-badge {
   padding: 2px 6px;
@@ -8156,12 +8159,12 @@ div:has(> table.admin-table),
 /* 지원완료 버튼 */
 .job-detail-apply-btn.applied {
   background: #e5e5e5 !important;
-  color: #888 !important;
+  color: #555 !important;
   cursor: default !important;
 }
 .job-detail-mobile-apply.applied {
   background: #e5e5e5 !important;
-  color: #888 !important;
+  color: #555 !important;
   cursor: default !important;
 }
 
@@ -8380,7 +8383,7 @@ div:has(> table.admin-table),
 }
 .hero-ai-item-sub {
   font-size: 12px;
-  color: #888;
+  color: #555;
   margin: 0;
 }
 .hero-ai-item-badge {
@@ -8393,7 +8396,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
 }
 .hero-ai-item-badge.new { background: #fee2e2; color: #991b1b; }
-.hero-ai-arrow { font-size: 16px; color: #ccc; }
+.hero-ai-arrow { font-size: 16px; color: #555; }
 
 /* 비로그인 */
 .hero-ai-guest { display: flex; flex-direction: column; gap: 12px; }
@@ -8445,7 +8448,7 @@ div:has(> table.admin-table),
 /* AI 카드 개선 */
 .hero-ai-desc {
   font-size: 12px;
-  color: #888;
+  color: #555;
   margin: 2px 0 0;
   line-height: 1.5;
 }
@@ -8483,7 +8486,7 @@ div:has(> table.admin-table),
 }
 .hero-ai-visual-sub {
   font-size: 12px;
-  color: #666;
+  color: #555;
   margin: 0;
   line-height: 1.5;
 }
@@ -8501,7 +8504,7 @@ div:has(> table.admin-table),
   border: 1px solid transparent;
 }
 .hero-ai-guest-item:hover { background: #f7f7f8; border-color: #efeff1; color: #582681; }
-.hero-ai-guest-arrow { margin-left: auto; color: #ccc; font-size: 14px; }
+.hero-ai-guest-arrow { margin-left: auto; color: #555; font-size: 14px; }
 .hero-ai-guest-item:hover .hero-ai-guest-arrow { color: #582681; }
 
 /* 히어로 카드 2개 레이아웃 */
@@ -8548,7 +8551,7 @@ div:has(> table.admin-table),
 }
 .hero-strategy-sub {
   font-size: 12px;
-  color: #666;
+  color: #555;
   margin: 0;
   line-height: 1.5;
 }
@@ -8692,7 +8695,7 @@ div:has(> table.admin-table),
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #6f6f75;
+  color: #555;
   font-size: 13.5px;
   font-weight: 600;
   letter-spacing: -.2px;
@@ -8701,7 +8704,7 @@ div:has(> table.admin-table),
   white-space: nowrap;
   font-family: inherit;
 }
-.hero-type-btn:hover { color: #6f6f75; }
+.hero-type-btn:hover { color: #555; }
 /* 고른 쪽은 로고 보라로 채운다. 연보라는 로고에 없는 색이라 쓰지 않는다 —
    옅게 칠하면 고른 것인지 아닌지가 흐려지기도 한다. */
 .hero-type-btn.active {
@@ -8724,7 +8727,7 @@ div:has(> table.admin-table),
   border-radius: 20px;
   border: 1.5px solid #efeff1;
   background: #fff;
-  color: #666;
+  color: #555;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -8760,7 +8763,7 @@ div:has(> table.admin-table),
 }
 .baj-save-info {
   font-size: 13px;
-  color: #aaa;
+  color: #555;
   cursor: help;
 }
 
@@ -8814,13 +8817,13 @@ div:has(> table.admin-table),
   width: 18px; height: 18px;
   accent-color: var(--color-primary); cursor: pointer;
 }
-.baj-save-info { font-size: 13px; color: #aaa; cursor: help; }
+.baj-save-info { font-size: 13px; color: #555; cursor: help; }
 .baj-login-error {
   font-size: 13px; color: #e53935;
   margin: 0 0 12px; text-align: center;
 }
 .baj-login-hint {
-  font-size: 12px; color: #bbb;
+  font-size: 12px; color: #555;
   text-align: center; margin: 4px 0 16px;
 }
 .baj-login-btn {
@@ -8837,7 +8840,7 @@ div:has(> table.admin-table),
   display: flex; align-items: center;
   justify-content: center; gap: 16px;
 }
-.baj-login-links a { font-size: 13px; color: #666; text-decoration: none; }
+.baj-login-links a { font-size: 13px; color: #555; text-decoration: none; }
 .baj-login-links a:hover { color: var(--color-primary); }
 .baj-login-divider { width: 1px; height: 12px; background: #ddd; display: inline-block; }
 
@@ -9006,7 +9009,7 @@ div:has(> table.admin-table),
   border-radius: 10px;
   border: 1.5px solid #efeff1;
   background: #fff;
-  color: #888;
+  color: #555;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -9025,7 +9028,7 @@ div:has(> table.admin-table),
 }
 .hero-m-search-label {
   font-size: 13px;
-  color: #888;
+  color: #555;
   margin: 0 20px 6px;
 }
 .hero-m-searchbar {
@@ -9205,7 +9208,7 @@ div:has(> table.admin-table),
 .region-modal-close {
   background: none;
   border: none;
-  color: #888;
+  color: #555;
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -9232,7 +9235,7 @@ div:has(> table.admin-table),
   border: none;
   border-left: 3px solid transparent;
   font-size: 14px;
-  color: #888;
+  color: #555;
   font-family: inherit;
   cursor: pointer;
   text-align: left;
@@ -9312,7 +9315,7 @@ div:has(> table.admin-table),
   gap: 3px;
   background: none;
   border: none;
-  color: #888;
+  color: #555;
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
@@ -9340,7 +9343,7 @@ div:has(> table.admin-table),
   display: flex;
   background: none;
   border: none;
-  color: #6f6f75;
+  color: #555;
   cursor: pointer;
   padding: 0;
 }
@@ -9401,7 +9404,7 @@ div:has(> table.admin-table),
 .hero-m-ai-card-head { display: flex; align-items: center; gap: 8px; }
 .hero-m-ai-card-icon { font-size: 24px; flex-shrink: 0; }
 .hero-m-ai-card strong { font-size: 15px; font-weight: 700; color: #555; }
-.hero-m-ai-card p { font-size: 13px; color: #888; line-height: 1.5; }
+.hero-m-ai-card p { font-size: 13px; color: #555; line-height: 1.5; }
 .hero-m-ai-card-btn {
   display: inline-block;
   margin-top: 8px;
@@ -9466,7 +9469,7 @@ div:has(> table.admin-table),
 .mob-menu-title { font-size: 16px; font-weight: 700; color: #555; }
 .mob-menu-close {
   background: none; border: none; cursor: pointer;
-  color: #666; display: flex; align-items: center;
+  color: #555; display: flex; align-items: center;
 }
 .mob-menu-nav { padding: 8px 0; flex: 1; }
 .mob-menu-item {
@@ -9629,7 +9632,7 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 12px;
   margin: 20px 0;
-  color: #bbb;
+  color: #555;
   font-size: 13px;
 }
 .baj-login-or span {
@@ -9687,7 +9690,7 @@ div:has(> table.admin-table),
   background: none;
   border: none;
   font-size: 14px;
-  color: #888;
+  color: #555;
   cursor: pointer;
   padding: 0;
   margin-bottom: 16px;
@@ -9725,7 +9728,7 @@ div:has(> table.admin-table),
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: #555;
   display: flex;
   align-items: center;
   padding: 4px;
@@ -9744,7 +9747,7 @@ div:has(> table.admin-table),
 }
 .lm-sub {
   font-size: 13px;
-  color: #888;
+  color: #555;
   margin: 0;
 }
 .lm-btns {
@@ -9798,7 +9801,7 @@ div:has(> table.admin-table),
 .lm-naver-btn:hover { opacity: 0.9; }
 .lm-biz-link {
   font-size: 14px;
-  color: #666;
+  color: #555;
   text-decoration: none;
   margin-bottom: 20px;
   padding: 8px 0;
@@ -9809,14 +9812,14 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 12px;
   font-size: 12px;
-  color: #bbb;
+  color: #555;
   padding-top: 16px;
   border-top: 1px solid #f0f0f0;
   width: 100%;
   justify-content: center;
 }
-.lm-footer a { color: #bbb; text-decoration: none; }
-.lm-footer a:hover { color: #666; }
+.lm-footer a { color: #555; text-decoration: none; }
+.lm-footer a:hover { color: #555; }
 .lm-footer span { font-size: 10px; }
 
 /* 모달 휴대전화 화면 */
@@ -9864,7 +9867,7 @@ div:has(> table.admin-table),
   font-family: inherit; margin-top: 8px;
 }
 .lm-error { font-size: 12px; color: #e53935; margin: 8px 0 0; }
-.lm-hint { font-size: 12px; color: #bbb; margin: 6px 0 12px; }
+.lm-hint { font-size: 12px; color: #555; margin: 6px 0 12px; }
 
 /* ── 매장·기업 채용관 섹션 배경 ── */
 
@@ -9908,8 +9911,8 @@ div:has(> table.admin-table),
   width: fit-content;
 }
 .service-name { font-size: 14px; font-weight: 700; color: #555; }
-.service-desc { font-size: 12px; color: #666; line-height: 1.5; }
-.service-company { font-size: 11px; color: #aaa; margin-top: 4px; }
+.service-desc { font-size: 12px; color: #555; line-height: 1.5; }
+.service-company { font-size: 11px; color: #555; margin-top: 4px; }
 
 /* ── 섹션 구분선 ── */
 .section-divider { background: transparent; }
@@ -9937,7 +9940,7 @@ div:has(> table.admin-table),
 .insight-card-new-title {
   font-size: 13px;
   font-weight: 600;
-  color: #222;
+  color: #555;
   line-height: 1.35;
   white-space: nowrap;
   overflow: hidden;
@@ -9945,7 +9948,7 @@ div:has(> table.admin-table),
 }
 .insight-card-new-desc {
   font-size: 11px;
-  color: #888;
+  color: #555;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -9954,7 +9957,7 @@ div:has(> table.admin-table),
 }
 .insight-card-new-date {
   font-size: 11px;
-  color: #bbb;
+  color: #555;
   margin-top: 4px;
 }
 /* 현장이야기 카드: 아이콘을 카테고리(질문) 옆으로 인라인 배치 */
@@ -9964,7 +9967,7 @@ div:has(> table.admin-table),
 /* 현장이야기 카드: 본문 한 줄 미리보기 (말줄임 …) */
 .insight-card-new-snippet {
   font-size: 13px;
-  color: #666;
+  color: #555;
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -11116,7 +11119,7 @@ div:has(> table.admin-table),
 }
 .cid-logo { font-size: 16px; font-weight: 800; color: #582681; text-decoration: none; }
 .cid-account { display: flex; align-items: center; gap: 10px; }
-.cid-account-id { font-size: 13px; color: #888; }
+.cid-account-id { font-size: 13px; color: #555; }
 .cid-account-btn {
   font-size: 12px;
   color: #582681;
@@ -11153,8 +11156,8 @@ div:has(> table.admin-table),
   flex-shrink: 0;
 }
 .cid-profile-info { flex: 1; }
-.cid-profile-name { font-size: 18px; font-weight: 800; color: #111; }
-.cid-profile-sub  { font-size: 13px; color: #888; margin-top: 2px; }
+.cid-profile-name { font-size: 18px; font-weight: 800; color: #555; }
+.cid-profile-sub  { font-size: 13px; color: #555; margin-top: 2px; }
 .cid-post-btn {
   display: flex;
   align-items: center;
@@ -11194,14 +11197,14 @@ div:has(> table.admin-table),
   align-items: center;
   gap: 14px;
   text-decoration: none;
-  color: #222;
+  color: #555;
   transition: border-color 0.15s, background 0.15s;
 }
 .cid-menu-card:hover { border-color: #a78bfa; background: #f7f7f8; }
 .cid-menu-icon { color: #582681; flex-shrink: 0; }
 .cid-menu-info { display: flex; flex-direction: column; gap: 2px; }
 .cid-menu-info strong { font-size: 14px; font-weight: 600; }
-.cid-menu-info span   { font-size: 12px; color: #888; }
+.cid-menu-info span   { font-size: 12px; color: #555; }
 
 /* 안내 배너 */
 .cid-banner {
@@ -11245,7 +11248,7 @@ div:has(> table.admin-table),
 }
 .ads-back {
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: 13px; color: #666; text-decoration: none;
+  font-size: 13px; color: #555; text-decoration: none;
   width: auto; white-space: nowrap;
 }
 .ads-back:hover { color: #582681; }
@@ -11261,11 +11264,11 @@ div:has(> table.admin-table),
   margin-bottom: 18px;
 }
 .ads-hero-title {
-  font-size: clamp(24px, 4vw, 36px); font-weight: 800; color: #111;
+  font-size: clamp(24px, 4vw, 36px); font-weight: 800; color: #555;
   line-height: 1.35; margin-bottom: 14px;
 }
 .ads-hero-point { color: #582681; }
-.ads-hero-desc { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 32px; }
+.ads-hero-desc { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 32px; }
 
 .ads-hero-stats {
   display: flex; align-items: center; justify-content: center;
@@ -11273,7 +11276,7 @@ div:has(> table.admin-table),
 }
 .ads-stat { text-align: center; }
 .ads-stat strong { display: block; font-size: 22px; font-weight: 800; color: #582681; }
-.ads-stat span   { font-size: 12px; color: #888; }
+.ads-stat span   { font-size: 12px; color: #555; }
 .ads-stat-divider { width: 1px; height: 32px; background: #ddd; }
 
 /* 섹션 공통 */
@@ -11281,9 +11284,9 @@ div:has(> table.admin-table),
 .ads-section.gray { background: #f9fafb; }
 .ads-inner { max-width: 800px; margin: 0 auto; }
 .ads-section-title {
-  font-size: clamp(20px, 3vw, 26px); font-weight: 800; text-align: center; color: #111; margin-bottom: 6px;
+  font-size: clamp(20px, 3vw, 26px); font-weight: 800; text-align: center; color: #555; margin-bottom: 6px;
 }
-.ads-section-sub { font-size: 13px; color: #999; text-align: center; margin-bottom: 32px; }
+.ads-section-sub { font-size: 13px; color: #555; text-align: center; margin-bottom: 32px; }
 
 /* 상품 카드 (아코디언) */
 .ads-product-list { display: flex; flex-direction: column; gap: 12px; }
@@ -11304,12 +11307,12 @@ div:has(> table.admin-table),
 .ads-product-header-left { display: flex; align-items: flex-start; gap: 14px; flex: 1; }
 .ads-product-emoji { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
 .ads-product-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
-.ads-product-name { font-size: 16px; font-weight: 700; color: #111; }
+.ads-product-name { font-size: 16px; font-weight: 700; color: #555; }
 .ads-product-tag {
   font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
 }
-.ads-product-summary { font-size: 13px; color: #666; line-height: 1.6; }
-.ads-chevron { color: #999; flex-shrink: 0; }
+.ads-product-summary { font-size: 13px; color: #555; line-height: 1.6; }
+.ads-chevron { color: #555; flex-shrink: 0; }
 
 /* 상세 내용 */
 .ads-product-detail {
@@ -11342,8 +11345,8 @@ div:has(> table.admin-table),
   font-size: 10px; font-weight: 700; color: #582681;
   background: #f7f7f8; padding: 2px 7px; border-radius: 20px;
 }
-.ads-pricing-price { font-size: 14px; font-weight: 700; color: #111; }
-.ads-pricing-note { font-size: 11px; color: #999; margin-top: 10px; line-height: 1.6; }
+.ads-pricing-price { font-size: 14px; font-weight: 700; color: #555; }
+.ads-pricing-note { font-size: 11px; color: #555; margin-top: 10px; line-height: 1.6; }
 
 /* FAQ */
 .ads-faq-list { display: flex; flex-direction: column; gap: 8px; }
@@ -11354,7 +11357,7 @@ div:has(> table.admin-table),
 .ads-faq-item.open { border-color: #582681; }
 .ads-faq-q {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 14px; font-weight: 600; color: #222; gap: 12px;
+  font-size: 14px; font-weight: 600; color: #555; gap: 12px;
 }
 .ads-faq-q svg { flex-shrink: 0; color: #582681; }
 .ads-faq-a { margin-top: 10px; font-size: 13px; color: #666; line-height: 1.7; border-top: 1px solid #f0f0f0; padding-top: 10px; }
@@ -11388,7 +11391,7 @@ div:has(> table.admin-table),
 }
 .mat-hero-title {
   font-size: clamp(26px, 5vw, 40px); font-weight: 800;
-  color: #111; line-height: 1.3; margin-bottom: 16px;
+  color: #555; line-height: 1.3; margin-bottom: 16px;
 }
 .mat-hero-point { color: #582681; }
 .mat-hero-desc { font-size: 15px; color: #555; line-height: 1.7; margin-bottom: 24px; }
@@ -11416,9 +11419,9 @@ div:has(> table.admin-table),
 .mat-inner { max-width: 800px; margin: 0 auto; }
 .mat-section-title {
   font-size: clamp(20px, 3vw, 26px); font-weight: 800;
-  text-align: center; color: #111; margin-bottom: 6px;
+  text-align: center; color: #555; margin-bottom: 6px;
 }
-.mat-section-sub { font-size: 13px; color: #999; text-align: center; margin-bottom: 32px; }
+.mat-section-sub { font-size: 13px; color: #555; text-align: center; margin-bottom: 32px; }
 
 /* 비교표 */
 .mat-compare-wrap { overflow-x: auto; }
@@ -11468,8 +11471,8 @@ div:has(> table.admin-table),
   width: calc(100% - 72px);
 }
 @media (max-width: 640px) { .mat-process-line { display: none; } }
-.mat-process-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 6px; }
-.mat-process-desc { font-size: 12px; color: #777; line-height: 1.6; white-space: pre-line; }
+.mat-process-title { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 6px; }
+.mat-process-desc { font-size: 12px; color: #555; line-height: 1.6; white-space: pre-line; }
 
 /* 수수료 */
 .mat-fee-grid {
@@ -11486,8 +11489,8 @@ div:has(> table.admin-table),
 .mat-fee-card:hover { border-color: #582681; }
 .mat-fee-header { display: flex; align-items: center; gap: 10px; }
 .mat-fee-icon { font-size: 28px; }
-.mat-fee-type { font-size: 17px; font-weight: 800; color: #111; }
-.mat-fee-desc { font-size: 13px; color: #666; line-height: 1.6; }
+.mat-fee-type { font-size: 17px; font-weight: 800; color: #555; }
+.mat-fee-desc { font-size: 13px; color: #555; line-height: 1.6; }
 .mat-fee-amount {
   background: #f7f7f8; border-radius: 10px; padding: 14px 16px;
   display: flex; flex-direction: column; gap: 4px;
@@ -11699,7 +11702,7 @@ div:has(> table.admin-table),
 
 /* 법적 문서 (약관/개인정보) */
 .legal-layout { max-width: 860px; margin: 0 auto; padding: 0; }
-.legal-title { font-size: 22px; font-weight: 700; color: #2b2b2b; margin-bottom: 24px; text-align: center; }
+.legal-title { font-size: 22px; font-weight: 700; color: #555; margin-bottom: 24px; text-align: center; }
 .legal-toc {
   display: flex; flex-direction: column; gap: 8px;
   padding: 24px; background: #f7f7f8; border: 1px solid #f7f7f8;
@@ -11755,7 +11758,7 @@ div:has(> table.admin-table),
   padding: 1px 6px;
   font-size: 10px;
   font-weight: 700;
-  color: #888;
+  color: #555;
   background: #f0f0f0;
   border-radius: 4px;
   vertical-align: middle;
@@ -11799,7 +11802,7 @@ div:has(> table.admin-table),
 }
 .resume-completion-text {
   font-size: 11px;
-  color: #888;
+  color: #555;
   margin-top: 8px;
 }
 .resume-sidebar-check {
@@ -11929,7 +11932,7 @@ div:has(> table.admin-table),
 
 .hero-search-guide {
   font-size: 13px;
-  color: #888;
+  color: #555;
   margin: 0 0 2px 2px;
   font-weight: 500;
 }
@@ -11969,7 +11972,7 @@ div:has(> table.admin-table),
 .resume-completion-text { margin: 0; white-space: nowrap; flex-shrink: 0; color: var(--color-text-mute); }
 /* 프로필 헤더: 로고는 왼쪽, 종+설정은 오른쪽으로 묶기 */
 .profile-header-inner { justify-content: flex-start; gap: 8px; }
-.profile-header-nav { font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
+.profile-header-nav { font-size: 15px; font-weight: 600; color: #555; text-decoration: none; white-space: nowrap; }
 .profile-header-nav:hover { color: #582681; }
 /* 섹션구성 접기/펴기 */
 .resume-sidebar-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 0; margin: 0; cursor: pointer; font: inherit; }
@@ -11985,7 +11988,7 @@ div:has(> table.admin-table),
   /* 섹션 칩: 여러 개씩 줄바꿈(태그형)으로 공간 절약 */
   .resume-sidebar-item { width: auto; white-space: nowrap; }
 }
-.resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #2b2b2b; text-decoration: none; white-space: nowrap; }
+.resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #555; text-decoration: none; white-space: nowrap; }
 .resume-header-nav:hover { color: #582681; }
 /* ===== 공용 JobCard (메인·채용공고 통일) — 정사각형 60/40 ===== */
 .jobcard { display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
@@ -12001,7 +12004,7 @@ div:has(> table.admin-table),
 .jobcard-title { margin: 0 0 3px; font-size: 13px; font-weight: 600; color: var(--color-text-strong); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .jobcard-company { margin: 0 0 2px; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobcard-metarow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 1px; }
-.jobcard-meta { margin: 0; flex: 1; min-width: 0; font-size: 13px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jobcard-meta { margin: 0; flex: 1; min-width: 0; font-size: 13px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .jobcard-deadline { margin-top: 0; flex-shrink: 0; font-size: 13px; font-weight: 600; }
 @media (max-width: 768px) { .jobs-grid { margin-top: 16px; } }
 @media (max-width: 480px) {
@@ -12021,7 +12024,7 @@ div:has(> table.admin-table),
 .hero-banner-top-inner>*{ position:relative; z-index:1; }
 @keyframes heroSheen{ 0%{transform:translateX(-170%) skewX(-18deg)} 55%,100%{transform:translateX(560%) skewX(-18deg)} }
 .hero-banner-badge{ width:34px!important; height:34px!important; padding:0!important; border-radius:50%!important; background:#582681!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(124,58,237,.3); flex-shrink:0; }
-.hero-banner-title{ color:#1f1f1f!important; text-shadow:none!important; }
+.hero-banner-title{ color: #555!important; text-shadow:none!important; }
 .hero-banner-sub{ color:#5a5a6a!important; text-shadow:none!important; }
 .hero-banner-link{ color:#582681!important; text-shadow:none!important; }
 
@@ -12045,7 +12048,7 @@ div:has(> table.admin-table),
 .hero-m-banner::before{ content:""; position:absolute; top:0; left:0; width:28%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
 .hero-m-banner>*{ position:relative; z-index:1; }
 .hero-m-banner-ad{ width:28px!important; height:28px!important; padding:0!important; border-radius:50%!important; background:#582681!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(124,58,237,.3); flex-shrink:0; }
-.hero-m-banner-text{ color:#1f1f1f!important; text-shadow:none!important; }
+.hero-m-banner-text{ color: #555!important; text-shadow:none!important; }
 .hero-m-banner-link{ color:#582681!important; text-shadow:none!important; }
 
 /* 프로필 4탭 균등 배치 (모바일) */
@@ -12124,7 +12127,7 @@ div:has(> table.admin-table),
 .co-hero-desc,
 .js-hero-sub {
   font-size: clamp(15px, 3.5vw, 17px);
-  color: #666;
+  color: #555;
   line-height: 1.7;
   margin: 0;
 }
@@ -12175,7 +12178,7 @@ div:has(> table.admin-table),
    크게 외치지 않는다. */
 .nb-head { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 16px 12px; }
 .nb-head h1 { font-size: var(--page-title); font-weight: 700; color: #555; margin: 0; letter-spacing: -.3px; }
-.nb-area { margin-left: auto; font-size: 12.5px; color: #888; overflow: hidden;
+.nb-area { margin-left: auto; font-size: 12.5px; color: #555; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap; max-width: 45%; }
 .nearby-map-wrap { height: 320px; }
 @media (min-width: 768px) {
@@ -12209,9 +12212,9 @@ div:has(> table.admin-table),
   cursor: pointer; padding: 8px 9px; border-radius: 7px; font-family: inherit; }
 .nb-find-list button:hover { background: #f7f7f8; }
 .nb-find-list b { display: block; font-size: 14px; font-weight: 600; color: #555; }
-.nb-find-list span { display: block; font-size: 12px; color: #999; margin-top: 2px;
+.nb-find-list span { display: block; font-size: 12px; color: #555; margin-top: 2px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nb-find-none { padding: 10px 9px; font-size: 13px; color: #999; }
+.nb-find-none { padding: 10px 9px; font-size: 13px; color: #555; }
 
 .nb-how { font-size: 12.5px; color: #8e8896; margin: 10px 0 0; line-height: 1.5; word-break: keep-all; }
 .nb-how b { color: #6b6474; font-weight: 600; }
@@ -12228,7 +12231,7 @@ div:has(> table.admin-table),
 .nb-pin-n { font-size: 11px; font-weight: 700; color: #fff; background: var(--color-primary);
   border-radius: 999px; padding: 1px 6px; }
 .nb-iw { padding: 9px 11px; max-width: 230px; }
-.nb-iw b { display: block; font-size: 12.5px; color: #666; font-weight: 600; margin-bottom: 6px; }
+.nb-iw b { display: block; font-size: 12.5px; color: #555; font-weight: 600; margin-bottom: 6px; }
 .nb-iw a { display: block; font-size: 13.5px; font-weight: 600; color: #555;
   text-decoration: none; padding: 4px 0; border-top: 1px solid #f2f2f2; }
 .nb-iw a:hover { color: var(--color-primary); }
@@ -12419,7 +12422,7 @@ div:has(> table.admin-table),
      제목 14/700, 회사 14, 아래 줄 13, 오른쪽 표시 13/600 으로 맞춘다. */
   .bookmark-title { font-size: 14px; font-weight: 700; }
   .bookmark-brand { font-size: 14px; }
-  .bookmark-location { font-size: 13px; color: #888; }
+  .bookmark-location { font-size: 13px; color: #555; }
   .bookmark-deadline { font-size: 13px; font-weight: 600; }
 }
 
@@ -12439,7 +12442,7 @@ div:has(> table.admin-table),
   .pf-drop-pc { display: none; }
   .pf-pick-mobile { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 13px; border-radius: 10px; border: 1.5px solid #efeff1; background: #fff; color: #582681; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
   .pf-pick-mobile:disabled { opacity: 0.6; cursor: default; }
-  .pf-pick-note { display: block; font-size: 11.5px; color: #888; text-align: center; margin: 7px 0 0; }
+  .pf-pick-note { display: block; font-size: 11.5px; color: #555; text-align: center; margin: 7px 0 0; }
 }
 
 /* === 포트폴리오 사진 격자 ===
@@ -12491,7 +12494,7 @@ div:has(> table.admin-table),
   border: none;
   background: none;
   border-radius: 8px;
-  color: #999;
+  color: #555;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
@@ -12541,7 +12544,7 @@ button,
 }
 
 /* === 약관·개인정보처리방침: 소제목·표·메타 === */
-.legal-meta { text-align: center; font-size: 13px; color: #999; margin: -12px 0 24px; }
+.legal-meta { text-align: center; font-size: 13px; color: #555; margin: -12px 0 24px; }
 .legal-subtitle { font-size: 15px; font-weight: 400; color: #555; margin: 20px 0 8px; }
 .legal-table-wrap { overflow-x: auto; margin: 12px 0 18px; }
 .legal-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 520px; }
@@ -12848,18 +12851,18 @@ button,
 /* '이달의 이벤트' 제목과 같은 글자. 두 카드가 위아래로 붙어 있으니 머리글
    무게가 같아야 한 짝으로 읽힌다. */
 .mt-nc-tag { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
-  font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; text-decoration: none; }
+  font-size: 16px; font-weight: 600; color: #555; line-height: 1.35; text-decoration: none; }
 .mt-nc-tag:hover { color: var(--color-primary); }
 .mt-nc .mt-notice { flex: 1; min-width: 0; }
 .mt-nc .nt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.mt-ask { font-size: 15px; color: #6b6b6b; margin: 0 0 12px; }
+.mt-ask { font-size: 15px; color: #555; margin: 0 0 12px; }
 /* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
    무엇에 대한 말인지 한 번 더 생각해야 한다. */
 .mt-type-desc { font-size: 14px; color: var(--color-text); margin: 9px 0 0; line-height: 1.55; word-break: keep-all; }
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #222; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
+.mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #555; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
 /* 딱지의 바탕을 걷고 글자만 남긴다. 옆의 '이달의 이벤트'와 나란히 서는
    자리라, 색 블록이 하나 더 있으면 제목보다 딱지가 먼저 읽힌다. 대신 빛을
    흘려 눈에 걸리게 한다 — 헤더의 '내 주변 공고'와 같은 방식이다.
@@ -12897,9 +12900,9 @@ button,
 /* 카드 제목 앞 아이콘. 점 하나보다 무엇에 관한 칸인지 먼저 말해 준다. */
 .mt-ic { color: var(--color-primary); flex-shrink: 0; }
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #582681; flex-shrink: 0; }
-.mt-more { font-size: 13px; color: #9a94a4; text-decoration: none; }
+.mt-more { font-size: 13px; color: #555; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
-.mt-notice .nt { display: block; font-size: 15px; font-weight: 400; color: #222; line-height: 1.35; }
+.mt-notice .nt { display: block; font-size: 15px; font-weight: 400; color: #555; line-height: 1.35; }
 
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
@@ -12914,7 +12917,7 @@ button,
 @media (min-width: 1025px) { .mt-evt-item + .mt-evt-item { border-left-color: var(--color-border); } }
 /* 누가 받는 혜택인지는 위에 작은 글자로만 — 배경 딱지를 달면 아래 버튼과
    무게가 겹쳐 뭘 눌러야 할지 헷갈린다("배지·버튼·링크로 액션이 세 군데"). */
-.mt-evt-who { display: block; font-size: 12px; font-weight: 500; color: #9a94a4; margin-bottom: 9px; }
+.mt-evt-who { display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 9px; }
 .mt-evt-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 /* 버튼은 카드 맨 아래, 정보를 다 읽은 다음에 만나는 하나뿐인 행동이다. */
 .mt-evt-btn { font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -.2px;
@@ -12925,20 +12928,20 @@ button,
 .mt-evt-btn:hover { border-color: var(--color-primary-hover); background: var(--color-primary-hover); }
 .mt-evt-txt { flex: 1; min-width: 0; }
 /* 내용 오른쪽 끝에 원문으로 가는 길. 버튼과 무게가 겹치지 않게 글자만 둔다. */
-.mt-evt-more { flex-shrink: 0; font-size: 12px; color: #9a94a4; text-decoration: none; white-space: nowrap; }
+.mt-evt-more { flex-shrink: 0; font-size: 12px; color: #555; text-decoration: none; white-space: nowrap; }
 .mt-evt-more:hover { color: var(--color-primary); }
 .mt-evt-ic { flex-shrink: 0; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
-.mt-evt-l { display: block; font-size: 13px; color: #9a94a4; }
-.mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #222; line-height: 1.35; margin-top: 3px; }
-.mt-evt-s { display: block; font-size: 13px; color: #9a94a4; margin-top: 4px; }
+.mt-evt-l { display: block; font-size: 13px; color: #555; }
+.mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #555; line-height: 1.35; margin-top: 3px; }
+.mt-evt-s { display: block; font-size: 13px; color: #555; margin-top: 4px; }
 
 .mt-ticker { margin-top: 14px; border: 1px solid #f7f7f8; border-radius: 12px; height: 48px;
   display: flex; align-items: center; padding-left: 22px; gap: 20px; background: #f7f7f8; overflow: hidden; }
-.mt-tk-l { font-size: 16px; font-weight: 600; color: #222; display: flex; align-items: center; gap: 7px;
+.mt-tk-l { font-size: 16px; font-weight: 600; color: #555; display: flex; align-items: center; gap: 7px;
   white-space: nowrap; flex-shrink: 0; padding-right: 20px; border-right: 1px solid #f7f7f8; }
 .mt-tk-view { flex: 1; min-width: 0; overflow: hidden; }
 .mt-tk-track { display: inline-flex; align-items: center; gap: 36px; white-space: nowrap; animation: mtRoll 32s linear infinite; }
-.mt-tk-item { font-size: 14px; color: #6b6b6b; text-decoration: none; }
+.mt-tk-item { font-size: 14px; color: #555; text-decoration: none; }
 .mt-tk-item i { font-style: normal; font-weight: 700; color: #582681; margin-right: 7px; font-size: 12px; letter-spacing: .5px; }
 @keyframes mtRoll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .mt-tk-track { animation: none; } }
@@ -12974,15 +12977,15 @@ button,
 .nb-board > li > button:hover .nb-board-t { color: var(--color-primary); }
 .nb-board-pin { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--color-primary);
   border: 1px solid var(--color-primary); border-radius: 4px; padding: 1px 5px; }
-.nb-board-t { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; color: #2b2b2b;
+.nb-board-t { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nb-board-d { flex-shrink: 0; font-size: 13px; color: #aaa; }
-.nb-board-ar { flex-shrink: 0; color: #bbb; transition: transform .15s; }
+.nb-board-d { flex-shrink: 0; font-size: 13px; color: #555; }
+.nb-board-ar { flex-shrink: 0; color: #555; transition: transform .15s; }
 .nb-board > li.on .nb-board-ar { transform: rotate(180deg); color: var(--color-primary); }
 .nb-board > li.on .nb-board-t { color: var(--color-primary); font-weight: 600; }
 .nb-board-body { font-size: 15px; line-height: 1.8; color: #555; white-space: pre-wrap;
   padding: 4px 4px 24px; word-break: keep-all; }
-.nb-board-msg { color: #999; text-align: center; padding: 60px 0; }
+.nb-board-msg { color: #555; text-align: center; padding: 60px 0; }
 
 /* 이벤트 페이지 — 고객센터 계열이 아니라 일반 헤더를 단다. */
 .ev-page { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
@@ -13018,7 +13021,7 @@ button,
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #6f6f75;
+  color: #555;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -.2px;
@@ -13129,7 +13132,7 @@ button,
 .cs-hero-pts li + li { border-left: 1px solid #efeff1; }
 .cs-hero-pts svg { color: var(--cs); flex-shrink: 0; }
 .cs-hero-pts span { font-size: 12.5px; color: #7a7076; line-height: 1.5; word-break: keep-all; }
-.cs-hero-pts b { display: block; font-size: 14px; font-weight: 700; color: #2b2b2b; }
+.cs-hero-pts b { display: block; font-size: 14px; font-weight: 700; color: #555; }
 
 /* 공통 틀 */
 .cs-wrap { max-width: 1160px; margin: 0 auto; padding: 62px 24px; }
@@ -13163,7 +13166,7 @@ button,
 /* 사이드바를 검게 칠하면 이 그림에서 가장 어두운 덩어리가 되어, 정작 보여
    주려는 지표와 차트보다 먼저 눈에 든다. 흰 바탕에 선 하나로 가른다. */
 .cs-shot-side { background: #fff; border-right: 1px solid #efeff1; padding: 14px 10px; display: flex; flex-direction: column; gap: 3px; }
-.cs-shot-brand { color: #2b2b2b; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
+.cs-shot-brand { color: #555; font-size: 13px; font-weight: 700; padding: 4px 8px 12px; }
 .cs-shot-menu { font-size: 11.5px; color: #8a8087; padding: 7px 8px; border-radius: 6px; }
 .cs-shot-menu.on { background: var(--cs-soft); color: var(--cs); font-weight: 600; }
 .cs-shot-main { padding: 14px; background: #f7f7f8; }
@@ -13238,7 +13241,7 @@ button,
 .cs-faq button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 15px 16px;
   background: none; border: none; cursor: pointer; text-align: left; font-family: inherit; }
 .cs-faq i { font-style: normal; font-size: 13.5px; font-weight: 700; color: var(--cs); flex-shrink: 0; }
-.cs-faq button > span { flex: 1; font-size: 14.5px; font-weight: 500; color: #2b2b2b; word-break: keep-all; }
+.cs-faq button > span { flex: 1; font-size: 14.5px; font-weight: 500; color: #555; word-break: keep-all; }
 .cs-faq button svg { color: #b7a9b1; flex-shrink: 0; }
 .cs-faq p { margin: 0; padding: 0 16px 16px 40px; font-size: 14px; line-height: 1.75; color: #5f565d; word-break: keep-all; }
 .cs-help { background: var(--cs-soft); border-radius: 12px; padding: 26px 22px; text-align: center; }
@@ -13301,7 +13304,7 @@ button,
 .story-item-title {
   font-size: 13px;
   font-weight: 600;
-  color: #222;
+  color: #555;
   line-height: 1.35;
   margin-bottom: 5px;
 }
@@ -13360,7 +13363,7 @@ button,
 /* 머리줄로 들어오는 화면들은 제목을 본문 가운데에 굵게 세운다. 건수는 그 아래. */
 .jobs-head { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 0 6px; }
 .jobs-head b { font-size: var(--page-title); font-weight: 700; color: #555; letter-spacing: -.4px; }
-.jobs-head span { font-size: 13.5px; color: #9a94a4; }
+.jobs-head span { font-size: 13.5px; color: #555; }
 
 /* 사이드바가 들어온 만큼 카드는 다섯 줄에서 네 줄로. */
 .jobs-layout .jobs-grid { grid-template-columns: repeat(4, 1fr); }
@@ -13382,7 +13385,7 @@ button,
 .jobs-side-grp-h:hover { background: #f7f7f8; }
 .jobs-side-grp-h > button:first-child { flex: 1; min-width: 0; }
 .jobs-side-grp-h.on > button:first-child { color: var(--color-primary); font-weight: 700; }
-.jobs-side-grp-h em { font-style: normal; font-size: 11.5px; font-weight: 500; color: #a8a8ad; margin-left: 5px; }
+.jobs-side-grp-h em { font-style: normal; font-size: 11.5px; font-weight: 500; color: #555; margin-left: 5px; }
 .jobs-side-open { flex: 0 0 auto; width: 26px; display: flex; align-items: center; justify-content: center;
   background: none; border: none; cursor: pointer; color: #c3bcca; padding: 5px 0; }
 .jobs-side-open svg { transition: transform .15s; }
@@ -13397,7 +13400,7 @@ button,
 /* 걸어 놓은 것을 한 번에 푼다. 걸린 것이 없으면 누를 이유가 없어 흐려 둔다. */
 .jobs-side-reset { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
   height: 38px; border: 1px solid #efeff1; border-radius: 9px; background: #fff; cursor: pointer;
-  font-family: inherit; font-size: 13.5px; font-weight: 600; color: #6b6570; transition: all .15s; }
+  font-family: inherit; font-size: 13.5px; font-weight: 600; color: #555; transition: all .15s; }
 .jobs-side-reset:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .jobs-side-reset:disabled { opacity: .45; cursor: default; }
 .jobs-side-reset em { font-style: normal; font-size: 12px; color: var(--color-primary); }
@@ -13509,9 +13512,9 @@ button,
   display: flex; flex-direction: column; gap: 1px; }
 .profile-account-row { display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 15px 4px; background: none; border: none; border-top: 1px solid #efeff1;
-  cursor: pointer; font-family: inherit; font-size: 15px; color: #2b2b2b; text-decoration: none; }
+  cursor: pointer; font-family: inherit; font-size: 15px; color: #555; text-decoration: none; }
 .profile-account-row svg { color: #e3e3e6; }
-.profile-account-row.logout { color: #9a94a4; }
+.profile-account-row.logout { color: #555; }
 .profile-account-row:hover { color: var(--color-primary); }
 
 /* ── 프로필 계열 — PC 사이드 메뉴 / 폰 탭 줄 ─────────────────────
@@ -13589,16 +13592,16 @@ button,
   }
   .pf-side-avatar-menu button:hover { background: #f7f7f8; }
   /* 사이드는 176px 이다 — 긴 이름이 사진을 밀어내지 않게 이름만 줄인다. */
-  .pf-side-me-name { font-size: 15px; font-weight: 500; color: #2b2b2b;
+  .pf-side-me-name { font-size: 15px; font-weight: 500; color: #555;
     min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* 아래 메뉴 줄 높이(10px 여백 + 글자)와 어깨를 맞춘다 — 34px 은 이 줄만 키운다. */
   .pf-side-me-av {
     width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
     background: #f5f5f7; display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: #a8a8ad; line-height: 1;
+    font-size: 14px; color: #555; line-height: 1;
   }
   .pf-side-me-av img { width: 100%; height: 100%; object-fit: cover; }
-  .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #8a8a8f; }
+  .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #555; }
   /* 본문 왼쪽 위 제목 — 이력서 페이지의 '기본 이력서' 제목과 같은 글자
      (.resume-top-title: 19px/700/#555). 페이지 제목끼리는 사이트
      전체에서 같은 무게로 읽혀야 한다.
@@ -13799,7 +13802,7 @@ button,
   cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s;
 }
 .resume-blank:hover { border-color: var(--color-primary); background: #f7f7f8; }
-.resume-blank-fields { display: block; font-size: 13.5px; color: #a8a8ad; }
+.resume-blank-fields { display: block; font-size: 13.5px; color: #555; }
 .resume-blank-fields i { font-style: normal; color: #e24b4a; margin-left: 1px; }
 /* 칸 안에서 그대로 펼치는 편집 폼 */
 .cv-inline { border-top: 1px solid var(--color-border); margin-top: 10px; }
@@ -13807,7 +13810,7 @@ button,
 /* 접어 둔 칸을 여는 줄 */
 .resume-more-open {
   width: 100%; background: #fff; border: 1px dashed #dcdce0; border-radius: 12px;
-  padding: 15px; font-family: inherit; font-size: 13.5px; color: #6f6f75; cursor: pointer;
+  padding: 15px; font-family: inherit; font-size: 13.5px; color: #555; cursor: pointer;
   transition: border-color .15s, color .15s;
 }
 .resume-more-open:hover { border-color: var(--color-primary); color: var(--color-primary); }
@@ -13815,7 +13818,7 @@ button,
 .career-rank { display: flex; flex-wrap: wrap; gap: 7px; }
 .career-rank-chip {
   border: 1px solid #dcdce0; background: #fff; border-radius: var(--chip-radius);
-  padding: 7px 14px; font-size: 13.5px; color: #6f6f75; cursor: pointer; font-family: inherit;
+  padding: 7px 14px; font-size: 13.5px; color: #555; cursor: pointer; font-family: inherit;
   transition: border-color .12s, color .12s, background .12s;
 }
 .career-rank-chip:hover { border-color: #b9b9be; color: #3d3d3d; }
@@ -13877,7 +13880,7 @@ button,
   .pf-side-notif .profile-settings-btn {
     display: flex; align-items: center; gap: 8px; width: 100%;
     background: none; border: none; cursor: pointer; padding: 9px 10px; border-radius: 8px;
-    font-family: inherit; font-size: 15px; color: #6b6570;
+    font-family: inherit; font-size: 15px; color: #555;
   }
   .pf-side-notif .profile-settings-btn:hover { background: #efeff1; color: #2b2b2b; }
   .pf-side-notif .profile-settings-btn::after { content: "알림"; }
@@ -13896,20 +13899,20 @@ button,
 .cv-inline-cancel {
   flex: 0 0 96px; height: 46px;
   background: #fff; border: 1px solid #dcdce0; border-radius: 8px;
-  font-family: inherit; font-size: 14px; color: #6f6f75; cursor: pointer;
+  font-family: inherit; font-size: 14px; color: #555; cursor: pointer;
   transition: border-color .12s, color .12s;
 }
 .cv-inline-cancel:hover { border-color: #b9b9be; color: #3d3d3d; }
 /* 추천 스킬 더 보기 */
 .cv-skill-more {
   border: 1px dashed #dcdce0; background: #fff; border-radius: var(--chip-radius);
-  padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
+  padding: 7px 13px; font-size: 13px; color: #555; cursor: pointer; font-family: inherit;
 }
 .cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }
 /* 추천 스킬 더 보기 */
 .cv-skill-more {
   border: 1px dashed #dcdce0; background: #fff; border-radius: var(--chip-radius);
-  padding: 7px 13px; font-size: 13px; color: #6f6f75; cursor: pointer; font-family: inherit;
+  padding: 7px 13px; font-size: 13px; color: #555; cursor: pointer; font-family: inherit;
 }
 .cv-skill-more:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
@@ -13989,10 +13992,10 @@ button,
 /* 지금 다니는 곳만 이름을 가릴 수 있다 — 회사명 옆 작은 켜기/끄기. */
 .career-open {
   display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; flex-shrink: 0;
-  font-size: 12.5px; color: #8a8a90; cursor: pointer; user-select: none; white-space: nowrap;
+  font-size: 12.5px; color: #555; cursor: pointer; user-select: none; white-space: nowrap;
 }
 .career-open input { width: 14px; height: 14px; margin: 0; accent-color: var(--color-primary); cursor: pointer; }
-.career-open-note { margin-left: 6px; font-size: 12px; color: #a0a0a6; white-space: nowrap; }
+.career-open-note { margin-left: 6px; font-size: 12px; color: #555; white-space: nowrap; }
 .if-line-head .if-slot { font-size: 15px; }
 .if-line-head .if-slot.on { font-weight: 700; }
 .if-req { font-style: normal; color: #e24b4a; margin-left: 2px; }
@@ -14033,12 +14036,12 @@ button,
 /* 프로필이 덜 채워졌을 때 이력서 대신 서는 안내 판 */
 .resume-gate { max-width: 460px; margin: 60px auto; padding: 32px 28px; text-align: center;
   background: #fff; border: 1px solid var(--color-border); border-radius: 16px; }
-.resume-gate h2 { font-size: 19px; font-weight: 700; color: #2b2b2b; margin: 0 0 8px; }
-.resume-gate p { font-size: 14px; color: #6f6f75; line-height: 1.6; margin: 0 0 18px; word-break: keep-all; }
+.resume-gate h2 { font-size: 19px; font-weight: 700; color: #555; margin: 0 0 8px; }
+.resume-gate p { font-size: 14px; color: #555; line-height: 1.6; margin: 0 0 18px; word-break: keep-all; }
 .resume-gate ul { list-style: none; padding: 14px 16px; margin: 0 0 20px; text-align: left;
   background: #f7f7f8; border-radius: 10px; display: flex; flex-wrap: wrap; gap: 6px 10px; }
 .resume-gate li { font-size: 13.5px; color: #3d3d3d; }
-.resume-gate li::before { content: "· "; color: #a8a8ad; }
+.resume-gate li::before { content: "· "; color: #555; }
 .resume-gate button { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   width: 100%; height: 48px; border: none; border-radius: 10px;
   background: var(--color-primary); color: #fff; font-family: inherit; font-size: 15px; cursor: pointer; }
@@ -14064,7 +14067,7 @@ button,
 input::placeholder,
 textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .if-slot:not(.on),
-.resume-blank-fields { color: #b4b4b9; }
+.resume-blank-fields { color: #555; }
 /* 항목의 첫 줄은 그 항목의 이름이다(매장명·학교명·자격증명). 여기까지
    흐려지면 무엇에 관한 줄인지가 먼저 사라진다. 한 단계 진하게 둔다. */
 .if-line-head .if-slot:not(.on) { color: #96969c; }
@@ -14075,7 +14078,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .settings-compact .if-slot:not(.on) { color: #c6c6cb; }
 .settings-compact .if-line:not(:has(.if-slot.on)) .if-sep { color: #d4d4d9; }
 /* 칸 제목 옆에 덧붙이는 흐린 한마디 */
-.resume-title-note { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: #b4b4b9; }
+.resume-title-note { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: #555; }
 
 /* 아직 못 채운 곳 — 그 자리에 적는다. 알림창처럼 사라지지 않는다. */
 .if-alert {
@@ -14418,8 +14421,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-head { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid #f2f2f4; }
 .pth-head > div { flex: 1; min-width: 0; }
 .pth-head button { border: none; background: none; color: #999; cursor: pointer; padding: 2px; display: flex; }
-.pth-who { font-size: 16px; color: #222; }
-.pth-job { font-size: 13px; color: #999; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pth-who { font-size: 16px; color: #555; }
+.pth-job { font-size: 13px; color: #555; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .pth-fixed {
   display: flex; align-items: center; gap: 8px; padding: 10px 18px;
@@ -14428,14 +14431,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-fixed b { font-weight: 500; }
 
 .pth-body { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
-.pth-empty { font-size: 13.5px; color: #b0b0b6; text-align: center; margin: auto 0; }
+.pth-empty { font-size: 13.5px; color: #555; text-align: center; margin: auto 0; }
 
 .pth-msg { max-width: 78%; align-self: flex-start; }
 .pth-msg p {
   margin: 0; padding: 9px 13px; border-radius: 12px; background: #f2f2f4;
   font-size: 14.5px; color: #555; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
 }
-.pth-msg span { display: block; margin-top: 3px; font-size: 11.5px; color: #b0b0b6; }
+.pth-msg span { display: block; margin-top: 3px; font-size: 11.5px; color: #555; }
 .pth-msg.mine { align-self: flex-end; }
 .pth-msg.mine p { background: #f4f0f8; color: #3a2a48; }
 .pth-msg.mine span { text-align: right; }
@@ -14448,8 +14451,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-appt-when { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #582681; }
 .pth-appt-when b { font-weight: 500; }
 .pth-appt-done { display: block; margin-top: 6px; font-size: 12.5px; color: #1f7a4d; }
-.pth-appt-no   { display: block; margin-top: 6px; font-size: 12.5px; color: #8a8a90; }
-.pth-appt-wait { display: block; margin-top: 6px; font-size: 12.5px; color: #b0b0b6; }
+.pth-appt-no   { display: block; margin-top: 6px; font-size: 12.5px; color: #555; }
+.pth-appt-wait { display: block; margin-top: 6px; font-size: 12.5px; color: #555; }
 .pth-appt-acts { display: flex; gap: 6px; margin-top: 9px; }
 .pth-appt-acts button {
   flex: 1; padding: 7px 0; border-radius: 8px; border: 1px solid #e5e5ea;
@@ -14482,7 +14485,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .pth-appt-form button.key { border-color: var(--color-primary); color: var(--color-primary); }
 
-.pth-warn { margin: 0; padding: 0 18px 12px; font-size: 12.5px; color: #a0a0a6; }
+.pth-warn { margin: 0; padding: 0 18px 12px; font-size: 12.5px; color: #555; }
 
 .pth-more { position: relative; flex-shrink: 0; }
 .pth-menu {
@@ -14498,7 +14501,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    있었는지 확인할 길이 없다. */
 .pth-closed {
   margin: 0; padding: 16px 18px; border-top: 1px solid #f2f2f4;
-  font-size: 13.5px; color: #a0a0a6; text-align: center;
+  font-size: 13.5px; color: #555; text-align: center;
 }
 /* 남은 날은 사흘 안쪽일 때만 말한다 — 일주일 내내 세고 있으면 재촉으로 읽힌다. */
 .prop-interest-left { margin-left: 6px; font-size: 12.5px; color: #555; }
@@ -14506,7 +14509,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 약속 장소 — 언제만 있고 어디가 없으면 면접에 못 간다. 누르면 지도로 간다. */
 .pth-appt-place {
   display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
-  font-size: 12.5px; color: #666; text-decoration: none; line-height: 1.4;
+  font-size: 12.5px; color: #555; text-decoration: none; line-height: 1.4;
 }
 .pth-appt-place:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; }
 .pth-fixed { flex-wrap: wrap; }
@@ -14676,7 +14679,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 포트폴리오 안의 「사진」·「SNS」 줄 이름. 편집 화면(resume-career-head)과 같은
    무게로 — 구역 제목이 아니라 그 안을 가르는 작은 이름이다. */
-.rp-sub { font-size: 13px; color: #888; margin: 0 0 8px; }
+.rp-sub { font-size: 13px; color: #555; margin: 0 0 8px; }
 
 /* 「제안 후 지원」·「대화 후 지원」 — 내가 먼저 찾아간 사람인지, 스스로 온 사람인지.
    지원 날짜 옆에 붙는 작은 표시지 상태값이 아니라, 뱃지처럼 굵게 세우지 않는다. */
@@ -15049,7 +15052,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 「재직 중인 기업 등…」처럼 길어지는 줄이 있어 한 줄로 묶지 않는다. 대신
    폭에 상한을 두어 두 줄에서 멈추게 한다. */
-.pf-vis-opt-d { grid-area: d; margin-top: 4px; max-width: 17em; font-size: 12.5px; color: #a0a0a6; line-height: 1.45; }
+.pf-vis-opt-d { grid-area: d; margin-top: 4px; max-width: 17em; font-size: 12.5px; color: #555; line-height: 1.45; }
 .pf-vis-opt.on .pf-vis-opt-t { color: var(--color-primary); }
 
 .pf-set-line.is-col { display: flex; flex-direction: column; align-items: stretch; gap: 6px; cursor: pointer; }
@@ -15082,7 +15085,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    알 수 없다. 적는 칸만 어디를 치고 있는지 옅은 회색으로 알린다. */
 .pf-pay-sel:focus { outline: none; background-color: transparent; }
 .pf-pay-in:focus { outline: none; background: #f2f2f4; }
-.pf-pay-unit { font-size: 15px; color: #8a8a90; }
+.pf-pay-unit { font-size: 15px; color: #555; }
 .pf-pay-nego { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; font-size: 15px; color: #555; cursor: pointer; user-select: none; }
 .pf-pay-nego input { width: 16px; height: 16px; accent-color: var(--color-primary); cursor: pointer; margin: 0; }
 .pf-pay-in:disabled { color: #c4c4c9; cursor: default; background: transparent; }

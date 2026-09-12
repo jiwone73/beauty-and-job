@@ -462,7 +462,7 @@ function ResumePageContent() {
             aria-expanded={sectionsOpen}
           >
             <span className="resume-sidebar-title">섹션 구성</span>
-            <ChevronDown size={18} style={{ color: "#888", transform: sectionsOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
+            <ChevronDown size={18} style={{ color: "#555", transform: sectionsOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }} />
           </button>
           {(() => {
             // 살롱 채용에서 실제로 보는 순서. 학력·활동수상은 뒤로 접어 두므로

@@ -64,7 +64,7 @@ export default function PasswordChangeModal({ open, onClose }: { open: boolean; 
             style={{ width: "100%", height: 48, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontSize: 15, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
             {saving ? "변경 중..." : "비밀번호 변경"}
           </button>
-          <p style={{ fontSize: 12, color: "#999", margin: "10px 0 0" }}>카카오 등 소셜 로그인 계정은 비밀번호 변경이 불가능합니다.</p>
+          <p style={{ fontSize: 12, color: "#555", margin: "10px 0 0" }}>카카오 등 소셜 로그인 계정은 비밀번호 변경이 불가능합니다.</p>
         </div>
       </div>
     </div>

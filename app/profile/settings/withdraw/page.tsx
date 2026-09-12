@@ -84,7 +84,7 @@ export default function WithdrawPage() {
           <p style={{ fontSize: 14, fontWeight: 600, color: "#555", margin: "0 0 4px" }}>
             지금까지 이용해 주셔서 감사합니다.
           </p>
-          <p style={{ fontSize: 13, color: "#666", margin: "0 0 14px" }}>
+          <p style={{ fontSize: 13, color: "#555", margin: "0 0 14px" }}>
             탈퇴하기 전 아래 유의사항을 확인해 주세요.
           </p>
           <ul style={{ margin: 0, padding: "14px 14px", listStyle: "none", background: "#f7f8fa", borderRadius: 8, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
@@ -148,13 +148,13 @@ export default function WithdrawPage() {
           {working ? "처리 중..." : "탈퇴하기"}
         </button>
         <button onClick={() => router.back()} disabled={working}
-          style={{ width: "100%", marginTop: 8, padding: "10px 0", border: "none", background: "transparent", color: "#888", fontSize: 13.5, cursor: "pointer" }}>
+          style={{ width: "100%", marginTop: 8, padding: "10px 0", border: "none", background: "transparent", color: "#555", fontSize: 13.5, cursor: "pointer" }}>
           취소
         </button>
 
-        <p style={{ fontSize: 12, color: "#aaa", lineHeight: 1.6, margin: "18px 0 0", textAlign: "center" }}>
+        <p style={{ fontSize: 12, color: "#555", lineHeight: 1.6, margin: "18px 0 0", textAlign: "center" }}>
           개인정보의 보관과 파기는{" "}
-          <Link href="/support/privacy" style={{ color: "#888", textDecoration: "underline" }}>개인정보 처리방침</Link>
+          <Link href="/support/privacy" style={{ color: "#555", textDecoration: "underline" }}>개인정보 처리방침</Link>
           을 따릅니다.
         </p>
       </div>

@@ -134,7 +134,7 @@ export default function AppliedList({ userName }: { userName: string }) {
   const 쪽수 = Math.max(1, Math.ceil(걸러진것.length / 한쪽));
   const 보일것 = 걸러진것.slice((쪽 - 1) * 한쪽, 쪽 * 한쪽);
 
-  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
+  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#555", padding: "40px 0" }}>불러오는 중...</p></div>;
   if (error) return (
     <div className="profile-empty-tab">
       <div className="profile-empty-icon">⚠️</div>
@@ -206,7 +206,7 @@ export default function AppliedList({ userName }: { userName: string }) {
           </thead>
           <tbody>
             {보일것.length === 0 && (
-              <tr><td colSpan={selectMode ? 6 : 5} style={{ padding: "40px 14px", textAlign: "center", color: "#9a9aa3" }}>
+              <tr><td colSpan={selectMode ? 6 : 5} style={{ padding: "40px 14px", textAlign: "center", color: "#555" }}>
                 조건에 맞는 지원 내역이 없어요
               </td></tr>
             )}
@@ -290,7 +290,7 @@ export default function AppliedList({ userName }: { userName: string }) {
       {selectMode && (
         <div className="ap-pager" style={{ marginTop: 14 }}>
           <button onClick={() => { setSelectMode(false); setSelectedApps(new Set()); }}
-            style={{ color: "#9a9aa3" }}>고르기 그만두기</button>
+            style={{ color: "#555" }}>고르기 그만두기</button>
         </div>
       )}
 

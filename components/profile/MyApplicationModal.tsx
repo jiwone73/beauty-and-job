@@ -78,7 +78,7 @@ export default function MyApplicationModal({
         </div>
         <div className="rp-modal-body" style={{ overflowY: "auto", flex: 1 }}>
           {loading ? (
-            <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>불러오는 중...</div>
+            <div style={{ padding: "60px", textAlign: "center", color: "#555" }}>불러오는 중...</div>
           ) : data ? (
             <ApplicationDocument
                 제출본
@@ -101,7 +101,7 @@ export default function MyApplicationModal({
               }}
             />
           ) : (
-            <div style={{ padding: "60px", textAlign: "center", color: "#888" }}>지원서를 불러올 수 없습니다.</div>
+            <div style={{ padding: "60px", textAlign: "center", color: "#555" }}>지원서를 불러올 수 없습니다.</div>
           )}
         </div>
       </div>

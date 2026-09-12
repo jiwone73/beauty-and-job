@@ -33,12 +33,12 @@ export default function NoticeDetailPage() {
 
   return (
     <div style={{ maxWidth: 760, margin: "0 auto", padding: "40px 20px 80px" }}>
-      <Link href="/notice" style={{ fontSize: 14, color: "#888", textDecoration: "none" }}>← 공지사항 목록</Link>
+      <Link href="/notice" style={{ fontSize: 14, color: "#555", textDecoration: "none" }}>← 공지사항 목록</Link>
 
       {loading ? (
-        <p style={{ color: "#999", textAlign: "center", padding: "60px 0" }}>불러오는 중...</p>
+        <p style={{ color: "#555", textAlign: "center", padding: "60px 0" }}>불러오는 중...</p>
       ) : notFound || !notice ? (
-        <p style={{ color: "#999", textAlign: "center", padding: "60px 0" }}>공지사항을 찾을 수 없습니다.</p>
+        <p style={{ color: "#555", textAlign: "center", padding: "60px 0" }}>공지사항을 찾을 수 없습니다.</p>
       ) : (
         <>
           <div style={{ margin: "24px 0 10px" }}>
@@ -47,8 +47,8 @@ export default function NoticeDetailPage() {
               {notice.type === "event" ? "이벤트" : "공지"}
             </span>
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#2b2b2b", margin: "0 0 8px", lineHeight: 1.4 }}>{notice.title}</h1>
-          <p style={{ fontSize: 13, color: "#aaa", margin: "0 0 20px", borderBottom: "1px solid #eee", paddingBottom: 20 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#555", margin: "0 0 8px", lineHeight: 1.4 }}>{notice.title}</h1>
+          <p style={{ fontSize: 13, color: "#555", margin: "0 0 20px", borderBottom: "1px solid #eee", paddingBottom: 20 }}>
             {fmtDate(notice.published_at || notice.created_at)}
           </p>
           <div style={{ fontSize: 15, lineHeight: 1.8, color: "#555", whiteSpace: "pre-wrap" }}>{notice.body}</div>

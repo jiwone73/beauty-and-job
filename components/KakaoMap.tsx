@@ -77,7 +77,7 @@ export default function KakaoMap({
 
   if (!latitude || !longitude) {
     return (
-      <div style={{ padding: "20px", textAlign: "center", color: "#888", fontSize: 14, background: "#f7f7f7", borderRadius: 8 }}>
+      <div style={{ padding: "20px", textAlign: "center", color: "#555", fontSize: 14, background: "#f7f7f7", borderRadius: 8 }}>
         위치 정보가 없습니다.
       </div>
     );

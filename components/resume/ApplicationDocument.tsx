@@ -41,7 +41,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
               <Quote size={16} className="resume-section-icon" />자기소개서
             </h2>
             {subtitle && (
-              <p style={{ fontSize: 12.5, color: "#888", margin: "-6px 0 14px" }}>{subtitle}</p>
+              <p style={{ fontSize: 12.5, color: "#555", margin: "-6px 0 14px" }}>{subtitle}</p>
             )}
             {/* 빈 줄을 그대로 흘리면 줄 높이(1.85)만큼 통째로 벌어져, 문단 사이가
                 제목과 첫 줄 사이보다 훨씬 넓어진다. 빈 줄로 끊어 문단으로 세우고

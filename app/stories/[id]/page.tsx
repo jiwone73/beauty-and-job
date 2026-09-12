@@ -107,14 +107,14 @@ export default function StoryDetailPage() {
   if (loading) {
     return (
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
-        <p style={{ textAlign: "center", padding: "80px 0", color: "#888" }}>불러오는 중...</p>
+        <p style={{ textAlign: "center", padding: "80px 0", color: "#555" }}>불러오는 중...</p>
       </main>
     );
   }
   if (notFound || !post) {
     return (
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
-        <p style={{ textAlign: "center", padding: "80px 0", color: "#888" }}>글을 찾을 수 없어요.</p>
+        <p style={{ textAlign: "center", padding: "80px 0", color: "#555" }}>글을 찾을 수 없어요.</p>
         <p style={{ textAlign: "center" }}>
           <Link href="/stories" style={{ color: "#582681" }}>이야기 목록으로</Link>
         </p>
@@ -122,7 +122,7 @@ export default function StoryDetailPage() {
     );
   }
 
-  const cs = CAT_STYLE[post.category] || { bg: "#f0f0f0", color: "#666" };
+  const cs = CAT_STYLE[post.category] || { bg: "#f0f0f0", color: "#555" };
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 40px" }}>
@@ -145,8 +145,8 @@ export default function StoryDetailPage() {
             <ThumbsUp size={18} strokeWidth={2} fill={liked ? "#582681" : "none"} />
             공감 {likeCount}
           </button>
-          <span style={{ fontSize: 13, color: "#bbb" }}>조회 {post.view_count ?? 0}</span>
-          <span style={{ fontSize: 13, color: "#bbb" }}>{fmtDate(post.published_at || post.created_at)}</span>
+          <span style={{ fontSize: 13, color: "#555" }}>조회 {post.view_count ?? 0}</span>
+          <span style={{ fontSize: 13, color: "#555" }}>{fmtDate(post.published_at || post.created_at)}</span>
         </div>
       </article>
 
@@ -168,7 +168,7 @@ export default function StoryDetailPage() {
         </div>
 
         {comments.length === 0 ? (
-          <p style={{ fontSize: 14, color: "#aaa", padding: "24px 0", textAlign: "center" }}>첫 댓글을 남겨보세요</p>
+          <p style={{ fontSize: 14, color: "#555", padding: "24px 0", textAlign: "center" }}>첫 댓글을 남겨보세요</p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {comments.map((c) => (
@@ -177,7 +177,7 @@ export default function StoryDetailPage() {
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#582681" }}>{c.anon_label || "익명"}</span>
                 </div>
                 <p style={{ fontSize: 14, color: "#555", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{c.body}</p>
-                <span style={{ fontSize: 12, color: "#bbb" }}>{fmtDate(c.created_at)}</span>
+                <span style={{ fontSize: 12, color: "#555" }}>{fmtDate(c.created_at)}</span>
               </div>
             ))}
           </div>

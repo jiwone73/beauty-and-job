@@ -591,7 +591,7 @@ export default function ApplyModal({
                   때 그것이 올라온 줄 모르고 처음부터 다시 썼다. */}
               {초안됨 && (
                 <div style={{ margin: "0 0 14px", padding: "10px 12px", borderRadius: 8,
-                  background: "#f7f4fa", fontSize: 13, color: "#6b6570" }}>
+                  background: "#f7f4fa", fontSize: 13, color: "#555" }}>
                   임시저장해 둔 사본을 불러왔어요.
                 </div>
               )}
@@ -630,7 +630,7 @@ export default function ApplyModal({
                 maxLength={2000}
                 style={{ width: "100%", minHeight: 320, padding: 12, borderRadius: 8, border: "1px solid #ddd", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
               />
-              <div style={{ textAlign: "right", fontSize: 12, color: "#aaa", marginTop: 4 }}>
+              <div style={{ textAlign: "right", fontSize: 12, color: "#555", marginTop: 4 }}>
                 {coverLetter.length}/2000자
               </div>
               </div>
@@ -682,7 +682,7 @@ export default function ApplyModal({
 
               {/* 문서가 끝나는 자리 — 선과 여백이 없으면 이 알림이 자기소개서의
                   마지막 문단처럼 붙어 읽힌다. */}
-              <p style={{ fontSize: 12, color: "#888", margin: "24px 0 14px", paddingTop: 18,
+              <p style={{ fontSize: 12, color: "#555", margin: "24px 0 14px", paddingTop: 18,
                 borderTop: "1px solid #ececee", lineHeight: 1.6 }}>
                 지원하면 위 이력서와 자기소개서가 그대로 전송·저장됩니다. 제출 후에는 수정할 수 없어요.
               </p>
@@ -775,7 +775,7 @@ export default function ApplyModal({
                   이런 줄 알고, 여기서 고친 것이 저쪽에도 남은 줄 안다. */}
               {초안됨 && (
                 <div style={{ margin: "0 0 14px", padding: "10px 12px", borderRadius: 8,
-                  background: "#f7f4fa", fontSize: 13, color: "#6b6570" }}>
+                  background: "#f7f4fa", fontSize: 13, color: "#555" }}>
                   임시저장해 둔 사본을 불러왔어요.
                 </div>
               )}

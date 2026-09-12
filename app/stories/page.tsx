@@ -54,7 +54,7 @@ export default function StoriesPage() {
       }}>
         <div>
           <h1 className="page-title">현장이야기</h1>
-          <p style={{ fontSize: 14, color: "#6f6f75", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: "#555", lineHeight: 1.6 }}>
             진상 손님부터 독립 고민까지,<br />
             공감·꿀팁·정보가 모이는 뷰티 현장 이야기.
           </p>
@@ -195,16 +195,16 @@ export default function StoriesPage() {
             )
           : posts;
         return loading ? (
-          <p style={{ textAlign: "center", color: "#888", padding: "40px 0" }}>불러오는 중...</p>
+          <p style={{ textAlign: "center", color: "#555", padding: "40px 0" }}>불러오는 중...</p>
         ) : filtered.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 0", color: "#999" }}>
+        <div style={{ textAlign: "center", padding: "60px 0", color: "#555" }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>💬</div>
           <p>{q ? "검색 결과가 없어요" : "아직 글이 없어요"}</p>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {filtered.map((p) => {
-            const cs = CAT_STYLE[p.category] || { bg: "#f0f0f0", color: "#666", emoji: "💬" };
+            const cs = CAT_STYLE[p.category] || { bg: "#f0f0f0", color: "#555", emoji: "💬" };
             return (
               <Link key={p.id} href={`/stories/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                 <div className="story-card" style={{
@@ -216,10 +216,10 @@ export default function StoriesPage() {
                       {p.category}
                     </span>
                     {p.title && <h2 className="story-item-title">{p.title}</h2>}
-                    <p style={{ fontSize: 14.5, color: "#666", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", marginBottom: 10 }}>
+                    <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", marginBottom: 10 }}>
                       {p.body}
                     </p>
-                    <div style={{ display: "flex", gap: 12, fontSize: 12.5, color: "#aaa" }}>
+                    <div style={{ display: "flex", gap: 12, fontSize: 12.5, color: "#555" }}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><ThumbsUp size={13} strokeWidth={2} /> {p.like_count}</span>
                       <span>💬 {p.comment_count}</span>
                       <span>조회 {p.view_count ?? 0}</span>

@@ -53,7 +53,7 @@ function BookmarkList() {
     선택끝내기();
   };
 
-  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#888", padding: "40px 0" }}>불러오는 중...</p></div>;
+  if (loading) return <div className="profile-empty-tab"><p style={{ color: "#555", padding: "40px 0" }}>불러오는 중...</p></div>;
   if (bookmarkedJobs.length === 0) return (
     <div className="profile-empty-tab">
       <div className="profile-empty-icon">🔖</div>

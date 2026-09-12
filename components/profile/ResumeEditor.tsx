@@ -281,7 +281,7 @@ export default function ResumeEditor({
             경력
             <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
             {!isEntryLevel && totalCareer && (
-              <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#888" }}>
+              <span style={{ marginLeft: "6px", fontSize: "13px", fontWeight: 400, color: "#555" }}>
                 ({totalCareer})
               </span>
             )}
@@ -577,7 +577,7 @@ export default function ResumeEditor({
               <span className="badge-up"><Sparkles size={11} />취업률 상승</span>
             )}
           </h2>
-          <ChevronDown size={18} style={{ color: "#bbb", transform: pf열림 ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+          <ChevronDown size={18} style={{ color: "#555", transform: pf열림 ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
         </div>
         {pf열림 && (
           <>
@@ -585,7 +585,7 @@ export default function ResumeEditor({
             <div className="resume-career-head" style={{ display: "flex", alignItems: "center" }}>
               <strong style={{ fontWeight: 400 }}>사진</strong>
               {portfolioImages.length > 0 && (
-                <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{portfolioImages.length}장</span>
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#555" }}>{portfolioImages.length}장</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
                 {/* 지원 창에서는 사진을 더하지도 지우지도 않는다 — 빼는 것만 한다.
@@ -645,7 +645,7 @@ export default function ResumeEditor({
             <div className="resume-career-head" style={{ display: "flex", alignItems: "center", marginTop: 14 }}>
               <strong style={{ fontWeight: 400 }}>SNS</strong>
               {links.length > 0 && (
-                <span style={{ marginLeft: 8, fontSize: 13, color: "#888" }}>{links.length}개</span>
+                <span style={{ marginLeft: 8, fontSize: 13, color: "#555" }}>{links.length}개</span>
               )}
               <span style={{ marginLeft: "auto", display: "flex", gap: 4, flexShrink: 0 }}>
                 {!빼기전용 && (<button className="resume-icon-btn" aria-label="SNS 추가"

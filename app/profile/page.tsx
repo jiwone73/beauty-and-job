@@ -673,7 +673,7 @@ export default function ProfilePage() {
                             </label>
                             {/* avatar_public 은 인재검색 쪽만 막는다. 지원한 곳은 그대로 본다.
                                 사진이 화면에서 사라지므로 지워진 것으로 오해하지 않게 적는다. */}
-                            <div style={{ fontSize: "11px", color: "#aaa", padding: "0 10px 4px", lineHeight: 1.5 }}>
+                            <div style={{ fontSize: "11px", color: "#555", padding: "0 10px 4px", lineHeight: 1.5 }}>
                               {avatarPublic
                                 ? "내가 지원한 매장에는 그대로 보여요."
                                 : "사진은 지워지지 않아요. 내가 지원한 매장에는 그대로 보여요."}
@@ -681,7 +681,7 @@ export default function ProfilePage() {
                             <div style={{ height: 1, background: "#f7f7f8", margin: "1px 6px 5px" }} />
                           </>
                         )}
-                        <div style={{ fontSize: "11px", color: "#aaa", padding: "4px 10px 2px" }}>JPG · PNG · WebP</div>
+                        <div style={{ fontSize: "11px", color: "#555", padding: "4px 10px 2px" }}>JPG · PNG · WebP</div>
                       </div>
                     )}
                     <input ref={avatarFileRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleAvatarUpload} style={{ display: "none" }} />

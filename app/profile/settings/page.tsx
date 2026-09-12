@@ -191,7 +191,7 @@ export default function AccountSettingsPage() {
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
           <button type="button" onClick={() => router.push("/profile/settings/withdraw")}
             style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
-              fontSize: 15, color: "#a0a0a6", textDecoration: "underline", textUnderlineOffset: 3 }}>
+              fontSize: 15, color: "#555", textDecoration: "underline", textUnderlineOffset: 3 }}>
             회원 탈퇴
           </button>
         </div>

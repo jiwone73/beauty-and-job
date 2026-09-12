@@ -159,7 +159,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
   if (notFound) {
     return (
       <div className="job-detail-page">
-        <div style={{ padding: "80px 20px", textAlign: "center", color: "#888" }}>
+        <div style={{ padding: "80px 20px", textAlign: "center", color: "#555" }}>
           <p style={{ marginBottom: 16 }}>공고를 찾을 수 없어요. 마감됐거나 아직 등록 중인 공고예요.</p>
           <Link href="/jobs" style={{ color: "#582681", fontWeight: 600 }}>채용공고 목록으로</Link>
         </div>
@@ -169,7 +169,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
   if (!job) {
     return (
       <div className="job-detail-page">
-        <div style={{ padding: "80px 20px", textAlign: "center", color: "#888" }}>
+        <div style={{ padding: "80px 20px", textAlign: "center", color: "#555" }}>
           불러오는 중...
         </div>
       </div>
@@ -279,7 +279,7 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
             </>
           ) : isCompany ? (
             <div style={{
-              background: "#f6f6f8", color: "#888", borderRadius: "10px",
+              background: "#f6f6f8", color: "#555", borderRadius: "10px",
               padding: "12px 14px", fontSize: "13px", lineHeight: 1.5, textAlign: "center"
             }}>
               기업회원 계정에서는 지원·스크랩을 이용할 수 없어요.
