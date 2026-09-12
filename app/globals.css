@@ -7071,7 +7071,7 @@ div:has(> table.admin-table),
   font-weight: 600;
   border-radius: 20px;
   background-color: #f1f1f3;
-  color: #6b7280;
+  color: #555;
   border: 1.5px solid transparent;
 }
 
