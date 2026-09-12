@@ -670,7 +670,7 @@ export default function CompanyProposalsPage() {
                 <th className="c-job">희망직군</th>
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
-                <th>최근활동/채팅</th>
+                <th>진행 상황</th>
                 <th className="c-time">업데이트</th>
               </tr>
             </thead>
