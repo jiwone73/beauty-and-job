@@ -89,8 +89,22 @@ function regionFromAddress(addr: string | null) {
 }
 
 const isPdf = (u: string) => u.split("?")[0].toLowerCase().endsWith(".pdf");
-// 유료 여부 — 유료 요금제 미도입이라 현재 전부 false(무료). 도입 시 이 함수만 실제 필드로 교체.
-const isPaid = (_c: Company) => false;
+// 유료 여부 — 기간이 오늘까지 살아 있으면 유료다. 결제가 붙기 전에는 이 날짜를
+// 손으로 넣어 유료 동작을 본다(상품을 팔기 시작하면 상품명이 이 자리를 대신한다).
+const isPaid = (c: Company) => !!c.paid_until && c.paid_until.slice(0, 10) >= 오늘();
+function 오늘() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+/** 기간이 며칠 남았나. 오늘까지면 0, 지났으면 null. */
+function 남은날(until: string | null): number | null {
+  if (!until) return null;
+  const 하루 = 86400000;
+  const t = new Date(until.slice(0, 10)); t.setHours(0, 0, 0, 0);
+  const 오늘날 = new Date(); 오늘날.setHours(0, 0, 0, 0);
+  const n = Math.round((t.getTime() - 오늘날.getTime()) / 하루);
+  return n >= 0 ? n : null;
+}
 
 function AdminCompaniesContent() {
   const searchParams = useSearchParams();
@@ -448,7 +462,7 @@ function AdminCompaniesContent() {
                 <th>공고</th>
                 <th>가입일</th>
                 <th>최종로그인</th>
-                <th>유료 기간</th>
+                <th>가입상품</th>
                 <th>상태</th>
               </tr>
             </thead>
@@ -508,13 +522,26 @@ function AdminCompaniesContent() {
                   <td className="admin-td-date">{fmtDate(c.created_at)}</td>
                   {/* 최종로그인 — 2026-09-12 부터 쌓인다. 그 전에 들어온 것은 남은 기록이 없다. */}
                   <td className="admin-td-date">{c.last_login_at ? fmtDate(c.last_login_at) : "-"}</td>
-                  {/* 유료 기간 — 오늘 이후면 유료. 비우면 무료로 되돌아간다. */}
+                  {/* 가입상품 — 1행은 무엇에 들어 있나, 2행은 언제까지인가.
+                      상품을 팔기 시작하면 1행에 상품명이 들어선다. 기간은 결제가
+                      붙기 전까지 여기서 손으로 넣어 유료 동작을 본다. */}
                   <td className="admin-td-date">
-                    <input type="date" value={(c.paid_until || "").slice(0, 10)}
-                      onChange={(e) => 유료기간저장(c.id, e.target.value)}
-                      style={{ border: "1px solid #e8e8ea", borderRadius: 6, padding: "3px 6px",
-                        fontSize: 12.5, fontFamily: "inherit",
-                        color: "#555" }} />
+                    <div>{isPaid(c) ? "유료" : "무료"}</div>
+                    <div style={{ marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
+                      <input type="date" value={(c.paid_until || "").slice(0, 10)}
+                        onChange={(e) => 유료기간저장(c.id, e.target.value)}
+                        style={{ border: "1px solid #e8e8ea", borderRadius: 6, padding: "3px 6px",
+                          fontSize: 12.5, fontFamily: "inherit",
+                          color: "#555" }} />
+                      {(() => {
+                        const n = 남은날(c.paid_until);
+                        if (n === null) return null;
+                        // 열흘 안쪽이면 곧 끊긴다 — 그때만 눈에 걸리게 한다.
+                        return <span style={{ fontSize: 12, color: n <= 10 ? "#c0504d" : "#a5a5ab" }}>
+                          {n === 0 ? "오늘까지" : `${n}일 남음`}
+                        </span>;
+                      })()}
+                    </div>
                   </td>
                   {/* 상태 */}
                   <td>
