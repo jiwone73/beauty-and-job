@@ -377,8 +377,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         </div>
                         )}
                         {q주말.length > 0 && (
-                          <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
-                            <span style={{ fontSize: 12.5, color: "#888", marginRight: 2 }}>{q주말.join("·")}</span>
+                          // 한 줄로 못 박는다 — 선택칸 넷이 창 폭(320px)에 겨우 들어가서
+                          // 줄바꿈을 허용하면 마지막 「0분」만 아래로 떨어졌다.
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, flexWrap: "nowrap", marginTop: 6 }}>
+                            {/* 지정 요일은 바로 위 체크가 「토·일은 시간 다르게」라고 이미 말한다 —
+                                여기 또 적으면 그만큼 자리를 먹어 칸이 밀려난다. */}
+                            {r.type !== "custom" && (
+                              <span style={{ fontSize: 12.5, color: "#888", marginRight: 2, flexShrink: 0 }}>{q주말.join("·")}</span>
+                            )}
                             <select className="ws-hourSel" value={q주말시작} onChange={(e) => { const v = Number(e.target.value); setQ주말시작(v); set확정(r.type); 주말반영(r.type, v, q주말시작분, q주말끝, q주말끝분); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                             </select>
