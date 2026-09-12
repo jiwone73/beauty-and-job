@@ -7249,6 +7249,11 @@ div:has(> table.admin-table),
 .company-layout, .company-layout * { font-weight: 400 !important; }
 /* 모바일 기업 셸(co-m)도 동일하게 전부 평체 */
 .co-m, .co-m * { font-weight: 400 !important; }
+/* 이름만 예외 — 목록에서 사람을 가리키는 값이라 한눈에 잡혀야 한다.
+   위 두 규칙이 !important 로 화면 전체를 누르므로 여기도 같이 건다.
+   옆에 붙는 나이·성별(.co-li-ageg)은 평체 그대로 둔다 — 같이 굵으면
+   「하지원 53세 · 남」이 통째로 한 덩어리로 읽힌다. */
+.company-layout .co-li-name, .co-m .co-li-name { font-weight: 600 !important; }
 .company-sidebar {
   width: 220px;
   min-height: 100vh;
@@ -15203,7 +15208,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 이름은 굵게 — 카드에서 사람을 가리키는 값이라 한눈에 잡혀야 한다. 네 화면
    (공고·지원자·인재풀·스크랩 인재·보낸 제안)이 같은 크기 14.5px·색 #555·굵기 600 이다.
    위 .tal-open 의 font: inherit 이 굵기를 부모 값으로 되돌리므로 그 뒤에서 못 박는다. */
-.tal-who .tal-open, .tal-line2 .tal-open { font-weight: 600 !important; }
+.tal-who .tal-open, .tal-line2 .tal-open { font-weight: 400 !important; }
+/* 굵기는 이름 조각에만. 단추 전체에 걸면 괄호 속 성별·나이까지 굵어져
+   「한지준 (여, 만 36세)」가 통째로 한 덩어리가 된다. */
+.tal-who .tal-open b, .tal-line2 .tal-open b,
+.apl-who b { font-weight: 600 !important; }
+.apl-who b + span { font-weight: 400 !important; }
 .tal-open:hover { color: var(--color-primary); }
 
 

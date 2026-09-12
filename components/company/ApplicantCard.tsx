@@ -99,7 +99,7 @@ export default function ApplicantCard({
             : <span>{(a.user_name || "?").slice(0, 1)}</span>}
         </span>
         <span className="apl-who">
-          <b>{a.user_name}{나이성별 && ` (${나이성별})`}</b>
+          <b>{a.user_name}</b>{나이성별 && <span> ({나이성별})</span>}
           {지역 && <i>{지역}</i>}
         </span>
         {/* 사람을 고르게 하는 건 이름이 아니라 이 줄이다. 한 줄 소개는
@@ -144,7 +144,8 @@ export default function ApplicantCard({
               같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들이다. */}
           <div className="tal-who tal-line2">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
-              {(a as any).user_intro ? a.user_name : ""}
+              {/* 이름만 굵게. 괄호 속 성별·나이는 평체로 둔다. */}
+              {(a as any).user_intro ? <b>{a.user_name}</b> : ""}
               {(a as any).user_intro && 나이성별 ? " " : ""}
               {나이성별 && `(${나이성별})`}
             </button>

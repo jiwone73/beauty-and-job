@@ -122,7 +122,9 @@ export default function TalentCard({
           <div className="tal-who">
             <button type="button" className="tal-open" title="이력서 보기"
               onClick={() => onOpenResume(t)}>
-              {t.intro ? t.name : ""}{t.intro && 나이성별 ? " " : ""}{나이성별 && `(${나이성별})`}
+              {/* 굵은 것은 이름뿐이다 — 괄호 속 성별·나이까지 굵으면 둘이 한
+                  덩어리로 읽혀, 정작 사람을 가리키는 이름이 묻힌다. */}
+              {t.intro ? <b>{t.name}</b> : ""}{t.intro && 나이성별 ? " " : ""}{나이성별 && `(${나이성별})`}
             </button>
           </div>
           {지역 && <div className="tal-who">{지역}</div>}

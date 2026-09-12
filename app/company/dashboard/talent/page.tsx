@@ -846,7 +846,7 @@ export default function TalentPage() {
             .co-li-avatar { width: 44px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-            .co-li-name { font-size: 15.5px; color: #555; flex-shrink: 0; }
+            .co-li-name { font-size: 15.5px; font-weight: 600; color: #555; flex-shrink: 0; }
             .co-li-ageg { font-size: 12.5px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 12.5px; color: #888; margin-top: 2px; }
             .co-li-job { font-size: 15.5px; color: #582681; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
