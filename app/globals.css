@@ -7253,7 +7253,8 @@ div:has(> table.admin-table),
    위 두 규칙이 !important 로 화면 전체를 누르므로 여기도 같이 건다.
    옆에 붙는 나이·성별(.co-li-ageg)은 평체 그대로 둔다 — 같이 굵으면
    「하지원 53세 · 남」이 통째로 한 덩어리로 읽힌다. */
-.company-layout .co-li-name, .co-m .co-li-name { font-weight: 600 !important; }
+.company-layout .co-li-name, .co-m .co-li-name,
+.company-layout .prop-whoinfo b, .co-m .prop-whoinfo b { font-weight: 600 !important; }
 .company-sidebar {
   width: 220px;
   min-height: 100vh;
