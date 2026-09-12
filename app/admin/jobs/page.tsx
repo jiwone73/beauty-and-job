@@ -387,8 +387,9 @@ function AdminJobsPageInner() {
                           )}
                           {(() => {
                             const isMember = job.is_member !== false && job.source !== "EXTERNAL";
+                            // 매장 줄에 딸린 값이라 매장명과 같은 결로 둔다.
                             return (
-                              <span style={{ fontSize: 15, whiteSpace: "nowrap", color: "#555" }}>
+                              <span className="adm-shop" style={{ whiteSpace: "nowrap" }}>
                                 {isMember ? "회원" : "비회원"}
                               </span>
                             );
