@@ -2696,13 +2696,24 @@ export default function JobPostForm({
             PAGE_TITLES["jobs-new"]). 여기는 버튼을 오른쪽 끝으로 미는 빈 자리만 남긴다. */}
         {!isMobile && (
           <div className="admin-form-actions" style={{ flex: 1, minWidth: 0, justifyContent: "flex-end" }}>
-            {/* 임시저장 버튼 + (관리자) 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출 */}
+            {/* 빈 화면에서 다시 시작하는 길. 관리자·알바는 불러오기 줄 끝에 이미 있어
+                기업 폼에만 둔다 — 한 화면에 같은 링크가 둘이면 어느 것이 무엇을 비우는지 흐려진다. */}
+            {기업폼 && (
+              <button type="button" onClick={초기화}
+                style={{ marginRight: "auto", border: "none", background: "none", color: "#555",
+                  fontSize: 13.5, fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
+                초기화
+              </button>
+            )}
+            {/* 임시저장 버튼 + 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출.
+                예전에는 관리자만 목록을 볼 수 있어, 기업회원은 들어올 때 뜨는 창을 닫으면
+                임시저장이 있는 줄도 몰랐다. */}
             <div ref={draftMenuRef} style={{ position: "relative", display: "inline-flex", alignItems: "stretch" }}>
               <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}
-                style={mode === "admin" && drafts.length > 0 ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 } : undefined}>
+                style={drafts.length > 0 ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 } : undefined}>
                 <Save size={15} /> {draftSaved ? "임시저장됨 ✓" : "임시저장"}
               </button>
-              {mode === "admin" && drafts.length > 0 && (
+              {drafts.length > 0 && (
                 <button type="button" className="admin-secondary-btn" title="임시저장 목록"
                   onClick={() => setDraftMenuOpen((v) => !v)}
                   style={{ marginLeft: -1, padding: "0 8px", borderTopLeftRadius: 0, borderBottomLeftRadius: 0, display: "inline-flex", alignItems: "center", gap: 2 }}>
@@ -2834,10 +2845,6 @@ export default function JobPostForm({
           <button type="button" onClick={() => location.reload()}
             style={{ marginLeft: "auto", border: "1px solid var(--color-primary)", background: "#fff", color: "var(--color-primary)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}>
             이어서 작성
-          </button>
-          <button type="button" onClick={() => { clearAutosave(); set되살릴것(null); }}
-            style={{ border: "1px solid #e5e5ea", background: "#fff", color: "#666", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}>
-            새로 시작
           </button>
         </div>
       )}

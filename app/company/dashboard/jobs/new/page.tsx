@@ -53,6 +53,31 @@ function CompanyJobNewForm() {
     return data.data;
   };
 
+  // 임시저장 목록 — 폼 위쪽 「임시저장」 단추 옆에서 언제든 펼쳐 본다. 들어올 때 뜨는
+  // 창을 닫고 나면 임시저장을 볼 길이 없었다.
+  const listDrafts = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return [];
+    const res = await fetch("/api/company/jobs?status=DRAFT&limit=30", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!data.success) return [];
+    const 목록 = Array.isArray(data.data) ? data.data : (data.data?.jobs || []);
+    return 목록.map((j: any) => ({ id: j.id, title: j.title, created_at: j.created_at }));
+  };
+
+  const deleteDraft = async (id: string) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return false;
+    const res = await fetch(`/api/company/jobs/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json().catch(() => ({ success: false }));
+    return !!data.success;
+  };
+
   const onSubmit = async (payload: any, status: "draft" | "publish") => {
     const token = localStorage.getItem("access_token");
     if (!token) return { success: false, error: "로그인이 필요합니다." };
@@ -85,6 +110,8 @@ function CompanyJobNewForm() {
           uploadImage={uploadImage}
           onSubmit={onSubmit}
           loadEditData={loadEditData}
+          listDrafts={listDrafts}
+          deleteDraft={deleteDraft}
         />
     </CompanyLayout>
   );
