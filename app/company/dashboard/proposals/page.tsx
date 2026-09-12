@@ -158,6 +158,11 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   return { 글: `${그분에게} 제안을 보냈습니다`, 때: p.createdAt };
 }
 
+/** 이 줄에 열린 대화가 있나. 수락해야 말을 걸 수 있고, 거절·거둔 제안은 끝난 것이다. */
+function 대화열림(p: 제안): boolean {
+  return !!p.interestedAt && !p.declinedAt && !p.canceledAt && !p.blocked;
+}
+
 /** 다음에 할 일. 우리 차례인 것만 색을 채운다. */
 function 다음할일(p: 제안): { 글: string; 우리차례: boolean } | null {
   const st = 상태(p);
@@ -666,7 +671,7 @@ export default function CompanyProposalsPage() {
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
                 <th>최근 활동</th>
-                <th className="c-act">다음 액션</th>
+                <th className="c-time">시각</th>
               </tr>
             </thead>
             <tbody>
@@ -707,32 +712,22 @@ export default function CompanyProposalsPage() {
                     <td className="c-date">{날짜(p.createdAt)}</td>
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
+                      {/* 거두는 일은 아직 답이 없는 줄에서만. 수락한 뒤에는 드물고, 잘못
+                          누르면 되돌릴 수 없다 — 그때는 대화로 정리한다. */}
+                      {st === "답변대기" && (
+                        <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
+                          제안 취소
+                        </button>
+                      )}
                     </td>
+                    {/* 무슨 일이 있었나. 대화가 열린 줄은 이 글자가 곧 채팅으로 가는 문이다 —
+                        버튼 열을 따로 두지 않고 여기 하나로 모았다. 미답변이면 빨갛다. */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
-                      <span>{활.글}</span>
-                      {활.때 && <i>({때(활.때)})</i>}
+                      {대화열림(p)
+                        ? <button type="button" onClick={() => set대화(p)}>{활.글}</button>
+                        : <span>{활.글}</span>}
                     </td>
-                    <td className="c-act">
-                      {/* 줄이 이미 두 줄 높이라 세로로 쌓아도 표가 안 늘어난다.
-                          열이 좁아진 만큼은 「최근 활동」이 쓴다.
-                          거두는 길은 어느 단계에나 있어야 한다(대화 중에 갑자기 다른
-                          사람을 뽑는 일이 제일 흔하다). 이미 끝난 것만 뺀다. */}
-                      <span className="prop-acts">
-                        {/* 나아가는 일이 먼저, 물리는 일이 아래. 줄마다 「제안 취소」가
-                            먼저 눈에 들어오면 부담스럽다. */}
-                        {할 && (
-                          <button type="button" className={할.우리차례 ? "key" : undefined}
-                            onClick={() => set대화(p)}>
-                            {할.글} <ChevronRight size={13} />
-                          </button>
-                        )}
-                        {!["거절", "취소"].includes(st) && (
-                          <button type="button" onClick={() => set취소할것(p)}>
-                            제안 취소 <ChevronRight size={13} />
-                          </button>
-                        )}
-                      </span>
-                    </td>
+                    <td className="c-time">{활.때 ? 때(활.때) : ""}</td>
                   </tr>
                 );
               })}

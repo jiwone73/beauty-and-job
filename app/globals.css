@@ -15341,7 +15341,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
     자리에 있고, 제목도 같은 선에서 시작한다.
     줄이 이미 두 줄 높이라 세로로 쌓아도 표가 안 늘어나고, 열이 좁아진 만큼은
     「최근 활동」이 쓴다. */
-.prop-table .c-act { width: 92px; text-align: left; }
+/* 시각은 따로 선다 — 활동 글자와 한 칸에 두면 긴 문구에서 시각이 아래로 떨어졌다. */
+.prop-table .c-time { width: 96px; white-space: nowrap; font-size: 13.5px; color: #9a9aa3; }
+/* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
+.prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
+  font-family: inherit; font-size: 12.5px; color: #9a9aa3; cursor: pointer;
+  text-decoration: underline; text-decoration-color: #dcdce0; text-underline-offset: 3px; }
+.prop-cancel:hover { color: #c0504d; }
 /* 테두리 없이 글자로 — 공고 관리의 「수정 | 마감」과 같은 꼴이다. */
 .prop-acts { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
 /* 좌우 여백을 두지 않는다 — 2px 이라도 있으면 글자 오른끝이 제목보다 그만큼
@@ -15380,13 +15386,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    주체가 글 안에 들어가면서 줄이 길어져 시각을 옆에 두면 밀려난다. */
 /* 글이 길면 다음 줄로 넘어간다 — 한 줄에 밀어 넣으려고 폭을 넓게 잡으면 정작
    이름·직군 칸이 좁아져 거기가 두 줄로 접혔다. 낱말 중간에서 끊지 않는다. */
-.prop-table .c-recent { width: 210px; }
+.prop-table .c-recent { width: 232px; }
 /* 시각은 문구 뒤에 이어 붙는다 — 자리가 있으면 같은 줄에, 모자라면 그때 넘어간다.
    예전에는 둘 다 블록이라 짧은 문구에서도 시각이 늘 아랫줄로 떨어졌다. */
 .c-recent span { display: inline; white-space: normal; word-break: keep-all; line-height: 1.45; }
 /* 미답변 — 구직자가 마지막으로 한 말이 그대로 여기 떠 있다. 그 글자를 빨갛게 해서
    답할 것이 무엇인지 바로 읽히게 한다(공고 줄에는 빨간 표시를 두지 않는다). */
-.c-recent.todo span { color: #c0504d; }
+.c-recent.todo span, .c-recent.todo button { color: #c0504d; }
+/* 미답변 메시지는 누르는 자리다 — 글자 그대로 두되 손을 올리면 밑줄이 든다. */
+.c-recent button { display: inline; border: none; background: none; padding: 0;
+  font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.c-recent button:hover { text-decoration: underline; text-underline-offset: 3px; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
   font-size: 13.5px; color: #9a9aa3; white-space: nowrap; }
 
