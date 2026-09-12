@@ -45,7 +45,7 @@ export default function ScrappedTalentList({
       {chips}
 
       {!hideCount && (
-        <div style={{ fontSize: 14, color: "#555", margin: "0 0 8px" }}>
+        <div style={{ fontSize: 15, color: "#555", margin: "0 0 8px" }}>
           총 <strong>{filtered.length}</strong>명
         </div>
       )}

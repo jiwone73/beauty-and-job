@@ -140,7 +140,9 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   if (p.appliedAt) return { 글: `${그분} 지원했습니다`, 때: p.appliedAt };
   if (p.declinedAt) return { 글: `${그분} 거절했습니다`, 때: p.declinedAt };
   if (p.blocked) return { 글: "차단됨", 때: null };
-  if (p.appointmentAt) {
+  // 약속이 잡혀 있어도, 그 뒤로 구직자가 말을 걸었으면 그 말을 먼저 적는다 —
+  // 답해야 할 것이 무엇인지가 이 칸에 떠 있어야 한다(빨간 글자가 곧 미답변이다).
+  if (p.appointmentAt && p.lastSender !== "USER") {
     const d = new Date(p.appointmentAt);
     return { 글: `${d.getMonth() + 1}.${d.getDate()} 면접 약속`, 때: p.lastMessageAt };
   }
@@ -483,9 +485,6 @@ export default function CompanyProposalsPage() {
         <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른공고 === g.id ? " on" : ""}`}
           onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
           <span className="co-jobitem-t">{g.제목}{g.마감 && <span className="co-jobitem-off">마감</span>}</span>
-          {/* 미답변이 몇인지 여기서 말한다 — 「전체 공고」로 모아 보지 않아도
-              어느 공고에 할 일이 있는지 훑어서 알 수 있다. */}
-          {g.내차례 > 0 && <b className="prop-side-mine">{g.내차례}</b>}
           <span className="co-jobitem-n">{g.수}</span>
         </button>
       ))}
@@ -709,7 +708,7 @@ export default function CompanyProposalsPage() {
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
                     </td>
-                    <td className="c-recent">
+                    <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
                       <span>{활.글}</span>
                       {활.때 && <i>({때(활.때)})</i>}
                     </td>

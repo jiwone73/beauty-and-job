@@ -14530,7 +14530,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-main { flex: 1; min-width: 0; }
 .tal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
 .tal-badge {
-  font-size: 11.5px; padding: 2px 9px; border-radius: 20px;
+  font-size: 12.5px; padding: 2px 9px; border-radius: 20px;
   background: #f7f7f8; color: var(--color-primary); white-space: nowrap;
 }
 .tal-sub { font-size: 12.5px; color: #555; }
@@ -14558,7 +14558,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-btn {
   display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px;
   border: 1px solid #e2e2e6; border-radius: 8px; background: #fff;
-  font-size: 13px; font-family: inherit; color: #555; cursor: pointer; white-space: nowrap;
+  font-size: 14px; font-family: inherit; color: #555; cursor: pointer; white-space: nowrap;
 }
 .tal-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .tal-btn.key { border-color: var(--color-primary); color: var(--color-primary); }
@@ -14598,7 +14598,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
 .tal-acts-top { display: flex; align-items: center; gap: 6px; }
 /* 「제안함」은 상태다. 버튼 모양이면 눌러야 하는 줄 알고 또 보낸다. */
-.tal-sent { font-size: 13.5px; color: #555; white-space: nowrap; padding: 6px 2px; }
+.tal-sent { font-size: 14.5px; color: #555; white-space: nowrap; padding: 6px 2px; }
 /* 뱃지는 이름에 붙는 표시라 한 줄로 묶는다 — 아랫줄로 내리면 나이·경력과 섞여
    무엇에 붙은 표시인지 흐려진다. */
 .tal-nameline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
@@ -14641,17 +14641,20 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-avatar { width: 60px; height: 60px; border-radius: 50%; font-size: 20px; }
 .tal-main { cursor: pointer; }
 .tal-main:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 6px; }
-.tal-name { font-size: var(--card-title); color: #555; margin-bottom: 6px; text-decoration: none;
+/* 한줄소개 — 카드에서 가장 먼저 읽는 줄이라 본문보다 한 칸 크다. 토큰(15.5px)에
+   1px 을 더하면 16.5px 이 되어 브라우저가 16px 로 내려 그려, 커진 티가 안 났다.
+   값으로 못 박는다. */
+.tal-name { font-size: 17px; color: #555; margin-bottom: 6px; text-decoration: none;
   display: inline-block; max-width: 100%; line-height: 1.45; }
 /* 여는 자리는 글자뿐이라, 글자에 손이 닿았을 때만 색이 든다. 예전에는 줄
    전체(.tal-main)에 손만 올려도 이름이 보라로 들어 눌리는 자리로 보였다. */
 .tal-name:hover, .tal-open:hover { color: var(--color-primary); text-decoration: underline;
   text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
-.tal-who { font-size: var(--card-sub); color: #555; line-height: 1.55; }
+.tal-who { font-size: calc(var(--card-sub) + 1px); color: #555; line-height: 1.55; }
 .tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
 .tal-foot { justify-content: space-between; margin-top: 11px; padding: 9px 0 11px; }
-.tal-tags { font-size: var(--card-meta); color: #555; }
-.tal-when { margin-left: auto; font-size: var(--card-meta); color: #555; }
+.tal-tags { font-size: calc(var(--card-meta) + 1px); color: #555; }
+.tal-when { margin-left: auto; font-size: calc(var(--card-meta) + 1px); color: #555; }
 
 /* 인재 이력서 페이지 — 모달이 아니라 제 주소를 가진 화면이다. 위에 돌아갈 길과
    그 사람에게 할 수 있는 일을 세우고, 이력서는 종이처럼 흰 판 위에 놓는다. */
@@ -14944,7 +14947,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    가운뎃점 대신 여백으로 가른다(가운뎃점은 태그의 「·」와 섞인다). */
 /* 이름·지역 줄과 같은 크기로 — 12.5px 는 그 위 줄들보다 작아 따로 놀았다. */
 .tal-foot .tal-tags { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px;
-  color: #555; font-size: 13.5px; }
+  color: #555; font-size: 14.5px; }
 .tal-job { color: #555; }
 .tal-foot .tal-from { margin-left: 0; }
 
@@ -15195,7 +15198,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 누를 수 없는 자리에는 손가락을 띄우지 않는다. */
 .tal-main, .tal-who, .tal-card { cursor: default; }
 /* 인재 카드 글자는 모두 #555 — 옅은 회색이 여럿 섞여 잘 안 읽혔다. */
-.tal-name.tal-open { color: #555; }
+/* 이 요소는 tal-name 과 tal-open 을 함께 가진다. .tal-open 의 font-size: inherit 이
+   뒤에 있어 .tal-name 의 크기를 덮고 부모(16px)를 물려받았다 — 두 클래스를 함께
+   짚어 크기를 못 박는다. */
+.tal-name.tal-open { color: #555; font-size: 17px; }
 .tal-open:hover { color: var(--color-primary); }
 
 
@@ -15297,7 +15303,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-chip {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 16px;
-  background: #fff; font-family: inherit; font-size: 13.5px; color: var(--color-text); cursor: pointer;
+  background: #fff; font-family: inherit; font-size: 14.5px; color: var(--color-text); cursor: pointer;
 }
 .prop-chip em { font-style: normal; color: var(--color-text); }
 .prop-chip:hover { border-color: #d8d3de; }
@@ -15317,9 +15323,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: var(--card-bg); border: 1px solid var(--card-line); border-radius: 10px;
   box-shadow: var(--card-shadow); overflow-x: auto;
 }
-.prop-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.prop-table { width: 100%; border-collapse: collapse; font-size: 15px; }
 .prop-table th {
-  padding: 10px 12px; text-align: left; font-weight: 500; font-size: 13.5px;
+  padding: 10px 12px; text-align: left; font-weight: 500; font-size: 14.5px;
   color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;
 }
 .prop-table td { padding: 10px 12px; border-top: 1px solid #f4f4f6; color: var(--color-text); vertical-align: middle; }
@@ -15343,7 +15349,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 줄 높이를 다른 칸(이름 두 줄)과 맞춘다 — 여기만 두꺼우면 그 줄만 부푼다. */
 .prop-acts button { display: inline-flex; align-items: center; gap: 1px;
   border: none; background: none; padding: 0; font-family: inherit;
-  font-size: 13.5px; line-height: 1.45; color: var(--color-text);
+  font-size: 14.5px; line-height: 1.45; color: var(--color-text);
   cursor: pointer; white-space: nowrap; }
 .prop-acts button svg { color: #c4c4c8; }
 .prop-acts button:hover { color: var(--color-primary); }
@@ -15360,12 +15366,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   display: flex; align-items: center; justify-content: center;
 }
 .prop-av img { width: 100%; height: 100%; object-fit: cover; }
-.prop-who b { display: block; font-weight: 500; font-size: 15px; color: var(--color-text-strong); }
+.prop-who b { display: block; font-weight: 500; font-size: 16px; color: var(--color-text-strong); }
 /* 이름 밑 공고명 — 기본 글자색으로. 옅은 회색으로 두었더니 안 보인다. */
-.prop-who i { display: block; font-style: normal; font-size: 13px; color: var(--color-text); }
+.prop-who i { display: block; font-style: normal; font-size: 14px; color: var(--color-text); }
 .prop-who:hover b { color: var(--color-primary); }
 
-.prop-st { font-size: 13.5px; }
+.prop-st { font-size: 14.5px; }
 /* 닫히는 날이 사흘 안쪽일 때만 남은 날을 덧붙인다 — 일주일 내내 세고 있으면
    재촉으로 읽힌다. */
 .prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: var(--color-primary); }
@@ -15378,8 +15384,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 시각은 문구 뒤에 이어 붙는다 — 자리가 있으면 같은 줄에, 모자라면 그때 넘어간다.
    예전에는 둘 다 블록이라 짧은 문구에서도 시각이 늘 아랫줄로 떨어졌다. */
 .c-recent span { display: inline; white-space: normal; word-break: keep-all; line-height: 1.45; }
+/* 미답변 — 구직자가 마지막으로 한 말이 그대로 여기 떠 있다. 그 글자를 빨갛게 해서
+   답할 것이 무엇인지 바로 읽히게 한다(공고 줄에는 빨간 표시를 두지 않는다). */
+.c-recent.todo span { color: #c0504d; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
-  font-size: 12.5px; color: #9a9aa3; white-space: nowrap; }
+  font-size: 13.5px; color: #9a9aa3; white-space: nowrap; }
 
 .prop-act {
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 7px;
@@ -15535,10 +15544,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   min-height: 34px; }
 .prop-whoinfo b { font-weight: 600; color: var(--color-text-strong); line-height: 1.35; }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
-  font-size: 13px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
+  font-size: 14px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
 /* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
    낱말 가운데서 끊기지 않게 keep-all 을 준다. */
-.prop-table .c-job { width: 125px; font-size: 13.5px; color: var(--color-text);
+.prop-table .c-job { width: 125px; font-size: 14.5px; color: var(--color-text);
   line-height: 1.45; word-break: keep-all; }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }
