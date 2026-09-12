@@ -42,14 +42,14 @@ const PURPLE = "#582681";
 // 중복 판정용 '지점' 시그니처: 제목에서 지점 토큰(○○역/○○동/○○점/○○센터)을 뽑아 정규화.
 //   같은 업체(=브랜드)에서 지점이 같으면 중복으로 본다. 사이트마다 형식이 달라(강남역점/강남역 등)
 //   끝의 '점·지점·센터'는 떼어 맞춘다. 지점 신호가 없으면 판정 불가 → 제외(과다집계 방지).
-// 활성공고 제목으로 매장/오피스 추정(found_jobs엔 job_type이 없어 제목 기반).
+// 활성공고 제목으로 매장/본사 추정(found_jobs엔 job_type이 없어 제목 기반).
 //   ① 뚜렷한 본사 사무직 신호 → OFFICE  ② 뚜렷한 매장 시술 신호 → STORE
-//   ③ 그 외: '제목에 지점이 있으면 매장, 없으면 오피스'(현장직은 지점명이 붙는다).
+//   ③ 그 외: '제목에 지점이 있으면 매장, 없으면 본사'(현장직은 지점명이 붙는다).
 function guessStoreOffice(title: string): "STORE" | "OFFICE" {
   const t = (title || "").replace(/\s/g, "");
   if (/인허가|regulatory|품질관리|머천다이저|상품기획|브랜드매니저|퍼포먼스마케팅|재무|회계|세무|법무|구매담당|물류|SCM|인사담당|채용담당|경영지원|전략기획|해외영업|수출입|개발자|엔지니어|데이터분석|약무|약사|고객센터|상담사|콜센터|본사|사무직|디렉터|기획자|마케터|영업|리크루터|헤드헌터|MD채용|재택|자산운용|펀드|운용역|증권|투자|금융|렌탈|설치기사|생산직|제조|영양사/i.test(t)) return "OFFICE";
   if (/디자이너|스타일리스트|스탭|스태프|스텝|인턴|네일|속눈썹|왁싱|피부관리|에스테틱|메이크업|바버|헤어|원장|실장|미용사|점장|샵마스터|관리사|테라피|두피|시술|샴푸|왁서/.test(t)) return "STORE";
-  return branchSignature(title) ? "STORE" : "OFFICE"; // 지점 있으면 매장, 없으면 오피스
+  return branchSignature(title) ? "STORE" : "OFFICE"; // 지점 있으면 매장, 없으면 본사
 }
 function branchSignature(title: string): string {
   const t = title || "";
@@ -74,7 +74,7 @@ function normUrl(u: string) {
 export default function AdminOutreachPage() {
   const [items, setItems] = useState<Row[]>([]);
   const [counts, setCounts] = useState<CountRow[]>([]);
-  const [globalSO, setGlobalSO] = useState<{ store: number; office: number }>({ store: 0, office: 0 }); // 6개 탭 전체 매장/오피스(추정)
+  const [globalSO, setGlobalSO] = useState<{ store: number; office: number }>({ store: 0, office: 0 }); // 6개 탭 전체 매장/본사(추정)
   const [loading, setLoading] = useState(true);
   const [group, setGroup] = useState<string>("헤어샵");
   const [hiringFilter, setHiringFilter] = useState("");
@@ -156,7 +156,7 @@ export default function AdminOutreachPage() {
     }
     return { total, dup };
   }, [items]);
-  // 현재 탭의 사이트별 활성 공고수 + 매장/오피스 추정
+  // 현재 탭의 사이트별 활성 공고수 + 매장/본사 추정
   const { bySite, storeCnt, officeCnt } = useMemo(() => {
     const m: Record<string, number> = {};
     let store = 0, office = 0;
@@ -350,7 +350,7 @@ export default function AdminOutreachPage() {
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
           <span style={{ fontSize: 14, color: "#555" }}>
             활성공고 총 {totalActive.toLocaleString()}건
-            {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 오피스 {globalSO.office.toLocaleString()})</span>}
+            {(globalSO.store > 0 || globalSO.office > 0) && <span title="공고 제목 기반 추정"> (매장 {globalSO.store.toLocaleString()} · 본사 {globalSO.office.toLocaleString()})</span>}
             {" · "}업체 {totalCount}개
           </span>
         </div>

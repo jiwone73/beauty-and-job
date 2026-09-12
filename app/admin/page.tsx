@@ -262,7 +262,7 @@ export default function AdminDashboard() {
             label: "진행중 채용공고",
             value: fmt(c?.active_jobs),
             unit: "건",
-            sub: `매장 ${fmt(c?.store_jobs)}건 · 오피스 ${fmt(c?.office_jobs)}건`,
+            sub: `매장 ${fmt(c?.store_jobs)}건 · 본사 ${fmt(c?.office_jobs)}건`,
             icon: Briefcase, color: "#0ea5e9",
             href: "/admin/jobs?status=active",
           },
@@ -270,7 +270,7 @@ export default function AdminDashboard() {
             label: "오늘 지원수",
             value: fmt(c?.today_applications),
             unit: "건",
-            sub: `매장 ${fmt(c?.today_applications_store)}건 · 오피스 ${fmt(c?.today_applications_office)}건`,
+            sub: `매장 ${fmt(c?.today_applications_store)}건 · 본사 ${fmt(c?.today_applications_office)}건`,
             icon: CheckCircle, color: "#10b981",
             href: "/admin/resumes/applications?date=today",
           },
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
           <UserCheck size={20} className="admin-section-icon individual" />
           <h2 className="admin-section-heading">개인회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>]] as const).map(([val, label]) => (
+            {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setIndivTab(val)} style={tabBtn(indivTab === val)}>
                 {label}
               </button>
@@ -511,7 +511,7 @@ export default function AdminDashboard() {
           <Building2 size={20} className="admin-section-icon company" />
           <h2 className="admin-section-heading">기업회원 현황</h2>
           <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
-            {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>]] as const).map(([val, label]) => (
+            {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>]] as const).map(([val, label]) => (
               <button key={val} onClick={() => setCorpTab(val)} style={tabBtn(corpTab === val)}>
                 {label}
               </button>
@@ -595,7 +595,7 @@ export default function AdminDashboard() {
           title="채용공고 등록 추이"
           type="job"
           unit="건"
-          subFilter={corpTab === "ALL" ? "" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "오피스" : "매장+오피스"}
+          subFilter={corpTab === "ALL" ? "" : corpTab === "STORE" ? "매장" : corpTab === "OFFICE" ? "본사" : "매장+본사"}
           render={(rows, range) => {
             const data = rows.map((r: any) => ({
               day: fmtTrendDay(r.day, range),

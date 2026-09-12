@@ -6,7 +6,7 @@ const STATUS_TO_LABEL: Record<string, string> = {
   PENDING: "승인대기", ACTIVE: "승인완료", SUSPENDED: "정지", REJECTED: "반려",
 };
 const TYPE_LABEL: Record<string, string> = {
-  OFFICE: "오피스", STORE: "매장",
+  OFFICE: "본사", STORE: "매장",
 };
 const JOB_STATUS_LABEL: Record<string, string> = {
   ACTIVE: "게시중", DRAFT: "승인대기", HIDDEN: "반려", CLOSED: "마감", EXPIRED: "만료",
@@ -84,7 +84,7 @@ export default function CompanyDetailModal({ company, onClose }: { company: any;
   };
 
   // 배너는 공고에 나가는 그 이미지 그대로. 매장정보에 없으면 공고 배너 첫 장을 쓴다
-  // (thumb_url 이 로고인 오피스는 제외 — 그건 배너가 아니다).
+  // (thumb_url 이 로고인 본사는 제외 — 그건 배너가 아니다).
   const cover = (Array.isArray(company.cover_images) && company.cover_images[0]?.url)
     || (company.thumb_url && company.thumb_url !== company.logo_url ? company.thumb_url : null);
   // 매장은 로고를 받지 않는다. 로고가 있는 기업만 배너 안쪽 왼쪽 아래에 얹는다.

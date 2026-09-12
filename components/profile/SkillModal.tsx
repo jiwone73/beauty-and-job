@@ -135,7 +135,7 @@ const OFFICE_EXTRA_SKILLS: string[] = [
   // 데이터·IT·기획
   "데이터 분석", "SQL", "Python", "Tableau", "Power BI", "데이터 시각화", "서비스 기획", "PM/PO",
   "기획서 작성", "와이어프레임", "QA 테스트",
-  // 공통 오피스 도구
+  // 공통 본사 도구
   "Excel", "PowerPoint", "Word", "한글(HWP)", "Notion", "Slack", "Jira", "Google Workspace",
 ];
 

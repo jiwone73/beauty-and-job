@@ -350,7 +350,7 @@ function isChosungQuery(q: string): boolean {
   return q.length > 0 && /^[ㄱ-ㅎ]+$/.test(q);
 }
 
-const TRACK_LABEL: Record<JobType, string> = { STORE: "매장", OFFICE: "오피스" };
+const TRACK_LABEL: Record<JobType, string> = { STORE: "매장", OFFICE: "본사" };
 
 /**
  * 글자 입력 시 실시간 추천 검색.

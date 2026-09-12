@@ -478,7 +478,7 @@ function parseJobkorea(html: string): StructuredResult | null {
     salary_negotiable = true;
   }
   const deadline = String(jp.validThrough || "").slice(0, 10);
-  const sug = suggestCats(`${title} ${company}`, { officeBias: true }); // 잡코리아=일반 잡보드 → 매장 현장직만 STORE, 나머지 오피스
+  const sug = suggestCats(`${title} ${company}`, { officeBias: true }); // 잡코리아=일반 잡보드 → 매장 현장직만 STORE, 나머지 본사
   const out: StructuredResult = {
     title,
     company_name: company,

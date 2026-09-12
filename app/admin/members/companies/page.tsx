@@ -20,7 +20,7 @@ const STATUS_TO_LABEL: Record<string, string> = {
   REJECTED: "반려",
 };
 const TYPE_LABEL: Record<string, string> = {
-  OFFICE: "오피스",
+  OFFICE: "본사",
   STORE: "매장",
 };
 const STATUS_OPTIONS = ["전체", "승인대기", "승인완료", "정지", "반려"];
@@ -113,7 +113,7 @@ function AdminCompaniesContent() {
   const typeParam = searchParams.get("type");
   const initialType =
     typeParam === "STORE" ? "매장" :
-    typeParam === "OFFICE" ? "오피스" :
+    typeParam === "OFFICE" ? "본사" :
     "전체";
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
   const detailId = searchParams.get("detail");
@@ -324,9 +324,9 @@ function AdminCompaniesContent() {
       {!blockedMode && (
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <span style={{ fontSize: 14, color: "#555" }}>회원 구분</span>
-          {/* 「매장·오피스」는 지웠다 — 그런 유형으로 저장되는 값이 없어(STORE 207·
+          {/* 「매장·본사」는 지웠다 — 그런 유형으로 저장되는 값이 없어(STORE 207·
               OFFICE 22 뿐) 고르면 늘 0건이었다. */}
-          {(["전체", "매장", "오피스"] as const).map((opt) => (
+          {(["전체", "매장", "본사"] as const).map((opt) => (
             <label key={opt} style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 15, color: typeFilter === opt ? "#582681" : "#555" }}>
               <input type="radio" name="companyTrack" checked={typeFilter === opt}
                 onChange={() => { setTypeFilter(opt); setPage(1); }}
