@@ -715,8 +715,6 @@ export default function JobPostForm({
       nmManagerName, nmManagerPhone, nmContactEmail, nmKakaoId, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
 
   const [restored, setRestored] = useState<string | null>(null);
-  // 새로고침이 아닌 길로 들어왔을 때, 지우지 않고 되살릴 수 있다고만 알린다.
-  const [되살릴것, set되살릴것] = useState<string | null>(null);
   const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
 
   // 빈 화면에서 다시 시작한다. 새로고침만으로는 브라우저에 남은 내용이 그대로 되살아난다.
@@ -731,22 +729,17 @@ export default function JobPostForm({
 
   // 화면이 뜰 때 남아 있던 내용을 되살린다.
   //
-  // 되살리는 건 "같은 화면을 새로고침했을 때"뿐이다. 다른 데서 등록 화면으로
-  // 넘어온 것은 새 공고를 쓰겠다는 뜻이라, 지난 내용이 남아 있으면 지우고 시작해야
-  // 한다. 브라우저가 알려주는 이동 방식(reload / navigate)으로 가른다.
+  // 새로고침이든 다른 화면에서 넘어온 길이든 가리지 않고 되살린다. 예전에는
+  // 새로고침일 때만 되살리고, 넘어온 길에는 「쓰던 내용이 남아 있어요」 띠로 알렸다.
+  // 그 띠를 걷으면서 조건도 같이 걷는다 — 안 되살리면서 알리지도 않으면 쓰던 글이
+  // 남아 있어도 꺼낼 길이 없다. 빈 화면에서 새로 쓰려면 액션줄의 「초기화」를 누른다.
   const 판단함 = useRef(false);
   useEffect(() => {
     if (editId) return;
     if (판단함.current) return; // 개발 모드에서 효과가 두 번 도는 것 방지
     판단함.current = true;
 
-    // 같은 문서 안에서 화면만 갈아끼운 경우(메뉴 클릭)도 '넘어온 것'이다.
-    const 화면전환 = 폼이열린적있음;
     폼이열린적있음 = true;
-    const 이동방식 = (performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined)?.type;
-    // 넘어온 길이면 새 공고를 쓰겠다는 뜻이라 자동으로 되살리지는 않는다.
-    // 다만 지우지도 않는다 — 다른 화면 잠깐 갔다 왔다고 쓰던 글이 사라지면 안 된다.
-    const 자동복원 = !화면전환 && 이동방식 === "reload";
 
     let d: any = null;
     try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
@@ -768,7 +761,6 @@ export default function JobPostForm({
       "nmIndustry", "nmSize", "nmFounded", "nmRepresentative", "nmPhone", "nmHomepage",
       "nmManagerName", "nmManagerPhone", "nmContactEmail", "nmKakaoId", "contactMethods", "externalApplyUrl"];
     if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
-    if (!자동복원) { set되살릴것(d.at || ""); return; }
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
     set(setForm, d.form); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
     set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
@@ -2833,25 +2825,8 @@ export default function JobPostForm({
         </div>
       )}
 
-      {/* 새로고침 뒤 남아 있던 내용을 되살렸다는 표시. 원치 않으면 여기서 비운다. */}
-      {/* 넘어온 길이라 자동으로 되살리진 않았지만, 쓰던 것이 남아 있다고 알린다.
-          지우지 않고 두는 것만으로는 부족하다 — 있는 줄 모르면 없는 것과 같다. */}
-      {!restored && 되살릴것 !== null && (
-        <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box",
-          display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-          padding: "10px 14px", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 10 }}>
-          <span style={{ fontSize: 13.5, color: "#4a4453" }}>
-            쓰던 내용이 남아 있어요{되살릴것 ? ` (${new Date(되살릴것).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })} 기준)` : ""}.
-          </span>
-          <button type="button" onClick={() => location.reload()}
-            style={{ marginLeft: "auto", border: "1px solid var(--color-primary)", background: "#fff", color: "var(--color-primary)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontFamily: "inherit", cursor: "pointer" }}>
-            이어서 작성
-          </button>
-        </div>
-      )}
-
-      {/* 「쓰던 내용을 되살렸어요」 띠는 걷었다. 되살아난 것은 화면에 적힌 값으로 이미
-          보이고, 비우는 길은 위 액션줄의 「초기화」 하나로 모았다. */}
+      {/* 쓰던 내용 안내 띠는 걷었다. 남아 있던 것은 화면에 값으로 이미 되살아나 있고,
+          비우는 길은 액션줄의 「초기화」 하나다. */}
 
       {mode === "admin" && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 16px`, boxSizing: "border-box" }}>
