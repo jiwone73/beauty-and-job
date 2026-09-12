@@ -344,11 +344,13 @@ function AdminJobsPageInner() {
                       onChange={() => toggleCheck(job.id)} />
                   </td>
                   {/* 매장 · 공고 — 1행 매장, 2행 공고명.
+                      아바타는 두 줄 전체의 형제로 둔다. 첫 줄 안에 넣으면 그 줄만
+                      기준이 되어 위로 붙는다.
                       공고명에 noopener 를 빼면 크롬이 새 탭을 이 목록과 같은 렌더러에
                       붙인다. 목록은 공고를 전부 그려 무거워서, 새 탭이 그 메인 스레드를
                       기다리느라 몇 초씩 '무제'로 멈춰 있었다. */}
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       {job.thumb_url ? (
                         <img
                           src={job.thumb_url}
@@ -364,46 +366,48 @@ function AdminJobsPageInner() {
                           {job.company_name.charAt(0)}
                         </div>
                       )}
-                      {/* 매장명은 읽는 값이다 — 누를 자리는 아래 공고명 하나로 둔다.
-                          한 칸에 갈 곳이 둘이면 어디를 눌러야 할지 매번 겨냥하게 된다. */}
-                      <div className="admin-td-brand adm-shop"
-                        title={job.company_name}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 5, fontWeight: 400,
-                          maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {job.company_name}
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          {/* 매장명은 읽는 값이다 — 누를 자리는 아래 공고명 하나로 둔다.
+                              한 칸에 갈 곳이 둘이면 어디를 눌러야 할지 매번 겨냥하게 된다. */}
+                          <div className="admin-td-brand adm-shop"
+                            title={job.company_name}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 5, fontWeight: 400,
+                              maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {job.company_name}
+                          </div>
+                          {/* 옮겨 온 공고는 원문으로 갈 수 있어야 한다 — 값이 맞는지 대조하고,
+                              아직 사람을 뽑는지 확인할 때 쓴다. */}
+                          {job.source_url && (
+                            <a href={job.source_url} target="_blank" rel="noopener noreferrer"
+                              title="원문 보기" onClick={(e) => e.stopPropagation()}
+                              style={{ fontSize: 13.5, color: "#555", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
+                              원문 ↗
+                            </a>
+                          )}
+                          {(() => {
+                            const isMember = job.is_member !== false && job.source !== "EXTERNAL";
+                            return (
+                              <span style={{ fontSize: 15, whiteSpace: "nowrap", color: "#555" }}>
+                                {isMember ? "회원" : "비회원"}
+                              </span>
+                            );
+                          })()}
+                        </div>
+                        <div className="adm-td2"
+                          title={job.title}
+                          style={{ marginTop: 3, maxWidth: 380, color: "#555", cursor: "pointer" }}
+                          onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
+                          {job.title}
+                        </div>
                       </div>
-                      {/* 옮겨 온 공고는 원문으로 갈 수 있어야 한다 — 값이 맞는지 대조하고,
-                          아직 사람을 뽑는지 확인할 때 쓴다. */}
-                      {job.source_url && (
-                        <a href={job.source_url} target="_blank" rel="noopener noreferrer"
-                          title="원문 보기" onClick={(e) => e.stopPropagation()}
-                          style={{ fontSize: 11, color: "#555", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>
-                          원문 ↗
-                        </a>
-                      )}
-                      {(() => {
-                        const isMember = job.is_member !== false && job.source !== "EXTERNAL";
-                        return (
-                          <span style={{ fontSize: 12, whiteSpace: "nowrap", color: "#555" }}>
-                            {isMember ? "회원" : "비회원"}
-                          </span>
-                        );
-                      })()}
-                    </div>
-                    {/* 2행: 공고명. 로고 폭(26)과 사이(8)만큼 들여써 매장명과 첫 글자를
-                        맞춘다 — 어긋나 있으면 두 줄이 한 덩어리로 안 읽힌다. */}
-                    <div className="adm-td2"
-                      title={job.title}
-                      style={{ marginLeft: 64, marginTop: 3, maxWidth: 380, color: "#555", cursor: "pointer" }}
-                      onClick={() => window.open(`/jobs/${job.id}?preview=admin`, "_blank", "noopener")}>
-                      {job.title}
                     </div>
                   </td>
                   {/* 등록상품 */}
                   <td>
                     {(() => {
                       const b = productBadge(job.product_type);
-                      return <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
+                      return <span style={{ fontSize: 15, fontWeight: 600, padding: "3px 9px", borderRadius: 6, background: b.bg, color: b.color, whiteSpace: "nowrap" }}>{b.label}</span>;
                     })()}
                   </td>
                   {/* 모집 직군 (공고 직군, 길면 2줄) */}
@@ -446,7 +450,7 @@ function AdminJobsPageInner() {
                   {/* 관리: 수정 */}
                   <td>
                     <Link href={`/admin/jobs/new?id=${job.id}`}
-                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #efeff1", color: "#555", fontSize: 13, whiteSpace: "nowrap", textDecoration: "none" }}>
+                      style={{ display: "inline-block", padding: "4px 12px", borderRadius: 6, border: "1px solid #efeff1", color: "#555", fontSize: 13.5, whiteSpace: "nowrap", textDecoration: "none" }}>
                       수정
                     </Link>
                   </td>

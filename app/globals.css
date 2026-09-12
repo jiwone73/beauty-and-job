@@ -5656,7 +5656,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-content .admin-danger-btn { font-size: 15px; }
 .admin-content .admin-primary-btn { font-size: 15px; }
 .admin-content .admin-page-btn { font-size: 14px; }
-.admin-content .admin-badge { font-size: 12px; }
+.admin-content .admin-badge { font-size: 13.5px; }
 .admin-content .filter-dd-btn { font-size: 15px; }
 
 /* 통계 카드 */
@@ -5813,7 +5813,7 @@ div:has(> table.admin-table),
 /* 공고 목록의 매장명만 예외 — 한 칸에 매장과 공고가 위아래로 있고, 주인공은
    아래의 공고명이다. 매장은 딸린 값이라 한 단계 물려 둔다. 이 표에서 #555 가
    아닌 글자는 여기 하나뿐이다. */
-.admin-table .adm-shop { font-size: 14px; color: #555; }
+.admin-table .adm-shop { font-size: 14px; color: #a5a5ab; }
 .admin-td-title {
   max-width: 200px;
   overflow: hidden;
@@ -5836,7 +5836,7 @@ div:has(> table.admin-table),
   display: inline-block;
   padding: 3px 8px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -5850,7 +5850,7 @@ div:has(> table.admin-table),
 .admin-actions { display: flex; align-items: center; gap: 6px; }
 .admin-action-btn {
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 600;
   border: none;
   border-radius: 6px;

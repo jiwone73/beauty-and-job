@@ -527,7 +527,7 @@ function AdminMembersPageInner() {
                         ) : m.naver_id ? (
                           <span className="admin-badge" style={{ background: "#03C75A", color: "#fff", fontSize: 12 }}>네이버</span>
                         ) : (
-                          <span className="admin-badge admin-badge-neutral" style={{ fontSize: 12 }}>이메일</span>
+                          <span className="admin-badge admin-badge-neutral">이메일</span>
                         )}
                       </div>
                     </td>
