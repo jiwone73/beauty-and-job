@@ -37,6 +37,10 @@ export async function GET(req: NextRequest) {
           ORDER BY (ul.url ILIKE '%instagram%') DESC, ul.created_at
           LIMIT 1) AS sns_url,
         COALESCE(a.resume_id, (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1)) AS resume_id,
+        -- 희망 급여 — 마이 화면(프로필)에서 본인이 적는 그 값이다. 프로필은
+        -- 하한 하나만 담으므로 「월 240만~」처럼 한쪽만 선다.
+        (SELECT p.salary_min FROM user_profiles p WHERE p.user_id = u.id) AS desired_salary_min,
+        (SELECT p.salary_type FROM user_profiles p WHERE p.user_id = u.id) AS desired_salary_type,
         jp.title AS position,
         jp.job_type,
         c.company_name,

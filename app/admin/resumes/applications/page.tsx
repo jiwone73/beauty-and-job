@@ -51,6 +51,8 @@ type App = {
   cover_letter: string | null;
   resume_snapshot: any | null;
   sns_url: string | null;
+  desired_salary_min: number | null;
+  desired_salary_type: string | null;
   region_sido: string | null;
   region_sigungu: string | null;
 };
@@ -108,6 +110,18 @@ function 지금(a: App): { 글: string; 급함: boolean } {
   }
   if (a.status === "VIEWED") return { 글: "열람됨", 급함: false };
   return { 글: "", 급함: false };
+}
+
+/** 희망 급여 한 줄 — 마이 화면에서 본인이 적은 값이다. 프로필은 하한 하나만
+ *  담으므로 「월 240만~」처럼 한쪽만 선다. 만 단위로 줄여 적는다 — 원 단위
+ *  그대로면 0이 여섯 개라 눈이 숫자를 세게 된다.
+ *  시급·일급은 만 단위로 줄이면 값이 뭉개져 원 단위 그대로 둔다. */
+function 희망급여(a: App): string {
+  const { desired_salary_min: 하한, desired_salary_type: 단위 } = a;
+  if (하한 == null) return "-";
+  const 앞 = 단위 === "YEARLY" ? "연" : 단위 === "HOURLY" ? "시급" : 단위 === "DAILY" ? "일급" : "월";
+  if (단위 === "HOURLY" || 단위 === "DAILY") return `${앞} ${하한.toLocaleString("ko-KR")}원~`;
+  return `${앞} ${Math.round(하한 / 10000).toLocaleString("ko-KR")}만~`;
 }
 
 function AdminApplicationsPageInner() {
@@ -220,15 +234,16 @@ function AdminApplicationsPageInner() {
                 <th>매장 · 공고</th>
                 <th>모집분야</th>
                 <th>희망지역</th>
+                <th>희망 급여</th>
                 <th>지원일</th>
                 <th>등록 자료</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : filtered.map((a) => {
                 const age = calcAge(a.birth_date);
                 const gender = genderLabel(a.gender);
@@ -302,6 +317,9 @@ function AdminApplicationsPageInner() {
                     <td className="admin-td-date">
                       {shortenRegion([a.region_sido, a.region_sigungu].filter(Boolean).join(" ")) || "-"}
                     </td>
+                    {/* 희망 급여 — 이력서에 적은 값이다. 저장된 것은 모두 월급이라
+                        「연봉」이라 쓰면 숫자와 말이 어긋난다. */}
+                    <td className="admin-td-date">{희망급여(a)}</td>
                     {/* 지원일 / 지금 — 날짜만으로는 묵힌 지원이 안 보인다. */}
                     <td className="admin-td-date">
                       <div>{fmtDate(a.applied_at)}</div>
