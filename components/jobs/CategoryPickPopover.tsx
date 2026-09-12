@@ -45,7 +45,7 @@ export default function CategoryPickPopover({ jobType, onPick, onClose }: Props)
         .catpick-pop-body.catpick-pop .cp-title { font-size: 14px !important; font-weight: 600; color: #555; }
         .cp-body { display: flex; }
         .cp-left { width: 158px; flex-shrink: 0; background: #fafafa; border-right: 1px solid #f0f0f0; }
-        .catpick-pop-body.catpick-pop .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 14px !important; color: #666; border-left: 2px solid transparent; white-space: nowrap; box-sizing: border-box; }
+        .catpick-pop-body.catpick-pop .cp-group { display: block; width: 100%; text-align: left; padding: 9px 10px; background: none; border: none; cursor: pointer; font-size: 14px !important; color: #555; border-left: 2px solid transparent; white-space: nowrap; box-sizing: border-box; }
         .catpick-pop-body.catpick-pop .cp-group.on { background: #fff; color: #582681; font-weight: 600; border-left-color: #582681; }
         .cp-right { flex: 1; padding: 6px; }
         .catpick-pop-body.catpick-pop .cp-item { display: block; width: 100%; text-align: left; padding: 8px 9px; background: none; border: none; border-radius: 6px; cursor: pointer; font-size: 14px !important; color: #555; }

@@ -2717,7 +2717,7 @@ export default function JobPostForm({
               {draftMenuOpen && drafts.length > 0 && (
                 <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 60, width: 340, maxWidth: "80vw", background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 8 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "2px 6px 6px" }}>
-                    <span style={{ fontSize: 12, color: "#9a92a6" }}>임시저장 {drafts.length}건 · 클릭하면 이어서 작성돼요</span>
+                    <span style={{ fontSize: 12, color: "#555" }}>임시저장 {drafts.length}건 · 클릭하면 이어서 작성돼요</span>
                     {deleteDraft && (
                       <button type="button" disabled={draftDeleting === "*"}
                         onClick={async () => {
@@ -2750,12 +2750,12 @@ export default function JobPostForm({
                             style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", flex: 1, minWidth: 0, padding: "8px 4px 8px 10px", border: "none", background: "none", cursor: on ? "default" : "pointer", font: "inherit" }}>
                             <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
                               {d.title || "(제목 없음)"}
-                              {d.company_name && <span style={{ color: "#9a92a6", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
+                              {d.company_name && <span style={{ color: "#555", marginLeft: 6, fontSize: 13 }}>· {d.company_name}</span>}
                             </span>
                             {on ? (
                               <span style={{ flexShrink: 0, fontSize: 12, color: "#582681", fontWeight: 600 }}>편집 중</span>
                             ) : d.created_at ? (
-                              <span style={{ flexShrink: 0, fontSize: 12, color: "#b3adbd" }}>{new Date(d.created_at).toLocaleDateString("ko-KR")}</span>
+                              <span style={{ flexShrink: 0, fontSize: 12, color: "#555" }}>{new Date(d.created_at).toLocaleDateString("ko-KR")}</span>
                             ) : null}
                           </button>
                           {deleteDraft && (
@@ -2770,7 +2770,7 @@ export default function JobPostForm({
                                 // 지금 고치던 것을 지웠으면 빈 등록 화면으로 나간다.
                                 if (on) { setDraftMenuOpen(false); router.push(pathname); }
                               }}
-                              style={{ flexShrink: 0, padding: "8px 10px", border: "none", background: "none", color: "#b3adbd", fontSize: 14, lineHeight: 1, cursor: "pointer" }}>
+                              style={{ flexShrink: 0, padding: "8px 10px", border: "none", background: "none", color: "#555", fontSize: 14, lineHeight: 1, cursor: "pointer" }}>
                               ✕
                             </button>
                           )}
@@ -2845,7 +2845,7 @@ export default function JobPostForm({
             {/* 붙여넣기를 고르면 글을 퍼 올 카페로 바로 갈 수 있게 한다. */}
             {importMode === "paste" && (
               <div style={{ display: "inline-flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 13, color: "#9a92a6" }}>구인글 보러가기</span>
+                <span style={{ fontSize: 13, color: "#555" }}>구인글 보러가기</span>
                 {SOURCE_CAFES.map((c) => (
                   <a key={c.name} href={c.url} target="_blank" rel="noopener noreferrer"
                     style={{ fontSize: 13.5, color: "#582681", textDecoration: "none", whiteSpace: "nowrap" }}>
@@ -2940,7 +2940,7 @@ export default function JobPostForm({
                     <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "#582681", background: "#f7f7f8", border: "1px solid #efeff1", borderRadius: 5, padding: "1px 6px" }}>{r.source}</span>
                     <span style={{ flex: 1, fontSize: 13, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.title}>{r.title}</span>
                     <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} title="원문 공고 새 탭으로 열기"
-                      style={{ flexShrink: 0, color: "#bbb", fontSize: 13, textDecoration: "none", padding: "0 2px" }}>↗</a>
+                      style={{ flexShrink: 0, color: "#555", fontSize: 13, textDecoration: "none", padding: "0 2px" }}>↗</a>
                   </div>
                 ); })}
               </div>
@@ -2983,7 +2983,7 @@ export default function JobPostForm({
                 placeholder="원문 주소 (예: instagram.com/p/… , cafe.naver.com/… )"
                 style={{ width: "100%", height: 38, padding: "0 12px", border: "1px solid #e0e0e0", borderRadius: 8, fontSize: 13.5 }}
               />
-              <div style={{ fontSize: 12, color: "#9a92a6", marginTop: 4 }}>
+              <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
                 캡처한 공고의 원문 주소예요. 넣어 두면 같은 공고를 두 번 올리지 않고, 나중에 원문을 다시 볼 수 있어요.
               </div>
             </div>
@@ -3579,11 +3579,11 @@ export default function JobPostForm({
                               ) : !o.is_curated && (
                                 <span role="button" title="목록에서 지우기" aria-label={`${o.name} 지우기`}
                                   onClick={(e) => { e.stopPropagation(); removeNewBenefit(o.name); }}
-                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: "#a8a8ad" }}>×</span>
+                                  style={{ marginLeft: 1, fontSize: 13, lineHeight: 1, cursor: "pointer", color: "#555" }}>×</span>
                               )}
                             </button>
                           ); })}
-                          {visible.length === 0 && <span style={{ fontSize: 13, color: "#bbb" }}>맞는 것이 없어요. ‘직접입력’으로 넣을 수 있어요.</span>}
+                          {visible.length === 0 && <span style={{ fontSize: 13, color: "#555" }}>맞는 것이 없어요. ‘직접입력’으로 넣을 수 있어요.</span>}
                         </div>
 
                         {nonMember && <button type="button" onClick={() => { setWelfareOpen(false); setFiOpen("benefits"); }}
@@ -3729,7 +3729,7 @@ export default function JobPostForm({
                               onClick={() => { setHiringProcess([...hiringProcess, x]); set절차열림(false); }}>{x}</button>
                           ))}
                           {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).every((x) => hiringProcess.includes(x)) && (
-                            <div style={{ fontSize: 12.5, color: "#a8a8ad", padding: "8px 10px" }}>더할 단계가 없어요</div>
+                            <div style={{ fontSize: 12.5, color: "#555", padding: "8px 10px" }}>더할 단계가 없어요</div>
                           )}
                         </div>
                       )}
@@ -3939,7 +3939,7 @@ export default function JobPostForm({
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => { e.preventDefault(); if (imgDragRef.current) { dropToBody(null); return; } if (!uploading) processFiles(e.dataTransfer.files); }}
                   onPaste={(e) => { const fs = imagesFromClipboard(e); if (fs.length) { e.preventDefault(); if (!uploading) processFiles(fs); } }}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 72, marginTop: 14, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: "#f7f7f8", outline: "none", fontSize: 13, color: "#a8a8ad" }}>
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 72, marginTop: 14, padding: 10, borderRadius: 10, border: `1.5px dashed ${pasteZone === "body" ? "#582681" : "#efeff1"}`, background: "#f7f7f8", outline: "none", fontSize: 13, color: "#555" }}>
                   여기로 끌어다 놓거나, 눌러서 Ctrl+V
                 </div>
               )}

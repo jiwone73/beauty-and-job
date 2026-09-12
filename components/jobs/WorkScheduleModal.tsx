@@ -236,16 +236,16 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
       <style>{`
         .ws-pop { position: fixed; z-index: 200; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 320px; max-width: calc(100vw - 16px); box-sizing: border-box; overflow: hidden; }
         .ws-tabs { display: flex; gap: 4px; border-bottom: 1px solid #eee; padding: 8px 10px 0; }
-        .ws-tab { padding: 6px 8px; margin-bottom: -1px; border: none; background: none; font-size: 13px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; }
+        .ws-tab { padding: 6px 8px; margin-bottom: -1px; border: none; background: none; font-size: 13px; color: #555; cursor: pointer; border-bottom: 2px solid transparent; }
         .ws-tab.on { color: #582681; font-weight: 600; border-bottom-color: #582681; }
         .ws-body { padding: 10px; max-height: 60vh; overflow-y: auto; }
         .ws-quick-row { display: flex; align-items: center; gap: 6px; width: 100%; padding: 8px 9px; border: 1px solid #e3e3e6; border-radius: 8px; background: #fff; cursor: pointer; text-align: left; margin-bottom: 6px; font-size: 13px; color: #555; }
         .ws-quick-row.on { border-color: #582681; background: #582681; color: #fff; }
         .ws-quick-row:disabled { color: #c8c8ce; background: #fafafb; border-color: #f0f0f2; cursor: not-allowed; }
         .ws-quick-row:disabled svg { color: #d8d8de !important; }
-        .ws-daychip { width: 26px; height: 26px; border-radius: 50%; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; }
+        .ws-daychip { width: 26px; height: 26px; border-radius: 50%; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #555; flex-shrink: 0; }
         .ws-daychip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
-        .ws-weekchip { height: 30px; padding: 0 10px; border-radius: 7px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #666; flex-shrink: 0; font-family: inherit; }
+        .ws-weekchip { height: 30px; padding: 0 10px; border-radius: 7px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: #fff; color: #555; flex-shrink: 0; font-family: inherit; }
         .ws-weekchip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
         .ws-hourSel { height: 30px; border: 1px solid #ddd; border-radius: 6px; padding: 0 4px; font-size: 13px; color: #555; background: #fff; }
         .ws-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-top: 1px solid #eee; }
@@ -323,7 +323,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                           <select className="ws-hourSel" value={qStartMin} onChange={(e) => { const m = Number(e.target.value); setQStartMin(m); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, m, qEnd, qEndMin); }}>
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
-                          <span style={{ color: "#888", fontSize: 13 }}>~</span>
+                          <span style={{ color: "#555", fontSize: 13 }}>~</span>
                           <select className="ws-hourSel" value={qEnd} onChange={(e) => { const en = Number(e.target.value); setQEnd(en); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, en, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                           </select>
@@ -359,7 +359,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                           })()
                         ) : (
                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 12.5, color: "#888" }}>주말 근무</span>
+                          <span style={{ fontSize: 12.5, color: "#555" }}>주말 근무</span>
                           {["토", "일"].map((d) => {
                             const on = q주말.includes(d);
                             return (
@@ -373,7 +373,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             );
                           })}
                           {/* 눌러 보기 전에는 주말 시간을 따로 잡을 수 있다는 걸 알 수 없었다. */}
-                          {q주말.length === 0 && <span style={{ fontSize: 12, color: "#b8b8be" }}>고르면 시간 따로 정해요</span>}
+                          {q주말.length === 0 && <span style={{ fontSize: 12, color: "#555" }}>고르면 시간 따로 정해요</span>}
                         </div>
                         )}
                         {q주말.length > 0 && (
@@ -383,7 +383,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             {/* 지정 요일은 바로 위 체크가 「토·일은 시간 다르게」라고 이미 말한다 —
                                 여기 또 적으면 그만큼 자리를 먹어 칸이 밀려난다. */}
                             {r.type !== "custom" && (
-                              <span style={{ fontSize: 12.5, color: "#888", marginRight: 2, flexShrink: 0 }}>{q주말.join("·")}</span>
+                              <span style={{ fontSize: 12.5, color: "#555", marginRight: 2, flexShrink: 0 }}>{q주말.join("·")}</span>
                             )}
                             <select className="ws-hourSel" value={q주말시작} onChange={(e) => { const v = Number(e.target.value); setQ주말시작(v); set확정(r.type); 주말반영(r.type, v, q주말시작분, q주말끝, q주말끝분); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
@@ -391,7 +391,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             <select className="ws-hourSel" value={q주말시작분} onChange={(e) => { const v = Number(e.target.value); setQ주말시작분(v); set확정(r.type); 주말반영(r.type, q주말시작, v, q주말끝, q주말끝분); }}>
                               {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                             </select>
-                            <span style={{ color: "#888", fontSize: 13 }}>~</span>
+                            <span style={{ color: "#555", fontSize: 13 }}>~</span>
                             <select className="ws-hourSel" value={q주말끝} onChange={(e) => { const v = Number(e.target.value); setQ주말끝(v); set확정(r.type); 주말반영(r.type, q주말시작, q주말시작분, v, q주말끝분); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                             </select>
@@ -422,7 +422,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 7, padding: "7px 9px", fontSize: 13, marginBottom: 8, fontFamily: "inherit", resize: "vertical" }} />
               <ul style={{ margin: 0, paddingLeft: 16 }}>
                 {FORMAT_EXAMPLES.map((ex) => (
-                  <li key={ex} style={{ fontSize: 13, color: "#888", lineHeight: 1.8, cursor: "pointer", whiteSpace: "pre-line" }}
+                  <li key={ex} style={{ fontSize: 13, color: "#555", lineHeight: 1.8, cursor: "pointer", whiteSpace: "pre-line" }}
                     onClick={() => setDraft(ex.replace(/\s*\/\s*/g, "\n"))}>{ex}</li>
                 ))}
               </ul>
@@ -439,7 +439,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         </div>
 
         <div className="ws-footer">
-          <button type="button" onClick={onClose} style={{ border: "1px solid #ddd", background: "#fff", color: "#666", borderRadius: 7, padding: "6px 12px", fontSize: 13, cursor: "pointer" }}>취소</button>
+          <button type="button" onClick={onClose} style={{ border: "1px solid #ddd", background: "#fff", color: "#555", borderRadius: 7, padding: "6px 12px", fontSize: 13, cursor: "pointer" }}>취소</button>
           <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (협의)` : t); onClose(); }} className="company-primary-btn" style={{ borderRadius: 7, padding: "6px 12px", fontSize: 13 }}>적용</button>
         </div>
       </div>
