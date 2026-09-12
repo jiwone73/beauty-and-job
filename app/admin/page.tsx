@@ -3,11 +3,7 @@ import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import Link from "next/link";
-import {
-  Users, Briefcase, CheckCircle, Clock, Eye,
-  TrendingUp, TrendingDown,
-  UserCheck, Building2
-} from "lucide-react";
+import { TrendingUp, TrendingDown, UserCheck, Building2 } from "lucide-react";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, Tooltip, ResponsiveContainer, Legend
@@ -247,73 +243,38 @@ export default function AdminDashboard() {
     <AdminLayout activeMenu="dashboard">
       <div>
 
-      {/* ── 1. 전체 요약 카드 ── */}
-      <div className="admin-stat-grid">
+      {/* ── 1. 전체 요약 카드 ──
+          기업 대시보드의 카운터(.co-counts)와 같은 부품을 쓴다. 두 화면이 같은 일을
+          하는데 생김새가 달라 손이 두 번 익어야 했다.
+          아이콘·단위·설명줄은 걷었다 — 저 카드에 없는 것들이고, 자세한 값은 카드를
+          눌러 들어간 화면이 말한다. */}
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: 5 }}>
         {[
           {
             label: "총 가입자",
             value: fmt(c ? Number(c.total_users) + Number(c.total_companies) : null),
-            unit: "명",
-            sub: `개인 ${fmt(c?.total_users)} · 기업 ${fmt(c?.total_companies)}`,
-            icon: Users, color: "#582681",
             href: "/admin/members",
           },
-          {
-            label: "진행중 채용공고",
-            value: fmt(c?.active_jobs),
-            unit: "건",
-            sub: `매장 ${fmt(c?.store_jobs)}건 · 본사 ${fmt(c?.office_jobs)}건`,
-            icon: Briefcase, color: "#0ea5e9",
-            href: "/admin/jobs?status=active",
-          },
-          {
-            label: "오늘 지원수",
-            value: fmt(c?.today_applications),
-            unit: "건",
-            sub: `매장 ${fmt(c?.today_applications_store)}건 · 본사 ${fmt(c?.today_applications_office)}건`,
-            icon: CheckCircle, color: "#10b981",
-            href: "/admin/resumes/applications?date=today",
-          },
-          {
-            label: "승인 대기 기업",
-            value: fmt(c?.pending_companies),
-            unit: "건",
-            sub: "즉시 처리 필요",
-            icon: Clock, color: "#f59e0b",
-            href: "/admin/members/companies?status=pending",
-          },
-          {
-            label: "오늘 방문자",
-            value: fmt(c?.today_visitors),
-            unit: "명",
-            sub: "로그인·비로그인 포함",
-            icon: Eye, color: "#7c3aed",
-          },
+          { label: "진행중 채용공고", value: fmt(c?.active_jobs), href: "/admin/jobs?status=active" },
+          { label: "오늘 지원수", value: fmt(c?.today_applications), href: "/admin/resumes/applications?date=today" },
+          // 승인 대기는 관리자가 손대야 풀리는 것이라 빨강으로 선다.
+          { label: "승인 대기 기업", value: fmt(c?.pending_companies), href: "/admin/members/companies?status=pending", 할일: true },
+          { label: "오늘 방문자", value: fmt(c?.today_visitors) },
         ].map((stat) => {
-          const inner = (
+          const 속 = (
             <>
-              <div className="admin-stat-top">
-                <div className="admin-stat-icon-label">
-                  <div className="admin-stat-icon" style={{ background: stat.color + "18", color: stat.color }}>
-                    <stat.icon size={16} />
-                  </div>
-                  <div className="admin-stat-label">{stat.label}</div>
-                </div>
-                <div className="admin-stat-trend neutral" />
-              </div>
-              <div className="admin-stat-value">
-                {stat.value}<span className="admin-stat-unit">{stat.unit}</span>
-              </div>
-              <div className="admin-stat-sub-text">{stat.sub}</div>
+              <span className="co-count-label">{stat.label}</span>
+              <span className="co-count-value">{stat.value}</span>
             </>
           );
+          const 켬 = stat.할일 && Number(String(stat.value).replace(/[^0-9]/g, "") || 0) > 0;
           return stat.href ? (
-            <Link key={stat.label} href={stat.href} className="admin-stat-card"
-              style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
-              {inner}
+            <Link key={stat.label} href={stat.href} className={`co-count${켬 ? " todo" : ""}`}
+              style={{ textDecoration: "none" }}>
+              {속}
             </Link>
           ) : (
-            <div key={stat.label} className="admin-stat-card">{inner}</div>
+            <div key={stat.label} className="co-count" style={{ cursor: "default" }}>{속}</div>
           );
         })}
       </div>
