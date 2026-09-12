@@ -15329,7 +15329,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 열 폭은 정한 대로 지킨다. 그냥 두면 브라우저가 「제안」처럼 내용 긴 열에
    자리를 더 떼어 주고, 그만큼 진행 상황이 눌린다. 말줄임(…)도 폭이 고정돼야 든다. */
-.prop-table { width: 100%; min-width: 760px; table-layout: fixed; border-collapse: collapse; font-size: 15px; }
+.prop-table { width: 100%; min-width: 760px; table-layout: fixed; border-collapse: collapse; font-size: 14.5px; }
 .prop-table th {
   padding: 8px 10px; text-align: left; font-weight: 500; font-size: 14.5px;
   color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;
@@ -15357,7 +15357,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 시각은 따로 선다 — 활동 글자와 한 칸에 두면 긴 문구에서 시각이 아래로 떨어졌다. */
 /* 업데이트 열 — 머리글자와 시간 모두 표 본문과 같은 #555. 옅은 회색으로 두었더니
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
-.prop-table .c-time { width: 88px; white-space: nowrap; font-size: 13.5px; color: #555; }
+.prop-table .c-time { width: 88px; white-space: nowrap; color: #555; }
 .prop-table th.c-time { color: #555; }
 /* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
 .prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
@@ -15389,12 +15389,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   display: flex; align-items: center; justify-content: center;
 }
 .prop-av img { width: 100%; height: 100%; object-fit: cover; }
-.prop-who b { display: block; font-weight: 500; font-size: 16px; color: var(--color-text-strong); }
+.prop-who b { display: block; font-weight: 500; font-size: inherit; color: var(--color-text-strong); }
 /* 이름 밑 공고명 — 기본 글자색으로. 옅은 회색으로 두었더니 안 보인다. */
-.prop-who i { display: block; font-style: normal; font-size: 14px; color: var(--color-text); }
+.prop-who i { display: block; font-style: normal; font-size: inherit; color: var(--color-text); }
 .prop-who:hover b { color: var(--color-primary); }
 
-.prop-st { font-size: 14.5px; }
+.prop-st { font-size: inherit; }
 /* 닫히는 날이 사흘 안쪽일 때만 남은 날을 덧붙인다 — 일주일 내내 세고 있으면
    재촉으로 읽힌다. */
 .prop-dday { margin-left: 5px; font-style: normal; font-size: 11.5px; color: var(--color-primary); }
@@ -15417,7 +15417,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   text-decoration: underline; text-decoration-color: #a5a5ae; text-underline-offset: 3px; }
 .c-recent button:hover { text-decoration-color: currentColor; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
-  font-size: 13.5px; color: #9a9aa3; white-space: nowrap; }
+  color: #9a9aa3; white-space: nowrap; }
 
 .prop-act {
   padding: 5px 11px; border: 1px solid var(--card-line); border-radius: 7px;
@@ -15571,17 +15571,17 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    위아래 여백까지 붙어 줄이 통째로 늘어졌다. */
 .prop-whoinfo { display: flex; flex-direction: column; justify-content: center;
   min-height: 34px; min-width: 0; }
-.prop-whoinfo b { font-weight: 600; font-size: 14.5px; color: #555; line-height: 1.35; }
+.prop-whoinfo b { font-weight: 600; color: #555; line-height: 1.35; }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
-  font-size: 14px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
+  font-weight: 400; color: var(--color-text); line-height: 1.35; }
 .prop-whoinfo em { display: block; min-height: 16px; font-style: normal;
-  font-size: 13.5px; font-weight: 400; color: #8a8a93; line-height: 1.35; }
+  font-weight: 400; color: #8a8a93; line-height: 1.35; }
 /* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
    낱말 가운데서 끊기지 않게 keep-all 을 준다. */
 /* 직군은 세 줄까지 쓴다 — 한 줄로 묶었더니 「속눈썹·반영구 아티스트」가 잘려
    무슨 일을 하는 사람인지가 사라졌다. 줄 높이는 아바타(60px)가 정하므로
    세 줄까지는 표가 늘어나지 않는다. 낱말 가운데서는 끊지 않는다. */
-.prop-table .c-job { width: 140px; max-width: 140px; font-size: 14.5px; color: var(--color-text);
+.prop-table .c-job { width: 140px; max-width: 140px; color: var(--color-text);
   line-height: 1.45; }
 /* 접는 일은 안쪽 조각이 한다 — 칸에 직접 걸었더니 칸이 표 칸이기를 그만두어
    세로 가운데 맞춤이 죽고 글이 위로 붙었다. */
