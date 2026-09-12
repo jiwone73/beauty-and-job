@@ -668,7 +668,6 @@ export default function CompanyProposalsPage() {
               <tr>
                 <th className="c-who">인재</th>
                 <th className="c-job">희망직군</th>
-                <th className="c-region">희망지역</th>
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
                 <th>진행 상황</th>
@@ -680,7 +679,7 @@ export default function CompanyProposalsPage() {
               <Fragment key={묶음.키}>
               {묶음.제목 && (
                 <tr className="prop-grouprow">
-                  <td colSpan={7}>
+                  <td colSpan={6}>
                     {띠(`${묶음.제목} · ${묶음.줄.length}명`)}
                   </td>
                 </tr>
@@ -699,10 +698,15 @@ export default function CompanyProposalsPage() {
                             : <span>{(p.userName || "?").slice(0, 1)}</span>}
                         </span>
                         <span className="prop-whoinfo">
-                          {/* 아바타 옆은 늘 두 줄이다 — 값이 없는 사람도 자리를
-                              비워 두어야 줄 높이가 들쭉날쭉하지 않다. */}
+                          {/* 아바타 옆은 늘 세 줄이다(이름 / 성별·나이 / 희망지역) —
+                              값이 없는 사람도 자리를 비워 두어야 줄 높이가
+                              들쭉날쭉하지 않다. */}
                           <b>{p.userName}</b>
                           <i>{인적(p)}</i>
+                          {/* 희망지역은 성별·나이 밑에. 열을 따로 주면 그 폭만큼
+                              진행 상황이 좁아지는데, 지역은 사람을 가릴 때 보는
+                              값이라 사람 옆에 붙어 있는 편이 읽힌다. */}
+                          <em>{p.regionPrefer || ""}</em>
                         </span>
                       </button>
                     </td>
@@ -710,7 +714,6 @@ export default function CompanyProposalsPage() {
                         달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
                     {/* 좁은 칸이라 긴 값은 …으로 잘린다. 잘린 것은 마우스를 올리면 그대로 보인다. */}
                     <td className="c-job" title={조건(p)}>{조건(p)}</td>
-                    <td className="c-region" title={p.regionPrefer || ""}>{p.regionPrefer || ""}</td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>

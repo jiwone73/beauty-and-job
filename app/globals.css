@@ -15340,14 +15340,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table tr.mine td:first-child { box-shadow: inset 2px 0 0 #c0504d; }
 /* 한 줄에 한 값 — 칸 안에서 글이 접히면 줄 높이가 사람마다 달라 표가 들쭉날쭉해진다.
    넘치면 접지 말고 말줄임으로 자른다. */
-.prop-table .c-date, .prop-table .c-st, .prop-table .c-region { white-space: nowrap; }
-.prop-table .c-region { width: 104px; overflow: hidden; text-overflow: ellipsis; }
-.prop-table .c-who { width: 148px; }
+.prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
+.prop-table .c-who { width: 190px; }
 /* 날짜·상태도 폭을 못 박는다 — 비워 두면 남은 자리를 진행 상황과 똑같이 나눠 갖고,
    정작 글이 긴 진행 상황이 좁아진다. */
 .prop-table .c-date { width: 78px; }
 .prop-table .c-st { width: 80px; }
-.prop-whoinfo b, .prop-whoinfo i { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prop-whoinfo b, .prop-whoinfo i, .prop-whoinfo em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
    머리 글자와 단추 글자가 12px 어긋나 보인다. */
  /* 왼쪽 정렬이다. 오른쪽에 붙이면 「채팅하기」가 없는 줄에서 「제안 취소」가
@@ -15571,14 +15570,19 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    두어야 줄 높이가 들쭉날쭉하지 않다. 직군은 그 아래에 붙인다 — 선을 그었더니
    위아래 여백까지 붙어 줄이 통째로 늘어졌다. */
 .prop-whoinfo { display: flex; flex-direction: column; justify-content: center;
-  min-height: 34px; }
+  min-height: 34px; min-width: 0; }
 .prop-whoinfo b { font-weight: 600; font-size: 14.5px; color: #555; line-height: 1.35; }
 .prop-whoinfo i { display: block; min-height: 16px; font-style: normal;
   font-size: 14px; font-weight: 400; color: var(--color-text); line-height: 1.35; }
+.prop-whoinfo em { display: block; min-height: 16px; font-style: normal;
+  font-size: 13.5px; font-weight: 400; color: #8a8a93; line-height: 1.35; }
 /* 직군 열 — 「속눈썹·반영구 아티스트」처럼 긴 값이 두 줄로 접히게 폭을 잡는다.
    낱말 가운데서 끊기지 않게 keep-all 을 준다. */
-/* 직군도 한 줄로 — 접히면 사람마다 줄 수가 달라 표가 들쭉날쭉해진다. 넘치면 말줄임. */
+/* 직군은 세 줄까지 쓴다 — 한 줄로 묶었더니 「속눈썹·반영구 아티스트」가 잘려
+   무슨 일을 하는 사람인지가 사라졌다. 줄 높이는 아바타(60px)가 정하므로
+   세 줄까지는 표가 늘어나지 않는다. 낱말 가운데서는 끊지 않는다. */
 .prop-table .c-job { width: 140px; max-width: 140px; font-size: 14.5px; color: var(--color-text);
-  line-height: 1.45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  line-height: 1.45; white-space: normal; word-break: keep-all; overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }
