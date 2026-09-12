@@ -91,7 +91,7 @@ export default function JobIssuesPage() {
               style={{ padding: "6px 14px", borderRadius: "var(--chip-radius)", fontSize: 13.5, cursor: "pointer",
                 border: `1px solid ${탭 === t ? "#582681" : "#efeff1"}`,
                 background: 탭 === t ? "#582681" : "#fff",
-                color: 탭 === t ? "#fff" : "#6f6f75" }}>
+                color: 탭 === t ? "#fff" : "#555" }}>
               {t}{t === "미해결" ? ` ${미해결수}` : t === "해결" ? ` ${해결수}` : ` ${list.length}`}
             </button>
           ))}
