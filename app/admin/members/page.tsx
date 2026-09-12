@@ -399,13 +399,13 @@ function AdminMembersPageInner() {
           <table className="admin-table" style={{ minWidth: 1240, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
-                <th style={{ width: 36, textAlign: "center" }}>
+                <th style={{ width: 36 }}>
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} />
                 </th>
                 <th>이름</th>
-                <th style={{ textAlign: "center" }}>구직 직군</th>
+                <th >구직 직군</th>
                 <th>지역</th>
-                <th style={{ textAlign: "center" }}>연락처</th>
+                <th >연락처</th>
                 <th>최근경력</th>
                 <th>인재검색</th>
                 <th>가입</th>
@@ -429,7 +429,7 @@ function AdminMembersPageInner() {
 
                 return (
                   <tr key={m.id} style={{ background: checked.includes(m.id) ? "#f7f7f8" : "" }}>
-                    <td style={{ textAlign: "center" }}>
+                    <td >
                       <input type="checkbox" checked={checked.includes(m.id)} onChange={() => toggleCheck(m.id)} />
                     </td>
 
@@ -466,7 +466,7 @@ function AdminMembersPageInner() {
                     </td>
 
                     {/* 직군: 대분류 · 소분류 (프로필 직군) */}
-                    <td className="admin-td-date" style={{ textAlign: "center" }}>
+                    <td className="admin-td-date" >
                       {(m.main_job_group || m.sub_job) ? (
                         <div className="adm-td2 adm-w-md"
                           title={[m.main_job_group, m.sub_job].filter(Boolean).join(" · ")}>
@@ -483,7 +483,7 @@ function AdminMembersPageInner() {
                     </td>
 
                     {/* 연락처: 이메일 / 전화 */}
-                    <td className="admin-td-date" style={{ textAlign: "center" }}>
+                    <td className="admin-td-date" >
                       <div className="adm-w-md" style={{ overflow: "hidden", textOverflow: "ellipsis", margin: "0 auto", whiteSpace: "nowrap" }} title={m.email || ""}>{m.email || "-"}</div>
                       <div style={{ marginTop: 4, color: "#888" }}>{m.phone ? formatPhone(m.phone) : "-"}</div>
                     </td>

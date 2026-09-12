@@ -262,7 +262,7 @@ export default function AlbaPage() {
           </thead>
           <tbody>
             {data.sessions.length === 0 && (
-              <tr><td colSpan={canEdit ? 5 : 4} style={{ padding: 20, textAlign: "center", color: "#999" }}>아직 기록이 없어요.</td></tr>
+              <tr><td colSpan={canEdit ? 5 : 4} style={{ padding: 20, color: "#999" }}>아직 기록이 없어요.</td></tr>
             )}
             {data.sessions.map((s) => (
               <tr key={s.id} style={{ borderTop: "1px solid #f2f2f2" }}>
@@ -274,7 +274,7 @@ export default function AlbaPage() {
                 <td style={{ padding: "10px 14px", textAlign: "right" }}>{formatMinutes(s.minutes)}</td>
                 <td style={{ padding: "10px 14px", color: "#888" }}>{s.note || ""}</td>
                 {canEdit && (
-                  <td style={{ padding: "10px 6px", textAlign: "center" }}>
+                  <td style={{ padding: "10px 6px" }}>
                     <button onClick={() => removeSession(s.id)} title="삭제"
                       style={{ background: "none", border: "none", cursor: "pointer", color: "#c8c8c8" }}>
                       <Trash2 size={15} />
@@ -302,7 +302,7 @@ export default function AlbaPage() {
           </thead>
           <tbody>
             {data.postings.length === 0 && (
-              <tr><td colSpan={5} style={{ padding: 20, textAlign: "center", color: "#999" }}>아직 등록한 공고가 없어요.</td></tr>
+              <tr><td colSpan={5} style={{ padding: 20, color: "#999" }}>아직 등록한 공고가 없어요.</td></tr>
             )}
             {data.postings.map((p) => (
               <tr key={p.id} style={{ borderTop: "1px solid #f2f2f2" }}>

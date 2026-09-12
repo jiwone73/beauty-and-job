@@ -433,7 +433,7 @@ function AdminCompaniesContent() {
           <table className="admin-table" style={{ minWidth: 1160, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
-                <th style={{ width: 40, textAlign: "center" }}>
+                <th style={{ width: 40 }}>
                   <input type="checkbox" checked={allPageSelected} onChange={toggleAllPage} style={{ cursor: "pointer" }} />
                 </th>
                 <th>매장/기업명</th>
@@ -454,7 +454,7 @@ function AdminCompaniesContent() {
                 <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : paginated.map((c) => (
                 <tr key={c.id} style={{ background: selectedIds.includes(c.id) ? "#f7f7f8" : undefined }}>
-                  <td style={{ textAlign: "center" }}>
+                  <td >
                     <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                   </td>
                   {/* 매장/기업명 → 클릭 시 기업정보 모달 */}

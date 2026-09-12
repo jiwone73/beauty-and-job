@@ -399,7 +399,7 @@ export default function ExternalCompaniesPanel() {
           <table className="admin-table" style={{ minWidth: 960, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
-                <th style={{ width: 40, textAlign: "center" }}>
+                <th style={{ width: 40 }}>
                   <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor: "pointer" }} />
                 </th>
                 <th>외부공고명</th>
@@ -407,7 +407,7 @@ export default function ExternalCompaniesPanel() {
                 <th>기업명</th>
                 <th>지역</th>
                 <th>연락처</th>
-                <th style={{ textAlign: "center" }}>입사지원</th>
+                <th >입사지원</th>
                 <th>상태</th>
                 <th>등록일</th>
               </tr>
@@ -429,7 +429,7 @@ export default function ExternalCompaniesPanel() {
                   const jobUrl = j0?.source_url || j0?.external_apply_url || null;
                   return (
                     <tr key={c.id} style={{ background: selected ? "#f7f7f8" : undefined }}>
-                      <td style={{ textAlign: "center" }}>
+                      <td >
                         <input type="checkbox" checked={selected} onChange={() => toggleOne(c.id)} style={{ cursor: "pointer" }} />
                       </td>
                       {/* 제목만 말줄임하고, 원문 링크와 배지는 오른쪽에 고정한다.
@@ -457,7 +457,7 @@ export default function ExternalCompaniesPanel() {
                         </div>
                       </td>
                       {/* 누가 올린 공고인지 — 알바 실적과 관리자 등록을 눈으로 가른다 */}
-                      <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
+                      <td style={{ whiteSpace: "nowrap" }}>
                         {j0 ? (
                           <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: "var(--chip-radius)",
                             background: isAlba(j0) ? "#eef7f0" : "#f7f7f8",
@@ -476,7 +476,7 @@ export default function ExternalCompaniesPanel() {
                       </td>
                       <td className="admin-td-date">{fmtRegion(c)}</td>
                       <td className="admin-td-date">{fmtPhone(contactPhone(c)) || contactEmail(c) || "-"}</td>
-                      <td className="admin-td-date" style={{ textAlign: "center" }}>
+                      <td className="admin-td-date" >
                         {cApps.length > 0 ? (
                           <a href={`/admin/resumes/applications?search=${encodeURIComponent(c.company_name)}`}
                             title={`${c.company_name} 입사지원 보기`}

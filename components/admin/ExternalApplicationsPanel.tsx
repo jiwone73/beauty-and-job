@@ -144,14 +144,14 @@ export default function ExternalApplicationsPanel() {
                         </div>
                         <div style={{ fontSize: 12.5, color: "#777" }}>{r.job_title}</div>
                       </td>
-                      <td style={{ textAlign: "center" }}>
+                      <td >
                         <span style={{ fontSize: 11.5, fontWeight: 800, padding: "3px 9px", borderRadius: 20, color: m.c, background: m.c + "1a" }}>{m.t}</span>
                       </td>
-                      <td style={{ textAlign: "center", fontWeight: 800, color: r.third_party_consent ? "#0a9d6e" : "#c0392b" }}>
+                      <td style={{ fontWeight: 800, color: r.third_party_consent ? "#0a9d6e" : "#c0392b" }}>
                         {r.third_party_consent ? "✔ 동의" : "✘ 미동의"}
                       </td>
-                      <td style={{ textAlign: "center", color: "#888" }}>{fmt(r.applied_at)}</td>
-                      <td style={{ textAlign: "center" }}>
+                      <td style={{ color: "#888" }}>{fmt(r.applied_at)}</td>
+                      <td >
                         {st === "FORWARDED" ? (
                           <span style={{ fontSize: 11.5, fontWeight: 800, padding: "3px 9px", borderRadius: 20, color: "#0a7d55", background: "#e9f9f1" }}>
                             전달됨{r.forwarded_channel === "MANUAL" ? "(수동)" : ""} · {fmt(r.forwarded_at)}

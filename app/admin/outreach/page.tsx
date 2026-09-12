@@ -432,9 +432,9 @@ export default function AdminOutreachPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
+                <tr><td colSpan={9} style={{ ...td, padding: 30, color: "#9a92a6" }}>불러오는 중…</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={9} style={{ ...td, textAlign: "center", padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
+                <tr><td colSpan={9} style={{ ...td, padding: 30, color: "#9a92a6" }}>데이터가 없습니다.</td></tr>
               ) : items.map((row, rowIdx) => {
                 const isChecking = checking.has(row.id);
                 const hv = String(val(row, "is_hiring"));
