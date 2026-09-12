@@ -14,7 +14,7 @@ import {
 const PAGE_TITLES: Record<string, string> = {
   dashboard: "대시보드",
   jobs: "공고·지원자 관리",
-  "jobs-new": "채용공고 등록",
+  "jobs-new": "공고 작성",
   applicants: "지원자",
   talent: "인재 검색",
   scrapped: "스크랩 인재",
@@ -204,7 +204,9 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     //   목록이 들어오는 문이라 위에 두고, 등록을 아래에 둔다.
     jobs: [
       { id: "jobs",     label: () => "공고·지원자 관리", title: () => "공고·지원자 관리", href: `${base}/jobs` },
-      { id: "jobs-new", label: () => "공고 등록",        title: () => "공고 등록",        href: `${base}/jobs/new` },
+      // 폼을 여는 자리는 「작성」, 폼 안에서 실제로 올리는 단추는 「공고 등록」이다 —
+      // 한 화면에 같은 이름의 단추가 둘이라 어느 것이 진짜 등록인지 헷갈렸다.
+      { id: "jobs-new", label: () => "공고 작성",        title: () => "공고 작성",        href: `${base}/jobs/new` },
     ],
     // 제안·스크랩 — 모아 둔 사람과 보낸 사람. 인재풀은 찾는 데서 끝나고(카드의 북마크로
     //   담는 데까지), 담아 둔 사람을 보는 일은 여기서 한다. 사람인도 인재풀 화면에는
@@ -487,7 +489,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
           </nav>
           <div className="co-top-right">
             <Link href={`${base}/jobs/new`} className="co-top-post">
-              공고 등록
+              새 공고 작성
             </Link>
             <div style={{ position: "relative" }}>
               <button className="company-header-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">

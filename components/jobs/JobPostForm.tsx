@@ -853,11 +853,16 @@ export default function JobPostForm({
   }, [cellOpen]);
   // 모집분야 고르개: 바깥 클릭 시 접기. 시간으로 닫으면 고르는 중에 닫히거나,
   // 다 고르고 나서도 한참 열려 있다 — 다른 데를 누르는 순간이 곧 다 골랐다는 뜻이다.
+  //
+  // 접는 시점은 mousedown 이 아니라 click 이다. 누르는 순간 접으면 목록이 사라지면서
+  // 아래 것들이 위로 올라가, 손을 뗄 때는 다른 자리라 클릭이 성립하지 않았다 —
+  // 소분류를 펼쳐 둔 채로 경력 칩(인턴 등)을 누르면 접히기만 하고 값은 안 들어가
+  // 한 번 더 눌러야 했다. click 이면 누른 것이 먼저 처리되고 그다음 접힌다.
   useEffect(() => {
     if (열린그룹.length === 0) return;
-    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".jp-pick")) set열린그룹([]); };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    const onClick = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".jp-pick")) set열린그룹([]); };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, [열린그룹]);
   const [절차열림, set절차열림] = useState(false);
   // 전형절차 팝오버: 바깥 클릭 시 닫기
