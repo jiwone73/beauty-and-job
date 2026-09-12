@@ -15344,7 +15344,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table .c-who { width: 190px; }
 /* 날짜·상태도 폭을 못 박는다 — 비워 두면 남은 자리를 진행 상황과 똑같이 나눠 갖고,
    정작 글이 긴 진행 상황이 좁아진다. */
-.prop-table .c-date { width: 78px; }
+.prop-table .c-date { width: 88px; }
 .prop-table .c-st { width: 80px; }
 .prop-whoinfo b, .prop-whoinfo i, .prop-whoinfo em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
@@ -15357,7 +15357,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 시각은 따로 선다 — 활동 글자와 한 칸에 두면 긴 문구에서 시각이 아래로 떨어졌다. */
 /* 업데이트 열 — 머리글자와 시간 모두 표 본문과 같은 #555. 옅은 회색으로 두었더니
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
-.prop-table .c-time { width: 80px; white-space: nowrap; font-size: 13.5px; color: #555; }
+.prop-table .c-time { width: 88px; white-space: nowrap; font-size: 13.5px; color: #555; }
 .prop-table th.c-time { color: #555; }
 /* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
 .prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
@@ -15582,7 +15582,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    무슨 일을 하는 사람인지가 사라졌다. 줄 높이는 아바타(60px)가 정하므로
    세 줄까지는 표가 늘어나지 않는다. 낱말 가운데서는 끊지 않는다. */
 .prop-table .c-job { width: 140px; max-width: 140px; font-size: 14.5px; color: var(--color-text);
-  line-height: 1.45; white-space: normal; word-break: keep-all; overflow: hidden;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+  line-height: 1.45; }
+/* 접는 일은 안쪽 조각이 한다 — 칸에 직접 걸었더니 칸이 표 칸이기를 그만두어
+   세로 가운데 맞춤이 죽고 글이 위로 붙었다. */
+.prop-table .c-job span { display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; overflow: hidden; white-space: normal; word-break: keep-all; }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }

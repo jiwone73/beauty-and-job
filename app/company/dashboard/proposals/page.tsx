@@ -713,7 +713,7 @@ export default function CompanyProposalsPage() {
                     {/* 직군은 열을 따로 준다. 이름 아래에 붙이면 사람에 따라 줄 수가
                         달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
                     {/* 좁은 칸이라 긴 값은 …으로 잘린다. 잘린 것은 마우스를 올리면 그대로 보인다. */}
-                    <td className="c-job" title={조건(p)}>{조건(p)}</td>
+                    <td className="c-job" title={조건(p)}><span>{조건(p)}</span></td>
                     <td className="c-date">{날짜(p.createdAt)}</td>
                     <td className="c-st">
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
