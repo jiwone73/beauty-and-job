@@ -15241,6 +15241,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 스크랩 인재 사이드의 「공고별 스크랩」 — 전체 스크랩과 공고 목록을 가르는 작은 제목.
    인재검색 사이드 필터 제목(.jobs-side-t)을 그대로 쓰고 크기·자리만 맞춘다. */
 .co-set-side .prop-side-group { font-size: 14px; margin: 14px 12px 4px; }
+/* 전체 보낸 제안 — 표를 공고별로 묶고 묶음 위에 공고명 띠를 얹는다. 공고명이 길어
+   (평균 35자) 표 안의 한 칸으로는 못 적는다. 띠는 표 폭을 다 써서 대개 안 잘린다. */
+.prop-grouprow td { padding: 0; border: none; background: none; }
+.prop-grouprow .co-pane-band { margin: 0 0 8px; }
+.prop-grouprow:not(:first-child) .co-pane-band { margin-top: 18px; }
+.prop-grouprow .co-pane-band span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .prop-side-more {
   width: 100%; margin-top: 4px; padding: 6px 9px; border: none; background: none;
   font-family: inherit; font-size: 12.5px; color: var(--color-text); text-align: left; cursor: pointer;

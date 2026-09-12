@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import ProposalThread from "@/components/proposal/ProposalThread";
@@ -185,10 +185,11 @@ export default function CompanyProposalsPage() {
     if (r?.success) 불러오기();
     else alert(r?.error?.message || "제안을 거두지 못했어요.");
   };
-  // 공고를 고르는 화면이라 처음부터 하나가 골라져 있다. 예전에는 「전체 공고」로
-  // 시작해 공고 없는 상태였는데, 그러면 위쪽 공고 머리가 비어 무엇을 보는 자리인지
-  // 안 읽혔다. 여러 공고에 걸친 「답할 것」은 사이드에 숫자로 붙는다.
-  const [고른공고, set고른공고] = useState<string | null>(null);
+  // "" 이면 전체 보낸 제안, 아니면 그 공고 하나. 스크랩 인재와 같은 짜임이다 —
+  // 한 메뉴 안의 두 갈래가 서로 다르게 열리면 같은 것으로 안 읽힌다.
+  // 전체로 보면 표를 공고별로 묶고 묶음마다 공고명 띠를 얹는다(공고명이 길어
+  // 표 안의 한 칸으로는 못 적는다 — 평균 35자, 열에 아홉이 57자까지 간다).
+  const [고른공고, set고른공고] = useState("");
   const [고른상태, set고른상태] = useState<상태키 | "전체">("전체");
   const router = useRouter();
   const pathname = usePathname();
@@ -309,14 +310,9 @@ export default function CompanyProposalsPage() {
     if (j) set고른공고(j);
   }, []);
 
-  // 처음 열릴 때 첫 공고를 고른다. 스크랩 인재에서는 고른 공고가 없다.
-  useEffect(() => {
-    if (스크랩모드 || 고른공고 || !보일공고.length) return;
-    set고른공고(보일공고[0].id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [보일공고.length]);
-
-  const 공고고른것 = 목록.filter((p) => (p.jobPostingId || "none") === 고른공고);
+  const 공고고른것 = 고른공고
+    ? 목록.filter((p) => (p.jobPostingId || "none") === 고른공고)
+    : 목록;
 
   // 상태 칩은 제안이 흘러가는 차례 그대로 세운다.
   //
@@ -421,6 +417,18 @@ export default function CompanyProposalsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [진행공고, 고른스크랩]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
+  // 전체로 볼 때만 공고별로 묶는다. 차례는 줄 차례 그대로 — 먼저 나온 공고가 먼저다.
+  const 묶음들 = useMemo(() => {
+    if (고른공고) return [{ 키: 고른공고, 제목: null as string | null, 줄: 줄들 }];
+    const 표 = new Map<string, { 키: string; 제목: string | null; 줄: typeof 줄들 }>();
+    for (const p of 줄들) {
+      const k = p.jobPostingId || "none";
+      const g = 표.get(k);
+      if (g) g.줄.push(p);
+      else 표.set(k, { 키: k, 제목: p.jobTitle || "공고 없음", 줄: [p] });
+    }
+    return Array.from(표.values());
+  }, [줄들, 고른공고]);
 
   const 공고고르기 = (id: string) => { set고른공고(id); set고른상태("전체"); };
 
@@ -454,6 +462,12 @@ export default function CompanyProposalsPage() {
 
   const 사이드 = (
     <>
+      <button type="button" className={`co-set-item co-jobitem${고른공고 === "" ? " on" : ""}`}
+        onClick={() => 공고고르기("")}>
+        <span className="co-jobitem-t">전체 보낸 제안</span>
+        <span className="co-jobitem-n">{목록.length}</span>
+      </button>
+      <p className="jobs-side-t prop-side-group">공고별 보낸 제안</p>
       {보일공고.map((g) => (
         <button key={g.id} type="button" className={`co-set-item co-jobitem${고른공고 === g.id ? " on" : ""}`}
           onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
@@ -563,11 +577,15 @@ export default function CompanyProposalsPage() {
       {/* 공고 머리와 띠는 한 묶음(.co-pane) — 판의 20px 간격이 둘 사이에 끼지 않아
           공고·지원자와 같은 간격이 된다. 띠는 아래 표가 이 공고의 것이라는 것과
           몇 명인지를 말한다. */}
-      <div className="co-pane">
-        {공고머리 && 머리판(공고머리, 고른공고)}
-        {띠(공고머리 ? `이 공고로 제안한 인재 ${공고고른것.length}명` : `보낸 제안 ${공고고른것.length}명`,
-          우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">내 차례 {우리차례수}</span></> : null)}
-      </div>
+      {/* 전체로 볼 때는 여기 띠를 두지 않는다 — 표 안에서 공고마다 띠가 서고,
+          위에 하나 더 두면 같은 말이 두 번이다. 스크랩 인재의 전체와 같다. */}
+      {공고머리 && (
+        <div className="co-pane">
+          {머리판(공고머리, 고른공고)}
+          {띠(`이 공고로 제안한 인재 ${공고고른것.length}명`,
+            우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">내 차례 {우리차례수}</span></> : null)}
+        </div>
+      )}
 
       {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
           어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
@@ -624,7 +642,7 @@ export default function CompanyProposalsPage() {
         <div className="prop-tablewrap">
           {/* 제안한 자리는 이 표 전체에 하나다 — 표가 공고별로 묶여 있고 한 공고에서
               여러 자리로 보내는 일은 드물다. 줄마다 적으면 같은 글이 열 번 찍힌다. */}
-          {제안한자리.length > 0 && (
+          {고른공고 && 제안한자리.length > 0 && (
             <p className="prop-sentpos">
               제안한 자리 · <b>{제안한자리.join(" / ")}</b>
             </p>
@@ -642,7 +660,16 @@ export default function CompanyProposalsPage() {
               </tr>
             </thead>
             <tbody>
-              {줄들.map((p, i) => {
+              {묶음들.map((묶음) => (
+              <Fragment key={묶음.키}>
+              {묶음.제목 && (
+                <tr className="prop-grouprow">
+                  <td colSpan={7}>
+                    {띠(`${묶음.제목} · ${묶음.줄.length}명`)}
+                  </td>
+                </tr>
+              )}
+              {묶음.줄.map((p, i) => {
                 const st = 상태(p);
                 const 활 = 최근활동(p);
                 const 할 = 다음할일(p);
@@ -699,6 +726,8 @@ export default function CompanyProposalsPage() {
                   </tr>
                 );
               })}
+              </Fragment>
+              ))}
             </tbody>
           </table>
         </div>
