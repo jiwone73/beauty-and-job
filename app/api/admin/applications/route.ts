@@ -73,7 +73,16 @@ export async function PATCH(req: NextRequest) {
 
   const client = await pool.connect()
   try {
-    await client.query(`UPDATE applications SET status = $1::app_status, status_updated_at = now(), updated_at = now() WHERE id = $2`, [status, id])
+    // 열람 이후 단계로 올리면 본 것이다 — 지원서를 열지 않고 상태만 바꿔도
+    // 「언제 봤나」가 남아야 한다. 이미 적힌 시각은 덮지 않는다(처음 본 때가 맞다).
+    const 열람이후 = ['VIEWED', 'INTERVIEW', 'PASSED', 'REJECTED'].includes(status)
+    await client.query(
+      `UPDATE applications
+          SET status = $1::app_status, status_updated_at = now(), updated_at = now()
+              ${열람이후 ? ', viewed_at = COALESCE(viewed_at, now())' : ''}
+        WHERE id = $2`,
+      [status, id]
+    )
     return ok({ success: true })
   } finally {
     client.release()

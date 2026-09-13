@@ -206,6 +206,11 @@ export async function PATCH(
   }
 
   updates.push(`updated_at = NOW()`);
+  // 열람 이후 단계로 올리면 본 것이다 — 지원서를 열지 않고 목록에서 상태만 바꿔도
+  // 「언제 봤나」가 남아야 한다. 이미 적힌 시각은 덮지 않는다(처음 본 때가 맞다).
+  if (["VIEWED", "INTERVIEW", "PASSED", "REJECTED"].includes(body.status)) {
+    updates.push(`viewed_at = COALESCE(a.viewed_at, NOW())`);
+  }
   values.push(params.id, auth!.sub);
 
   const query = `
