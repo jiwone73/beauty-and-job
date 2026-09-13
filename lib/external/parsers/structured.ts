@@ -170,8 +170,15 @@ function parseHairinjob(html: string): StructuredResult | null {
   const flexTime = /근무\s*시간[^가-힣]{0,8}(선택|협의|조율|탄력|자율|자유)|시간\s*(선택\s*가능|협의|조율|탄력)|탄력\s*근무|자율\s*출퇴근/.test(pageText);
   const flexDays = /근무\s*요일[^가-힣]{0,8}(선택|협의|조율|자유)|요일\s*(선택\s*가능|협의|조율|자유)|격주|주\s*[3-6]\s*일|스케줄\s*근무|근무\s*일수\s*(선택|협의)/.test(pageText);
   // 근무시간: 유동형이면 협의, 아니면 페이지 내 첫 시간대(오전/오후 표기도 24시간으로 변환)
-  const firstTime = (pageText.match(/(?:오전|오후)?\s*\d{1,2}:\d{2}\s*~\s*(?:오전|오후)?\s*\d{1,2}:\d{2}/) || [])[0] || "";
-  const work_time = flexTime ? "협의" : parseWorkTime(firstTime);
+  // 근무시간: 유동형이면 협의.
+  //
+  // 두 타임(오전·오후 교대)을 읽되, 「근무시간」 항목 안에서만 모은다. 페이지 전문을
+  // 훑으면 다른 자리에 적힌 시간까지 끌어와 한 타임짜리 공고가 두 타임으로 둔갑한다 —
+  // 실제로 헤어인잡 한 공고에 「10:00~8:00」과 「10:00~7:00」이 따로 적혀 있었다.
+  // 항목이 비어 있으면 예전처럼 페이지에서 첫 하나만 쓴다.
+  const 시간칸 = liValue("근무시간") || liValue("근무 시간");
+  const work_time = flexTime ? "협의"
+    : (parseWorkTimes(시간칸, 2) || parseWorkTimes(pageText, 1));
   // 근무요일: 유동형이면 협의. (구체 요일이 명시된 경우는 드물고 '휴무 요일' 오인 위험이 커서, 확실한 유동형만 채운다)
   const work_days = flexDays ? "협의" : "";
 
@@ -806,16 +813,44 @@ function parseSalaryText(raw: string): {
   return { salary, salary_type, salary_amount, salary_amount_max, salary_negotiable };
 }
 // 근무시간 "09:00 ~ 18:00 (...)" → "09:00~18:00"
+//
+// 「10시~7시」처럼 분을 안 적는 공고가 많다. 콜론 표기만 보던 탓에 그런 줄은
+// 통째로 못 읽어, 시간이 빈 채로 등록됐다 — 원문에 분명히 적혀 있는데도.
+//
+// 그리고 끝이 시작보다 이르면(10시~7시) 오후로 읽는다. 미용실이 아침 10시에
+// 열어 아침 7시에 닫을 수는 없다. 이건 추정이 아니라 시계가 한 바퀴 돈 것을
+// 되돌리는 것이다 — 오전·오후가 적혀 있으면 그 말을 그대로 따른다.
+const 시간표기 = String.raw`(?:오전|오후)?\s*\d{1,2}\s*(?::\s*\d{2}|시(?:\s*\d{1,2}\s*분)?)\s*~\s*(?:오전|오후)?\s*\d{1,2}\s*(?::\s*\d{2}|시(?:\s*\d{1,2}\s*분)?)`;
 function parseWorkTime(raw: string): string {
-  const wt = (raw || "").match(/(오전|오후)?\s*(\d{1,2}):(\d{2})\s*~\s*(오전|오후)?\s*(\d{1,2}):(\d{2})/);
-  if (!wt) return "";
-  const h = (ap: string | undefined, hh: string) => {
-    let n = Number(hh);
-    if (ap === "오후" && n < 12) n += 12;
-    if (ap === "오전" && n === 12) n = 0;
-    return String(n).padStart(2, "0");
+  const m = (raw || "").match(new RegExp(시간표기));
+  if (!m) return "";
+  const 한쪽 = /(오전|오후)?\s*(\d{1,2})\s*(?::\s*(\d{2})|시(?:\s*(\d{1,2})\s*분)?)/g;
+  const 쪽들: { ap?: string; h: number; m: string }[] = [];
+  let x: RegExpExecArray | null;
+  while ((x = 한쪽.exec(m[0])) !== null) {
+    쪽들.push({ ap: x[1], h: Number(x[2]), m: (x[3] ?? x[4] ?? "0").padStart(2, "0") });
+  }
+  if (쪽들.length < 2) return "";
+  const 고침 = (v: { ap?: string; h: number }) => {
+    let n = v.h;
+    if (v.ap === "오후" && n < 12) n += 12;
+    if (v.ap === "오전" && n === 12) n = 0;
+    return n;
   };
-  return `${h(wt[1], wt[2])}:${wt[3]}~${h(wt[4], wt[5])}:${wt[6]}`;
+  let 시작 = 고침(쪽들[0]);
+  let 끝 = 고침(쪽들[1]);
+  // 끝이 시작보다 이르고 오후라고 안 적혀 있으면, 그 끝은 오후다.
+  if (끝 <= 시작 && !쪽들[1].ap && 끝 < 12) 끝 += 12;
+  const 둘 = (n: number) => String(n).padStart(2, "0");
+  return `${둘(시작)}:${쪽들[0].m}~${둘(끝)}:${쪽들[1].m}`;
+}
+
+/** 글에 적힌 시간대를 전부 읽는다. 오전·오후 두 타임으로 나눠 뽑는 자리가 흔하다.
+ *  여러 개면 줄바꿈으로 잇는다 — 폼과 근무요일 창이 줄 단위로 시간대를 센다. */
+export function parseWorkTimes(raw: string, 최대 = 2): string {
+  const 전부 = (raw || "").match(new RegExp(시간표기, "g")) || [];
+  const 값 = [...new Set(전부.map((t) => parseWorkTime(t)).filter(Boolean))].slice(0, 최대);
+  return 값.join("\n");
 }
 // "경기 부천" / "인천" / "서울 강남" → 시도 정식명 + 시군구
 /** 헤어인잡은 시·도를 묶어 적는다 — 「전남광주」·「경기·인천」·「대전충남」처럼.

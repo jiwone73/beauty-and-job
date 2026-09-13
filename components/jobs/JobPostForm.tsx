@@ -1788,7 +1788,11 @@ export default function JobPostForm({
       // 근무시간
       if (d.work_time === "협의") { setWorkTimeNego(true); setWorkTimeStart(""); setWorkTimeEnd(""); }
       else if (typeof d.work_time === "string") {
-        const m = d.work_time.trim().match(/^(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})$/);
+        // 타임이 둘인 공고(오전·오후 교대)는 줄바꿈으로 온다. 예전에는 한 쌍만
+        // 인정해서(^…$) 두 줄이 오면 통째로 버렸다 — 원문에 적힌 시간이 사라졌다.
+        // 첫 줄로 위쪽 시간 칸을 채우고, 나머지 줄은 모집부문 값에 그대로 남는다.
+        const 첫줄 = d.work_time.split("\n")[0].trim();
+        const m = 첫줄.match(/^(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})$/);
         if (m) { setWorkTimeNego(false); setWorkTimeStart(`${m[1].padStart(2, "0")}:${m[2]}`); setWorkTimeEnd(`${m[3].padStart(2, "0")}:${m[4]}`); }
       }
       {

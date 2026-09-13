@@ -5,7 +5,7 @@ export const maxDuration = 60;
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { parseStructured } from "@/lib/external/parsers/structured";
+import { parseStructured, parseWorkTimes } from "@/lib/external/parsers/structured";
 import { getAllJobItems, SEARCH_TAGS } from "@/lib/data/jobGroups";
 import { parsePasted } from "@/lib/external/parsers/pasted";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
@@ -757,8 +757,12 @@ export async function POST(req: NextRequest) {
             else if (/계약직/.test(workcond)) out.employment_type = "계약직";
             else if (/파트|아르바이트|알바/.test(workcond)) out.employment_type = "파트타임";
             // 근무시간: 본문에 "근무시간 … HH:MM ~ HH:MM"(평일 등 접두 허용)이 있으면 추출
-            const wtm = full.match(/근무시간[^0-9]{0,20}(\d{1,2}):(\d{2})\s*~\s*(\d{1,2}):(\d{2})/);
-            if (wtm && !out.work_time) out.work_time = `${wtm[1].padStart(2, "0")}:${wtm[2]}~${wtm[3].padStart(2, "0")}:${wtm[4]}`;
+            //   「10시~7시」처럼 분을 안 적거나 타임이 둘인 공고도 있어 공용 규칙을 쓴다.
+            const wtm = full.match(/근무\s*시간[^0-9]{0,20}([^\n]{0,80})/);
+            if (wtm && !out.work_time) {
+              const v = parseWorkTimes(wtm[1]);
+              if (v) out.work_time = v;
+            }
           }
         } finally { clearTimeout(t); }
       }
