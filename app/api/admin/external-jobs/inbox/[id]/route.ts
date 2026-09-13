@@ -58,8 +58,19 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
   }
 
+  // 상세요강 그림은 이름을 바꿔서 내보낸다.
+  //
+  // 파서는 상세 포스터를 "_detailImagesRaw" 에 담는데, 폼이 읽는 칸은 "detail_images" 다.
+  // 주소를 넣어 불러오는 길(파싱 라우트)은 재호스팅하면서 이름을 바꿔 주는데, 목록에서
+  // 골라 들어오는 이 길만 그 변환을 빠뜨리고 있었다. 그래서 상세 그림을 멀쩡히 들고도
+  // 폼에는 한 장도 안 실렸다 — 받은함에 담긴 헤어인잡 33건·셀렉미 36건이 그랬다.
+  const 상세그림 = (parsed as any)._detailImagesRaw;
+  const 내보낼것: any = { ...parsed };
+  delete 내보낼것._detailImagesRaw;
+  if (Array.isArray(상세그림) && 상세그림.length) 내보낼것.detail_images = 상세그림;
+
   // 원문 주소는 공고에 남겨야 한다 — 값이 맞는지 대조하고, 아직 뽑는지 확인할 때 쓴다.
   // ai_parsed 는 폼이 「제대로 읽었다」로 알아듣는 표시다. 목록에 담긴 것은 이미
   // 파서가 읽어 낸 것이라, 이게 없으면 폼이 「AI 정리에 실패했다」고 알린다.
-  return ok({ ...parsed, ai_parsed: true, source_url: r.rows[0].url });
+  return ok({ ...내보낼것, ai_parsed: true, source_url: r.rows[0].url });
 }
