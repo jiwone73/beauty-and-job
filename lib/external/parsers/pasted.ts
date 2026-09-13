@@ -261,11 +261,26 @@ export function parsePasted(text: string, 제목 = ""): PastedResult | null {
   }
   // 라벨로 잡은 값은 설명 문장까지 딸려 오므로 그 칸에 맞는 조각만 남긴다.
   if (out.salary) out.salary = 값다듬기(out.salary, 급여모양, 급여아닌줄);
-  if (out.work_time) out.work_time = 값다듬기(out.work_time, 시간모양);
+  // 근무시간만 여러 개를 담는다. 「오전타임 10시~7시 오후타임 12시~9시」처럼 같은
+  // 요일에 타임이 둘인 자리가 흔한데, 값다듬기는 처음 맞는 하나만 돌려줘 오후
+  // 타임이 늘 사라졌다. 두 타임까지 줄바꿈으로 잇는다 — 폼과 근무요일 창이 줄
+  // 단위로 시간대를 센다. 다른 칸은 하나가 맞으므로 그대로 둔다.
+  if (out.work_time) {
+    const 전부 = String(out.work_time).match(new RegExp(시간모양.source, "g")) || [];
+    out.work_time = 전부.length > 1
+      ? [...new Set(전부.map((t) => t.replace(/\s+/g, " ").trim()))].slice(0, 2).join("\n")
+      : 값다듬기(out.work_time, 시간모양);
+  }
   if (out.work_days) out.work_days = 값다듬기(out.work_days, 휴무모양);
   if (out.career) out.career = 값다듬기(out.career, 경력모양);
   // 「◇ 지원문의」 아래에는 번호 다음 줄까지 붙어 온다("…3691\n본 채용정보에 관심 가").
   if (out.contact_phone) out.contact_phone = 전화꼴(값다듬기(out.contact_phone, 전화모양));
+  // 「근무처」는 가게 이름으로도, 주소로도 쓴다. 값이 주소 모양이면 주소 칸이 맞다 —
+  // 이름 칸에 넣으면 매장명이 「서울 강남구 테헤란로 123」이 되어 버린다.
+  if (out.company_name && 주소모양.test(out.company_name) && 지역뽑기(out.company_name)) {
+    if (!out.address) out.address = out.company_name;
+    out.company_name = "";
+  }
   // 이름 칸에 번호가 들어왔으면 그건 이름이 아니다. 비우고, 번호 칸이 비어 있으면 옮긴다.
   if (out.contact_name && 전화모양.test(out.contact_name)) {
     if (!out.contact_phone) out.contact_phone = 전화꼴(값다듬기(out.contact_name, 전화모양));
