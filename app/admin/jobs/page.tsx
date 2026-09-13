@@ -88,11 +88,6 @@ function AdminJobsPageInner() {
   const initialDate = searchParams.get("date") === "today" ? "today" : "전체";
 
   const [jobs, setJobs] = useState<Job[]>([]);
-  // 고용24 목록 주소 하나로 여러 건을 임시저장에 담는다.
-  const [가져오기열림, set가져오기열림] = useState(false);
-  const [가져오기주소, set가져오기주소] = useState("");
-  const [가져오는중, set가져오는중] = useState(false);
-  const [가져온결과, set가져온결과] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [statusFilter, setStatusFilter] = useState(initialStatus);
@@ -117,26 +112,6 @@ function AdminJobsPageInner() {
   }, [token]);
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
 
-  // 목록 주소를 서버에 넘기면 공고를 하나씩 읽어 임시저장으로 담아 준다.
-  // 발행은 하지 않는다 — 잘못 읽은 값이 그대로 공고로 나가면 되돌릴 데가 없다.
-  const 가져오기 = async () => {
-    set가져오는중(true); set가져온결과(null);
-    try {
-      const res = await fetch("/api/admin/external-jobs/bulk", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("admin_token")}` },
-        body: JSON.stringify({ url: 가져오기주소.trim(), limit: 20 }),
-      });
-      const j = await res.json();
-      if (!j.success) { set가져온결과({ 오류: j.error?.message || "가져오지 못했어요." }); return; }
-      set가져온결과(j.data);
-      fetchJobs();
-    } catch {
-      set가져온결과({ 오류: "네트워크 오류가 발생했어요." });
-    } finally {
-      set가져오는중(false);
-    }
-  };
 
   // 기업명 클릭 → 회사 정보 불러와 모달 (이동 없음)
   const openCompany = async (companyId: string) => {
@@ -275,14 +250,9 @@ function AdminJobsPageInner() {
             options={["전체", "오늘", "최근 7일", "최근 1개월", "최근 3개월", "최근 1년"]}
             onChange={(v) => setDateFilter(DATE_VALUES[v] ?? "전체")} />
         </div>
-        <div style={{display:"flex", gap:"8px"}}>
-          <button type="button" className="admin-secondary-btn" onClick={() => { set가져오기주소(""); set가져온결과(null); set가져오기열림(true); }}>
-            고용24 가져오기
-          </button>
-          <Link href="/admin/jobs/new" className="admin-primary-btn">
-            <Plus size={16} /> 공고 직접 등록
-          </Link>
-        </div>
+        <Link href="/admin/jobs/new" className="admin-primary-btn">
+          <Plus size={16} /> 공고 직접 등록
+        </Link>
       </div>
       <div className="admin-card">
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -467,53 +437,6 @@ function AdminJobsPageInner() {
         <CompanyDetailModal company={companyModal} onClose={() => setCompanyModal(null)} />
       )}
 
-      {가져오기열림 && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 1200, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
-          onClick={() => !가져오는중 && set가져오기열림(false)}>
-          <div onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 560, maxHeight: "80vh", overflow: "auto", padding: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <strong style={{ fontSize: 16, color: "#555" }}>고용24 가져오기</strong>
-              <button type="button" onClick={() => set가져오기열림(false)} aria-label="닫기"
-                style={{ border: "none", background: "none", fontSize: 20, color: "#555", cursor: "pointer" }}>×</button>
-            </div>
-            <textarea value={가져오기주소} onChange={(e) => set가져오기주소(e.target.value)}
-              rows={4}
-              placeholder={"고용24 목록 주소, 또는 공고 주소 여러 개"}
-              style={{ width: "100%", boxSizing: "border-box", border: "1px solid #efeff1", borderRadius: 8, padding: "10px 12px", fontSize: 14, outline: "none", resize: "vertical", fontFamily: "inherit", lineHeight: 1.5 }} />
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-              <button type="button" className="admin-secondary-btn" onClick={() => set가져오기열림(false)} disabled={가져오는중}>닫기</button>
-              <button type="button" className="admin-primary-btn" onClick={가져오기} disabled={가져오는중 || !가져오기주소.trim()}>
-                {가져오는중 ? "가져오는 중…" : "가져오기"}
-              </button>
-            </div>
-
-            {가져온결과 && (
-              <div style={{ marginTop: 16, fontSize: 13.5, color: "#555", lineHeight: 1.7 }}>
-                {가져온결과.오류 ? (
-                  <p style={{ color: "#c0392b", margin: 0 }}>{가져온결과.오류}</p>
-                ) : (
-                  <>
-                    <p style={{ margin: "0 0 8px" }}>
-                      공고 {가져온결과.본것}건을 보고 <strong style={{ color: "#555" }}>{가져온결과.담음.length}건</strong>을 임시저장에 담았습니다.
-                    </p>
-                    {가져온결과.담음.map((x: any, i: number) => (
-                      <div key={`y${i}`} style={{ color: "#555" }}>· {x.company} — {x.title}</div>
-                    ))}
-                    {가져온결과.건너뜀.length > 0 && (
-                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f2f2f4", color: "#555" }}>
-                        {가져온결과.건너뜀.map((x: any, i: number) => (
-                          <div key={`n${i}`}>· {x.title} — {x.사유}</div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }
