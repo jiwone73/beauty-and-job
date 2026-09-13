@@ -32,17 +32,27 @@ export async function refreshSampleData(client: PoolClient) {
   `, [newJobs]);
 
   const newApps = 10 + Math.floor(Math.random() * 21);
+  // 상태와 열람 시각의 앞뒤를 맞춘다. 상태만 제비뽑기로 넣으면 「면접까지 갔는데
+  // 본 적은 없다」는 지원이 쌓여, 화면에서 열람 흐름을 볼 수 없다.
+  // 열람 이후 단계면 지원한 뒤~지금 사이 아무 때나 본 것으로 둔다.
   await client.query(`
-    INSERT INTO applications (user_id, job_posting_id, status, applied_at)
-    SELECT u.id, jp.id,
-      (ARRAY['APPLIED','VIEWED','INTERVIEW','PASSED','REJECTED','WITHDRAWN'])[floor(random()*6+1)::int]::app_status,
-      now() - (floor(random()*10) || ' hours')::interval
-    FROM (SELECT id, job_type FROM users WHERE is_sample = true ORDER BY random() LIMIT $1) u
-    CROSS JOIN LATERAL (
-      SELECT id FROM job_postings
-      WHERE is_sample = true AND job_type = u.job_type
-      ORDER BY random() LIMIT 1
-    ) jp
+    WITH 뽑기 AS (
+      SELECT u.id AS user_id, jp.id AS job_posting_id,
+        (ARRAY['APPLIED','VIEWED','INTERVIEW','PASSED','REJECTED','WITHDRAWN'])[floor(random()*6+1)::int]::app_status AS status,
+        now() - (floor(random()*10) || ' hours')::interval AS applied_at
+      FROM (SELECT id, job_type FROM users WHERE is_sample = true ORDER BY random() LIMIT $1) u
+      CROSS JOIN LATERAL (
+        SELECT id FROM job_postings
+        WHERE is_sample = true AND job_type = u.job_type
+        ORDER BY random() LIMIT 1
+      ) jp
+    )
+    INSERT INTO applications (user_id, job_posting_id, status, applied_at, viewed_at)
+    SELECT user_id, job_posting_id, status, applied_at,
+      CASE WHEN status IN ('VIEWED','INTERVIEW','PASSED','REJECTED')
+        THEN applied_at + (random() * (now() - applied_at))
+        ELSE NULL END
+    FROM 뽑기
     ON CONFLICT (job_posting_id, user_id) DO NOTHING
   `, [newApps]);
 
