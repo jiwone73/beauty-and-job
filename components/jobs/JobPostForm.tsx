@@ -720,11 +720,16 @@ export default function JobPostForm({
   // 빈 화면에서 다시 시작한다. 새로고침만으로는 브라우저에 남은 내용이 그대로 되살아난다.
   // 값을 하나하나 비우면 빠뜨린 칸이 생기므로, 남은 내용을 지우고 화면을 새로 연다.
   const 초기화 = () => {
-    if (!confirm("쓰던 내용을 모두 지우고 빈 화면에서 새로 쓸까요?")) return;
     try { localStorage.removeItem(`jobpost:autosave:${mode}:new`); } catch { /* noop */ }
-    // 고치던 중이면 주소의 ?id= 를 떼야 빈 등록 화면이 된다.
-    if (editId) router.push(pathname);
-    else location.reload();
+    // 주소에 값을 실어 나르는 칸(?inbox=·?url=·?q=·?id=)이 남아 있으면, 임시저장을 지워도
+    // 화면을 새로 여는 순간 그 값이 도로 태워진다. 헤어인잡·셀렉미 목록에서 넘어온 공고에서
+    // 단추가 안 먹는 것처럼 보이던 게 이것이다 — 지워지긴 했는데 곧바로 다시 채워졌다.
+    // 함께 뗀다. 어디서 왔는지(?from=)와 붙여넣기 칸(?paste=)은 남긴다 — 내용을 담지 않고,
+    // 떼면 「목록으로」 돌아갈 길과 열려 있던 칸까지 같이 잃는다.
+    const 남길것 = new URLSearchParams(typeof window === "undefined" ? "" : location.search);
+    ["inbox", "url", "q", "id"].forEach((k) => 남길것.delete(k));
+    const 꼬리 = 남길것.toString();
+    location.href = 꼬리 ? `${pathname}?${꼬리}` : pathname;
   };
 
   // 화면이 뜰 때 남아 있던 내용을 되살린다.
