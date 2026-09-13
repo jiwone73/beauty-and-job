@@ -1025,7 +1025,37 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
   const address = [shopAddress, shopAddrDetail].filter(Boolean).join(" ").trim() || region;
 
   // 상세요강 본문(매장 원문) — RSC 이중 이스케이프(\\n 등) 복원 + 잔여 백슬래시 제거
+  //
+  // 본문이 「$41」처럼 참조 번호로만 올 때가 있다. 셀렉미가 긴 글을 따로 실어
+  // 보내면서 자리에는 번호만 남기는데, 그걸 그대로 담아 상세요강이 세 글자가 됐다 —
+  // 받은함에 담긴 56건 중 16건이 그랬다. 번호가 오면 그 조각을 찾아가 읽는다.
+  //
+  // 조각은 「41:T9e2,」 머리표로 시작하고 9e2 는 16진수로 센 길이다. 뒤 내용은
+  // script 태그 여러 개로 쪼개져 오므로 이음매를 걷고 이어 붙인 뒤 그 길이만큼
+  // 자른다. 길이가 바이트 기준이라 한 줄이 더 딸려 올 수 있어, 스트림 조각처럼
+  // 생긴 꼬리 줄은 버린다.
+  const 참조본문 = (번호: string): string => {
+    const m = html.match(new RegExp(`(?:^|\\\\n)${번호}:T([0-9a-f]+),`));
+    if (!m) return "";
+    const 길이 = parseInt(m[1], 16);
+    const 뒤 = html.slice((m.index ?? 0) + m[0].length);
+    const 이음 = 뒤.replace(/"\]\)<\/script><script>self\.__next_f\.push\(\[1,"/g, "");
+    const 풀림 = 이음.replace(/\\n/g, "\n").replace(/\\"/g, '"')
+      .replace(/\\+u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
+      .replace(/\\+/g, "");
+    const 줄 = 풀림.slice(0, 길이).split("\n");
+    const 깨끗: string[] = [];
+    for (const l of 줄) {
+      if (/^\s*\d+:\[?"?\$/.test(l) || /^\s*\d+:[A-Za-z]\w*,/.test(l) || l.includes('"$L')) break;
+      깨끗.push(l);
+    }
+    return 깨끗.join("\n").trim();
+  };
   let description = g(/"contents":"((?:[^"\\]|\\.)*)"/);
+  {
+    const 참조 = description.match(/^\$(\d+)$/);
+    if (참조) description = 참조본문(참조[1]);
+  }
   description = description
     .replace(/\\+n/g, "\n")
     .replace(/\\+r/g, "")
