@@ -194,7 +194,7 @@ const WORK_PERIODS = ["~6개월", "6개월 ~ 1년", "1년 이상", "협의"];
 // 복리후생 옵션은 DB 마스터(benefit_tags)로 이관 → /api/benefit-tags 에서 로드
 const PRESET_PROCESS: Record<string, string[]> = {
   기업: ["서류전형", "전화면접", "1차 면접", "2차 면접", "과제전형", "최종합격"],
-  매장: ["서류전형", "전화면접", "대면면접", "시술테스트", "최종합격"],
+  매장: ["서류전형", "전화면접", "대면면접", "1차 면접", "2차 면접", "시술테스트", "최종합격"],
 };
 
 type Company = { id: string; company_name: string; brand_name: string | null };
@@ -3882,19 +3882,10 @@ export default function JobPostForm({
               <div className="company-card" style={{ overflow: "visible" }}>
                 <div className="admin-form-body">
                   <div className="jp-proc">
-                    {hiringProcess.length === 0 && (
-                      <span className="jp-proc-ph">예) 서류전형 › 1차 면접 › 최종합격</span>
-                    )}
-                    {hiringProcess.map((p, i) => (
-                      <span key={`${p}-${i}`} className="jp-proc-item">
-                        <span className="jp-proc-step on">
-                          {p}
-                          <button type="button" aria-label={`${p} 빼기`}
-                            onClick={() => setHiringProcess(hiringProcess.filter((_, k) => k !== i))}>×</button>
-                        </span>
-                        <i>›</i>
-                      </span>
-                    ))}
+                    {/* ＋ 가 맨 왼쪽에 선다. 단계를 더할수록 오른쪽으로 이어 붙으니
+                        누를 자리가 늘 같은 데 있다 — 예전에는 단계 뒤를 따라다녔다.
+                        비어 있을 때는 ＋ 옆에 무엇을 하는 단추인지 한마디 적는다
+                        (예시 문구는 값처럼 읽혀 걷었다). */}
                     <span className="jp-proc-item posshift-pop" style={{ position: "relative" }}>
                       <button type="button" className="jp-proc-add" aria-label="전형 단계 더하기"
                         onClick={(e) => { if (절차열림) { set절차열림(false); return; } openPopAt(e.currentTarget, 200, 250); set절차열림(true); }}>＋</button>
@@ -3910,6 +3901,21 @@ export default function JobPostForm({
                         </div>
                       )}
                     </span>
+                    {hiringProcess.length === 0 && (
+                      <span className="jp-proc-ph">목록에서 선택하기</span>
+                    )}
+                    {hiringProcess.map((p, i) => (
+                      <span key={`${p}-${i}`} className="jp-proc-item">
+                        <span className="jp-proc-step on">
+                          {p}
+                          <button type="button" aria-label={`${p} 빼기`}
+                            onClick={() => setHiringProcess(hiringProcess.filter((_, k) => k !== i))}>×</button>
+                        </span>
+                        {/* 마지막 단계 뒤에는 화살표를 두지 않는다. 예전에는 ＋ 가 줄 끝이라
+                            이 화살표가 ＋ 를 가리켰는데, ＋ 가 앞으로 오면서 허공을 가리켰다. */}
+                        {i < hiringProcess.length - 1 && <i>›</i>}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
