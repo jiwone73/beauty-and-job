@@ -95,7 +95,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     if (!본문.trim()) return;
     const [첫줄, ...나머지] = 본문.split("\n");
 
-    if (첫줄.includes("협의") && !첫줄.includes("주 ")) { 되살림("nego"); return; }
+    // 「협의」가 있어도 시간이 함께 적혀 있으면 요일만 협의인 것이다.
+    //
+    // 원문에서 "협의 10:00~20:00" 처럼 요일은 협의, 시간은 정해진 공고가 흔하다.
+    // 이걸 통째로 협의로 보면 주 N일·지정 요일이 잠겨, 적어 둔 시간을 살린 채
+    // 요일만 고르는 길이 막힌다. 시간이 있으면 협의로 확정하지 않는다.
+    const 시간있음 = /\d{1,2}\s*[:시]/.test(첫줄);
+    if (첫줄.includes("협의") && !첫줄.includes("주 ") && !시간있음) { 되살림("nego"); return; }
 
     // 주 N일 / 주 N~M일 / 주 N·M일
     const 일수 = 첫줄.match(/주\s*([\d~·,]+)\s*일/);
@@ -114,8 +120,15 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     } else if (/^\d/.test(첫줄)) {
       되살림("hours");
     } else if (첫줄.trim()) {
-      되살림("custom");
-      setQDays(첫줄.split(/[,·]/).map((x) => x.trim()).filter((x) => DAY_OPTIONS.includes(x)));
+      // 요일을 실제로 읽어 냈을 때만 「지정 요일로 정해졌다」고 본다.
+      //
+      // 예전에는 남은 글자를 무조건 custom 으로 못박았다. "협의 10:00~20:00" 처럼
+      // 요일이 협의인 줄까지 지정 요일이 되어, 나머지 항목이 잠긴 채 요일은 하나도
+      // 안 골라진 상태가 됐다. 읽어 낸 요일이 없으면 펴 두기만 하고 정하지는 않는다 —
+      // 그래야 세 항목이 모두 열려 원하는 것을 고를 수 있다.
+      const 읽은요일 = 첫줄.split(/[,·]/).map((x) => x.trim()).filter((x) => DAY_OPTIONS.includes(x));
+      if (읽은요일.length) { 되살림("custom"); setQDays(읽은요일); }
+      else setQuickType(null);
     }
 
     if (첫줄.includes("격주")) setQBiweekly(true);
