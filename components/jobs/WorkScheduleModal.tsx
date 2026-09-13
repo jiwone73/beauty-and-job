@@ -81,6 +81,10 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   // 같은 요일에 타임이 둘인 자리가 있다 — 원문에 「오전타임 10시~7시 오후타임 12시~9시」
   // 처럼 적힌 공고가 흔하다. 시간 고르개를 한 줄 더 얹어 그대로 담는다.
   const [둘째타임, set둘째타임] = useState(false);
+  // 요일만 정하고 시간은 협의로 두는 자리가 있다("주 5일, 시간은 협의"). 켜면 시간
+  // 고르개를 잠그고 시간 줄을 아예 적지 않는다 — 안 정한 것을 10시~20시로 적어
+  // 두면 매장이 말하지 않은 조건이 공고에 박힌다.
+  const [시간생략, set시간생략] = useState(false);
   const [q2시작, setQ2시작] = useState(12);
   const [q2시작분, setQ2시작분] = useState(0);
   const [q2끝, setQ2끝] = useState(21);
@@ -138,6 +142,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
       else setQuickType(null);
     }
 
+    // 적어 둔 값에 시간 줄이 없으면 시간을 안 정한 것이다. 창을 다시 열었을 때
+    // 체크가 풀려 있으면 10시~20시가 슬그머니 다시 붙는다.
+    if (!나머지.some((l) => /\d{1,2}\s*[:시]/.test(l))) set시간생략(true);
     if (첫줄.includes("격주")) setQBiweekly(true);
     const 주말괄호 = (첫줄.match(/\+\s*([^)]*)\)/) || [])[1] || "";
     const 주말머리 = /근무/.test(첫줄) ? 첫줄.split("근무")[0] : "";
@@ -165,7 +172,8 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
 
   // 주말에 나오면 시간 줄이 둘로 갈린다. 무엇이 평일 시간인지 알 수 있게 앞줄에도
   // '평일'을 적는다 — 시간 두 줄만 있으면 어느 게 어느 요일인지 모른다.
-  const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays, 둘째 = 둘째타임) => {
+  const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays, 둘째 = 둘째타임, 생략 = 시간생략) => {
+    if (생략) return "";
     // 둘째 타임은 어느 갈래에서든 마지막 줄로 따라붙는다. 여기 한 곳에 두면
     // 주 N일·지정 요일·근무시간·평일·주말이 모두 같은 꼴로 담긴다.
     //
@@ -219,14 +227,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   };
 
   const applyQuick = (type: QuickType, days: string[], startH: number, startM: number, endH: number, endM: number,
-    weekDays: number[] = qWeekDays, biweekly = qBiweekly, 주말 = q주말, 둘째 = 둘째타임) => {
+    weekDays: number[] = qWeekDays, biweekly = qBiweekly, 주말 = q주말, 둘째 = 둘째타임, 생략 = 시간생략) => {
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
     // 매장은 어느 요일인지보다 주 몇 일 나오는지가 먼저다 — 요일은 매주 돌아가며 바뀐다.
-    if (type === "hours") { setDraft(시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째)); return; }
+    if (type === "hours") { setDraft(시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째, 생략)); return; }
     if (type === "weeks") {
-      setDraft(`${요일줄(weekDays, biweekly)}\n${시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째)}`);
+      setDraft([요일줄(weekDays, biweekly), 시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째, 생략)].filter(Boolean).join("\n"));
       return;
     }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
@@ -234,13 +242,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     if (type === "custom") {
       // 고른 요일에서 주말을 뺀 수가 평일 수다 — 토·일만 고르면 「평일」 줄이 안 선다.
       const 평일수 = days.filter((d) => !["토", "일"].includes(d)).length;
-      setDraft(`${days.join(", ")}\n${시간줄(startH, startM, endH, endM, 주말, [평일수], 둘째)}`);
+      setDraft([days.join(", "), 시간줄(startH, startM, endH, endM, 주말, [평일수], 둘째, 생략)].filter(Boolean).join("\n"));
       return;
     }
     const label = type === "weekday" ? "평일(월~금)" : "주말(토~일)";
     // 요일과 시간을 한 줄에 붙이면 길어서 표·칸에서 줄바꿈 없이 한 줄로 늘어졌다
     // ("시간 줄바꿈 안되어 있어") — 요일 다음 줄에 시간을 따로 둔다.
-    setDraft(`${label}\n${시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째)}`);
+    setDraft([label, 시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째, 생략)].filter(Boolean).join("\n"));
   };
 
   const toggleQDay = (d: string) => {
@@ -315,7 +323,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                       // "10시~7시" 처럼 시간만 있는 값은 hours 로 정해지는데, 매장에는 그
                       // 항목이 없어 세 개가 한꺼번에 잠겼다. 푸는 길이 「켜진 항목을 다시
                       // 누르기」 하나뿐인데 그 항목이 화면에 없으니 빠져나올 수가 없었다.
-                      disabled={확정 !== null && 확정 !== r.type && quickRows.some((x) => x.type === 확정)}
+                      // 「협의」는 나머지를 잠그지 않는다. 요일을 협의로 두었다가 주 N일로
+                      // 바꾸는 일이 흔한데, 잠겨 있으면 협의를 먼저 풀어야 해서 두 번 누른다.
+                      disabled={확정 !== null && 확정 !== r.type && 확정 !== "nego" && quickRows.some((x) => x.type === 확정)}
                       onClick={() => {
                         // 풀 때는 주말 선택도 같이 비운다 — 남겨 두면 다른 항목을 열었을 때
                         // 고른 적 없는 토·일이 이미 골라진 채로 나온다.
@@ -357,8 +367,15 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             </label>
                           </div>
                         )}
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
-                          <select className="ws-hourSel" value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, fontSize: 13, color: "#555", cursor: "pointer" }}>
+                          <input type="checkbox" checked={시간생략}
+                            onChange={(e) => { const 켬 = e.target.checked; set시간생략(켬); set확정(r.type);
+                              applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, 둘째타임, 켬); }}
+                            style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                          시간은 협의
+                        </label>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", opacity: 시간생략 ? 0.45 : 1, pointerEvents: 시간생략 ? "none" : "auto" }}>
+                          <select className="ws-hourSel" disabled={시간생략} value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
                             {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                           </select>
                           <select className="ws-hourSel" value={qStartMin} onChange={(e) => { const m = Number(e.target.value); setQStartMin(m); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, m, qEnd, qEndMin); }}>
