@@ -1729,7 +1729,33 @@ export default function JobPostForm({
       if (Array.isArray(d.hiring_process) && d.hiring_process.length) setHiringProcess(d.hiring_process);
       // 직군(칩) — 서버가 공식 목록에 맞춰 골라줌
       if (["남성", "여성", "무관"].includes(String(d.gender_preference || ""))) setGenderPref(String(d.gender_preference));
-      if (Array.isArray(d.job_categories) && d.job_categories.length) setCategories(d.job_categories);
+      // 원문이 직급별로 급여를 주면 모집부문을 단계별 행으로 세운다.
+      //
+      // 셀렉미는 직종마다 신입·경력·실장 급여를 따로 준다. 예전에는 대표 급여 하나만
+      // 담아, 나머지 단계의 금액이 사라졌다. 같은 직종이 여러 줄이면 내부 키에 #2, #3 을
+      // 붙인다 — 화면·저장은 꼬리표를 뗀 이름으로 나간다.
+      const 직급행 = Array.isArray(d.positions) ? d.positions.filter((p: any) => p && p.category) : [];
+      if (직급행.length) {
+        const 키들: string[] = [];
+        const 값들: Record<string, any> = {};
+        for (const p of 직급행) {
+          const base = String(p.category);
+          const 이미 = 키들.filter((k) => k.replace(/#\d+$/, "") === base).length;
+          const key = 이미 ? `${base}#${이미 + 1}` : base;
+          키들.push(key);
+          값들[key] = {
+            ...emptyPos,
+            // 단계 이름은 시술단계(인턴·신입·경력·실장)를 따른다. CAREER_OPTIONS 는
+            // 「1년 이상」 같은 연차 목록이라, 그걸로 거르면 경력·실장이 빈칸이 된다.
+            career: ["인턴", "신입", "경력", "실장", "경력무관"].includes(p.career) ? p.career : "",
+            salary: typeof p.salary === "string" ? p.salary : "",
+            headcount: typeof p.headcount === "string" ? p.headcount : "",
+            salaryNego: p.salary_negotiable ? "open" : "",
+          };
+        }
+        setCategories(키들);
+        setPosMeta(값들);
+      } else if (Array.isArray(d.job_categories) && d.job_categories.length) setCategories(d.job_categories);
       // 우리 직군 목록에 없는 일이라도 원문에 적힌 말로 담는다.
       // 비워 두면 그 공고는 모집분야 없이 올라가 검색에도 안 걸린다.
       else if (String(d.job_category_raw || "").trim()) setCategories([String(d.job_category_raw).trim()]);

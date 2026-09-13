@@ -1154,6 +1154,36 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     }
   }
 
+  // 직급별 급여를 그대로 담는다.
+  //
+  // 셀렉미는 직종마다 단계별 조건을 준다 — 신입 280 · 경력 300 · 실장 320 처럼.
+  // 그런데 첫 조건 하나만 읽어, 나머지 단계의 급여가 통째로 사라졌다. 모집부문 표는
+  // 단계마다 한 줄을 담을 수 있으니 있는 그대로 옮긴다.
+  const 단계이름: Record<string, string> = {
+    newcomer: "신입", career: "경력", manager: "실장", intern: "인턴",
+  };
+  const positions: any[] = [];
+  for (const m of btBlock.matchAll(/"name":"([^"]*)","conditions":\[([\s\S]*?)\]\}/g)) {
+    const 직종 = mapSelectmeCat(m[1]) || m[1];
+    for (const c of m[2].matchAll(/\{([^{}]*)\}/g)) {
+      const f = c[1];
+      const ct = (f.match(/"careerType":"([^"]*)"/) || [])[1] || "";
+      const 협의 = /"isSalaryConsult":true/.test(f);
+      const 라벨 = (f.match(/"salaryLabel":"([^"]*)"/) || [])[1] || "";
+      const 원 = Number((f.match(/"salaryAmount":(\d+)/) || [])[1] || "") || 0;
+      const 인원 = Number((f.match(/"headCount":(\d+)/) || [])[1] || "") || 0;
+      const styp2 = (f.match(/"salaryType":"([^"]*)"/) || [])[1] || "";
+      positions.push({
+        category: 직종,
+        career: 단계이름[ct] || "",
+        headcount: 인원 ? `${인원}명` : "",
+        salary: 협의 ? "협의" : (라벨 ? (/month/.test(styp2) ? `월급 ${라벨}` : 라벨) : ""),
+        salary_amount: 원,
+        salary_negotiable: 협의,
+      });
+    }
+  }
+
   const sug = suggestCats(`${names.join(" ")} ${title}`);
   const job_categories = mappedCats.length ? mappedCats : sug.job_categories;
 
@@ -1200,6 +1230,7 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     ...(contact_phone ? { contact_phone } : {}),
     industry,
     always_open: true, // 셀렉미는 상시노출 위주(마감일 미표기)
+    ...(positions.length ? { positions } : {}),
     description,
     job_type: sug.job_type || "STORE", // 미용 샵이 대부분
     job_categories,
