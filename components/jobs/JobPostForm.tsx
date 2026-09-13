@@ -2676,7 +2676,12 @@ export default function JobPostForm({
       contact_email_hidden: 숨김.mail !== false,
       contact_kakao_hidden: 숨김.kakao !== false,
       contact_methods: contactMethods,
-      source_url: (picked?.url || parseUrl || ocrSourceUrl || "").trim() || null,
+      // 받은함에서 열고 들어온 것도 원문 주소를 싣는다.
+      //
+      // 지금까지는 검색으로 고른 것(picked)·주소를 친 것(parseUrl)·그림에서 읽은 것만
+      // 봤다. 목록에서 눌러 들어오면 그 셋이 다 비어, 등록해도 원문 주소가 안 남았다 —
+      // 외부공고 목록은 그 주소로 대조하므로 이미 등록한 공고가 계속 「미등록」으로 떴다.
+      source_url: (picked?.url || parseUrl || ocrSourceUrl || initialParsed?.source_url || "").trim() || null,
       // 배너는 어느 쪽에서 올렸든 이 공고에 실린다. 예전에는 기업회원일 때만
       // 공고에 싣고 관리자일 때는 업체 커버로만 넣었는데, 업체에 커버가 이미
       // 있으면 덮지 않아서 미리보기에 보이던 배너가 저장 뒤에 사라졌다.
