@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
     [companyId]
   )
 
-  // 아직 안 본 지원자 — 「미열람 지원자」 카드 제목에 쓴다.
+  // 아직 안 본 지원자 — 「미열람 지원서」 카드 제목에 쓴다.
   const unviewedRes = await pool.query(
     `SELECT COUNT(*)::int AS cnt
        FROM applications a JOIN job_postings jp ON jp.id = a.job_posting_id

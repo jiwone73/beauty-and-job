@@ -73,7 +73,7 @@ export default function AdminDashboardCompanies() {
             { label: "오늘 공고 등록", value: fmtNum(tab === "STORE" ? c?.today_jobs_store : tab === "OFFICE" ? c?.today_jobs_office : c?.today_jobs), href: "/admin/jobs?date=today" },
             { label: "유료 기업", value: c ? 퍼센트(유료) : "-", href: `/admin/members/companies?type=${tab}` },
             // 아래 둘은 손대야 풀린다 — 미열람은 기업을 찌르고, 승인 대기는 관리자가 누른다.
-            { label: "미열람 지원", value: fmtNum(미열람), href: "/admin/resumes/applications", 할일: true },
+            { label: "미열람 지원서", value: fmtNum(미열람), href: "/admin/resumes/applications", 할일: true },
             { label: "승인 대기", value: fmtNum(c?.pending_companies), href: "/admin/members/companies?status=pending", 할일: true },
           ];
         })().map((s) => {

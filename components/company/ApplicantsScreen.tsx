@@ -59,7 +59,7 @@ function ApplicantsContent() {
   const [applicants, setApplicants] = useState<CompanyApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  // 대시보드 「미열람 지원자」에서 넘어오면 그 칸이 골라진 채로 열린다(?status=미열람).
+  // 대시보드 「미열람 지원서」에서 넘어오면 그 칸이 골라진 채로 열린다(?status=미열람).
   const [statusFilter, setStatusFilter] = useState<string>(() => {
     const s = searchParams.get("status");
     return s && ["전체", "미열람", "열람", "면접", "합격"].includes(s) ? s : "전체";

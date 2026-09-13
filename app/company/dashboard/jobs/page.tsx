@@ -308,8 +308,8 @@ function CompanyJobsContent() {
     { label: "마감", value: String(counts.마감), unit: "건", status: "마감" },
     { label: "지원자", value: String(cntApplied), unit: "건", status: "지원자" },
     // 지금 손이 가야 할 공고 — 아직 안 본 지원자가 있는 곳. 고르면 그 공고들의
-    // 미열람 지원자만 펼쳐진다.
-    { label: "미열람 지원자", value: String(cntUnviewed), unit: "건", status: "미열람" },
+    // 미열람 지원서만 펼쳐진다.
+    { label: "미열람 지원서", value: String(cntUnviewed), unit: "건", status: "미열람" },
   ];
 
   // 모바일 상단 상태 통계 카드 (마감 임박 기준 필터)
@@ -320,7 +320,7 @@ function CompanyJobsContent() {
     { label: "마감임박", value: String(cntSoon), status: "마감임박" },
     { label: "마감", value: String(counts.마감), status: "마감" },
     { label: "지원자", value: String(cntApplied), status: "지원자" },
-    { label: "미열람 지원자", value: String(cntUnviewed), status: "미열람" },
+    { label: "미열람 지원서", value: String(cntUnviewed), status: "미열람" },
   ];
 
   // 왼쪽 사이드는 이 화면이 직접 그린다 — 고정 메뉴(공고·지원자 관리 / 공고 등록)는
