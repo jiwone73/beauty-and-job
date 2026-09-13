@@ -173,7 +173,10 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   // 주말에 나오면 시간 줄이 둘로 갈린다. 무엇이 평일 시간인지 알 수 있게 앞줄에도
   // '평일'을 적는다 — 시간 두 줄만 있으면 어느 게 어느 요일인지 모른다.
   const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays, 둘째 = 둘째타임, 생략 = 시간생략) => {
-    if (생략) return "";
+    // 시간을 안 정했다는 것도 값이다. 빈 줄을 돌려주면 조립부의 filter(Boolean)이
+    // 그 줄을 통째로 버려 「주 5일」만 남았다 — 시간을 협의하기로 한 사실이
+    // 등록폼에도 미리보기에도 안 보였고, 구직자는 시간을 아예 안 적은 공고로 읽었다.
+    if (생략) return "시간은 협의";
     // 둘째 타임은 어느 갈래에서든 마지막 줄로 따라붙는다. 여기 한 곳에 두면
     // 주 N일·지정 요일·근무시간·평일·주말이 모두 같은 꼴로 담긴다.
     //
