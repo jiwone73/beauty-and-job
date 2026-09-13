@@ -165,10 +165,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
 
   // 주말에 나오면 시간 줄이 둘로 갈린다. 무엇이 평일 시간인지 알 수 있게 앞줄에도
   // '평일'을 적는다 — 시간 두 줄만 있으면 어느 게 어느 요일인지 모른다.
-  const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays) => {
+  const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays, 둘째 = 둘째타임) => {
     // 둘째 타임은 어느 갈래에서든 마지막 줄로 따라붙는다. 여기 한 곳에 두면
     // 주 N일·지정 요일·근무시간·평일·주말이 모두 같은 꼴로 담긴다.
-    const 덧줄 = (v: string) => (둘째타임 ? `${v}\n${fmtT(q2시작, q2시작분)} ~ ${fmtT(q2끝, q2끝분)}` : v);
+    //
+    // 켬 여부를 인자로 받는다. 상태만 읽으면 「추가」를 누른 직후의 호출이 아직
+    // 켜기 전 값을 보고 있어 둘째 줄이 붙지 않았다 — 눌러도 아무 일도 안 일어났다.
+    const 덧줄 = (v: string) => (둘째 ? `${v}\n${fmtT(q2시작, q2시작분)} ~ ${fmtT(q2끝, q2끝분)}` : v);
     if (!주말.length) return 덧줄(`${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
     const 주말시간 = `${주말.join("·")} ${fmtT(q주말시작, q주말시작분)} ~ ${fmtT(q주말끝, q주말끝분)}`;
     // 평일에 안 나오는 자리(주말 알바)는 평일 시간을 적지 않는다.
@@ -216,14 +219,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   };
 
   const applyQuick = (type: QuickType, days: string[], startH: number, startM: number, endH: number, endM: number,
-    weekDays: number[] = qWeekDays, biweekly = qBiweekly, 주말 = q주말) => {
+    weekDays: number[] = qWeekDays, biweekly = qBiweekly, 주말 = q주말, 둘째 = 둘째타임) => {
     setQuickType(type);
     if (type === "nego") { setDraft("협의"); return; }
     if (type === "custom" && days.length === 0) { setDraft(""); return; }
     // 매장은 어느 요일인지보다 주 몇 일 나오는지가 먼저다 — 요일은 매주 돌아가며 바뀐다.
-    if (type === "hours") { setDraft(시간줄(startH, startM, endH, endM)); return; }
+    if (type === "hours") { setDraft(시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째)); return; }
     if (type === "weeks") {
-      setDraft(`${요일줄(weekDays, biweekly)}\n${시간줄(startH, startM, endH, endM)}`);
+      setDraft(`${요일줄(weekDays, biweekly)}\n${시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째)}`);
       return;
     }
     // "평일"만 적으면 구직자가 정확히 어떤 요일인지 다시 물어야 했다. 어느 요일인지
@@ -231,13 +234,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     if (type === "custom") {
       // 고른 요일에서 주말을 뺀 수가 평일 수다 — 토·일만 고르면 「평일」 줄이 안 선다.
       const 평일수 = days.filter((d) => !["토", "일"].includes(d)).length;
-      setDraft(`${days.join(", ")}\n${시간줄(startH, startM, endH, endM, 주말, [평일수])}`);
+      setDraft(`${days.join(", ")}\n${시간줄(startH, startM, endH, endM, 주말, [평일수], 둘째)}`);
       return;
     }
     const label = type === "weekday" ? "평일(월~금)" : "주말(토~일)";
     // 요일과 시간을 한 줄에 붙이면 길어서 표·칸에서 줄바꿈 없이 한 줄로 늘어졌다
     // ("시간 줄바꿈 안되어 있어") — 요일 다음 줄에 시간을 따로 둔다.
-    setDraft(`${label}\n${시간줄(startH, startM, endH, endM)}`);
+    setDraft(`${label}\n${시간줄(startH, startM, endH, endM, 주말, weekDays, 둘째)}`);
   };
 
   const toggleQDay = (d: string) => {
@@ -373,29 +376,29 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         {!둘째타임 ? (
                           <button type="button"
                             onClick={() => { set둘째타임(true); set확정(r.type);
-                              setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}
+                              applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}
                             style={{ marginTop: 6, border: "none", background: "none", color: "#582681", fontSize: 13,
                               fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
                             ＋ 시간대 추가
                           </button>
                         ) : (
                           <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
-                            <select className="ws-hourSel" value={q2시작} onChange={(e) => { setQ2시작(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                            <select className="ws-hourSel" value={q2시작} onChange={(e) => { setQ2시작(Number(e.target.value)); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                             </select>
-                            <select className="ws-hourSel" value={q2시작분} onChange={(e) => { setQ2시작분(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                            <select className="ws-hourSel" value={q2시작분} onChange={(e) => { setQ2시작분(Number(e.target.value)); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}>
                               {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                             </select>
                             <span style={{ color: "#555", fontSize: 13 }}>~</span>
-                            <select className="ws-hourSel" value={q2끝} onChange={(e) => { setQ2끝(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                            <select className="ws-hourSel" value={q2끝} onChange={(e) => { setQ2끝(Number(e.target.value)); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
                             </select>
-                            <select className="ws-hourSel" value={q2끝분} onChange={(e) => { setQ2끝분(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                            <select className="ws-hourSel" value={q2끝분} onChange={(e) => { setQ2끝분(Number(e.target.value)); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}>
                               {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                             </select>
                             <button type="button" aria-label="시간대 빼기"
                               onClick={() => { set둘째타임(false); set확정(r.type);
-                                setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}
+                                applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, false); }}
                               style={{ border: "none", background: "none", color: "#aaa", fontSize: 17, lineHeight: 1, cursor: "pointer", padding: "0 2px" }}>×</button>
                           </div>
                         )}
