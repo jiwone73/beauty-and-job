@@ -78,6 +78,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   const [q주말시작분, setQ주말시작분] = useState(0);
   const [q주말끝, setQ주말끝] = useState(16);
   const [q주말끝분, setQ주말끝분] = useState(0);
+  // 같은 요일에 타임이 둘인 자리가 있다 — 원문에 「오전타임 10시~7시 오후타임 12시~9시」
+  // 처럼 적힌 공고가 흔하다. 시간 고르개를 한 줄 더 얹어 그대로 담는다.
+  const [둘째타임, set둘째타임] = useState(false);
+  const [q2시작, setQ2시작] = useState(12);
+  const [q2시작분, setQ2시작분] = useState(0);
+  const [q2끝, setQ2끝] = useState(21);
+  const [q2끝분, setQ2끝분] = useState(0);
 
   useEffect(() => { const [d, n] = splitNego(value); setDraft(d); setNego(n); }, [value]);
 
@@ -139,13 +146,19 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
 
     // 시간 줄들. "평일 10:30 ~ 19:30" / "토 9:00 ~ 16:00" / "10:30 ~ 19:30"
     const 시분 = (t: string) => { const [h, m] = t.split(":").map(Number); return [h, m || 0] as const; };
+    let 평일채움 = false;
     for (const 줄 of 나머지) {
       const m = 줄.match(/(\d{1,2}:\d{2})\s*~\s*(\d{1,2}:\d{2})/);
       if (!m) continue;
       const [sh, sm] = 시분(m[1]);
       const [eh, em] = 시분(m[2]);
       if (/^(토|일)/.test(줄.trim())) { setQ주말시작(sh); setQ주말시작분(sm); setQ주말끝(eh); setQ주말끝분(em); }
-      else { setQStart(sh); setQStartMin(sm); setQEnd(eh); setQEndMin(em); }
+      else if (평일채움) {
+        // 주말도 아닌데 시간 줄이 또 나오면 둘째 타임이다. 안 살리면 창을
+        // 닫았다 열 때마다 오후 타임이 사라진다.
+        set둘째타임(true); setQ2시작(sh); setQ2시작분(sm); setQ2끝(eh); setQ2끝분(em);
+      }
+      else { setQStart(sh); setQStartMin(sm); setQEnd(eh); setQEndMin(em); 평일채움 = true; }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -153,11 +166,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
   // 주말에 나오면 시간 줄이 둘로 갈린다. 무엇이 평일 시간인지 알 수 있게 앞줄에도
   // '평일'을 적는다 — 시간 두 줄만 있으면 어느 게 어느 요일인지 모른다.
   const 시간줄 = (startH: number, startM: number, endH: number, endM: number, 주말 = q주말, weekDays: number[] = qWeekDays) => {
-    if (!주말.length) return `${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`;
+    // 둘째 타임은 어느 갈래에서든 마지막 줄로 따라붙는다. 여기 한 곳에 두면
+    // 주 N일·지정 요일·근무시간·평일·주말이 모두 같은 꼴로 담긴다.
+    const 덧줄 = (v: string) => (둘째타임 ? `${v}\n${fmtT(q2시작, q2시작분)} ~ ${fmtT(q2끝, q2끝분)}` : v);
+    if (!주말.length) return 덧줄(`${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}`);
     const 주말시간 = `${주말.join("·")} ${fmtT(q주말시작, q주말시작분)} ~ ${fmtT(q주말끝, q주말끝분)}`;
     // 평일에 안 나오는 자리(주말 알바)는 평일 시간을 적지 않는다.
-    if ((weekDays.length ? Math.min(...weekDays) : 0) - 주말.length <= 0) return 주말시간;
-    return `평일 ${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}\n${주말시간}`;
+    if ((weekDays.length ? Math.min(...weekDays) : 0) - 주말.length <= 0) return 덧줄(주말시간);
+    return 덧줄(`평일 ${fmtT(startH, startM)} ~ ${fmtT(endH, endM)}\n${주말시간}`);
   };
 
   // 「주 5일 · 평일 4일＋토」처럼 요일 구성을 적는다. 평일 일수는 주 N일에서
@@ -353,6 +369,36 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
                         </div>
+                        {/* 같은 요일에 타임이 둘인 자리(오전·오후 교대). 켜면 시간 줄이 하나 더 선다. */}
+                        {!둘째타임 ? (
+                          <button type="button"
+                            onClick={() => { set둘째타임(true); set확정(r.type);
+                              setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}
+                            style={{ marginTop: 6, border: "none", background: "none", color: "#582681", fontSize: 13,
+                              fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
+                            ＋ 시간대 추가
+                          </button>
+                        ) : (
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
+                            <select className="ws-hourSel" value={q2시작} onChange={(e) => { setQ2시작(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                              {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
+                            </select>
+                            <select className="ws-hourSel" value={q2시작분} onChange={(e) => { setQ2시작분(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                              {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
+                            </select>
+                            <span style={{ color: "#555", fontSize: 13 }}>~</span>
+                            <select className="ws-hourSel" value={q2끝} onChange={(e) => { setQ2끝(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                              {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
+                            </select>
+                            <select className="ws-hourSel" value={q2끝분} onChange={(e) => { setQ2끝분(Number(e.target.value)); set확정(r.type); setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}>
+                              {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
+                            </select>
+                            <button type="button" aria-label="시간대 빼기"
+                              onClick={() => { set둘째타임(false); set확정(r.type);
+                                setTimeout(() => applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin), 0); }}
+                              style={{ border: "none", background: "none", color: "#aaa", fontSize: 17, lineHeight: 1, cursor: "pointer", padding: "0 2px" }}>×</button>
+                          </div>
+                        )}
                         {/* 「주 5일」만으로는 평일 5일인지 평일 4일＋토인지 알 수 없다.
                             주말에 나오는지부터 묻고, 고르면 그 요일 시간 줄이 따라 선다 —
                             주말 시간이 다른 매장이 많아 어차피 갈려야 한다. */}
