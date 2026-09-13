@@ -50,6 +50,7 @@ type App = {
   applicant_sub_job: string | null;
   cover_letter: string | null;
   resume_snapshot: any | null;
+  viewed_at: string | null;
   sns_url: string | null;
   desired_salary_min: number | null;
   desired_salary_type: string | null;
@@ -101,14 +102,19 @@ function 지난날(d: string | null): number {
  * 미열람은 기업을 찔러야 하는 일이다. 빨강은 손이 가야 하는 둘에만 준다.
  * 사흘은 주말을 한 번 넘긴 셈이라, 그 전까지는 기다리는 중으로 본다.
  */
+function 열람(a: App): { 글: string; 때: string | null; 급함: boolean } {
+  if (a.status === "WITHDRAWN") return { 글: "-", 때: null, 급함: false };
+  if (a.status === "APPLIED") {
+    const n = 지난날(a.applied_at);
+    return { 글: "미열람", 때: null, 급함: n >= 3 };
+  }
+  return { 글: "열람", 때: a.viewed_at || null, 급함: false };
+}
+
 function 지금(a: App): { 글: string; 급함: boolean } {
   if (a.status === "WITHDRAWN") return { 글: "지원취소", 급함: false };
   if (!a.company_is_member && !a.linked_at) return { 글: "연결 대기", 급함: true };
-  if (a.status === "APPLIED") {
-    const n = 지난날(a.applied_at);
-    return { 글: n === 0 ? "오늘 지원" : `${n}일째 미열람`, 급함: n >= 3 };
-  }
-  if (a.status === "VIEWED") return { 글: "열람됨", 급함: false };
+  // 열람 여부는 옆 「열람」 열이 말한다 — 여기서는 손대야 할 것만 남긴다.
   return { 글: "", 급함: false };
 }
 
@@ -236,14 +242,15 @@ function AdminApplicationsPageInner() {
                 <th>희망지역</th>
                 <th>희망 급여</th>
                 <th>지원일</th>
+                <th>열람</th>
                 <th>등록 자료</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={7} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={8} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : filtered.map((a) => {
                 const age = calcAge(a.birth_date);
                 const gender = genderLabel(a.gender);
@@ -325,10 +332,26 @@ function AdminApplicationsPageInner() {
                       <div>{fmtDate(a.applied_at)}</div>
                       {(() => {
                         const z = 지금(a);
+                        if (!z.글) return null;
                         return (
                           <div style={{ marginTop: 3, fontSize: 13.5, color: z.급함 ? "#c0504d" : "#a5a5ab" }}>
                             {z.글}
                           </div>
+                        );
+                      })()}
+                    </td>
+                    {/* 열람 — 봤으면 언제 봤는지, 안 봤으면 「미열람」. 사흘 넘게
+                        안 본 것은 빨갛다(기업을 찔러야 하는 일이다). */}
+                    <td className="admin-td-date">
+                      {(() => {
+                        const v = 열람(a);
+                        return (
+                          <>
+                            <div style={{ color: v.급함 ? "#c0504d" : undefined }}>{v.글}</div>
+                            {v.때 && (
+                              <div style={{ marginTop: 3, fontSize: 13.5, color: "#a5a5ab" }}>{fmtDate(v.때)}</div>
+                            )}
+                          </>
                         );
                       })()}
                     </td>

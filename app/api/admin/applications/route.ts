@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
     const result = await client.query(`
       SELECT
         a.id, a.status, a.applied_at, a.cover_letter, a.resume_snapshot,
+        -- 기업이 언제 봤나. 지원일과 나란히 두면 며칠 묵혔는지가 한눈에 보인다.
+        a.viewed_at,
         u.name AS applicant_name,
         u.avatar_url,
         u.gender,
