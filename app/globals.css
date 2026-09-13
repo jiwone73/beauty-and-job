@@ -14338,7 +14338,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-proc-step button { border: none; background: none; padding: 0 2px; color: #c4c4c9;
   font-size: 13px; line-height: 1; cursor: pointer; }
 .jp-proc-step button:hover { color: var(--color-primary); }
-.jp-proc-ph { font-size: 13px; color: #555; margin-right: 2px; }
+/* 설명문이라 옆 ＋ 단추와 같은 색으로 흐리게 둔다. 적어 넣은 값이 아니라
+   무엇을 하는 자리인지 알려 주는 글이라, 단계 이름과 같은 진하기면 이미
+   담긴 줄로 읽힌다. 새 회색을 만들지 않고 ＋ 가 쓰던 색을 그대로 쓴다. */
+.jp-proc-ph { font-size: 13px; color: #8a8a90; margin-right: 2px; }
 .jp-proc-add { width: 34px; height: 34px; border: 1px dashed #d8d8de; border-radius: 8px;
   background: #fff; font-family: inherit; font-size: 15px; color: #8a8a90; cursor: pointer; line-height: 1; }
 .jp-proc-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
