@@ -607,6 +607,19 @@ export default function JobPostForm({
   //   화면 표시·저장은 항상 꼬리표를 뗀 원래 분야명으로 나간다.
   const baseCat = (c: string) => c.replace(/#\d+$/, "");
   const nextDupKey = (base: string, list: string[]) => { let i = 2; while (list.includes(`${base}#${i}`)) i++; return `${base}#${i}`; };
+  /** 저장할 때 화면 카드와 같은 차례로 늘어놓는다.
+   *
+   *  카드는 분야별로 묶어 보여 주는데(피부 신입·경력 → 왁싱 신입·경력 → …) 저장은
+   *  고른 차례 그대로 나갔다. 분야 셋을 먼저 고르고 나중에 경력 줄을 덧붙이면 배열이
+   *  「신입 셋 → 경력 셋」이 되어, 공고 상세와 미리보기가 그 차례로 떴다 — 폼과 다른
+   *  순서라 어느 것이 한 자리인지 읽히지 않았다.
+   *
+   *  분야가 처음 나온 차례를 지키고, 그 안에서만 원래 차례를 따른다. */
+  const 화면차례 = (list: string[]) => {
+    const 분야순: string[] = [];
+    list.forEach((c) => { const b = baseCat(c); if (!분야순.includes(b)) 분야순.push(b); });
+    return 분야순.flatMap((b) => list.filter((c) => baseCat(c) === b));
+  };
   const MAX_POS_ROWS = 10;
   // "추가 ＋"에서 고른 분야를 새 행으로 붙인다. 이미 있는 분야면 중복 행이 된다(신입/경력 분리 모집).
   // 한 부문의 모든 단계 행에 같은 값을 넣는다 — 고용형태·근무요일/시간·학력·성별은
@@ -2154,7 +2167,7 @@ export default function JobPostForm({
     // 모집부문 표(positions) — 부문마다 경력·고용형태·급여·근무요일/시간·인원·성별우대를
     // 따로 담는다. 같은 날 같은 시간에 다 뽑는 게 아니라 자리마다 다르다.
     // 필터·호환용 대표값은 첫 행에서 유도.
-    const positions = categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const positions = 화면차례(categories).map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     // 발행 시 꼭 있어야 하는 것은 모집분야뿐이다.
     //
     // 고용형태는 원문에 아예 언급이 없는 공고가 흔하다. 필수로 두면 관리자가 없는
@@ -2585,7 +2598,7 @@ export default function JobPostForm({
   const 저장값만들기 = () => {
     const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
     const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
-    const positions = categories.map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
+    const positions = 화면차례(categories).map((c) => { const r = 행읽기(c); return { category: baseCat(c), career: r.career.trim(), education: r.education.trim(), employment: r.employment.trim(), salary: r.salary.trim(), workDays: r.workDays.trim(), workTime: normWorkTime(r.workTime), headcount: r.headcount.trim(), gender: r.gender.trim(), location: r.location.trim(), shiftNego: r.shiftNego, salaryNego: r.salaryNego, shiftText: r.shiftText.trim(), extraShifts: r.extraShifts.map((s) => ({ days: s.days.trim(), time: normWorkTime(s.time) })).filter((s) => s.days || s.time) }; });
     const p0 = positions[0] || { career: "", education: "", employment: "", headcount: "", workDays: "", workTime: "", gender: "" };
     const primaryHeadcount = parseInt((p0.headcount || "").replace(/[^0-9]/g, "")) || null;
     const careers = positions.map((p) => p.career).filter(Boolean);
