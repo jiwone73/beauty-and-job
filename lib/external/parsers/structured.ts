@@ -1141,10 +1141,15 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     headcount = Number((firstCond.match(/"headCount":(\d+)/) || [])[1] || "") || 0;
     if (/"isSalaryConsult":true/.test(firstCond)) { salary_negotiable = true; salary = "협의"; }
     else {
-      const amt = (firstCond.match(/"amount":"([^"]*)"/) || [])[1] || "";
+      // 셀렉미가 주는 칸은 salaryLabel("280만원")과 salaryAmount(2800000)다.
+      // 예전에는 "amount" 라는 없는 칸을 찾아, 금액이 적힌 공고도 빈 값으로 들어왔다 —
+      // 받은함에 담긴 56건 중 금액이 들어온 것이 하나도 없었다.
+      const amt = (firstCond.match(/"salaryLabel":"([^"]*)"/) || [])[1] || "";
+      const won = Number((firstCond.match(/"salaryAmount":(\d+)/) || [])[1] || "") || 0;
       const styp = (firstCond.match(/"salaryType":"([^"]*)"/) || [])[1] || "";
       salary_type = /month/.test(styp) ? "MONTHLY" : /year|annual/.test(styp) ? "ANNUAL" : /hour/.test(styp) ? "HOURLY" : /week/.test(styp) ? "WEEKLY" : "";
-      salary_amount = Number((amt.match(/([\d,]+)/) || [])[1]?.replace(/,/g, "") || "") || 0;
+      // 금액은 원 단위 값을 그대로 쓴다. 라벨에서 숫자만 긁으면 「280만원」이 280이 된다.
+      salary_amount = won || Number((amt.match(/([\d,]+)/) || [])[1]?.replace(/,/g, "") || "") || 0;
       salary = amt ? (salary_type === "MONTHLY" ? `월급 ${amt}` : amt) : "";
     }
   }
