@@ -1,5 +1,6 @@
 "use client";
 import { forwardRef, type ReactNode } from "react";
+import { 전형절차이름, 근무지이름, 담당자이름 } from "@/lib/constants";
 import Link from "next/link";
 import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
@@ -285,7 +286,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const locationSection = hasMap ? (
     <div className="jd-subblock" key="location">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#555", flexShrink: 0 }} />근무지역</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#555", flexShrink: 0 }} />{근무지이름}</h2>
       {/* 근무지가 여럿이면 다 적는다. 폼의 「근무지 추가」로 넣은 지점이 여태
           지원 창에서 고를 때만 보여, 폼과 공고가 갈렸다. 지도는 첫 주소로 그린다. */}
       {[job.companyAddress, ...(((job as any).workLocations || []) as any[])
@@ -307,7 +308,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // 지원 안내: 담당자 · 지원방법 · 채용 절차 (라벨 + 값 한 줄)
   const contactInner = hasContact ? (
     <div className="jd-guide-row">
-      <span className="jd-guide-label">채용담당자</span>
+      <span className="jd-guide-label">{담당자이름}</span>
       <span>{[job.contactName || "인사담당", 전화꼴(job.contactPhone), job.contactEmail,
               job.contactKakao ? `카카오톡 ${job.contactKakao}` : ""].filter(Boolean).join("   ·   ")}</span>
     </div>
@@ -326,7 +327,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     <div>
       {job.process?.length > 0 && (
         <div className="jd-guide-row">
-          <span className="jd-guide-label">채용 절차</span>
+          <span className="jd-guide-label">{전형절차이름}</span>
           <span>{job.process.join("   →   ")}</span>
         </div>
       )}

@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Buildin
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { 공고모양 } from "@/lib/jobShape";
+import { 전형절차이름, 근무지이름, 담당자이름 } from "@/lib/constants";
 import { formatSalaryWon } from "@/lib/salary";
 import CategoryPickPopover from "@/components/jobs/CategoryPickPopover";
 import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
@@ -1357,7 +1358,7 @@ export default function JobPostForm({
     const v = processCustom.trim();
     if (!v) return;
     if (processDraft.includes(v)) { setProcessCustom(""); return; }
-    if (processDraft.length >= 8) { alert("채용 절차는 최대 8단계까지 추가할 수 있어요."); return; }
+    if (processDraft.length >= 8) { alert(`${전형절차이름}는 최대 8단계까지 추가할 수 있어요.`); return; }
     setProcessDraft([...processDraft, v]);
     setProcessCustom("");
   };
@@ -3798,7 +3799,7 @@ export default function JobPostForm({
           {/* 카드 안에 '근무지역' 제목을 또 달면 섹션 이름과 같은 말이 위아래로 겹친다.
               필수 표시는 섹션 제목이 받고, 추가 단추는 그 줄 오른쪽 끝에 선다. */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 20 }}>
-            <h2 id="jp-region" className="jobpost-section-title" style={{ margin: 0 }}>근무지{reqStar}</h2>
+            <h2 id="jp-region" className="jobpost-section-title" style={{ margin: 0 }}>{근무지이름}{reqStar}</h2>
             <button type="button" onClick={() => setExtraLocations((prev) => [...prev, { address: "", detail: "" }])}
               title="근무지를 하나 더 넣어요" className="jp-add-btn">
               <MapPinPlus size={14} />근무지 추가</button>
@@ -3899,7 +3900,7 @@ export default function JobPostForm({
               필수는 아니다 — 비워 두면 그대로 등록된다. */}
           {(
             <>
-              <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>전형절차</h2>
+              <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>{전형절차이름}</h2>
               <div className="company-card" style={{ overflow: "visible" }}>
                 <div className="admin-form-body">
                   <div className="jp-proc">
@@ -4047,7 +4048,7 @@ export default function JobPostForm({
 
           {/* 담당자 정보 — 지원방법과 묶지 않는다. 매장정보에 적어 둔 연락처를
               그대로 가져오고, 이 공고만 다르면 여기서 고친다. */}
-          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>담당자 정보{reqStar}</h2>
+          <h2 className="jobpost-section-title" style={{ marginTop: 20 }}>{담당자이름}{reqStar}</h2>
           <div className="company-card" style={{ overflow: "visible" }}>
             <div className="admin-form-body">
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "repeat(2, minmax(0, 1fr))", gap: isMobile ? "0" : "6px 28px" }}>
