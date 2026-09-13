@@ -176,8 +176,21 @@ function parseHairinjob(html: string): StructuredResult | null {
   // 훑으면 다른 자리에 적힌 시간까지 끌어와 한 타임짜리 공고가 두 타임으로 둔갑한다 —
   // 실제로 헤어인잡 한 공고에 「10:00~8:00」과 「10:00~7:00」이 따로 적혀 있었다.
   // 항목이 비어 있으면 예전처럼 페이지에서 첫 하나만 쓴다.
-  const 시간칸 = liValue("근무시간") || liValue("근무 시간");
-  const work_time = flexTime ? "협의"
+  // 헤어인잡의 근무시간은 li 항목이 아니라 「분야·급여·근무시간」 표 안에 있다.
+  // liValue 로만 찾으면 늘 비어서, 페이지 전문에 흩어진 엉뚱한 시간을 끌어왔다.
+  // 이 공고의 정답은 표에 적힌 「협의후결정」이다.
+  const 시간표칸 = (() => {
+    const t = html.match(/<th[^>]*>\s*근무시간\s*<\/th>([\s\S]{0,3000}?)<\/table>/i);
+    if (!t) return "";
+    const 줄 = [...t[1].matchAll(/<tr>([\s\S]*?)<\/tr>/gi)];
+    for (const r of 줄) {
+      const 칸 = [...r[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((c) => strip(c[1]));
+      if (칸.length) return 칸[칸.length - 1];
+    }
+    return "";
+  })();
+  const 시간칸 = 시간표칸 || liValue("근무시간") || liValue("근무 시간");
+  const work_time = (flexTime || /협의|조율|선택/.test(시간칸)) ? "협의"
     : (parseWorkTimes(시간칸, 2) || parseWorkTimes(pageText, 1));
   // 근무요일: 유동형이면 협의. (구체 요일이 명시된 경우는 드물고 '휴무 요일' 오인 위험이 커서, 확실한 유동형만 채운다)
   const work_days = flexDays ? "협의" : "";
