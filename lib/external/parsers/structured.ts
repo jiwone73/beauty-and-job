@@ -1210,7 +1210,24 @@ function parseWork24(html: string): StructuredResult | null {
   const V = (k: string) => strip(표[k] || "");
 
   // 직무내용 — 표가 아니라 접히는 상자 안에 있다.
-  const 직무 = strip((html.match(/직무내용<\/strong>([\s\S]{0,3000}?)<\/div>/i) || [])[1] || "");
+  // 직무내용만 줄바꿈을 살려서 읽는다.
+  //
+  // 원문에는 항목마다 <br> 이 들어 있는데, 태그를 공백으로 바꾸는 strip 이 그걸
+  // 통째로 뭉갰다. 그래서 「-모집분야: … -근무조건: … -급여: …」가 한 문단으로
+  // 이어 붙어, 읽으려면 사람이 손으로 줄을 나눠야 했다. 원문에 없던 줄을 만드는
+  // 것이 아니라 원문에 있던 줄을 지우지 않는 것이다.
+  //
+  // strip 자체는 건드리지 않는다 — 표 라벨·근무시간·마감일이 같이 쓰는데,
+  // 거기에 줄바꿈이 끼면 한 줄이어야 할 값이 갈라진다.
+  const 줄살려strip = (raw: string) => {
+    const 줄 = dec(raw.replace(/<\s*br\s*\/?>/gi, "\n")
+      .replace(/<\/\s*(?:p|div|li|tr)\s*>/gi, "\n")
+      .replace(/<[^>]+>/g, " "))
+      .replace(/&middot;/g, "·").replace(/&[a-z]{2,8};/gi, " ")
+      .split("\n").map((l) => l.replace(/\s+/g, " ").trim());
+    return 줄.filter(Boolean).join("\n").trim();
+  };
+  const 직무 = 줄살려strip((html.match(/직무내용<\/strong>([\s\S]{0,3000}?)<\/div>/i) || [])[1] || "");
 
   // 아이콘 목록에서 「제공하는 것」만 고른다. disable 이 붙은 <li> 는 통째로 버린다.
   const 켜진항목 = (제목: string): string[] => {
