@@ -98,8 +98,10 @@ function AdminJobNewForm() {
     return { success: false, error: data.error?.message };
   };
 
+  // 사이드에서 켜질 항목. 붙여넣기로 들어오면(?paste=1) 「맨사 / 뷰앤잡」이다 —
+  // 그 항목의 주소가 바로 이 화면이라, jobs-new 를 넘기면 사이드가 아무것도 안 켜졌다.
   return (
-    <AdminLayout activeMenu={from ? `import-${from}` : "jobs-new"}
+    <AdminLayout activeMenu={from ? `import-${from}` : paste ? "import-cafe" : "jobs-new"}
       pageTitle={editId ? "공고 수정" : "공고 등록"}>
       {from && 소스이름[from] && (
         <div style={{ marginBottom: 10 }}>
