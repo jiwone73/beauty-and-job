@@ -1721,6 +1721,17 @@ export default function JobPostForm({
           ? `📞 본문에서 연락처를 찾아 ‘채용 담당자’에 넣었어요 (${c.join(" · ")}). 지원방식(관리자 대행·이메일 중계·외부 링크)을 이 연락처 기준으로 확인해 정하세요.`
           : "");
       }
+      // 원문 주소는 칸에 남긴다. 목록에서 골라 들어오면 「불러오기」를 누른 적이
+      // 없어 칸이 비어 있었다 — 어디서 가져온 공고인지 화면에서 사라지고,
+      // 옆의 「원문 ↗」도 뜨지 않아 원문과 대조할 길이 없었다.
+      if (typeof d.source_url === "string" && d.source_url.trim()) {
+        const u = d.source_url.trim();
+        setParseUrl(u);
+        // 칸도 이 공고 주소로 갈아끼운다. 앞 값을 살려 두면 임시저장에 남아 있던
+        // 다른 소스의 주소가 그대로 보인다 — 셀렉미를 열었는데 헤어인잡 주소가 떴다.
+        setFindQuery(u);
+        setImportMode("url");
+      }
       if (d.ai_parsed) {
         setParseMsg("✓ 불러왔어요. 직군·경력·지역·급여·근무조건·이미지까지 자동 반영했어요. 값만 확인하고 등록하세요.");
       } else {
@@ -2917,8 +2928,8 @@ export default function JobPostForm({
               <input className="admin-form-input" style={{ flex: 1 }} placeholder="회사명, 또는 헤어인잡·잡코리아·알바몬·사람인·뷰티잡·셀렉미 공고 주소"
                 value={findQuery} onChange={(e) => { setFindQuery(e.target.value); if (picked && e.target.value !== picked.title) setPicked(null); }}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); runImport(); } }} />
-              {picked && (
-                <a href={picked.url} target="_blank" rel="noopener noreferrer" title="선택한 공고 원문을 새 탭으로 열기"
+              {(picked?.url || parseUrl.trim()) && (
+                <a href={picked?.url || parseUrl.trim()} target="_blank" rel="noopener noreferrer" title="이 공고의 원문을 새 탭으로 열기"
                   style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", padding: "0 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#582681", fontSize: 15, fontWeight: 400, textDecoration: "none", whiteSpace: "nowrap" }}>원문 ↗</a>
               )}
               <button type="button" onClick={runImport} disabled={finding || parsing}
