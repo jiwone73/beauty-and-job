@@ -1,6 +1,6 @@
 "use client";
 import { forwardRef, type ReactNode } from "react";
-import { 전형절차이름, 근무지이름, 담당자이름 } from "@/lib/constants";
+import { 전형절차이름, 근무지이름, 담당자이름, 모집부문이름 } from "@/lib/constants";
 import Link from "next/link";
 import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
@@ -259,9 +259,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
       </>)}
     </div>
   ) : null;
-  // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기(근무 조건 제목 블록)는 텍스트형 공고에서만 노출.
-  // 등록 화면에 없는 제목이라, 담을 값이 하나도 없으면 아예 세우지 않는다 —
-  // 빈 칸을 '협의'로 채우던 자리다.
+  // 모집부문 표가 있으면 근무기간·복리후생은 표 아래로 합쳐 넣으므로, 여기는 표가 없는 옛 공고에서만 선다.
+  // 제목은 폼과 같은 말을 쓴다 — 예전에는 「근무 조건」이라 적었는데 등록 화면에 없는 말이었다.
+  // 담을 값이 하나도 없으면 아예 세우지 않는다 — 빈 칸을 '협의'로 채우던 자리다.
   const 근무조건줄: [string, string][] = positions.length === 0
     ? ([
         ["고용형태", job.employType || ""],
@@ -272,7 +272,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     : [];
   const workCondSection = 근무조건줄.some(([, v]) => v.trim()) ? (
     <div className="jd-subblock" key="workcond">
-      <h2 className="job-detail-subtitle">근무 조건</h2>
+      <h2 className="job-detail-subtitle">{모집부문이름}</h2>
       <div className="job-detail-company-info">
         {근무조건줄.map(([k, v]) => (
           <div key={k} className="job-detail-company-row" style={k === "복리후생" ? { alignItems: "flex-start" } : undefined}>

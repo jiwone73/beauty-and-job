@@ -37,10 +37,7 @@ export function 공고모양(j: any) {
         // 등록폼이 옛 공고를 열 때와 똑같은 순서·규칙으로 합친다(상세합치기).
         // 폼에 없는 칸이 공고에만 따로 서면 「폼과 실제가 다르다」가 된다.
         description: 상세합치기(j.responsibilities, j.description, j.requirements, j.preferred_qualifications),
-        requirements: [],
-        preferreds: [],
         benefits: (Array.isArray(j.benefit_tags) && j.benefit_tags.length) ? j.benefit_tags : (j.benefits ? j.benefits.split('\n').filter(Boolean) : []),
-        responsibilities: [],
         process: j.hiring_process || [],
         logo_url: j.company?.logo_url,
         // 공고에 지정한 상단 이미지가 있으면 그걸 쓰고, 없으면(null) 기업정보 커버로 폴백.
