@@ -6,6 +6,7 @@ import { ALBA_IDLE_GAP_MIN, formatMinutes } from "@/lib/alba";
 import { ExternalLink, Plus, Trash2, RefreshCw } from "lucide-react";
 
 type Week = {
+  targetMinutes?: number; reliefMinutes?: number;
   index: number; start: string; end: string;
   minutes: number; postings: number;
   isCurrent: boolean; isFuture: boolean;
@@ -190,7 +191,10 @@ export default function AlbaPage() {
           </thead>
           <tbody>
             {data.weeks.map((w) => {
-              const done = w.minutes >= weeklyTargetMin;
+              // 그 주의 목표로 본다. 감면해 준 주를 이번 주 목표로 재면 미달로 찍힌다.
+              const wt = w.targetMinutes ?? weeklyTargetMin;
+              const done = w.minutes >= wt;
+              const 감면 = w.reliefMinutes || 0;
               return (
                 <tr key={w.index} style={{ borderTop: "1px solid #f2f2f2", background: w.isCurrent ? "#f7f7f8" : undefined }}>
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
@@ -201,13 +205,15 @@ export default function AlbaPage() {
                   <td style={{ padding: "10px 14px", textAlign: "right" }}>{w.postings || "—"}</td>
                   <td style={{ padding: "10px 14px", whiteSpace: "nowrap" }}>
                     {w.isFuture ? <span style={{ color: "#555" }}>예정</span>
-                      : done ? <span style={{ color: "#0f6e56" }}>달성</span>
-                      : w.isCurrent ? <span style={{ color: "#582681" }}>{formatMinutes(weeklyTargetMin - w.minutes)} 남음</span>
+                      : done ? <span style={{ color: "#0f6e56" }}>
+                          달성{감면 > 0 && <span style={{ color: "#555" }}> · 목표 {formatMinutes(wt)}으로 줄인 주</span>}
+                        </span>
+                      : w.isCurrent ? <span style={{ color: "#582681" }}>{formatMinutes(wt - w.minutes)} 남음</span>
                       : data.blockedWeeks?.[w.index] ? <span style={{ color: "#555" }}>
-                          미달 {formatMinutes(weeklyTargetMin - w.minutes)} · {data.blockedWeeks[w.index]}
+                          미달 {formatMinutes(wt - w.minutes)} · {data.blockedWeeks[w.index]}
                         </span>
                       : <span style={{ color: "#e74c3c" }}>
-                          미달 {formatMinutes(weeklyTargetMin - w.minutes)} · 목표 +{data.penaltyPerShortfallHours}시간
+                          미달 {formatMinutes(wt - w.minutes)} · 목표 +{data.penaltyPerShortfallHours}시간
                         </span>}
                   </td>
                 </tr>

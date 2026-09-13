@@ -95,6 +95,10 @@ export type AlbaWeek = {
   end: string;        // 일요일
   minutes: number;    // 그 주 근무 분
   postings: number;   // 그 주 등록한 공고 수
+  // 그 주에 채워야 할 분. 주마다 다를 수 있어(감면) 값을 주에 실어 보낸다 —
+  // 화면이 이번 주 목표를 지난 주에도 갖다 대면, 미리 줄여 준 주가 미달로 찍힌다.
+  targetMinutes: number;
+  reliefMinutes: number; // 그 주에 줄여 준 분 (0이면 감면 없음)
   isCurrent: boolean;
   isFuture: boolean;
 };
@@ -144,6 +148,8 @@ export function buildWeeks(
       end,
       minutes,
       postings,
+      targetMinutes: weekTargetMinutes(i),
+      reliefMinutes: ALBA_WEEK_RELIEF_MIN[i] || 0,
       isCurrent: today >= start && today <= end,
       isFuture: today < start,
     });
