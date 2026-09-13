@@ -13,7 +13,15 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /** 못 고치는 칸. 지원 창처럼 사실은 그대로 두고 서술형만 여는 자리에 쓴다.
  *  누를 수 없다는 것이 보여야 하므로 단추가 아니라 글자로 선다. */
-function 잠긴칸(value: string, placeholder: string, 여러줄?: boolean) {
+function 잠긴칸(value: string, placeholder: string, 여러줄?: boolean, 필수?: boolean) {
+  // 못 고치는 칸이 비어 있으면 아예 그리지 않는다.
+  //
+  // 지원서는 빼기만 되는 자리다. 그런데 빈 칸에 자리글("시험명 │ 점수/등급 │
+  // 취득 년월")이 글자로 남아, 적지도 않은 것이 적힌 것처럼 줄을 차지했다.
+  // 누를 수도 없으니 치우지도 못한다.
+  //
+  // 필수 칸은 비어도 남긴다 — 무엇이 빠졌는지는 보여야 채우러 갈 수 있다.
+  if (!value && !필수) return null;
   return (
     <span className={`if-slot if-lock ${value ? "on" : ""} ${여러줄 ? "if-slot-multi" : ""}`}>
       {value || placeholder}
@@ -74,7 +82,7 @@ export function InlineText({
 
   const 마치기 = () => { set고치는중(false); if (초안.trim() !== value) onSave(초안.trim()); };
 
-  if (잠금) return 잠긴칸(value, placeholder, 여러줄);
+  if (잠금) return 잠긴칸(value, placeholder, 여러줄, required);
 
   if (고치는중 && 여러줄) {
     return (
@@ -145,7 +153,7 @@ export function InlineSuggest<T extends { 이름: string }>({
     return () => document.removeEventListener("mousedown", 밖);
   });
 
-  if (잠금) return 잠긴칸(value, placeholder);
+  if (잠금) return 잠긴칸(value, placeholder, undefined, required);
 
   if (!고치는중) {
     return (
@@ -201,7 +209,7 @@ export function InlinePick({
     return () => { document.removeEventListener("mousedown", 밖); window.removeEventListener("keydown", 키); };
   }, [열림]);
 
-  if (잠금) return 잠긴칸(value, placeholder);
+  if (잠금) return 잠긴칸(value, placeholder, undefined, required);
 
   return (
     <span className="if-wrap" ref={감싸개}>
@@ -341,7 +349,7 @@ export function InlineYM({
 
   const 연들 = Array.from({ length: 40 }, (_, i) => 올해 - i);
 
-  if (잠금) return 잠긴칸(value, placeholder);
+  if (잠금) return 잠긴칸(value, placeholder, undefined, required);
 
   return (
     <span className="if-wrap" ref={감싸개}>
