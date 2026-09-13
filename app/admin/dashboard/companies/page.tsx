@@ -54,17 +54,44 @@ export default function AdminDashboardCompanies() {
         ))}
       </div>
 
-      <div className="co-counts" style={{ ["--co-counts-n" as any]: 3 }}>
-        {[
-          { label: "기업회원", value: fmtNum(tab === "STORE" ? c?.store_companies : tab === "OFFICE" ? c?.office_companies : c?.total_companies), href: `/admin/members/companies?type=${tab}` },
-          { label: "오늘 신규 가입", value: fmtNum(tab === "STORE" ? c?.today_companies_store : tab === "OFFICE" ? c?.today_companies_office : c?.today_companies), href: `/admin/members/companies?type=${tab}&date=today` },
-          { label: "오늘 공고 등록", value: fmtNum(tab === "STORE" ? c?.today_jobs_store : tab === "OFFICE" ? c?.today_jobs_office : c?.today_jobs), href: "/admin/jobs?date=today" },
-        ].map((s) => (
-          <Link key={s.label} href={s.href} className="co-count" style={{ textDecoration: "none" }}>
-            <span className="co-count-label">{s.label}</span>
-            <span className="co-count-value">{s.value}</span>
-          </Link>
-        ))}
+      {/* 카운터 — 개인회원 현황과 같은 골격이다. 모수 → 비율 → 오늘 셋 → 돈 →
+          손대야 할 것 둘. 어느 칸에서 숫자가 떨어지는지가 곧 고칠 자리다.
+          「진행중 공고」는 대시보드 요약 카드에 있어 여기 두지 않는다. */}
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: 8 }}>
+        {(() => {
+          const 모수 = Number(tab === "STORE" ? c?.store_companies : tab === "OFFICE" ? c?.office_companies : c?.total_companies) || 0;
+          const 공고낸곳 = Number(tab === "STORE" ? c?.companies_with_job_store : tab === "OFFICE" ? c?.companies_with_job_office : c?.companies_with_job) || 0;
+          const 유료 = Number(tab === "STORE" ? c?.paid_companies_store : tab === "OFFICE" ? c?.paid_companies_office : c?.paid_companies) || 0;
+          const 미열람 = Number(tab === "STORE" ? c?.unviewed_applications_store : tab === "OFFICE" ? c?.unviewed_applications_office : c?.unviewed_applications) || 0;
+          const 퍼센트 = (n: number) => (모수 ? `${Math.round((n / 모수) * 100)}%` : "-");
+          return [
+            { label: "총 기업회원", value: fmtNum(모수), href: `/admin/members/companies?type=${tab}` },
+            // 가입만 하고 공고를 안 올리는 곳이 기업 쪽에서 가장 크게 새는 구멍이다.
+            { label: "공고 등록률", value: c ? 퍼센트(공고낸곳) : "-", href: "/admin/jobs" },
+            { label: "오늘 신규 가입", value: fmtNum(tab === "STORE" ? c?.today_companies_store : tab === "OFFICE" ? c?.today_companies_office : c?.today_companies), href: `/admin/members/companies?type=${tab}&date=today` },
+            { label: "오늘 로그인", value: fmtNum(c?.today_company_logins) },
+            { label: "오늘 공고 등록", value: fmtNum(tab === "STORE" ? c?.today_jobs_store : tab === "OFFICE" ? c?.today_jobs_office : c?.today_jobs), href: "/admin/jobs?date=today" },
+            { label: "유료 기업", value: c ? 퍼센트(유료) : "-", href: `/admin/members/companies?type=${tab}` },
+            // 아래 둘은 손대야 풀린다 — 미열람은 기업을 찌르고, 승인 대기는 관리자가 누른다.
+            { label: "미열람 지원", value: fmtNum(미열람), href: "/admin/resumes/applications", 할일: true },
+            { label: "승인 대기", value: fmtNum(c?.pending_companies), href: "/admin/members/companies?status=pending", 할일: true },
+          ];
+        })().map((s) => {
+          const 속 = (
+            <>
+              <span className="co-count-label">{s.label}</span>
+              <span className="co-count-value">{s.value}</span>
+            </>
+          );
+          const 켬 = (s as any).할일 && Number(String(s.value).replace(/[^0-9]/g, "") || 0) > 0;
+          return s.href ? (
+            <Link key={s.label} href={s.href} className={`co-count${켬 ? " todo" : ""}`} style={{ textDecoration: "none" }}>
+              {속}
+            </Link>
+          ) : (
+            <div key={s.label} className="co-count" style={{ cursor: "default" }}>{속}</div>
+          );
+        })}
       </div>
 
       {/* 추이 2개 */}

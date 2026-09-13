@@ -31,15 +31,39 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.status = 'PUBLISHED' AND u.job_type = 'STORE') AS published_resumes_store,
         (SELECT COUNT(*) FROM applications a JOIN job_postings jp ON jp.id = a.job_posting_id WHERE (a.applied_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date AND jp.job_type = 'OFFICE') AS today_applications_office,
         (SELECT COUNT(*) FROM applications a JOIN job_postings jp ON jp.id = a.job_posting_id WHERE (a.applied_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date AND jp.job_type = 'STORE') AS today_applications_store,
-        (SELECT COUNT(*) FROM companies) AS total_companies,
-        (SELECT COUNT(*) FROM companies WHERE company_type = 'STORE') AS store_companies,
-        (SELECT COUNT(*) FROM companies WHERE company_type = 'OFFICE') AS office_companies,
+        (SELECT COUNT(*) FROM companies WHERE is_member = true) AS total_companies,
+        (SELECT COUNT(*) FROM companies WHERE is_member = true AND company_type = 'STORE') AS store_companies,
+        (SELECT COUNT(*) FROM companies WHERE is_member = true AND company_type = 'OFFICE') AS office_companies,
         (SELECT COUNT(*) FROM companies WHERE company_type = 'BOTH') AS both_companies,
         (SELECT COUNT(*) FROM companies WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date) AS today_companies,
         (SELECT COUNT(*) FROM companies WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date AND company_type = 'STORE') AS today_companies_store,
         (SELECT COUNT(*) FROM companies WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date AND company_type = 'OFFICE') AS today_companies_office,
         (SELECT COUNT(*) FROM companies WHERE (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date AND company_type = 'BOTH') AS today_companies_both,
-        (SELECT COUNT(*) FROM companies WHERE status = 'PENDING') AS pending_companies,
+        (SELECT COUNT(*) FROM companies WHERE is_member = true AND status = 'PENDING') AS pending_companies,
+        -- 공고를 한 번이라도 올린 회원기업. 가입만 하고 마는 곳이 기업 쪽에서 가장
+        -- 크게 새는 구멍이라, 이 비율이 그 화면의 첫 숫자가 된다.
+        (SELECT COUNT(DISTINCT c.id) FROM companies c JOIN job_postings j ON j.company_id = c.id
+          WHERE c.is_member = true) AS companies_with_job,
+        (SELECT COUNT(DISTINCT c.id) FROM companies c JOIN job_postings j ON j.company_id = c.id
+          WHERE c.is_member = true AND c.company_type = 'STORE') AS companies_with_job_store,
+        (SELECT COUNT(DISTINCT c.id) FROM companies c JOIN job_postings j ON j.company_id = c.id
+          WHERE c.is_member = true AND c.company_type = 'OFFICE') AS companies_with_job_office,
+        -- 유료 — 상용화 뒤에는 이 비율이 곧 매출이다. 기간이 오늘까지 살아 있으면 유료다.
+        (SELECT COUNT(*) FROM companies WHERE is_member = true
+          AND paid_until >= (now() AT TIME ZONE 'Asia/Seoul')::date) AS paid_companies,
+        (SELECT COUNT(*) FROM companies WHERE is_member = true AND company_type = 'STORE'
+          AND paid_until >= (now() AT TIME ZONE 'Asia/Seoul')::date) AS paid_companies_store,
+        (SELECT COUNT(*) FROM companies WHERE is_member = true AND company_type = 'OFFICE'
+          AND paid_until >= (now() AT TIME ZONE 'Asia/Seoul')::date) AS paid_companies_office,
+        -- 기업이 아직 안 본 지원. 구직자가 떠나는 가장 큰 이유라 관리자가 찔러야 한다.
+        (SELECT COUNT(*) FROM applications WHERE status = 'APPLIED') AS unviewed_applications,
+        (SELECT COUNT(*) FROM applications a JOIN job_postings j ON j.id = a.job_posting_id
+          WHERE a.status = 'APPLIED' AND j.job_type = 'STORE') AS unviewed_applications_store,
+        (SELECT COUNT(*) FROM applications a JOIN job_postings j ON j.id = a.job_posting_id
+          WHERE a.status = 'APPLIED' AND j.job_type = 'OFFICE') AS unviewed_applications_office,
+        -- 오늘 들어온 기업. 로그인할 때 남기기 시작한 값이라 그 전 기록은 없다.
+        (SELECT COUNT(*) FROM companies WHERE is_member = true
+          AND (last_login_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date) AS today_company_logins,
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS active_jobs,
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND job_type = 'STORE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS active_jobs_store,
         (SELECT COUNT(*) FROM job_postings WHERE status = 'ACTIVE' AND job_type = 'OFFICE' AND (deadline IS NULL OR deadline >= CURRENT_DATE)) AS active_jobs_office,
