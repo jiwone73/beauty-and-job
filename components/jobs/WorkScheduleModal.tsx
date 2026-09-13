@@ -276,7 +276,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                 return (
                   <div key={r.type}>
                     <button type="button" className={`ws-quick-row ${on ? "on" : ""}`}
-                      disabled={확정 !== null && 확정 !== r.type}
+                      // 화면에 없는 종류로 정해졌으면 잠그지 않는다.
+                      //
+                      // 원문에서 읽어 온 값은 여섯 종류로 되짚는데, 화면에 깔리는 항목은
+                      // 매장 셋(주 N일·지정 요일·협의) 또는 본사 둘(근무시간·협의)뿐이다.
+                      // "10시~7시" 처럼 시간만 있는 값은 hours 로 정해지는데, 매장에는 그
+                      // 항목이 없어 세 개가 한꺼번에 잠겼다. 푸는 길이 「켜진 항목을 다시
+                      // 누르기」 하나뿐인데 그 항목이 화면에 없으니 빠져나올 수가 없었다.
+                      disabled={확정 !== null && 확정 !== r.type && quickRows.some((x) => x.type === 확정)}
                       onClick={() => {
                         // 풀 때는 주말 선택도 같이 비운다 — 남겨 두면 다른 항목을 열었을 때
                         // 고른 적 없는 토·일이 이미 골라진 채로 나온다.
