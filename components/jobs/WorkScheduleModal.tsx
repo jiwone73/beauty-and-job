@@ -88,7 +88,9 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     if (되짚음.current) return;
     되짚음.current = true;
     // 저장된 값으로 다시 열면 그 항목은 이미 정해진 것이다.
-    const 되살림 = (t: QuickType) => { 되살림(t); set확정(t); };
+    // 이름이 겹쳐 자기 자신을 부르고 있었다 — 저장된 값으로 창을 열면 끝없이
+    // 돌다 화면이 통째로 죽었다(Maximum call stack size exceeded).
+    const 되살림 = (t: QuickType) => { setQuickType(t); set확정(t); };
     const [본문] = splitNego(value);
     if (!본문.trim()) return;
     const [첫줄, ...나머지] = 본문.split("\n");
