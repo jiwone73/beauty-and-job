@@ -2804,6 +2804,27 @@ export default function JobPostForm({
   const 채운칸 = 할칸.filter((c) => c.done).length;
   const 작성률 = Math.round((채운칸 / 할칸.length) * 100);
 
+  // 전형 단계 더하기 단추. 놓는 자리가 상태에 따라 달라 변수로 세운다 —
+  // 비어 있을 때는 맨 앞에 서서 「목록에서 선택하기」를 데리고 있고,
+  // 단계가 담기면 담긴 것들 뒤로 물러난다(다음에 더할 자리가 거기다).
+  const 전형더하기 = (
+    <span className="jp-proc-item posshift-pop" style={{ position: "relative" }}>
+      <button type="button" className="jp-proc-add" aria-label="전형 단계 더하기"
+        onClick={(e) => { if (절차열림) { set절차열림(false); return; } openPopAt(e.currentTarget, 200, 250); set절차열림(true); }}>＋</button>
+      {절차열림 && popAt && (
+        <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width: 200, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+          {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).filter((x) => !hiringProcess.includes(x)).map((x) => (
+            <button key={x} type="button" className="jp-proc-opt"
+              onClick={() => { setHiringProcess([...hiringProcess, x]); set절차열림(false); }}>{x}</button>
+          ))}
+          {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).every((x) => hiringProcess.includes(x)) && (
+            <div style={{ fontSize: 12.5, color: "#555", padding: "8px 10px" }}>더할 단계가 없어요</div>
+          )}
+        </div>
+      )}
+    </span>
+  );
+
   // 모집부문 표 칸 너비 — 고정 퍼센트로 두니 "아르바이트"·"여성 우대"·"초대졸 이상"처럼
   // 값이 긴 칸은 말줄임(...)으로 잘리고, 근무요일/시간·급여는 늘 남아돌았다
   // ("다른항목이 잘렸어" · "근무요일/시간 여백이 너무 넓어"). 미리보기 표와 같은 방식으로
@@ -3886,23 +3907,11 @@ export default function JobPostForm({
                         누를 자리가 늘 같은 데 있다 — 예전에는 단계 뒤를 따라다녔다.
                         비어 있을 때는 ＋ 옆에 무엇을 하는 단추인지 한마디 적는다
                         (예시 문구는 값처럼 읽혀 걷었다). */}
-                    <span className="jp-proc-item posshift-pop" style={{ position: "relative" }}>
-                      <button type="button" className="jp-proc-add" aria-label="전형 단계 더하기"
-                        onClick={(e) => { if (절차열림) { set절차열림(false); return; } openPopAt(e.currentTarget, 200, 250); set절차열림(true); }}>＋</button>
-                      {절차열림 && popAt && (
-                        <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width: 200, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
-                          {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).filter((x) => !hiringProcess.includes(x)).map((x) => (
-                            <button key={x} type="button" className="jp-proc-opt"
-                              onClick={() => { setHiringProcess([...hiringProcess, x]); set절차열림(false); }}>{x}</button>
-                          ))}
-                          {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).every((x) => hiringProcess.includes(x)) && (
-                            <div style={{ fontSize: 12.5, color: "#555", padding: "8px 10px" }}>더할 단계가 없어요</div>
-                          )}
-                        </div>
-                      )}
-                    </span>
                     {hiringProcess.length === 0 && (
-                      <span className="jp-proc-ph">목록에서 선택하기</span>
+                      <>
+                        {전형더하기}
+                        <span className="jp-proc-ph">목록에서 선택하기</span>
+                      </>
                     )}
                     {hiringProcess.map((p, i) => (
                       <span key={`${p}-${i}`} className="jp-proc-item">
@@ -3916,6 +3925,7 @@ export default function JobPostForm({
                         {i < hiringProcess.length - 1 && <i>›</i>}
                       </span>
                     ))}
+                    {hiringProcess.length > 0 && 전형더하기}
                   </div>
                 </div>
               </div>
