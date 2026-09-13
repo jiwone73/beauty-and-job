@@ -266,6 +266,35 @@ export default function ApplyModal({
     if (!coverLoaded) setCoverLoaded(true);
   }, []);
 
+  /** 이력서를 서버에서 새로 받아온다.
+   *
+   *  이 창은 열 때 이력서를 한 벌 받아 두고 그 뒤로는 다시 읽지 않는다. 그래서
+   *  이력서 화면에서 경력을 더하고 돌아와도 여기서는 안 보였다. 프로필 값(희망급여·
+   *  희망직군)은 돌아올 때마다 다시 읽으니, 이력서만 손으로 당겨 오면 된다.
+   *
+   *  창 안에서 고르고 적은 것(자소서·뺀 사진·뺀 줄·급여)은 store 가 아니라 이 창이
+   *  들고 있어 새로 받아도 그대로 남는다. 한줄소개만 store 에 있고 여기서도 고칠 수
+   *  있어, 손댔으면 그 값을 지킨다 — 다시 받아오느라 쓰던 글을 지울 수는 없다.
+   *
+   *  받아온 다음에는 되돌릴 기준도 새것으로 바꾼다. 그대로 두면 창을 닫는 순간
+   *  방금 당겨 온 값이 옛 것으로 되돌아간다. */
+  const [당기는중, set당기는중] = useState(false);
+  const 이력서당겨오기 = async () => {
+    if (당기는중) return;
+    set당기는중(true);
+    const 내가쓴한줄 = useProfileStore.getState().intro;
+    const 원래한줄 = 뜬이력서.current?.intro ?? "";
+    try {
+      await useProfileStore.getState().loadFromServer();
+      if (내가쓴한줄 !== 원래한줄) useProfileStore.getState().setIntro(내가쓴한줄);
+      뜬이력서.current = useProfileStore.getState().이력서뽑기();
+    } catch (e) {
+      console.error("[지원서] 이력서 당겨오기 실패", e);
+    } finally {
+      set당기는중(false);
+    }
+  };
+
   const jobDisplay = (job === "직접입력" ? jobCustom : job) || officeJobAreas[0] || skillAreas[0] || "직군 미설정";
   // 희망 급여 — 이력서 미리보기와 같은 꼴로 적는다(「월 400만원~」·「협의」).
   const 희망급여표시 = (() => {
@@ -794,6 +823,20 @@ export default function ApplyModal({
                 </div>
               )}
               <div className="apply-resume-wrap" style={{ borderTop: "1px solid #eee", paddingTop: 16 }}>
+                {/* 이력서 화면에서 고치고 온 것을 여기로 당겨 온다. 창을 닫았다 다시
+                    열어야만 보이던 것을, 누르면 그 자리에서 바뀌게 한다. */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <a href="/profile/resume" target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 13, color: "var(--color-primary)", textDecoration: "none", whiteSpace: "nowrap" }}>
+                    이력서에서 고치기 ↗
+                  </a>
+                  <button type="button" onClick={이력서당겨오기} disabled={당기는중}
+                    style={{ marginLeft: "auto", border: "1px solid #e5e5ea", background: "#fff",
+                      borderRadius: 7, padding: "5px 11px", fontSize: 13, color: "#555",
+                      fontFamily: "inherit", cursor: 당기는중 ? "default" : "pointer", whiteSpace: "nowrap" }}>
+                    {당기는중 ? "불러오는 중…" : "이력서 새로 불러오기"}
+                  </button>
+                </div>
                 <ResumeEditor
                   resumeType={resumeType}
                   emailLocal={emailLocal}
