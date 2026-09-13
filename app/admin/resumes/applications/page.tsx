@@ -102,6 +102,18 @@ function 지난날(d: string | null): number {
  * 미열람은 기업을 찔러야 하는 일이다. 빨강은 손이 가야 하는 둘에만 준다.
  * 사흘은 주말을 한 번 넘긴 셈이라, 그 전까지는 기다리는 중으로 본다.
  */
+/** 「08.20 11:14」 — 올해 것은 해를 빼고 적는다. */
+function 때(s: string): string {
+  const d = new Date(s);
+  const 올해 = d.getFullYear() === new Date().getFullYear();
+  const 날 = `${olhae(d, 올해)}${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+  const 시각 = d.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return `${날} ${시각}`;
+}
+function olhae(d: Date, 올해: boolean) {
+  return 올해 ? "" : `${String(d.getFullYear()).slice(2)}.`;
+}
+
 function 열람(a: App): { 글: string; 때: string | null; 급함: boolean } {
   if (a.status === "WITHDRAWN") return { 글: "-", 때: null, 급함: false };
   if (a.status === "APPLIED") {
@@ -349,7 +361,7 @@ function AdminApplicationsPageInner() {
                           <>
                             <div style={{ color: v.급함 ? "#c0504d" : undefined }}>{v.글}</div>
                             {v.때 && (
-                              <div style={{ marginTop: 3, fontSize: 13.5, color: "#a5a5ab" }}>{fmtDate(v.때)}</div>
+                              <div style={{ marginTop: 3, fontSize: 13.5, color: "#a5a5ab" }}>{때(v.때)}</div>
                             )}
                           </>
                         );
