@@ -742,6 +742,12 @@ export default function JobPostForm({
   });
   const [saved, setSaved] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false); // 임시저장 완료 표시(발행완료와 구분)
+  /** 고치는 중인 공고가 지금 어떤 상태인가. 진행중이면 임시저장 단추를 감춘다 —
+   *  누르면 그 공고가 임시저장으로 내려앉아 구직자 화면에서 사라진다. 잠깐 저장해
+   *  두려고 누른 것이 공고를 내리는 일이 되면 안 된다. 내릴 일이 있으면 공고 목록에서
+   *  상태를 바꾸는 것이 제자리다. */
+  const [고치는공고상태, set고치는공고상태] = useState<string | null>(null);
+  const 진행중수정 = !!editId && 고치는공고상태 === "ACTIVE";
   const [alwaysOpen, setAlwaysOpen] = useState(false);
   const [detailImages, setDetailImages] = useState<{ url: string; name: string; readable?: boolean; fromSource?: boolean }[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -1206,6 +1212,7 @@ export default function JobPostForm({
     if (!editId || !loadEditData) return;
     loadEditData(editId).then((j) => {
       if (!j) return;
+      set고치는공고상태(typeof j.status === "string" ? j.status : null);
       const career = j.experience_level === "NEW" ? "신입"
         : j.experience_level === "EXPERIENCED" ? "2년 이상" : "경력무관";
       const rawType = j.employment_type
@@ -2835,7 +2842,7 @@ export default function JobPostForm({
             {/* 임시저장 버튼 + 임시저장 목록 드롭다운 — 페이지를 밀지 않도록 버튼에서 팝오버로 노출.
                 예전에는 관리자만 목록을 볼 수 있어, 기업회원은 들어올 때 뜨는 창을 닫으면
                 임시저장이 있는 줄도 몰랐다. */}
-            <div ref={draftMenuRef} style={{ position: "relative", display: "inline-flex", alignItems: "stretch" }}>
+            <div ref={draftMenuRef} style={{ position: "relative", display: 진행중수정 ? "none" : "inline-flex", alignItems: "stretch" }}>
               <button className="admin-secondary-btn" onClick={() => handleSubmit("draft")}
                 style={drafts.length > 0 ? { borderTopRightRadius: 0, borderBottomRightRadius: 0 } : undefined}>
                 <Save size={15} /> {draftSaved ? "임시저장됨 ✓" : "임시저장"}
@@ -2925,9 +2932,11 @@ export default function JobPostForm({
 
       {isMobile && headerSlot && createPortal(
         <>
-          <button className="co-m-ibtn" onClick={() => handleSubmit("draft")} aria-label="임시저장" title="임시저장">
-            <Save size={20} />
-          </button>
+          {!진행중수정 && (
+            <button className="co-m-ibtn" onClick={() => handleSubmit("draft")} aria-label="임시저장" title="임시저장">
+              <Save size={20} />
+            </button>
+          )}
           <button className="co-m-ibtn" onClick={() => setShowPreview(true)} aria-label="미리보기" title="미리보기">
             <Eye size={20} />
           </button>
