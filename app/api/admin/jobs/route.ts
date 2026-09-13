@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
              representative_name = COALESCE(representative_name, $9),
              company_phone = COALESCE(company_phone, $10),
              logo_url = COALESCE(logo_url, $11),
-             cover_images = CASE WHEN (cover_images IS NULL OR cover_images = '[]'::jsonb) AND $12 IS NOT NULL THEN $12::jsonb ELSE cover_images END,
+             cover_images = CASE WHEN (cover_images IS NULL OR cover_images = '[]'::jsonb) AND $12::jsonb IS NOT NULL THEN $12::jsonb ELSE cover_images END,
              updated_at = now()
            WHERE id = $1`,
           [finalCompanyId, (nm.brand_name || '').trim() || null, (nm.homepage_url || '').trim() || null,
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
       } else {
         const companyRes = await client.query(
           `INSERT INTO companies (company_name, brand_name, company_type, website_url, description, address, industry, company_size, founded_year, representative_name, company_phone, logo_url, cover_images, is_member, status)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, COALESCE($13::jsonb, '[]'::jsonb), false, 'ACTIVE'::company_status)
+           VALUES ($1, $2, $3, $4::text, $5::text, $6::text, $7::text, $8::text, $9::text, $10::text, $11::text, $12::text, COALESCE($13::jsonb, '[]'::jsonb), false, 'ACTIVE'::company_status)
            RETURNING id`,
           [nmName, (nm.brand_name || '').trim() || null, job_type, (nm.homepage_url || '').trim() || null,
            (nm.description || '').trim() || null, (nm.address || '').trim() || null, (nm.industry || '').trim() || null,
@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
          contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
          cover_images
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, '${jobStatus}', $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49
+         $1, $2, $3, $4, $5::text, $6::text, $7::text, $8::int, $9::int, $10::salary_type, $11::varchar, $12::text, $13::work_type, $14::experience_level, $15::date, $16, $17::jsonb, $18::jsonb, $19::text, $20::text, '${jobStatus}', $21, $22, $23, $24::text, $25::text, $26::text, $27::text, $28::text, $29, $30::text, $31, $32::text, $33::text, $34::text, $35::int, $36::text, $37::text, $38::text, $39::text, $40::text, $41::text, $42::jsonb, $43::jsonb, $44::text, $45, $46, $47, $48, $49::jsonb
        ) RETURNING id, title, status, created_at`,
       [
         finalCompanyId, title, job_type, job_category_id || null, description || null,
@@ -271,9 +271,12 @@ export async function POST(req: NextRequest) {
     // 카페에서 찾아 둔 글로 등록했다면 그 줄을 '등록완료'로 바꾼다.
     // 알바가 목록에서 따로 체크할 필요가 없게, 저장 한 번으로 끝낸다.
     return ok(result.rows[0], 201)
-  } catch (e) {
+  } catch (e: any) {
     await client.query('ROLLBACK')
-    throw e
+    // 던져 버리면 응답 본문이 비어, 화면은 「아무 일도 안 일어난」 것처럼 보인다.
+    // 실제로 임시저장이 조용히 죽고 있었다 — 누가 눌러도 저장도 안 되고 말도 없었다.
+    console.error('[공고 등록]', e?.message, e?.code)
+    return err('JOB_500', `공고 저장에 실패했습니다: ${e?.message || '알 수 없는 오류'}`, 500)
   } finally {
     client.release()
   }
