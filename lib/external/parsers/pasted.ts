@@ -72,7 +72,9 @@ const 칸이름: Record<string, string[]> = {
   // 제목에도 본문에도 가게 이름이 적혀 있는데 매장명이 비었다.
   company_name: ["샵명", "업체명", "매장명", "매장이름", "근무처", "회사명", "상호", "지점명", "샵이름"],
   contact_name: ["대표자", "담당자", "채용담당자"],
-  contact_phone: ["전화번호", "연락처", "문의", "지원문의", "전화"],
+  // 「담당자 번호」는 이름이 아니라 번호다. 「담당자」가 부분일치로 먼저 걸려
+  // 담당자 이름 칸에 전화번호가 박혔다 — 번호를 뜻하는 말을 앞에 둔다.
+  contact_phone: ["담당자번호", "담당자연락처", "전화번호", "연락처", "문의", "지원문의", "전화"],
   address: ["샵위치", "위치", "주소", "근무지", "근무지역"],
   work_time: ["근무시간", "영업시간", "근무시간대", "근무시간및휴무"],
   career: ["경력", "자격요건", "지원자격"],
@@ -264,6 +266,11 @@ export function parsePasted(text: string, 제목 = ""): PastedResult | null {
   if (out.career) out.career = 값다듬기(out.career, 경력모양);
   // 「◇ 지원문의」 아래에는 번호 다음 줄까지 붙어 온다("…3691\n본 채용정보에 관심 가").
   if (out.contact_phone) out.contact_phone = 전화꼴(값다듬기(out.contact_phone, 전화모양));
+  // 이름 칸에 번호가 들어왔으면 그건 이름이 아니다. 비우고, 번호 칸이 비어 있으면 옮긴다.
+  if (out.contact_name && 전화모양.test(out.contact_name)) {
+    if (!out.contact_phone) out.contact_phone = 전화꼴(값다듬기(out.contact_name, 전화모양));
+    out.contact_name = "";
+  }
 
   // 라벨로 못 채운 칸은 글 전체에서 값 모양으로 한 번 더 읽는다.
   const 줄들 = String(text || "").replace(/\r\n?/g, "\n").split("\n").map((l) => l.trim()).filter(Boolean);
