@@ -4178,11 +4178,19 @@ export default function JobPostForm({
                     )}
                     {/* 주소는 한 줄로 본다 — 기업회원 폼도 합쳐진 주소 한 줄이다.
                         검색으로 채운 주소 뒤에 동·호수만 이어 적는다. */}
-                    <div style={row}><span style={lbl2}>주소<span style={req}> *</span></span>
-                      <input readOnly style={{ ...inpHl(!!nmAddress), cursor: "pointer" }} value={nmAddress}
-                        onClick={() => openAddressSearch()} placeholder="주소 검색을 눌러주세요" />
-                      <input style={inpHl(!!nmAddressDetail)} value={nmAddressDetail}
-                        onChange={(e) => setNmAddressDetail(e.target.value)} placeholder="동·호수 등" />
+                    {/* 주소와 동·호수는 두 열로 나란히. 예전에는 한 줄에 흘려 두어, 채워진
+                        주소가 남은 폭을 다 먹고 빈 동·호수 칸이 오른쪽 끝으로 밀려났다 —
+                        값과 멀찍이 떨어져 어느 줄 것인지 읽히지 않았다. 위 근무지 줄이
+                        이미 쓰는 두 열 배치를 그대로 쓴다. */}
+                    <div style={{ ...row, alignItems: "center" }}><span style={lbl2}>주소<span style={req}> *</span></span>
+                      <div style={{ flex: 1, minWidth: 0, display: "grid",
+                        gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)",
+                        gap: isMobile ? 4 : 12, alignItems: "center" }}>
+                        <input readOnly style={{ ...inpHl(!!nmAddress), cursor: "pointer", justifySelf: "start" }} value={nmAddress}
+                          onClick={() => openAddressSearch()} placeholder="주소 검색을 눌러주세요" />
+                        <input style={{ ...inpHl(!!nmAddressDetail), justifySelf: "start" }} value={nmAddressDetail}
+                          onChange={(e) => setNmAddressDetail(e.target.value)} placeholder="동·호수 등" />
+                      </div>
                     </div>
                     {!isOffice && (
                       <div style={{ ...row, alignItems: "flex-start" }}>
