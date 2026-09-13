@@ -69,6 +69,27 @@ export async function GET(req: NextRequest) {
         (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.is_public = true AND u.job_type = 'STORE') AS public_resumes_store,
         (SELECT COUNT(*) FROM resumes r JOIN users u ON u.id = r.user_id WHERE r.is_public = true AND u.job_type = 'OFFICE') AS public_resumes_office,
         (SELECT COUNT(DISTINCT user_id) FROM resumes) AS users_with_resume,
+        -- 프로필을 못 채워 지원이 막히는 사람. 관리자가 안내하면 풀리는 유일한 자리라
+        -- 숫자가 곧 할 일이다. 판정은 지원을 막는 조건(lib/applyReady)과 같아야 한다 —
+        -- 여기서 「괜찮다」고 세어 놓고 정작 지원은 막히면 안 된다.
+        (SELECT COUNT(*) FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+          WHERE u.phone IS NULL OR u.birth_date IS NULL OR u.gender IS NULL
+             OR u.email IS NULL OR u.region_sido IS NULL OR u.job_type IS NULL
+             OR p.salary_min IS NULL) AS profile_incomplete,
+        (SELECT COUNT(*) FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+          WHERE u.job_type = 'STORE'
+            AND (u.phone IS NULL OR u.birth_date IS NULL OR u.gender IS NULL
+              OR u.email IS NULL OR u.region_sido IS NULL OR p.salary_min IS NULL)) AS profile_incomplete_store,
+        (SELECT COUNT(*) FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+          WHERE u.job_type = 'OFFICE'
+            AND (u.phone IS NULL OR u.birth_date IS NULL OR u.gender IS NULL
+              OR u.email IS NULL OR u.region_sido IS NULL OR p.salary_min IS NULL)) AS profile_incomplete_office,
+        -- 인재검색에 뜨는 사람. 본인이 고른 값이라 비공개가 늘면 그게 신호다.
+        (SELECT COUNT(*) FROM user_profiles WHERE job_search_status::text = 'SEEKING') AS search_open,
+        (SELECT COUNT(*) FROM user_profiles p JOIN users u ON u.id = p.user_id
+          WHERE p.job_search_status::text = 'SEEKING' AND u.job_type = 'STORE') AS search_open_store,
+        (SELECT COUNT(*) FROM user_profiles p JOIN users u ON u.id = p.user_id
+          WHERE p.job_search_status::text = 'SEEKING' AND u.job_type = 'OFFICE') AS search_open_office,
         (SELECT COUNT(DISTINCT r.user_id) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'STORE') AS users_with_resume_store,
         (SELECT COUNT(DISTINCT r.user_id) FROM resumes r JOIN users u ON u.id = r.user_id WHERE u.job_type = 'OFFICE') AS users_with_resume_office,
         (SELECT ROUND(AVG(cnt), 1) FROM (

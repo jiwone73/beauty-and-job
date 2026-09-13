@@ -69,29 +69,43 @@ export default function AdminDashboardUsers() {
       </div>
 
       {/* 카운터 — 대시보드 요약 카드와 같은 부품(.co-counts) */}
-      <div className="co-counts" style={{ ["--co-counts-n" as any]: 7 }}>
-        {[
-          { label: "개인회원", value: fmtNum(tab === "STORE" ? c?.store_users : tab === "OFFICE" ? c?.office_users : c?.total_users), href: `/admin/members?type=${tab}` },
-          { label: "오늘 신규 가입", value: fmtNum(tab === "STORE" ? c?.today_users_store : tab === "OFFICE" ? c?.today_users_office : c?.today_users), href: `/admin/members?type=${tab}&date=today` },
-          // 방문·로그인은 사이트 전체 수라 매장/본사로 갈리지 않는다 — 고르개를 따르지 않는다.
-          { label: "오늘 방문", value: fmtNum(c?.today_visitors) },
-          { label: "오늘 로그인", value: fmtNum(c?.today_logins) },
-          { label: "오늘 입사지원", value: fmtNum(tab === "STORE" ? c?.today_applications_store : tab === "OFFICE" ? c?.today_applications_office : c?.today_applications), href: "/admin/resumes/applications?date=today" },
-          { label: "오늘 이력서 등록", value: fmtNum(tab === "STORE" ? c?.today_resumes_store : tab === "OFFICE" ? c?.today_resumes_office : c?.today_resumes), href: "/admin/members" },
-          { label: "전체 이력서", value: fmtNum(tab === "STORE" ? c?.total_resumes_store : tab === "OFFICE" ? c?.total_resumes_office : c?.total_resumes), href: "/admin/members" },
-        ].map((s) => (
-          s.href ? (
-            <Link key={s.label} href={s.href} className="co-count" style={{ textDecoration: "none" }}>
+      {/* 카운터 — 깔때기 순서로 선다. 가입 → 이력서 → 로그인 → 지원.
+          어느 칸에서 숫자가 뚝 떨어지는지가 곧 고칠 자리다. */}
+      <div className="co-counts" style={{ ["--co-counts-n" as any]: 8 }}>
+        {(() => {
+          const 모수 = Number(tab === "STORE" ? c?.store_users : tab === "OFFICE" ? c?.office_users : c?.total_users) || 0;
+          const 이력서 = Number(tab === "STORE" ? c?.users_with_resume_store : tab === "OFFICE" ? c?.users_with_resume_office : c?.users_with_resume) || 0;
+          const 공개 = Number(tab === "STORE" ? c?.search_open_store : tab === "OFFICE" ? c?.search_open_office : c?.search_open) || 0;
+          const 미완 = Number(tab === "STORE" ? c?.profile_incomplete_store : tab === "OFFICE" ? c?.profile_incomplete_office : c?.profile_incomplete) || 0;
+          // 비율은 모수를 알아야 뜻이 생긴다 — 숫자 둘을 따로 두면 매번 나눠 봐야 한다.
+          const 퍼센트 = (n: number) => (모수 ? `${Math.round((n / 모수) * 100)}%` : "-");
+          return [
+            { label: "총 개인회원", value: fmtNum(모수), href: `/admin/members?type=${tab}` },
+            { label: "이력서 등록률", value: c ? 퍼센트(이력서) : "-", href: "/admin/members" },
+            { label: "오늘 신규 가입", value: fmtNum(tab === "STORE" ? c?.today_users_store : tab === "OFFICE" ? c?.today_users_office : c?.today_users), href: `/admin/members?type=${tab}&date=today` },
+            { label: "오늘 로그인", value: fmtNum(c?.today_logins) },
+            { label: "오늘 입사지원", value: fmtNum(tab === "STORE" ? c?.today_applications_store : tab === "OFFICE" ? c?.today_applications_office : c?.today_applications), href: "/admin/resumes/applications?date=today" },
+            { label: "공고당 입사지원", value: c?.avg_applications_per_job == null ? "-" : String(c.avg_applications_per_job) },
+            // 관리자가 안내하면 풀리는 자리라 빨강으로 세운다.
+            { label: "프로필 미완성", value: fmtNum(미완), href: `/admin/members?type=${tab}`, 할일: true },
+            { label: "인재검색 공개", value: c ? 퍼센트(공개) : "-", href: `/admin/members?type=${tab}` },
+          ];
+        })().map((s) => {
+          const 속 = (
+            <>
               <span className="co-count-label">{s.label}</span>
               <span className="co-count-value">{s.value}</span>
+            </>
+          );
+          const 켬 = (s as any).할일 && Number(String(s.value).replace(/[^0-9]/g, "") || 0) > 0;
+          return s.href ? (
+            <Link key={s.label} href={s.href} className={`co-count${켬 ? " todo" : ""}`} style={{ textDecoration: "none" }}>
+              {속}
             </Link>
           ) : (
-            <div key={s.label} className="co-count" style={{ cursor: "default" }}>
-              <span className="co-count-label">{s.label}</span>
-              <span className="co-count-value">{s.value}</span>
-            </div>
-          )
-        ))}
+            <div key={s.label} className="co-count" style={{ cursor: "default" }}>{속}</div>
+          );
+        })}
       </div>
 
       {/* 추이 2개 */}
