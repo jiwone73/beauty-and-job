@@ -2280,12 +2280,20 @@ export default function JobPostForm({
   };
   // 저장·미리보기 시 한 번 더 정리 — 입력 직후 칸을 벗어나지 않고 바로 등록해도 09:30 형태로 나가게
   const normWorkTime = (v: string) => {
-    const t = (v || "").trim();
-    if (!t || !t.includes("~")) return t;
-    const [a, b] = t.split("~");
-    const f = (x: string) => (/^\d{1,4}$/.test((x || "").trim()) ? fmtTime(x) : (x || "").trim());
-    const st = f(a), en = f(b);
-    return st || en ? `${st}~${en}` : "";
+    // 줄 단위로 다듬는다.
+    //
+    // 타임이 둘인 자리(오전·오후 교대)는 값이 두 줄로 온다. 통째로 "~" 로 쪼개면
+    // 조각이 셋이 되어 앞의 둘만 남고 뒤가 잘렸다 — "10시~7시\n12시~9시" 가
+    // "10시~7시\n12시" 가 되어 오후 타임의 끝시각이 저장 때 사라졌다.
+    const 한줄 = (line: string) => {
+      const t = (line || "").trim();
+      if (!t || !t.includes("~")) return t;
+      const i = t.indexOf("~");
+      const f = (x: string) => (/^\d{1,4}$/.test((x || "").trim()) ? fmtTime(x) : (x || "").trim());
+      const st = f(t.slice(0, i)), en = f(t.slice(i + 1));
+      return st || en ? `${st}~${en}` : "";
+    };
+    return String(v || "").split("\n").map(한줄).filter(Boolean).join("\n");
   };
   const cellSelect: React.CSSProperties = { width: "100%", minHeight: 24, boxSizing: "border-box", border: "none", borderRadius: 5, padding: "3px 6px", fontSize: 13.5, WebkitAppearance: "none", appearance: "none", cursor: "pointer" };
   // 값이 없으면 연보라 자리표시, 채우면 배경 없이 글자만(테두리는 쓰지 않음)
