@@ -352,9 +352,88 @@ export default function JobPostForm({
   // 대표 주소는 기업 정보에 두고, 여기에는 '추가' 근무지만 담는다.
   const [extraLocations, setExtraLocations] = useState<{ address: string; detail: string }[]>([]);
 
+  // 상호명으로도 찾는다.
+  //
+  // 우편번호 서비스는 주소 데이터만 들고 있어 「포쉬네일 킨텍스점」 같은 상호로는
+  // 아무것도 안 나온다. 그런데 공고를 옮겨 적는 사람은 매장 이름은 알아도 도로명
+  // 주소는 모르는 경우가 대부분이다. 지도에 이미 쓰고 있는 카카오 장소검색을
+  // 같은 창에 얹어, 상호를 치면 그 가게의 도로명 주소가 바로 잡히게 한다.
+  const [상호검색, set상호검색] = useState("");
+  const [상호결과, set상호결과] = useState<{ name: string; road: string; jibun: string }[]>([]);
+  const [상호찾는중, set상호찾는중] = useState(false);
+  // 고른 결과를 넣을 자리. 창을 열 때 넘어온 onPick 을 담아 둔다(대표 주소면 비어 있다).
+  const 넣을자리 = useRef<((addr: string) => void) | undefined>(undefined);
+
+  /** 우편번호 창에서 고른 것이든 상호로 고른 것이든 같은 길로 흘려보낸다. */
+  const 주소채우기 = (addr: string) => {
+    const onPick = 넣을자리.current;
+    if (onPick) onPick(addr);
+    else {
+      setNmAddress(addr);
+      const r = deriveRegion(addr);
+      if (r.length) setRegionList(r);
+    }
+    setAddrOpen(false);
+  };
+
+  /** 카카오 장소검색. 지도에서 쓰는 SDK 를 그대로 쓴다 — 키도 서버도 더 필요 없다. */
+  const 상호로찾기 = (질의: string) => {
+    const q = 질의.trim();
+    if (!q) { set상호결과([]); return; }
+    const 돌리기 = () => {
+      const kakao = (window as any).kakao;
+      if (!kakao?.maps?.services) { set상호찾는중(false); set상호결과([]); return; }
+      const ps = new kakao.maps.services.Places();
+      ps.keywordSearch(q, (r: any[], st: string) => {
+        set상호찾는중(false);
+        set상호결과(st === kakao.maps.services.Status.OK
+          ? r.slice(0, 8).map((d) => ({
+              name: d.place_name || "",
+              road: d.road_address_name || "",
+              jibun: d.address_name || "",
+            })).filter((d) => d.road || d.jibun)
+          : []);
+      });
+    };
+    set상호찾는중(true);
+
+    // window.kakao 가 있다고 지도 SDK 가 실린 것이 아니다.
+    //
+    // 같은 창에 띄우는 우편번호 스크립트가 window.kakao.postcode 를 만든다. 이름이
+    // 겹쳐서, 있는지만 보고 지도인 줄 알았다가 maps 가 없어 영영 멈췄다.
+    // 실렸는지는 maps 로만 판정한다.
+    const 실렸나 = () => !!(window as any).kakao?.maps;
+
+    // 이미 붙어 있는 태그는 로드가 끝났을 수 있다 — 그러면 load 이벤트가 다시는
+    // 오지 않는다. 이벤트를 기다리지 않고 준비됐는지 직접 들여다본다.
+    const 기다렸다돌리기 = () => {
+      const 시작 = Date.now();
+      const 재보기 = () => {
+        if (실렸나()) { (window as any).kakao.maps.load(돌리기); return; }
+        if (Date.now() - 시작 > 8000) { set상호찾는중(false); set상호결과([]); return; }
+        setTimeout(재보기, 150);
+      };
+      재보기();
+    };
+
+    if ((window as any).kakao?.maps?.services) { 돌리기(); return; }
+    if (실렸나()) { (window as any).kakao.maps.load(돌리기); return; }
+    if (!document.getElementById("kakao-map-sdk")) {
+      const script = document.createElement("script");
+      script.id = "kakao-map-sdk";
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false&libraries=services`;
+      script.async = true;
+      script.addEventListener("error", () => { set상호찾는중(false); set상호결과([]); }, { once: true });
+      document.head.appendChild(script);
+    }
+    기다렸다돌리기();
+  };
+
   // 주소 검색은 대표 주소 칸과 추가 근무지 칸이 같이 쓴다.
   // onPick 을 넘기면 그 칸에 넣고, 안 넘기면 대표 주소에 넣는다.
   const openAddressSearch = (onPick?: (addr: string) => void) => {
+    넣을자리.current = onPick;
+    set상호검색(""); set상호결과([]); set상호찾는중(false);
     setAddrOpen(true);
     const embed = () => {
       const el = addrBoxRef.current;
@@ -364,13 +443,7 @@ export default function JobPostForm({
         oncomplete: (data: any) => {
           const base = data.roadAddress || data.jibunAddress || "";
           const withBuilding = data.buildingName ? `${base} (${data.buildingName})` : base;
-          if (onPick) onPick(withBuilding);
-          else {
-            setNmAddress(withBuilding);
-            const r = deriveRegion(withBuilding);
-            if (r.length) setRegionList(r);
-          }
-          setAddrOpen(false);
+          주소채우기(withBuilding);
         },
         onclose: () => setAddrOpen(false),
         width: "100%",
@@ -4134,6 +4207,35 @@ export default function JobPostForm({
               <span style={{ fontSize: 15 }}>주소 검색</span>
               <button type="button" onClick={() => setAddrOpen(false)}
                 style={{ background: "none", border: "none", fontSize: 22, lineHeight: 1, color: "#555", cursor: "pointer" }}>×</button>
+            </div>
+            {/* 상호명으로 먼저 찾아본다. 결과가 없으면 아래 우편번호 검색이 그대로 있다. */}
+            <div style={{ padding: "10px 14px 0" }}>
+              <input
+                className="admin-form-input"
+                value={상호검색}
+                onChange={(e) => { const v = e.target.value; set상호검색(v); if (!v.trim()) set상호결과([]); }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); 상호로찾기(상호검색); } }}
+                placeholder="상호명으로 찾기 (예: 포쉬네일 킨텍스점)"
+                style={{ width: "100%", boxSizing: "border-box" }}
+              />
+              {상호찾는중 && <div style={{ fontSize: 13, color: "#555", padding: "8px 2px" }}>찾는 중…</div>}
+              {!상호찾는중 && 상호결과.length > 0 && (
+                <div style={{ marginTop: 8, border: "1px solid #eee", borderRadius: 8, maxHeight: 190, overflowY: "auto" }}>
+                  {상호결과.map((r, i) => (
+                    <button key={`${r.name}-${i}`} type="button"
+                      onClick={() => 주소채우기(r.road || r.jibun)}
+                      style={{ display: "block", width: "100%", textAlign: "left", background: "none",
+                        border: "none", borderBottom: i === 상호결과.length - 1 ? "none" : "1px solid #f3f3f5",
+                        padding: "9px 11px", cursor: "pointer", fontFamily: "inherit" }}>
+                      <span style={{ fontSize: 14, color: "#555", fontWeight: 600 }}>{r.name}</span>
+                      <span style={{ display: "block", fontSize: 13, color: "#555", marginTop: 2 }}>{r.road || r.jibun}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {!상호찾는중 && 상호검색.trim() && 상호결과.length === 0 && (
+                <div style={{ fontSize: 13, color: "#555", padding: "8px 2px" }}>찾는 상호가 없어요. 아래에서 주소로 찾아 주세요.</div>
+              )}
             </div>
             <div ref={addrBoxRef} style={{ flex: 1, minHeight: 0 }} />
           </div>
