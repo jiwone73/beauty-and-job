@@ -755,10 +755,18 @@ export default function JobPostForm({
   // 새로 쓰는 공고에서만 한다. 기존 공고를 고칠 때는 서버 값이 맞는 값이라,
   // 남아 있던 옛 입력이 그 위에 덮이면 안 된다.
   const AUTOSAVE_KEY = `jobpost:autosave:${mode}:new`;
+  /** 이 임시저장이 어느 공고 것인가. 주소의 ?inbox= (목록에서 고른 공고) 또는 ?url= 로 본다.
+   *  빈 화면에서 새로 쓰는 중이면 "" 다. */
+  const 쓰던공고 = () => {
+    if (typeof window === "undefined") return "";
+    const q = new URLSearchParams(location.search);
+    return q.get("inbox") || q.get("url") || q.get("q") || "";
+  };
   const autosaveReady = useRef(false);
   const snapshot = () => ({
     v: 1,
     at: new Date().toISOString(),
+    열쇠: 쓰던공고(),
     form, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations,
     detailImages, bannerImages, hiringProcess, benefitTags,
     salaryNego, salaryType, salaryMax, salaryByCat,
@@ -822,6 +830,13 @@ export default function JobPostForm({
     let d: any = null;
     try { d = JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { d = null; }
     if (!d || d.v !== 1) return;
+    // 다른 공고를 열었으면 되살리지 않는다.
+    //
+    // 되살리기는 배너·상세 그림까지 돌려놓는데, 불러오기가 걷어내는 것은 원문에서
+    // 가져온 그림뿐이다. 그래서 샘플로 만든 배너처럼 손으로 넣은 그림이 다음 공고까지
+    // 따라붙었다 — 고용24처럼 원문에 그림이 아예 없는 공고를 열어도 앞 공고 배너가
+    // 그대로 남았다. 같은 공고에서 새로고침한 것이면 그대로 되살린다.
+    if ((d.열쇠 || "") !== 쓰던공고()) return;
     // 빈 껍데기는 되살릴 것이 없다.
     //
     // 여기에 항목을 빠뜨리면 저장은 됐는데 되살리지 않는다. 실제로 주소가 빠져 있어,
