@@ -983,11 +983,46 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     .trim()
     .slice(0, 8000);
 
-  // 이미지: shopImages(매장 사진) → 배너 / contentsImages(상세요강 포스터) → 상세
+  // 이미지: 매장 사진 → 배너 / 상세요강 포스터 → 상세
+  //
+  // 2026-09: 셀렉미가 그림 칸을 통째로 바꿨다. 매장 사진은 "shopImages" 가 없어지고
+  // 대표 한 장("representativeImage")과 나머지("images")로 갈렸고, 상세요강 포스터
+  // ("contentsImages")는 주소 목록이 아니라 {order,name,image:{...}} 꼴이 됐다.
+  // 옛 칸만 보던 탓에 받은함에 담긴 셀렉미 30건이 전부 배너 0장이었다. 상세는 더 나빴다 —
+  // 「첫 닫는 괄호까지」로 자르니 variants 안에서 끊겨, 첫 장의 크기별 변형이 서로 다른
+  // 그림 여러 장인 것처럼 들어왔다. 같은 사진이 크기만 바뀌어 상세요강에 줄줄이 박혔다.
+  //
+  // 한 장이 {"src":..,"originUrl":..,"variants":[{"width":n,"url":..}]} 꼴이라 묶음 안에
+  // 괄호가 겹친다. 짝을 세어 통째로 떠낸 뒤, 장마다 제일 큰 변형을 고른다.
+  const 묶음 = (열쇠: string, 여는: "[" | "{"): string => {
+    const at = chunk.indexOf(`"${열쇠}":${여는}`);
+    if (at < 0) return "";
+    const 닫는 = 여는 === "[" ? "]" : "}";
+    let 깊이 = 0;
+    for (let i = at; i < chunk.length; i++) {
+      if (chunk[i] === 여는) 깊이++;
+      else if (chunk[i] === 닫는 && --깊이 === 0) return chunk.slice(at, i + 1);
+    }
+    return "";
+  };
+  // src 는 작은 쪽으로 고정이고 originUrl 은 원본(4,000px 넘는다) → variants 중 제일 큰 것.
+  const 제일큰것 = (조각: string): string => {
+    let 골라둔 = "", 폭 = -1;
+    const re = /"width":(\d+),"url":"([^"]+)"/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(조각)) !== null) { const w = Number(m[1]); if (w > 폭) { 폭 = w; 골라둔 = m[2]; } }
+    return 골라둔 || (조각.match(/"src":"([^"]+)"/) || [])[1] || "";
+  };
+  // 장 경계는 "src" 가 나오는 자리. contentsImages 는 {order,name,image:{src..}} 로 한 겹 더 싸여 있다.
+  const 낱장 = (묶음글: string) =>
+    묶음글.split(/(?="src":")/).filter((t) => t.startsWith('"src":"')).map(제일큰것);
+
   const shopM = chunk.match(/"shopImages":\[([^\]]*)\]/);
-  const bannerImgs = shopM ? [...new Set((shopM[1].match(/https?:\/\/[^"\\,\]]+/g) || []))].slice(0, 10) : [];
-  const ciM = chunk.match(/"contentsImages":\[([^\]]*)\]/);
-  const detailImgs = ciM ? [...new Set((ciM[1].match(/https?:\/\/[^"\\,\]]+/g) || []))].slice(0, 12) : [];
+  let bannerImgs = shopM ? [...new Set((shopM[1].match(/https?:\/\/[^"\\,\]]+/g) || []))].slice(0, 10) : [];
+  if (!bannerImgs.length) {
+    bannerImgs = [...new Set([제일큰것(묶음("representativeImage", "{")), ...낱장(묶음("images", "["))].filter(Boolean))].slice(0, 10);
+  }
+  const detailImgs = [...new Set(낱장(묶음("contentsImages", "[")))].slice(0, 12);
 
   // 고용형태
   const workType = g(/"workType":"([^"]*)"/);
