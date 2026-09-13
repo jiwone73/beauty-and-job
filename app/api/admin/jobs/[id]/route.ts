@@ -140,29 +140,33 @@ export async function PATCH(
       if (memberRes.rows[0]?.is_member === false) {
         const nmFoundedYear = nm.founded_year ? (parseInt(String(nm.founded_year), 10) || null) : null;
         await client.query(
+          // 매장명은 여기서 고치지 않는다.
+          //
+          // 공고 하나를 고치려고 연 화면인데, 매장명을 손대면 업체 행이 바뀌어
+          // 그 업체의 다른 공고까지 이름이 따라 바뀌었다. 공고를 고치는 일이
+          // 업체를 고치는 일이 되면 안 된다 — 업체 이름은 업체 화면에서 고친다.
+          // 신규 등록에서 매장명으로 업체를 만들거나 찾는 길은 그대로 둔다.
           `UPDATE companies SET
-             company_name = COALESCE(NULLIF($2, ''), company_name),
-             brand_name = $3,
-             website_url = $4,
-             description = $5,
-             address = $6,
-             industry = $7,
-             company_size = $8,
-             founded_year = $9,
-             representative_name = $10,
-             company_phone = $11,
+             brand_name = $2::text,
+             website_url = $3::text,
+             description = $4::text,
+             address = $5::text,
+             industry = $6::text,
+             company_size = $7::text,
+             founded_year = $8::text,
+             representative_name = $9::text,
+             company_phone = $10::text,
              updated_at = now()
            WHERE id = $1`,
           [
             companyId,
-            (nm.company_name || "").trim(),
             (nm.brand_name || "").trim() || null,
             (nm.homepage_url || "").trim() || null,
             (nm.description || "").trim() || null,
             (nm.address || "").trim() || null,
             (nm.industry || "").trim() || null,
             (nm.company_size || "").trim() || null,
-            nmFoundedYear,
+            nmFoundedYear === null ? null : String(nmFoundedYear),
             (nm.representative_name || "").trim() || null,
             (nm.company_phone || "").replace(/\D/g, "") || null,
           ]

@@ -3345,7 +3345,9 @@ export default function JobPostForm({
               {/* 공고 헤더(미리보기형): 실제 상세화면 최상단에 보일 브랜드 + 제목 */}
               <div style={{ padding: "4px 0 14px", marginBottom: 4 }}>
                 <div style={{ marginBottom: 6 }}>
-                  {nonMember ? (
+                  {/* 고치는 중이면 매장명은 글자로만 둔다 — 업체 이름은 업체 화면에서
+                      고치는 값이라, 여기서 바꿔도 남을 곳이 없다. 새로 등록할 때는 친다. */}
+                  {nonMember && !editId ? (
                     <input
                       value={newCompanyName}
                       onChange={(e) => setNewCompanyName(e.target.value)}
@@ -3353,6 +3355,10 @@ export default function JobPostForm({
                       className="jobpost-brand-input"
                       style={{ fontWeight: 700, color: "#555", border: "none", outline: "none", background: "transparent", padding: 0, width: "100%" }}
                     />
+                  ) : nonMember && editId ? (
+                    <div className="jobpost-brand-input" style={{ fontWeight: 700, color: "#555" }}>
+                      {newCompanyName || "—"}
+                    </div>
                   ) : (
                     <div className="jobpost-brand-input" style={{ fontWeight: 700, color: "#555" }}>
                       {previewCompanyName}
@@ -4207,7 +4213,15 @@ export default function JobPostForm({
                   // 두 단으로 짜면 이름과 값이 지그재그로 흩어져 읽기 어려웠다.
                   // minmax(0,1fr) 이어야 긴 값(인스타 주소 등)이 칸 안에서 줄바꿈된다.
                   <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 0 }}>
-                    <div style={row}><span style={lbl2}>{L.name}<span style={req}> *</span></span><input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} /></div>
+                    {/* 고치는 중이면 매장명은 잠근다.
+                        업체 이름은 업체 화면에서 고치는 값이라 여기서 바꿔도 남을 곳이
+                        없다. 열어 두면 고쳤는데 되돌아온 것처럼 보인다.
+                        새로 등록할 때는 그대로 친다 — 직접 등록은 여기서 이름을 받는다. */}
+                    <div style={row}><span style={lbl2}>{L.name}<span style={req}> *</span></span>
+                      {editId
+                        ? <span style={{ flex: 1, minWidth: 0, fontSize: 15, color: "#555", padding: "6px 2px" }}>{newCompanyName || "—"}</span>
+                        : <input style={inpHl(!!newCompanyName)} value={newCompanyName} onChange={(e) => setNewCompanyName(e.target.value)} />}
+                    </div>
                     <div style={row}><span style={lbl2}>업종</span>{!fiIndustry.trim() && (<select style={sel3(!!nmIndustry)} value={nmIndustry} onChange={(e) => { if (e.target.value === "__fi__") { setFiOpen("industry"); return; } setFiIndustry(""); setNmIndustry(e.target.value); }}><option value=""></option>{industryGroupsFor(jobGroupType === "매장" ? "STORE" : "OFFICE").flatMap((g) => g.items).map((it) => (<option key={it} value={it}>{it}</option>))}{nonMember && <option value="__fi__">직접입력…</option>}</select>)}{freeField("industry", fiIndustry, setFiIndustry, "직접 입력…", false, () => setNmIndustry(""))}</div>
                     {isOffice && (
                       <div style={row}><span style={lbl2}>{L.size}</span><select style={sel3(!!nmSize)} value={nmSize} onChange={(e) => setNmSize(e.target.value)}><option value=""></option>{["1~10명", "10~50명", "50~100명", "100~300명", "300~1000명", "1000명 이상"].map((sz) => (<option key={sz} value={sz}>{sz}</option>))}</select></div>
