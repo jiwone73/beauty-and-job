@@ -8,6 +8,7 @@ import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { 공고모양 } from "@/lib/jobShape";
 import { 전형절차이름, 근무지이름, 담당자이름 } from "@/lib/constants";
+import { 상세합치기 } from "@/lib/detailMerge";
 import { formatSalaryWon } from "@/lib/salary";
 import CategoryPickPopover from "@/components/jobs/CategoryPickPopover";
 import WorkScheduleModal from "@/components/jobs/WorkScheduleModal";
@@ -111,55 +112,6 @@ const SOURCE_CAFES: { name: string; url: string }[] = [
 ];
 
 const ISSUE_FIELDS = ["채용유형", "상단 배너", "회사명", "제목", "모집분야", "근무지역", "상세요강 이미지", "기타"];
-// 같은 말이 두 번 실리는 것을 막는 장치.
-//
-// 파서는 원문을 상세요강에 통째로 담으면서, 그 안의 「우대 조건 : …」·「급여 조건 : …」
-// 같은 줄을 우대사항 칸에도 따로 담아 보낸다. 그 칸을 다시 상세요강에 이어
-// 붙이니 같은 문장이 두 번 나갔다. 예전 검사는 글자가 똑같을 때만 걸러서
-// 「우대 조건 : 책임감 있고…」와 「책임감 있고…」를 다른 줄로 봤다.
-//
-// 그래서 두 가지를 더 본다.
-//   · 한쪽이 다른 쪽을 통째로 품고 있으면 같은 말이다(라벨만 더 붙은 경우).
-//     「협의」 같은 짧은 줄까지 이러면 멀쩡한 줄이 사라지므로 여덟 자부터 본다.
-//   · 라벨에서 「조건·사항·내용」을 떼고 견준다. 「급여 조건 : 월 300만원」과
-//     「급여: 월 300만원」은 하려는 말이 같다. 값만으로 견주지 않는 이유는
-//     「경력 : 무관」과 「학력 : 무관」처럼 라벨이 달라야 뜻이 갈리는 줄이 있어서다.
-type 줄열쇠 = { 전체: string; 정규: string };
-const 열쇠만들기 = (줄: string): 줄열쇠 => {
-  const 전체 = 줄.replace(/\s+/g, "");
-  const i = 전체.indexOf(":");
-  if (i <= 0 || i > 12) return { 전체, 정규: 전체 };
-  const 라벨 = 전체.slice(0, i).replace(/(조건|사항|내용|여부|정보)$/, "");
-  const 값 = 전체.slice(i + 1);
-  return { 전체, 정규: (라벨 && 값) ? `${라벨}:${값}` : 전체 };
-};
-const 같은말있나 = (담긴: 줄열쇠[], 이번: 줄열쇠) =>
-  담긴.some((앞) =>
-    앞.전체 === 이번.전체
-    || 앞.정규 === 이번.정규
-    || (이번.전체.length >= 8 && 앞.전체.includes(이번.전체)));
-
-// 나뉘어 온 글을 한 덩이로 잇는다. 빈 것은 건너뛰고, 사이는 빈 줄 하나로 띄운다.
-const 상세합치기 = (...조각: (string | null | undefined)[]) => {
-  const 본줄: 줄열쇠[] = [];
-  const 담을것: string[] = [];
-  for (const 조각하나 of 조각) {
-    const 글 = (조각하나 || "").trim();
-    if (!글) continue;
-    // 통째로 이미 담긴 조각은 버린다(파서가 description 과 requirements 에 같은 글을
-    // 넣어 보내는 일이 흔하다).
-    const 남길줄 = 글.split("\n").filter((줄) => {
-      const 열쇠 = 열쇠만들기(줄);
-      if (!열쇠.전체) return true;         // 빈 줄은 모양이라 세지 않는다
-      if (같은말있나(본줄, 열쇠)) return false;
-      본줄.push(열쇠);
-      return true;
-    });
-    const 남은글 = 남길줄.join("\n").trim();
-    if (남은글) 담을것.push(남은글);
-  }
-  return 담을것.join("\n\n");
-};
 
 const CONTACT_METHOD_OPTIONS = ["문자", "이메일", "전화", "카카오톡", "직접방문", "뷰티워크 온라인지원", "회사 홈페이지 지원", "상세요강 참조"]; // 지원방법(복수)
 const CONVERTIBLE_SUFFIX = " · 정규직 전환 가능"; // 계약직·인턴 하위 옵션

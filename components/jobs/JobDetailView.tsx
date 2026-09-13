@@ -484,50 +484,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             </section>
           )}
 
-          {/* 자격 요건 */}
-          {job.requirements?.length > 0 && (
-            <section className="job-detail-section">
-              <h2 className="job-detail-section-title">자격 요건</h2>
-              <ul className="job-detail-list">
-                {job.requirements.map((raw: string, i: number) => (
-                  <li key={i} className="job-detail-list-item">
-                    <CheckCircle2 size={16} className="job-detail-list-icon" />
-                    <span>{raw}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* 우대 사항 */}
-          {job.preferreds?.length > 0 && (
-            <section className="job-detail-section">
-              <h2 className="job-detail-section-title">우대 사항</h2>
-              <ul className="job-detail-list">
-                {job.preferreds.map((raw: string, i: number) => (
-                  <li key={i} className="job-detail-list-item">
-                    <CheckCircle2 size={16} className="job-detail-list-icon check-soft" />
-                    <span>{raw}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* 주요 업무 */}
-          {job.responsibilities?.length > 0 && (
-            <section className="job-detail-section">
-              <h2 className="job-detail-section-title">주요 업무</h2>
-              <ul className="job-detail-list">
-                {job.responsibilities.map((item: string, i: number) => (
-                  <li key={i} className="job-detail-list-item">
-                    <CheckCircle2 size={16} className="job-detail-list-icon" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          {/* 자격 요건·우대 사항·주요 업무는 섹션으로 세우지 않는다.
+              등록폼이 이 셋을 상세요강 하나로 합친 뒤로, 폼에서는 보이지도 고치지도
+              못하는 글이 공고에만 따로 서 있었다. 이제 공고모양()에서 상세요강으로
+              합쳐 들어온다 — 값이 사라지는 게 아니라 폼과 같은 자리에 실린다. */}
         </>)}
 
         {/* 기업 정보 (공고 내용 아래) */}
