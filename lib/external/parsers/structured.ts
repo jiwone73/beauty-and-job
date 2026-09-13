@@ -964,7 +964,11 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
 
   const g = (re: RegExp) => (chunk.match(re) || [])[1] || "";
   const shopName = g(/"shopName":"([^"]*)"/).trim();
-  const title = g(/"title":"((?:[^"\\]|\\.)*)"/).replace(/\\n/g, " ").replace(/\\(.)/g, "$1").trim();
+  const title = g(/"title":"((?:[^"\\]|\\.)*)"/)
+    .replace(/\\n/g, " ")
+    // 제목도 본문과 같다 — \uXXXX 를 먼저 글자로 되돌려야 "u003e" 가 남지 않는다.
+    .replace(/\\+u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/\\(.)/g, "$1").trim();
   if (!shopName && !title) return null;
 
   const shopAddress = g(/"shopAddress":"([^"]*)"/).trim();
@@ -979,6 +983,10 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
     .replace(/\\+r/g, "")
     .replace(/\\+t/g, " ")
     .replace(/\\+"/g, '"')
+    // \u003e(>) 같은 표기를 글자로 되돌린 다음에 남은 역슬래시를 걷는다.
+    // 순서가 반대면 역슬래시만 사라져 "u003e" 라는 글자가 본문에 그대로 박힌다 —
+    // "헤어디자이너[경력] > 월급 220만원" 이 "u003e" 로 보이던 게 이것이다.
+    .replace(/\\+u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
     .replace(/\\+/g, "")
     .trim()
     .slice(0, 8000);
