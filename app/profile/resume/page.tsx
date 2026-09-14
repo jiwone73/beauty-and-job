@@ -45,6 +45,15 @@ function ResumePageContent() {
   const [resumeType, setResumeType] = useState<"office" | "salon">("office");
   // 프로필에서 아직 안 채운 필수 항목. 하나라도 있으면 이력서를 쓸 수 없다.
   const [못채운것, set못채운것] = useState<string[]>([]);
+  /**
+   * 프로필을 확인했는가.
+   *
+   * 없으면 첫 그림에 이력서 편집기가 통째로 그려졌다가 프로필을 받아 온 뒤에야
+   * 안내판으로 바뀐다 — 「누르면 뭔가 스쳤다가 이 화면이 뜬다」의 정체다.
+   * 모르는 동안에는 둘 다 그리지 않는다. 머리줄은 그대로 있으니 화면이
+   * 하얗게 비지는 않는다.
+   */
+  const [프로필확인, set프로필확인] = useState(false);
   // 작성 완료를 누른 뒤 아직 못 채운 곳. 각 칸 위에 붙는다.
   const [흠, set흠] = useState<흠[]>([]);
   const 칸흠 = (어디: string) => 흠.filter((h) => h.어디 === 어디 && !h.누구).map((h) => h.말);
@@ -143,9 +152,11 @@ function ResumePageContent() {
           // 채우러 갈지는 본인이 고르게 한다.
           if (missing.length > 0) {
             set못채운것(missing);
+            set프로필확인(true);
             return;
           }
           set못채운것([]);
+          set프로필확인(true);
           if (res.data.email) setEmailLocal(res.data.email);
           if (res.data.phone) setPhoneLocal(res.data.phone);
           if (res.data.job_type === "STORE") setResumeType("salon");
@@ -158,9 +169,13 @@ function ResumePageContent() {
           if (res.data.address_road) {
             setAddressDisplay(res.data.address_road + (res.data.address_detail ? ` ${res.data.address_detail}` : ""));
           }
+        } else {
+          // 프로필을 못 읽었으면 막지 않는다. 읽기 실패로 이력서를 잠그면
+          // 다 채워 둔 사람이 영문 모르고 안내판을 본다.
+          set프로필확인(true);
         }
       })
-      .catch(console.error);
+      .catch((e) => { console.error(e); set프로필확인(true); });
   }, []);
 
   // 프로필에서 설정한 직군은 서버(officeAreas)에 저장됨 → 우선 사용
@@ -439,7 +454,7 @@ function ResumePageContent() {
           이력서에 그대로 실려 가는데, 비어 있으면 빈 이력서가 완성된 척
           만들어진다. 무엇이 비었는지 여기서 보여주고 채우러 갈지는 본인이
           고른다 — 예전에는 알림창을 띄우고 곧장 프로필로 밀어냈다. */}
-      {못채운것.length > 0 ? (
+      {!프로필확인 ? null : 못채운것.length > 0 ? (
         <div className="resume-gate">
           <h2>프로필을 먼저 채워 주세요</h2>
           <p>이력서의 이름·연락처·희망 근무지역은 프로필에서 그대로 가져옵니다.</p>
