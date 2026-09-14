@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { ok, err, requireAuth } from "@/lib/api";
 import { supabaseAdmin } from "@/lib/supabase";
 import { shrinkImage } from "@/lib/imageShrink";
+import { 썸네일도올리기 } from "@/lib/uploadThumb";
 
 const BUCKET = "job-images";
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -36,6 +37,8 @@ export async function POST(req: NextRequest) {
       console.error("[admin job image upload]", uploadError);
       return err("FILE_004", "업로드에 실패했습니다.");
     }
+
+    await 썸네일도올리기(BUCKET, fileName, 줄인.buf, 줄인.contentType);
 
     const { data: urlData } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
     return ok({ url: urlData.publicUrl, name: file.name });

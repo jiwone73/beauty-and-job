@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { thumbUrl } from "@/lib/thumb";
 
 // 배너/썸네일 한 칸.
 //  기본: 정해진 칸 높이에 맞춰 축소(contain), 남는 여백은 이미지 모서리 배경색으로 채움.
@@ -34,10 +35,14 @@ export function BannerImg({ src, alt, ratio = false, fill = false }: { src: stri
   // 누른 채 마우스를 움직이면 페이지 스크롤 대신 사진이 통째로 딸려 나온다
   // ("스크롤하면 사진이 드래그 되서 움직이네"). 끌어서 순서 바꾸기는 이 img를 감싼
   // BannerStrip의 바깥 div가 따로 담당하므로 여기서 꺼도 그 기능엔 영향이 없다.
+  // 카드(fill)는 250px 칸이라 1600px 원본을 받을 이유가 없다. 같은 자리에 놓인
+  // 400px 사진을 먼저 쓰고, 없으면(onError) 원본으로 되돌아간다.
   if (fill) {
+    const 작은것 = noCors ? null : thumbUrl(src);
     return (
       <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
-        <img src={src} alt={alt} loading="lazy" decoding="async" draggable={false}
+        <img src={작은것 || src} alt={alt} loading="lazy" decoding="async" draggable={false}
+          onError={() => { if (작은것) setNoCors(true); }}
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       </div>
     );

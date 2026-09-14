@@ -456,6 +456,12 @@
 .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
 .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
 .card-grid-5 { grid-template-columns: repeat(5, 1fr); }
+/* 목록 「더 보기」 — 한 번에 24건씩 늘린다. */
+.jobs-more { display: flex; justify-content: center; padding: 28px 0 4px; }
+.jobs-more button { font-family: inherit; font-size: 15px; color: #555; background: #fff;
+  border: 1px solid var(--color-border); border-radius: 10px; height: 48px; padding: 0 26px; cursor: pointer; }
+.jobs-more button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
 /* 메인 채용관 머리. 파는 자리라 「광고」를 붙인다(표시 의무). */
 /* 히어로 판과 붙어 보이지 않게 첫 채용관 위만 넉넉히 띄운다. */
 .showcase-sec.top { padding-top: 34px; }

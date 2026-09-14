@@ -5,6 +5,7 @@ import { ok, err } from "@/lib/api";
 import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
 import { shrinkImage } from "@/lib/imageShrink";
+import { 썸네일도올리기 } from "@/lib/uploadThumb";
 
 const BUCKET = "company-logos"; // 기존 버킷 재사용 (signboard/ 경로로 구분)
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -66,6 +67,8 @@ export async function POST(req: NextRequest) {
         console.error("[company signboard upload]", uploadError);
         return err("FILE_004", "업로드에 실패했습니다.");
       }
+
+      await 썸네일도올리기(BUCKET, fileName, 줄인.buf, 줄인.contentType);
 
       const { data: urlData } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
       const publicUrl = urlData.publicUrl;

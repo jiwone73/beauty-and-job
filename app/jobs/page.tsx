@@ -278,6 +278,10 @@ function JobsPageInner() {
     setSelectedEmployment("고용형태 전체"); setSelectedCareer("경력 전체");
     setSelectedBenefits([]); set열린팝오버(null);
   };
+  // 한 번에 다 그리면 카드가 100장이 된다. 화면에 보이는 만큼만 그리고 「더 보기」로
+  // 늘린다 — 사진은 lazy 라 안 보이면 안 받지만, 카드 100장은 그 자체로 무겁다.
+  const 한번에 = 24;
+  const [보여줄수, set보여줄수] = useState(한번에);
   const filteredJobs = (apiJobs || []).filter((j: any) => {
     const matchType = j.type === jobTypeFilter || j.type === "both";
     const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
@@ -291,6 +295,11 @@ function JobsPageInner() {
     const matchBrand = !selectedBrand || (j.brand || "").includes(selectedBrand);
     return matchType && matchJob && matchCareer && matchEmployment && matchBenefit && matchSalary && matchBrand;
   });
+
+  // 조건을 바꾸면 처음 24건부터 다시 본다. 아니면 필터를 좁혔는데도 아까 늘려 둔
+  // 만큼 그대로 뜬다.
+  useEffect(() => { set보여줄수(한번에); },
+    [selectedJobs, selectedCareer, selectedEmployment, selectedBenefits, selectedSalary, searchQuery, selectedRegions, apiJobs]);
 
   return (
     <div className="jobs-page">
@@ -499,7 +508,7 @@ function JobsPageInner() {
         {/* ===== 채용공고 그리드 ===== */}
         {filteredJobs.length > 0 ? (
           <div className="jobs-grid">
-            {filteredJobs.map((job) => (
+            {filteredJobs.slice(0, 보여줄수).map((job) => (
               <JobCard key={job.id} data={{
                 id: job.id,
                 title: job.title,
@@ -520,6 +529,14 @@ function JobsPageInner() {
             <p className="jobs-empty-title">조건에 맞는 포지션이 없어요.</p>
             <button className="jobs-empty-reset" onClick={() => { setSelectedJobs([]); setSelectedCareer("경력 전체"); setSelectedEmployment("고용형태 전체"); setSelectedBenefits([]); setSelectedSalary(0); setSearchQuery(""); setSelectedRegions([]); }}>
               필터 초기화
+            </button>
+          </div>
+        )}
+
+        {filteredJobs.length > 보여줄수 && (
+          <div className="jobs-more">
+            <button type="button" onClick={() => set보여줄수((n) => n + 한번에)}>
+              공고 더 보기 ({filteredJobs.length - 보여줄수}건)
             </button>
           </div>
         )}

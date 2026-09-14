@@ -13,6 +13,7 @@
 // 오히려 커진 경우. 어느 쪽이든 받은 것을 그대로 돌려준다.
 
 import sharp from "sharp";
+import { 썸네일꼬리 } from "@/lib/thumb";
 
 const 가로상한 = 1600;
 const 그냥둘크기 = 300 * 1024;
@@ -58,4 +59,37 @@ function 확장자(ct: string): string {
   if (/gif/i.test(ct)) return "gif";
   if (/webp/i.test(ct)) return "webp";
   return "jpg";
+}
+
+
+// ── 목록 카드용 작은 사진 ─────────────────────────────────────────────
+//
+// 왜 또 만드나: 위에서 줄인 1600px 은 공고 상세 본문(952px 칸) 기준이다.
+// 목록 카드는 250px 이라 같은 파일을 쓰면 넓이로 40배를 받아서 버린다.
+// 실측(2026-09-14) 목록 한 장에 사진 97 장 13.8MB, 평균 146KB 였다.
+//
+// 이름 규칙: 원본이 `a/b.jpg` 면 썸네일은 `a/b-t400.webp` 다. 칸을 따로 두지
+// 않고 이름으로 찾는다 — 표에 칸을 더하면 공고·기업·프로필 네 군데를 다 고쳐야
+// 한다. 없는 경우는 화면이 원본으로 되돌아간다(onError).
+
+const 썸네일가로 = 400;
+
+/** 목록 카드용 400px webp. 못 만들면 null — 그때는 원본을 그대로 쓴다. */
+export async function makeThumb(input: Buffer, contentType: string): Promise<Buffer | null> {
+  if (/gif/i.test(contentType)) return null;   // 움직이는 그림은 첫 장만 남아 어색하다
+  try {
+    const out = await sharp(input, { failOn: "none", sequentialRead: true })
+      .rotate()
+      .resize({ width: 썸네일가로, withoutEnlargement: true })
+      .webp({ quality: 72 })
+      .toBuffer();
+    return out;
+  } catch {
+    return null;
+  }
+}
+
+/** 원본 주소 → 썸네일 주소. 확장자만 갈아 끼운다. */
+export function thumbPath(path: string): string {
+  return path.replace(/\.(jpe?g|png|webp|gif)$/i, "") + 썸네일꼬리;
 }

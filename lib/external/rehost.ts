@@ -6,6 +6,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase";
 import { shrinkImage } from "@/lib/imageShrink";
+import { 썸네일도올리기 } from "@/lib/uploadThumb";
 
 const BUCKET = "job-images";
 const UA =
@@ -53,6 +54,7 @@ export async function rehostImages(
         .from(BUCKET)
         .upload(fileName, 줄인.buf, { contentType: 줄인.contentType, upsert: true });
       if (error) continue;
+      await 썸네일도올리기(BUCKET, fileName, 줄인.buf, 줄인.contentType);
       const { data } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fileName);
       if (data?.publicUrl) out.push(data.publicUrl);
     } catch {
