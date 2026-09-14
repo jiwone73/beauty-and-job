@@ -170,7 +170,7 @@ function Hero() {
           <div className="mt-cols">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 본사까지,<br /><b>뷰티업계 일자리를 한곳에서</b></h2>
+                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 오피스직까지,<br /><b>뷰티업계 일자리를 한곳에서</b></h2>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
                 {/* 무엇을 찾을지 고르고(토글), 그게 뭔지 읽고(설명), 치는
                     칸(검색바)까지가 한 동작이다. 사이가 벌어지면 셋이 따로
