@@ -21,7 +21,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Coffee, TrendingUp, Gift } from "lucide-react";
+  ChevronDown, Gift } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
@@ -245,6 +245,7 @@ function Hero() {
                       <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
                         {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
                       </Link>
+                      <Link href="/jobs" className="mt-evt-more">자세히 보기 ›</Link>
                     </div>
                   );
                 })()}
@@ -253,41 +254,28 @@ function Hero() {
               <div className="mt-card mt-evt">
                 <div className="mt-chead">
                   <Link href="/event" className="t"><Gift size={17} className="mt-ic" />이달의 이벤트</Link>
+                  <span className="mt-evt-lead">지금, 뷰티워크에서 준비한 특별한 혜택을 만나보세요.</span>
                   {/* 언제 왜 주는지는 두 혜택에 공통이다. 줄마다 되풀이하지 않고
                       제목 옆에 한 번만 둔다. */}
                   <span className="mt-evt-when"><Sparkles size={13} className="mt-evt-when-ic" />10월 오픈 기념</span>
                 </div>
+                {/* 판 하나가 통째로 그림이다 — 디자인 그대로 쓰고, 판 전체가
+                    눌리는 자리다. 안쪽에 또 「보기」 단추를 두지 않는다. */}
                 <div className="mt-evt-list">
-                  {/* 「개인회원」 딱지와 「이력서를 등록하면」 줄은 걷었다 —
-                      아래 단추가 이미 누구 것인지 말하고, 조건은 곁줄 한 줄로 붙는다. */}
-                  <div className="mt-evt-item">
-                    <div className="mt-evt-row">
-                      <span className="mt-evt-ic"><Coffee size={19} /></span>
-                      <span className="mt-evt-txt">
-                        <span className="mt-evt-t">무료 메가MGC 커피</span>
-                        <span className="mt-evt-s">이력서 등록 시 2,000원 쿠폰</span>
-                      </span>
-                      <ResumeCta className="mt-evt-btn">이력서 등록하기</ResumeCta>
-                    </div>
-                  </div>
-                  <div className="mt-evt-item">
-                    <div className="mt-evt-row">
-                      <span className="mt-evt-ic"><TrendingUp size={19} /></span>
-                      <span className="mt-evt-txt">
-                        <span className="mt-evt-t">무료 상단 노출</span>
-                        <span className="mt-evt-s">공고 등록 시 · 10월 1일부터</span>
-                      </span>
-                      <button
-                        type="button"
-                        className="mt-evt-btn"
-                        onClick={() => router.push(
-                          isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
-                        )}
-                      >
-                        채용공고 등록하기
-                      </button>
-                    </div>
-                  </div>
+                  <ResumeCta className="mt-evt-banner">
+                    <img src="/images/event/event-user.png"
+                      alt="개인회원 이벤트 — 이력서 등록하고 메가MGC 커피 2,000원 쿠폰 받기" />
+                  </ResumeCta>
+                  <button
+                    type="button"
+                    className="mt-evt-banner"
+                    onClick={() => router.push(
+                      isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
+                    )}
+                  >
+                    <img src="/images/event/event-company.png"
+                      alt="기업회원 이벤트 — 채용공고 등록하고 10월 한 달 무료 우선 노출" />
+                  </button>
                 </div>
               </div>
             </div>

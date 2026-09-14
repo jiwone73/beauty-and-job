@@ -12927,9 +12927,19 @@ button,
 
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
+/* 이달의 이벤트 — 개인·기업 두 쪽을 나란히 건다.
+   바탕 색은 로고의 보라(#582681)와 옅은 분홍을 아주 묽게 푼 값이다. 칠한
+   덩어리가 아니라 종이 두 장을 얹은 정도로만 보이게 둔다. */
 .mt-evt { display: flex; flex-direction: column; }
-.mt-evt-list { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
-.mt-evt-item + .mt-evt-item { border-left: 1px solid #f7f7f8; padding-left: 18px; }
+.mt-evt-lead { font-size: 13px; color: #555; margin-left: 10px; flex: 1; }
+.mt-evt-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+/* 판 하나가 통째로 그림이다. 판 전체가 눌린다 — 안쪽에 또 단추를 두지 않는다. */
+.mt-evt-banner { display: block; width: 100%; padding: 0; border: 0; background: none;
+  border-radius: 14px; overflow: hidden; cursor: pointer; font-family: inherit; }
+.mt-evt-banner img { display: block; width: 100%; height: auto; }
+.mt-evt-banner:hover { filter: brightness(.985); }
+/* 그림 자리. 파일이 없으면 <img> 가 스스로 숨어 칸을 안 먹는다. */
+
 /* 회색 구분선이 회색 카드 바탕에 얹혀 묻혀 있었다("개인회원·기업회원
    사이 세로선이 안 보인다"). .mt-card 가 흰 바탕으로 바뀌는 PC 폭에서는
    테두리 색(--color-border)으로 갈아 실제로 보이게 한다. 이 규칙은
@@ -12938,27 +12948,12 @@ button,
 @media (min-width: 1025px) { .mt-evt-item + .mt-evt-item { border-left-color: var(--color-border); } }
 /* 누가 받는 혜택인지는 위에 작은 글자로만 — 배경 딱지를 달면 아래 버튼과
    무게가 겹쳐 뭘 눌러야 할지 헷갈린다("배지·버튼·링크로 액션이 세 군데"). */
-.mt-evt-who { display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 9px; }
-.mt-evt-row { display: flex; align-items: center; gap: 12px; margin-bottom: 0; }
 /* 버튼은 카드 맨 아래, 정보를 다 읽은 다음에 만나는 하나뿐인 행동이다. */
 /* 칸을 꽉 채운 보라 단추는 납작해 보였다. 줄 오른쪽 끝에 글자 폭만큼만 둔다 —
    세로 자리를 안 먹어 카드가 한 줄 짧아지고, 채운 덩어리도 사라진다. */
-.mt-evt-btn { font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -.2px;
-  height: 34px; padding: 0 14px; border-radius: 8px; cursor: pointer; white-space: nowrap;
-  display: inline-flex; align-items: center; justify-content: center; flex: none; text-decoration: none;
-  background: #fff; color: var(--color-primary); border: 1px solid var(--color-border);
-  transition: background .15s, border-color .15s, color .15s; }
-.mt-evt-btn:hover { border-color: var(--color-primary); }
-.mt-evt-txt { flex: 1; min-width: 0; }
 /* 내용 오른쪽 끝에 원문으로 가는 길. 버튼과 무게가 겹치지 않게 글자만 둔다. */
 .mt-evt-more { flex-shrink: 0; font-size: 12px; color: #555; text-decoration: none; white-space: nowrap; }
 .mt-evt-more:hover { color: var(--color-primary); }
-.mt-evt-ic { flex-shrink: 0; color: var(--color-primary); display: flex; align-items: center; justify-content: center; }
-.mt-evt-l { display: block; font-size: 13px; color: #555; }
-.mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #555; line-height: 1.35; margin-top: 0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mt-evt-s { display: block; font-size: 13px; color: #555; margin-top: 4px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .mt-tkc .mt-tk-l { font-size: 14px; font-weight: 600; color: var(--color-primary); flex-shrink: 0;
   padding-right: 0; border-right: 0; }
@@ -12985,10 +12980,7 @@ button,
 @media (max-width: 640px) {
   .mainTop { padding: 10px 0 2px; }
   /* 좁아지면 개인·기업을 위아래로 쌓고, 딱지 옆 버튼도 줄바꿈을 허용한다. */
-  .mt-evt-list { grid-template-columns: 1fr; gap: 14px; }
-  .mt-evt-item + .mt-evt-item { border-left: 0; padding-left: 0;
-    border-top: 1px solid #f7f7f8; padding-top: 14px; }
-  .mt-evt-more { display: none; }
+      .mt-evt-more { display: none; }
   .mt-hero-in { padding: 22px 20px; }
   .mt-hero-h { font-size: 24px; }
   .mt-jobs { padding: 18px 16px 20px; border-radius: 14px; }
