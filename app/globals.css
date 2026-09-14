@@ -12980,9 +12980,10 @@ button,
 .mt-evt-coin i { font-style: normal; font-size: 9.5px; font-weight: 600; }
 .mt-evt-pts { position: absolute; right: 7px; top: 50%; transform: translateY(-45%); z-index: 1;
   display: flex; flex-direction: column; gap: 4px; }
-.mt-evt-pts i { font-style: normal; background: #fff; border-radius: 100px; padding: 3px 8px 3px 6px;
-  font-size: 9.5px; font-weight: 600; color: #555; white-space: nowrap; }
-.mt-evt-pts i::before { content: "✓"; color: var(--color-primary); margin-right: 3px; font-weight: 700; }
+/* 체크표는 걷었다. 9.5px 글자 옆에 붙은 표가 글자만큼 자리를 먹으면서 정작
+   읽어야 할 말을 못 키우고 있었다. 표를 빼고 그 자리를 글자에 준다. */
+.mt-evt-pts i { font-style: normal; background: #fff; border-radius: 100px; padding: 3px 9px;
+  font-size: 11.5px; font-weight: 600; color: #555; white-space: nowrap; }
 /* 기간·조건은 바뀌는 정보다. 그림에 구워 넣으면 날짜가 바뀔 때마다 그림을
    다시 받아야 한다 — 글자로 둔다.
    크기는 바로 위 .mt-evt-lead 와 같다. 이 줄만 11.5px 로 작아 같은 판 안에서
