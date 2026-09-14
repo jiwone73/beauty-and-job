@@ -306,9 +306,6 @@ function SignupEmailContent() {
                 )}
               </button>
             </div>
-            {jobType === "" && (
-              <p className="text-[12px] md:text-[14px] text-[#e74c3c] mt-2">직군을 선택해주세요.</p>
-            )}
           </div>
 
           <JobCareerPicker jobType={jobType as any} group={대분류} stage={단계}
