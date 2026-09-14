@@ -12872,7 +12872,7 @@ button,
 /* '이달의 이벤트' 제목과 같은 글자. 두 카드가 위아래로 붙어 있으니 머리글
    무게가 같아야 한 짝으로 읽힌다. */
 .mt-nc-tag { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
-  font-size: 14px; font-weight: 600; color: #555; line-height: 1.35; text-decoration: none; }
+  font-size: 15px; font-weight: 600; color: #555; line-height: 1.35; text-decoration: none; }
 .mt-nc-tag:hover { color: var(--color-primary); }
 .mt-nc .mt-notice { flex: 1; min-width: 0; }
 .mt-nc .nt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -12880,7 +12880,7 @@ button,
 .mt-ask { font-size: 17px; color: #555; margin: 0 0 10px; }
 /* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
    무엇에 대한 말인지 한 번 더 생각해야 한다. */
-.mt-type-desc { font-size: 14px; color: var(--color-text); margin: 9px 0 0; line-height: 1.55; word-break: keep-all; }
+.mt-type-desc { font-size: 15px; color: var(--card-meta-c); margin: 9px 0 0; line-height: 1.55; word-break: keep-all; }
 
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #555; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
@@ -12923,7 +12923,7 @@ button,
 .mt-dot { width: 6px; height: 6px; border-radius: 50%; background: #582681; flex-shrink: 0; }
 .mt-more { font-size: 13px; color: #555; text-decoration: none; }
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
-.mt-notice .nt { display: block; font-size: 14px; font-weight: 400; color: #555; line-height: 1.35; }
+.mt-notice .nt { display: block; font-size: 15px; font-weight: 400; color: #555; line-height: 1.35; }
 
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
@@ -12931,7 +12931,7 @@ button,
    바탕 색은 로고의 보라(#582681)와 옅은 분홍을 아주 묽게 푼 값이다. 칠한
    덩어리가 아니라 종이 두 장을 얹은 정도로만 보이게 둔다. */
 .mt-evt { display: flex; flex-direction: column; }
-.mt-evt-lead { font-size: 13px; color: #555; margin-left: 10px; flex: 1; }
+.mt-evt-lead { font-size: 14.5px; color: var(--card-meta-c); margin-left: 10px; flex: 1; }
 .mt-evt-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 /* 판 하나. 글자는 직접 짜고 그림만 원본에서 떼어 얹는다 — 그림에 글자를 구워
    넣으면 330px 칸에서 3분의 1로 눌려 안 읽힌다. 바탕은 떼어 온 그림의 가장자리
@@ -12968,7 +12968,7 @@ button,
 .mt-evt-pts i::before { content: "✓"; color: var(--color-primary); margin-right: 3px; font-weight: 700; }
 /* 기간·조건은 바뀌는 정보다. 그림에 구워 넣으면 날짜가 바뀔 때마다 그림을
    다시 받아야 한다 — 글자로 둔다. */
-.mt-evt-note { margin: 10px 0 0; font-size: 11.5px; color: #555; }
+.mt-evt-note { margin: 10px 0 0; font-size: 11.5px; color: var(--card-meta-c); }
 /* 그림 자리. 파일이 없으면 <img> 가 스스로 숨어 칸을 안 먹는다. */
 
 /* 회색 구분선이 회색 카드 바탕에 얹혀 묻혀 있었다("개인회원·기업회원
@@ -12986,10 +12986,10 @@ button,
 .mt-evt-more { flex-shrink: 0; font-size: 12px; color: #555; text-decoration: none; white-space: nowrap; }
 .mt-evt-more:hover { color: var(--color-primary); }
 
-.mt-tkc .mt-tk-l { font-size: 14px; font-weight: 600; color: var(--color-primary); flex-shrink: 0;
+.mt-tkc .mt-tk-l { font-size: 15px; font-weight: 600; color: var(--color-primary); flex-shrink: 0;
   padding-right: 0; border-right: 0; }
 /* 한 건만 한 줄로. 긴 제목은 자른다 — 흐르게 두면 끝까지 지나갈 때까지 기다려야 한다. */
-.mt-tk-one { flex: 1; min-width: 0; font-size: 14px; color: #555; text-decoration: none;
+.mt-tk-one { flex: 1; min-width: 0; font-size: 15px; color: #555; text-decoration: none;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mt-tk-one:hover { color: var(--color-primary); }
 .mt-ticker { margin-top: 14px; border: 1px solid #f7f7f8; border-radius: 12px; height: 48px;
