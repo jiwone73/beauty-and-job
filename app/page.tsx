@@ -21,7 +21,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, ChevronUp, Rocket, Coffee, TrendingUp, Megaphone, Gift } from "lucide-react";
+  ChevronDown, Rocket, Coffee, TrendingUp, Gift } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
@@ -162,7 +162,9 @@ function Hero() {
           <span className="mt-hero-photo" />
           <span className="mt-hero-in">
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
-            <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
+            {/* 히어로 카드에 있던 머리글을 배너로 옮겼다 — 처음 온 사람에게
+                여기가 무엇을 다루는 곳인지 알려주는 줄이라 없애면 안 된다. */}
+            <span className="mt-hero-h">살롱·샵 현장직부터 브랜드 본사까지,<br /><b>뷰티업계 일자리를 한곳에서</b></span>
             <span className="mt-hero-sub">{이벤트?.title || "10월 1일 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
           </span>
         </Link>
@@ -231,9 +233,7 @@ function Hero() {
                   카드보다 길어져 아래 끝이 어긋났다. */}
               <div className="mt-nrow">
                 <div className="mt-card mt-nc">
-                  <Link href="/notice" className="mt-nc-tag">
-                    <Megaphone size={17} className="mt-ic" />공지
-                  </Link>
+                  <Link href="/notice" className="mt-nc-tag">공지</Link>
                   <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
                     <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
                   </Link>
@@ -241,17 +241,12 @@ function Hero() {
 
                 {속보.length > 0 && (() => {
                   const 이번 = 속보[속보차례 % 속보.length];
-                  const 넘김 = (d: number) => set속보차례((n) => (n + d + 속보.length) % 속보.length);
                   return (
                     <div className="mt-card mt-nc mt-tkc">
                       <span className="mt-tk-l">채용속보</span>
                       <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
                         {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
                       </Link>
-                      <span className="mt-tk-nav">
-                        <button type="button" onClick={() => 넘김(-1)} aria-label="이전 속보"><ChevronUp size={15} /></button>
-                        <button type="button" onClick={() => 넘김(1)} aria-label="다음 속보"><ChevronDown size={15} /></button>
-                      </span>
                     </div>
                   );
                 })()}
