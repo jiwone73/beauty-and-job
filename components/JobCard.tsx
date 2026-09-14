@@ -23,19 +23,21 @@ export type JobCardData = {
 };
 
 /**
- * 카드 둘째 줄에 무엇을 놓을지.
+ * 카드 둘째 줄에 무엇을 놓을지 — 모집분야다.
  *
- * 매장 공고는 제목에 지점명이 대부분 들어 있다("준오헤어 홍대1호점과 함께…").
- * 그 아래 회사명을 또 놓으면 같은 말을 두 번 하는 셈이라, 정작 궁금한
- * '무슨 자리를 뽑는지'가 안 보인다. 그래서 모집분야를 놓는다.
+ * 예전에는 매장 공고에만 모집분야를 놓고 오피스 공고에는 회사명을 놓았다.
+ * 「매장 공고는 제목에 지점명이 들어 있으니 회사명을 또 놓을 필요가 없다」는
+ * 이유였는데, 실제 제목은 「★90일 디자이너 전환 시스템★」·「이직 할 미용실을
+ * 찾으세요?」처럼 가게 이름이 없는 것이 더 많았다. 그래서 어느 매장인지 알
+ * 길이 카드에 아예 없었다.
  *
- * 오피스 공고는 반대다. 제목이 직군으로 시작해서("브랜드 마케터") 어느 회사인지가
- * 빠진다. 그쪽은 회사명을 그대로 둔다.
+ * 이제 회사명은 사진 위에 얹는다(아래 jobcard-cover-badge). 글줄을 하나도
+ * 뺏지 않으니 카드 높이가 그대로고, 이 줄은 양쪽 다 모집분야를 쓴다.
  *
- * 모집분야가 없으면(옛 공고 등) 회사명으로 되돌아간다 — 빈 줄을 남기지 않는다.
+ * 모집분야가 없는 옛 공고는 회사명으로 되돌아간다 — 줄을 비우면 그 카드만
+ * 한 줄 낮아져 줄이 어긋난다.
  */
 function 둘째줄(data: JobCardData): string {
-  if (data.jobType === "OFFICE") return data.company;
   const c = (data.categories || []).filter(Boolean);
   if (!c.length) return data.company;
   // 칸이 한 줄뿐이라 다 늘어놓으면 뒤가 잘려 몇 개인지도 모르게 된다.
@@ -85,7 +87,12 @@ export default function JobCard({ data, variant = "grid" }: { data: JobCardData;
     <div className={`jobcard${data.image ? " jobcard-photo" : ""}`} onClick={go}>
       <div className={`jobcard-cover${data.image ? "" : " jobcard-cover-empty"}`}>
         {data.image ? (
-          <BannerImg src={data.image} alt={data.company} fill />
+          <>
+            <BannerImg src={data.image} alt={data.company} fill />
+            {/* 사진 위에 얹는다 — 본문 줄을 안 뺏으니 카드가 높아지지 않는다.
+                사진이 없을 때 표지가 회사명을 크게 쓰던 것과 같은 자리다. */}
+            {data.company && <span className="jobcard-cover-badge">{data.company}</span>}
+          </>
         ) : (
           <span className="jobcard-cover-name">{data.company || "·"}</span>
         )}
