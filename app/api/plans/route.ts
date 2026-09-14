@@ -11,10 +11,14 @@ import { ok } from "@/lib/api";
  */
 export async function GET() {
   try {
-    const { rows } = await pool.query(`SELECT value FROM app_settings WHERE key = 'plan_sales'`);
-    return ok({ sales: rows[0]?.value === "on" });
+    const { rows } = await pool.query(
+      `SELECT key, value FROM app_settings WHERE key IN ('plan_sales', 'plan_bank')`
+    );
+    const v: Record<string, string> = {};
+    for (const r of rows) v[r.key] = r.value;
+    return ok({ sales: v.plan_sales === "on", bank: v.plan_bank || "" });
   } catch {
     // 스위치를 못 읽으면 닫힌 것으로 본다 — 팔 수 없는 상태로 여는 쪽이 안전하다.
-    return ok({ sales: false });
+    return ok({ sales: false, bank: "" });
   }
 }

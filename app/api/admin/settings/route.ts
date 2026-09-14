@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 
-const ALLOWED_KEYS = ["story_autogen", "newsletter_autogen"];
+// plan_sales 는 판매 개시 스위치(통신판매업 신고 전에는 off),
+// plan_bank 는 무통장입금 계좌 안내다. 계좌는 코드에 박지 않는다 — 바뀌는 값이고
+// 지어내면 엉뚱한 곳으로 돈이 간다.
+const ALLOWED_KEYS = ["story_autogen", "newsletter_autogen", "plan_sales", "plan_bank"];
 
 export async function GET(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
