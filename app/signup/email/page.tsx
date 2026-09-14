@@ -241,7 +241,7 @@ function SignupEmailContent() {
       </div>
 
       <div className="flex-1 flex justify-center px-5 py-8">
-        <div className="w-full max-w-[420px]">
+        <div className="w-full max-w-[640px]">
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-2">
             개인회원 가입
           </h1>
@@ -329,43 +329,47 @@ function SignupEmailContent() {
           <RegionSelectModal open={지역창} initial={지역들} allowAny
             onClose={() => set지역창(false)}
             onApply={(r) => { set지역들(r); set지역창(false); }} />
-          {/* 이메일 — 중복 확인만. 인증은 비밀번호 재설정·이메일 변경 시점에 한다. */}
-          <div className="mb-4">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                const v = e.target.value;
-                setEmail(v);
-                // 형식은 치는 중에 바로 알려 주고(3자부터), 중복은 다 치고 나서 확인한다.
-                const t = v.trim();
-                if (t.length >= 3 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) setEmailStatus("invalid");
-                else setEmailStatus("idle");
-              }}
-              onBlur={checkEmailDup}
-              placeholder="이메일을 입력해주세요"
-              className={`w-full h-[48px] px-4 border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${
-                emailStatus === "invalid" || emailStatus === "taken"
-                  ? "border-[#e74c3c] focus:border-[#e74c3c]"
-                  : "border-[#e0e0e0] focus:border-[#582681]"
-              }`}
-            />
-            {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">확인 중이에요.</p>}
-            {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#10b981]">사용할 수 있는 이메일이에요.</p>}
-            {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">이미 가입된 이메일이에요. 로그인해 주세요.</p>}
-            {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">이메일 형식을 다시 확인해주세요.</p>}
-          </div>
-          {/* 이름 */}
-          <div className="mb-4">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="이름을 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
-            />
+          {/* 640px 에서 짧은 칸이 한 줄을 통째로 먹지 않게 둘씩 나란히 둔다.
+              기업회원 가입 폼과 같은 방식이다. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            {/* 이메일 — 중복 확인만. 인증은 비밀번호 재설정·이메일 변경 시점에 한다. */}
+            <div className="mb-4">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setEmail(v);
+                  // 형식은 치는 중에 바로 알려 주고(3자부터), 중복은 다 치고 나서 확인한다.
+                  const t = v.trim();
+                  if (t.length >= 3 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) setEmailStatus("invalid");
+                  else setEmailStatus("idle");
+                }}
+                onBlur={checkEmailDup}
+                placeholder="이메일을 입력해주세요"
+                className={`w-full h-[48px] px-4 border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${
+                  emailStatus === "invalid" || emailStatus === "taken"
+                    ? "border-[#e74c3c] focus:border-[#e74c3c]"
+                    : "border-[#e0e0e0] focus:border-[#582681]"
+                }`}
+              />
+              {emailStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">확인 중이에요.</p>}
+              {emailStatus === "ok" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#10b981]">사용할 수 있는 이메일이에요.</p>}
+              {emailStatus === "taken" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">이미 가입된 이메일이에요. 로그인해 주세요.</p>}
+              {emailStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">이메일 형식을 다시 확인해주세요.</p>}
+            </div>
+            {/* 이름 */}
+            <div className="mb-4">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="이름을 입력해주세요"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
+              />
+            </div>
           </div>
           {/* 휴대폰 번호 + 인증 */}
           <div className="mb-4">
@@ -416,32 +420,40 @@ function SignupEmailContent() {
               </p>
             )}
           </div>
-          {/* 비밀번호 */}
+          {/* 비밀번호 — 나란히 두면 오른쪽 칸에 이름표가 필요하다. 넓은 화면에서
+              이름표 없는 칸이 옆에 서면 무엇을 다시 치라는 것인지 안내문에만 남는다. */}
           <div className="mb-2">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
-            <div className="relative mb-2">
-              <input
-                type={showPw ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="비밀번호를 입력해주세요"
-                className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]"
-              >
-                {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+              <div>
+                <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
+                <div className="relative mb-2 md:mb-0">
+                  <input
+                    type={showPw ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="비밀번호를 입력해주세요"
+                    className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]"
+                  >
+                    {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 확인 <span className="text-red-500">*</span></label>
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  placeholder="비밀번호를 다시 한번 입력해주세요"
+                  className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
+                />
+              </div>
             </div>
-            <input
-              type={showPw ? "text" : "password"}
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              placeholder="비밀번호를 다시 한번 입력해주세요"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
-            />
             <p className={`text-[12px] md:text-[14px] mt-1.5 leading-relaxed ${password && !isPasswordValid(password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
               {PASSWORD_HINT}
             </p>
