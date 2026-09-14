@@ -13254,6 +13254,30 @@ button,
   margin: 0 0 24px; }
 .cs-order-sum span + span::before { content: "·"; margin-right: 10px; color: #c8c8ce; }
 
+/* 내 이용권. 기업 화면 판(1018px 안쪽)을 그대로 쓴다 — 새 값을 정하지 않는다. */
+.co-bill-now { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  border: 1px solid var(--color-border); border-radius: 12px; padding: 22px 24px; background: #fff; }
+.co-bill-plan { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.co-bill-nm { font-size: 20px; color: var(--color-primary); letter-spacing: -.3px; }
+.co-bill-until { font-size: 14px; color: #555; }
+.co-bill-go { font-size: 14px; color: #555; text-decoration: none; white-space: nowrap; }
+.co-bill-go:hover { color: var(--color-primary); }
+.co-bill-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.co-bill-stats > div { border: 1px solid var(--color-border); border-radius: 12px; padding: 18px 20px; background: #fff; }
+.co-bill-stats span { display: block; font-size: 13px; color: #555; margin-bottom: 8px; }
+.co-bill-stats b { font-weight: 400; font-size: 22px; color: #1a1a1a; letter-spacing: -.5px; }
+.co-bill-stats i { font-style: normal; font-size: 13px; color: #555; margin-left: 4px; }
+.co-bill-h { font-size: 16px; color: #1a1a1a; margin: 34px 0 12px; }
+.co-bill-empty { font-size: 14px; color: #555; padding: 26px 0; text-align: center;
+  border: 1px solid var(--color-border); border-radius: 12px; background: #fff; margin: 0; }
+.co-bill-tb { width: 100%; border-collapse: collapse; background: #fff;
+  border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; }
+.co-bill-tb th { font-size: 14px; font-weight: 400; color: #555; text-align: left;
+  padding: 13px 16px; background: #f7f7f8; white-space: nowrap; }
+.co-bill-tb td { font-size: 14px; color: #555; padding: 14px 16px; border-top: 1px solid #f2f2f2; }
+.co-bill-tb td.on { color: var(--color-primary); }
+
+
 
 
 .cs-h2 { font-size: 27px; font-weight: 700; letter-spacing: -.7px; text-align: center; margin: 0 0 10px; word-break: keep-all; }

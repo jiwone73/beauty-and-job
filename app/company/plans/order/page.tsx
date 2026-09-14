@@ -42,8 +42,10 @@ function 주문화면() {
     if (!isLoggedIn || ownerType !== "company") { router.push("/company/login"); return; }
     if (!입금자.trim()) return;
     set바쁨(true);
+    const token = localStorage.getItem("access_token");
     const r = await fetch("/api/company/orders", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ plan, days, depositor: 입금자.trim() }),
     }).then((x) => x.json()).catch(() => null);
     set바쁨(false);

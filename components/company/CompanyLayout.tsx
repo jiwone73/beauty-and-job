@@ -27,6 +27,7 @@ const PAGE_TITLES: Record<string, string> = {
   account: "계정 설정",
   password: "비밀번호 변경",
   notifications: "알림 설정",
+  billing: "내 이용권",
 };
 
 export default function CompanyLayout({ children, activePage, title, side, sideExtra }: {
@@ -223,6 +224,10 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
       { id: "account",       label: () => "계정정보",       title: () => "계정정보 설정",      href: `${base}/account` },
       { id: "password",      label: () => "비밀번호 변경",   title: () => "비밀번호 변경",      href: `${base}/account/password` },
       { id: "notifications", label: () => "알림",           title: () => "알림 설정",          href: `${base}/notifications` },
+      // 무엇을 언제까지 쓰는지는 설정이 아니라 영수증에 가깝지만, 사장님이 찾으러
+      // 오는 자리는 결국 계정 쪽이다. 「채용상품」(머리줄)은 사러 가는 길이고
+      // 여기는 산 것을 보는 길이다.
+      { id: "billing",       label: () => "이용권",         title: () => "내 이용권",          href: `${base}/billing` },
     ],
   };
   /** 지금 화면이 어느 묶음에 드는지 — 사이드를 보일지, 머리줄 어느 메뉴를 켤지가 이걸로 정해진다. */
