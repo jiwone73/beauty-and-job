@@ -28,7 +28,7 @@ export function fmtTrendDay(d: string | null, range: string) {
     : `${dt.getMonth() + 1}/${dt.getDate()}`;
 }
 
-/** 매장·본사 토글 단추 — 세 화면이 같은 모양을 쓴다. */
+/** 매장·오피스 토글 단추 — 세 화면이 같은 모양을 쓴다. */
 export const tabBtn = (active: boolean) => ({
   padding: "4px 12px", borderRadius: 6, fontSize: 13, fontWeight: 600,
   cursor: "pointer", border: "none",

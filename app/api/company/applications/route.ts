@@ -65,10 +65,10 @@ export async function GET(req: NextRequest) {
        up.sub_job AS user_sub_job,
        up.work_type_prefer AS user_work_type_prefer,
        -- 직군이 늘 main_job_group 에 있는 것은 아니다. 매장은 skill_areas 에만,
-       -- 본사는 office_job_areas 에만 든 사람이 있다.
+       -- 오피스는 office_job_areas 에만 든 사람이 있다.
        up.skill_areas AS user_skill_areas,
-       -- 본사 직군의 원본은 users.office_job_areas 다. user_profiles 쪽은 거의
-       -- 비어 있어, 그것만 보면 본사 지원자의 직군 태그가 통째로 빠진다.
+       -- 오피스 직군의 원본은 users.office_job_areas 다. user_profiles 쪽은 거의
+       -- 비어 있어, 그것만 보면 오피스 지원자의 직군 태그가 통째로 빠진다.
        CASE WHEN COALESCE(array_length(up.office_job_areas, 1), 0) > 0
             THEN up.office_job_areas ELSE u.office_job_areas END AS user_office_job_areas,
         (

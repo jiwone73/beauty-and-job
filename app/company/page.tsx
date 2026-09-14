@@ -84,7 +84,7 @@ const 이유 = [
 ];
 
 const FAQS = [
-  { q: "매장과 본사 채용을 동시에 진행할 수 있나요?", a: "네. 가입 시 유형을 고르고, 공고를 만들 때마다 매장·본사 중에서 선택하실 수 있습니다. 한 계정에서 양쪽을 함께 관리합니다." },
+  { q: "매장과 오피스 채용을 동시에 진행할 수 있나요?", a: "네. 가입 시 유형을 고르고, 공고를 만들 때마다 매장·오피스 중에서 선택하실 수 있습니다. 한 계정에서 양쪽을 함께 관리합니다." },
   { q: "지원자 매칭은 어떻게 이루어지나요?", a: "직군, 지역, 경력, 고용형태를 견주어 점수를 매기고 높은 순으로 보여드립니다. 지원자가 프로필을 공개한 경우에만 추천됩니다." },
   { q: "광고 상품은 언제든 변경할 수 있나요?", a: "네. 진행 중인 상품은 잔여 기간을 정산해 다른 상품으로 바꾸실 수 있습니다. 자세한 조건은 고객센터로 문의해 주세요." },
   { q: "이용 요금은 어떻게 되나요?", a: "채용공고 등록과 지원자 확인은 무료입니다. 상단 노출·배너 등 노출을 늘리는 상품만 유료로 운영합니다." },
@@ -115,7 +115,7 @@ export default function CompanyServicePage() {
               매장 채용 시작하기 <ArrowRight size={16} />
             </Link>
             <Link href="/company/signup?type=OFFICE" className="cs-btn-line lg">
-              본사 채용 시작하기 <ArrowRight size={16} />
+              오피스 채용 시작하기 <ArrowRight size={16} />
             </Link>
           </div>
 
@@ -321,14 +321,14 @@ export default function CompanyServicePage() {
         <div className="cs-cta-in">
           <div>
             <b>지금 바로 뷰티워크를 시작하세요</b>
-            <p>매장과 본사 채용을 더 쉽고 빠르게</p>
+            <p>매장과 오피스 채용을 더 쉽고 빠르게</p>
           </div>
           <div className="cs-cta-btns">
             <Link href="/company/signup?type=STORE" className="cs-btn-white">
               매장 채용 시작하기 <ArrowRight size={16} />
             </Link>
             <Link href="/company/signup?type=OFFICE" className="cs-btn-white line">
-              본사 채용 시작하기 <ArrowRight size={16} />
+              오피스 채용 시작하기 <ArrowRight size={16} />
             </Link>
           </div>
         </div>

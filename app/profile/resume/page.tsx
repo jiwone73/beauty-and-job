@@ -468,7 +468,7 @@ function ResumePageContent() {
             // 살롱 채용에서 실제로 보는 순서. 학력·활동수상은 뒤로 접어 두므로
             // 매장 이력서에서는 값이 있을 때만 목록에 세운다 — 안 쓸 칸이
             // 완성도를 깎으면 아무리 채워도 100%가 안 된다.
-            // 매장·본사가 같은 순서를 쓴다. 편집 화면·미리보기·이 목록이
+            // 매장·오피스가 같은 순서를 쓴다. 편집 화면·미리보기·이 목록이
             // 서로 다른 차례로 서 있으면 같은 이력서를 세 번 새로 읽게 된다.
             const sections = 완성항목;
             const doneCount = sections.filter((s) => s.done).length;
@@ -547,7 +547,7 @@ function ResumePageContent() {
             <흠줄 말들={칸흠("headline")} />
             {/* 안내는 칸 안에 둔다. 밖에 한 줄을 더 세우면 적기도 전에 읽을
                 것이 둘이 되고, 다 적고 나면 그 줄만 남아 자리를 먹는다.
-                채용 담당자가 가장 먼저 읽는 줄이라 예시는 매장·본사로 가른다. */}
+                채용 담당자가 가장 먼저 읽는 줄이라 예시는 매장·오피스로 가른다. */}
             <input
               value={introLocal}
               onChange={(e) => setIntroLocal(e.target.value)}

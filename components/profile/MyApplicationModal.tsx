@@ -91,7 +91,7 @@ export default function MyApplicationModal({
                 addressDisplay:
                   [data.address_road, data.address_detail].filter(Boolean).join(" ") ||
                   [data.region_sido, data.region_sigungu].filter(Boolean).join(" "),
-                jobDisplay: data.user_job_type === "STORE" ? "매장" : "본사",
+                jobDisplay: data.user_job_type === "STORE" ? "매장" : "오피스",
                 phone: data.user_phone || "",
                 email: data.user_email || "",
                 portfolioImages: data.portfolio_images || [],

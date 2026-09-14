@@ -3,9 +3,8 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok } from '@/lib/api'
 
-// 화면 라벨은 '본사'다. 그런데 이 표에는 '기업'만 있어서, 화면이 보내던
-// '오피스'가 어디에도 걸리지 않아 필터가 조용히 무시돼 왔다. 지금 쓰는 말과
-// 예전 링크에 남아 있는 말을 모두 받는다.
+// 화면 라벨은 '오피스'다. 예전에 쓰던 '본사'·'기업'도 그대로 받는다 —
+// 밖에 나간 링크와 북마크가 조용히 안 걸리면 안 된다.
 const TYPE_MAP: Record<string, string> = {
   "본사": "OFFICE",
   "오피스": "OFFICE",

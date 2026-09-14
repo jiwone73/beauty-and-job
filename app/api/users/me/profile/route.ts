@@ -122,7 +122,7 @@ export async function PATCH(req: NextRequest) {
   if (Array.isArray(b.office_job_areas)) fields.push(["office_job_areas", b.office_job_areas]);
   if (typeof b.entry_experience === "string") fields.push(["entry_experience", b.entry_experience]);
   // 가입할 때 고르는 직군 대분류와 경력 단계. 사다리는 대분류마다 다르다
-  // (헤어·바버는 실장까지, 본사는 연차) — lib/data/jobGroups.ts 의 경력단계.
+  // (헤어·바버는 실장까지, 오피스는 연차) — lib/data/jobGroups.ts 의 경력단계.
   // 신입 여부는 고른 단계에서 끌어낸다. 따로 물으면 둘이 어긋난다.
   if (typeof b.main_job_group === "string") fields.push(["main_job_group", b.main_job_group]);
   if (typeof b.career_stage === "string") {

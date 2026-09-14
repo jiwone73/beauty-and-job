@@ -64,12 +64,14 @@ function JobsPageInner() {
   const { userJobType, userJobAreas } = useAuthStore();
   const searchParams = useSearchParams();
 
-  // 매장/본사는 이 화면에서 가장 위 가지다 — 고르는 순간 사이드바의 직군 목록도,
+  // 매장/오피스는 이 화면에서 가장 위 가지다 — 고르는 순간 사이드바의 직군 목록도,
   // 소분류도, 급여/연봉 어휘도 바뀐다. '전체'는 두지 않는다. 성격이 다른 두
   // 시장을 섞어 두면 직군이 13개로 늘어나 사이드바만 복잡해진다.
   // 메인에서 '전체'로 검색해 넘어오면 건수가 많은 매장으로 연다(114 대 26).
+  // 예전에 「본사」·「기업」으로 나간 링크와 북마크가 조용히 매장으로 열리면
+  // 안 된다. 지금 쓰는 말과 예전 말을 모두 받는다(/api/jobs 의 TYPE_MAP 과 같다).
   const 넘어온유형 = searchParams.get("type");
-  const initType = 넘어온유형 === "본사" ? "본사" : "매장";
+  const initType = ["오피스", "본사", "기업"].includes(넘어온유형 ?? "") ? "오피스" : "매장";
   const initCareer = searchParams.get("career") || "경력 전체";
   const initRegion = searchParams.get("region") || "";
   const initBrand = searchParams.get("brand") || "";
@@ -162,7 +164,7 @@ function JobsPageInner() {
     if (sd) qs.set("sido", sd);
     if (sg) qs.set("sigungu", sg);
     if (kw || searchQuery) qs.set("q", kw || searchQuery);
-    qs.set("company_type", jobTypeFilter === "본사" ? "OFFICE" : "STORE");
+    qs.set("company_type", jobTypeFilter === "오피스" ? "OFFICE" : "STORE");
     if (selectedJobs.length) qs.set("categories", selectedJobs.join(","));
     if (selectedCareer !== "경력 전체") qs.set("career", selectedCareer);
     if (selectedEmployment !== "고용형태 전체") qs.set("employment", selectedEmployment);
@@ -194,7 +196,7 @@ function JobsPageInner() {
             categories: j.categories || [],
             career: j.experience_level === 'NEW' ? '신입' : j.experience_level === 'EXPERIENCED' ? '경력' : '경력무관',
             region: j.location || '국내',
-            type: j.company_type === 'OFFICE' ? '본사' : j.company_type === 'STORE' ? '매장' : '본사',
+            type: j.company_type === 'OFFICE' ? '오피스' : j.company_type === 'STORE' ? '매장' : '오피스',
             // 목록 카드는 '이 매장이 어디인가'를 먼저 말해야 한다. 그래서 매장이
             // 그 용도로 직접 고른 프로필 사진(로고·간판)을 먼저 쓴다. 배너는
             // 상세 페이지 상단에서 크게 보여 주려고 받은 홍보 사진이라 성격이 다르다.
@@ -233,7 +235,7 @@ function JobsPageInner() {
     // 검색어·브랜드 등 명시적 검색 시엔 프로필 직군 자동필터를 걸지 않음
     if (urlQuery) { seededFilter.current = true; return; }
     if (!urlJob && !urlType && userJobType) {
-      setJobTypeFilter(userJobType === "OFFICE" ? "본사" : "매장");
+      setJobTypeFilter(userJobType === "OFFICE" ? "오피스" : "매장");
       if (userJobAreas && userJobAreas.length > 0) {
         setSelectedJobs(userJobAreas);
       }
@@ -252,10 +254,10 @@ function JobsPageInner() {
   };
 
   const salaryOpts = jobTypeFilter === "매장" ? SALARY_STORE : SALARY_OFFICE;
-  // 복리후생 어휘 자체가 매장·본사에서 다르다(기숙사 제공은 매장, 재택근무는 본사).
+  // 복리후생 어휘 자체가 매장·오피스에서 다르다(기숙사 제공은 매장, 재택근무는 오피스).
   // 탭을 바꾸면 그 업태의 태그만 다시 받아 온다.
   useEffect(() => {
-    const jt = jobTypeFilter === "매장" ? "STORE" : jobTypeFilter === "본사" ? "OFFICE" : "";
+    const jt = jobTypeFilter === "매장" ? "STORE" : jobTypeFilter === "오피스" ? "OFFICE" : "";
     fetch(`/api/benefit-tags?curated=1${jt ? `&job_type=${jt}` : ""}`)
       .then((r) => r.json())
       .then((res) => {
@@ -265,11 +267,11 @@ function JobsPageInner() {
       .catch(() => { /* 못 받아도 기본 목록으로 돈다 */ });
   }, [jobTypeFilter]);
 
-  // 복리후생 후보는 그 업태의 어휘 전체를 보여 준다(매장 21 · 본사 27 · 전체 35).
+  // 복리후생 후보는 그 업태의 어휘 전체를 보여 준다(매장 21 · 오피스 27 · 전체 35).
   // 지금 공고에 달린 것만 남기면 목록이 서너 개로 쪼그라들어, 무엇으로 거를 수 있는지조차 알 수 없다.
   const benefitOptions = curatedBenefits;
-  // 사이드바 직군 목록은 매장/본사에 따라 통째로 갈린다(매장 8 · 본사 5).
-  const 대분류목록 = jobTypeFilter === "본사" ? OFFICE_JOB_GROUPS : STORE_JOB_GROUPS;
+  // 사이드바 직군 목록은 매장/오피스에 따라 통째로 갈린다(매장 8 · 오피스 5).
+  const 대분류목록 = jobTypeFilter === "오피스" ? OFFICE_JOB_GROUPS : STORE_JOB_GROUPS;
   // 지금 몇 가지가 걸려 있는지. 0 이면 초기화 버튼을 눌러도 바뀔 것이 없다.
   const 걸린조건 = selectedRegions.length + selectedJobs.length + selectedBenefits.length
     + (selectedEmployment !== "고용형태 전체" ? 1 : 0)
@@ -350,7 +352,7 @@ function JobsPageInner() {
             "이런 것도 있네" 하고 눌러 본다. */}
         <aside className="jobs-side" ref={사이드바}>
           <div className="seg jobs-side-type">
-            {(["매장", "본사"] as const).map((t) => (
+            {(["매장", "오피스"] as const).map((t) => (
               <button key={t} type="button"
                 className={`seg-btn ${jobTypeFilter === t ? "active" : ""}`}
                 onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); set열린팝오버(null); }}>
@@ -525,7 +527,7 @@ function JobsPageInner() {
                 deadline: job.deadline,
                 image: job.thumbnail,
                 categories: job.categories,
-                jobType: job.type === '본사' ? 'OFFICE' : 'STORE',
+                jobType: job.type === '오피스' ? 'OFFICE' : 'STORE',
               }} variant="grid" />
             ))}
           </div>

@@ -134,7 +134,7 @@ export default function TalentResumePage({ params }: { params: { userId: string 
                   ? `${String(u.birth_date).slice(0, 4)}년 (${calcAgeFromBirth(u.birth_date)}세, ${u.gender === "FEMALE" ? "여" : u.gender === "MALE" ? "남" : ""})`
                   : ""
               }
-              jobDisplay={u?.job_type === "STORE" ? "매장" : "본사"}
+              jobDisplay={u?.job_type === "STORE" ? "매장" : "오피스"}
               phone={u?.phone || ""}
               email={u?.email || ""}
               portfolioImages={u?.portfolio_images || []}

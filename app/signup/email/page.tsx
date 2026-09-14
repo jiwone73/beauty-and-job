@@ -251,7 +251,7 @@ function SignupEmailContent() {
           </p>
 
           {/* 직군 선택 — 고른 카드는 뷰티워크 보라 테두리에 회색 바탕이다.
-              연보라로 칠하지 않는다(기업회원 가입의 매장·본사 카드와 같은 값). */}
+              연보라로 칠하지 않는다(기업회원 가입의 매장·오피스 카드와 같은 값). */}
           <div className="mb-6">
             <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
@@ -294,7 +294,7 @@ function SignupEmailContent() {
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                 <OfficeIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
-                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">본사</span>
+                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">오피스</span>
                   <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">
                     {직군요약("OFFICE")}
                   </span>

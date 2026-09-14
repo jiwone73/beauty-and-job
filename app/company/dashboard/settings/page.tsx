@@ -22,7 +22,7 @@ export default function CompanySettingsPage() {
   const router = useRouter();
   const [info, setInfo] = useState<CompanyInfo | null>(null);
   // 매장 회원은 '회사'가 아니라 '매장' 기준 용어를 쓴다.
-  const isStore = info?.company_type !== "OFFICE"; // 매장·매장+본사는 매장 기준 용어를 쓴다
+  const isStore = info?.company_type !== "OFFICE"; // 매장·매장+오피스는 매장 기준 용어를 쓴다
   const L = {
     name: isStore ? "매장명" : "기업명",
     size: isStore ? "직원수" : "사원수",
@@ -221,7 +221,7 @@ export default function CompanySettingsPage() {
     }
   };
 
-  // 직원수 구간은 매장과 본사가 다르다. 미용실은 1인샵~20명 남짓이 현실 범위라
+  // 직원수 구간은 매장과 오피스가 다르다. 미용실은 1인샵~20명 남짓이 현실 범위라
   // "300~1000명" 같은 칸을 보여주면 고를 게 없다.
   const SIZE_OPTIONS = isStore
     ? ["1명 (1인샵)", "2~4명", "5~9명", "10~19명", "20명 이상"]
@@ -340,8 +340,8 @@ export default function CompanySettingsPage() {
     return d.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
   };
 
-  // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
-  // SNS·홈페이지 목록 — 매장과 본사가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
+  // SNS·홈페이지 목록 — 매장과 오피스가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
+  // SNS·홈페이지 목록 — 매장과 오피스가 같은 것을 쓴다(개인회원 프로필과 같은 부품).
   //   라벨 옆에 바로 칸이 붙어 한 줄로 읽힌다. 빈 줄 하나는 늘 세워 둔다 —
   //   "넣어 보세요" 같은 안내 단추 없이도 무엇을 적는 자리인지 자리글이 말해 준다.
   // SNS·홈페이지 — 개인회원 프로필과 같은 부품. 2열 한 칸에 들어가는 크기다.
@@ -352,7 +352,7 @@ export default function CompanySettingsPage() {
   const 링크한줄 = links[0] || { id: "__빈", category: "", url: "" };
   /* 계정 통제(로그인) 정보가 아니라 이 사업자가 법적으로 누구인지에 대한 사실이라
      프로필에 둔다("사업자등록번호는 계정설정보다 프로필이 맞다"). 가입 때 검증한
-     값이라 여기서도 고치지는 못한다. 매장·본사가 짝지을 칸이 달라 조각으로 빼 둔다. */
+     값이라 여기서도 고치지는 못한다. 매장·오피스가 짝지을 칸이 달라 조각으로 빼 둔다. */
   const 사업자번호칸 = (
     <div className="admin-form-row">
       <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
@@ -549,7 +549,7 @@ export default function CompanySettingsPage() {
               </div>
               )}
               {/* 회사 로고 — 매장은 상호가 곧 브랜드라 쓸 만한 로고 파일이 없는 경우가 많고,
-                  목록 썸네일·공고 상단은 배너 이미지가 이미 채운다. 그래서 본사에만 둔다. */}
+                  목록 썸네일·공고 상단은 배너 이미지가 이미 채운다. 그래서 오피스에만 둔다. */}
               {!isStore && (
               <div className="admin-form-row">
                 <div>
@@ -592,7 +592,7 @@ export default function CompanySettingsPage() {
 
 
               {/* 매장은 상호가 곧 브랜드라 이름 칸이 하나면 된다(브랜드명·대표자·설립연도·매장 전화번호 없음).
-                  본사(매장이 아닌 곳)는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
+                  오피스(매장이 아닌 곳)는 근로계약이 법인 기준이라 기업명과 브랜드명을 따로 받는다. */}
               {isStore ? (
                 <>
                 {/* 두 칸씩 끝까지 맞아떨어지게 짝을 지었다 — 혼자 남아 반쪽만 차지하는 줄이 없다. */}
@@ -666,7 +666,7 @@ export default function CompanySettingsPage() {
                         onChange={(e) => setForm({ ...form, company_phone: e.target.value.replace(/\D/g, "").slice(0, 11) })} />
                     </div>
                   </div>
-                  {/* 본사는 칸이 홀수라 하나가 짝 없이 남는다. 반쪽만 차지하고 옆이 비는
+                  {/* 오피스는 칸이 홀수라 하나가 짝 없이 남는다. 반쪽만 차지하고 옆이 비는
                       것보다, 주소·소개처럼 한 줄을 다 쓰게 두는 편이 낫다(주소가 긴 칸이기도 하다). */}
                   {링크목록}
                 </>

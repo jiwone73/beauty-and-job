@@ -13,10 +13,10 @@ import type { JobType } from "@/lib/data/jobGroups";
 // 고를 것이 많아야 열 개라 굳이 접어 둘 이유가 없다 — 펼쳐 두면 누르는 횟수가
 // 줄고 무엇이 있는지 한눈에 보인다.
 //
-// 칩은 채용공고 필터가 쓰는 .filter-chip 을 그대로 쓴다. 위의 매장·본사 단추와
+// 칩은 채용공고 필터가 쓰는 .filter-chip 을 그대로 쓴다. 위의 매장·오피스 단추와
 // 아래 지역 칸이 모두 같은 모서리(--chip-radius)라 세로로 결이 맞는다.
 //
-// 경력 사다리는 대분류마다 다르다(헤어·바버는 실장까지, 본사는 연차).
+// 경력 사다리는 대분류마다 다르다(헤어·바버는 실장까지, 오피스는 연차).
 // 그래서 대분류를 먼저 고르게 하고 그다음에 단계를 연다. 대분류를 바꾸면
 // 이전에 고른 단계가 새 사다리에 없을 수 있어 비운다.
 export default function JobCareerPicker({
@@ -49,7 +49,7 @@ export default function JobCareerPicker({
       <div className="mb-8">
         <p className={이름표}>직군 <span className="text-red-500">*</span></p>
         {대분류들.length === 0 ? (
-          <p className={아직}>매장·본사를 먼저 골라 주세요</p>
+          <p className={아직}>매장·오피스를 먼저 골라 주세요</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {대분류들.map((g) => (

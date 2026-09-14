@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
+import { 직군요약, 유형이름 } from "@/lib/data/jobGroups";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
 
 interface Term {
@@ -14,13 +15,13 @@ interface Term {
   is_required: boolean;
 }
 
-// 업체 성격은 매장/본사 둘 중 하나. 매장을 여럿 둔 직영 체인도 '매장'이고,
-// 본사 인력을 뽑을 땐 공고를 만들 때 유형(job_type)을 본사로 고르면 된다.
+// 업체 성격은 매장/오피스 둘 중 하나. 매장을 여럿 둔 직영 체인도 '매장'이고,
+// 오피스 인력을 뽑을 땐 공고를 만들 때 유형(job_type)을 오피스로 고르면 된다.
 // (예전 'BOTH'는 공고 유형과 중복이라 선택지에서 뺐다 — 기존 데이터는 매장으로 취급)
 const COMPANY_TYPES = [
   // 설명은 개인회원 가입과 같은 어휘로 — '현장직/사무직'보다 무엇을 뽑는 곳인지가 바로 읽힌다.
-  { value: "STORE", label: "매장", Icon: StoreIcon, desc: "시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장" },
-  { value: "OFFICE", label: "본사", Icon: OfficeIcon, desc: "제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원" },
+  { value: "STORE", label: 유형이름.STORE, Icon: StoreIcon, desc: 직군요약("STORE") },
+  { value: "OFFICE", label: 유형이름.OFFICE, Icon: OfficeIcon, desc: 직군요약("OFFICE") },
 ];
 
 export default function CompanySignupPage() {
@@ -325,7 +326,7 @@ export default function CompanySignupPage() {
       </header>
 
       <div className="flex-1 flex justify-center px-5 py-8">
-        {/* 480px 에서는 매장·본사 고르는 칸이 반씩 나뉘어 직군 설명이 세 줄로
+        {/* 480px 에서는 매장·오피스 고르는 칸이 반씩 나뉘어 직군 설명이 세 줄로
             접혔다. 폼 자체는 한 줄짜리 칸이 대부분이라 640px 이면 넉넉하다. */}
         <div className="w-full max-w-[640px]">
           <div className="flex justify-center mb-6">

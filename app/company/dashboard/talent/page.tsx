@@ -25,7 +25,7 @@ type JobTab = "OFFICE" | "STORE";
 // 경력은 공고 모집부문과 같은 사다리를 쓴다. 매장은 연차로 뽑지 않는다 —
 // 인턴·신입·경력·실장이지 「3년차」가 아니다. 두 화면이 다른 말을 쓰면
 // 같은 사람을 두고 매장과 우리가 다른 것을 세게 된다.
-// 매장은 자리(인턴·신입·경력·실장), 본사는 연차. 공고 모집부문과 같은 말이다.
+// 매장은 자리(인턴·신입·경력·실장), 오피스는 연차. 공고 모집부문과 같은 말이다.
 const 단계차례 = ["인턴", "신입", "경력", "실장", "매니저급", "점장급",
                   "1~2년", "3~5년", "5~10년", "10년+"];
 const AGE_FILTERS    = ["전체", "20대", "30대", "40대 이상"];
@@ -43,7 +43,7 @@ function shortenRegion(region: string | null | undefined): string {
 
 function jobTypeLabel(jobType: string | null | undefined): string | null {
   if (jobType === "STORE") return "매장";
-  if (jobType === "OFFICE") return "본사";
+  if (jobType === "OFFICE") return "오피스";
   return null;
 }
 
@@ -70,7 +70,7 @@ export default function TalentPage() {
     ? "/company/dashboard"
     : `/${pathname.split("/").filter(Boolean)[0]}`;
   const [activeTab, setActiveTab]     = useState<JobTab>("STORE");
-  // 매장은 매장 인재만, 본사는 본사 인재만 본다. 서로의 인재풀을 볼 일이 없고,
+  // 매장은 매장 인재만, 오피스는 오피스 인재만 본다. 서로의 인재풀을 볼 일이 없고,
   //   열어 두면 남의 이메일·전화만 넓게 보이는 셈이다. 겸업(BOTH) 회원만 고를 수 있다.
   const [companyType, setCompanyType] = useState<"OFFICE" | "STORE" | "BOTH" | null>(null);
   const [talents, setTalents]         = useState<TalentItem[]>([]);
@@ -146,7 +146,7 @@ export default function TalentPage() {
         if (!j) return;
         set보내는공고이름(j.title || "");
         // 그 공고의 직군을 필터에 걸어 둔다. 안 걸면 넘어와도 인재 전부가 뜬다
-        //   — 네일 공고로 왔는데 헤어·피부·본사 마케터까지 섞여 있어, 그 공고에
+        //   — 네일 공고로 왔는데 헤어·피부·오피스 마케터까지 섞여 있어, 그 공고에
         //   맞는 사람을 처음부터 다시 찾아야 했다.
         // 사이드 필터에 그대로 걸리므로 언제든 풀 수 있다.
         const 유형 = j.job_type === "OFFICE" ? "OFFICE" : "STORE";
@@ -606,7 +606,7 @@ export default function TalentPage() {
 
   return (
     <CompanyLayout activePage="talent" sideExtra={!isMobile && view === "search" ? 필터 : undefined}>
-      {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. 매장·본사는 제 유형으로 묶인다. */}
+      {/* 인재 구분 — 겸업(BOTH) 회원만 고른다. 매장·오피스는 제 유형으로 묶인다. */}
       {companyType === "BOTH" && isMobile && view === "search" && (
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 12 }}>
           <span style={{ fontSize: 14, color: "#555" }}>인재 구분</span>
@@ -615,7 +615,7 @@ export default function TalentPage() {
               <input type="radio" name="talentTrackM" checked={activeTab === tab}
                 onChange={() => handleTabSwitch(tab)}
                 style={{ accentColor: "#582681", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
-              {tab === "STORE" ? "매장" : "본사"}
+              {tab === "STORE" ? "매장" : "오피스"}
             </label>
           ))}
         </div>
@@ -651,7 +651,7 @@ export default function TalentPage() {
                   boxShadow: activeTab === tab ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
                   transition: "all .15s",
                 }}>
-                {tab === "STORE" ? "매장" : "본사"}
+                {tab === "STORE" ? "매장" : "오피스"}
               </button>
             ))}
           </div>

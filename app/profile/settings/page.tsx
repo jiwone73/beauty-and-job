@@ -20,7 +20,7 @@ export default function AccountSettingsPage() {
   // 차단 목록은 「공개, 일부만 빼고」 칸 안에 그대로 펼친다 — 비공개 옆에
   // 나란히 서야 「비공개 말고 이 길도 있다」로 읽힌다.
   const [blocked, setBlocked] = useState<{ companyId: string; companyName: string }[]>([]);
-  // 매장 회원인지 본사 회원인지. 미용실 원장에게 "기업"이라고 하면 남
+  // 매장 회원인지 오피스 회원인지. 미용실 원장에게 "기업"이라고 하면 남
   // 이야기처럼 들려 자기 설정으로 읽히지 않는다.
   const [jobType, setJobType] = useState<"STORE" | "OFFICE" | null>(null);
   useEffect(() => {

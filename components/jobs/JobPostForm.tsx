@@ -873,7 +873,7 @@ export default function JobPostForm({
     if (!jobGroupType) return; // 미선택이면 급여유형 자동설정 보류(선택 시 설정)
     if (importSalaryRef.current) { importSalaryRef.current = false; return; }
     setSalaryType(jobGroupType === "매장" ? "MONTHLY" : "ANNUAL");
-    // 본사(기업)는 급여가 대부분 회사내규/면접 후 협의 → 협의를 기본값으로
+    // 오피스(기업)는 급여가 대부분 회사내규/면접 후 협의 → 협의를 기본값으로
     setSalaryNego(jobGroupType === "기업");
   }, [jobGroupType, editId]);
   useEffect(() => {
@@ -2106,14 +2106,14 @@ export default function JobPostForm({
     const isNmAdmin = mode === "admin" && nonMember;
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
     if (isNmAdmin) {
-      if (!jobGroupType) { alert("채용유형(매장/본사)을 선택해주세요."); return; }
+      if (!jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
     }
     // 추가 근무지의 지역도 함께 담아야 그 지역으로 찾는 사람에게도 보인다.
     const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
     const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
     if (!isNmAdmin) {
-      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/본사)을 선택해주세요."); return; }
+      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
       if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
       if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
       // 주소를 붙여넣거나 임시저장에서 복원하면 입력 onChange가 안 타 regionList가 비어 있을 수 있다.
@@ -2372,7 +2372,7 @@ export default function JobPostForm({
     const freeInput = options.length === 0 || cellFree;      // 목록 없는 칸이거나 '직접입력'을 고른 상태
     // 급여는 "300"(확정) · "300~"(이상) · "300~350"(범위) 세 가지 형태가 섞여 쓰인다.
     // 최소·최대 두 칸으로 나눠 받고, 최대를 비운 채로 "이상" 표시만 고를 수 있게 한다.
-    // 급여유형을 아직 안 골랐으면 매장은 월급, 본사는 연봉을 기본으로 삼는다 — 숫자만
+    // 급여유형을 아직 안 골랐으면 매장은 월급, 오피스는 연봉을 기본으로 삼는다 — 숫자만
     // 입력해도 그 단위가 자동으로 붙는다.
     const salaryPrefix = units ? (v.match(/^\s*([시일주월연])\s*/)?.[1] || (jobGroupType === "매장" ? "월" : "연")) : "";
     const salaryRest = units ? v.replace(/^\s*[시일주월연]\s*/, "") : "";
@@ -2553,13 +2553,13 @@ export default function JobPostForm({
   const textFieldMeta: Record<TextKey, { label: string }> = {
     benefits: { label: "혜택·복지" },
     responsibilities: { label: "담당업무" },
-    // 매장 공고에만 선다(textFields 참조 — 본사는 담당업무가 그 자리다).
+    // 매장 공고에만 선다(textFields 참조 — 오피스는 담당업무가 그 자리다).
     description: { label: "상세요강 글" },
     requirements: { label: "자격요건" },
     preferred: { label: "우대사항" },
   };
   // 상세요강은 칸 하나다. 담당업무·자격요건·우대사항으로 갈라 두었더니 불러온 글이
-  // 어느 칸에도 안 맞아 사라졌다(본사는 description 칸이 아예 없어서 통째로 유실).
+  // 어느 칸에도 안 맞아 사라졌다(오피스는 description 칸이 아예 없어서 통째로 유실).
   // 원문은 그 셋으로 깔끔히 나뉘지 않는다 — 나누지 말고 있는 그대로 담는다.
   const textFields: TextKey[] = ["description"];
 
@@ -2945,13 +2945,13 @@ export default function JobPostForm({
       )}
 
 
-      {/* 채용유형(매장/본사) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
+      {/* 채용유형(매장/오피스) — 최상단, 외부 불러오기 박스 밖. 라디오 선택, 불러오기로 자동 추정 후 확정·수정 */}
       {showTypeToggle && (
         <div style={{ width: "100%", maxWidth: 콘텐츠폭, margin: `0 ${mx} 12px`, boxSizing: "border-box", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "6px 24px" }}>
           {/* 아래 「외부 공고 불러오기」와 같은 글꼴·색. 화면마다 새로 정하지 않는다. */}
           <span style={{ fontWeight: 400, fontSize: 16, color: "#582681" }}>채용유형</span>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            {([["매장", "매장"], ["기업", "본사"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
+            {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
                 <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: on ? "#555" : "#666" }}>
@@ -3450,8 +3450,8 @@ export default function JobPostForm({
               <div style={{ margin: "4px 0 20px" }}>
                 {[...new Set(categories.map(baseCat))].map((item) => {
                   // 맨 끝에 '무관' — 직급을 가리지 않고 뽑는 자리가 흔하다.
-                  // 매장·본사에 같은 이름의 대분류가 있다(리테일·의료미용·교육).
-                  // 어느 쪽 공고인지 함께 넘겨야 매장 공고에 본사 단계가 뜨지 않는다.
+                  // 매장·오피스에 같은 이름의 대분류가 있다(리테일·의료미용·교육).
+                  // 어느 쪽 공고인지 함께 넘겨야 매장 공고에 오피스 단계가 뜨지 않는다.
                   const 단계들 = [...직군의경력단계(item, isOffice ? "OFFICE" : "STORE"), "경력무관"];
                   const 내행 = categories.filter((c) => baseCat(c) === item);
                   const 켜진단계 = 내행.map((c) => 행읽기(c).career).filter(Boolean);
@@ -3845,7 +3845,7 @@ export default function JobPostForm({
             </div>
           </div>
 
-          {/* 전형절차 — 매장·본사 가리지 않고 늘 보인다. 서류·면접이 몇 번인지가 지원
+          {/* 전형절차 — 매장·오피스 가리지 않고 늘 보인다. 서류·면접이 몇 번인지가 지원
               여부를 가르는 값이라 지원 안내 안에 묻어 두지 않고 제 제목을 달고 그 앞에 선다.
               예전에는 매장 공고에 값이 있을 때만 그렸다. 그러면 새로 여는 화면에는 아예
               자리가 없어, 매장은 적고 싶어도 적을 길이 없었다.
@@ -3896,10 +3896,10 @@ export default function JobPostForm({
                   뷰티워크 온라인지원만 고르면 담당자 칸은 생기지 않는다(연락처가 필요 없는 방법이라).
                   비회원 공고의 담당자 연락처는 상세화면에서 구직자에게 노출되지 않는다(JobDetailView). */}
               {(() => {
-                // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 본사에서만 쓴다.
-                // 매장은 '직접방문'(워크인)이 흔하고, 본사는 그런 접수를 받지 않는다.
+                // 매장 공고는 자체 채용 홈페이지가 없는 경우가 대부분이라 '회사 홈페이지 지원'을 빼고, 오피스에서만 쓴다.
+                // 매장은 '직접방문'(워크인)이 흔하고, 오피스는 그런 접수를 받지 않는다.
                 // '회사 홈페이지 지원'은 그 반대 — 매장은 자체 채용 홈페이지가 없다.
-                // 문자·전화도 매장만 — 본사 채용은 담당자 개인 번호로 받지 않는다.
+                // 문자·전화도 매장만 — 오피스 채용은 담당자 개인 번호로 받지 않는다.
                 const methodOptions = CONTACT_METHOD_OPTIONS
                   .filter((m) => m !== "회사 홈페이지 지원" || isOffice)
                   .filter((m) => m !== "직접방문" || !isOffice)

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Clock, Calendar, MessageCircle, ChevronDown, X } from "lucide-react";
 
 const DAY_OPTIONS = ["월", "화", "수", "목", "금", "토", "일"];
-const HOUR_OPTIONS = Array.from({ length: 17 }, (_, i) => i + 7); // 7시~23시 — 매장·본사 공통 범위
+const HOUR_OPTIONS = Array.from({ length: 17 }, (_, i) => i + 7); // 7시~23시 — 매장·오피스 공통 범위
 const MIN_OPTIONS = [0, 30]; // 30분 단위만 — 매장 근무시간엔 이 이상 잘게 쪼갤 일이 없다
 const FORMAT_EXAMPLES = ["월, 수 10시-18시 / 금 12시-20시", "평일 10시-18시, 토 10시-17시", "협의"];
 const fmtT = (h: number, m: number) => (m ? `${h}시${m}분` : `${h}시`);
@@ -21,9 +21,9 @@ interface Props {
   popRef: React.RefObject<HTMLDivElement>;
   left: number;
   top: number;
-  defaultStart?: number; // 매장 10시 / 본사 7시 — 빠른 선택 시간의 기본값
-  defaultEnd?: number;   // 매장 20시 / 본사 19시
-  /** 매장이면 요일을 못 박는 대신 '주 N일'로 받는다. 본사는 평일·주말 그대로. */
+  defaultStart?: number; // 매장 10시 / 오피스 7시 — 빠른 선택 시간의 기본값
+  defaultEnd?: number;   // 매장 20시 / 오피스 19시
+  /** 매장이면 요일을 못 박는 대신 '주 N일'로 받는다. 오피스는 평일·주말 그대로. */
   store?: boolean;
 }
 
@@ -270,7 +270,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         { type: "custom", icon: Calendar, label: "지정 요일" },
         { type: "nego", icon: MessageCircle, label: "협의" },
       ]
-    // 본사는 주 5일 정시가 기본이라 요일을 고를 일이 없다 — 시간만 받는다.
+    // 오피스는 주 5일 정시가 기본이라 요일을 고를 일이 없다 — 시간만 받는다.
     : [
         { type: "hours", icon: Clock, label: "근무시간" },
         { type: "nego", icon: MessageCircle, label: "협의" },
@@ -301,7 +301,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
           <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 2 }}><X size={15} /></button>
         </div>
 
-        {/* 직접 입력은 매장에만. 본사는 요일·시간이 정해져 있어 문장으로 적을 일이 없다. */}
+        {/* 직접 입력은 매장에만. 오피스는 요일·시간이 정해져 있어 문장으로 적을 일이 없다. */}
         {store ? (
           <div className="ws-tabs">
             <button type="button" className={`ws-tab ${tab === "quick" ? "on" : ""}`} onClick={() => setTab("quick")}>빠른 선택</button>
@@ -322,7 +322,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                       // 화면에 없는 종류로 정해졌으면 잠그지 않는다.
                       //
                       // 원문에서 읽어 온 값은 여섯 종류로 되짚는데, 화면에 깔리는 항목은
-                      // 매장 셋(주 N일·지정 요일·협의) 또는 본사 둘(근무시간·협의)뿐이다.
+                      // 매장 셋(주 N일·지정 요일·협의) 또는 오피스 둘(근무시간·협의)뿐이다.
                       // "10시~7시" 처럼 시간만 있는 값은 hours 로 정해지는데, 매장에는 그
                       // 항목이 없어 세 개가 한꺼번에 잠겼다. 푸는 길이 「켜진 항목을 다시
                       // 누르기」 하나뿐인데 그 항목이 화면에 없으니 빠져나올 수가 없었다.

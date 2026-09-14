@@ -45,8 +45,8 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  // 매장 회원이면 '매장정보', 본사(기업) 회원이면 '기업정보'로 부른다.
-  const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+본사는 매장으로 분류
+  // 매장 회원이면 '매장정보', 오피스(기업) 회원이면 '기업정보'로 부른다.
+  const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+오피스는 매장으로 분류
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "", manager: "" });
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
@@ -70,7 +70,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
         if (res.success && res.data) {
           setCompanyInfo({
             name: res.data.company_name || "",
-            category: res.data.company_type === "OFFICE" ? "본사" : res.data.company_type === "STORE" ? "매장" : "매장·본사",
+            category: res.data.company_type === "OFFICE" ? "오피스" : res.data.company_type === "STORE" ? "매장" : "매장·오피스",
             logo: res.data.logo_url || "",
             type: res.data.company_type || "",
             cover: (Array.isArray(res.data.cover_images) && res.data.cover_images[0]?.url) ? res.data.cover_images[0].url : "",
@@ -197,7 +197,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
   //   사이드는 짧게 훑는 자리라 이름만 적고, 무엇을 하는 곳인지는 오른쪽 제목이
-  //   말한다(title). 라벨이 함수인 것은 매장/본사에 따라 이름이 갈리는 칸이 있어서다.
+  //   말한다(title). 라벨이 함수인 것은 매장/오피스에 따라 이름이 갈리는 칸이 있어서다.
   //   묶음이 늘면 여기에 한 줄 더 넣으면 된다 — 껍데기는 손댈 것이 없다.
   const SIDE_NAV: Record<string, { id: string; label: (i: string) => string;
     title: (i: string) => string; href: string }[]> = {

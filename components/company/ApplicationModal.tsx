@@ -135,7 +135,7 @@ export default function ApplicationModal({
                   ageDisplay: 나이(자료.user_birth_date) != null ? `${나이(자료.user_birth_date)}세` : "",
                   genderDisplay: 성별(자료.user_gender),
                   addressDisplay: 주소,
-                  jobDisplay: 자료.user_job_type === "STORE" ? "매장" : "본사",
+                  jobDisplay: 자료.user_job_type === "STORE" ? "매장" : "오피스",
                   phone: 자료.user_phone || "",
                   email: 자료.user_email || "",
                   portfolioImages: 자료.portfolio_images || [],

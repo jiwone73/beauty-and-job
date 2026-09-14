@@ -49,7 +49,7 @@ export default function AdminDashboardCompanies() {
       <div>
 
       <div style={{ display: "flex", gap: 4, marginBottom: 14 }}>
-        {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>]] as const).map(([val, label]) => (
+        {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>]] as const).map(([val, label]) => (
           <button key={val} onClick={() => setTab(val)} style={tabBtn(tab === val)}>{label}</button>
         ))}
       </div>
@@ -115,7 +115,7 @@ export default function AdminDashboardCompanies() {
         }} />
         <TrendCard
           title="채용공고 등록 추이" type="job" unit="건"
-          subFilter={tab === "ALL" ? "" : tab === "STORE" ? "매장" : "본사"}
+          subFilter={tab === "ALL" ? "" : tab === "STORE" ? "매장" : "오피스"}
           render={(rows, range) => {
             const data = rows.map((r: any) => ({
               day: fmtTrendDay(r.day, range),

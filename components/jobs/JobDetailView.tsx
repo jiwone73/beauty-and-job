@@ -41,7 +41,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const hasMap = (ci.latitude && ci.longitude) || job.companyAddress?.trim();
   // 매장 공고는 법인 정보(회사명·대표자·설립·규모)가 지원 판단에 쓸모가 없고, 주소는 근무지역과,
   // 브랜드명은 상단 제목과 그대로 겹친다. 그래서 매장은 소개글과 SNS만 남긴다.
-  const isOfficeJob = job.jobType === "본사";
+  const isOfficeJob = job.jobType === "오피스";
   const linkCell = (url: string) => (
     <a key="w" href={/^https?:\/\//.test(url) ? url : `https://${url}`}
       target="_blank" rel="noreferrer" style={{ color: "#582681", wordBreak: "break-all" }}>{url}</a>
@@ -50,7 +50,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   if (previewMode) {
     // 등록폼에는 대표자·설립연도 같은 입력칸이 없다 — 미리보기에서만, 폼이
     // 실제로 다루는 값에 가까운 최소 항목으로 좁힌다("매장명·업종·주소·매장소개 /
-    // 본사는 회사명·업종·직원수·홈페이지·주소 정도").
+    // 오피스는 회사명·업종·직원수·홈페이지·주소 정도").
     if (isOfficeJob) {
       if (ci.name) companyRows.push(["회사명", ci.name]);
       if (ci.industry) companyRows.push(["업종", ci.industry]);
@@ -525,7 +525,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 관련 공고 */}
         {related.length > 0 && (
           <section className="job-detail-section">
-            <Link href={`/jobs?type=${job.jobType === "본사" ? "본사" : "매장"}`} className="job-detail-more-link">
+            <Link href={`/jobs?type=${job.jobType === "오피스" ? "오피스" : "매장"}`} className="job-detail-more-link">
               <span>관련 채용공고<span className="job-detail-more-sub">비슷한 포지션 더보기</span></span>
               <ChevronRight size={20} />
             </Link>

@@ -30,7 +30,7 @@ function mapJob(j: any): Job {
     title: j.title,
     region: j.location || "국내",
     categories: j.categories || [],
-    type: j.company_type === "OFFICE" ? "본사" : j.company_type === "STORE" ? "매장" : "본사",
+    type: j.company_type === "OFFICE" ? "오피스" : j.company_type === "STORE" ? "매장" : "오피스",
     career: expLevelLabel(j.experience_level),
     employment: j.employment_type || null,
     deadline: formatDeadline(j.deadline),
@@ -73,7 +73,7 @@ function SectionHead({ label, count, onMore }: { label: string; count: number; o
 function toCard(j: Job) {
   return { id: j.id, title: j.title, company: j.brand, region: j.region, career: j.career,
            employment: j.employment, deadline: j.deadline,
-           categories: j.categories, jobType: j.type === "본사" ? "OFFICE" : "STORE" };
+           categories: j.categories, jobType: j.type === "오피스" ? "OFFICE" : "STORE" };
 }
 
 function SearchInner() {

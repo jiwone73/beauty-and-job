@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * 매장 · 본사 선택 아이콘 (가입·온보딩의 큰 선택 카드 전용).
+ * 매장 · 오피스 선택 아이콘 (가입·온보딩의 큰 선택 카드 전용).
  *
  * 범용 아이콘(가게/빌딩)은 어느 업종에나 붙어서 눈에 남지 않는다.
  * 여기서는 두 가지만 분명히 보이게 그린다.
  *   · 매장 — 차양(스캘럽) 달린 살롱 간판 + 거울 + 반짝임
- *   · 본사 — 층층이 창이 난 본사 건물 + 낮은 부속동
+ *   · 오피스 — 층층이 창이 난 오피스 건물 + 낮은 부속동
  * 선은 currentColor, 면은 같은 색을 옅게 깔아 선택 상태에서도 형태가 살아 있다.
  */
 
@@ -44,7 +44,7 @@ export function OfficeIcon({ size = 26, className, style }: Props) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
       className={className} style={style} aria-hidden focusable="false">
-      {/* 본사 동 */}
+      {/* 오피스 동 */}
       <path
         d="M12.6 20.6V5.2a1.3 1.3 0 0 1 1.3-1.3h5.1a1.3 1.3 0 0 1 1.3 1.3v15.4"
         fill="currentColor" fillOpacity="0.14"
@@ -53,7 +53,7 @@ export function OfficeIcon({ size = 26, className, style }: Props) {
       <path
         d="M3.7 20.6V10.7a1.3 1.3 0 0 1 1.3-1.3h7.6"
         stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* 본사 창 */}
+      {/* 오피스 창 */}
       <path d="M15.1 7.4h2.7M15.1 10.6h2.7M15.1 13.8h2.7"
         stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       {/* 부속동 창 */}

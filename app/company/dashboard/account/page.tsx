@@ -31,7 +31,7 @@ export default function CompanyAccountPage() {
 
   // 가입할 때 고른 값이고 여기서 바꾸지 않는다 — 이 값이 화면 곳곳의 말(매장명/기업명)과
   // 업종 목록, 공고 직군을 통째로 가른다. 옛 'BOTH' 는 매장으로 본다(가입 선택지에서 빠졌다).
-  const 유형이름 = companyType === "OFFICE" ? "본사" : companyType ? "매장" : "";
+  const 유형이름 = companyType === "OFFICE" ? "오피스" : companyType ? "매장" : "";
 
   const formatPhone = (v: string) => {
     const d = (v || "").replace(/\D/g, "").slice(0, 11);
@@ -148,7 +148,7 @@ export default function CompanyAccountPage() {
                     {/* 반 칸짜리 자리라 한마디만 — 긴 설명은 가입 화면에서 이미 읽었다. */}
                     {유형이름 && (
                       <span style={{ fontSize: 15, color: "#555" }}>
-                        {유형이름 === "본사" ? "매장이 아닌 곳 채용" : "살롱·샵 채용"}
+                        {유형이름 === "오피스" ? "매장이 아닌 곳 채용" : "살롱·샵 채용"}
                       </span>
                     )}
                   </span>

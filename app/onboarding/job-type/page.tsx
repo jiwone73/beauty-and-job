@@ -228,7 +228,7 @@ export default function OnboardingJobTypePage() {
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
               <StoreIcon size={20} style={{ color: "#582681" }} /> 매장
             </p>
-            <p className="text-[14px] text-[#555] leading-relaxed break-keep">
+            <p className="text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
               {직군요약("STORE")}
             </p>
           </button>
@@ -241,9 +241,9 @@ export default function OnboardingJobTypePage() {
                 : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
-              <OfficeIcon size={20} style={{ color: "#582681" }} /> 본사
+              <OfficeIcon size={20} style={{ color: "#582681" }} /> 오피스
             </p>
-            <p className="text-[14px] text-[#555] leading-relaxed break-keep">
+            <p className="text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
               {직군요약("OFFICE")}
             </p>
           </button>

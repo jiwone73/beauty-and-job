@@ -20,8 +20,8 @@ interface Props {
   genderDisplay?: string;
   ageDisplay?: string;
   addressDisplay?: string;
-  /** 매장/본사 — 회원 유형이지 이력서에 적을 값이 아니다. 이력서 종류를 가르는
-   *  데만 쓰고 화면에는 내지 않는다(「본사」가 기본 정보에 서 있으면 뜬금없다). */
+  /** 매장/오피스 — 회원 유형이지 이력서에 적을 값이 아니다. 이력서 종류를 가르는
+   *  데만 쓰고 화면에는 내지 않는다(「오피스」가 기본 정보에 서 있으면 뜬금없다). */
   jobDisplay?: string;
   phone: string;
   email: string;
@@ -102,9 +102,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   ref
 ) {
   const [확대, set확대] = useState<number | null>(null);
-  // 매장은 skillAreas, 본사는 officeJobAreas 에 든다. 따로 서 있던 「직군 영역」
+  // 매장은 skillAreas, 오피스는 officeJobAreas 에 든다. 따로 서 있던 「직군 영역」
   // 칸을 걷고 이리로 모았다 — 가진 것이 아니라 원하는 것이라, 희망 근무지·희망
-  // 급여와 같은 묶음이다. 본사 이력서에서는 같은 값이 두 번 나오기도 했다.
+  // 급여와 같은 묶음이다. 오피스 이력서에서는 같은 값이 두 번 나오기도 했다.
   const 희망직군 = [...(skillAreas || []), ...(officeJobAreas || [])].join(", ");
   return (
     <div ref={ref} className="rp-wrap">

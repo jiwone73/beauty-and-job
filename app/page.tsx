@@ -7,7 +7,7 @@ import HeroMobile from "@/components/HeroMobile";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { workTypeLabel } from "@/lib/constants";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
-import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
+import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS, 직군요약 } from "@/lib/data/jobGroups";
 import { useEffect, useState } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
@@ -83,7 +83,7 @@ function Hero() {
   // 이 토글은 눌러서 채용공고 화면으로 넘어가는 자리다. 그쪽에 '전체'가
   // 없으므로 여기서도 두지 않는다 — 고를 수 있게 해 놓고 넘어가면 다른 것이
   // 걸려 있는 것은 약속을 어기는 셈이다. 건수가 많은 매장을 기본으로 둔다.
-  const [jobType, setJobType] = useState<"본사" | "매장">("매장");
+  const [jobType, setJobType] = useState<"오피스" | "매장">("매장");
   const shortSido = (s: string) => s.replace(/(특별시|광역시|특별자치시|특별자치도|도)$/, "");
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
@@ -95,7 +95,7 @@ function Hero() {
       .then((r) => r.json())
       .then((res) => {
         const u = res.data || res;
-        setJobType(u?.job_type === "OFFICE" ? "본사" : "매장");
+        setJobType(u?.job_type === "OFFICE" ? "오피스" : "매장");
         if (Array.isArray(u?.preferred_regions)) {
           const regions = u.preferred_regions
             .filter((r: any) => r.sido && r.sido !== "지역 무관")
@@ -180,26 +180,29 @@ function Hero() {
                       <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
                     </button>
-                    <button type="button" className={`hero-type-btn ${jobType === "본사" ? "active" : ""}`} onClick={() => setJobType("본사")}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>
+                    <button type="button" className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`} onClick={() => setJobType("오피스")}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
                     </button>
                   </div>
                   {/* 매장의 반대쪽은 긍정형으로 정의된 범주가 아니라 '매장이
-                      아닌 곳'이라는 잔여 범주다. 그래서 라벨 한 단어로는 어느
-                      말을 골라도 무언가가 새어 나간다 — '기업'은 매장도 기업이라
-                      틀린 대립을 만들고(게다가 기업회원은 매장을 품는 윗 단계라
-                      한 화면에서 같은 말이 두 뜻이 된다), '오피스'는 제조 QC와
-                      아카데미 강사가 사무실에서 일하지 않아 정작 그들을 밀어낸다.
+                      아닌 곳'이라는 잔여 범주다. 그래서 한 단어로는 어느 말을
+                      골라도 무언가가 새어 나간다 — '본사'는 지점이 있다고 우기고
+                      ('corporate' 에는 없는 뜻이다. corporate headquarters 가 본사다),
+                      '브랜드'는 제조사·플랫폼·헤드헌팅사를 밀어내고, '기업'은
+                      매장도 기업이라 틀린 대립을 만든다.
 
-                      그래서 라벨은 매장과 짝이 굳어진 '본사'로 두고, 못 담는
-                      나머지는 이 설명 줄이 맡는다. 고정 안내문은 읽히지 않으므로
-                      고른 쪽에 따라 바뀌게 해 고르는 순간에 알려 준다. 두 설명
-                      모두 '어디서 근무하는가' 한 축으로 갈라야 나란히 놓고 자기
-                      자리를 짚을 수 있다. */}
+                      그래서 가장 적게 우기는 말로 '오피스'를 골랐다. 사무실에
+                      앉는다는 것 말고는 주장하는 바가 없고, DB 도 이미 OFFICE 다.
+                      그래도 제조 QC·아카데미 강사는 못 담으니, 못 담는 나머지는
+                      이 설명 줄이 맡는다. 고정 안내문은 읽히지 않으므로 고른
+                      쪽에 따라 바뀌게 해 고르는 순간에 알려 준다.
+
+                      설명은 직군 대분류에서 만든다. 손으로 적어 두었더니
+                      「마케팅·영업 · 경영지원」처럼 있지도 않은 직군이 남았다. */}
                   <p className="mt-type-desc">
-                    {jobType === "매장" ? "시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장"
-                      : jobType === "본사" ? "제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원"
-                      : "매장과 본사 공고를 함께 봅니다"}
+                    {jobType === "매장" ? 직군요약("STORE")
+                      : jobType === "오피스" ? 직군요약("OFFICE")
+                      : "매장과 오피스 공고를 함께 봅니다"}
                   </p>
                   <div className="hero-searchbar-v2">
                     <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
@@ -208,7 +211,7 @@ function Hero() {
                     <span className="hero-searchbar-divider" />
                     <input className="hero-search-input-v2" type="text"
                       placeholder={jobType === "매장" ? "헤어 디자이너, 네일리스트, 실장…"
-                        : jobType === "본사" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
+                        : jobType === "오피스" ? "마케터, MD, 뷰티 연구원…" : "지역, 직무, 매장명으로 검색"}
                       value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                     <button type="submit" className="hero-search-btn-v2" aria-label="검색"><Search size={20} /></button>
                   </div>
@@ -301,9 +304,9 @@ function Hero() {
    섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
    ============================================ */
 function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
-  // 사이트 어디서나 매장/본사 두 갈래만 쓴다. '전체'를 한 곳에만 남기면
+  // 사이트 어디서나 매장/오피스 두 갈래만 쓴다. '전체'를 한 곳에만 남기면
   // 같은 토글이 화면마다 다르게 생긴 셈이 된다.
-  const [tab, setTab] = useState<"매장" | "본사">("매장");
+  const [tab, setTab] = useState<"매장" | "오피스">("매장");
   const [jobs, setJobs] = useState<any[]>([]);
   // 이력서를 근거로 점수를 매길 수 있었는지. 근거가 없으면 '추천'이라 부르지 않는다 —
   // 최신순을 추천이라 내놓으면 한 번 보고 다시 안 본다.
@@ -312,7 +315,7 @@ function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
     // 위쪽 '지금 적극 채용 중'과 겹치는 공고를 걸러내려면 그쪽 id 를 먼저
     // 받아야 한다. 아직이면(null) 잠깐 기다린다.
     if (excludeIds === null) return;
-    const jt = tab === "매장" ? "&job_type=STORE" : tab === "본사" ? "&job_type=OFFICE" : "";
+    const jt = tab === "매장" ? "&job_type=STORE" : tab === "오피스" ? "&job_type=OFFICE" : "";
     const exclude = excludeIds.length ? `&exclude=${excludeIds.join(",")}` : "";
     const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     fetch(`/api/jobs/recommended?limit=4${jt}${exclude}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
@@ -327,7 +330,7 @@ function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
   const mappedJobs = jobs.map(mapJob);
   // 이력서를 근거로 고른 것이 아니면 이 자리를 아예 접는다. 최신순을 메인에
   // 또 늘어놓으면 채용관에서 산 자리가 그만큼 묽어진다.
-  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "본사" ? "/jobs?type=본사" : "/jobs";
+  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "오피스" ? "/jobs?type=오피스" : "/jobs";
   if (!맞춤) return null;
   return (
     <section className="section section-divider">
@@ -346,14 +349,14 @@ function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
 
         <div style={{ marginBottom: 24 }}>
           <div className="hero-type-toggle">
-            {(["매장", "본사"] as const).map((t) => (
+            {(["매장", "오피스"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
                 className={`hero-type-btn ${tab === t ? "active" : ""}`}
                 onClick={() => setTab(t)}
               >
-                {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : t === "본사" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span> : t}
+                {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span> : t}
               </button>
             ))}
           </div>
@@ -428,7 +431,7 @@ function fmtStoryDate(d: string) {
    섹션: 직무별 채용 바로가기
    ============================================ */
 function SectionJobGroups() {
-  const [tab, setTab] = useState<"매장" | "본사">("매장");
+  const [tab, setTab] = useState<"매장" | "오피스">("매장");
   const groups = tab === "매장" ? STORE_JOB_GROUPS : OFFICE_JOB_GROUPS;
   return (
     <section className="section section-divider">
@@ -441,10 +444,10 @@ function SectionJobGroups() {
           </div>
         </div>
         <div className="seg">
-          {(["매장", "본사"] as const).map((t) => (
+          {(["매장", "오피스"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className={`seg-btn ${tab === t ? "active" : ""}`}>
-              {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />본사</span>}
+              {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span>}
             </button>
           ))}
         </div>

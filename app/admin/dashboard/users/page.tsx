@@ -16,7 +16,7 @@ import {
 /**
  * 개인회원 현황.
  *
- * 대시보드에서 떼어 왔다. 한 화면에 개인·기업을 다 쌓으니 매장/본사를 갈라
+ * 대시보드에서 떼어 왔다. 한 화면에 개인·기업을 다 쌓으니 매장/오피스를 갈라
  * 보기 시작하는 순간 끝없이 길어졌다. 대시보드는 「지금 어떤가」 한 판으로
  * 끝내고, 파고드는 일은 이 화면이 맡는다.
  *
@@ -61,9 +61,9 @@ export default function AdminDashboardUsers() {
     <AdminLayout activeMenu="dashboard-users">
       <div>
 
-      {/* 매장·본사 — 이 화면의 모든 숫자가 이 고르개를 따른다. */}
+      {/* 매장·오피스 — 이 화면의 모든 숫자가 이 고르개를 따른다. */}
       <div style={{ display: "flex", gap: 4, marginBottom: 14 }}>
-        {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />본사</span>]] as const).map(([val, label]) => (
+        {([["ALL", "전체" as React.ReactNode], ["STORE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>], ["OFFICE", <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>]] as const).map(([val, label]) => (
           <button key={val} onClick={() => setTab(val)} style={tabBtn(tab === val)}>{label}</button>
         ))}
       </div>

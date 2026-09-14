@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
 
-  // 매장은 매장 인재만, 본사는 본사 인재만 본다. 화면에서 고르개를 감추는 것만으로는
+  // 매장은 매장 인재만, 오피스는 오피스 인재만 본다. 화면에서 고르개를 감추는 것만으로는
   //   이 API 를 직접 부르면 그대로 넘어온다 — 회원 유형으로 여기서 강제한다.
   //   겸업(BOTH) 회원만 넘어온 값을 그대로 쓴다.
   const 내유형 = (await pool.query(
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
   else if (careerFilter === "실장")    careerClause = 묶음(고른단계가("실장"), 직급으로("실장"));
   else if (careerFilter === "매니저급") careerClause = 묶음(고른단계가("매니저급"), 직급으로("매니저"));
   else if (careerFilter === "점장급")   careerClause = 묶음(고른단계가("점장급"), 직급으로("점장"));
-  // 본사는 연차로 뽑는다. 구간은 겹치지 않는다(예전 「1-3년」·「3-5년」은 3년에서 겹쳤다).
+  // 오피스는 연차로 뽑는다. 구간은 겹치지 않는다(예전 「1-3년」·「3-5년」은 3년에서 겹쳤다).
   else if (careerFilter === "1~2년")  careerClause = 묶음(고른단계가("1~2년"), 이력이("career_years BETWEEN 1 AND 2"));
   else if (careerFilter === "3~5년")  careerClause = 묶음(고른단계가("3~5년"), 이력이("career_years BETWEEN 3 AND 5"));
   else if (careerFilter === "5~10년") careerClause = 묶음(고른단계가("5~10년"), 이력이("career_years BETWEEN 6 AND 10"));

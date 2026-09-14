@@ -8,7 +8,7 @@
 export type 진행칸 = { id: string; label: string; done: boolean };
 
 export type 진행입력 = {
-  /** 매장(살롱) 이력서냐. 본사는 학력·어학을 반드시 본다. */
+  /** 매장(살롱) 이력서냐. 오피스는 학력·어학을 반드시 본다. */
   살롱: boolean;
   isEntryLevel: boolean;
   careers: { company?: string | null; startDate?: string | null }[];
