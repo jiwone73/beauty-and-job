@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>메인 상단 — 현재와 C안 비교</title>
+<style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard-dynamic-subset.css");
+:root{--cs:#582681}
+*{box-sizing:border-box}
+body{margin:0;background:#f2f2f4;color:#555;font-family:"Pretendard","Noto Sans KR",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1460px;margin:0 auto;padding:30px 20px 60px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.colhead{font-size:14px;color:#555;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.colhead b{font-weight:400;font-size:16px;color:#2b2b2e}
+.colhead em{font-style:normal;font-size:12px;color:var(--cs);background:#f4f0f8;border-radius:5px;padding:2px 8px}
+.view{width:100%;max-width:672px;height:632px;overflow:hidden;background:#fff;border:1px solid #e9e9ed;border-radius:10px;position:relative}
+.scaler{width:1200px;transform:scale(.5583);transform-origin:top left}
+.cut{position:absolute;left:0;right:0;top:502px;border-top:1px dashed #c0504d;z-index:6}
+.cut span{position:absolute;right:8px;top:-17px;font-size:11px;color:#c0504d;background:#fff;padding:0 5px}
+.mk{position:absolute;z-index:7;width:20px;height:20px;border-radius:50%;background:var(--cs);color:#fff;font-size:11.5px;display:flex;align-items:center;justify-content:center}
+
+.hd{height:73px;border-bottom:1px solid #efeff1;display:flex;align-items:center;gap:24px;padding:0 20px}
+.hd .lg{font-size:16px;color:var(--cs)}
+.hd .nv{display:flex;gap:18px;font-size:13.5px;color:#555}
+.hd .rt{margin-left:auto;display:flex;gap:8px}
+.hd .rt i{font-style:normal;font-size:12.5px;border:1px solid #e9e9ed;border-radius:7px;padding:7px 12px}
+.wrap{padding:14px 20px 0}
+.ban{height:190px;border-radius:14px;background:#f4f0f8;padding:26px 30px}
+.ban .kr{font-size:11.5px;color:var(--cs);letter-spacing:.06em;margin:0 0 8px}
+.ban h1{margin:0 0 8px;font-size:26px;color:#2b2b2e;font-weight:400;letter-spacing:-.6px;line-height:1.3}
+.ban p{margin:0;font-size:13.5px;color:#555}
+.adban{height:190px;border-radius:14px;background:#f4f0f8;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;color:#9a9aa0}
+.adban em{font-style:normal;font-size:11px;border:1px solid #e0e0e4;border-radius:4px;padding:1px 5px}
+.srch{display:flex;gap:8px;align-items:center}
+.seg{display:flex;border:1px solid #e3e3e6;border-radius:8px;overflow:hidden;background:#fff;flex:none}
+.seg i{font-style:normal;font-size:13px;padding:10px 16px;color:#555}
+.seg i.on{background:#f7f7f8;color:var(--cs)}
+.sel{border:1px solid #e3e3e6;border-radius:8px;background:#fff;font-size:13px;padding:10px 14px;color:#555;flex:none}
+.inp{flex:1;border:1px solid #e3e3e6;border-radius:8px;background:#fff;font-size:13px;padding:10px 14px;color:#9a9aa0}
+.sbtn{width:42px;border-radius:8px;background:var(--cs);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.jobs{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-top:14px}
+.card{border:1px solid #e9e9ed;border-radius:14px;padding:22px}
+.card.slim{padding:14px 18px}
+.card h3{margin:0 0 6px;font-size:16px;color:#2b2b2e;font-weight:400;line-height:1.4}
+.card .q{margin:0 0 12px;font-size:13px;color:#555}
+.card .note{margin:10px 0 0;font-size:12px;color:#9a9aa0;line-height:1.5}
+.nt{display:flex;align-items:center;gap:10px;font-size:13px;color:#555;margin:0 0 12px}
+.nt em{font-style:normal;font-size:11.5px;color:var(--cs);background:#f4f0f8;border-radius:5px;padding:2px 7px}
+.evt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.evt div{border:1px solid #f0f0f2;border-radius:10px;padding:12px;font-size:12.5px;color:#555}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.btnrow i{font-style:normal;text-align:center;font-size:13px;color:#fff;background:var(--cs);border-radius:8px;padding:11px}
+.tick{display:flex;align-items:center;gap:10px;height:48px;margin-top:14px;border-top:1px solid #f0f0f2;font-size:12.5px;color:#555}
+.tick em{font-style:normal;color:var(--cs)}
+.zone{margin-top:22px}
+.zh{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px}
+.zh b{font-weight:400;font-size:18px;color:#2b2b2e;display:flex;align-items:center;gap:8px}
+.zh .ad{font-size:11px;color:#9a9aa0;border:1px solid #e9e9ed;border-radius:4px;padding:1px 5px}
+.zh a{font-size:13px;color:#555;text-decoration:none}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.jc{border:1px solid #e9e9ed;border-radius:12px;overflow:hidden}
+.jc .ph{background:#f4f4f6;height:112px}
+.g5 .jc .ph{height:84px}
+.jc .bd{padding:11px 12px 13px}
+.jc .co{font-size:12px;color:#9a9aa0;margin:0 0 3px}
+.jc .ti{font-size:13.5px;color:#2b2b2e;margin:0 0 6px;line-height:1.35}
+.jc .mt{font-size:12px;color:#555;margin:0}
+.diff{margin-top:26px;border-top:1px solid #e5e5e9;padding-top:20px}
+.diff .row{display:grid;grid-template-columns:26px 150px 1fr 1fr;gap:14px;padding:13px 0;border-bottom:1px solid #f0f0f2;align-items:start;font-size:14px}
+.diff .row.h{border-bottom:1px solid #e5e5e9;font-size:13px;color:#9a9aa0;padding-bottom:9px}
+.diff .n{width:20px;height:20px;border-radius:50%;background:var(--cs);color:#fff;font-size:11.5px;display:flex;align-items:center;justify-content:center}
+.diff .k{color:#2b2b2e}
+.diff .a{color:#555}
+.diff .b{color:var(--cs)}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="cols">
+
+  <div>
+    <p class="colhead"><b>현재</b><em>채용관 616px</em></p>
+    <div class="view">
+      <div class="cut"><span>첫 화면 끝</span></div>
+      <span class="mk" style="left:22px;top:258px">1</span>
+      <span class="mk" style="left:22px;top:56px">2</span>
+      <span class="mk" style="right:18px;top:168px">4</span>
+      <span class="mk" style="left:22px;top:306px">5</span>
+      <span class="mk" style="left:22px;top:348px">3</span>
+      <div class="scaler">
+        <div class="hd"><span class="lg">뷰티워크</span><span class="nv"><span>채용공고</span><span>내 주변 공고</span><span>이력서</span><span>현장이야기</span></span><span class="rt"><i>회원가입/로그인</i><i>기업 서비스</i></span></div>
+        <div class="wrap">
+          <div class="ban"><p class="kr">BEAUTYWORK OPEN</p><h1>뷰티 커리어의 시작,<br>뷰티워크</h1><p>10월 오픈 기념 · 메가커피 쿠폰</p></div>
+          <div class="jobs">
+            <div class="card">
+              <h3>살롱·샵 현장직부터 브랜드 본사까지,<br>뷰티업계 일자리를 한곳에서</h3>
+              <p class="q">어떤 일자리를 찾으세요?</p>
+              <div class="seg" style="display:inline-flex"><i class="on">매장</i><i>본사</i></div>
+              <p class="note">시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장</p>
+              <div class="srch" style="margin-top:14px"><span class="sel">지역 전체 ▾</span><span class="inp">헤어 디자이너, 네일리스트, 실장…</span><span class="sbtn">🔍</span></div>
+            </div>
+            <div class="card">
+              <p class="nt"><em>공지</em>뷰티워크 서비스 무료 이용 안내</p>
+              <p class="nt" style="margin:0"><em>이달의 이벤트</em>10월 오픈 기념</p>
+              <div class="evt"><div>무료 메가MGC 커피<br>2,000원 쿠폰</div><div>무료 상단 노출<br>먼저 올린 순서대로</div></div>
+              <div class="btnrow"><i>이력서 등록하기</i><i>채용공고 등록하기</i></div>
+            </div>
+          </div>
+          <div class="tick"><em>● 채용속보</em>에이투비아카데미 · ★90일 디자이너 전환 시스템★</div>
+          <div class="zone">
+            <div class="zh"><b>프리미엄 채용관 <span class="ad">광고</span></b><a href="#">요금제 ›</a></div>
+            <div class="g4">
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">뮤아로 헤어</p><p class="ti">헤어 디자이너 채용</p><p class="mt">서울 강남구 · 월 280만원~</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">볼륨 네일샵</p><p class="ti">네일리스트 구합니다</p><p class="mt">서울 마포구 · 급여 협의</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">스킨덴바디</p><p class="ti">피부관리사 채용</p><p class="mt">경기 성남시 · 월 260만원~</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">플로라 헤어</p><p class="ti">디자이너·인턴 모집</p><p class="mt">서울 송파구 · 급여 협의</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="colhead"><b>C안</b><em>채용관 351px</em></p>
+    <div class="view">
+      <div class="cut"><span>첫 화면 끝</span></div>
+      <span class="mk" style="left:22px;top:50px">1</span>
+      <span class="mk" style="left:22px;top:85px">2</span>
+      <span class="mk" style="left:22px;top:200px">3</span>
+      <span class="mk" style="left:22px;top:458px">5</span>
+      <span class="mk" style="left:22px;top:496px">4</span>
+      <div class="scaler">
+        <div class="hd"><span class="lg">뷰티워크</span><span class="nv"><span>채용공고</span><span>내 주변 공고</span><span>이력서</span><span>현장이야기</span></span><span class="rt"><i>회원가입/로그인</i><i>기업 서비스</i></span></div>
+        <div class="wrap">
+          <div class="srch"><span class="seg"><i class="on">매장</i><i>본사</i></span><span class="sel">지역 전체 ▾</span><span class="inp">헤어 디자이너, 네일리스트, 실장…</span><span class="sbtn">🔍</span></div>
+          <div class="adban">메인 AD 배너 — 통짜 한 장 <em>광고</em></div>
+          <div class="zone">
+            <div class="zh"><b>프리미엄 채용관 <span class="ad">광고</span></b><a href="#">요금제 ›</a></div>
+            <div class="g4">
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">뮤아로 헤어</p><p class="ti">헤어 디자이너 채용</p><p class="mt">서울 강남구 · 월 280만원~</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">볼륨 네일샵</p><p class="ti">네일리스트 구합니다</p><p class="mt">서울 마포구 · 급여 협의</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">스킨덴바디</p><p class="ti">피부관리사 채용</p><p class="mt">경기 성남시 · 월 260만원~</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">플로라 헤어</p><p class="ti">디자이너·인턴 모집</p><p class="mt">서울 송파구 · 급여 협의</p></div></div>
+            </div>
+            <div class="zh" style="margin-top:26px"><b>스탠다드 채용관 <span class="ad">광고</span></b><a href="#">요금제 ›</a></div>
+            <div class="g5">
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">라움헤어</p><p class="ti">타미리스트 구합니다</p><p class="mt">경기 고양시</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">벨런스삼성</p><p class="ti">피부관리사 채용</p><p class="mt">서울 강남구</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">제니스튜디오</p><p class="ti">헤어스탭 모집</p><p class="mt">서울 서초구</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">오느리오레</p><p class="ti">파트너 모집</p><p class="mt">서울 도봉구</p></div></div>
+              <div class="jc"><div class="ph"></div><div class="bd"><p class="co">아데르 역삼</p><p class="ti">스텝 모집합니다</p><p class="mt">서울 강남구</p></div></div>
+            </div>
+          </div>
+          <div class="tick"><em>● 채용속보</em>에이투비아카데미 · ★90일 디자이너 전환 시스템★</div>
+          <div class="jobs">
+            <div class="card slim"><p class="nt" style="margin:0"><em>공지</em>뷰티워크 서비스 무료 이용 안내</p></div>
+            <div class="card slim"><p class="nt" style="margin:0"><em>이달의 이벤트</em>10월 오픈 기념 · 무료 상단 노출</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="diff">
+  <div class="row h"><span></span><span>무엇이</span><span>현재</span><span>C안</span></div>
+  <div class="row"><span class="n">1</span><span class="k">검색</span><span class="a">배너 아래 카드 안. 토글·안내줄·지역·키워드가 세로로 쌓여 365px</span><span class="b">맨 위 가로 한 줄. 칸은 그대로 넷</span></div>
+  <div class="row"><span class="n">2</span><span class="k">배너</span><span class="a">왼쪽 글씨 + 오른쪽 사진으로 나뉨</span><span class="b">통짜 한 장. 광고주 소재를 그대로 끼움</span></div>
+  <div class="row"><span class="n">3</span><span class="k">채용관</span><span class="a">616px — 첫 화면에 카드 윗부분만</span><span class="b">351px — 프리미엄 4칸 + 스탠다드 5칸이 첫 화면 안</span></div>
+  <div class="row"><span class="n">4</span><span class="k">공지 · 이벤트</span><span class="a">첫 화면 오른쪽 카드</span><span class="b">채용관 아래 한 줄씩</span></div>
+  <div class="row"><span class="n">5</span><span class="k">채용속보</span><span class="a">배너와 채용관 사이</span><span class="b">채용관 아래</span></div>
+</div>
+</div>
+</body>
+</html>

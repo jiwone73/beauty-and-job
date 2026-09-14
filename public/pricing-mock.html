@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>뷰티워크 요금제 시안</title>
+<style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard-dynamic-subset.css");
+:root{ --cs:#582681; --cs-deep:#431a63; }
+*{box-sizing:border-box}
+body{margin:0;background:#f2f2f4;color:#555;font-family:"Pretendard","Noto Sans KR",-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.tag{max-width:1160px;margin:0 auto;padding:34px 24px 10px;font-size:13px;color:#9a9aa0}
+.screen{background:#fff}
+.wrap{max-width:1160px;margin:0 auto;padding:62px 24px}
+.h2{font-size:27px;font-weight:700;letter-spacing:-.7px;text-align:center;margin:0 0 34px;color:#2b2b2e}
+
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
+.plan{background:#fff;border:1px solid #e9e9ed;border-radius:14px;padding:28px 22px 24px;display:flex;flex-direction:column}
+.plan.on{border:2px solid var(--cs);padding:27px 21px 23px}
+.plan .flag{font-size:12.5px;color:var(--cs);margin:0 0 12px;height:16px;letter-spacing:-.2px}
+.plan .nm{font-size:19px;color:#2b2b2e;margin:0 0 6px;letter-spacing:-.3px}
+.plan .ln{font-size:13.5px;color:#555;margin:0 0 22px;line-height:1.55;word-break:keep-all;min-height:42px}
+.plan .pr{font-size:27px;color:#2b2b2e;margin:0;letter-spacing:-1px;line-height:1.1}
+.plan .pr i{font-size:15px;font-style:normal;letter-spacing:-.2px}
+.plan .du{font-size:13px;color:#555;margin:6px 0 20px}
+.plan .du.free{color:#9a9aa0}
+.btn{display:flex;align-items:center;justify-content:center;height:44px;border-radius:9px;font-size:14.5px;text-decoration:none;letter-spacing:-.3px;border:1px solid #e3e3e6;background:#fff;color:var(--cs)}
+.btn.on{border-color:var(--cs)}
+.btn.free{color:#555}
+.more{display:flex;align-items:center;justify-content:center;gap:4px;height:36px;font-size:13px;color:#555;text-decoration:none}
+.inc{font-size:12.5px;color:#9a9aa0;margin:0;padding-top:16px;border-top:1px solid #f0f0f2}
+.inc+.feat{border-top:0;margin-top:0;padding-top:10px}
+.feat{border-top:1px solid #f0f0f2;margin-top:6px;padding-top:16px;display:flex;flex-direction:column;gap:10px}
+.feat span{font-size:13.5px;color:#555;display:flex;align-items:flex-start;gap:7px;letter-spacing:-.2px;line-height:1.45}
+.feat svg{flex:none;margin-top:3px}
+.vat{text-align:center;font-size:13px;color:#9a9aa0;margin:26px 0 0}
+
+.expo{display:grid;grid-template-columns:1.25fr 1fr;gap:22px;align-items:start}
+.mock{border:1px solid #e9e9ed;border-radius:12px;padding:18px;background:#fff}
+.mock .cap{font-size:13.5px;color:#555;margin:0 0 14px}
+.rowlab{font-size:12px;color:#9a9aa0;margin:0 0 7px}
+.cells{display:grid;gap:8px;margin:0 0 18px}
+.cells.c4{grid-template-columns:repeat(4,1fr)}
+.cells.c5{grid-template-columns:repeat(5,1fr)}
+.cell{border:1px solid #e9e9ed;border-radius:8px;background:#fcfcfd;height:58px}
+.cell.p{border-color:var(--cs);background:#fff}
+.cell.s{border-color:#d9d2e2}
+.cells.c5 .cell{height:46px}
+.arrows{display:flex;justify-content:flex-end;gap:6px;margin:-10px 0 16px}
+.arrows i{width:22px;height:22px;border:1px solid #e9e9ed;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;color:#9a9aa0}
+.slist{display:flex;flex-direction:column;gap:8px}
+.srow{border:1px solid #e9e9ed;border-radius:8px;height:40px;display:flex;align-items:center;padding:0 12px;gap:8px;font-size:12.5px;color:#9a9aa0;background:#fcfcfd}
+.srow em{font-style:normal;font-size:11.5px;padding:2px 7px;border-radius:5px}
+.srow.p{border-color:var(--cs);background:#fff}
+.srow.p em{color:var(--cs);background:#f4f0f8}
+.srow.s{border-color:#d9d2e2;background:#fff}
+.srow.s em{color:#7a6b8a;background:#f7f7f8}
+
+.per{width:100%;border-collapse:collapse;font-size:14.5px;max-width:760px;margin:0 auto}
+.per th,.per td{border-bottom:1px solid #f0f0f2;padding:14px 10px;text-align:center;color:#555;font-weight:400}
+.per thead th{border-bottom:1px solid #e5e5e9;color:#2b2b2e;font-size:15px}
+.per thead th.on{color:var(--cs)}
+.per tbody td:first-child,.per thead th:first-child{text-align:left;padding-left:4px;color:#555}
+.per tr.base td{background:#f7f7f8}
+.per tr.base td:first-child{border-radius:8px 0 0 8px}
+.per tr.base td:last-child{border-radius:0 8px 8px 0}
+.per .no{color:#c8c8ce}
+.mainsec{max-width:1160px;margin:0 auto;padding:40px 24px}
+.mhead{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px}
+.mhead h3{margin:0;font-size:19px;color:#2b2b2e;font-weight:400;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.mhead .ad{font-size:11px;color:#9a9aa0;border:1px solid #e9e9ed;border-radius:4px;padding:1px 5px;letter-spacing:0}
+.mhead .rt{display:flex;align-items:center;gap:12px}
+.mhead .rt a{font-size:13px;color:#555;text-decoration:none}
+.mhead .pg{display:flex;align-items:center;gap:6px;font-size:12px;color:#9a9aa0}
+.mhead .pg i{width:22px;height:22px;border:1px solid #e9e9ed;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:11px}
+.jg{display:grid;gap:14px}
+.jg.g4{grid-template-columns:repeat(4,1fr)}
+.jg.g5{grid-template-columns:repeat(5,1fr)}
+.jc{border:1px solid #e9e9ed;border-radius:12px;overflow:hidden;background:#fff}
+.jc .ph{background:#f4f4f6;height:118px}
+.jg.g5 .jc .ph{height:88px}
+.jc .bd{padding:12px 13px 14px}
+.jc .co{font-size:12.5px;color:#9a9aa0;margin:0 0 4px}
+.jc .ti{font-size:14px;color:#2b2b2e;margin:0 0 8px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:39px}
+.jg.g5 .jc .ti{font-size:13.5px}
+.jc .mt{font-size:12px;color:#555;margin:0}
+.lst{max-width:1160px;margin:0 auto;padding:40px 24px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+.chips span{font-size:13.5px;padding:8px 15px;border-radius:8px;border:1px solid #efeff1;background:#f7f7f8;color:#555}
+.chips span.on{background:#fff;border-color:var(--cs);color:var(--cs)}
+.cols{display:grid;grid-template-columns:210px minmax(0,1fr);gap:26px;align-items:start}
+.side{border:1px solid #e9e9ed;border-radius:12px;padding:16px}
+.side p{margin:0 0 10px;font-size:13px;color:#555}
+.side .bar{height:9px;background:#f4f4f6;border-radius:4px;margin:0 0 9px}
+.side .bar.s{width:62%}
+.side .bar.m{width:80%}
+.slotwrap{border:1px solid var(--cs);border-radius:12px;padding:14px;margin:0 0 12px;position:relative}
+.slothead{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}
+.slothead b{font-weight:400;font-size:14px;color:var(--cs)}
+.slothead .ad{font-size:11px;color:#9a9aa0;border:1px solid #e9e9ed;border-radius:4px;padding:1px 5px}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.slot{border:1px solid #e9e9ed;border-radius:10px;overflow:hidden}
+.slot .ph{background:#f4f4f6;height:74px}
+.slot .bd{padding:10px 11px 12px}
+.slot .co{font-size:12px;color:#9a9aa0;margin:0 0 3px}
+.slot .ti{font-size:13.5px;color:#2b2b2e;margin:0 0 6px;line-height:1.35}
+.slot .mt{font-size:12px;color:#555;margin:0}
+.rowlist{display:flex;flex-direction:column;gap:10px}
+.row{border:1px solid #e9e9ed;border-radius:10px;padding:13px 14px;display:flex;gap:12px;align-items:center}
+.row .th{width:54px;height:40px;background:#f4f4f6;border-radius:6px;flex:none}
+.row .tx{flex:1}
+.row .tx b{display:block;font-weight:400;font-size:13.5px;color:#2b2b2e;margin:0 0 3px}
+.row .tx span{font-size:12px;color:#555}
+.note{font-size:12.5px;color:#9a9aa0;margin:10px 0 0}
+.cmp{width:100%;border-collapse:collapse;margin:0;font-size:14px}
+.cmp th,.cmp td{border-bottom:1px solid #f0f0f2;padding:14px 8px;text-align:center;color:#555;font-weight:400}
+.cmp thead th{border-bottom:1px solid #e5e5e9;color:#2b2b2e;font-size:15px}
+.cmp thead th.on{color:var(--cs)}
+.cmp tbody td:first-child,.cmp thead th:first-child{text-align:left;padding-left:4px;width:26%}
+.cmp .no{color:#c8c8ce}
+
+.faq{border-top:1px solid #e5e5e9;margin-top:8px}
+.faq>div{border-bottom:1px solid #f0f0f2;padding:18px 4px;display:flex;gap:12px;align-items:flex-start}
+.faq>div>div{flex:1}
+.faq i{font-style:normal;color:var(--cs);font-size:14.5px;line-height:1.6}
+.faq p{margin:0;font-size:14.5px;color:#555;line-height:1.6}
+.faq p.a{margin-top:7px}
+.foot{display:flex;align-items:center;justify-content:center;padding:34px 0 0}
+.foot a{height:46px;padding:0 22px;display:inline-flex;align-items:center;border-radius:9px;border:1px solid #e3e3e6;color:#555;font-size:15px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<p class="tag">① 기업서비스 페이지 안 — 요금제 섹션</p>
+<div class="screen"><div class="wrap">
+  <h2 class="h2">요금제</h2>
+  <div class="plans">
+    <div class="plan">
+      <p class="flag"></p>
+      <p class="nm">베이직</p>
+      <p class="ln">공고를 올리고 지원자를 받습니다</p>
+      <p class="pr">무료</p>
+      <p class="du free">공고 게재 7일</p>
+      <a class="btn free" href="#">시작하기</a>
+      <a class="more" href="#">자세히 보기 ›</a>
+      <div class="feat">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>공고 등록 5건</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>지원자 이력서 열람</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>검색 결과 노출</span>
+      </div>
+    </div>
+
+    <div class="plan">
+      <p class="flag"></p>
+      <p class="nm">라이트</p>
+      <p class="ln">공고를 기간 내내 걸어 둡니다</p>
+      <p class="pr">49,000<i>원</i></p>
+      <p class="du">30일</p>
+      <a class="btn" href="#">시작하기</a>
+      <a class="more" href="#">자세히 보기 ›</a>
+      <p class="inc">베이직 혜택 포함</p>
+      <div class="feat">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>공고 등록 무제한</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>게재 기간 제한 없음</span>
+      </div>
+    </div>
+
+    <div class="plan on">
+      <p class="flag">인기 플랜</p>
+      <p class="nm">스탠다드</p>
+      <p class="ln">인재를 직접 보고 제안할 수 있습니다</p>
+      <p class="pr">89,000<i>원</i></p>
+      <p class="du">30일</p>
+      <a class="btn on" href="#">시작하기</a>
+      <a class="more" href="#">자세히 보기 ›</a>
+      <p class="inc">라이트 혜택 포함</p>
+      <div class="feat">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>인재 연락처 열람</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>검색 상단 · 메인 노출</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>제안 무제한</span>
+      </div>
+    </div>
+
+    <div class="plan">
+      <p class="flag"></p>
+      <p class="nm">프리미엄</p>
+      <p class="ln">가장 먼저, 가장 크게 보이는 자리입니다</p>
+      <p class="pr">149,000<i>원</i></p>
+      <p class="du">30일</p>
+      <a class="btn" href="#">시작하기</a>
+      <a class="more" href="#">자세히 보기 ›</a>
+      <p class="inc">스탠다드 혜택 포함</p>
+      <div class="feat">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>검색 결과 최상단</span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#582681" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>메인 프리미엄관 노출</span>
+      </div>
+    </div>
+  </div>
+  <p class="vat">모든 금액은 부가세 포함입니다</p>
+</div></div>
+
+<p class="tag">② 자세히 보기 — 요금제 상세</p>
+<div class="screen"><div class="wrap">
+  <h2 class="h2">플랜 비교</h2>
+  <table class="cmp">
+    <thead><tr><th>　</th><th>베이직</th><th>라이트</th><th class="on">스탠다드</th><th>프리미엄</th></tr></thead>
+    <tbody>
+      <tr><td>이용 요금 (30일)</td><td>무료</td><td>49,000원</td><td>89,000원</td><td>149,000원</td></tr>
+      <tr><td>채용공고 등록</td><td>5건</td><td>무제한</td><td>무제한</td><td>무제한</td></tr>
+      <tr><td>공고 게재 기간</td><td>7일</td><td>이용권 기간 내내</td><td>내내</td><td>내내</td></tr>
+      <tr><td>지원자 이력서·연락처</td><td>열람</td><td>열람</td><td>열람</td><td>열람</td></tr>
+      <tr><td>인재검색 목록</td><td>연락처 가림</td><td>연락처 가림</td><td>열람</td><td>열람</td></tr>
+      <tr><td>인재 이름·연락처</td><td class="no">—</td><td class="no">—</td><td>무제한</td><td>무제한</td></tr>
+      <tr><td>인재 자기소개서·포트폴리오</td><td class="no">—</td><td class="no">—</td><td>무제한</td><td>무제한</td></tr>
+      <tr><td>채용 제안 보내기</td><td class="no">—</td><td class="no">—</td><td>무제한</td><td>무제한</td></tr>
+      <tr><td>검색 결과 노출</td><td>일반</td><td>일반</td><td>상단</td><td>최상단</td></tr>
+      <tr><td>메인 채용관 노출</td><td class="no">—</td><td class="no">—</td><td>5칸 · 돌아가며</td><td>4칸 · 돌아가며</td></tr>
+    </tbody>
+  </table>
+  <p class="vat">모든 금액은 부가세 포함입니다</p>
+
+
+  <div style="height:26px"></div>
+  <h2 class="h2">기간별 요금</h2>
+  <table class="per">
+    <thead><tr><th>　</th><th>라이트</th><th class="on">스탠다드</th><th>프리미엄</th></tr></thead>
+    <tbody>
+      <tr><td>7일</td><td>19,000원</td><td>35,000원</td><td>59,000원</td></tr>
+      <tr><td>15일</td><td>29,000원</td><td>55,000원</td><td>95,000원</td></tr>
+      <tr class="base"><td>30일</td><td>49,000원</td><td>89,000원</td><td>149,000원</td></tr>
+      <tr><td>45일</td><td>69,000원</td><td>129,000원</td><td>219,000원</td></tr>
+      <tr><td>60일</td><td>89,000원</td><td>165,000원</td><td>279,000원</td></tr>
+    </tbody>
+  </table>
+  <p class="vat">모든 금액은 부가세 포함입니다</p>
+
+  <div style="height:26px"></div>
+  <h2 class="h2">노출 자리</h2>
+  <div class="expo">
+    <div class="mock">
+      <p class="cap">메인 화면</p>
+      <p class="rowlab">프리미엄 채용관 · 4칸 고정</p>
+      <div class="cells c4"><div class="cell p"></div><div class="cell p"></div><div class="cell p"></div><div class="cell p"></div></div>
+      <p class="rowlab">스탠다드 채용관 · 5칸 고정</p>
+      <div class="cells c5"><div class="cell s"></div><div class="cell s"></div><div class="cell s"></div><div class="cell s"></div><div class="cell s"></div></div>
+    </div>
+    <div class="mock">
+      <p class="cap">검색 결과</p>
+      <div class="slist">
+        <div class="srow p"><em>프리미엄</em>최상단</div>
+        <div class="srow p"><em>프리미엄</em>최상단</div>
+        <div class="srow s"><em>스탠다드</em>상단</div>
+        <div class="srow s"><em>스탠다드</em>상단</div>
+        <div class="srow">라이트 · 일반</div>
+        <div class="srow">베이직 · 일반</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:26px"></div>
+  <h2 class="h2">자주 묻는 질문</h2>
+  <div class="faq">
+    <div><i>Q.</i><div><p>결제는 어떻게 하나요?</p><p class="a">무통장입금으로 받습니다. 주문 후 안내되는 계좌로 입금하시면 확인 뒤 이용권이 적용됩니다.</p></div></div>
+    <div><i>Q.</i><div><p>이용권은 언제부터 시작되나요?</p><p class="a">입금이 확인된 날부터 시작합니다. 이용 중에 다시 결제하면 남은 기간에 이어 붙습니다.</p></div></div>
+    <div><i>Q.</i><div><p>기간이 끝나면 어떻게 되나요?</p><p class="a">베이직으로 돌아갑니다. 자동 결제는 없습니다. 올려 둔 공고는 5건까지 남고 나머지는 마감됩니다.</p></div></div>
+    <div><i>Q.</i><div><p>무료로도 공고를 올릴 수 있나요?</p><p class="a">5건까지 올릴 수 있고 7일 동안 게재됩니다. 기간이 지나면 마감되며 다시 등록할 수 있습니다.</p></div></div>
+    <div><i>Q.</i><div><p>세금계산서를 받을 수 있나요?</p><p class="a">발행해 드립니다. 주문 후 고객센터로 사업자등록증을 보내주세요.</p></div></div>
+    <div><i>Q.</i><div><p>환불이 되나요?</p><p class="a">이용권을 쓰지 않은 상태에서 7일 안에 요청하시면 전액 환불합니다. 인재 연락처를 열람했거나 제안을 보낸 뒤에는 남은 기간만큼 일할 계산합니다.</p></div></div>
+  </div>
+  <div class="foot"><a href="#">고객센터 문의하기</a></div>
+</div></div>
+
+
+<p class="tag">③ 메인 화면 — 채용관 두 줄</p>
+<div class="screen"><div class="mainsec">
+  <div class="mhead">
+    <h3>프리미엄 채용관 <span class="ad">광고</span></h3>
+    <div class="rt"><a href="#">요금제 ›</a></div>
+  </div>
+  <div class="jg g4">
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">뮤아로 헤어</p><p class="ti">헤어 디자이너 채용</p><p class="mt">서울 강남구 · 월 280만원~</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">볼륨 네일샵</p><p class="ti">네일리스트 구합니다</p><p class="mt">서울 마포구 · 급여 협의</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">스킨덴바디</p><p class="ti">피부관리사 채용</p><p class="mt">경기 성남시 · 월 260만원~</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">플로라 헤어</p><p class="ti">디자이너·인턴 모집</p><p class="mt">서울 송파구 · 급여 협의</p></div></div>
+  </div>
+
+  <div style="height:38px"></div>
+
+  <div class="mhead">
+    <h3>스탠다드 채용관 <span class="ad">광고</span></h3>
+    <div class="rt"><a href="#">요금제 ›</a></div>
+  </div>
+  <div class="jg g5">
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">라움헤어</p><p class="ti">타미리스트 구합니다</p><p class="mt">경기 고양시</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">벨런스삼성</p><p class="ti">피부관리사 채용</p><p class="mt">서울 강남구</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">제니스튜디오</p><p class="ti">헤어스탭 모집</p><p class="mt">서울 서초구</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">오느리오레</p><p class="ti">파트너 모집</p><p class="mt">서울 도봉구</p></div></div>
+      <div class="jc"><div class="ph"></div><div class="bd"><p class="co">아데르 역삼</p><p class="ti">스텝 모집합니다</p><p class="mt">서울 강남구</p></div></div>
+  </div>
+</div></div>
+
+
+<p class="tag">④ 채용공고 목록 — 「헤어」를 고른 화면</p>
+<div class="screen"><div class="lst">
+  <div class="chips">
+    <span class="on">헤어</span><span>네일</span><span>피부</span><span>메이크업</span><span>속눈썹</span><span>왁싱</span><span>두피</span><span>매장매니저</span>
+  </div>
+  <div class="cols">
+    <div class="side">
+      <p>지역</p><div class="bar m"></div><div class="bar s"></div><div class="bar m"></div>
+      <p style="margin-top:16px">경력</p><div class="bar s"></div><div class="bar m"></div>
+      <p style="margin-top:16px">고용형태</p><div class="bar m"></div><div class="bar s"></div>
+    </div>
+    <div>
+      <div class="slotwrap">
+        <div class="slothead"><b>상단 공고 3칸 — 여기가 파는 자리</b><span class="ad">광고</span></div>
+        <div class="slots">
+          <div class="slot"><div class="ph"></div><div class="bd"><p class="co">뮤아로 헤어</p><p class="ti">헤어 디자이너 채용</p><p class="mt">서울 강남구 · 월 280만원~</p></div></div>
+          <div class="slot"><div class="ph"></div><div class="bd"><p class="co">플로라 헤어</p><p class="ti">디자이너·인턴 모집</p><p class="mt">서울 송파구 · 급여 협의</p></div></div>
+          <div class="slot"><div class="ph"></div><div class="bd"><p class="co">라움헤어</p><p class="ti">타미리스트 구합니다</p><p class="mt">경기 고양시 · 급여 협의</p></div></div>
+        </div>
+      </div>
+      <div class="rowlist">
+        <div class="row"><span class="th"></span><span class="tx"><b>헤어디자이너 모집</b><span>에이치플레이스 · 서울 서초구 · 주 5일</span></span></div>
+        <div class="row"><span class="th"></span><span class="tx"><b>초보·경력 디자이너 구해요</b><span>구동연헤어 · 대구 중구 · 주 4일</span></span></div>
+        <div class="row"><span class="th"></span><span class="tx"><b>헤어디자이너 채용</b><span>세종헤어 진월점 · 광주 남구 · 협의</span></span></div>
+        <div class="row"><span class="th"></span><span class="tx"><b>2호점 오픈 디자이너 모집</b><span>리안헤어 동구릉역점 · 경기 구리시 · 주 5일</span></span></div>
+        <div class="row"><span class="th"></span><span class="tx"><b>헤어 스탭 채용</b><span>121헤어살롱 · 경기 하남시 · 협의</span></span></div>
+      </div>
+      <p class="note">위 3칸 아래부터는 지금처럼 최신순입니다</p>
+    </div>
+  </div>
+</div></div>
+
+<div style="height:60px"></div>
+</body>
+</html>

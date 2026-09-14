@@ -21,7 +21,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Rocket, Coffee, TrendingUp, Megaphone, Gift } from "lucide-react";
+  ChevronDown, ChevronUp, Rocket, Coffee, TrendingUp, Megaphone, Gift } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
@@ -122,6 +122,9 @@ function Hero() {
   const [이벤트, set이벤트] = useState<any>(null);
   const [공지, set공지] = useState<any>(null);
   const [속보, set속보] = useState<any[]>([]);
+  // 한 번에 한 건만 보여주고 차례로 넘긴다. 가로로 흘리면 눈이 따라가야 하고,
+  // 긴 제목은 끝까지 지나갈 때까지 기다려야 한다.
+  const [속보차례, set속보차례] = useState(0);
   useEffect(() => {
     fetch("/api/notices")
       .then((r) => r.json())
@@ -136,6 +139,14 @@ function Hero() {
       .then((res) => { if (Array.isArray(res?.data)) set속보(res.data); })
       .catch(() => {});
   }, []);
+
+
+  // 4초마다 다음 건으로. 화살표로 직접 넘기면 그 자리에서 다시 센다.
+  useEffect(() => {
+    if (속보.length < 2) return;
+    const t = setInterval(() => set속보차례((n) => (n + 1) % 속보.length), 4000);
+    return () => clearInterval(t);
+  }, [속보.length, 속보차례]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,7 +176,6 @@ function Hero() {
           <div className="mt-cols">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
-                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 본사까지,<br /><b>뷰티업계 일자리를 한곳에서</b></h2>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
                 {/* 무엇을 찾을지 고르고(토글), 그게 뭔지 읽고(설명), 치는
                     칸(검색바)까지가 한 동작이다. 사이가 벌어지면 셋이 따로
@@ -210,6 +220,26 @@ function Hero() {
                 </div>
               </form>
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
+
+              {/* 채용속보 — 검색 아래 남는 자리를 채운다. 머리글을 걷어내면서
+                  왼쪽 칸이 오른쪽 이벤트 카드보다 짧아졌다. 공고명이 왼쪽으로
+                  흐르므로 긴 제목도 자르지 않는다. */}
+              {속보.length > 0 && (() => {
+                const 이번 = 속보[속보차례 % 속보.length];
+                const 넘김 = (d: number) => set속보차례((n) => (n + d + 속보.length) % 속보.length);
+                return (
+                  <div className="mt-ticker in-card">
+                    <span className="mt-tk-l">채용속보</span>
+                    <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
+                      {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
+                    </Link>
+                    <span className="mt-tk-nav">
+                      <button type="button" onClick={() => 넘김(-1)} aria-label="이전 속보"><ChevronUp size={15} /></button>
+                      <button type="button" onClick={() => 넘김(1)} aria-label="다음 속보"><ChevronDown size={15} /></button>
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* 오른쪽은 한 줄로 세운다 — 위는 공지, 아래는 이벤트.
@@ -237,26 +267,24 @@ function Hero() {
                   <span className="mt-evt-when"><Sparkles size={13} className="mt-evt-when-ic" />10월 오픈 기념</span>
                 </div>
                 <div className="mt-evt-list">
+                  {/* 「개인회원」 딱지와 「이력서를 등록하면」 줄은 걷었다 —
+                      아래 단추가 이미 누구 것인지 말하고, 조건은 곁줄 한 줄로 붙는다. */}
                   <div className="mt-evt-item">
-                    <span className="mt-evt-who">개인회원</span>
                     <div className="mt-evt-row">
                       <span className="mt-evt-ic"><Coffee size={19} /></span>
                       <span className="mt-evt-txt">
-                        <span className="mt-evt-l">이력서를 등록하면</span>
                         <span className="mt-evt-t">무료 메가MGC 커피</span>
-                        <span className="mt-evt-s">2,000원 쿠폰 지급</span>
+                        <span className="mt-evt-s">이력서 등록 시 2,000원 쿠폰</span>
                       </span>
                     </div>
                     <ResumeCta className="mt-evt-btn">이력서 등록하기</ResumeCta>
                   </div>
                   <div className="mt-evt-item">
-                    <span className="mt-evt-who">기업회원</span>
                     <div className="mt-evt-row">
                       <span className="mt-evt-ic"><TrendingUp size={19} /></span>
                       <span className="mt-evt-txt">
-                        <span className="mt-evt-l">채용공고를 등록하면</span>
                         <span className="mt-evt-t">무료 상단 노출</span>
-                        <span className="mt-evt-s">먼저 올린 순서대로 · 10월 1일부터</span>
+                        <span className="mt-evt-s">공고 등록 시 · 10월 1일부터 순서대로</span>
                       </span>
                     </div>
                     <button
@@ -274,22 +302,6 @@ function Hero() {
             </div>
           </div>
         </div>
-
-        {/* 3. 채용속보 — 공고명이 왼쪽으로 흐른다. 긴 제목도 자르지 않는다. */}
-        {속보.length > 0 && (
-          <div className="mt-ticker">
-            <span className="mt-tk-l"><span className="mt-dot" />채용속보</span>
-            <span className="mt-tk-view">
-              <span className="mt-tk-track">
-                {[...속보, ...속보].map((j, i) => (
-                  <Link key={`${j.id}-${i}`} href={`/jobs/${j.id}`} className="mt-tk-item">
-                    <i>NEW</i>{j.company_name ? `${j.company_name} · ` : ""}{j.title}
-                  </Link>
-                ))}
-              </span>
-            </span>
-          </div>
-        )}
       </div>
     </section>
   );
