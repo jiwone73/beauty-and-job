@@ -2,6 +2,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 이용권, 게재종료일, 무료한도넘음 } from "@/lib/companyEntitlement";
+import { 한도안내 } from "@/lib/companyPlans";
 
 // 공고 단건 조회
 export async function GET(
@@ -79,6 +81,33 @@ export async function PATCH(
   if (body.status === "CLOSED") {
     updates.push(`closed_at = NOW()`);
   }
+
+  // 다시 거는 것은 새로 거는 것과 같다.
+  //
+  // 임시저장을 펴거나 마감한 공고를 다시 여는 길이 여기밖에 없는데, 여태 상태만
+  // 바뀌고 게재 기간은 건드리지 않았다. 그래서 임시저장으로 넣었다가 펴면
+  // listed_until 이 빈 채로 남아 **영영 내려가지 않는 공고**가 됐고, 무료 다섯 건
+  // 한도도 그 길로는 세지 않았다. 반대로 옛날에 마감해 둔 공고를 다시 열면 지난
+  // 게재일이 그대로라 ACTIVE 인데 목록에 안 보였다.
+  //
+  // 등록(POST)과 같은 함수를 쓴다 — 한쪽만 고치면 그쪽이 다시 뒷문이 된다.
+  if (body.status === "ACTIVE") {
+    const 지금 = await pool.query(
+      `SELECT status::text AS status FROM job_postings WHERE id = $1 AND company_id = $2`,
+      [params.id, auth!.sub]
+    );
+    if (지금.rowCount === 0) return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);
+    if (지금.rows[0].status !== "ACTIVE") {
+      const { plan, paidUntil } = await 이용권(auth!.sub);
+      if (!plan && (await 무료한도넘음(auth!.sub, params.id))) {
+        return err("PLAN_001", 한도안내, 403);
+      }
+      updates.push(`listed_until = $${idx++}::date`);
+      values.push(게재종료일(plan, paidUntil));
+      updates.push(`closed_at = NULL`);
+    }
+  }
+
   updates.push(`updated_at = NOW()`);
 
   values.push(params.id, auth!.sub);

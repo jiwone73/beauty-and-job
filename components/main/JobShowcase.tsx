@@ -28,6 +28,8 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
   const [cols, setCols] = useState<number>(메인칸[tier].열);
   const [바퀴, set바퀴] = useState(0);
   const 모은것 = useRef<string[]>([]);
+  /** 서버가 내준 표. 노출 수는 이 표에 적힌 것만 센다. */
+  const 표 = useRef<string | null>(null);
 
   useEffect(() => {
     if (excludeIds === null) return;  // 겹치는지 알기 전에 먼저 쏘면 걸러줄 게 없다
@@ -39,6 +41,7 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
         setItems(list);
         setSlots(r.data.slots || slots);
         setCols(r.data.cols || cols);
+        표.current = r.data.표 ?? null;
         onLoaded?.(list.map((x: any) => x.id));
       }).catch(() => onLoaded?.([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,9 +66,9 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
   useEffect(() => {
     const 보내기 = () => {
       const ids = 모은것.current;
-      if (!ids.length) return;
+      if (!ids.length || !표.current) return;
       모은것.current = [];
-      const body = JSON.stringify({ ids });
+      const body = JSON.stringify({ ids, 표: 표.current });
       // 화면을 떠나는 중에는 보통 fetch 가 잘린다.
       if (navigator.sendBeacon) navigator.sendBeacon("/api/jobs/showcase", new Blob([body], { type: "application/json" }));
       else fetch("/api/jobs/showcase", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });

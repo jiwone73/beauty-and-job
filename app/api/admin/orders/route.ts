@@ -103,17 +103,21 @@ export async function PATCH(req: NextRequest) {
       return ok({ id, status: "CANCELED" });
     }
 
-    // 이어 붙일 자리를 찾는다. 기간이 남아 있으면 그 끝에서, 아니면 오늘부터.
+    // 이어 붙일 자리를 찾는다. 기간이 남아 있으면 그 끝 다음 날부터, 아니면 오늘부터.
+    // 「오늘부터 30일」은 오늘을 넣어 세므로 마지막 날이 오늘+29 다.
     const 적용 = await client.query(
       `UPDATE companies
           SET plan = $2,
               paid_until = GREATEST(COALESCE(paid_until, CURRENT_DATE - 1), CURRENT_DATE - 1) + ($3 || ' days')::interval,
               updated_at = now()
         WHERE id = $1
-        RETURNING to_char(paid_until, 'YYYY-MM-DD') AS paid_until`,
+        RETURNING to_char(paid_until, 'YYYY-MM-DD') AS paid_until,
+                  to_char((paid_until - ($3 || ' days')::interval)::date + 1, 'YYYY-MM-DD') AS 시작`,
       [o.company_id, o.plan, String(o.days)]
     );
     const 새끝 = 적용.rows[0]?.paid_until;
+    // 영수증에 적을 시작일. 연장이면 오늘이 아니라 옛 기간이 끝난 다음 날이다.
+    const 시작 = 적용.rows[0]?.시작;
 
     // 걸려 있는 공고의 게재 기간도 같이 민다.
     await client.query(
@@ -125,9 +129,9 @@ export async function PATCH(req: NextRequest) {
     await client.query(
       `UPDATE company_orders
           SET status = 'PAID', confirmed_at = now(), updated_at = now(),
-              applied_from = CURRENT_DATE, applied_until = $2::date
+              applied_from = $3::date, applied_until = $2::date
         WHERE id = $1`,
-      [id, 새끝]
+      [id, 새끝, 시작]
     );
     await client.query("COMMIT");
     return ok({ id, status: "PAID", paidUntil: 새끝, plan: o.plan, planName: 플랜[o.plan as keyof typeof 플랜].name });

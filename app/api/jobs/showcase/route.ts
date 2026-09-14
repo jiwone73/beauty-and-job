@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { 메인칸, 칸수 } from "@/lib/companyPlans";
+import jwt from "jsonwebtoken";
 
 /**
  * 메인 채용관 — 유료로 산 자리.
@@ -62,17 +63,38 @@ export async function GET(req: NextRequest) {
       채움 = r.rows.map((x) => ({ ...x, filler: true }));
     }
 
-    return ok({ slots: 칸, cols: 메인칸[tier].열, items: [...산곳.rows, ...채움] });
+    // 셀 수 있는 것을 여기서 못 박아 표로 끊어 준다. 아래 POST 는 이 표에 적힌
+    // 것만 센다 — 노출 수는 산 사람에게 보여주는 영수증이라 아무나 고쳐 쓸 수
+    // 있으면 영수증이 아니다. (표를 받아다 여러 번 되보내는 것까지는 못 막는다.
+    // 그건 사람이 새로고침하는 것과 같은 비용이라 여기서 볼 일은 아니다.)
+    const 표 = 산곳.rowCount
+      ? jwt.sign({ ids: 산곳.rows.map((r) => r.id) }, process.env.JWT_SECRET!, { expiresIn: "12h" })
+      : null;
+
+    return ok({ slots: 칸, cols: 메인칸[tier].열, items: [...산곳.rows, ...채움], 표 });
   } catch (e) {
     console.error("[showcase GET]", e);
     return err("SERVER_001", "채용관을 불러오지 못했습니다.", 500);
   }
 }
 
-/** 실제로 화면에 뜬 것만 센다. 화면이 모아 두었다가 한 번에 알려 준다. */
+/**
+ * 실제로 화면에 뜬 것만 센다. 화면이 모아 두었다가 한 번에 알려 준다.
+ *
+ * 무엇을 셀 수 있는지는 GET 이 내준 표가 정한다. 표에 없는 id 는 버린다.
+ */
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const ids = Array.isArray(body?.ids) ? body.ids.filter((x: any) => typeof x === "string").slice(0, 200) : [];
+  let 셀수있는것: Set<string>;
+  try {
+    const p = jwt.verify(String(body?.표 || ""), process.env.JWT_SECRET!) as { ids?: string[] };
+    셀수있는것 = new Set(Array.isArray(p.ids) ? p.ids : []);
+  } catch {
+    return ok({ counted: 0 });
+  }
+  const ids = [...new Set(
+    (Array.isArray(body?.ids) ? body.ids : []).filter((x: any) => typeof x === "string" && 셀수있는것.has(x))
+  )];
   if (!ids.length) return ok({ counted: 0 });
   try {
     const r = await pool.query(

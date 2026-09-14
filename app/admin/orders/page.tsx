@@ -25,6 +25,12 @@ const 상태이름: Record<주문["status"], string> = {
   PENDING: "입금대기", PAID: "적용됨", CANCELED: "취소",
 };
 
+/** 관리자 화면은 admin_token 으로 부른다 — 공개 사이트 세션과 다른 열쇠다. */
+const 머리 = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${typeof window === "undefined" ? "" : localStorage.getItem("admin_token") || ""}`,
+});
+
 export default function AdminOrdersPage() {
   const [목록, set목록] = useState<주문[]>([]);
   const [기업들, set기업들] = useState<{ id: string; company_name: string }[]>([]);
@@ -38,14 +44,15 @@ export default function AdminOrdersPage() {
 
   const 불러오기 = async (s = 상태) => {
     set로딩(true);
-    const r = await fetch(`/api/admin/orders${s ? `?status=${s}` : ""}`).then((x) => x.json()).catch(() => null);
+    const r = await fetch(`/api/admin/orders${s ? `?status=${s}` : ""}`, { headers: 머리() })
+      .then((x) => x.json()).catch(() => null);
     set목록(r?.success && Array.isArray(r.data) ? r.data : []);
     set로딩(false);
   };
 
   useEffect(() => { 불러오기(); /* eslint-disable-next-line */ }, [상태]);
   useEffect(() => {
-    fetch("/api/admin/companies?member=true").then((x) => x.json())
+    fetch("/api/admin/companies?member=true", { headers: 머리() }).then((x) => x.json())
       .then((r) => { if (r?.success && Array.isArray(r.data)) set기업들(r.data.map((c: any) => ({ id: c.id, company_name: c.company_name }))); })
       .catch(() => {});
   }, []);
@@ -55,7 +62,7 @@ export default function AdminOrdersPage() {
     if (action === "cancel" && !confirm(`${기업} — 주문을 취소합니다.`)) return;
     set바쁨(true);
     const r = await fetch("/api/admin/orders", {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
+      method: "PATCH", headers: 머리(),
       body: JSON.stringify({ id, action }),
     }).then((x) => x.json()).catch(() => null);
     set바쁨(false);
@@ -69,7 +76,7 @@ export default function AdminOrdersPage() {
     if (!기업) { alert("목록에 있는 기업을 골라 주세요."); return; }
     set바쁨(true);
     const r = await fetch("/api/admin/orders", {
-      method: "POST", headers: { "Content-Type": "application/json" },
+      method: "POST", headers: 머리(),
       body: JSON.stringify({ companyId: 기업.id, plan: 새주문.plan, days: 새주문.days, depositor: 새주문.depositor }),
     }).then((x) => x.json()).catch(() => null);
     set바쁨(false);

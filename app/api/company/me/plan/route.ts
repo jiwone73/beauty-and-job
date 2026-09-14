@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   try {
-    const { plan, paidUntil } = await 이용권(auth!.sub);
+    const { plan, paidUntil, 남은일 } = await 이용권(auth!.sub);
     const { rows } = await pool.query(
       `SELECT COUNT(*)::int AS 진행중,
               COALESCE(SUM(main_impressions), 0)::bigint AS 노출,
@@ -25,9 +25,6 @@ export async function GET(req: NextRequest) {
       [auth!.sub]
     );
     const r = rows[0];
-    const 남은일 = paidUntil && plan
-      ? Math.max(0, Math.ceil((new Date(paidUntil + "T00:00:00+09:00").getTime() - Date.now()) / 864e5))
-      : 0;
     return ok({
       plan, paidUntil, 남은일,
       진행중: r.진행중,

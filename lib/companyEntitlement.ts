@@ -1,11 +1,13 @@
 import pool from "@/lib/db";
-import { 플랜, 플랜인가, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 베이직, 플랜인가, type PlanId } from "@/lib/companyPlans";
 
 export type 이용권정보 = {
   /** 유료 기간 안에 있을 때의 등급. 기간이 지났거나 비면 null(= 베이직) */
   plan: PlanId | null;
-  /** YYYY-MM-DD. 유료였던 적이 없으면 null */
+  /** YYYY-MM-DD. 유료였던 적이 없으면 null. 이 날까지가 이용 기간이다(이 날 포함) */
   paidUntil: string | null;
+  /** 오늘을 넣어 앞으로 며칠을 더 쓰는가. 마지막 날이 1, 기간 밖이면 0 */
+  남은일: number;
 };
 
 /**
@@ -17,14 +19,50 @@ export type 이용권정보 = {
 export async function 이용권(companyId: string): Promise<이용권정보> {
   const { rows } = await pool.query(
     `SELECT plan, to_char(paid_until, 'YYYY-MM-DD') AS paid_until,
-            (paid_until IS NOT NULL AND paid_until >= CURRENT_DATE) AS 유효
+            (paid_until IS NOT NULL AND paid_until >= CURRENT_DATE) AS 유효,
+            -- 오늘을 넣어 센다. 30일권을 산 날은 30, 마지막 날은 1이다.
+            -- 날짜 빼기를 서버(UTC)에서 하면 오전 아홉 시까지 하루가 어긋난다.
+            GREATEST(0, (paid_until - CURRENT_DATE) + 1) AS 남은일
        FROM companies WHERE id = $1`,
     [companyId]
   );
   const r = rows[0];
-  if (!r) return { plan: null, paidUntil: null };
+  if (!r) return { plan: null, paidUntil: null, 남은일: 0 };
   const plan = r.유효 && 플랜인가(r.plan) ? (r.plan as PlanId) : null;
-  return { plan, paidUntil: r.paid_until ?? null };
+  return { plan, paidUntil: r.paid_until ?? null, 남은일: plan ? Number(r.남은일) : 0 };
+}
+
+/**
+ * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD).
+ *
+ * 유료는 이용권이 끝나는 날까지, 무료는 등록일로부터 이레다. 공고를 처음 걸 때와
+ * 마감한 것을 다시 열 때가 같은 규칙을 써야 한다 — 한쪽만 고치면 그쪽이 뒷문이 된다.
+ */
+export function 게재종료일(plan: PlanId | null, paidUntil: string | null): string {
+  if (plan && paidUntil) return paidUntil;
+  // 한국 날짜로 센다. 서버는 UTC 라 자정부터 아침 아홉 시까지는 아직 어제다.
+  const 오늘 = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
+  const d = new Date(오늘 + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + 베이직.게재일);
+  return d.toISOString().slice(0, 10);
+}
+
+/**
+ * 무료(베이직)가 걸 수 있는 건수를 이미 다 썼는가.
+ *
+ * 지금 걸려 있는 것만 센다 — 게재 기간이 끝난 공고는 자리를 차지하지 않는다.
+ * `빼고` 는 지금 다시 열려는 공고다. 자기 자신을 세면 다섯 번째 공고를 다시
+ * 열 수 없다.
+ */
+export async function 무료한도넘음(companyId: string, 빼고?: string): Promise<boolean> {
+  const { rows } = await pool.query(
+    `SELECT COUNT(*)::int AS n FROM job_postings
+      WHERE company_id = $1 AND status = 'ACTIVE'
+        AND (listed_until IS NULL OR listed_until >= CURRENT_DATE)
+        AND ($2::uuid IS NULL OR id <> $2::uuid)`,
+    [companyId, 빼고 ?? null]
+  );
+  return rows[0].n >= 베이직.공고수;
 }
 
 /**
