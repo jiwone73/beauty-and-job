@@ -9106,6 +9106,7 @@ div:has(> table.admin-table),
   justify-content: center;
   flex-shrink: 0;
 }
+.mt-type-desc + .hero-searchbar-v2 { margin-top: 12px; }
 .hero-searchbar-v2 {
   display: flex;
   align-items: center;
@@ -12852,7 +12853,8 @@ button,
 }
 /* 남는 자리는 머리글과 이 덩어리 사이로만 간다. 덩어리 안은 붙여 둔다. */
 .mt-search-set { display: flex; flex-direction: column; }
-.mt-search-set .hero-searchbar-v2 { margin-top: 14px; }
+.mt-search-set .mt-type-desc { margin: 8px 0 0; }
+.mt-search-set .hero-searchbar-v2 { margin-top: 10px; }
 .mt-right { display: flex; flex-direction: column; gap: 8px; }
 /* 공지와 채용속보를 한 줄에 반씩. 둘 다 한 줄짜리 소식이다. */
 .mt-nrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
@@ -12890,6 +12892,13 @@ button,
 .mt-nc .nt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .mt-ask { font-size: 17px; color: #555; margin: 0 0 10px; }
+/* 설명은 설명하는 대상 바로 아래에 붙어야 이어진다. 검색창 아래로 내리면
+   무엇에 대한 말인지 한 번 더 생각해야 한다. */
+/* 15px 로 키우니 한 줄에 22px 가 모자랐다. 글자 사이를 반 픽셀씩 좁혀 한 줄을
+   지킨다 — 크기를 도로 줄이면 키운 뜻이 없다. */
+.mt-type-desc { font-size: 15px; color: var(--card-meta-c); margin: 9px 0 0; line-height: 1.55;
+  word-break: keep-all; letter-spacing: -.5px; }
+
 .mt-chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .mt-chead .t { font-size: 16px; text-decoration: none; font-weight: 600; color: #555; line-height: 1.35; display: flex; align-items: center; gap: 7px; }
 /* 딱지의 바탕을 걷고 글자만 남긴다. 옆의 '이달의 이벤트'와 나란히 서는
