@@ -168,8 +168,11 @@ function Hero() {
         </Link>
 
         {/* 2. 일자리 찾기 블록 */}
+        {/* 디자인 차례 그대로 — 검색이 가로 전체, 그 아래 공지·채용속보 반반,
+            그 아래 이달의 이벤트가 가로 전체다. 이벤트 판은 받은 그림을 그대로
+            쓰는데, 좁은 칸에 넣으면 글자가 3분의 1로 눌려 읽히지 않는다. */}
         <div className="mt-jobs">
-          <div className="mt-cols">
+          <div className="mt-wide">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
@@ -219,13 +222,6 @@ function Hero() {
 
             </div>
 
-            {/* 오른쪽은 한 줄로 세운다 — 위는 공지, 아래는 이벤트.
-                이벤트는 받는 사람이 갈리므로 개인회원·기업회원을 나란히 둔다. */}
-            <div className="mt-right">
-              {/* 공지가 한 줄인데 카드에 두 줄 자리를 주면 제목 뒤로 450px 가
-                  빈다. 내용이 없어서가 아니라 자리를 크게 잡아서다. 딱지를
-                  제목 앞에 붙여 한 줄로 눕히고, 남는 높이는 담을 것이 많은
-                  아래 이벤트 카드가 가져간다. */}
               {/* 공지와 채용속보를 한 줄에 나란히 둔다. 둘 다 한 줄짜리 소식이라
                   자리를 반씩 나눠 쓴다. 왼쪽 칸에 두었더니 검색 카드가 이벤트
                   카드보다 길어져 아래 끝이 어긋났다. */}
@@ -278,7 +274,6 @@ function Hero() {
                   </button>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>

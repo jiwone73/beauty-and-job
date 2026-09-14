@@ -12826,6 +12826,9 @@ button,
 /* 왼쪽은 찾는 자리, 오른쪽은 소식 자리. 오른쪽 안에서 공지와 이벤트를
    위아래로 세운다. */
 .mt-cols { position: relative; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 10px; align-items: stretch; }
+/* 디자인 차례대로 가로 전체에 쌓는다. 이벤트 판은 받은 그림을 그대로 쓰는데,
+   좁은 칸에 넣으면 글자가 3분의 1로 눌려 읽히지 않는다. */
+.mt-wide { position: relative; display: flex; flex-direction: column; gap: 10px; }
 /* 칸 안에 흐르는 띠(채용속보)가 있으면 min-content 가 통째로 늘어 칸이 8000px 까지 밀린다. */
 .mt-cols > .mt-card { min-width: 0; }
 /* 두 칸의 위아래 끝을 맞춘다.
@@ -12839,6 +12842,11 @@ button,
 }
 /* 남는 자리는 머리글과 이 덩어리 사이로만 간다. 덩어리 안은 붙여 둔다. */
 .mt-search-set { display: flex; flex-direction: column; }
+/* 가로가 넉넉하니 토글·지역·키워드를 한 줄로 편다. 세로로 쌓으면 카드만 길어진다. */
+.mt-wide .mt-search-set { flex-direction: row; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mt-wide .mt-search-set .hero-type-toggle { flex: none; }
+.mt-wide .mt-search-set .mt-type-desc { order: 3; flex-basis: 100%; margin: 0; }
+.mt-wide .mt-search-set .hero-searchbar-v2 { flex: 1; min-width: 320px; margin-top: 0; }
 .mt-search-set .mt-type-desc { margin: 8px 0 0; }
 .mt-search-set .hero-searchbar-v2 { margin-top: 10px; }
 .mt-right { display: flex; flex-direction: column; gap: 8px; }
