@@ -1,4 +1,31 @@
 import pool from "@/lib/db";
+import { 플랜, 플랜인가, type PlanId } from "@/lib/companyPlans";
+
+export type 이용권정보 = {
+  /** 유료 기간 안에 있을 때의 등급. 기간이 지났거나 비면 null(= 베이직) */
+  plan: PlanId | null;
+  /** YYYY-MM-DD. 유료였던 적이 없으면 null */
+  paidUntil: string | null;
+};
+
+/**
+ * 이 기업이 지금 무엇을 샀는가.
+ *
+ * 기간이 지나면 등급을 지워서 돌려준다 — 부르는 쪽이 날짜를 또 견주지
+ * 않게 한다. 등급 칸에 값이 남아 있어도 기간 밖이면 베이직이다.
+ */
+export async function 이용권(companyId: string): Promise<이용권정보> {
+  const { rows } = await pool.query(
+    `SELECT plan, to_char(paid_until, 'YYYY-MM-DD') AS paid_until,
+            (paid_until IS NOT NULL AND paid_until >= CURRENT_DATE) AS 유효
+       FROM companies WHERE id = $1`,
+    [companyId]
+  );
+  const r = rows[0];
+  if (!r) return { plan: null, paidUntil: null };
+  const plan = r.유효 && 플랜인가(r.plan) ? (r.plan as PlanId) : null;
+  return { plan, paidUntil: r.paid_until ?? null };
+}
 
 /**
  * 이 기업이 인재의 개인정보(이름·연락처·사진·자기소개서·재직 매장)를 볼 수 있고
@@ -9,18 +36,14 @@ import pool from "@/lib/db";
  * 보내는 제안은 받는 사람이 판단할 것이 없고, 그런 제안이 쌓이면 인재가 제안
  * 알림을 아예 안 열게 된다.
  *
- * 등급을 따로 두지 않고 날짜 하나(companies.paid_until)로 본다. 기간이 지나면
- * 저절로 무료로 떨어지고, 결제가 붙으면 이 날짜만 밀어 주면 된다. 결제 전에도
- * 관리자가 기간을 넣어 유료/무료 동작을 그대로 확인할 수 있다.
+ * 유료 여부는 날짜 하나(companies.paid_until)로 보고, 무엇을 샀는지는 등급
+ * (companies.plan)이 말한다. 기간이 지나면 저절로 베이직으로 떨어진다.
+ * 라이트는 공고를 위한 상품이라 이 문을 열지 않는다 — 인재를 여는 것은
+ * 스탠다드부터다(lib/companyPlans.ts 의 `인재열람`).
  */
 export async function 인재열람가능(companyId: string): Promise<boolean> {
-  const { rows } = await pool.query(
-    `SELECT 1 FROM companies
-     WHERE id = $1 AND paid_until IS NOT NULL AND paid_until >= CURRENT_DATE
-     LIMIT 1`,
-    [companyId]
-  );
-  return rows.length > 0;
+  const { plan } = await 이용권(companyId);
+  return !!plan && 플랜[plan].인재열람;
 }
 
 /**
