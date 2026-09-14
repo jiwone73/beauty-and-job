@@ -373,58 +373,62 @@ export default function CompanySignupPage() {
           </div>
 
           {/* 기업 정보 */}
-          <div className="mb-3">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">회사명 <span className="text-[#e74c3c]">*</span></label>
-            <input type="text" value={form.company_name}
-              onChange={(e) => update("company_name", e.target.value)}
-              placeholder="예) 올리브영"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
-          </div>
-
-          <div className="mb-3">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명</label>
-            <input type="text" value={form.brand_name}
-              onChange={(e) => update("brand_name", e.target.value)}
-              placeholder="대표 브랜드명"
-              className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
-            <div className="relative">
-              <input type="text" value={form.business_number}
-                onChange={(e) => {
-                  const f = formatBizNum(e.target.value);
-                  update("business_number", f);
-                  const d = f.replace(/\D/g, "");
-                  if (d.length === 10) {
-                    if (isValidBizNo(d)) { setBizStatus("valid"); setBizMsg("사업자등록번호 형식이 확인되었습니다."); }
-                    else { setBizStatus("invalid"); setBizMsg("유효하지 않은 사업자등록번호입니다."); }
-                  }
-                  else if (d.length === 0) { setBizStatus("idle"); setBizMsg(""); }
-                  else { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); }
-                }}
-                placeholder="000-00-00000"
-                className={`w-full h-[48px] px-4 ${form.business_number ? "pr-10" : ""} border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${bizStatus === "invalid" ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#582681]"}`} />
-              {form.business_number && (
-                <button type="button" tabIndex={-1}
-                  onClick={() => { update("business_number", ""); setBizStatus("idle"); setBizMsg(""); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[#d0d0d5] text-white text-[12px] leading-none hover:bg-[#b8b8c0]">×</button>
-              )}
+          {/* 640px 에서 한 줄에 한 칸씩 세우면 칸이 옆으로 늘어진다.
+              짧은 칸은 둘씩 나란히 둔다 — 기업 대시보드 설정 화면과 같은 결이다. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <div className="mb-3">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">회사명 <span className="text-[#e74c3c]">*</span></label>
+              <input type="text" value={form.company_name}
+                onChange={(e) => update("company_name", e.target.value)}
+                placeholder="예) 올리브영"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
             </div>
-            {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">사업자 정보 확인 중…</p>}
-            {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
-            {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{bizMsg}</p>}
-          </div>
 
-          <div className="mb-4">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
-            <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#f7f7f8] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
-              <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
-              {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "사업자등록증 첨부 (JPG·PNG·WebP·PDF · 최대 5MB)"}
-            </label>
-            {licenseError && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{licenseError}</p>}
-            {form.business_license_path && !licenseError && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ 사업자등록증이 첨부되었습니다.</p>}
+            <div className="mb-3">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명</label>
+              <input type="text" value={form.brand_name}
+                onChange={(e) => update("brand_name", e.target.value)}
+                placeholder="대표 브랜드명"
+                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
+              <div className="relative">
+                <input type="text" value={form.business_number}
+                  onChange={(e) => {
+                    const f = formatBizNum(e.target.value);
+                    update("business_number", f);
+                    const d = f.replace(/\D/g, "");
+                    if (d.length === 10) {
+                      if (isValidBizNo(d)) { setBizStatus("valid"); setBizMsg("사업자등록번호 형식이 확인되었습니다."); }
+                      else { setBizStatus("invalid"); setBizMsg("유효하지 않은 사업자등록번호입니다."); }
+                    }
+                    else if (d.length === 0) { setBizStatus("idle"); setBizMsg(""); }
+                    else { setBizStatus("invalid"); setBizMsg("올바른 사업자등록번호를 입력해주세요."); }
+                  }}
+                  placeholder="000-00-00000"
+                  className={`w-full h-[48px] px-4 ${form.business_number ? "pr-10" : ""} border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${bizStatus === "invalid" ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#582681]"}`} />
+                {form.business_number && (
+                  <button type="button" tabIndex={-1}
+                    onClick={() => { update("business_number", ""); setBizStatus("idle"); setBizMsg(""); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[#d0d0d5] text-white text-[12px] leading-none hover:bg-[#b8b8c0]">×</button>
+                )}
+              </div>
+              {bizStatus === "checking" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#999]">사업자 정보 확인 중…</p>}
+              {bizStatus === "valid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ {bizMsg}</p>}
+              {bizStatus === "invalid" && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{bizMsg}</p>}
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
+              <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#f7f7f8] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
+                <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
+                {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "파일 첨부 · JPG·PNG·PDF · 5MB"}
+              </label>
+              {licenseError && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{licenseError}</p>}
+              {form.business_license_path && !licenseError && <p className="mt-1.5 text-[12px] md:text-[14px] text-[#1a8a4a]">✓ 사업자등록증이 첨부되었습니다.</p>}
+            </div>
           </div>
 
           {/* 담당자 정보 */}
