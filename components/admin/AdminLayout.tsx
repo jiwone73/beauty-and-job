@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
-  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2, Download, Clock, Bug, Rocket } from "lucide-react";
+  LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2, Download, Clock, Bug, Rocket, Wallet } from "lucide-react";
 const NAV_ITEMS = [
   // 오픈까지 남은 일이 제일 먼저 보여야 한다.
   { id: "launch", label: "상용화 일정", icon: Rocket, href: "/admin/launch" },
@@ -48,6 +48,7 @@ const NAV_ITEMS = [
   { id: "stories", label: "현장이야기", icon: BookOpen, href: "/admin/stories" },
   { id: "newsletters", label: "뉴스레터", icon: Mail, href: "/admin/newsletters" },
   { id: "notices", label: "공지사항", icon: Bell, href: "/admin/notices" },
+  { id: "orders", label: "이용권 주문", icon: Wallet, href: "/admin/orders" },
   { id: "ads", label: "사업문의", icon: Megaphone, href: "/admin/ads" },
   { id: "inquiries", label: "1:1 문의", icon: MessageSquare, href: "/admin/inquiries" },
 ];
@@ -56,6 +57,7 @@ const NAV_ITEMS = [
 /** 화면 제목. 사이드에서 켜질 메뉴(activeMenu)로 찾는다. */
 const PAGE_SUBTITLES: Record<string, string> = {
   "launch": "상용화 일정",
+  "orders": "이용권 주문",
   "dashboard": "대시보드",
   "dashboard-users": "개인회원 현황",
   "dashboard-companies": "기업회원 현황",
