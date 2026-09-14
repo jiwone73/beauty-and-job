@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import PlanCards from "@/components/company/PlanCards";
+import ServiceHeader from "@/components/company/ServiceHeader";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
   CheckCircle2, ArrowRight, Plus, Minus,
@@ -94,24 +96,7 @@ export default function CompanyServicePage() {
   return (
     <div className="cs-page">
       {/* ── 헤더 ── */}
-      <header className="cs-header">
-        <div className="cs-header-in">
-          <Link href="/" className="cs-logo">
-            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
-          </Link>
-          <nav className="cs-nav">
-            <a href="#소개">서비스 소개</a>
-            <a href="#직군">매장 채용</a>
-            <a href="#직군">본사 채용</a>
-            <a href="#광고">광고·노출 상품</a>
-            <Link href="/support">고객센터</Link>
-          </nav>
-          <div className="cs-header-btns">
-            <Link href="/company/login" className="cs-btn-ghost">로그인</Link>
-            <Link href="/company/signup" className="cs-btn-fill">회원가입</Link>
-          </div>
-        </div>
-      </header>
+      <ServiceHeader 소개화면 />
 
       {/* ── 히어로 ── */}
       <section className="cs-hero" id="소개">
@@ -156,6 +141,12 @@ export default function CompanyServicePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── 요금제 ── */}
+      <section className="cs-wrap" id="요금제">
+        <h2 className="cs-h2">요금제</h2>
+        <PlanCards />
       </section>
 
       {/* ── 대시보드 ── */}
