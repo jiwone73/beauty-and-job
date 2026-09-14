@@ -235,6 +235,7 @@ function Hero() {
               <div className="mt-nrow">
                 <div className="mt-card mt-nc">
                   <Link href="/notice" className="mt-nc-tag">공지</Link>
+                  <span className="mt-nc-bar" aria-hidden="true">|</span>
                   <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
                     <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
                   </Link>
@@ -245,6 +246,7 @@ function Hero() {
                   return (
                     <div className="mt-card mt-nc mt-tkc">
                       <span className="mt-tk-l">채용속보</span>
+                      <span className="mt-nc-bar" aria-hidden="true">|</span>
                       <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
                         {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
                       </Link>
