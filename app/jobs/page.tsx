@@ -1,7 +1,7 @@
 "use client";
 import Header from "@/components/Header";
 import { jobCompanyName } from "@/lib/companyName";
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, useMemo, Suspense } from "react";
 import JobGroupSelectModal from "@/components/JobGroupSelectModal";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
@@ -141,10 +141,17 @@ function JobsPageInner() {
   // 아직 안 온 것은 다른 일인데, 화면에는 똑같이 빈 목록으로 보인다.
   const [불러왔나, set불러왔나] = useState(false);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
+  // 서버가 24건씩 준다. 「더 보기」는 다음 쪽을 받아 뒤에 잇는다.
+  const 한번에 = 24;
+  const [쪽, set쪽] = useState(1);
+  const [총건수, set총건수] = useState(0);
   // 복리후생 필터 후보는 공고등록 폼과 같은 마스터(benefit_tags, 검수됨)에서 받는다.
   // 화면마다 목록을 따로 적어 두면 등록 어휘와 필터 어휘가 갈라진다.
   const [curatedBenefits, setCuratedBenefits] = useState<string[]>(BENEFIT_FILTER);
-  useEffect(() => {
+  // 조건을 한 곳에 모아 서버로 넘긴다. 예전에는 100건을 받아 브라우저에서
+  // 걸렀는데, 진행 중 공고가 189건이 되면서 89건은 걸러지지도 않았다
+  // (네일 10건 중 1건만 보였다). 조건이 바뀌면 첫 쪽부터 다시 받는다.
+  const 조건 = useMemo(() => {
     const qs = new URLSearchParams();
     const t = searchParams.get("type");
     const sd = searchParams.get("sido");
@@ -154,8 +161,25 @@ function JobsPageInner() {
     if (selectedRegions.length) qs.set("regions", selectedRegions.join(","));
     if (sd) qs.set("sido", sd);
     if (sg) qs.set("sigungu", sg);
-    if (kw) qs.set("q", kw);
-    qs.set("limit", "100");
+    if (kw || searchQuery) qs.set("q", kw || searchQuery);
+    qs.set("company_type", jobTypeFilter === "본사" ? "OFFICE" : "STORE");
+    if (selectedJobs.length) qs.set("categories", selectedJobs.join(","));
+    if (selectedCareer !== "경력 전체") qs.set("career", selectedCareer);
+    if (selectedEmployment !== "고용형태 전체") qs.set("employment", selectedEmployment);
+    if (selectedBenefits.length) qs.set("benefits", selectedBenefits.join(","));
+    if (selectedSalary > 0) qs.set("salary_min", String(selectedSalary));
+    if (selectedBrand) qs.set("brand", selectedBrand);
+    qs.set("nosample", "1");
+    return qs.toString();
+  }, [searchParams, selectedRegions, searchQuery, jobTypeFilter, selectedJobs,
+      selectedCareer, selectedEmployment, selectedBenefits, selectedSalary, selectedBrand]);
+
+  useEffect(() => { set쪽(1); }, [조건]);
+
+  useEffect(() => {
+    const qs = new URLSearchParams(조건);
+    qs.set("limit", String(한번에));
+    qs.set("page", String(쪽));
     fetch(`/api/jobs?${qs.toString()}`)
       .then(r => r.json())
       .then(res => {
@@ -186,12 +210,14 @@ function JobsPageInner() {
             benefit_tags: j.benefit_tags || [],
             salary_min: j.salary_min ?? null,
           }));
-          setApiJobs(mapped);
+          setApiJobs((prev) => (쪽 === 1 ? mapped : [...(prev || []), ...mapped]));
+          set총건수(res?.meta?.total ?? mapped.length);
         }
       })
       .catch(e => console.error('[load jobs]', e))
       .finally(() => set불러왔나(true));
-  }, [searchParams, selectedRegions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [조건, 쪽]);
 
   useEffect(() => {
     loadBookmarks();
@@ -278,28 +304,8 @@ function JobsPageInner() {
     setSelectedEmployment("고용형태 전체"); setSelectedCareer("경력 전체");
     setSelectedBenefits([]); set열린팝오버(null);
   };
-  // 한 번에 다 그리면 카드가 100장이 된다. 화면에 보이는 만큼만 그리고 「더 보기」로
-  // 늘린다 — 사진은 lazy 라 안 보이면 안 받지만, 카드 100장은 그 자체로 무겁다.
-  const 한번에 = 24;
-  const [보여줄수, set보여줄수] = useState(한번에);
-  const filteredJobs = (apiJobs || []).filter((j: any) => {
-    const matchType = j.type === jobTypeFilter || j.type === "both";
-    const matchJob = selectedJobs.length === 0 || selectedJobs.some((s) => (j.categories || []).includes(s));
-    // '경력무관' 공고는 신입에게도 경력자에게도 열려 있으니 양쪽 필터에 모두 걸린다.
-    // (신입·경력을 함께 뽑는 공고가 ANY 로 저장되는데, 예전에는 신입 필터에서 사라졌다.)
-    const matchCareer = selectedCareer === "경력 전체" || j.experience_level === selectedCareer
-      || (j.experience_level === "ANY" && (selectedCareer === "NEW" || selectedCareer === "EXPERIENCED"));
-    const matchEmployment = selectedEmployment === "고용형태 전체" || j.employment_type === selectedEmployment;
-    const matchBenefit = selectedBenefits.length === 0 || selectedBenefits.every((b) => (j.benefit_tags || []).includes(b));
-    const matchSalary = selectedSalary === 0 || (j.salary_min && j.salary_min >= selectedSalary);
-    const matchBrand = !selectedBrand || (j.brand || "").includes(selectedBrand);
-    return matchType && matchJob && matchCareer && matchEmployment && matchBenefit && matchSalary && matchBrand;
-  });
-
-  // 조건을 바꾸면 처음 24건부터 다시 본다. 아니면 필터를 좁혔는데도 아까 늘려 둔
-  // 만큼 그대로 뜬다.
-  useEffect(() => { set보여줄수(한번에); },
-    [selectedJobs, selectedCareer, selectedEmployment, selectedBenefits, selectedSalary, searchQuery, selectedRegions, apiJobs]);
+  // 거르는 일은 전부 서버가 한다. 여기서는 받은 것을 그대로 그린다.
+  const filteredJobs = apiJobs || [];
 
   return (
     <div className="jobs-page">
@@ -466,7 +472,7 @@ function JobsPageInner() {
         <div className="jobs-main">
         <div className="jobs-head">
           <b>{jobTypeFilter} 채용공고</b>
-          <span>{filteredJobs.length}건</span>
+          <span>{총건수}건</span>
         </div>
 
         {/* ===== 고른 값 =====
@@ -508,7 +514,7 @@ function JobsPageInner() {
         {/* ===== 채용공고 그리드 ===== */}
         {filteredJobs.length > 0 ? (
           <div className="jobs-grid">
-            {filteredJobs.slice(0, 보여줄수).map((job) => (
+            {filteredJobs.map((job) => (
               <JobCard key={job.id} data={{
                 id: job.id,
                 title: job.title,
@@ -533,10 +539,10 @@ function JobsPageInner() {
           </div>
         )}
 
-        {filteredJobs.length > 보여줄수 && (
+        {filteredJobs.length < 총건수 && (
           <div className="jobs-more">
-            <button type="button" onClick={() => set보여줄수((n) => n + 한번에)}>
-              공고 더 보기 ({filteredJobs.length - 보여줄수}건)
+            <button type="button" onClick={() => set쪽((n) => n + 1)}>
+              공고 더 보기 ({총건수 - filteredJobs.length}건)
             </button>
           </div>
         )}

@@ -28,6 +28,15 @@ export async function GET(req: NextRequest) {
   // 메인은 자리가 여럿이라 같은 공고가 두 번 뜨기 쉽다. 위 자리에 이미 뜬 것을
   // 빼고 고른다 — /api/jobs/recommended 가 쓰던 규칙과 같은 이름을 쓴다.
   const exclude = (searchParams.get('exclude') || '').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 40)
+  // 목록 화면의 상세 필터. 예전에는 100건을 받아 브라우저에서 걸렀는데, 진행 중
+  // 공고가 189건이 되면서 89건은 애초에 걸러지지도 않았다(네일 10건 중 1건만 보임).
+  const categories = (searchParams.get('categories') || '').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 40)
+  const benefits = (searchParams.get('benefits') || '').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 20)
+  const career = searchParams.get('career') || ''
+  const employment = searchParams.get('employment') || ''
+  const salaryMin = parseInt(searchParams.get('salary_min') || '0')
+  const brand = searchParams.get('brand') || ''
+  const companyType = searchParams.get('company_type') || ''
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
@@ -73,6 +82,39 @@ export async function GET(req: NextRequest) {
     where.push(`(${prefix}title ILIKE $${idx} OR ${prefix}brand_name ILIKE $${idx + 1} OR ${prefix}company_name ILIKE $${idx + 2})`)
     params.push(kw, kw, kw)
     idx += 3
+  }
+  // 매장/본사. company_type 이 비어 있는 대행 공고는 job_type 으로 갈음한다.
+  if (companyType === 'STORE' || companyType === 'OFFICE') {
+    // 두 칸이 서로 다른 열거형이라 그대로 COALESCE 하면 형 변환에서 걸린다.
+    where.push(`COALESCE(${prefix}company_type::text, ${prefix}job_type::text) = $${idx++}`)
+    params.push(companyType)
+  }
+  if (categories.length) {
+    // 하나라도 걸치면 나온다(화면의 직군 필터가 OR 다).
+    where.push(`${prefix}categories && $${idx++}::text[]`)
+    params.push(categories)
+  }
+  if (career === 'NEW' || career === 'EXPERIENCED') {
+    // 「경력무관」은 신입에게도 경력자에게도 열려 있으니 양쪽에 걸린다.
+    where.push(`(${prefix}experience_level = $${idx} OR ${prefix}experience_level = 'ANY')`)
+    params.push(career); idx += 1
+  }
+  if (employment) {
+    where.push(`${prefix}employment_type = $${idx++}`)
+    params.push(employment)
+  }
+  if (benefits.length) {
+    // 고른 것을 다 갖춘 공고만(화면의 복리후생 필터가 AND 다).
+    where.push(`${prefix}benefit_tags @> $${idx++}::text[]`)
+    params.push(benefits)
+  }
+  if (salaryMin > 0) {
+    where.push(`${prefix}salary_min >= $${idx++}`)
+    params.push(salaryMin)
+  }
+  if (brand) {
+    where.push(`(${prefix}brand_name ILIKE $${idx} OR ${prefix}company_name ILIKE $${idx + 1})`)
+    params.push(`%${brand}%`, `%${brand}%`); idx += 2
   }
   if (exclude.length) {
     const prefix = active ? 'j.' : ''
