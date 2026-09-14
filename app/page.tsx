@@ -20,7 +20,6 @@ import {
   Building2,
   Bookmark,
   Sparkles,
-  MapPin,
   ChevronDown, Gift, UserRound } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
@@ -206,7 +205,7 @@ function Hero() {
                   </p>
                   <div className="hero-searchbar-v2">
                     <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
-                      <MapPin size={16} /><span>{regionLabel}</span><ChevronDown size={15} />
+                      <span>{regionLabel}</span><ChevronDown size={15} />
                     </button>
                     <span className="hero-searchbar-divider" />
                     {/* 칸 안에는 예시를 적지 않는다. 바로 위 줄이 무엇이 들어

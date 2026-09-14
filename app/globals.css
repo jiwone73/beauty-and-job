@@ -9113,7 +9113,9 @@ div:has(> table.admin-table),
   background: #fff;
   border: 1.5px solid #efeff1;
   border-radius: 12px;
-  padding: 5px 5px 5px 14px;
+  /* 앞의 핀 아이콘을 걷어 낸 만큼 왼쪽 여백도 줄인다 — 아이콘만 빼고 여백을
+     그대로 두면 「지역 전체」가 혼자 안으로 들어와 보인다. */
+  padding: 5px 5px 5px 10px;
   gap: 0;
 }
 .hero-region-trigger {
@@ -9123,7 +9125,7 @@ div:has(> table.admin-table),
   background: none;
   border: none;
   padding: 0 8px 0 0;
-  font-size: 15px;
+  font-size: 14px;
   color: #582681;
   font-weight: 600;
   font-family: inherit;
@@ -12361,7 +12363,7 @@ div:has(> table.admin-table),
   .hero-strategy-title { font-size: 16px; }
   .hero-right-card-title { font-size: 17px; }
   .baj-login-input { font-size: 16px; }
-  .hero-region-trigger { font-size: 16px; }
+  .hero-region-trigger { font-size: 15px; }
   .mob-menu-item { font-size: 16px; }
   .baj-kakao-btn { font-size: 16px; }
   .baj-phone-btn { font-size: 16px; }
