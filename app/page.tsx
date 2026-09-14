@@ -21,7 +21,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Gift } from "lucide-react";
+  ChevronDown, Gift, UserRound } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
@@ -168,11 +168,8 @@ function Hero() {
         </Link>
 
         {/* 2. 일자리 찾기 블록 */}
-        {/* 디자인 차례 그대로 — 검색이 가로 전체, 그 아래 공지·채용속보 반반,
-            그 아래 이달의 이벤트가 가로 전체다. 이벤트 판은 받은 그림을 그대로
-            쓰는데, 좁은 칸에 넣으면 글자가 3분의 1로 눌려 읽히지 않는다. */}
         <div className="mt-jobs">
-          <div className="mt-wide">
+          <div className="mt-cols">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
@@ -222,6 +219,13 @@ function Hero() {
 
             </div>
 
+            {/* 오른쪽은 한 줄로 세운다 — 위는 공지, 아래는 이벤트.
+                이벤트는 받는 사람이 갈리므로 개인회원·기업회원을 나란히 둔다. */}
+            <div className="mt-right">
+              {/* 공지가 한 줄인데 카드에 두 줄 자리를 주면 제목 뒤로 450px 가
+                  빈다. 내용이 없어서가 아니라 자리를 크게 잡아서다. 딱지를
+                  제목 앞에 붙여 한 줄로 눕히고, 남는 높이는 담을 것이 많은
+                  아래 이벤트 카드가 가져간다. */}
               {/* 공지와 채용속보를 한 줄에 나란히 둔다. 둘 다 한 줄짜리 소식이라
                   자리를 반씩 나눠 쓴다. 왼쪽 칸에 두었더니 검색 카드가 이벤트
                   카드보다 길어져 아래 끝이 어긋났다. */}
@@ -255,25 +259,32 @@ function Hero() {
                       제목 옆에 한 번만 둔다. */}
                   <span className="mt-evt-when"><Sparkles size={13} className="mt-evt-when-ic" />10월 오픈 기념</span>
                 </div>
-                {/* 판 하나가 통째로 그림이다 — 디자인 그대로 쓰고, 판 전체가
-                    눌리는 자리다. 안쪽에 또 「보기」 단추를 두지 않는다. */}
+                {/* 글자는 직접 짠다 — 그림에 구워 넣으면 좁은 칸에서 3분의 1로
+                    눌려 안 읽히고, 문구를 고칠 때마다 그림을 다시 받아야 한다.
+                    커피·확성기만 원본에서 떼어 얹는다. 큰 카피는 디자인 그대로. */}
                 <div className="mt-evt-list">
-                  <ResumeCta className="mt-evt-banner">
-                    <img src="/images/event/event-user.png"
-                      alt="개인회원 이벤트 — 이력서 등록하고 메가MGC 커피 2,000원 쿠폰 받기" />
+                  <ResumeCta className="mt-evt-p ev-user">
+                    <span className="mt-evt-tag"><UserRound size={12} />개인회원 EVENT</span>
+                    <span className="mt-evt-h">이력서 등록하고<br /><b>메가MGC 커피 받기</b></span>
+                    <span className="mt-evt-go">이력서 등록하기 ›</span>
+                    <img className="mt-evt-art art-coffee" src="/images/event/art-coffee.png" alt="" />
                   </ResumeCta>
+
                   <button
                     type="button"
-                    className="mt-evt-banner"
+                    className="mt-evt-p ev-co"
                     onClick={() => router.push(
                       isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
                     )}
                   >
-                    <img src="/images/event/event-company.png"
-                      alt="기업회원 이벤트 — 채용공고 등록하고 10월 한 달 무료 우선 노출" />
+                    <span className="mt-evt-tag"><OfficeIcon size={12} />기업회원 EVENT</span>
+                    <span className="mt-evt-h">채용공고 등록하고<br /><b>무료 우선 노출</b></span>
+                    <span className="mt-evt-go">채용공고 등록하기 ›</span>
+                    <img className="mt-evt-art art-mega" src="/images/event/art-megaphone.png" alt="" />
                   </button>
                 </div>
               </div>
+            </div>
           </div>
         </div>
       </div>

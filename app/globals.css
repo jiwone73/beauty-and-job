@@ -12826,9 +12826,6 @@ button,
 /* 왼쪽은 찾는 자리, 오른쪽은 소식 자리. 오른쪽 안에서 공지와 이벤트를
    위아래로 세운다. */
 .mt-cols { position: relative; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 10px; align-items: stretch; }
-/* 디자인 차례대로 가로 전체에 쌓는다. 이벤트 판은 받은 그림을 그대로 쓰는데,
-   좁은 칸에 넣으면 글자가 3분의 1로 눌려 읽히지 않는다. */
-.mt-wide { position: relative; display: flex; flex-direction: column; gap: 10px; }
 /* 칸 안에 흐르는 띠(채용속보)가 있으면 min-content 가 통째로 늘어 칸이 8000px 까지 밀린다. */
 .mt-cols > .mt-card { min-width: 0; }
 /* 두 칸의 위아래 끝을 맞춘다.
@@ -12842,11 +12839,6 @@ button,
 }
 /* 남는 자리는 머리글과 이 덩어리 사이로만 간다. 덩어리 안은 붙여 둔다. */
 .mt-search-set { display: flex; flex-direction: column; }
-/* 가로가 넉넉하니 토글·지역·키워드를 한 줄로 편다. 세로로 쌓으면 카드만 길어진다. */
-.mt-wide .mt-search-set { flex-direction: row; align-items: center; gap: 10px; flex-wrap: wrap; }
-.mt-wide .mt-search-set .hero-type-toggle { flex: none; }
-.mt-wide .mt-search-set .mt-type-desc { order: 3; flex-basis: 100%; margin: 0; }
-.mt-wide .mt-search-set .hero-searchbar-v2 { flex: 1; min-width: 320px; margin-top: 0; }
 .mt-search-set .mt-type-desc { margin: 8px 0 0; }
 .mt-search-set .hero-searchbar-v2 { margin-top: 10px; }
 .mt-right { display: flex; flex-direction: column; gap: 8px; }
@@ -12941,11 +12933,28 @@ button,
 .mt-evt { display: flex; flex-direction: column; }
 .mt-evt-lead { font-size: 13px; color: #555; margin-left: 10px; flex: 1; }
 .mt-evt-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-/* 판 하나가 통째로 그림이다. 판 전체가 눌린다 — 안쪽에 또 단추를 두지 않는다. */
-.mt-evt-banner { display: block; width: 100%; padding: 0; border: 0; background: none;
-  border-radius: 14px; overflow: hidden; cursor: pointer; font-family: inherit; }
-.mt-evt-banner img { display: block; width: 100%; height: auto; }
-.mt-evt-banner:hover { filter: brightness(.985); }
+/* 판 하나. 글자는 직접 짜고 그림만 원본에서 떼어 얹는다 — 그림에 글자를 구워
+   넣으면 330px 칸에서 3분의 1로 눌려 안 읽힌다. 바탕은 떼어 온 그림의 가장자리
+   색에 맞춰, 그림과 판 사이에 금이 보이지 않게 한다. */
+.mt-evt-p { position: relative; overflow: hidden; border-radius: 14px; padding: 13px 15px;
+  display: block; text-align: left; text-decoration: none; border: 0; cursor: pointer;
+  font-family: inherit; min-height: 142px; }
+.mt-evt-p.ev-user { background: linear-gradient(100deg, #fdf2f8 0%, #fdf3fa 100%); }
+.mt-evt-p.ev-co { background: linear-gradient(100deg, #f4f0fc 0%, #f7f4fe 100%); }
+.mt-evt-p:hover .mt-evt-go { background: var(--color-primary-hover); }
+.mt-evt-tag { display: inline-flex; align-items: center; gap: 5px; background: #fff;
+  border-radius: 100px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--color-primary); }
+.mt-evt-tag svg { color: var(--color-primary); flex: none; }
+.mt-evt-h { display: block; margin: 10px 0 12px; font-size: 16px; line-height: 1.4;
+  color: #1a1a1a; letter-spacing: -.4px; position: relative; z-index: 1; }
+.mt-evt-h b { color: var(--color-primary); font-weight: 700; }
+.mt-evt-go { display: inline-flex; align-items: center; height: 32px; padding: 0 14px;
+  border-radius: 8px; background: var(--color-primary); color: #fff;
+  font-size: 12.5px; font-weight: 600; letter-spacing: -.2px; position: relative; z-index: 1; }
+/* 그림은 판 오른쪽 아래에 붙인다. 글자 뒤로 깔리되 글자를 가리지 않는 폭까지만. */
+.mt-evt-art { position: absolute; bottom: 0; right: 0; z-index: 0; pointer-events: none; }
+.mt-evt-art.art-coffee { height: 132px; width: auto; right: 10px; bottom: -6px; }
+.mt-evt-art.art-mega { height: 104px; width: auto; right: -4px; bottom: 2px; }
 /* 그림 자리. 파일이 없으면 <img> 가 스스로 숨어 칸을 안 먹는다. */
 
 /* 회색 구분선이 회색 카드 바탕에 얹혀 묻혀 있었다("개인회원·기업회원
