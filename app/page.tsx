@@ -21,7 +21,7 @@ import {
   Bookmark,
   Sparkles,
   MapPin,
-  ChevronDown, Rocket, Coffee, TrendingUp, Gift } from "lucide-react";
+  ChevronDown, Coffee, TrendingUp, Gift } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
@@ -36,28 +36,22 @@ export default function HomePage() {
   useEffect(() => {
     useBookmarkStore.getState().loadFromServer();
   }, []);
-  // '지금 적극 채용 중'에 뜬 공고 id. null 이면 아직 안 불러온 상태라
-  // 추천 공고 쪽 요청을 잠깐 미룬다 — 겹치는지 알기 전에 먼저 쏘면 걸러줄 게 없다.
-  const [activeHiringIds, setActiveHiringIds] = useState<string[] | null>(null);
   // 채용관에 뜬 공고. null 이면 아직 안 불러온 상태다. 프리미엄이 먼저 정해지고
   // 스탠다드가 그것을 빼고 고른다.
   const [프리미엄Ids, set프리미엄Ids] = useState<string[] | null>(null);
   const [스탠다드Ids, set스탠다드Ids] = useState<string[] | null>(null);
   const 채용관Ids = 프리미엄Ids === null || 스탠다드Ids === null
     ? null : [...프리미엄Ids, ...스탠다드Ids];
-  const 합친제외 = activeHiringIds === null || 채용관Ids === null
-    ? null : [...채용관Ids, ...activeHiringIds];
   return (
     <main className="main-page">
       <Header />
       <MobileDetector />
       {/* 유료로 산 자리. 프리미엄이 위, 스탠다드가 아래이고 5초마다 안이 바뀐다.
-          아래 자리들은 여기 뜬 공고를 빼고 고른다 — 메인에 같은 공고가 두 번
+          아래 추천 자리는 여기 뜬 공고를 빼고 고른다 — 메인에 같은 공고가 두 번
           뜨면 자리를 산 쪽도 안 산 쪽도 손해다. */}
       <JobShowcase tier="PREMIUM" title="프리미엄 채용관" onLoaded={set프리미엄Ids} />
       <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={프리미엄Ids} onLoaded={set스탠다드Ids} />
-      <SectionActiveHiring onLoaded={setActiveHiringIds} excludeIds={채용관Ids} />
-      <SectionPick excludeIds={합친제외} />
+      <SectionPick excludeIds={채용관Ids} />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       <SectionStories />
       {/* <SectionBeautyServices /> 숨김 */}
@@ -307,46 +301,6 @@ function Hero() {
 /* ============================================
    섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
    ============================================ */
-/* ============================================
-   섹션: 지금 적극 채용 중
-   ============================================ */
-function SectionActiveHiring({ onLoaded, excludeIds }: { onLoaded: (ids: string[]) => void; excludeIds?: string[] | null }) {
-  const [jobs, setJobs] = useState<any[]>([]);
-  useEffect(() => {
-    if (excludeIds === null) return;
-    const ex = excludeIds?.length ? `&exclude=${excludeIds.join(",")}` : "";
-    fetch(`/api/jobs?active=1&limit=4&nosample=1${ex}`)
-      .then((r) => r.json())
-      .then((res) => {
-        if (res.success && Array.isArray(res.data)) { setJobs(res.data); onLoaded(res.data.map((j: any) => j.id)); }
-        else { setJobs([]); onLoaded([]); }
-      })
-      .catch((e) => { console.error(e); onLoaded([]); });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [excludeIds]);
-  const mappedJobs = jobs.map(mapJob);
-  if (mappedJobs.length === 0) return null;
-  return (
-    <section className="section">
-      <div className="container">
-        {/* 바로 위가 채용관이라 가로줄을 또 그으면 칸이 둘로 갈려 보인다. */}
-        <div className="section-head">
-          <div>
-            <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>
-            <p className="section-sub">여러 채용 지표를 분석해, 지금 가장 적극적으로 채용 중인 곳만 엄선했어요</p>
-          </div>
-          
-        </div>
-        <div className="card-grid card-grid-4">
-          {mappedJobs.map((job: any) => (
-            <JobCard key={job.id} data={job} variant="grid" />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
   // 사이트 어디서나 매장/본사 두 갈래만 쓴다. '전체'를 한 곳에만 남기면
   // 같은 토글이 화면마다 다르게 생긴 셈이 된다.
@@ -372,7 +326,10 @@ function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
       .catch(console.error);
   }, [tab, excludeIds]);
   const mappedJobs = jobs.map(mapJob);
+  // 이력서를 근거로 고른 것이 아니면 이 자리를 아예 접는다. 최신순을 메인에
+  // 또 늘어놓으면 채용관에서 산 자리가 그만큼 묽어진다.
   const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "본사" ? "/jobs?type=본사" : "/jobs";
+  if (!맞춤) return null;
   return (
     <section className="section section-divider">
       <div className="container">
@@ -381,13 +338,9 @@ function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
           <div>
             <h2 className="section-title">
               <Sparkles size={24} className="title-icon" />
-              {맞춤 ? "뷰티워크 추천 공고" : "최신 채용공고"}
+              뷰티워크 추천 공고
             </h2>
-            <p className="section-sub">
-              {맞춤
-                ? "내 직군·지역·경력과 스크랩한 곳을 함께 보고 골랐어요"
-                : "이력서를 등록하면 나에게 맞는 공고를 골라드려요"}
-            </p>
+            <p className="section-sub">내 직군·지역·경력과 스크랩한 곳을 함께 보고 골랐어요</p>
           </div>
           <Link href={seeAll} className="see-all">전체보기</Link>
         </div>
