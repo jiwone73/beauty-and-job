@@ -267,26 +267,26 @@ function Hero() {
                         <span className="mt-evt-t">무료 메가MGC 커피</span>
                         <span className="mt-evt-s">이력서 등록 시 2,000원 쿠폰</span>
                       </span>
+                      <ResumeCta className="mt-evt-btn">이력서 등록하기</ResumeCta>
                     </div>
-                    <ResumeCta className="mt-evt-btn">이력서 등록하기</ResumeCta>
                   </div>
                   <div className="mt-evt-item">
                     <div className="mt-evt-row">
                       <span className="mt-evt-ic"><TrendingUp size={19} /></span>
                       <span className="mt-evt-txt">
                         <span className="mt-evt-t">무료 상단 노출</span>
-                        <span className="mt-evt-s">공고 등록 시 · 10월 1일부터 순서대로</span>
+                        <span className="mt-evt-s">공고 등록 시 · 10월 1일부터</span>
                       </span>
+                      <button
+                        type="button"
+                        className="mt-evt-btn"
+                        onClick={() => router.push(
+                          isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
+                        )}
+                      >
+                        채용공고 등록하기
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="mt-evt-btn"
-                      onClick={() => router.push(
-                        isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
-                      )}
-                    >
-                      채용공고 등록하기
-                    </button>
                   </div>
                 </div>
               </div>
