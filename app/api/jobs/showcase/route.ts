@@ -44,9 +44,9 @@ export async function GET(req: NextRequest) {
     // 오픈 첫날 메인이 비지 않으면서, 자리가 팔리면 없어지는 자리라 파는 쪽
     // 명분도 선다. 채운 것은 노출 수를 세지 않는다(판 자리가 아니다).
     //
-    // 채우는 것은 프리미엄관만이다. 둘 다 채우면 유료 기업이 없는 동안 메인에
-    // 같은 공고가 두 번 뜬다. 스탠다드관은 산 곳이 없으면 아예 접는다.
-    const 모자람 = tier === "PREMIUM" ? Math.max(0, 칸 - 산곳.rowCount!) : 0;
+    // 두 채용관이 같은 공고를 채우지 않도록, 스탠다드관은 프리미엄관이 쓴 것을
+    // exclude 로 받아 빼고 채운다.
+    const 모자람 = Math.max(0, 칸 - 산곳.rowCount!);
     let 채움: any[] = [];
     if (모자람 > 0) {
       const r = await pool.query(

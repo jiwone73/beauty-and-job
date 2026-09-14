@@ -85,7 +85,7 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
     <section className="section">
       <div className="container">
         <div className="showcase-head">
-          <h2 className="showcase-title">{title}<span className="showcase-ad">광고</span></h2>
+          <h2 className="showcase-title">{title}</h2>
           <Link href="/company/plans" className="see-all">요금제</Link>
         </div>
         <div className={`card-grid card-grid-${slots}`}>

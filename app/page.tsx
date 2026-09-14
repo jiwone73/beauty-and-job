@@ -39,8 +39,12 @@ export default function HomePage() {
   // '지금 적극 채용 중'에 뜬 공고 id. null 이면 아직 안 불러온 상태라
   // 추천 공고 쪽 요청을 잠깐 미룬다 — 겹치는지 알기 전에 먼저 쏘면 걸러줄 게 없다.
   const [activeHiringIds, setActiveHiringIds] = useState<string[] | null>(null);
-  // 채용관에 뜬 공고. null 이면 아직 안 불러온 상태다.
-  const [채용관Ids, set채용관Ids] = useState<string[] | null>(null);
+  // 채용관에 뜬 공고. null 이면 아직 안 불러온 상태다. 프리미엄이 먼저 정해지고
+  // 스탠다드가 그것을 빼고 고른다.
+  const [프리미엄Ids, set프리미엄Ids] = useState<string[] | null>(null);
+  const [스탠다드Ids, set스탠다드Ids] = useState<string[] | null>(null);
+  const 채용관Ids = 프리미엄Ids === null || 스탠다드Ids === null
+    ? null : [...프리미엄Ids, ...스탠다드Ids];
   const 합친제외 = activeHiringIds === null || 채용관Ids === null
     ? null : [...채용관Ids, ...activeHiringIds];
   return (
@@ -50,8 +54,8 @@ export default function HomePage() {
       {/* 유료로 산 자리. 프리미엄이 위, 스탠다드가 아래이고 5초마다 안이 바뀐다.
           아래 자리들은 여기 뜬 공고를 빼고 고른다 — 메인에 같은 공고가 두 번
           뜨면 자리를 산 쪽도 안 산 쪽도 손해다. */}
-      <JobShowcase tier="PREMIUM" title="프리미엄 채용관" onLoaded={set채용관Ids} />
-      <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={채용관Ids} />
+      <JobShowcase tier="PREMIUM" title="프리미엄 채용관" onLoaded={set프리미엄Ids} />
+      <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={프리미엄Ids} onLoaded={set스탠다드Ids} />
       <SectionActiveHiring onLoaded={setActiveHiringIds} excludeIds={채용관Ids} />
       <SectionPick excludeIds={합친제외} />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
