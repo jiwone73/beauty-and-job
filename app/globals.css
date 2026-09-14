@@ -12953,8 +12953,22 @@ button,
   font-size: 12.5px; font-weight: 600; letter-spacing: -.2px; position: relative; z-index: 1; }
 /* 그림은 판 오른쪽 아래에 붙인다. 글자 뒤로 깔리되 글자를 가리지 않는 폭까지만. */
 .mt-evt-art { position: absolute; bottom: 0; right: 0; z-index: 0; pointer-events: none; }
-.mt-evt-art.art-coffee { height: 132px; width: auto; right: 10px; bottom: -6px; }
-.mt-evt-art.art-mega { height: 104px; width: auto; right: -4px; bottom: 2px; }
+.mt-evt-art.art-coffee { height: 128px; width: auto; right: 62px; bottom: -4px; }
+.mt-evt-art.art-mega { height: 84px; width: auto; right: 88px; bottom: 6px; }
+/* 그림 옆 빈 자리. 원본 디자인에 있던 쿠폰 동그라미와 체크 목록을 글자로 되살린다. */
+.mt-evt-coin { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); z-index: 1;
+  width: 54px; height: 54px; border-radius: 50%; background: #fbe4ee; color: #b8446f;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; line-height: 1.2; text-align: center; }
+.mt-evt-coin i { font-style: normal; font-size: 9.5px; font-weight: 600; }
+.mt-evt-pts { position: absolute; right: 7px; top: 50%; transform: translateY(-45%); z-index: 1;
+  display: flex; flex-direction: column; gap: 4px; }
+.mt-evt-pts i { font-style: normal; background: #fff; border-radius: 100px; padding: 3px 8px 3px 6px;
+  font-size: 9.5px; font-weight: 600; color: #555; white-space: nowrap; }
+.mt-evt-pts i::before { content: "✓"; color: var(--color-primary); margin-right: 3px; font-weight: 700; }
+/* 기간·조건은 바뀌는 정보다. 그림에 구워 넣으면 날짜가 바뀔 때마다 그림을
+   다시 받아야 한다 — 글자로 둔다. */
+.mt-evt-note { margin: 10px 0 0; font-size: 11.5px; color: #555; }
 /* 그림 자리. 파일이 없으면 <img> 가 스스로 숨어 칸을 안 먹는다. */
 
 /* 회색 구분선이 회색 카드 바탕에 얹혀 묻혀 있었다("개인회원·기업회원

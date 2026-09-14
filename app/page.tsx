@@ -160,9 +160,7 @@ function Hero() {
           <span className="mt-hero-photo" />
           <span className="mt-hero-in">
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
-            {/* 히어로 카드에 있던 머리글을 배너로 옮겼다 — 처음 온 사람에게
-                여기가 무엇을 다루는 곳인지 알려주는 줄이라 없애면 안 된다. */}
-            <span className="mt-hero-h">살롱·샵 현장직부터 브랜드 본사까지,<br /><b>뷰티업계 일자리를 한곳에서</b></span>
+            <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
             <span className="mt-hero-sub">{이벤트?.title || "10월 1일 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
           </span>
         </Link>
@@ -172,6 +170,7 @@ function Hero() {
           <div className="mt-cols">
             <div className="mt-card">
               <form onSubmit={handleSearch} onClick={(e) => e.stopPropagation()}>
+                <h2 className="mt-jobs-h">살롱·샵 현장직부터 브랜드 본사까지,<br /><b>뷰티업계 일자리를 한곳에서</b></h2>
                 <p className="mt-ask">어떤 일자리를 찾으세요?</p>
                 {/* 무엇을 찾을지 고르고(토글), 그게 뭔지 읽고(설명), 치는
                     칸(검색바)까지가 한 동작이다. 사이가 벌어지면 셋이 따로
@@ -245,7 +244,6 @@ function Hero() {
                       <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
                         {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
                       </Link>
-                      <Link href="/jobs" className="mt-evt-more">자세히 보기 ›</Link>
                     </div>
                   );
                 })()}
@@ -268,6 +266,7 @@ function Hero() {
                     <span className="mt-evt-h">이력서 등록하고<br /><b>메가MGC 커피 받기</b></span>
                     <span className="mt-evt-go">이력서 등록하기 ›</span>
                     <img className="mt-evt-art art-coffee" src="/images/event/art-coffee.png" alt="" />
+                    <span className="mt-evt-coin">2,000원<i>쿠폰 증정</i></span>
                   </ResumeCta>
 
                   <button
@@ -281,8 +280,14 @@ function Hero() {
                     <span className="mt-evt-h">채용공고 등록하고<br /><b>무료 우선 노출</b></span>
                     <span className="mt-evt-go">채용공고 등록하기 ›</span>
                     <img className="mt-evt-art art-mega" src="/images/event/art-megaphone.png" alt="" />
+                    <span className="mt-evt-pts">
+                      <i>더 많은 지원자</i><i>빠른 채용</i><i>브랜드 노출</i>
+                    </span>
                   </button>
                 </div>
+                <p className="mt-evt-note">
+                  * 이벤트 기간: 2026. 10. 1 (목) ~ 10. 31 (토) · 쿠폰은 이력서 등록 완료 후 즉시 지급됩니다.
+                </p>
               </div>
             </div>
           </div>
