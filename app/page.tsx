@@ -184,26 +184,15 @@ function Hero() {
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
                     </button>
                   </div>
-                  {/* 매장의 반대쪽은 긍정형으로 정의된 범주가 아니라 '매장이
-                      아닌 곳'이라는 잔여 범주다. 그래서 한 단어로는 어느 말을
-                      골라도 무언가가 새어 나간다 — '본사'는 지점이 있다고 우기고
-                      ('corporate' 에는 없는 뜻이다. corporate headquarters 가 본사다),
-                      '브랜드'는 제조사·플랫폼·헤드헌팅사를 밀어내고, '기업'은
-                      매장도 기업이라 틀린 대립을 만든다.
+                  {/* 무엇이 들어 있는지 알려 주던 직군 나열은 걷었다.
+                      바로 위 머리글이 「살롱·샵 현장직부터 브랜드 오피스직까지」라
+                      이미 같은 말을 하고, 아래 검색창의 예시 글귀가 손이 가는
+                      자리에서 한 번 더 한다. 세 번 할 말이 아니고, 두 줄을 먹으며
+                      정작 눌러야 할 검색창을 밀어내고 있었다.
 
-                      그래서 가장 적게 우기는 말로 '오피스'를 골랐다. 사무실에
-                      앉는다는 것 말고는 주장하는 바가 없고, DB 도 이미 OFFICE 다.
-                      그래도 제조 QC·아카데미 강사는 못 담으니, 못 담는 나머지는
-                      이 설명 줄이 맡는다. 고정 안내문은 읽히지 않으므로 고른
-                      쪽에 따라 바뀌게 해 고르는 순간에 알려 준다.
-
-                      설명은 직군 대분류에서 만든다. 손으로 적어 두었더니
-                      「마케팅·영업 · 경영지원」처럼 있지도 않은 직군이 남았다. */}
-                  <p className="mt-type-desc">
-                    {jobType === "매장" ? 직군요약("STORE")
-                      : jobType === "오피스" ? 직군요약("OFFICE")
-                      : "매장과 오피스 공고를 함께 봅니다"}
-                  </p>
+                      여기서는 토글을 눌러 보면 목록이 바로 바뀌므로 읽는 것보다
+                      눌러 보는 편이 빠르다. 가입 화면은 다르다 — 거기선 눌러 보고
+                      되돌리는 게 아니라 고르는 것이라 설명을 남겨 둔다. */}
                   <div className="hero-searchbar-v2">
                     <button type="button" className={`hero-region-trigger ${selected.length ? "active" : ""}`} onClick={() => setModalOpen(true)}>
                       <MapPin size={16} /><span>{regionLabel}</span><ChevronDown size={15} />
