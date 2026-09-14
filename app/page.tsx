@@ -217,25 +217,6 @@ function Hero() {
               </form>
               <RegionSelectModal open={modalOpen} initial={selected} onClose={() => setModalOpen(false)} onApply={setSelected} />
 
-              {/* 채용속보 — 검색 아래 남는 자리를 채운다. 머리글을 걷어내면서
-                  왼쪽 칸이 오른쪽 이벤트 카드보다 짧아졌다. 공고명이 왼쪽으로
-                  흐르므로 긴 제목도 자르지 않는다. */}
-              {속보.length > 0 && (() => {
-                const 이번 = 속보[속보차례 % 속보.length];
-                const 넘김 = (d: number) => set속보차례((n) => (n + d + 속보.length) % 속보.length);
-                return (
-                  <div className="mt-ticker in-card">
-                    <span className="mt-tk-l">채용속보</span>
-                    <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
-                      {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
-                    </Link>
-                    <span className="mt-tk-nav">
-                      <button type="button" onClick={() => 넘김(-1)} aria-label="이전 속보"><ChevronUp size={15} /></button>
-                      <button type="button" onClick={() => 넘김(1)} aria-label="다음 속보"><ChevronDown size={15} /></button>
-                    </span>
-                  </div>
-                );
-              })()}
             </div>
 
             {/* 오른쪽은 한 줄로 세운다 — 위는 공지, 아래는 이벤트.
@@ -245,14 +226,35 @@ function Hero() {
                   빈다. 내용이 없어서가 아니라 자리를 크게 잡아서다. 딱지를
                   제목 앞에 붙여 한 줄로 눕히고, 남는 높이는 담을 것이 많은
                   아래 이벤트 카드가 가져간다. */}
-              <div className="mt-card mt-nc">
-                <Link href="/notice" className="mt-nc-tag">
-                  <Megaphone size={17} className="mt-ic" />공지
-                </Link>
-                <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
-                  <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
-                  <span className="mt-evt-more">자세히 보기 ›</span>
-                </Link>
+              {/* 공지와 채용속보를 한 줄에 나란히 둔다. 둘 다 한 줄짜리 소식이라
+                  자리를 반씩 나눠 쓴다. 왼쪽 칸에 두었더니 검색 카드가 이벤트
+                  카드보다 길어져 아래 끝이 어긋났다. */}
+              <div className="mt-nrow">
+                <div className="mt-card mt-nc">
+                  <Link href="/notice" className="mt-nc-tag">
+                    <Megaphone size={17} className="mt-ic" />공지
+                  </Link>
+                  <Link href={공지 ? `/notice?open=${공지.id}` : "/notice"} className="mt-notice">
+                    <span className="nt">{공지?.title || "뷰티워크 서비스 무료 이용 안내"}</span>
+                  </Link>
+                </div>
+
+                {속보.length > 0 && (() => {
+                  const 이번 = 속보[속보차례 % 속보.length];
+                  const 넘김 = (d: number) => set속보차례((n) => (n + d + 속보.length) % 속보.length);
+                  return (
+                    <div className="mt-card mt-nc mt-tkc">
+                      <span className="mt-tk-l">채용속보</span>
+                      <Link href={`/jobs/${이번.id}`} className="mt-tk-one">
+                        {이번.company_name ? `${이번.company_name} · ` : ""}{이번.title}
+                      </Link>
+                      <span className="mt-tk-nav">
+                        <button type="button" onClick={() => 넘김(-1)} aria-label="이전 속보"><ChevronUp size={15} /></button>
+                        <button type="button" onClick={() => 넘김(1)} aria-label="다음 속보"><ChevronDown size={15} /></button>
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="mt-card mt-evt">
@@ -326,9 +328,9 @@ function SectionActiveHiring({ onLoaded, excludeIds }: { onLoaded: (ids: string[
   const mappedJobs = jobs.map(mapJob);
   if (mappedJobs.length === 0) return null;
   return (
-    <section className="section section-divider">
+    <section className="section">
       <div className="container">
-        <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
+        {/* 바로 위가 채용관이라 가로줄을 또 그으면 칸이 둘로 갈려 보인다. */}
         <div className="section-head">
           <div>
             <h2 className="section-title">🔥 지금 적극 채용 중<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 데이터 기반 선별</span></h2>

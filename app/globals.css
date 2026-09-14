@@ -12835,6 +12835,10 @@ button,
 .mt-search-set .mt-type-desc { margin: 8px 0 0; }
 .mt-search-set .hero-searchbar-v2 { margin-top: 10px; }
 .mt-right { display: flex; flex-direction: column; gap: 10px; }
+/* 공지와 채용속보를 한 줄에 반씩. 둘 다 한 줄짜리 소식이다. */
+.mt-nrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.mt-tkc { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
 /* 공지는 제목 한 줄뿐이라 제 높이만 쓰고, 남는 자리는 이벤트가 채운다. */
 .mt-right > .mt-evt { flex: 1; }
 /* 카드 안쪽은 순백이 아니다 — 바탕의 보라기를 아주 옅게 머금어야 따로 놀지 않는다. */
@@ -12945,15 +12949,13 @@ button,
 .mt-evt-t { display: block; font-size: 16px; font-weight: 600; color: #555; line-height: 1.35; margin-top: 3px; }
 .mt-evt-s { display: block; font-size: 13px; color: #555; margin-top: 4px; }
 
-.mt-ticker.in-card { margin-top: 14px; border: 1px solid #ececf0; border-radius: 10px; background: #fff;
-  height: 44px; padding: 0 6px 0 14px; display: flex; align-items: center; gap: 12px; }
-.mt-ticker.in-card .mt-tk-l { font-size: 14px; font-weight: 600; color: var(--color-primary); flex-shrink: 0; }
+.mt-tkc .mt-tk-l { font-size: 14px; font-weight: 600; color: var(--color-primary); flex-shrink: 0; }
 /* 한 건만 한 줄로. 긴 제목은 자른다 — 흐르게 두면 끝까지 지나갈 때까지 기다려야 한다. */
 .mt-tk-one { flex: 1; min-width: 0; font-size: 14px; color: #555; text-decoration: none;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mt-tk-one:hover { color: var(--color-primary); }
 .mt-tk-nav { display: flex; gap: 4px; flex-shrink: 0; }
-.mt-tk-nav button { width: 28px; height: 28px; border: 1px solid #ececf0; border-radius: 7px;
+.mt-tk-nav button { width: 26px; height: 26px; border: 1px solid #ececf0; border-radius: 7px;
   background: #fff; color: #555; display: flex; align-items: center; justify-content: center; }
 .mt-tk-nav button:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .mt-ticker { margin-top: 14px; border: 1px solid #f7f7f8; border-radius: 12px; height: 48px;
