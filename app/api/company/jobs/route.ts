@@ -3,6 +3,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
+import { 이용권 } from '@/lib/companyEntitlement'
+import { 베이직 } from '@/lib/companyPlans'
 
 // 내 공고 목록
 export async function GET(req: NextRequest) {
@@ -87,6 +89,29 @@ export async function POST(req: NextRequest) {
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
+  // 무료(베이직)는 진행 중 공고를 다섯 건까지만 건다. 이미 그보다 많이 올려 둔
+  // 곳은 그대로 두고 새로 거는 것만 막는다 — 어제까지 보이던 공고가 안내 없이
+  // 사라지면 안 된다. 임시저장은 목록에 안 뜨므로 세지 않는다.
+  const { plan, paidUntil } = await 이용권(auth!.sub)
+  if (!plan && jobStatus === 'ACTIVE') {
+    const { rows } = await pool.query(
+      `SELECT COUNT(*)::int AS n FROM job_postings
+        WHERE company_id = $1 AND status = 'ACTIVE'
+          AND (listed_until IS NULL OR listed_until >= CURRENT_DATE)`,
+      [auth!.sub]
+    )
+    if (rows[0].n >= 베이직.공고수) {
+      return err('PLAN_001',
+        `무료로는 공고를 ${베이직.공고수}건까지 걸 수 있습니다. 진행 중인 공고를 마감하거나 이용권을 신청해 주세요.`, 403)
+    }
+  }
+
+  // 게재 종료일. 유료는 이용권이 끝나는 날까지, 무료는 등록일로부터 이레.
+  // 임시저장은 목록에 뜨지 않으니 비워 둔다(등록될 때 정해진다).
+  const listedUntil = jobStatus !== 'ACTIVE' ? null
+    : plan ? paidUntil
+    : new Date(Date.now() + 베이직.게재일 * 864e5).toISOString().slice(0, 10)
+
   const result = await pool.query(
     `INSERT INTO job_postings (
        company_id, title, job_type, job_category_id, description,
@@ -97,9 +122,9 @@ export async function POST(req: NextRequest) {
        work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images,
        external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao,
        contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
-       apply_method, external_apply_url, salary_text, source_url, work_locations, headcount_text, status
+       apply_method, external_apply_url, salary_text, source_url, work_locations, headcount_text, listed_until, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, '${jobStatus}'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -139,7 +164,8 @@ export async function POST(req: NextRequest) {
       (salary_text || '').trim() || null,
       (source_url || '').trim() || null,
       Array.isArray(work_locations) && work_locations.length ? JSON.stringify(work_locations) : null,
-      (headcount_text || '').trim() || null
+      (headcount_text || '').trim() || null,
+      listedUntil
     ]
   )
   return ok(result.rows[0], 201)

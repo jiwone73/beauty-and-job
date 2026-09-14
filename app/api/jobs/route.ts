@@ -79,6 +79,10 @@ export async function GET(req: NextRequest) {
 
   // 샘플은 가짜라 진짜 공고 뒤에 세운다.
   const activeOrderBy = `j.is_sample NULLS FIRST, j.created_at DESC`
+  // 유료로 산 자리. 프리미엄이 최상단, 스탠다드가 그 아래, 나머지는 최신순이다.
+  // 예전에 여기 있던 is_featured 는 아무 데서도 켜 주지 않는 죽은 칸이었다.
+  const 노출등급 = (a = '') =>
+    `CASE ${a}company_plan WHEN 'PREMIUM' THEN 2 WHEN 'STANDARD' THEN 1 ELSE 0 END DESC`
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
@@ -105,7 +109,7 @@ export async function GET(req: NextRequest) {
            experience_level, is_featured, deadline, created_at, categories, benefit_tags
     FROM v_active_jobs
     ${whereClause}
-    ORDER BY is_sample NULLS FIRST, is_featured DESC, created_at DESC
+    ORDER BY is_sample NULLS FIRST, ${노출등급()}, created_at DESC
     LIMIT $${idx++} OFFSET $${idx++}
   `
 
