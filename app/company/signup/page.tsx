@@ -325,7 +325,9 @@ export default function CompanySignupPage() {
       </header>
 
       <div className="flex-1 flex justify-center px-5 py-8">
-        <div className="w-full max-w-[480px]">
+        {/* 480px 에서는 매장·본사 고르는 칸이 반씩 나뉘어 직군 설명이 세 줄로
+            접혔다. 폼 자체는 한 줄짜리 칸이 대부분이라 640px 이면 넉넉하다. */}
+        <div className="w-full max-w-[640px]">
           <div className="flex justify-center mb-6">
             <Link href="/" className="logo auth-logo"><Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} /></Link>
           </div>
