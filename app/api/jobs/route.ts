@@ -25,6 +25,9 @@ export async function GET(req: NextRequest) {
   const active = searchParams.get('active')
   // 샘플 공고는 화면을 채우려고 만든 가짜다 — 메인처럼 몇 건만 보여주는 자리에서는 뺀다.
   const noSample = searchParams.get('nosample') === '1' 
+  // 메인은 자리가 여럿이라 같은 공고가 두 번 뜨기 쉽다. 위 자리에 이미 뜬 것을
+  // 빼고 고른다 — /api/jobs/recommended 가 쓰던 규칙과 같은 이름을 쓴다.
+  const exclude = (searchParams.get('exclude') || '').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 40)
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
@@ -70,6 +73,12 @@ export async function GET(req: NextRequest) {
     where.push(`(${prefix}title ILIKE $${idx} OR ${prefix}brand_name ILIKE $${idx + 1} OR ${prefix}company_name ILIKE $${idx + 2})`)
     params.push(kw, kw, kw)
     idx += 3
+  }
+  if (exclude.length) {
+    const prefix = active ? 'j.' : ''
+    where.push(`NOT (${prefix}id = ANY($${idx}::uuid[]))`)
+    params.push(exclude)
+    idx += 1
   }
   // 마감 지난 공고는 v_active_jobs 가 이미 걸러 낸다. 예전에는 여기서 마감일이
   // 있어야 한다는 조건을 더해, 상시채용 공고를 전부 떨어뜨렸다 — 메인의
