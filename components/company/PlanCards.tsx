@@ -1,64 +1,69 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Check } from "lucide-react";
-import { 플랜, 베이직, 원, type PlanId } from "@/lib/companyPlans";
+import Link from "next/link";
+import { 플랜, 베이직, 비교표, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
 
 /**
- * 요금제 카드 넉 장. 기업서비스 첫 화면과 요금제 상세가 같은 것을 쓴다.
+ * 요금제 카드 넉 장. 기업서비스 첫 화면과 요금제 화면이 같은 것을 쓴다.
  *
- * 카드에는 30일 값과 그 플랜에서 새로 생기는 혜택만 적는다. 기간별 값과
- * 전체 비교는 「자세히 보기」 뒤에 있다 — 첫 화면에 숫자를 다 늘어놓으면
- * 고르기 전에 비교부터 하게 된다.
+ * 비교표를 따로 세우지 않고 카드 안에 녹인다. 표를 밑에 따로 두면 카드에서
+ * 고르려던 사람이 표까지 내려가 처음부터 다시 비교하게 되고, 같은 값을 두
+ * 군데 적게 되어 언젠가 한쪽만 바뀐다.
+ *
+ * 값은 제일 짧은 기간(7일)을 적고 뒤에 「~」를 붙인다. 30일 값을 적어 두면
+ * 제일 싼 것이 얼마인지 알려면 눌러 봐야 한다. 기간별 값은 자세히 보기에 있다.
  */
 
 const 카드순서: PlanId[] = ["LIGHT", "STANDARD", "PREMIUM"];
 
-export default function PlanCards({ 자세히 = true }: { 자세히?: boolean }) {
-  // 통신판매업 신고 전에는 결제를 열 수 없다. 그동안은 「문의하기」로 받는다.
-  const [팔림, set팔림] = useState(false);
-  useEffect(() => {
-    fetch("/api/plans").then((r) => r.json())
-      .then((r) => set팔림(!!r?.data?.sales)).catch(() => {});
-  }, []);
+function 줄들(칸: 0 | 1 | 2 | 3) {
+  return 비교표.map((r) => ({ 항목: r.항목, 값: r.값[칸], 없음: r.값[칸] === "—" }));
+}
 
-  const 살곳 = (p: PlanId) => (팔림 ? `/company/plans/order?plan=${p}` : "/support");
+function 항목목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
+  return (
+    <ul className="cs-plan-feat">
+      {줄들(칸).map((r) => (
+        <li key={r.항목} className={r.없음 ? "off" : undefined}>
+          <Check size={15} strokeWidth={2.4} />
+          <span className="k">{r.항목}</span>
+          <b className="v">{r.없음 ? "제공 안 함" : r.값}</b>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
+export default function PlanCards() {
   return (
     <>
       <div className="cs-plans">
         <div className="cs-plan">
-          <p className="cs-plan-flag" />
           <p className="cs-plan-nm">{베이직.name}</p>
           <p className="cs-plan-ln">{베이직.한줄}</p>
           <p className="cs-plan-pr">무료</p>
           <p className="cs-plan-du free">공고 게재 {베이직.게재일}일</p>
           <Link href="/company/signup" className="cs-plan-btn free">시작하기</Link>
-          {자세히 && <Link href="/company/plans" className="cs-plan-more">자세히 보기 ›</Link>}
-          <ul className="cs-plan-feat">
-            {베이직.요약.map((t) => <li key={t}><Check size={15} strokeWidth={2.4} />{t}</li>)}
-          </ul>
+          <항목목록 칸={비교칸.BASIC} />
         </div>
 
         {카드순서.map((p) => {
           const 것 = 플랜[p];
-          const 인기 = p === "STANDARD";
           return (
-            <div key={p} className={`cs-plan${인기 ? " on" : ""}`}>
-              <p className="cs-plan-flag">{인기 ? "인기 플랜" : ""}</p>
+            <div key={p} className={`cs-plan${p === "STANDARD" ? " on" : ""}`}>
               <p className="cs-plan-nm">{것.name}</p>
               <p className="cs-plan-ln">{것.한줄}</p>
-              <p className="cs-plan-pr">{원(것.가격[30]).replace("원", "")}<i>원</i></p>
-              <p className="cs-plan-du">30일</p>
-              <Link href={살곳(p)} className={`cs-plan-btn${인기 ? " on" : ""}`}>
-                {팔림 ? "시작하기" : "문의하기"}
+              <p className="cs-plan-pr">{원(것.가격[시작기간]).replace("원", "")}<i>원~</i></p>
+              <p className="cs-plan-du">{시작기간}일 기준</p>
+              {/* 여기서는 고르는 것까지만 한다. 신청은 자세히 보기 안에서 —
+                  기간과 값을 보고 나서 누르는 것이 순서다. */}
+              <Link href={`/company/plans/${p.toLowerCase()}`}
+                className={`cs-plan-btn${p === "STANDARD" ? " on" : ""}`}>
+                자세히 보기
               </Link>
-              {자세히 && <Link href="/company/plans" className="cs-plan-more">자세히 보기 ›</Link>}
               <p className="cs-plan-inc">{것.포함}</p>
-              <ul className="cs-plan-feat">
-                {것.요약.map((t) => <li key={t}><Check size={15} strokeWidth={2.4} />{t}</li>)}
-              </ul>
+              <항목목록 칸={비교칸[p]} />
             </div>
           );
         })}
