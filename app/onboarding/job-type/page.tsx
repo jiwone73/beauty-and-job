@@ -210,11 +210,15 @@ export default function OnboardingJobTypePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
-      <div className="w-full max-w-lg">
+      {/* 이메일 가입 폼과 같은 640px. 여기만 512px(max-w-lg)이라, 카카오·네이버로
+          들어온 사람은 같은 것을 묻는 화면을 더 좁게 봤다. */}
+      <div className="w-full max-w-[640px]">
+        {/* 제목·부제는 이메일 가입 화면과 같은 값이다. 같은 것을 묻는 두 화면인데
+            여기만 굵고 검었다. */}
         <div className="mb-8 text-center">
           <p className="text-[13px] text-[#582681] font-semibold mb-2">거의 다 왔어요!</p>
-          <h1 className="text-[22px] font-bold text-[#111]">어떤 일을 찾고 계세요?</h1>
-          <p className="text-[14px] text-[#6b6b6b] mt-2">관심 분야 공고를 먼저 보여드릴게요</p>
+          <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] mb-2">어떤 일을 찾고 계세요?</h1>
+          <p className="text-[13px] md:text-[14px] text-[#6b6b6b]">관심 분야 공고를 먼저 보여드릴게요</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-8 items-stretch">
@@ -255,7 +259,6 @@ export default function OnboardingJobTypePage() {
         <div className="mb-8">
           <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
             희망 근무지역 <span className="text-red-500">*</span>
-            <span className="text-[#9a9a9a]"> · 이 지역 공고를 먼저 보여드려요</span>
           </p>
           <button type="button" onClick={() => set지역창(true)}
             className="w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
@@ -277,7 +280,6 @@ export default function OnboardingJobTypePage() {
           <div className="mb-8">
             <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
               휴대폰 번호 <span className="text-red-500">*</span>
-              <span className="text-[#9a9a9a]"> · 기업이 연락할 때 쓰여요</span>
             </p>
             <div className="flex gap-2">
               <input
