@@ -19,66 +19,73 @@ import type { JobType } from "@/lib/data/jobGroups";
 // 경력 사다리는 대분류마다 다르다(헤어·바버는 실장까지, 오피스는 연차).
 // 그래서 대분류를 먼저 고르게 하고 그다음에 단계를 연다. 대분류를 바꾸면
 // 이전에 고른 단계가 새 사다리에 없을 수 있어 비운다.
-export default function JobCareerPicker({
-  jobType, group, stage, onGroup, onStage,
-}: {
+type 값 = {
   jobType: JobType | "";
   group: string;
   stage: string;
   onGroup: (v: string) => void;
   onStage: (v: string) => void;
-}) {
-  const 대분류들 = jobType ? getGroupNames(jobType) : [];
-  const 사다리 = jobType && group ? 경력단계(group, jobType) : [];
+};
 
+// 이름표와 「아직 못 고른다」 칸은 이 컴포넌트가 끼어드는 가입 폼의 다른 칸과
+// 같은 모양이어야 한다. 넓은 화면에서 이 둘만 13px 로 남아 옆의 희망 근무지역
+// 보다 작게 보였다.
+const 이름표 = "text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5";
+// 고를 것이 아직 없을 때도 칸은 칸으로 보여야 한다. 글씨만 덩그러니 두면
+// 그 자리가 고장 난 것처럼 읽힌다 — 희망 근무지역 칸과 같은 테두리를 두른다.
+const 아직 = "w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-[14px] text-[#9a9a9a]";
+
+function 칩들({ 것들, 고른것, 고르기 }: { 것들: readonly string[]; 고른것: string; 고르기: (v: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {것들.map((x) => (
+        <button key={x} type="button"
+          className={`filter-chip${x === 고른것 ? " on" : ""}`}
+          onClick={() => 고르기(x === 고른것 ? "" : x)}>
+          {x}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** 직군 한 칸. 칩이 열 개까지 늘어서므로 늘 한 줄을 다 쓴다. */
+export function 직군고르기({ jobType, group, onGroup }: Pick<값, "jobType" | "group" | "onGroup">) {
+  const 대분류들 = jobType ? getGroupNames(jobType) : [];
+  return (
+    <div>
+      <p className={이름표}>직군 <span className="text-red-500">*</span></p>
+      {대분류들.length === 0
+        ? <p className={아직}>매장·오피스를 먼저 골라 주세요</p>
+        : <칩들 것들={대분류들} 고른것={group} 고르기={onGroup} />}
+    </div>
+  );
+}
+
+/** 경력 한 칸. 칩이 넷에서 여섯이라 반 폭에 들어간다. */
+export function 경력고르기({ jobType, group, stage, onStage }: Pick<값, "jobType" | "group" | "stage" | "onStage">) {
+  const 사다리 = jobType && group ? 경력단계(group, jobType) : [];
   useEffect(() => {
     if (stage && !사다리.includes(stage)) onStage("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group, jobType]);
+  return (
+    <div>
+      <p className={이름표}>경력 <span className="text-red-500">*</span></p>
+      {사다리.length === 0
+        ? <p className={아직}>직군을 먼저 골라 주세요</p>
+        : <칩들 것들={사다리} 고른것={stage} 고르기={onStage} />}
+    </div>
+  );
+}
 
-  // 이름표와 「아직 못 고른다」 칸은 이 컴포넌트가 끼어드는 가입 폼의 다른 칸과
-  // 같은 모양이어야 한다. 넓은 화면에서 이 둘만 13px 로 남아 옆의 희망 근무지역
-  // 보다 작게 보였다.
-  const 이름표 = "text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5";
-  // 고를 것이 아직 없을 때도 칸은 칸으로 보여야 한다. 글씨만 덩그러니 두면
-  // 그 자리가 고장 난 것처럼 읽힌다 — 희망 근무지역 칸과 같은 테두리를 두른다.
-  const 아직 = "w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-[14px] text-[#9a9a9a]";
-
+/** 둘을 세로로 세우는 기본 꼴. 가입 화면들은 경력을 희망 근무지역과 나란히
+ *  두려고 위의 두 조각을 따로 가져다 쓴다. */
+export default function JobCareerPicker(props: 값) {
   return (
     <>
-      <div className="mb-8">
-        <p className={이름표}>직군 <span className="text-red-500">*</span></p>
-        {대분류들.length === 0 ? (
-          <p className={아직}>매장·오피스를 먼저 골라 주세요</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {대분류들.map((g) => (
-              <button key={g} type="button"
-                className={`filter-chip${g === group ? " on" : ""}`}
-                onClick={() => onGroup(g === group ? "" : g)}>
-                {g}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="mb-8">
-        <p className={이름표}>경력 <span className="text-red-500">*</span></p>
-        {사다리.length === 0 ? (
-          <p className={아직}>직군을 먼저 골라 주세요</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {사다리.map((s) => (
-              <button key={s} type="button"
-                className={`filter-chip${s === stage ? " on" : ""}`}
-                onClick={() => onStage(s === stage ? "" : s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="mb-8"><직군고르기 {...props} /></div>
+      <div className="mb-8"><경력고르기 {...props} /></div>
     </>
   );
 }

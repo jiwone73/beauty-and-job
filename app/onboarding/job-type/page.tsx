@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import RegionSelectModal from "@/components/RegionSelectModal";
-import JobCareerPicker from "@/components/signup/JobCareerPicker";
+import { 직군고르기, 경력고르기 } from "@/components/signup/JobCareerPicker";
 import { 직군요약 } from "@/lib/data/jobGroups";
 import { shortRegion } from "@/lib/regionShort";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -253,19 +253,23 @@ export default function OnboardingJobTypePage() {
           </button>
         </div>
 
-        <JobCareerPicker jobType={selected} group={대분류} stage={단계}
-          onGroup={set대분류} onStage={set단계} />
+        {/* 이메일 가입과 같은 짜임. 직군은 한 줄을 다 쓰고, 경력과 희망 근무지역은
+            둘이 나란히 선다. */}
+        <div className="mb-8"><직군고르기 jobType={selected} group={대분류} onGroup={set대분류} /></div>
 
-        <div className="mb-8">
-          <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
-            희망 근무지역 <span className="text-red-500">*</span>
-          </p>
-          <button type="button" onClick={() => set지역창(true)}
-            className="w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
-            {지역들.length === 0
-              ? <span className="text-[#9a9a9a]">지역을 선택해 주세요</span>
-              : <span className="text-[#3a3a3a]">{지역들.map((r) => shortRegion(r)).join(" · ")}</span>}
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 mb-8">
+          <경력고르기 jobType={selected} group={대분류} stage={단계} onStage={set단계} />
+          <div className="mt-8 md:mt-0">
+            <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
+              희망 근무지역 <span className="text-red-500">*</span>
+            </p>
+            <button type="button" onClick={() => set지역창(true)}
+              className="w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
+              {지역들.length === 0
+                ? <span className="text-[#9a9a9a]">지역을 선택해 주세요</span>
+                : <span className="text-[#3a3a3a]">{지역들.map((r) => shortRegion(r)).join(" · ")}</span>}
+            </button>
+          </div>
         </div>
 
         <RegionSelectModal
