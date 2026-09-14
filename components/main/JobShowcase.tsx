@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { Crown, Star } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { mapJob } from "@/lib/jobCard";
 import { 메인롤링 } from "@/lib/companyPlans";
@@ -82,11 +83,16 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
   if (items.length === 0) return null;
 
   return (
-    <section className="section">
+    <section className={`section showcase-sec${tier === "PREMIUM" ? " top" : ""}`}>
       <div className="container">
         <div className="showcase-head">
-          <h2 className="showcase-title">{title}</h2>
-          <Link href="/company/plans" className="see-all">요금제</Link>
+          <h2 className="showcase-title">
+            {tier === "PREMIUM"
+              ? <Crown size={22} className="title-icon" />
+              : <Star size={22} className="title-icon" />}
+            {title}
+          </h2>
+          <Link href="/company/plans" className="see-all">상품안내 ›</Link>
         </div>
         <div className={`card-grid card-grid-${slots}`}>
           {보이는것.map((j) => <JobCard key={j.id} data={mapJob(j)} variant="grid" />)}

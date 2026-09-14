@@ -457,6 +457,8 @@
 .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
 .card-grid-5 { grid-template-columns: repeat(5, 1fr); }
 /* 메인 채용관 머리. 파는 자리라 「광고」를 붙인다(표시 의무). */
+/* 히어로 판과 붙어 보이지 않게 첫 채용관 위만 넉넉히 띄운다. */
+.showcase-sec.top { padding-top: 34px; }
 .showcase-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .showcase-title { display: flex; align-items: center; gap: 9px; font-size: 22px; font-weight: 700;
   color: var(--color-text-strong); margin: 0; letter-spacing: -.3px; }
@@ -12934,7 +12936,7 @@ button,
 .mt-evt-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 /* 버튼은 카드 맨 아래, 정보를 다 읽은 다음에 만나는 하나뿐인 행동이다. */
 .mt-evt-btn { font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: -.2px;
-  height: 32px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+  height: 38px; padding: 0 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;
   display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none;
   background: var(--color-primary); color: #fff; border: 1px solid var(--color-primary);
   transition: background .15s, border-color .15s, color .15s; }
