@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Crown, Star } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { mapJob } from "@/lib/jobCard";
-import { 메인롤링 } from "@/lib/companyPlans";
+import { 메인롤링, 메인칸, 칸수 } from "@/lib/companyPlans";
 
 /**
  * 메인 채용관 — 프리미엄 4칸, 스탠다드 5칸.
@@ -24,7 +24,8 @@ type Props = { tier: "PREMIUM" | "STANDARD"; title: string;
 
 export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props) {
   const [items, setItems] = useState<any[]>([]);
-  const [slots, setSlots] = useState(tier === "PREMIUM" ? 4 : 5);
+  const [slots, setSlots] = useState(칸수(tier));
+  const [cols, setCols] = useState<number>(메인칸[tier].열);
   const [바퀴, set바퀴] = useState(0);
   const 모은것 = useRef<string[]>([]);
 
@@ -37,6 +38,7 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
         const list = r.data.items || [];
         setItems(list);
         setSlots(r.data.slots || slots);
+        setCols(r.data.cols || cols);
         onLoaded?.(list.map((x: any) => x.id));
       }).catch(() => onLoaded?.([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,7 +96,7 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
           </h2>
           <Link href="/company/plans" className="see-all">상품안내 ›</Link>
         </div>
-        <div className={`card-grid card-grid-${slots}`}>
+        <div className={`card-grid card-grid-${cols}`}>
           {보이는것.map((j) => <JobCard key={j.id} data={mapJob(j)} variant="grid" />)}
         </div>
       </div>

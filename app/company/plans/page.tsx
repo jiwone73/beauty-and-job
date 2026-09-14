@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Plus, Minus, ArrowRight } from "lucide-react";
 import ServiceHeader from "@/components/company/ServiceHeader";
 import PlanCards from "@/components/company/PlanCards";
-import { 플랜, 베이직, 기간들, 비교표, 요금제FAQ, 원, 메인칸, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 베이직, 기간들, 비교표, 요금제FAQ, 원, 메인칸, 칸수, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 요금제 상세 — 「자세히 보기」가 닿는 자리.
@@ -89,13 +89,13 @@ export default function CompanyPlansPage() {
           <div className="cs-expo">
             <div className="cs-mock">
               <p className="cs-mock-cap">메인 화면</p>
-              <p className="cs-mock-lab">프리미엄 채용관 · {메인칸.PREMIUM}칸</p>
+              <p className="cs-mock-lab">프리미엄 채용관 · {메인칸.PREMIUM.열}칸 × {메인칸.PREMIUM.줄}줄</p>
               <div className="cs-cells c4">
-                {Array.from({ length: 메인칸.PREMIUM }).map((_, i) => <span key={i} className="cs-cell p" />)}
+                {Array.from({ length: 메인칸.PREMIUM.열 }).map((_, i) => <span key={i} className="cs-cell p" />)}
               </div>
-              <p className="cs-mock-lab">스탠다드 채용관 · {메인칸.STANDARD}칸</p>
+              <p className="cs-mock-lab">스탠다드 채용관 · {메인칸.STANDARD.열}칸 × {메인칸.STANDARD.줄}줄</p>
               <div className="cs-cells c5">
-                {Array.from({ length: 메인칸.STANDARD }).map((_, i) => <span key={i} className="cs-cell s" />)}
+                {Array.from({ length: 메인칸.STANDARD.열 }).map((_, i) => <span key={i} className="cs-cell s" />)}
               </div>
               <p className="cs-mock-note">5초마다 바뀌며, 덜 노출된 공고가 먼저 앞자리에 섭니다</p>
             </div>

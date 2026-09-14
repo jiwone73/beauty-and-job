@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
-import { 메인칸 } from "@/lib/companyPlans";
+import { 메인칸, 칸수 } from "@/lib/companyPlans";
 
 /**
  * 메인 채용관 — 유료로 산 자리.
@@ -23,10 +23,10 @@ export async function GET(req: NextRequest) {
   const tier = (sp.get("tier") || "PREMIUM").toUpperCase() as 등급;
   const 빼기 = (sp.get("exclude") || "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 40);
   if (!등급.includes(tier)) return err("REQ_001", "알 수 없는 채용관입니다.", 400);
-  const 칸 = 메인칸[tier];
-  // 한 번에 여섯 바퀴 분량을 받아 두고 화면이 5초마다 돌린다. 5초마다 서버를
+  const 칸 = 칸수(tier);
+  // 한 번에 세 바퀴 분량을 받아 두고 화면이 5초마다 돌린다. 5초마다 서버를
   // 부르면 방문자 한 사람이 1분에 열두 번 부른다.
-  const 뽑을수 = 칸 * 6;
+  const 뽑을수 = 칸 * 3;
 
   try {
     const 산곳 = await pool.query(
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       채움 = r.rows.map((x) => ({ ...x, filler: true }));
     }
 
-    return ok({ slots: 칸, items: [...산곳.rows, ...채움] });
+    return ok({ slots: 칸, cols: 메인칸[tier].열, items: [...산곳.rows, ...채움] });
   } catch (e) {
     console.error("[showcase GET]", e);
     return err("SERVER_001", "채용관을 불러오지 못했습니다.", 500);
