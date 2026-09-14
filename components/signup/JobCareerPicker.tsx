@@ -36,8 +36,13 @@ export default function JobCareerPicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group, jobType]);
 
-  const 이름표 = "text-[13px] text-[#6b6b6b] mb-2";
-  const 아직 = "text-[13px] text-[#9a9a9a] py-1";
+  // 이름표와 「아직 못 고른다」 칸은 이 컴포넌트가 끼어드는 가입 폼의 다른 칸과
+  // 같은 모양이어야 한다. 넓은 화면에서 이 둘만 13px 로 남아 옆의 희망 근무지역
+  // 보다 작게 보였다.
+  const 이름표 = "text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5";
+  // 고를 것이 아직 없을 때도 칸은 칸으로 보여야 한다. 글씨만 덩그러니 두면
+  // 그 자리가 고장 난 것처럼 읽힌다 — 희망 근무지역 칸과 같은 테두리를 두른다.
+  const 아직 = "w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-[14px] text-[#9a9a9a]";
 
   return (
     <>

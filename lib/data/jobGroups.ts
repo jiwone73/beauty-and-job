@@ -295,6 +295,17 @@ export function getGroupNames(jobType: JobType): string[] {
   return getJobGroups(jobType).map((g) => g.group);
 }
 
+/**
+ * 매장·본사 카드에 적는 「여기에 무엇이 들어 있나」.
+ *
+ * 손으로 적어 두면 대분류를 고치는 날 카드만 옛말로 남는다. 실제로 카드에는
+ * 「헤어·네일·피부·두피」라 적혀 있는데 바로 아래 칩은 「헤어·바버 / 네일·속눈썹 /
+ * 피부·바디 / 두피·탈모」였고, 뷰티 리테일은 카드에 아예 없었다. 같은 곳에서 만든다.
+ */
+export function 직군요약(jobType: JobType): string {
+  return getGroupNames(jobType).join(" · ");
+}
+
 // 특정 대분류의 소분류 (모달 오른쪽 패널용)
 export function getJobSubGroups(jobType: JobType, group: string): string[] {
   const found = getJobGroups(jobType).find((g) => g.group === group);

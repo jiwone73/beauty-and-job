@@ -8,6 +8,7 @@ import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useAuthStore } from "@/lib/store/authStore";
 import { setLoginPersistence } from "@/lib/auth/session";
 import JobCareerPicker from "@/components/signup/JobCareerPicker";
+import { 직군요약 } from "@/lib/data/jobGroups";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { shortRegion } from "@/lib/regionShort";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
@@ -249,7 +250,8 @@ function SignupEmailContent() {
             처음 오셨네요. 아래 정보만 채우면 회원가입이 끝나요.
           </p>
 
-          {/* 직군 선택 */}
+          {/* 직군 선택 — 고른 카드는 뷰티워크 보라 테두리에 회색 바탕이다.
+              연보라로 칠하지 않는다(기업회원 가입의 매장·본사 카드와 같은 값). */}
           <div className="mb-6">
             <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
@@ -260,8 +262,8 @@ function SignupEmailContent() {
                 onClick={() => setJobType("STORE")}
                 className={`jt-card relative flex items-center gap-3 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
                   jobType === "STORE"
-                    ? "border-purple-500 bg-purple-50 text-purple-700"
-                    : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                    ? "border-[#582681] bg-[#f7f7f8] text-[#582681]"
+                    : "border-[#e0e0e0] bg-white text-[#6b6b6b] hover:border-[#c0c0c0]"
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
@@ -269,13 +271,13 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장</span>
                   <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">
-                    시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장
+                    {직군요약("STORE")}
                   </span>
                 </span>
                 {jobType === "STORE" && (
-                  <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#582681] rounded-full flex items-center justify-center">
+                    <svg width="8" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </span>
                 )}
@@ -285,8 +287,8 @@ function SignupEmailContent() {
                 onClick={() => setJobType("OFFICE")}
                 className={`jt-card relative flex items-center gap-3 px-2 py-2.5 rounded-xl border-2 text-left transition-all ${
                   jobType === "OFFICE"
-                    ? "border-purple-500 bg-purple-50 text-purple-700"
-                    : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+                    ? "border-[#582681] bg-[#f7f7f8] text-[#582681]"
+                    : "border-[#e0e0e0] bg-white text-[#6b6b6b] hover:border-[#c0c0c0]"
                 }`}
               >
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
@@ -294,13 +296,13 @@ function SignupEmailContent() {
                 <span className="jt-text flex flex-col min-w-0">
                   <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">본사</span>
                   <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">
-                    제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원
+                    {직군요약("OFFICE")}
                   </span>
                 </span>
                 {jobType === "OFFICE" && (
-                  <span className="absolute top-2 right-2 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-[#582681] rounded-full flex items-center justify-center">
+                    <svg width="8" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </span>
                 )}

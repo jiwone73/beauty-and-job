@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import JobCareerPicker from "@/components/signup/JobCareerPicker";
+import { 직군요약 } from "@/lib/data/jobGroups";
 import { shortRegion } from "@/lib/regionShort";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -228,7 +229,7 @@ export default function OnboardingJobTypePage() {
               <StoreIcon size={20} style={{ color: "#582681" }} /> 매장
             </p>
             <p className="text-[14px] text-[#555] leading-relaxed break-keep">
-              시술·스탭(헤어·메이크업·네일·피부·두피) · 샵 운영 · 웨딩 · 미용강사 · 병원 현장
+              {직군요약("STORE")}
             </p>
           </button>
 
@@ -243,7 +244,7 @@ export default function OnboardingJobTypePage() {
               <OfficeIcon size={20} style={{ color: "#582681" }} /> 본사
             </p>
             <p className="text-[14px] text-[#555] leading-relaxed break-keep">
-              제조·OEM · 플랫폼·콘텐츠 · MD·커머스 · 마케팅·영업 · 교육 기획 · 경영지원
+              {직군요약("OFFICE")}
             </p>
           </button>
         </div>
@@ -252,7 +253,7 @@ export default function OnboardingJobTypePage() {
           onGroup={set대분류} onStage={set단계} />
 
         <div className="mb-8">
-          <p className="text-[13px] text-[#6b6b6b] mb-2">
+          <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
             희망 근무지역 <span className="text-red-500">*</span>
             <span className="text-[#9a9a9a]"> · 이 지역 공고를 먼저 보여드려요</span>
           </p>
@@ -274,7 +275,7 @@ export default function OnboardingJobTypePage() {
 
         {needPhone && (
           <div className="mb-8">
-            <p className="text-[13px] text-[#6b6b6b] mb-2">
+            <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
               휴대폰 번호 <span className="text-red-500">*</span>
               <span className="text-[#9a9a9a]"> · 기업이 연락할 때 쓰여요</span>
             </p>
