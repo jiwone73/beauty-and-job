@@ -463,7 +463,10 @@
 .jobs-more button:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 /* 메인 채용관 머리. 파는 자리라 「광고」를 붙인다(표시 의무). */
-/* 히어로 판과 붙어 보이지 않게 첫 채용관 위만 넉넉히 띄운다. */
+/* 채용관 제목 위 여백은 둘이 같아야 한다. 프리미엄은 히어로 판 바로 아래라
+   제 padding 34px 이 그대로 여백이 되지만, 스탠다드는 위에 프리미엄 판의
+   아래 여백 12px 이 이미 깔려 있다 — 그래서 22px 만 더해 34px 를 맞춘다. */
+.showcase-sec { padding-top: 22px; }
 .showcase-sec.top { padding-top: 34px; }
 .showcase-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .showcase-title { display: flex; align-items: center; gap: 9px; font-size: 22px; font-weight: 700;
