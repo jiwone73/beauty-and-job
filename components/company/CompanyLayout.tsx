@@ -30,11 +30,14 @@ const PAGE_TITLES: Record<string, string> = {
   billing: "내 이용권",
 };
 
-export default function CompanyLayout({ children, activePage, title, side, sideExtra }: {
+export default function CompanyLayout({ children, activePage, title, 제목숨김, side, sideExtra }: {
   children: React.ReactNode;
   activePage: string;
   /** 화면 제목을 갈아 끼운다 — 한 사람의 이력서처럼 제목이 내용마다 달라지는 곳. */
   title?: string;
+  /** 본문 제목(h1)을 세우지 않는다. 본문이 제 이름을 스스로 적는 화면용 —
+   *  상품 상세가 그렇다. 두 번 적으면 어느 쪽이 그 화면 이름인지 흐려진다. */
+  제목숨김?: boolean;
   /** 화면이 제 사이드를 직접 그린다. 지원자처럼 사이드에 세울 것이 고정 메뉴가
    *  아니라 그때그때 달라지는 목록(공고)인 경우에 쓴다. */
   side?: React.ReactNode;
@@ -618,9 +621,11 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
             </nav>
             <main className="company-content co-set-main">
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
-              <h1 className="co-set-title">
-                {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
-              </h1>
+              {!제목숨김 && (
+                <h1 className="co-set-title">
+                  {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
+                </h1>
+              )}
               {children}
             </main>
           </div>

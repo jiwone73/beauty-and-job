@@ -15989,11 +15989,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-btn.off { background: #ececf0; color: #8a8a90; cursor: default; }
 
 .pi-sec { margin-top: 34px; }
-.pi-st { font-size: 15.5px; font-weight: 700; color: #1f1f22; margin: 0 0 12px;
+.pi-st { font-size: 16.5px; font-weight: 700; color: #555; margin: 0 0 12px;
   padding-bottom: 8px; border-bottom: 1px solid #1f1f22; }
 .pi-tb { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .pi-tb th, .pi-tb td { border-bottom: 1px solid #f0f0f3; padding: 10px 12px; text-align: left; line-height: 1.55; }
-.pi-tb th { width: 130px; color: #1f1f22; font-weight: 600; background: #f7f7f8; white-space: nowrap; }
+.pi-tb th { width: 130px; color: #555; font-weight: 400; background: #f7f7f8; white-space: nowrap; }
 .pi-tb td.off { color: #8a8a90; }
 
 /* 기간은 고르는 것이지 읽는 것이 아니다. 값만 줄줄이 적어 두면 며칠짜리를

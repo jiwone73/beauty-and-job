@@ -12,9 +12,11 @@ export default function CompanyDashboardPlanDetailPage() {
   const id = 자리 as PlanId;
 
   return (
-    <CompanyLayout activePage={`plan-${자리.toLowerCase()}`} title={플랜[id].name}>
+    // 제목은 본문이 스스로 적는다 — 「채용공고 상품 / 라이트 / 한 줄」이 한
+    // 덩어리라, 이름만 떼어 화면 위에 따로 세우면 그 덩어리가 머리를 잃는다.
+    <CompanyLayout activePage={`plan-${자리.toLowerCase()}`} title={플랜[id].name} 제목숨김>
       <div className="co-plans">
-        <PlanDetail id={id} 이름보임={false} />
+        <PlanDetail id={id} />
       </div>
     </CompanyLayout>
   );
