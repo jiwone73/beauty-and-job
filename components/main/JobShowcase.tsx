@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Crown, Star } from "lucide-react";
+import { Crown, Star, Gift } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import { mapJob } from "@/lib/jobCard";
 import { 메인롤링, 메인칸, 칸수 } from "@/lib/companyPlans";
@@ -17,13 +17,17 @@ import { 메인롤링, 메인칸, 칸수 } from "@/lib/companyPlans";
  * 1분에 열두 번 부르므로, 모아 두었다가 20초에 한 번 · 화면을 떠날 때 보낸다.
  */
 
-type Props = { tier: "PREMIUM" | "STANDARD"; title: string;
+type Props = { tier: "EVENT" | "PREMIUM" | "STANDARD";
+  /** 제목. 이벤트 채용관은 서버가 준 제목을 쓰므로 비워 둔다. */
+  title?: string;
   /** 다른 자리에 이미 뜬 공고 — 빈 칸을 채울 때 뺀다. null 이면 아직 모른다. */
   excludeIds?: string[] | null;
   onLoaded?: (ids: string[]) => void };
 
 export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props) {
   const [items, setItems] = useState<any[]>([]);
+  /** 서버가 정한 제목(이벤트 채용관). 설정에서 바꾸면 화면도 바뀐다. */
+  const [제목, set제목] = useState<string | null>(null);
   const [slots, setSlots] = useState(칸수(tier));
   const [cols, setCols] = useState<number>(메인칸[tier].열);
   const [바퀴, set바퀴] = useState(0);
@@ -42,6 +46,7 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
         setSlots(r.data.slots || slots);
         setCols(r.data.cols || cols);
         표.current = r.data.표 ?? null;
+        set제목(r.data.title ?? null);
         onLoaded?.(list.map((x: any) => x.id));
       }).catch(() => onLoaded?.([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,16 +93,20 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
   if (items.length === 0) return null;
 
   return (
-    <section className={`section showcase-sec${tier === "PREMIUM" ? " top" : ""}`}>
+    <section className={`section showcase-sec${tier === "EVENT" ? " top evt" : tier === "PREMIUM" ? " top" : ""}`}>
       <div className="container">
         <div className="showcase-head">
           <h2 className="showcase-title">
-            {tier === "PREMIUM"
-              ? <Crown size={22} className="title-icon" />
-              : <Star size={22} className="title-icon" />}
-            {title}
+            {tier === "EVENT"
+              ? <Gift size={22} className="title-icon" />
+              : tier === "PREMIUM"
+                ? <Crown size={22} className="title-icon" />
+                : <Star size={22} className="title-icon" />}
+            {제목 || title}
           </h2>
-          <Link href="/company/plans" className="see-all">상품안내 ›</Link>
+          <Link href={tier === "EVENT" ? "/event" : "/company/plans"} className="see-all">
+            {tier === "EVENT" ? "이벤트 보기 ›" : "상품안내 ›"}
+          </Link>
         </div>
         <div className={`card-grid card-grid-${cols}`}>
           {보이는것.map((j) => <JobCard key={j.id} data={mapJob(j)} variant="grid" />)}

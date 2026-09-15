@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, 보관표기,
+import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, 보관표기, 메인롤링,
          type PlanId, type 기간 } from "@/lib/companyPlans";
 
 /**
@@ -173,6 +173,13 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         <ul className="pi-warn">
           <li>무통장입금으로 접수하며, 입금 확인일부터 기산합니다.</li>
           <li>자동 결제·자동 연장은 없습니다. 종료 3일 전 알림을 보내드립니다.</li>
+          {메인자리 && (
+            <li>
+              메인 공고 노출은 정해진 칸을 {메인롤링 / 1000}초마다 교대합니다. 산 곳이 칸 수보다
+              많으면 돌아가며 서며, 덜 노출된 공고가 먼저 앞자리에 섭니다. 내 공고가 몇 번
+              떴는지는 「내 이용권」에서 보실 수 있습니다.
+            </li>
+          )}
           <li>결제하신 이용권은 환불되지 않습니다.</li>
           <li>
             채용이 끝나 공고를 모두 마감하시면 남은 기간을 보관해 두었다가{" "}

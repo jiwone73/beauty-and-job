@@ -49,6 +49,10 @@ export default function HomePage() {
       {/* 유료로 산 자리. 프리미엄이 위, 스탠다드가 아래이고 5초마다 안이 바뀐다.
           아래 추천 자리는 여기 뜬 공고를 빼고 고른다 — 메인에 같은 공고가 두 번
           뜨면 자리를 산 쪽도 안 산 쪽도 손해다. */}
+      {/* 오픈이벤트 채용관 — 판 자리가 아니라 오픈 기념으로 잠깐 세우는 줄이다.
+          이벤트가 끝나면 app_settings.event_showcase 만 지우면 줄째 사라진다.
+          맨 위인 까닭은 「메인페이지 상단 노출」이 이벤트로 약속한 것이어서다. */}
+      <JobShowcase tier="EVENT" />
       <JobShowcase tier="PREMIUM" title="프리미엄 채용관" onLoaded={set프리미엄Ids} />
       <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={프리미엄Ids} onLoaded={set스탠다드Ids} />
       <SectionPick excludeIds={채용관Ids} />

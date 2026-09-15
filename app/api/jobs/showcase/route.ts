@@ -16,8 +16,31 @@ import jwt from "jsonwebtoken";
  * 곳마다 숫자가 고르게 맞는다.
  */
 
-const 등급 = ["PREMIUM", "STANDARD"] as const;
+const 등급 = ["EVENT", "PREMIUM", "STANDARD"] as const;
 type 등급 = (typeof 등급)[number];
+
+/**
+ * 이벤트 채용관 설정. app_settings.event_showcase 에 이렇게 둔다.
+ *
+ *   {"from":"2026-10-01","to":"2026-10-31","until":"2026-11-30","title":"오픈이벤트 채용관"}
+ *
+ * from~to 사이에 가입하고 그 사이에 공고를 올린 곳이 대상이고, until 까지
+ * 그 줄을 세운다. 설정이 없거나 until 이 지났으면 줄 자체가 안 생긴다 —
+ * 이벤트가 끝나면 값 하나만 지우면 된다.
+ */
+type 이벤트설정 = { from: string; to: string; until: string; title?: string };
+
+async function 이벤트설정읽기(): Promise<이벤트설정 | null> {
+  try {
+    const { rows } = await pool.query(
+      `SELECT value, to_char(CURRENT_DATE, 'YYYY-MM-DD') AS 오늘
+         FROM app_settings WHERE key = 'event_showcase'`);
+    if (!rows[0]?.value) return null;
+    const v = JSON.parse(rows[0].value) as 이벤트설정;
+    if (!v?.from || !v?.to || !v?.until || v.until < rows[0].오늘) return null;
+    return v;
+  } catch { return null; }
+}
 
 export async function GET(req: NextRequest) {
   const sp = new URL(req.url).searchParams;
@@ -30,8 +53,33 @@ export async function GET(req: NextRequest) {
   const 뽑을수 = 칸 * 3;
 
   try {
-    const 산곳 = await pool.query(
-      `SELECT id, title, job_type, company_id, company_name, brand_name, logo_url,
+    // 이벤트 채용관은 산 자리가 아니라 「이벤트 기간에 가입하고 공고를 올린
+    // 곳」이다. 차례도 노출 수가 아니라 **먼저 올린 순**이다 — 선착순이라고
+    // 약속했으면 그 순서가 화면에 그대로 보여야 한다.
+    if (tier === "EVENT") {
+      const 설정 = await 이벤트설정읽기();
+      if (!설정) return ok({ items: [], slots: 칸, cols: 메인칸.EVENT.열, 표: null, title: null });
+      const { rows } = await pool.query(
+        `SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url,
+                j.cover_images, j.signboard_url, j.company_type, j.location, j.work_type,
+                j.employment_type, j.experience_level, j.deadline, j.created_at, j.categories
+           FROM v_active_jobs j
+           JOIN companies c ON c.id = j.company_id
+          WHERE j.is_sample IS NOT TRUE
+            AND c.created_at::date BETWEEN $1::date AND $2::date
+            AND j.created_at::date BETWEEN $1::date AND $2::date
+          ORDER BY j.created_at ASC
+          LIMIT $3`,
+        [설정.from, 설정.to, 뽑을수]
+      );
+      const 표 = rows.length
+        ? jwt.sign({ ids: rows.map((r) => r.id) }, process.env.JWT_SECRET!, { expiresIn: "12h" })
+        : null;
+      return ok({ items: rows, slots: 칸, cols: 메인칸.EVENT.열, 표,
+                  title: 설정.title || "오픈이벤트 채용관" });
+    }
+
+    const 산곳 = await pool.query(      `SELECT id, title, job_type, company_id, company_name, brand_name, logo_url,
               cover_images, signboard_url, company_type, location, work_type,
               employment_type, experience_level, deadline, created_at, categories
          FROM v_active_jobs
