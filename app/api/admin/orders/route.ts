@@ -2,7 +2,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 값, 플랜, 플랜인가, 기간인가 } from "@/lib/companyPlans";
+import { 값, 플랜, 플랜인가, 기간인가, type PlanId } from "@/lib/companyPlans";
+import { 보관더할일 } from "@/lib/companyEntitlement";
 
 /**
  * 기업 이용권 주문.
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   const where = ["PENDING", "PAID", "CANCELED"].includes(status) ? `WHERE o.status = '${status}'` : "";
   try {
     const { rows } = await pool.query(
-      `SELECT o.id, o.company_id, c.company_name, o.plan, o.days, o.amount, o.status,
+      `SELECT o.id, o.company_id, c.company_name, o.plan, o.days, o.amount, o.status, o.kept_days,
               o.depositor,
               to_char(o.applied_from,  'YYYY-MM-DD') AS applied_from,
               to_char(o.applied_until, 'YYYY-MM-DD') AS applied_until,
@@ -103,17 +104,37 @@ export async function PATCH(req: NextRequest) {
       return ok({ id, status: "CANCELED" });
     }
 
+    // 세워 둔 기간이 있으면 여기서 함께 푼다. 이 플랜 기준으로 환산해 얹고,
+    // 얹은 만큼 보관함을 비운다 — 두 번 쓰이면 안 된다.
+    // 이 기업 행을 잠그고 읽는다. 트랜잭션 밖에서 읽으면 두 주문을 나란히
+    // 확인할 때 같은 보관분을 둘 다 얹는다.
+    const { rows: 보관행 } = await client.query(
+      `SELECT kept_days, kept_plan, to_char(kept_until, 'YYYY-MM-DD') AS kept_until,
+              (kept_until IS NOT NULL AND kept_until >= CURRENT_DATE) AS 살아있음
+         FROM companies WHERE id = $1 FOR UPDATE`,
+      [o.company_id]
+    );
+    const k = 보관행[0];
+    const 세운것 = k?.살아있음 && 플랜인가(k.kept_plan) && Number(k.kept_days) > 0
+      ? { days: Number(k.kept_days), plan: k.kept_plan as PlanId, until: k.kept_until }
+      : { days: 0, plan: null, until: null };
+    const 얹을일 = 보관더할일(세운것, o.plan);
+    const 총일 = Number(o.days) + 얹을일;
+
     // 이어 붙일 자리를 찾는다. 기간이 남아 있으면 그 끝 다음 날부터, 아니면 오늘부터.
     // 「오늘부터 30일」은 오늘을 넣어 세므로 마지막 날이 오늘+29 다.
     const 적용 = await client.query(
       `UPDATE companies
           SET plan = $2,
               paid_until = GREATEST(COALESCE(paid_until, CURRENT_DATE - 1), CURRENT_DATE - 1) + ($3 || ' days')::interval,
+              kept_days = CASE WHEN $4::int > 0 THEN 0 ELSE kept_days END,
+              kept_plan = CASE WHEN $4::int > 0 THEN NULL ELSE kept_plan END,
+              kept_until = CASE WHEN $4::int > 0 THEN NULL ELSE kept_until END,
               updated_at = now()
         WHERE id = $1
         RETURNING to_char(paid_until, 'YYYY-MM-DD') AS paid_until,
                   to_char((paid_until - ($3 || ' days')::interval)::date + 1, 'YYYY-MM-DD') AS 시작`,
-      [o.company_id, o.plan, String(o.days)]
+      [o.company_id, o.plan, String(총일), 얹을일]
     );
     const 새끝 = 적용.rows[0]?.paid_until;
     // 영수증에 적을 시작일. 연장이면 오늘이 아니라 옛 기간이 끝난 다음 날이다.
@@ -129,12 +150,13 @@ export async function PATCH(req: NextRequest) {
     await client.query(
       `UPDATE company_orders
           SET status = 'PAID', confirmed_at = now(), updated_at = now(),
-              applied_from = $3::date, applied_until = $2::date
+              applied_from = $3::date, applied_until = $2::date, kept_days = $4::int
         WHERE id = $1`,
-      [id, 새끝, 시작]
+      [id, 새끝, 시작, 얹을일]
     );
     await client.query("COMMIT");
-    return ok({ id, status: "PAID", paidUntil: 새끝, plan: o.plan, planName: 플랜[o.plan as keyof typeof 플랜].name });
+    return ok({ id, status: "PAID", paidUntil: 새끝, plan: o.plan,
+                planName: 플랜[o.plan as keyof typeof 플랜].name, 보관일: 얹을일 });
   } catch (e) {
     await client.query("ROLLBACK").catch(() => {});
     console.error("[admin orders PATCH]", e);

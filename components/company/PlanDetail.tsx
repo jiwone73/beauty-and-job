@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, type PlanId, type 기간 } from "@/lib/companyPlans";
+import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, 보관표기,
+         type PlanId, type 기간 } from "@/lib/companyPlans";
 
 /**
  * 상품 하나를 자세히 — 상품 안내서다.
@@ -169,6 +170,9 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         <ul className="pi-warn">
           <li>무통장입금으로 접수하며, 입금 확인일부터 기산합니다.</li>
           <li>자동 결제·자동 연장은 없습니다. 종료 3일 전 알림을 보내드립니다.</li>
+          <li>채용이 끝나 공고를 모두 마감하시면 남은 기간을 {보관표기}간 보관해 두었다가
+              다음 채용 때 쓰실 수 있습니다. 다른 플랜에 쓰실 때는 하루 요금 비율로 환산하며,
+              보관한 기간은 환불 대상에서 제외됩니다.</li>
           <li>미사용 시 7일 이내 전액 환불, 이용 후에는 잔여 기간을 일할 계산해 환불합니다.</li>
           <li>이용 중 상위 상품 신청 시 남은 기간에 이어서 적용됩니다.</li>
         </ul>

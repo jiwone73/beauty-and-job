@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권 } from "@/lib/companyEntitlement";
+import { 이용권, 보관 } from "@/lib/companyEntitlement";
 
 /**
  * 내 이용권 — 무엇을 언제까지 쓰는가, 그동안 얼마나 노출됐는가.
@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   try {
     const { plan, paidUntil, 남은일, 체험끝, 체험중 } = await 이용권(auth!.sub);
+    const 세운것 = await 보관(auth!.sub);
     // 무료 체험이 언제 끝나는가. 끝나는 날이 곧 공고가 내려가는 날이라,
     // 그 전에 알려 줘야 한다 — 내려가고 나서 알면 이미 늦다.
     const 체험남은일 = 체험끝 && 체험중
@@ -35,6 +36,9 @@ export async function GET(req: NextRequest) {
       진행중: r.진행중,
       노출: Number(r.노출),
       게재종료: r.먼저끝나는게재일,
+      보관: 세운것,
+      // 지금 보관할 수 있는가. 걸린 공고가 있으면 아직 채용 중이다.
+      보관가능: !!plan && 남은일 > 0 && r.진행중 === 0,
     });
   } catch (e) {
     console.error("[company me plan]", e);
