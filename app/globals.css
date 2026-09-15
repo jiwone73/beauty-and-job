@@ -13346,17 +13346,20 @@ button,
 .co-upsell-go { flex: none; display: inline-flex; align-items: center; gap: 2px;
   font-size: 13.5px; color: var(--color-primary); font-weight: 600; }
 
-/* 지금 하는 이벤트 한 줄. 상품을 보러 온 사람에게 「지금 사면 이런 게 있다」를
-   그 자리에서 말한다 — 문구는 공지사항에서 받아 온다. */
-.co-evtband { display: flex; align-items: center; gap: 8px; text-decoration: none;
-  background: linear-gradient(100deg, #f4f0fc 0%, #f7f4fe 100%);
-  border: 1px solid #e7e0f5; border-radius: 12px; padding: 12px 15px; margin: 0 0 18px;
-  color: #2b2b2e; font-size: 14.5px; }
-.co-evtband:hover { border-color: var(--color-primary); }
-.co-evtband svg { flex: none; color: var(--color-primary); }
-.co-evtband-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.co-evtband-go { flex: none; display: inline-flex; align-items: center; gap: 1px;
-  font-size: 13.5px; color: var(--color-primary); font-weight: 600; }
+/* 지금 하는 이벤트. 상품을 보러 온 사람에게 「지금 사면 이런 게 있다」를 그
+   자리에서 말한다 — 한 줄만 적고 이벤트 페이지로 보내면, 무엇을 주는지 알려면
+   상품 고르던 화면을 떠나야 한다. 문구는 공지사항에서 받아 온다. */
+.co-evt { border: 1px solid var(--card-line); border-radius: 12px;
+  background: #fbfafc; padding: 16px 18px; margin: 0 0 20px; }
+.co-evt-h { display: flex; align-items: center; gap: 7px; margin: 0;
+  font-size: 15px; font-weight: 700; color: #1f1f22; }
+.co-evt-h svg { flex: none; color: var(--color-primary); }
+.co-evt-lead { margin: 8px 0 0; }
+.co-evt-lead + .co-evt-item { margin-top: 12px; }
+.co-evt-item + .co-evt-lead { margin-top: 12px; }
+.co-evt-item { margin: 14px 0 0; padding-left: 11px; border-left: 2px solid var(--color-primary); }
+.co-evt-nm { margin: 0 0 3px; font-size: 14px; font-weight: 700; color: var(--color-primary); }
+.co-evt-t { margin: 0; font-size: 13.5px; color: #555; line-height: 1.65; word-break: keep-all; }
 
 .cs-vat { text-align: center; font-size: 13px; color: #9a9aa0; margin: 26px 0 0; }
 /* 카드 판 바깥, 오른쪽 끝. 값 옆에 붙는 단서라 값이 선 쪽에 둔다. */
