@@ -20,7 +20,7 @@ export default function CompanyDashboardAdsPage() {
   return (
     <CompanyLayout activePage="plans-ads">
       <div className="co-plans">
-        <EventBand />
+        <EventBand 안쪽 />
         <p className="cs-lead" style={{ marginTop: 0, marginBottom: 22 }}>
           공고가 아니라 <b>자리</b>를 사는 상품입니다. 브랜드·교육·장비를 알리는 데 씁니다.
         </p>

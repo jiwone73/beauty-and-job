@@ -137,11 +137,6 @@ export default function CompanyServicePage() {
           받아 오므로 이벤트가 끝나면 저절로 사라진다. */}
       <section className="cs-wrap">
         <EventBand />
-        <div className="cs-center">
-          <Link href="/company/plans/event" className="cs-btn-line lg">
-            오픈이벤트 자세히 보기 <ArrowRight size={15} />
-          </Link>
-        </div>
       </section>
 
       {/* ── 다루는 직군 ── */}
