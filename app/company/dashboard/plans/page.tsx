@@ -20,7 +20,7 @@ export default function CompanyDashboardPlansPage() {
   return (
     <CompanyLayout activePage="plans">
       <div className="co-plans">
-        <PlanCards />
+        <PlanCards 안쪽 />
 
         <h2 className="cs-h2" style={{ marginTop: 56 }}>자주 묻는 질문</h2>
         <ul className="cs-faq">

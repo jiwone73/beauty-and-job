@@ -34,7 +34,11 @@ export function 혜택목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
   );
 }
 
-export default function PlanCards() {
+export default function PlanCards({ 안쪽 = false }: {
+  /** 기업 대시보드 안에서 보는가. 이미 회원인 사람에게 「시작하기」가
+   *  가입 화면으로 가면 안 된다 — 그쪽에는 바로 공고를 거는 길을 준다. */
+  안쪽?: boolean;
+} = {}) {
   return (
     <>
       <div className="cs-plans">
@@ -42,7 +46,9 @@ export default function PlanCards() {
           <p className="cs-plan-nm">{스타트.name}</p>
           <p className="cs-plan-ln">{스타트.한줄}</p>
           <p className="cs-plan-pr">무료<span className="cs-plan-du free">공고 게재 {스타트.게재일}일</span></p>
-          <Link href="/company/signup" className="cs-plan-btn free">시작하기</Link>
+          <Link href={안쪽 ? "/company/dashboard/jobs/new" : "/company/signup"} className="cs-plan-btn free">
+            {안쪽 ? "공고 등록하기" : "시작하기"}
+          </Link>
           <혜택목록 칸={비교칸.BASIC} />
         </div>
 
@@ -61,7 +67,9 @@ export default function PlanCards() {
               </p>
               {/* 여기서는 고르는 것까지만 한다. 신청은 자세히 보기 안에서 —
                   기간과 값을 보고 나서 누르는 것이 순서다. */}
-              <Link href={`/company/plans/${p.toLowerCase()}`}
+              {/* 대시보드에서 누르면 대시보드 안의 상세로 간다 — 바깥 화면으로
+                  튀어나가면 사이드 메뉴를 잃고 돌아올 길이 머리줄뿐이다. */}
+              <Link href={`${안쪽 ? "/company/dashboard/plans" : "/company/plans"}/${p.toLowerCase()}`}
                 className="cs-plan-btn">
                 자세히 보기
               </Link>
