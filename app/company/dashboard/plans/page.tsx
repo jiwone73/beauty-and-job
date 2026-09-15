@@ -6,7 +6,6 @@ import { Plus, Minus, ArrowRight } from "lucide-react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import PlanCards from "@/components/company/PlanCards";
 import { 요금제FAQ } from "@/lib/companyPlans";
-import { 광고상품 } from "@/lib/adProducts";
 
 /**
  * 채용상품 — 로그인한 기업이 머리줄에서 들어오는 첫 화면.
@@ -22,22 +21,6 @@ export default function CompanyDashboardPlansPage() {
     <CompanyLayout activePage="plans">
       <div className="co-plans">
         <PlanCards 안쪽 />
-
-        {/* 채용상품 옆에 광고상품도 세운다. 파는 자리가 둘이라는 것을 여기서
-            한 번에 보여야, 공고만 올려서는 안 뜨는 자리가 있다는 게 읽힌다. */}
-        <h2 className="cs-h2" style={{ marginTop: 56 }}>광고 상품</h2>
-        <p className="cs-lead" style={{ marginTop: 0, marginBottom: 22 }}>
-          공고가 아니라 <b>자리</b>를 사는 상품입니다. 브랜드·교육·장비를 알리는 데 씁니다.
-        </p>
-        <div className="cs-ads">
-          {광고상품.map((a) => (
-            <Link key={a.id} href="/company/ads" className="cs-ad">
-              <span className="cs-ad-nm">{a.name}</span>
-              <span className="cs-ad-where">{a.자리}</span>
-              <span className="cs-ad-sum">{a.한줄}</span>
-            </Link>
-          ))}
-        </div>
 
         <h2 className="cs-h2" style={{ marginTop: 56 }}>자주 묻는 질문</h2>
         <ul className="cs-faq">

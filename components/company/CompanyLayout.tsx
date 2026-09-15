@@ -224,13 +224,15 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     // 채용상품 — 첫 화면은 요금제(카드 넉 장)고, 그 아래는 상품 하나하나다.
     //   카드의 「자세히 보기」와 이 사이드가 같은 곳으로 간다. 스타트는 사는
     //   물건이 아니라 가입하면 놓이는 자리라 상세 화면이 없다.
+    // 채용상품 — 파는 물건이 둘이다. 공고를 거는 상품(채용공고)과 자리를 파는
+    //   상품(배너광고). 한 화면에 같이 두었더니 요금제 카드 아래에 광고가 딸린
+    //   꼴이라 둘째 물건이 곁다리로 읽혔다. 페이지를 나눠 각자 제 제목을 갖는다.
     plans: [
-      { id: "plans",          label: () => "상품안내", title: () => "상품안내", href: `${base}/plans` },
+      { id: "plans",          label: () => "채용공고", title: () => "채용공고 상품 안내", href: `${base}/plans` },
       { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light` },
       { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard` },
       { id: "plan-premium",   label: () => "프리미엄", title: () => "프리미엄", href: `${base}/plans/premium` },
-      // 다른 물건이지만 대시보드에서 들어갈 문이 여기밖에 없다.
-      { id: "ads",            label: () => "광고·노출 상품", title: () => "광고·노출 상품", href: "/company/ads" },
+      { id: "plans-ads",      label: () => "배너광고", title: () => "배너광고 상품 안내", href: `${base}/plans/ads` },
     ],
     settings: [
       { id: "settings",      label: (i: string) => i,      title: (i: string) => `${i} 설정`, href: `${base}/settings` },
