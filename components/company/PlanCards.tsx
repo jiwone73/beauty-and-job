@@ -49,20 +49,20 @@ export default function PlanCards() {
         {카드순서.map((p) => {
           const 것 = 플랜[p];
           return (
-            <div key={p} className={`cs-plan${p === "STANDARD" ? " on" : ""}`}>
+            <div key={p} className="cs-plan">
               <p className="cs-plan-nm">
                 {(() => { const I = 아이콘[p]; return <I size={17} strokeWidth={2.2} />; })()}
                 {것.name}
               </p>
               <p className="cs-plan-ln">{것.한줄}</p>
               <p className="cs-plan-pr">
-                {원(것.가격[시작기간]).replace("원", "")}<i>원~</i>
+                {원(것.가격[시작기간]).replace("원", "")}<i>원</i><em>~</em>
                 <span className="cs-plan-du">{시작기간}일 기준</span>
               </p>
               {/* 여기서는 고르는 것까지만 한다. 신청은 자세히 보기 안에서 —
                   기간과 값을 보고 나서 누르는 것이 순서다. */}
               <Link href={`/company/plans/${p.toLowerCase()}`}
-                className={`cs-plan-btn${p === "STANDARD" ? " on" : ""}`}>
+                className="cs-plan-btn">
                 자세히 보기
               </Link>
               <혜택목록 칸={비교칸[p]} />
@@ -70,7 +70,7 @@ export default function PlanCards() {
           );
         })}
       </div>
-      <p className="cs-vat">모든 금액은 부가세 포함입니다</p>
+      <p className="cs-vat right">부가세 포함</p>
     </>
   );
 }
