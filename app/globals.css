@@ -13231,12 +13231,11 @@ button,
 
 /* 요금제 카드 넉 장. 파는 자리라 첫 화면에서 한 번에 읽혀야 한다 —
    카드에는 30일 값과 그 플랜에서 새로 생기는 혜택만 둔다. */
-.cs-plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
-/* 바탕은 사이트가 쓰는 판 색(#f7f7f8) 그대로다 — 공지·이벤트 판(.mt-card),
-   기업서비스의 띠(.cs-band), 가입 화면의 고른 카드가 모두 이 색이다. 크림빛을
-   새로 만들지 않는다. */
-.cs-plan { background: var(--cs-soft); border: 1px solid #e9e9ed; border-radius: 14px;
-  padding: 28px 22px 24px; display: flex; flex-direction: column; }
+.cs-plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; align-items: stretch; }
+/* 바탕은 흰색에 아주 옅은 크림을 얹은 값이다. 사이트의 판 색(#f7f7f8)은 회색
+   쪽이라 카드 넉 장이 서면 화면이 가라앉는다. 카드에만 쓰는 색이라 여기 둔다. */
+.cs-plan { background: #fdfcf8; border: 1px solid #e9e9ed; border-radius: 14px;
+  padding: 14px 11px 12px; display: flex; flex-direction: column; }
 /* 테두리는 두께가 아니라 색으로만 굵어진다. 2px 로 주면 그 카드만 안쪽이 1px
    좁아져 줄이 옆 카드와 어긋난다 — 스탠다드 줄만 2px 밀려 있던 까닭이다. */
 .cs-plan.on { border-color: var(--cs); box-shadow: inset 0 0 0 1px var(--cs); }
@@ -13244,9 +13243,10 @@ button,
 .cs-plan-nm { font-size: 19px; color: #2b2b2e; margin: 0 0 6px; letter-spacing: -.3px;
   display: flex; align-items: center; gap: 7px; }
 .cs-plan-nm svg { flex: none; color: var(--cs); }
-/* 카드마다 설명 길이가 달라도 값 줄은 같은 높이에 서야 한다. 제일 긴 것
-   (스탠다드)이 네 줄까지 가므로 그만큼 자리를 잡아 둔다. */
-.cs-plan-ln { font-size: 13.5px; color: #555; margin: 0 0 22px; line-height: 1.55; word-break: keep-all; min-height: 84px; }
+/* 카드마다 설명 길이가 달라도 값 줄은 같은 높이에 서야 한다. 안쪽 여백을
+   줄이고 나니 제일 긴 것도 두 줄에 들어, 넉 장 중 가장 좁은 판(198px)에서
+   두 줄만큼만 잡아 둔다 — 더 잡아 두면 그만큼이 값 위의 빈자리가 된다. */
+.cs-plan-ln { font-size: 13.5px; color: #555; margin: 0 0 11px; line-height: 1.55; word-break: keep-all; min-height: 42px; }
 .cs-plan-pr { font-size: 27px; color: #2b2b2e; margin: 0; letter-spacing: -1px; line-height: 1.1; }
 .cs-plan-pr i { font-size: 15px; font-style: normal; letter-spacing: -.2px; }
 .cs-plan-du { font-size: 13px; color: #555; margin: 6px 0 20px; }
@@ -13274,8 +13274,10 @@ button,
   letter-spacing: -.2px; line-height: 1.45; word-break: keep-all; }
 .cs-plan-feat li::before { content: ""; position: absolute; left: 1px; top: 7px;
   width: 5px; height: 5px; border-radius: 50%; background: #b0b0b6; }
-/* 바로 아래 플랜보다 나아진 줄. 값을 더 내는 이유가 어느 줄인지 여기서 보인다. */
-.cs-plan-feat li.new { color: var(--cs); font-weight: 600; }
+/* 바로 아래 플랜보다 나아진 줄. 값을 더 내는 이유가 어느 줄인지 여기서 보인다.
+   색만 바꾸고 굵기는 그대로 둔다 — 굵기까지 주면 한 카드 안에서 굵은 줄과 얇은
+   줄이 섞여 목록이 울퉁불퉁해진다. */
+.cs-plan-feat li.new { color: var(--cs); }
 .cs-plan-feat li.new::before { background: var(--cs); }
 
 /* 자세히 보기 화면에서는 가운데로 모으고 한 줄을 키운다. */
