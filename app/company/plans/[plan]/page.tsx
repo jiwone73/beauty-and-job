@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import ServiceHeader from "@/components/company/ServiceHeader";
-import {
-  플랜, 기간들, 비교표, 비교칸, 원, 메인칸, 플랜인가, type PlanId,
-} from "@/lib/companyPlans";
+import { 플랜, 기간들, 비교칸, 원, 메인칸, 플랜인가, type PlanId } from "@/lib/companyPlans";
+import { 혜택목록 } from "@/components/company/PlanCards";
 
 /**
  * 플랜 하나를 자세히 — 카드의 「자세히 보기」가 닿는 자리.
@@ -44,18 +43,9 @@ export default function PlanDetailPage() {
 
       <section className="cs-wrap">
         <h3 className="cs-h3">이 플랜이 주는 것</h3>
-        <ul className="cs-plan-feat cs-feat-wide">
-          {비교표.map((r) => {
-            const v = r.값[칸];
-            return (
-              <li key={r.항목} className={v === "—" ? "off" : undefined}>
-                <Check size={15} strokeWidth={2.4} />
-                <span className="k">{r.항목}</span>
-                <b className="v">{v === "—" ? "제공 안 함" : v}</b>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="cs-feat-wide">
+          <혜택목록 칸={칸} />
+        </div>
       </section>
 
       <section className="cs-band">

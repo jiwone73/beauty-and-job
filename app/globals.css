@@ -13246,25 +13246,19 @@ button,
 /* 아래 플랜 혜택을 그대로 품는다는 한 줄. 같은 말을 넉 장에 되풀이하지 않는다. */
 .cs-plan-inc { font-size: 12.5px; color: #9a9aa0; margin: 0; padding-top: 16px; border-top: 1px solid #f0f0f2; }
 .cs-plan-inc + .cs-plan-feat { border-top: 0; margin-top: 0; padding-top: 10px; }
-/* 비교표를 카드 안에 녹인 줄. 왼쪽은 항목, 오른쪽은 이 플랜의 값이다.
-   값을 오른쪽 끝에 세워야 카드 넉 장을 가로로 훑으며 견줄 수 있다. */
-.cs-plan-feat { list-style: none; margin: 6px 0 0; padding-top: 16px; border-top: 1px solid #f0f0f2;
+/* 이 플랜이 주는 것. 한 줄에 한 가지, 값은 문장 안에 넣는다.
+   없는 기능은 아예 그리지 않는다 — 흐리게라도 적어 두면 카드가 반쯤 회색이
+   되고 얻는 것보다 못 얻는 것이 먼저 읽힌다. */
+.cs-plan-feat { list-style: none; margin: 6px 0 0; padding-top: 18px; border-top: 1px solid #f0f0f2;
   display: flex; flex-direction: column; gap: 11px; }
-.cs-plan-feat li { font-size: 13px; color: #555; display: grid;
-  grid-template-columns: 15px minmax(0, 1fr) auto; align-items: start; gap: 7px;
-  letter-spacing: -.2px; line-height: 1.45; }
-.cs-plan-feat .k { word-break: keep-all; }
-.cs-plan-feat .v { font-weight: 600; color: #2b2b2e; text-align: right; word-break: keep-all; }
+.cs-plan-feat li { font-size: 13.5px; color: #555; display: flex; align-items: flex-start; gap: 7px;
+  letter-spacing: -.2px; line-height: 1.45; word-break: keep-all; }
 .cs-plan-feat svg { flex: none; margin-top: 3px; color: var(--cs); }
-/* 이 플랜에 없는 것도 지우지 않고 흐리게 남긴다 — 무엇이 빠졌는지가 곧
-   위 플랜을 사는 이유다. 없는 줄에는 체크 대신 가운뎃줄을 긋는다. */
-.cs-plan-feat li.off { color: #b8b8be; }
-.cs-plan-feat li.off svg { color: #d8d8dc; }
-.cs-plan-feat li.off .v { color: #b8b8be; font-weight: 400; }
 
-/* 자세히 보기 화면에서는 한 줄이 넓어 항목과 값 사이를 띄운다. */
-.cs-feat-wide { max-width: 560px; margin: 0 auto; border-top: 0; padding-top: 0; }
-.cs-feat-wide li { font-size: 14.5px; gap: 10px; }
+/* 자세히 보기 화면에서는 가운데로 모으고 한 줄을 키운다. */
+.cs-feat-wide { max-width: 420px; margin: 0 auto; }
+.cs-feat-wide .cs-plan-feat { border-top: 0; padding-top: 0; margin: 0; gap: 13px; }
+.cs-feat-wide li { font-size: 15px; }
 .cs-vat { text-align: center; font-size: 13px; color: #9a9aa0; margin: 26px 0 0; }
 
 /* 플랜 하나를 자세히 보는 화면 */

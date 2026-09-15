@@ -2,34 +2,28 @@
 
 import { Check } from "lucide-react";
 import Link from "next/link";
-import { 플랜, 베이직, 비교표, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 베이직, 혜택, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 요금제 카드 넉 장. 기업서비스 첫 화면과 요금제 화면이 같은 것을 쓴다.
  *
- * 비교표를 따로 세우지 않고 카드 안에 녹인다. 표를 밑에 따로 두면 카드에서
- * 고르려던 사람이 표까지 내려가 처음부터 다시 비교하게 되고, 같은 값을 두
- * 군데 적게 되어 언젠가 한쪽만 바뀐다.
+ * 카드 하나가 곧 그 플랜의 설명서다. 비교표를 따로 세우면 카드에서 고르려던
+ * 사람이 표까지 내려가 처음부터 다시 비교하게 된다.
+ *
+ * 없는 기능은 적지 않는다. 낮은 플랜 것부터 쌓아 적으므로 빠진 줄은 반드시
+ * 뒤쪽에만 생기고, 그래서 넉 장의 앞줄이 저절로 가로로 맞는다.
  *
  * 값은 제일 짧은 기간(7일)을 적고 뒤에 「~」를 붙인다. 30일 값을 적어 두면
- * 제일 싼 것이 얼마인지 알려면 눌러 봐야 한다. 기간별 값은 자세히 보기에 있다.
+ * 제일 싼 것이 얼마인지 알려면 눌러 봐야 한다.
  */
 
 const 카드순서: PlanId[] = ["LIGHT", "STANDARD", "PREMIUM"];
 
-function 줄들(칸: 0 | 1 | 2 | 3) {
-  return 비교표.map((r) => ({ 항목: r.항목, 값: r.값[칸], 없음: r.값[칸] === "—" }));
-}
-
-function 항목목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
+export function 혜택목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
   return (
     <ul className="cs-plan-feat">
-      {줄들(칸).map((r) => (
-        <li key={r.항목} className={r.없음 ? "off" : undefined}>
-          <Check size={15} strokeWidth={2.4} />
-          <span className="k">{r.항목}</span>
-          <b className="v">{r.없음 ? "제공 안 함" : r.값}</b>
-        </li>
+      {혜택(칸).map((t) => (
+        <li key={t}><Check size={15} strokeWidth={2.4} />{t}</li>
       ))}
     </ul>
   );
@@ -45,7 +39,7 @@ export default function PlanCards() {
           <p className="cs-plan-pr">무료</p>
           <p className="cs-plan-du free">공고 게재 {베이직.게재일}일</p>
           <Link href="/company/signup" className="cs-plan-btn free">시작하기</Link>
-          <항목목록 칸={비교칸.BASIC} />
+          <혜택목록 칸={비교칸.BASIC} />
         </div>
 
         {카드순서.map((p) => {
@@ -62,8 +56,7 @@ export default function PlanCards() {
                 className={`cs-plan-btn${p === "STANDARD" ? " on" : ""}`}>
                 자세히 보기
               </Link>
-              <p className="cs-plan-inc">{것.포함}</p>
-              <항목목록 칸={비교칸[p]} />
+              <혜택목록 칸={비교칸[p]} />
             </div>
           );
         })}
