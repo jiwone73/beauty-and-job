@@ -15978,12 +15978,26 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-tb th, .pi-tb td { border-bottom: 1px solid #f0f0f3; padding: 10px 12px; text-align: left; line-height: 1.55; }
 .pi-tb th { width: 130px; color: #1f1f22; font-weight: 600; background: #f7f7f8; white-space: nowrap; }
 .pi-tb td.off { color: #8a8a90; }
-.pi-tb td.num { text-align: right; font-weight: 700; color: #1f1f22; width: 120px; }
-.pi-tb td.day { text-align: right; color: #8a8a90; width: 110px; }
-.pi-tb tr.on td { background: #fbfbfc; }
-.pi-tb tr.on td:first-child { font-weight: 700; color: #1f1f22; }
-.pi-mark { display: inline-block; border: 1px solid var(--color-primary); color: var(--color-primary);
-  border-radius: 2px; font-size: 11px; font-weight: 700; padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+
+/* 기간은 고르는 것이지 읽는 것이 아니다. 값만 줄줄이 적어 두면 며칠짜리를
+   사는지 신청 화면에 가서야 정하게 되고, 거기서 한 번 더 망설인다. */
+.pi-pick { margin-top: 2px; }
+.pi-opt { display: flex; align-items: center; gap: 10px; cursor: pointer;
+  border-bottom: 1px solid #f0f0f3; padding: 12px 12px; }
+.pi-opt:last-child { border-bottom: 0; }
+.pi-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+.pi-tick { flex: none; width: 19px; height: 19px; border: 1px solid #d8d8de; border-radius: 3px;
+  background: #fff; color: #d8d8de; display: flex; align-items: center; justify-content: center; }
+.pi-opt-d { font-size: 13.5px; color: #555; flex: 1; }
+.pi-opt-d em { display: inline-block; font-style: normal; border: 1px solid var(--color-primary);
+  color: var(--color-primary); border-radius: 2px; font-size: 11px; font-weight: 700;
+  padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+.pi-opt-a { font-size: 15px; font-weight: 700; color: #1f1f22; letter-spacing: -.3px; }
+.pi-opt-u { font-size: 12px; color: #8a8a90; width: 96px; text-align: right; }
+.pi-opt:hover .pi-tick { border-color: var(--color-primary); }
+.pi-opt.on { background: #fbfafc; }
+.pi-opt.on .pi-tick { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.pi-opt.on .pi-opt-d { color: #1f1f22; font-weight: 700; }
 
 /* 노출 자리는 그려서 설명하지 않고 실제 화면을 찍어 보여 준다. */
 .pi-shot { border: 1px solid var(--card-line); }
@@ -16014,8 +16028,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-warn li { font-size: 12.5px; color: #8a8a90; line-height: 1.75; padding-left: 11px; position: relative; }
 .pi-warn li::before { content: "·"; position: absolute; left: 2px; }
 
-.pi-foot { border-top: 1px solid var(--card-line); margin-top: 34px; padding: 18px 2px;
-  display: flex; align-items: center; justify-content: space-between; gap: 14px;
-  position: sticky; bottom: 0; background: #fff; }
-.pi-fl { font-size: 12.5px; color: #8a8a90; }
-.pi-fl b { display: block; font-size: 15.5px; color: #1f1f22; font-weight: 700; margin-top: 2px; }
+/* 값과 신청 단추는 기간을 고른 자리에 하나만 둔다. */
+.pi-buy { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  border-top: 1px solid #1f1f22; margin: 4px 0 26px; padding: 18px 12px; }
+.pi-buy-l { font-size: 13px; color: #8a8a90; margin: 0; }
+.pi-buy-l b { display: block; font-size: 24px; font-weight: 700; color: #1f1f22;
+  letter-spacing: -.8px; margin: 3px 0 2px; }
+.pi-buy-l i { font-style: normal; font-size: 12px; color: #8a8a90; }

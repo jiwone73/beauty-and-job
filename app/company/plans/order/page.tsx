@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 import ServiceHeader from "@/components/company/ServiceHeader";
 import { useAuthStore } from "@/lib/store/authStore";
-import { 플랜, 기간들, 값, 원, 플랜인가, type PlanId, type 기간 } from "@/lib/companyPlans";
+import { 플랜, 기간들, 값, 원, 플랜인가, 기간인가, type PlanId, type 기간 } from "@/lib/companyPlans";
 
 /**
  * 이용권 신청.
@@ -23,8 +23,11 @@ function 주문화면() {
   const { isLoggedIn, ownerType } = useAuthStore();
 
   const 첫플랜 = 플랜인가(params.get("plan")) ? (params.get("plan") as PlanId) : "STANDARD";
+  // 상세에서 기간까지 고르고 왔으면 그대로 받는다 — 여기서 다시 고르게 하면
+  // 고른 값이 사라져 어느 쪽이 진짜인지 되묻게 된다.
+  const 첫기간 = 기간인가(Number(params.get("days"))) ? (Number(params.get("days")) as 기간) : 30;
   const [plan, setPlan] = useState<PlanId>(첫플랜);
-  const [days, setDays] = useState<기간>(30);
+  const [days, setDays] = useState<기간>(첫기간);
   const [입금자, set입금자] = useState("");
   const [바쁨, set바쁨] = useState(false);
   const [끝남, set끝남] = useState(false);

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, type PlanId } from "@/lib/companyPlans";
+import { Check } from "lucide-react";
+import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, type PlanId, type 기간 } from "@/lib/companyPlans";
 
 /**
  * 상품 하나를 자세히 — 상품 안내서다.
@@ -41,6 +42,9 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
 
   const [팔림, set팔림] = useState(false);
   const [안엶, set안엶] = useState(false);
+  /** 고른 기간. 값도 신청 단추도 이걸 따라간다 — 고르는 자리 없이 값만
+   *  적어 두면 「그래서 얼마를 내고 며칠을 쓰나」를 신청 화면에서 다시 정하게 된다. */
+  const [일수, set일수] = useState<기간>(30);
   useEffect(() => {
     fetch("/api/plans").then((r) => r.json()).then((r) => {
       set팔림(!!r?.data?.sales);
@@ -48,7 +52,8 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
     }).catch(() => {});
   }, [id]);
 
-  const 기본 = 원(것.가격[30]);
+  const 기본 = 원(것.가격[일수]);
+  const 신청 = 팔림 ? `/company/plans/order?plan=${id}&days=${일수}` : "/support";
   // 이 상품이 목록에서 누구 사이에 서는가. 맨 위·맨 아래면 한쪽이 없다.
   // 확대해서 보여 줄 두 줄 — 이 상품 구간과 바로 윗 구간의 경계다.
   // 프리미엄은 위가 없으니 아랫 경계를 본다.
@@ -67,19 +72,31 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         <p className="pi-ln">{것.한줄}</p>
       </div>
 
-      <div className="pi-sum">
-        <div>
-          <p className="pi-lbl">30일 기준</p>
-          <p className="pi-amt">{기본.replace("원", "")}<i>원</i></p>
-          <p className="pi-note">부가세 포함 · 7일 {원(것.가격[7])}부터</p>
-        </div>
-        {안엶
-          ? <span className="pi-btn off">{준비중}</span>
-          : <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="pi-btn">신청하기</Link>}
-      </div>
-
       <section className="pi-sec">
-        <h3 className="pi-st">제공 내역</h3>
+        <h3 className="pi-st">상품 내용</h3>
+        <div className="pi-pick">
+          {기간들.map((d) => (
+            <label key={d} className={`pi-opt${d === 일수 ? " on" : ""}`}>
+              <input type="radio" name={`pi-days-${id}`} checked={d === 일수}
+                     onChange={() => set일수(d)} />
+              <i className="pi-tick"><Check size={12} strokeWidth={3.5} /></i>
+              <span className="pi-opt-d">{d}일{d === 30 && <em>추천</em>}</span>
+              <b className="pi-opt-a">{원(것.가격[d])}</b>
+              <span className="pi-opt-u">1일 {Math.round(것.가격[d] / d).toLocaleString("ko-KR")}원</span>
+            </label>
+          ))}
+        </div>
+
+        <div className="pi-buy">
+          <p className="pi-buy-l">
+            {것.name} {일수}일
+            <b>{기본}</b>
+            <i>부가세 포함</i>
+          </p>
+          {안엶
+            ? <span className="pi-btn off">{준비중}</span>
+            : <Link href={신청} className="pi-btn">신청하기</Link>}
+        </div>
         <table className="pi-tb">
           <tbody>
             {사양.map((r) => {
@@ -92,21 +109,6 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
                 </tr>
               );
             })}
-          </tbody>
-        </table>
-      </section>
-
-      <section className="pi-sec">
-        <h3 className="pi-st">이용 요금</h3>
-        <table className="pi-tb">
-          <tbody>
-            {기간들.map((d) => (
-              <tr key={d} className={d === 30 ? "on" : undefined}>
-                <td>{d}일{d === 30 && <span className="pi-mark">추천</span>}</td>
-                <td className="num">{원(것.가격[d])}</td>
-                <td className="day">1일 {Math.round(것.가격[d] / d).toLocaleString("ko-KR")}원</td>
-              </tr>
-            ))}
           </tbody>
         </table>
       </section>
@@ -172,12 +174,6 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         </ul>
       </section>
 
-      <div className="pi-foot">
-        <span className="pi-fl">30일 기준<b>{안엶 ? 준비중 : 기본}</b></span>
-        {안엶
-          ? <span className="pi-btn off">{준비중}</span>
-          : <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="pi-btn">신청하기</Link>}
-      </div>
     </div>
   );
 }
