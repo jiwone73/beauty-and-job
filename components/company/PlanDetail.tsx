@@ -65,13 +65,12 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
   const 자리 = 칸 === 3
     ? "목록 맨 위에 섭니다"
     : `${칸이름[칸 + 1]} 아래, ${칸이름[칸 - 1]} 위에 섭니다`;
-  /** 메인 채용관 자리. 없는 상품이면 null 이고 칸이 통째로 「미노출」이 된다. */
+  /** 메인 공고 노출 자리. 없는 상품이면 null 이고 칸이 통째로 「미노출」이 된다. */
   const 메인자리 = 사양[6].값[칸];
 
   return (
     <div className="pi">
       <div className="pi-hd">
-        <p className="pi-kind">채용공고 상품</p>
         {이름보임 && <h2 className="pi-nm">{것.name}</h2>}
         <p className="pi-ln">{것.한줄}</p>
       </div>
@@ -143,7 +142,7 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
                   {!메인자리 && (
                     <span className="pi-x">
                       노출되지 않습니다
-                      <i>메인 채용관은 {칸이름[2]}부터</i>
+                      <i>메인 공고 노출은 {칸이름[2]}부터</i>
                     </span>
                   )}
                 </div>

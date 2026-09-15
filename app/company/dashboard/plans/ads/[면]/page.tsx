@@ -25,7 +25,6 @@ export default function CompanyDashboardAdSurfacePage() {
       <div className="co-plans">
         <div className="pi">
           <div className="pi-hd">
-            <p className="pi-kind">배너광고 상품</p>
             <h2 className="pi-nm">{면이름[면]}</h2>
             <p className="pi-ln">{면설명[면]}</p>
           </div>

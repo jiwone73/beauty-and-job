@@ -474,14 +474,14 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
            (이 style 은 글자 그대로 나가므로 따옴표·꺾쇠·＆ 를 쓰지 않는다 — 서버가
             그 글자를 빠져나가게 적어 보내 클라이언트와 어긋나면서 hydration 오류가 난다.) */
         .co-set-item { display: block; padding: 10px 12px;
-          border-radius: 8px; font-size: 16px; color: #555; text-decoration: none;
+          border-radius: 8px; font-size: 17px; color: #555; text-decoration: none;
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
         /* 아랫단 — 위 줄에 딸린 낱개다. 들여쓰고 한 호수 줄여 둘의 높이를
            눈으로 가른다. 같은 크기로 두면 무엇이 묶음이고 무엇이 그 안인지
            이름만 읽어서는 알 수 없다. */
-        .co-set-item.sub { padding-left: 24px; font-size: 14.5px; }
+        .co-set-item.sub { padding-left: 24px; font-size: 15.5px; }
         /* 인재풀 — 탭이 제목 자리를 대신한다. 그래서 글자도 제목과 같은 크기·굵기·
            색(.co-set-title)을 쓴다. 켜진 탭이 곧 지금 보고 있는 화면의 이름이다.
            다른 화면 제목이 모두 가운데 서 있으므로 이 줄도 가운데 세운다. */

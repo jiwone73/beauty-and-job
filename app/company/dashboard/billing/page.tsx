@@ -117,7 +117,7 @@ export default function CompanyBillingPage() {
 
         <div className="co-bill-stats">
           <div><span>진행 중 공고</span><b>{it?.진행중 ?? 0}<i>건</i></b></div>
-          <div><span>메인 노출</span><b>{(it?.노출 ?? 0).toLocaleString("ko-KR")}<i>회</i></b></div>
+          <div><span>메인 공고 노출</span><b>{(it?.노출 ?? 0).toLocaleString("ko-KR")}<i>회</i></b></div>
           <div><span>공고 게재</span><b>{it?.게재종료 ? <>{it.게재종료}<i>까지</i></> : <>—</>}</b></div>
         </div>
 
