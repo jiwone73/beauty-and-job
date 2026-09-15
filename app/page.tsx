@@ -273,10 +273,14 @@ function Hero() {
                 <div className="mt-evt-list">
                   <ResumeCta className="mt-evt-p ev-user">
                     <span className="mt-evt-tag"><UserRound size={12} />개인회원 EVENT</span>
-                    <span className="mt-evt-h">이력서 등록하고<br /><b>메가MGC 커피 받기</b></span>
+                    {/* 이력서 등록은 사진·인증·경력·자소서까지 30분짜리 일이다.
+                        처음 보는 사이트에서 그 일을 시키려면 커피 한 잔으로는 얇다.
+                        값보다 중요한 것은 수량이다 — 「무제한 2,000원」은 오늘
+                        해야 할 이유가 없고 「선착순 200명」은 있다. */}
+                    <span className="mt-evt-h">이력서 등록하고<br /><b>메가MGC 커피쿠폰</b></span>
                     <span className="mt-evt-go">이력서 등록하기 ›</span>
                     <img className="mt-evt-art art-coffee" src="/images/event/art-coffee.png" alt="" />
-                    <span className="mt-evt-coin">2,000원<i>쿠폰 증정</i></span>
+                    <span className="mt-evt-coin">5,000원<i>선착순 200명</i></span>
                   </ResumeCta>
 
                   <button
@@ -287,16 +291,21 @@ function Hero() {
                     )}
                   >
                     <span className="mt-evt-tag"><OfficeIcon size={12} />기업회원 EVENT</span>
-                    <span className="mt-evt-h">채용공고 등록하고<br /><b>무료 우선 노출</b></span>
+                    {/* 인재검색은 약속하지 않는다 — 이력서가 쌓이기 전에는 못 지킨다.
+                        지금 우리가 줄 수 있는 진짜 값은 기간과 노출이다.
+                        자리는 먼저 올린 순서대로 준다. 최상단은 원래 프리미엄
+                        자리라 나중에 팔 때 「그때는 공짜였는데」가 될 수 있지만,
+                        오픈 초기에 공고를 모으는 것이 먼저라고 정했다. */}
+                    <span className="mt-evt-h">선착순 채용공고 등록하고<br /><b>1개월 무료 + 최상단 노출</b></span>
                     <span className="mt-evt-go">채용공고 등록하기 ›</span>
                     <img className="mt-evt-art art-mega" src="/images/event/art-megaphone.png" alt="" />
                     <span className="mt-evt-pts">
-                      <i>더 많은 지원자</i><i>빠른 채용</i><i>브랜드 노출</i>
+                      <i>공고 등록 무제한</i><i>기간 내내 게재</i><i>선착순 최상단</i>
                     </span>
                   </button>
                 </div>
                 <p className="mt-evt-note">
-                  * 이벤트 기간: 2026. 10. 1 (목) ~ 10. 31 (토) · 쿠폰은 이력서 등록 완료 확인 후 지급됩니다.
+                  * 이벤트 기간: 2026. 10. 1 (목) ~ 10. 31 (토) · 선착순 200명 · 쿠폰은 이력서 등록 완료 확인 후 지급됩니다.
                 </p>
               </div>
             </div>

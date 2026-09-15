@@ -18,8 +18,8 @@ function CompanyJobNewForm() {
   // 빈 폼으로 들어올 때만 묻는다. 이어서 쓰거나 복사해서 온 길에는 끼어들지 않는다.
   // 모달은 고를 것이 있을 때만 스스로 뜬다(임시저장도 지난 공고도 없으면 안 뜬다).
   const [고르기, set고르기] = useState(!editId && !copyId);
-  /** 무료로 더 올릴 수 있는 공고 수. 유료 기간 안이면 null */
-  const [무료남은, set무료남은] = useState<number | null>(null);
+  /** 무료 체험 상태. 유료 기간 안이면 null 이라 아무것도 안 뜬다. */
+  const [체험, set체험] = useState<{ 끝: string | null; 중: boolean; 남은: number } | null>(null);
 
   useEffect(() => {
     companyMeApi.get()
@@ -30,7 +30,10 @@ function CompanyJobNewForm() {
     const token = localStorage.getItem("access_token");
     fetch("/api/company/me/plan", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
-      .then((r) => { if (r?.success) set무료남은(r.data?.무료남은 ?? null); })
+      .then((r) => {
+        if (!r?.success) return;
+        set체험(r.data?.plan ? null : { 끝: r.data?.체험끝 ?? null, 중: !!r.data?.체험중, 남은: r.data?.체험남은일 ?? 0 });
+      })
       .catch(() => {});
   }, []);
 
@@ -113,18 +116,19 @@ function CompanyJobNewForm() {
             onPick={(href) => { set고르기(false); router.push(href); }}
           />
         )}
-        {무료남은 != null && (
-          <p className={`co-quota${무료남은 === 0 ? " out" : ""}`}>
-            {무료남은 === 0
-              ? <>
-                  {/* 여기서 막힌 사람에게 필요한 것은 공고를 더 거는 일이다.
-                      요금제 넉 장을 다시 비교하게 하지 않고 그 일을 하는 상품
-                      하나로 바로 데려간다 — 인재 쪽에서 막힌 사람은 스탠다드로
-                      가는 것과 같은 규칙이다. */}
-                  무료 공고 {스타트.공고수}번을 모두 썼습니다.{" "}
-                  <Link href="/company/dashboard/plans/light">{플랜.LIGHT.name} 보기 ›</Link>
-                </>
-              : <>무료 공고 {무료남은}번 남음 · 한 건당 {스타트.게재일}일 게재됩니다</>}
+        {체험 && (
+          <p className={`co-quota${체험.끝 && !체험.중 ? " out" : ""}`}>
+            {!체험.끝
+              ? <>이 공고를 올리면 {스타트.게재일}일 무료 체험이 시작됩니다 · 그동안 공고를 몇 건이든 걸 수 있어요</>
+              : 체험.중
+                ? <>무료 체험 {체험.남은}일 남음 · {체험.끝}에 걸어 둔 공고가 함께 내려갑니다</>
+                : <>
+                    {/* 여기서 막힌 사람에게 필요한 것은 공고를 계속 걸어 두는
+                        일이다. 요금제 넉 장을 다시 비교하게 하지 않고 그 일을
+                        하는 상품 하나로 바로 데려간다. */}
+                    {스타트.게재일}일 무료 체험이 끝났습니다.{" "}
+                    <Link href="/company/dashboard/plans/light">{플랜.LIGHT.name} 보기 ›</Link>
+                  </>}
           </p>
         )}
         <JobPostForm

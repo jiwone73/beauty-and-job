@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Zap, Star, Crown } from "lucide-react";
 import Link from "next/link";
-import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, 준비중, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 요금제 카드 넉 장. 기업서비스 첫 화면과 요금제 화면이 같은 것을 쓴다.
@@ -39,13 +40,21 @@ export default function PlanCards({ 안쪽 = false }: {
    *  가입 화면으로 가면 안 된다 — 그쪽에는 바로 공고를 거는 길을 준다. */
   안쪽?: boolean;
 } = {}) {
+  // 지금 팔 수 있는 상품. 인재 열람을 파는 상품은 이력서가 쌓이기 전에는 팔
+  // 물건이 없어 「오픈 준비중」으로 세워 둔다. 켜는 것은 운영 스위치 하나다.
+  const [열린것, set열린것] = useState<string[] | null>(null);
+  useEffect(() => {
+    fetch("/api/plans").then((r) => r.json())
+      .then((r) => set열린것(Array.isArray(r?.data?.open) ? r.data.open : []))
+      .catch(() => set열린것([]));
+  }, []);
   return (
     <>
       <div className="cs-plans">
         <div className="cs-plan">
           <p className="cs-plan-nm">{스타트.name}</p>
           <p className="cs-plan-ln">{스타트.한줄}</p>
-          <p className="cs-plan-pr">무료<span className="cs-plan-du free">공고 게재 {스타트.게재일}일</span></p>
+          <p className="cs-plan-pr">무료<span className="cs-plan-du free">{스타트.게재일}일 체험</span></p>
           <Link href={안쪽 ? "/company/dashboard/jobs/new" : "/company/signup"} className="cs-plan-btn free">
             {안쪽 ? "공고 등록하기" : "시작하기"}
           </Link>
@@ -54,8 +63,10 @@ export default function PlanCards({ 안쪽 = false }: {
 
         {카드순서.map((p) => {
           const 것 = 플랜[p];
-          return (
-            <div key={p} className="cs-plan">
+            const 안엶 = 열린것 !== null && !열린것.includes(p);
+            return (
+            <div key={p} className={`cs-plan${안엶 ? " soon" : ""}`}>
+              {안엶 && <span className="cs-plan-soon">{준비중}</span>}
               <p className="cs-plan-nm">
                 {(() => { const I = 아이콘[p]; return <I size={17} strokeWidth={2.2} />; })()}
                 {것.name}

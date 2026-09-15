@@ -36,56 +36,69 @@ const 공고내기 = (n) => 부른다('/api/company/jobs', { method: 'POST', tok
   body: { title: `${표시} 공고 ${n}`, job_type: 'STORE', description: '검증용' } })
 
 try {
-// ── 1. 베이직 ───────────────────────────────────────────────────────
-console.log('\n1. 베이직(무료)')
+// ── 1. 스타트(무료 체험) ────────────────────────────────────────────
+console.log('\n1. 스타트 — 라이트 30일 체험')
 {
   const p = await 부른다('/api/company/me/plan', { token: 기업토큰 })
-  본다('이용권이 베이직(plan=null)', p.data?.plan === null, JSON.stringify(p.data))
+  본다('이용권이 스타트(plan=null)', p.data?.plan === null, JSON.stringify(p.data))
+  본다('공고를 걸기 전에는 체험이 시작되지 않는다', p.data?.체험끝 == null, String(p.data?.체험끝))
 
   const 낸것 = []
   for (let i = 1; i <= 6; i++) 낸것.push(await 공고내기(i))
-  본다('공고 5건까지 등록된다', 낸것.slice(0, 5).every(r => r.status === 200 || r.status === 201),
-       낸것.slice(0,5).map(r=>r.status+':'+(r.code||'')).join(' '))
-  본다('6건째는 막힌다(PLAN_001/403)', 낸것[5].status === 403 && 낸것[5].code === 'PLAN_001',
-       `${낸것[5].status} ${낸것[5].code} ${낸것[5].msg ?? ''}`)
+  본다('무료로도 건수를 안 막는다(여섯 건 다 걸린다)', 낸것.every(r => r.ok === true),
+       낸것.map(r => r.status + ':' + (r.code || '')).join(' '))
 
-  const [{ listed_until, n }] = await q(
-    `SELECT to_char(MIN(listed_until),'YYYY-MM-DD') listed_until, COUNT(*)::int n
+  const [c] = await q(`SELECT to_char(trial_until,'YYYY-MM-DD') t FROM companies WHERE id=$1`, [기업])
+  본다('첫 공고를 거는 날 체험이 시작된다(오늘 + 29)', c.t === 날(29), `${c.t} vs ${날(29)}`)
+
+  const [{ a: 처음, b: 끝 }] = await q(
+    `SELECT to_char(MIN(listed_until),'YYYY-MM-DD') a, to_char(MAX(listed_until),'YYYY-MM-DD') b
        FROM job_postings WHERE company_id=$1 AND status='ACTIVE'`, [기업])
-  본다('게재 종료일이 등록일 + 7일', listed_until === 날(7), `${listed_until} vs ${날(7)} (${n}건)`)
+  본다('무료 공고는 모두 체험 끝나는 날까지다', 처음 === 날(29) && 끝 === 날(29), `${처음} ~ ${끝}`)
 
-  const [{ 쓴것 }] = await q(`SELECT free_posts_used AS 쓴것 FROM companies WHERE id=$1`, [기업])
-  본다('무료 다섯 장을 다 썼다고 적힌다', 쓴것 === 5, String(쓴것))
+  const p2 = await 부른다('/api/company/me/plan', { token: 기업토큰 })
+  본다('내 이용권에 체험 남은 날이 보인다', p2.data?.체험중 === true && p2.data?.체험남은일 === 30,
+       JSON.stringify({ 중: p2.data?.체험중, 남은: p2.data?.체험남은일 }))
 
-  // 마감해도 자리가 돌아오지 않는다 — 소진되는 횟수다.
-  const [닫을것] = await q(`SELECT id FROM job_postings WHERE company_id=$1 LIMIT 1`, [기업])
-  await 부른다(`/api/company/jobs/${닫을것.id}`, { method: 'PATCH', token: 기업토큰, body: { status: 'CLOSED' } })
-  const 또 = await 공고내기(9)
-  본다('마감해도 무료 자리는 안 돌아온다', 또.status === 403 && 또.code === 'PLAN_001', `${또.status} ${또.code}`)
-  await 부른다(`/api/company/jobs/${닫을것.id}`, { method: 'PATCH', token: 기업토큰, body: { status: 'ACTIVE' } })
-  const [{ 쓴것2 }] = await q(`SELECT free_posts_used AS 쓴것2 FROM companies WHERE id=$1`, [기업])
-  본다('마감한 것을 다시 열 때는 한 장을 더 쓰지 않는다', 쓴것2 === 5, String(쓴것2))
+  // 체험이 끝나면 못 건다.
+  // 하루가 지난 것처럼 민다. 공고의 게재 종료일은 걸 때 체험 끝나는 날로
+  // 박혔으므로 같이 민다 — 실제로는 날짜가 흐르며 둘이 함께 지난다.
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE - 1 WHERE id=$1`, [기업])
+  await q(`UPDATE job_postings SET listed_until = CURRENT_DATE - 1 WHERE company_id=$1`, [기업])
+  const 막힘 = await 공고내기(7)
+  본다('체험이 끝나면 무료로는 못 건다(PLAN_001)', 막힘.status === 403 && 막힘.code === 'PLAN_001',
+       `${막힘.status} ${막힘.code}`)
+  const [v] = await q(`SELECT COUNT(*)::int n FROM v_active_jobs WHERE company_id=$1`, [기업])
+  본다('체험이 끝나면 걸어 둔 공고가 함께 내려간다', v.n === 0, `${v.n}건 남음`)
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE + 29 WHERE id=$1`, [기업])
+  await q(`UPDATE job_postings SET listed_until = CURRENT_DATE + 29 WHERE company_id=$1`, [기업])
 }
 
 // ── 2. 주문 ────────────────────────────────────────────────────────
-console.log('\n2. 주문')
+console.log('\n2. 주문 — 지금 파는 것은 라이트뿐')
 let 주문id
 {
   await q(`UPDATE app_settings SET value='off' WHERE key='plan_sales'`)
   const 닫힘 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
-    body: { plan: 'STANDARD', days: 30, depositor: '검증' } })
+    body: { plan: 'LIGHT', days: 30, depositor: '검증' } })
   본다('판매 꺼져 있으면 주문이 막힌다(PLAN_010)', 닫힘.status === 403 && 닫힘.code === 'PLAN_010',
        `${닫힘.status} ${닫힘.code}`)
 
   await q(`UPDATE app_settings SET value='on' WHERE key='plan_sales'`)
-  const 주문 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
+
+  const 준비중것 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
     body: { plan: 'STANDARD', days: 30, depositor: '검증' } })
-  본다('주문이 들어간다', 주문.ok === true, `${주문.status} ${주문.code}`)
-  본다('금액을 서버가 다시 계산한다(89,000)', 주문.data?.amount === 89000, String(주문.data?.amount))
+  본다('아직 안 여는 상품은 주문이 막힌다(PLAN_013)', 준비중것.status === 403 && 준비중것.code === 'PLAN_013',
+       `${준비중것.status} ${준비중것.code}`)
+
+  const 주문 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
+    body: { plan: 'LIGHT', days: 30, depositor: '검증' } })
+  본다('라이트 주문이 들어간다', 주문.ok === true, `${주문.status} ${주문.code}`)
+  본다('금액을 서버가 다시 계산한다(49,000)', 주문.data?.amount === 49000, String(주문.data?.amount))
   주문id = 주문.data?.id
 
   const 값속임 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
-    body: { plan: 'STANDARD', days: 30, depositor: '검증', amount: 100 } })
+    body: { plan: 'LIGHT', days: 30, depositor: '검증', amount: 100 } })
   본다('입금대기 중에는 또 못 낸다(PLAN_012)', 값속임.status === 409 && 값속임.code === 'PLAN_012',
        `${값속임.status} ${값속임.code}`)
 
@@ -93,7 +106,7 @@ let 주문id
     body: { plan: 'GOLD', days: 31, depositor: '' } })
   본다('없는 플랜은 거른다', 엉터리.status === 400, String(엉터리.status))
 
-  const 남 = await 부른다('/api/company/orders', { method: 'POST', body: { plan: 'STANDARD', days: 30, depositor: 'x' } })
+  const 남 = await 부른다('/api/company/orders', { method: 'POST', body: { plan: 'LIGHT', days: 30, depositor: 'x' } })
   본다('로그인 없이는 주문 못 한다', 남.status === 401, String(남.status))
 }
 
@@ -108,7 +121,7 @@ console.log('\n3. 입금 확인')
   본다('마지막 이용일이 오늘부터 30일째(오늘+29)', c.data?.paidUntil === 날(29), `${c.data?.paidUntil} vs ${날(29)}`)
 
   const [co] = await q(`SELECT plan, to_char(paid_until,'YYYY-MM-DD') pu FROM companies WHERE id=$1`, [기업])
-  본다('기업 등급이 STANDARD 로 붙는다', co.plan === 'STANDARD' && co.pu === 날(29), JSON.stringify(co))
+  본다('기업 등급이 LIGHT 로 붙는다', co.plan === 'LIGHT' && co.pu === 날(29), JSON.stringify(co))
 
   const [j] = await q(`SELECT to_char(MIN(listed_until),'YYYY-MM-DD') a, to_char(MAX(listed_until),'YYYY-MM-DD') b
                          FROM job_postings WHERE company_id=$1 AND status='ACTIVE'`, [기업])
@@ -124,7 +137,7 @@ console.log('\n3. 입금 확인')
        `${두번.status} ${두번.code}`)
 
   const p = await 부른다('/api/company/me/plan', { token: 기업토큰 })
-  본다('내 이용권이 STANDARD 로 보인다', p.data?.plan === 'STANDARD' && p.data?.남은일 === 30,
+  본다('내 이용권이 라이트로 보인다', p.data?.plan === 'LIGHT' && p.data?.남은일 === 30,
        JSON.stringify(p.data))
 }
 
@@ -132,11 +145,14 @@ console.log('\n3. 입금 확인')
 console.log('\n4. 유료 기간 동안')
 {
   const r = await 공고내기(6)
-  본다('공고 6건째가 열린다', r.ok === true, `${r.status} ${r.code}`)
+  본다('유료로 바꾼 뒤에도 걸린다', r.ok === true, `${r.status} ${r.code}`)
   const [j] = await q(`SELECT to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings
                         WHERE company_id=$1 ORDER BY created_at DESC LIMIT 1`, [기업])
   본다('새 공고 게재일이 이용권 만료일과 같다', j.lu === 날(29), `${j.lu} vs ${날(29)}`)
 
+  // 하향 금지는 스탠다드를 쓰는 중일 때 보인다. 스탠다드는 아직 안 파는 상품이라
+  // 주문으로는 그 상태를 만들 수 없어 등급만 세워 놓고 본다.
+  await q(`UPDATE companies SET plan='STANDARD' WHERE id=$1`, [기업])
   const 아래 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
     body: { plan: 'LIGHT', days: 30, depositor: '검증' } })
   본다('이용 중에 더 낮은 등급은 못 산다(PLAN_011)', 아래.status === 409 && 아래.code === 'PLAN_011',
@@ -209,7 +225,9 @@ console.log('\n6. 메인 채용관')
 // ── 7. 만료 ────────────────────────────────────────────────────────
 console.log('\n7. 만료')
 {
-  await q(`UPDATE companies SET paid_until = CURRENT_DATE - 1 WHERE id=$1`, [기업])
+  // 이용권도 체험도 지난 상태. 체험은 가입 뒤 한 번뿐이라 유료가 끝나도
+  // 다시 살아나지 않는다.
+  await q(`UPDATE companies SET paid_until = CURRENT_DATE - 1, trial_until = CURRENT_DATE - 1 WHERE id=$1`, [기업])
   await q(`UPDATE job_postings SET listed_until = CURRENT_DATE - 1 WHERE company_id=$1`, [기업])
 
   const p = await 부른다('/api/company/me/plan', { token: 기업토큰 })
@@ -228,54 +246,33 @@ console.log('\n7. 만료')
        JSON.stringify(한명 && { name: 한명.name }))
 
   const 새공고 = await 공고내기(7)
-  본다('무료 다섯 장을 다 썼으면 만료 뒤에도 못 건다', 새공고.status === 403 && 새공고.code === 'PLAN_001',
+  본다('체험을 이미 쓴 곳은 만료 뒤 무료로 못 건다', 새공고.status === 403 && 새공고.code === 'PLAN_001',
        `${새공고.status} ${새공고.code}`)
-
-  // 한 장을 돌려주면 다시 걸리고, 그 공고는 7일짜리다.
-  await q(`UPDATE companies SET free_posts_used = free_posts_used - 1 WHERE id=$1`, [기업])
-  const 다시 = await 공고내기(8)
-  본다('한 장이 남아 있으면 걸린다', 다시.ok === true, `${다시.status} ${다시.code}`)
-  const [j] = await q(`SELECT to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings
-                        WHERE company_id=$1 ORDER BY created_at DESC LIMIT 1`, [기업])
-  본다('그 공고는 7일짜리다', j.lu === 날(7), `${j.lu} vs ${날(7)}`)
 }
-
 
 // ── 8. 뒷문 ────────────────────────────────────────────────────────
 console.log('\n8. 뒷문')
 {
-  // 임시저장으로 넣고 상태만 ACTIVE 로 바꾸면 게재 기간과 무료 한도를 건너뛰는가.
-  const [{ 넣기전 }] = await q(`SELECT free_posts_used AS 넣기전 FROM companies WHERE id=$1`, [기업])
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE + 29 WHERE id=$1`, [기업])
+
+  // 임시저장으로 넣고 상태만 ACTIVE 로 바꾸면 게재 기간을 건너뛰는가.
   const d = await 부른다('/api/company/jobs', { method: 'POST', token: 기업토큰,
     body: { title: `${표시} 임시저장`, job_type: 'STORE', status: 'DRAFT' } })
   const 임시 = d.data?.id
-  const [{ 넣은뒤 }] = await q(`SELECT free_posts_used AS 넣은뒤 FROM companies WHERE id=$1`, [기업])
-  본다('임시저장을 넣는 것만으로는 한 장도 안 쓴다', 넣은뒤 === 넣기전, `${넣기전} → ${넣은뒤}`)
-
-  // 자리가 없으면 펴는 것부터 막힌다.
-  await q(`UPDATE companies SET free_posts_used = $2 WHERE id=$1`, [기업, 5])
-  const 막힘 = await 부른다(`/api/company/jobs/${임시}`, { method: 'PATCH', token: 기업토큰, body: { status: 'ACTIVE' } })
-  본다('무료 자리가 없으면 임시저장도 못 편다', 막힘.status === 403 && 막힘.code === 'PLAN_001',
-       `${막힘.status} ${막힘.code}`)
-
-  await q(`UPDATE companies SET free_posts_used = $2 WHERE id=$1`, [기업, 4])
   const 펴기 = await 부른다(`/api/company/jobs/${임시}`, { method: 'PATCH', token: 기업토큰,
     body: { status: 'ACTIVE' } })
   const [dj] = await q(`SELECT status::text status, to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings WHERE id=$1`, [임시])
-  본다('임시저장을 펴면 게재 종료일이 붙는다', dj?.lu != null,
+  본다('임시저장을 펴면 게재 종료일이 붙는다', dj?.lu === 날(29),
        `status=${dj?.status} listed_until=${dj?.lu} (${펴기.status})`)
-  const [{ 펴고쓴것 }] = await q(`SELECT free_posts_used AS 펴고쓴것 FROM companies WHERE id=$1`, [기업])
-  본다('펼 때 한 장을 쓴다', 펴고쓴것 === 5, `4 → ${펴고쓴것}`)
 
-  // 마감한 공고를 다시 여는 경우.
-  const [되살릴것] = await q(`SELECT id FROM job_postings WHERE company_id=$1 AND status='ACTIVE' LIMIT 1`, [기업])
-  if (되살릴것) {
-    await 부른다(`/api/company/jobs/${되살릴것.id}`, { method: 'PATCH', token: 기업토큰, body: { status: 'CLOSED' } })
-    await q(`UPDATE job_postings SET listed_until = CURRENT_DATE - 10 WHERE id=$1`, [되살릴것.id])
-    await 부른다(`/api/company/jobs/${되살릴것.id}`, { method: 'PATCH', token: 기업토큰, body: { status: 'ACTIVE' } })
-    const [r] = await q(`SELECT to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings WHERE id=$1`, [되살릴것.id])
-    본다('마감한 공고를 다시 열면 게재 기간이 다시 잡힌다', !!r.lu && r.lu >= 날(0), `listed_until=${r.lu}`)
-  }
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE - 1 WHERE id=$1`, [기업])
+  const d2 = await 부른다('/api/company/jobs', { method: 'POST', token: 기업토큰,
+    body: { title: `${표시} 임시저장2`, job_type: 'STORE', status: 'DRAFT' } })
+  const 막힘2 = await 부른다(`/api/company/jobs/${d2.data?.id}`, { method: 'PATCH', token: 기업토큰,
+    body: { status: 'ACTIVE' } })
+  본다('체험이 끝났으면 임시저장도 못 편다', 막힘2.status === 403 && 막힘2.code === 'PLAN_001',
+       `${막힘2.status} ${막힘2.code}`)
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE + 29 WHERE id=$1`, [기업])
 
   // 노출 수 — 로그인 없이 아무 공고나 올릴 수 있는가.
   const [남의것] = await q(`SELECT id, main_impressions FROM job_postings

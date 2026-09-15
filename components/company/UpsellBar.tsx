@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Lock } from "lucide-react";
-import { 플랜, type PlanId } from "@/lib/companyPlans";
+import { useEffect, useState } from "react";
+import { 플랜, 준비중, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 막힌 자리에서 바로 사러 가는 길.
@@ -21,6 +22,13 @@ export default function UpsellBar({ plan = "STANDARD", 무엇 }: {
   /** 무엇이 잠겼는지 — 「인재 이름·연락처」처럼 명사로 */
   무엇: string;
 }) {
+  const [안엶, set안엶] = useState(false);
+  useEffect(() => {
+    fetch("/api/plans").then((r) => r.json())
+      .then((r) => set안엶(Array.isArray(r?.data?.open) && !r.data.open.includes(plan)))
+      .catch(() => {});
+  }, [plan]);
+
   // 로그인한 기업은 대시보드 안의 상품 화면으로, 그 밖에서는 바깥 화면으로.
   const 안쪽 = (usePathname() || "").startsWith("/company/dashboard");
   const 어디 = `${안쪽 ? "/company/dashboard/plans" : "/company/plans"}/${plan.toLowerCase()}`;
@@ -31,7 +39,7 @@ export default function UpsellBar({ plan = "STANDARD", 무엇 }: {
       <span className="co-upsell-t">
         {무엇}는 <b>{플랜[plan].name}</b>부터 열립니다
       </span>
-      <span className="co-upsell-go">상품 보기<ChevronRight size={15} /></span>
+      <span className="co-upsell-go">{안엶 ? 준비중 : "상품 보기"}<ChevronRight size={15} /></span>
     </Link>
   );
 }

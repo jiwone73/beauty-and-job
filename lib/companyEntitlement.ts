@@ -8,6 +8,10 @@ export type 이용권정보 = {
   paidUntil: string | null;
   /** 오늘을 넣어 앞으로 며칠을 더 쓰는가. 마지막 날이 1, 기간 밖이면 0 */
   남은일: number;
+  /** 무료 체험이 끝나는 날(YYYY-MM-DD). 아직 시작 전이면 null */
+  체험끝: string | null;
+  /** 지금이 무료 체험 기간 안인가 */
+  체험중: boolean;
 };
 
 /**
@@ -22,14 +26,43 @@ export async function 이용권(companyId: string): Promise<이용권정보> {
             (paid_until IS NOT NULL AND paid_until >= CURRENT_DATE) AS 유효,
             -- 오늘을 넣어 센다. 30일권을 산 날은 30, 마지막 날은 1이다.
             -- 날짜 빼기를 서버(UTC)에서 하면 오전 아홉 시까지 하루가 어긋난다.
-            GREATEST(0, (paid_until - CURRENT_DATE) + 1) AS 남은일
+            GREATEST(0, (paid_until - CURRENT_DATE) + 1) AS 남은일,
+            to_char(trial_until, 'YYYY-MM-DD') AS trial_until,
+            (trial_until IS NOT NULL AND trial_until >= CURRENT_DATE) AS 체험중
        FROM companies WHERE id = $1`,
     [companyId]
   );
   const r = rows[0];
-  if (!r) return { plan: null, paidUntil: null, 남은일: 0 };
+  if (!r) return { plan: null, paidUntil: null, 남은일: 0, 체험끝: null, 체험중: false };
   const plan = r.유효 && 플랜인가(r.plan) ? (r.plan as PlanId) : null;
-  return { plan, paidUntil: r.paid_until ?? null, 남은일: plan ? Number(r.남은일) : 0 };
+  return {
+    plan,
+    paidUntil: r.paid_until ?? null,
+    남은일: plan ? Number(r.남은일) : 0,
+    체험끝: r.trial_until ?? null,
+    체험중: !!r.체험중,
+  };
+}
+
+/**
+ * 무료 체험을 아직 안 썼으면 지금 시작한다 — 끝나는 날을 돌려준다.
+ *
+ * 가입한 날이 아니라 **첫 공고를 거는 날**부터 센다. 가입만 해 두고 며칠 뒤에
+ * 들어온 사람이 체험을 이미 까먹은 채로 시작하면 써 보지도 못하고 끝난다.
+ *
+ * 이미 시작했으면 그 날짜를 그대로 돌려준다(끝났어도). 한 번 쓴 체험은 다시
+ * 시작되지 않는다.
+ */
+export async function 체험시작(companyId: string): Promise<string | null> {
+  const { rows } = await pool.query(
+    `UPDATE companies
+        SET trial_until = COALESCE(trial_until, CURRENT_DATE + ($2::int - 1)),
+            updated_at = now()
+      WHERE id = $1
+      RETURNING to_char(trial_until, 'YYYY-MM-DD') AS trial_until`,
+    [companyId, 스타트.게재일]
+  );
+  return rows[0]?.trial_until ?? null;
 }
 
 /**
@@ -38,51 +71,15 @@ export async function 이용권(companyId: string): Promise<이용권정보> {
  * 유료는 이용권이 끝나는 날까지, 무료는 등록일로부터 이레다. 공고를 처음 걸 때와
  * 마감한 것을 다시 열 때가 같은 규칙을 써야 한다 — 한쪽만 고치면 그쪽이 뒷문이 된다.
  */
-export function 게재종료일(plan: PlanId | null, paidUntil: string | null): string {
+/** 한국 날짜 YYYY-MM-DD. 서버는 UTC 라 자정부터 아침 아홉 시까지는 아직 어제다. */
+export const 오늘날짜 = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
+
+export function 게재종료일(plan: PlanId | null, paidUntil: string | null, trialUntil: string | null): string | null {
   if (plan && paidUntil) return paidUntil;
-  // 한국 날짜로 센다. 서버는 UTC 라 자정부터 아침 아홉 시까지는 아직 어제다.
-  const 오늘 = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
-  const d = new Date(오늘 + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + 스타트.게재일);
-  return d.toISOString().slice(0, 10);
-}
-
-/**
- * 무료로 공고를 한 번 올린다 — 남았으면 한 장 쓰고 true.
- *
- * 스타트의 다섯 건은 **평생 다섯 번**이다. 진행 중인 공고만 세던 때에는
- * 이레 뒤 게재가 끝나면 자리가 다시 비어 무료로 끝없이 올릴 수 있었다.
- *
- * 공고 행을 세지 않고 기업에 쓴 횟수를 적어 두는 까닭은, 행을 세면 공고를
- * 지웠을 때 횟수가 되살아나기 때문이다.
- *
- * 세는 것과 쓰는 것을 한 문장으로 한다 — 따로 하면 동시에 두 건을 올릴 때
- * 둘 다 검사를 통과한다.
- */
-export async function 무료공고한장(companyId: string): Promise<boolean> {
-  const { rowCount } = await pool.query(
-    `UPDATE companies SET free_posts_used = free_posts_used + 1, updated_at = now()
-      WHERE id = $1 AND free_posts_used < $2`,
-    [companyId, 스타트.공고수]
-  );
-  return (rowCount ?? 0) > 0;
-}
-
-/** 써 둔 한 장을 돌려준다 — 공고를 실제로 넣지 못했을 때. */
-export async function 무료공고되돌리기(companyId: string): Promise<void> {
-  await pool.query(
-    `UPDATE companies SET free_posts_used = GREATEST(0, free_posts_used - 1) WHERE id = $1`,
-    [companyId]
-  ).catch(() => { /* 되돌리기에 실패해도 공고 등록 응답을 가리지 않는다 */ });
-}
-
-/** 무료로 몇 장 남았는가. 화면에 보여 주기 위한 값. */
-export async function 무료남은장(companyId: string): Promise<number> {
-  const { rows } = await pool.query(
-    `SELECT GREATEST(0, $2 - free_posts_used)::int AS n FROM companies WHERE id = $1`,
-    [companyId, 스타트.공고수]
-  );
-  return rows[0]?.n ?? 0;
+  // 무료 공고는 체험이 끝나는 날까지다. 건건이 이레가 아니라 계정의 이레라,
+  // 체험 중에 올린 공고는 몇 건이든 같은 날 함께 내려간다 — 그 날이 라이트를
+  // 사는 날이 된다.
+  return trialUntil;
 }
 
 /**

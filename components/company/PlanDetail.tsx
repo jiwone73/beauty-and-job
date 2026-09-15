@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { 플랜, 기간들, 비교칸, 원, 메인칸, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 기간들, 비교칸, 원, 메인칸, 준비중, type PlanId } from "@/lib/companyPlans";
 import { 혜택목록 } from "@/components/company/PlanCards";
 
 /**
@@ -18,9 +18,14 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
 
   // 통신판매업 신고 전에는 결제를 열 수 없다. 그동안은 고객센터로 받는다.
   const [팔림, set팔림] = useState(false);
+  const [안엶, set안엶] = useState(false);
   useEffect(() => {
     fetch("/api/plans").then((r) => r.json())
-      .then((r) => set팔림(!!r?.data?.sales)).catch(() => {});
+      .then((r) => {
+        set팔림(!!r?.data?.sales);
+        set안엶(Array.isArray(r?.data?.open) && !r.data.open.includes(id));
+      }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -88,9 +93,20 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
       </section>
 
       <section className="cs-wrap cs-center">
-        <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="cs-btn-fill lg">
-          {팔림 ? `${것.name} 신청하기` : "고객센터 문의하기"} <ArrowRight size={15} />
-        </Link>
+        {안엶 ? (
+          // 이력서가 쌓이기 전에는 인재를 파는 상품을 열지 않는다. 돈을 받고
+          // 열었는데 볼 사람이 없으면 그게 첫 환불이다.
+          <>
+            <span className="cs-btn-fill lg off">{준비중}</span>
+            <p className="cs-vat" style={{ marginTop: 12 }}>
+              인재 이력서가 쌓이는 대로 엽니다. 그동안은 라이트로 공고를 걸어 두세요.
+            </p>
+          </>
+        ) : (
+          <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="cs-btn-fill lg">
+            {팔림 ? `${것.name} 신청하기` : "고객센터 문의하기"} <ArrowRight size={15} />
+          </Link>
+        )}
       </section>
     </>
   );

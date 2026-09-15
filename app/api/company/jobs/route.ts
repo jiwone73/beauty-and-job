@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
-import { 이용권, 게재종료일, 무료공고한장, 무료공고되돌리기 } from '@/lib/companyEntitlement'
-import { 한도안내 } from '@/lib/companyPlans'
+import { 이용권, 게재종료일, 체험시작, 오늘날짜 } from '@/lib/companyEntitlement'
+import { 체험끝안내 } from '@/lib/companyPlans'
 
 // 내 공고 목록
 export async function GET(req: NextRequest) {
@@ -89,21 +89,26 @@ export async function POST(req: NextRequest) {
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
-  // 무료(스타트)는 평생 다섯 번이다. 임시저장은 아직 건 것이 아니라 세지 않는다.
-  // 자리를 먼저 집어 두고 넣는다 — 넣고 나서 세면 동시에 들어온 두 건이
-  // 둘 다 통과한다.
+  // 무료로 몇 건을 올리든 막지 않는다. 공고가 많이 올라오는 것은 우리에게
+  // 이득이다 — 공고가 많아야 구직자가 오고, 구직자가 있어야 유료가 팔린다.
+  // 무료와 유료를 가르는 것은 **건수가 아니라 날짜**다.
+  //
+  // 무료는 라이트를 이레 동안 그대로 써 보는 것이다. 첫 공고를 거는 순간
+  // 이레가 시작되고, 그 안에서는 몇 건이든 걸 수 있다. 이레가 지나면 걸려
+  // 있던 공고가 함께 내려가고 — 연장하려면 라이트를 산다.
   const { plan, paidUntil } = await 이용권(auth!.sub)
-  const 무료로걺 = !plan && jobStatus === 'ACTIVE'
-  if (무료로걺 && !(await 무료공고한장(auth!.sub))) {
-    return err('PLAN_001', 한도안내, 403)
+  let 체험끝: string | null = null
+  if (!plan && jobStatus === 'ACTIVE') {
+    체험끝 = await 체험시작(auth!.sub)
+    if (!체험끝 || 체험끝 < 오늘날짜()) {
+      return err('PLAN_001', 체험끝안내, 403)
+    }
   }
 
   // 게재 종료일. 임시저장은 목록에 뜨지 않으니 비워 둔다(펼 때 정해진다).
-  const listedUntil = jobStatus !== 'ACTIVE' ? null : 게재종료일(plan, paidUntil)
+  const listedUntil = jobStatus !== 'ACTIVE' ? null : 게재종료일(plan, paidUntil, 체험끝)
 
-  let result
-  try {
-  result = await pool.query(
+  const result = await pool.query(
     `INSERT INTO job_postings (
        company_id, title, job_type, job_category_id, description,
        requirements, preferred_qualifications, salary_min, salary_max,
@@ -159,10 +164,5 @@ export async function POST(req: NextRequest) {
       listedUntil
     ]
   )
-  } catch (e) {
-    // 자리를 먼저 집어 두었으니 넣지 못하면 돌려준다.
-    if (무료로걺) await 무료공고되돌리기(auth!.sub)
-    throw e
-  }
   return ok(result.rows[0], 201)
 }

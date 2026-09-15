@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 무료남은장 } from "@/lib/companyEntitlement";
+import { 이용권 } from "@/lib/companyEntitlement";
 
 /**
  * 내 이용권 — 무엇을 언제까지 쓰는가, 그동안 얼마나 노출됐는가.
@@ -14,10 +14,12 @@ export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   try {
-    const { plan, paidUntil, 남은일 } = await 이용권(auth!.sub);
-    // 무료로 몇 번 더 올릴 수 있는가. 소진되는 횟수라, 다 쓰고 나서 막히기 전에
-    // 미리 보여야 한다 — 여섯 번째를 누르다 막혀서 알게 되면 늦다.
-    const 무료남은 = plan ? null : await 무료남은장(auth!.sub);
+    const { plan, paidUntil, 남은일, 체험끝, 체험중 } = await 이용권(auth!.sub);
+    // 무료 체험이 언제 끝나는가. 끝나는 날이 곧 공고가 내려가는 날이라,
+    // 그 전에 알려 줘야 한다 — 내려가고 나서 알면 이미 늦다.
+    const 체험남은일 = 체험끝 && 체험중
+      ? Math.max(0, Math.floor((Date.parse(체험끝 + "T00:00:00+09:00") - Date.parse(new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10) + "T00:00:00+09:00")) / 864e5) + 1)
+      : 0;
     const { rows } = await pool.query(
       `SELECT COUNT(*)::int AS 진행중,
               COALESCE(SUM(main_impressions), 0)::bigint AS 노출,
@@ -29,7 +31,7 @@ export async function GET(req: NextRequest) {
     );
     const r = rows[0];
     return ok({
-      plan, paidUntil, 남은일, 무료남은,
+      plan, paidUntil, 남은일, 체험끝, 체험중, 체험남은일,
       진행중: r.진행중,
       노출: Number(r.노출),
       게재종료: r.먼저끝나는게재일,

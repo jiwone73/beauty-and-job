@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 이용권 } from "@/lib/companyEntitlement";
-import { 값, 플랜, 플랜인가, 기간인가, 등급높이 } from "@/lib/companyPlans";
+import { 값, 플랜, 플랜인가, 기간인가, 등급높이, 준비중 } from "@/lib/companyPlans";
 
 /** 내가 낸 주문. 「내 이용권」 화면이 이걸로 내역을 그린다. */
 export async function GET(req: NextRequest) {
@@ -46,9 +46,17 @@ export async function POST(req: NextRequest) {
 
   // 판매가 닫혀 있으면 주문을 받지 않는다. 화면에서 막는 것만으로는 이 API 를
   // 직접 부르면 그대로 넘어간다.
-  const 스위치 = await pool.query(`SELECT value FROM app_settings WHERE key = 'plan_sales'`);
-  if (스위치.rows[0]?.value !== "on") {
+  const 스위치 = await pool.query(
+    `SELECT key, value FROM app_settings WHERE key IN ('plan_sales', 'plans_open')`);
+  const 설정: Record<string, string> = {};
+  for (const r of 스위치.rows) 설정[r.key] = r.value;
+  if (설정.plan_sales !== "on") {
     return err("PLAN_010", "지금은 온라인 신청을 받지 않습니다. 고객센터로 문의해 주세요.", 403);
+  }
+  // 아직 안 여는 상품은 받지 않는다 — 화면의 「오픈 준비중」과 같은 스위치다.
+  const 열림 = (설정.plans_open ?? "LIGHT").split(",").map((x) => x.trim());
+  if (!열림.includes(plan)) {
+    return err("PLAN_013", `${플랜[plan].name}은(는) ${준비중}입니다.`, 403);
   }
 
   // 쓰고 있는 것보다 낮은 등급은 이용 중에 받지 않는다. 받으면 남은 기간을
