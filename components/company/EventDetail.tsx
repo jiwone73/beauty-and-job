@@ -84,15 +84,15 @@ export default function EventDetail({ 안쪽 = false }: {
           <li><b>기업회원으로 가입합니다.</b> 이벤트 기간 안에 가입하셔야 합니다.</li>
           <li><b>채용공고를 등록합니다.</b> 건수 제한은 없습니다.</li>
           <li>
-            <b>신청은 따로 없습니다.</b> 공고를 올리시면 {플랜.LIGHT.name} 1개월이
+            <b>신청은 따로 없습니다.</b> 공고를 올리시면 1개월 무제한 등록이 바로
             적용되고, 먼저 올리신 순서대로 노출됩니다.
           </li>
         </ol>
         <div className="pi-buy">
           <p className="pi-buy-l">
-            {플랜.LIGHT.name} 1개월
+            1개월 무제한 공고등록
             <b>0원</b>
-            <i>이벤트 기간 한정</i>
+            <i>{플랜.LIGHT.name} 상품 · 이벤트 기간 한정</i>
           </p>
           <Link href={안쪽 ? "/company/dashboard/jobs/new" : "/company/signup"} className="pi-btn">
             {안쪽 ? "공고 등록하기" : "기업회원 가입하기"}
@@ -138,11 +138,18 @@ export default function EventDetail({ 안쪽 = false }: {
         <ul className="pi-warn">
           <li>이벤트 기간 안에 가입하고 공고를 등록하신 곳만 대상입니다.</li>
           <li>
-            무료로 드리는 {플랜.LIGHT.name} 1개월은 첫 공고를 등록하신 날부터 셉니다.
+            1개월은 첫 공고를 등록하신 날부터 셉니다. 가입만 하고 공고를 올리지
+            않으시면 시작되지 않습니다.
+          </li>
+          <li>
+            무료로 드리는 것은 유료 상품인 {플랜.LIGHT.name}입니다 — {스타트.name} 회원의
             {스타트.게재일}일 무료 체험 대신 적용됩니다.
           </li>
           <li>오픈이벤트 채용관은 정해진 칸을 차례로 교대하며, 먼저 올리신 순서대로 앞자리에 섭니다.</li>
-          <li>1개월이 끝나면 {스타트.name}으로 돌아가며, 걸어 두신 공고는 게재가 끝납니다.</li>
+          <li>
+            1개월이 끝나면 {스타트.name}으로 돌아가며, 걸어 두신 공고는 게재가 끝납니다.
+            계속 걸어 두시려면 {플랜.LIGHT.name}부터 신청하시면 됩니다.
+          </li>
         </ul>
       </section>
     </div>
