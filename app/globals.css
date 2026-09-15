@@ -13228,7 +13228,9 @@ button,
 /* 고른 것을 바탕색으로 칠하지 않는다 — 테두리만 보라로 준다. */
 .cs-plan.on { border: 2px solid var(--cs); padding: 27px 21px 23px; }
 .cs-plan-flag { font-size: 12.5px; color: var(--cs); margin: 0 0 12px; height: 16px; letter-spacing: -.2px; }
-.cs-plan-nm { font-size: 19px; color: #2b2b2e; margin: 0 0 6px; letter-spacing: -.3px; }
+.cs-plan-nm { font-size: 19px; color: #2b2b2e; margin: 0 0 6px; letter-spacing: -.3px;
+  display: flex; align-items: center; gap: 7px; }
+.cs-plan-nm svg { flex: none; color: var(--cs); }
 .cs-plan-ln { font-size: 13.5px; color: #555; margin: 0 0 22px; line-height: 1.55; word-break: keep-all; min-height: 42px; }
 .cs-plan-pr { font-size: 27px; color: #2b2b2e; margin: 0; letter-spacing: -1px; line-height: 1.1; }
 .cs-plan-pr i { font-size: 15px; font-style: normal; letter-spacing: -.2px; }
@@ -13251,9 +13253,12 @@ button,
    되고 얻는 것보다 못 얻는 것이 먼저 읽힌다. */
 .cs-plan-feat { list-style: none; margin: 6px 0 0; padding-top: 18px; border-top: 1px solid #f0f0f2;
   display: flex; flex-direction: column; gap: 11px; }
-.cs-plan-feat li { font-size: 13.5px; color: #555; display: flex; align-items: flex-start; gap: 7px;
+/* 체크표 대신 점 하나. 15px 아이콘에 7px 사이를 두면 글자가 들어갈 자리가
+   22px 줄어 「메인 스탠다드 채용관 노출」이 세 줄로 접혔다. 점은 11px 이다. */
+.cs-plan-feat li { font-size: 13.5px; color: #555; position: relative; padding-left: 11px;
   letter-spacing: -.2px; line-height: 1.45; word-break: keep-all; }
-.cs-plan-feat svg { flex: none; margin-top: 3px; color: var(--cs); }
+.cs-plan-feat li::before { content: ""; position: absolute; left: 1px; top: 8px;
+  width: 3px; height: 3px; border-radius: 50%; background: #b0b0b6; }
 
 /* 자세히 보기 화면에서는 가운데로 모으고 한 줄을 키운다. */
 .cs-feat-wide { max-width: 420px; margin: 0 auto; }

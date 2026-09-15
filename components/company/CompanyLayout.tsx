@@ -225,7 +225,7 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     //   카드의 「자세히 보기」와 이 사이드가 같은 곳으로 간다. 스타트는 사는
     //   물건이 아니라 가입하면 놓이는 자리라 상세 화면이 없다.
     plans: [
-      { id: "plans",          label: () => "요금제",   title: () => "요금제",   href: `${base}/plans` },
+      { id: "plans",          label: () => "상품안내", title: () => "상품안내", href: `${base}/plans` },
       { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light` },
       { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard` },
       { id: "plan-premium",   label: () => "프리미엄", title: () => "프리미엄", href: `${base}/plans/premium` },
@@ -439,6 +439,10 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
            났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
         .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
           width: 1018px; max-width: 100%; }
+        /* 상품안내만 판을 넓힌다. 1018px 에서는 카드 한 장이 190px 이라 「메인
+           스탠다드 채용관 노출」이 세 줄로 접힌다. 판 폭을 갈래마다 바꾸지 않는
+           것이 규칙이지만, 여기는 넉 장을 나란히 견주는 화면이라 좁으면 견줄 수가 없다. */
+        .co-set-wrap.co-set-plans { width: 1240px; }
         /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
            바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;

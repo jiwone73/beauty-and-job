@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Zap, Star, Crown } from "lucide-react";
 import Link from "next/link";
 import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
 
@@ -19,12 +19,15 @@ import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, type PlanId } 
 
 const 카드순서: PlanId[] = ["LIGHT", "STANDARD", "PREMIUM"];
 
+/** 파는 물건에만 아이콘을 단다. 스타트는 상품이 아니라 가입하면 놓이는
+ *  자리라 아이콘이 없다 — 그 없음이 「이건 사는 것이 아니다」를 말한다.
+ *  스탠다드·프리미엄은 메인 채용관 제목에 쓰는 것과 같은 아이콘이다. */
+const 아이콘 = { LIGHT: Zap, STANDARD: Star, PREMIUM: Crown } as const;
+
 export function 혜택목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
   return (
     <ul className="cs-plan-feat">
-      {혜택(칸).map((t) => (
-        <li key={t}><Check size={15} strokeWidth={2.4} />{t}</li>
-      ))}
+      {혜택(칸).map((t) => <li key={t}>{t}</li>)}
     </ul>
   );
 }
@@ -46,7 +49,10 @@ export default function PlanCards() {
           const 것 = 플랜[p];
           return (
             <div key={p} className={`cs-plan${p === "STANDARD" ? " on" : ""}`}>
-              <p className="cs-plan-nm">{것.name}</p>
+              <p className="cs-plan-nm">
+                {(() => { const I = 아이콘[p]; return <I size={17} strokeWidth={2.2} />; })()}
+                {것.name}
+              </p>
               <p className="cs-plan-ln">{것.한줄}</p>
               <p className="cs-plan-pr">{원(것.가격[시작기간]).replace("원", "")}<i>원~</i></p>
               <p className="cs-plan-du">{시작기간}일 기준</p>
