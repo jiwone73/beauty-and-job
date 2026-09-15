@@ -90,7 +90,7 @@ export default function PlanDetailPage() {
               <span className={`cs-srow p${id === "PREMIUM" ? " me" : ""}`}><i>프리미엄</i>최상단</span>
               <span className={`cs-srow s${id === "STANDARD" ? " me" : ""}`}><i>스탠다드</i>상단</span>
               <span className={`cs-srow${id === "LIGHT" ? " me" : ""}`}>라이트 · 일반</span>
-              <span className="cs-srow">베이직 · 일반</span>
+              <span className="cs-srow">스타트 · 일반</span>
             </div>
             <p className="cs-mock-note">굵게 표시된 줄이 이 플랜의 자리입니다</p>
           </div>

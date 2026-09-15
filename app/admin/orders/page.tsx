@@ -151,7 +151,7 @@ export default function AdminOrdersPage() {
                     <td>
                       {o.company_plan && o.company_paid_until
                         ? `${플랜[o.company_plan]?.name || o.company_plan} · ${o.company_paid_until}까지`
-                        : "베이직"}
+                        : "스타트"}
                     </td>
                     <td>{o.applied_until ? `${o.applied_until}까지` : "—"}</td>
                     <td style={{ color: o.status === "PENDING" ? "#582681" : "#555" }}>{상태이름[o.status]}</td>

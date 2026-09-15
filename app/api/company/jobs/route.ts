@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
-  // 무료(베이직)는 진행 중 공고를 다섯 건까지만 건다. 이미 그보다 많이 올려 둔
+  // 무료(스타트)는 진행 중 공고를 다섯 건까지만 건다. 이미 그보다 많이 올려 둔
   // 곳은 그대로 두고 새로 거는 것만 막는다 — 어제까지 보이던 공고가 안내 없이
   // 사라지면 안 된다. 임시저장은 목록에 안 뜨므로 세지 않는다.
   const { plan, paidUntil } = await 이용권(auth!.sub)

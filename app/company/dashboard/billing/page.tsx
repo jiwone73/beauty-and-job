@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { 플랜, 베이직, 원, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 원, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 내 이용권 — 무엇을 언제까지 쓰는가, 그동안 얼마나 노출됐는가, 무엇을 냈는가.
@@ -39,7 +39,7 @@ export default function CompanyBillingPage() {
       .then((r) => { if (r?.success && Array.isArray(r.data)) set주문들(r.data); }).catch(() => {});
   }, []);
 
-  const 이름 = it?.plan ? 플랜[it.plan].name : 베이직.name;
+  const 이름 = it?.plan ? 플랜[it.plan].name : 스타트.name;
 
   return (
     <CompanyLayout activePage="billing">

@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 import Link from "next/link";
-import { 플랜, 베이직, 혜택, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 요금제 카드 넉 장. 기업서비스 첫 화면과 요금제 화면이 같은 것을 쓴다.
@@ -34,10 +34,10 @@ export default function PlanCards() {
     <>
       <div className="cs-plans">
         <div className="cs-plan">
-          <p className="cs-plan-nm">{베이직.name}</p>
-          <p className="cs-plan-ln">{베이직.한줄}</p>
+          <p className="cs-plan-nm">{스타트.name}</p>
+          <p className="cs-plan-ln">{스타트.한줄}</p>
           <p className="cs-plan-pr">무료</p>
-          <p className="cs-plan-du free">공고 게재 {베이직.게재일}일</p>
+          <p className="cs-plan-du free">공고 게재 {스타트.게재일}일</p>
           <Link href="/company/signup" className="cs-plan-btn free">시작하기</Link>
           <혜택목록 칸={비교칸.BASIC} />
         </div>

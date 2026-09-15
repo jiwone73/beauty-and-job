@@ -1,8 +1,8 @@
 import pool from "@/lib/db";
-import { 플랜, 베이직, 플랜인가, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 플랜인가, type PlanId } from "@/lib/companyPlans";
 
 export type 이용권정보 = {
-  /** 유료 기간 안에 있을 때의 등급. 기간이 지났거나 비면 null(= 베이직) */
+  /** 유료 기간 안에 있을 때의 등급. 기간이 지났거나 비면 null(= 스타트) */
   plan: PlanId | null;
   /** YYYY-MM-DD. 유료였던 적이 없으면 null. 이 날까지가 이용 기간이다(이 날 포함) */
   paidUntil: string | null;
@@ -14,7 +14,7 @@ export type 이용권정보 = {
  * 이 기업이 지금 무엇을 샀는가.
  *
  * 기간이 지나면 등급을 지워서 돌려준다 — 부르는 쪽이 날짜를 또 견주지
- * 않게 한다. 등급 칸에 값이 남아 있어도 기간 밖이면 베이직이다.
+ * 않게 한다. 등급 칸에 값이 남아 있어도 기간 밖이면 스타트이다.
  */
 export async function 이용권(companyId: string): Promise<이용권정보> {
   const { rows } = await pool.query(
@@ -43,12 +43,12 @@ export function 게재종료일(plan: PlanId | null, paidUntil: string | null): 
   // 한국 날짜로 센다. 서버는 UTC 라 자정부터 아침 아홉 시까지는 아직 어제다.
   const 오늘 = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
   const d = new Date(오늘 + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + 베이직.게재일);
+  d.setUTCDate(d.getUTCDate() + 스타트.게재일);
   return d.toISOString().slice(0, 10);
 }
 
 /**
- * 무료(베이직)가 걸 수 있는 건수를 이미 다 썼는가.
+ * 무료(스타트)가 걸 수 있는 건수를 이미 다 썼는가.
  *
  * 지금 걸려 있는 것만 센다 — 게재 기간이 끝난 공고는 자리를 차지하지 않는다.
  * `빼고` 는 지금 다시 열려는 공고다. 자기 자신을 세면 다섯 번째 공고를 다시
@@ -62,7 +62,7 @@ export async function 무료한도넘음(companyId: string, 빼고?: string): Pr
         AND ($2::uuid IS NULL OR id <> $2::uuid)`,
     [companyId, 빼고 ?? null]
   );
-  return rows[0].n >= 베이직.공고수;
+  return rows[0].n >= 스타트.공고수;
 }
 
 /**
@@ -75,7 +75,7 @@ export async function 무료한도넘음(companyId: string, 빼고?: string): Pr
  * 알림을 아예 안 열게 된다.
  *
  * 유료 여부는 날짜 하나(companies.paid_until)로 보고, 무엇을 샀는지는 등급
- * (companies.plan)이 말한다. 기간이 지나면 저절로 베이직으로 떨어진다.
+ * (companies.plan)이 말한다. 기간이 지나면 저절로 스타트으로 떨어진다.
  * 라이트는 공고를 위한 상품이라 이 문을 열지 않는다 — 인재를 여는 것은
  * 스탠다드부터다(lib/companyPlans.ts 의 `인재열람`).
  */
