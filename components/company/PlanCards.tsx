@@ -27,7 +27,9 @@ const 아이콘 = { LIGHT: Zap, STANDARD: Star, PREMIUM: Crown } as const;
 export function 혜택목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
   return (
     <ul className="cs-plan-feat">
-      {혜택(칸).map((t) => <li key={t}>{t}</li>)}
+      {혜택(칸).map((r) => (
+        <li key={r.글} className={r.새것 ? "new" : undefined}>{r.글}</li>
+      ))}
     </ul>
   );
 }
