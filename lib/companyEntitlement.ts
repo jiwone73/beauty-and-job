@@ -1,5 +1,5 @@
 import pool from "@/lib/db";
-import { 플랜, 스타트, 플랜인가, 보관환산, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 플랜인가, type PlanId } from "@/lib/companyPlans";
 
 export type 이용권정보 = {
   /** 유료 기간 안에 있을 때의 등급. 기간이 지났거나 비면 null(= 스타트) */
@@ -44,39 +44,47 @@ export async function 이용권(companyId: string): Promise<이용권정보> {
   };
 }
 
-/** 세워 둔 기간. 만료됐으면 없는 것으로 본다. */
-export type 보관정보 = {
-  /** 보관한 일수. 아래 plan 기준이다 */
-  days: number;
-  /** 그 일수를 보관한 플랜 */
-  plan: PlanId | null;
-  /** 보관이 끝나는 날(YYYY-MM-DD) */
-  until: string | null;
-};
+/** 세워 둔 기간 — 상품 하나치 */
+export type 보관칸 = { days: number; until: string };
+/** 상품별 보관함. 만료된 칸은 빠진 채로 온다. */
+export type 보관함 = Partial<Record<PlanId, 보관칸>>;
 
-/**
- * 이 기업이 세워 둔 기간이 얼마나 있는가.
- *
- * 만료된 것은 0으로 돌려준다 — 부르는 쪽이 날짜를 또 견주지 않게 한다.
- * 칸에 값이 남아 있어도 만료일이 지났으면 없는 것이다.
- */
-export async function 보관(companyId: string): Promise<보관정보> {
-  const { rows } = await pool.query(
-    `SELECT kept_days, kept_plan, to_char(kept_until, 'YYYY-MM-DD') AS kept_until,
-            (kept_until IS NOT NULL AND kept_until >= CURRENT_DATE) AS 살아있음
-       FROM companies WHERE id = $1`,
-    [companyId]
-  );
-  const r = rows[0];
-  if (!r || !r.살아있음 || !플랜인가(r.kept_plan) || Number(r.kept_days) <= 0) {
-    return { days: 0, plan: null, until: null };
+/** 보관함 raw(jsonb)에서 살아 있는 칸만 추린다. */
+export function 보관읽기(raw: unknown, 오늘: string): 보관함 {
+  const 함: 보관함 = {};
+  if (!raw || typeof raw !== "object") return 함;
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (!플랜인가(k) || !v || typeof v !== "object") continue;
+    const { days, until } = v as { days?: unknown; until?: unknown };
+    const d = Number(days);
+    // 보관일이 지난 칸은 없는 것으로 본다. 지우지는 않는다 — 언제 무엇이
+    // 소멸했는지는 남아 있어야 나중에 설명할 수 있다.
+    if (d > 0 && typeof until === "string" && until >= 오늘) 함[k] = { days: d, until };
   }
-  return { days: Number(r.kept_days), plan: r.kept_plan as PlanId, until: r.kept_until };
+  return 함;
 }
 
-/** 이 플랜을 살 때 보관분이 며칠로 얹히는가. 없으면 0. */
-export function 보관더할일(보관: 보관정보, 살플랜: PlanId): number {
-  return 보관.plan ? 보관환산(보관.plan, 보관.days, 살플랜) : 0;
+/**
+ * 이 기업이 상품마다 며칠씩 세워 두었는가.
+ *
+ * 라이트에서 남은 것은 라이트로만 쓴다. 그래서 칸도 상품마다 따로다 —
+ * 하나로 합쳐 두면 라이트를 세워 둔 채 스탠다드를 세울 자리가 없다.
+ */
+export async function 보관(companyId: string): Promise<보관함> {
+  const { rows } = await pool.query(
+    `SELECT kept, to_char(CURRENT_DATE, 'YYYY-MM-DD') AS 오늘 FROM companies WHERE id = $1`,
+    [companyId]
+  );
+  return rows[0] ? 보관읽기(rows[0].kept, rows[0].오늘) : {};
+}
+
+/** 이 상품을 살 때 보관분이 며칠 얹히는가. 다른 상품 칸은 건드리지 않는다. */
+export const 보관더할일 = (함: 보관함, 살플랜: PlanId): number => 함[살플랜]?.days ?? 0;
+
+/** 보관함에 며칠을 더한 결과. 더한 칸은 만료일이 오늘부터 다시 센다. */
+export function 보관더하기(함: 보관함, plan: PlanId, days: number, 만료: string): 보관함 {
+  if (days <= 0) return 함;
+  return { ...함, [plan]: { days: (함[plan]?.days ?? 0) + days, until: 만료 } };
 }
 
 /**

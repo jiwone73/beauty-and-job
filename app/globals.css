@@ -15990,7 +15990,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   padding-bottom: 8px; border-bottom: 1px solid #1f1f22; }
 .pi-tb { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 .pi-tb th, .pi-tb td { border-bottom: 1px solid #f0f0f3; padding: 10px 12px; text-align: left; line-height: 1.55; }
-.pi-tb th { width: 130px; color: #555; font-weight: 400; background: #f7f7f8; white-space: nowrap; }
+.pi-tb th { width: 130px; color: #1f1f22; font-weight: 400; background: #f7f7f8; white-space: nowrap; }
 .pi-tb td.off { color: #8a8a90; }
 
 /* 기간은 고르는 것이지 읽는 것이 아니다. 값만 줄줄이 적어 두면 며칠짜리를
@@ -16030,7 +16030,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    어디쯤에 서는지는 그걸로 다 보인다 — 오히려 매장 이름이 또렷하면 그 매장이
    그 등급을 산 것처럼 읽힌다. */
 .pi-spot { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.pi-spot th { font-size: 14.5px; font-weight: 400; color: #555; text-align: left;
+.pi-spot th { font-size: 14.5px; font-weight: 400; color: #1f1f22; text-align: left;
   padding: 0 0 8px; border-bottom: 1px solid #1f1f22; }
 .pi-spot th + th, .pi-spot td + td { padding-left: 16px; }
 .pi-spot td { vertical-align: top; padding-top: 14px; }

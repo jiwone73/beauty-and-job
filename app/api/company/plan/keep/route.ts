@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 보관 } from "@/lib/companyEntitlement";
+import { 이용권, 보관읽기, 보관더하기, 오늘날짜 } from "@/lib/companyEntitlement";
 import { 플랜, 보관일수 } from "@/lib/companyPlans";
 
 /**
@@ -43,38 +43,27 @@ export async function POST(req: NextRequest) {
         `진행 중인 공고 ${걸림[0].n}건을 먼저 마감해 주세요. 공고를 모두 닫은 뒤에 보관할 수 있습니다.`, 409);
     }
 
-    // 보관은 상품마다 따로다. 이미 다른 상품의 보관분이 있으면 합칠 수 없다 —
-    // 칸은 하나뿐이라 합치면 먼저 세워 둔 것이 조용히 사라진다. 그것부터 쓰고
-    // 오시라고 돌려보낸다.
-    const 옛 = await 보관(auth!.sub);
-    if (옛.plan && 옛.plan !== plan) {
-      await client.query("ROLLBACK");
-      return err("KEEP_003",
-        `보관 중인 ${플랜[옛.plan].name} ${옛.days}일이 있습니다. 먼저 ${플랜[옛.plan].name}을 신청해 그 기간을 쓰신 뒤에 보관해 주세요.`, 409);
-    }
-    const 합 = 남은일 + 옛.days;
+    // 보관함은 상품마다 칸이 따로다. 라이트에서 남은 것은 라이트 칸에만 쌓인다.
+    const { rows: [행] } = await client.query(
+      `SELECT kept FROM companies WHERE id = $1 FOR UPDATE`, [auth!.sub]);
+    const 오늘 = 오늘날짜();
+    const 함 = 보관읽기(행?.kept, 오늘);
+    const 만료 = new Date(Date.parse(오늘 + "T00:00:00Z") + 보관일수 * 864e5).toISOString().slice(0, 10);
+    const 새함 = 보관더하기(함, plan, 남은일, 만료);
 
-    const { rows } = await client.query(
+    await client.query(
       `UPDATE companies
-          SET kept_days  = $2,
-              kept_plan  = $3,
-              kept_until = CURRENT_DATE + $4::int,
+          SET kept = $2::jsonb,
               -- 이용권은 여기서 끝난다. 어제로 밀어 두면 이용권() 이 스스로
               -- 스타트로 읽는다 — 등급 칸을 지울 필요가 없다.
               paid_until = CURRENT_DATE - 1,
               updated_at = now()
-        WHERE id = $1
-        RETURNING kept_days, to_char(kept_until, 'YYYY-MM-DD') AS kept_until`,
-      [auth!.sub, 합, plan, 보관일수]
+        WHERE id = $1`,
+      [auth!.sub, JSON.stringify(새함)]
     );
 
     await client.query("COMMIT");
-    return ok({
-      days: rows[0].kept_days,
-      plan,
-      planName: 플랜[plan].name,
-      until: rows[0].kept_until,
-    });
+    return ok({ plan, planName: 플랜[plan].name, days: 새함[plan]!.days, until: 만료 });
   } catch (e) {
     await client.query("ROLLBACK").catch(() => {});
     console.error("[company plan keep]", e);

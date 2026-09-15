@@ -180,9 +180,10 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
             보관일부터 {보관표기}이 지나면 자동으로 소멸합니다.
           </li>
           <li>
-            이용 중에 더 높은 상품을 신청하시면 남은 기간이 새 상품 기간으로 바뀌어
-            이어집니다. 예를 들어 {플랜.LIGHT.name} 10일이 남은 상태에서{" "}
-            {플랜.STANDARD.name} 30일을 신청하시면, 그날부터 {플랜.STANDARD.name}을 40일 쓰십니다.
+            이용 중에 다른 상품을 신청하시면 새 상품이 그날부터 시작하고, 쓰던 상품의
+            남은 기간은 그 상품으로 보관됩니다. 예를 들어 {플랜.LIGHT.name} 10일이 남은
+            상태에서 {플랜.STANDARD.name} 30일을 신청하시면, 그날부터{" "}
+            {플랜.STANDARD.name}을 30일 쓰시고 {플랜.LIGHT.name} 10일은 보관됩니다.
           </li>
         </ul>
       </section>

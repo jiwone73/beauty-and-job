@@ -236,11 +236,11 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     //   다섯을 한 높이로 늘어놓았더니 라이트·스탠다드·프리미엄이 배너광고와
     //   같은 종류의 물건처럼 보였다.
     plans: [
-      { id: "plans",          label: () => "채용공고", title: () => "채용공고 상품 안내", href: `${base}/plans` },
+      { id: "plans",          label: () => "채용공고 상품", title: () => "채용공고 상품 안내", href: `${base}/plans` },
       { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light`,    아래: true },
       { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard`, 아래: true },
       { id: "plan-premium",   label: () => "프리미엄", title: () => "프리미엄", href: `${base}/plans/premium`,  아래: true },
-      { id: "plans-ads",      label: () => "배너광고", title: () => "배너광고 상품 안내", href: `${base}/plans/ads` },
+      { id: "plans-ads",      label: () => "배너광고 상품", title: () => "배너광고 상품 안내", href: `${base}/plans/ads` },
       { id: "ads-main",       label: () => "메인페이지 노출", title: () => "메인페이지 노출 광고",
         href: `${base}/plans/ads/main`, 아래: true },
       { id: "ads-jobs",       label: () => "공고페이지 노출", title: () => "공고페이지 노출 광고",

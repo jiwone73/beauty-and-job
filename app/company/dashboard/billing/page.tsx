@@ -19,8 +19,8 @@ type 이용권 = {
   체험끝: string | null;
   체험중: boolean;
   체험남은일: number;
-  /** 세워 둔 기간 */
-  보관: { days: number; plan: PlanId | null; until: string | null };
+  /** 상품별로 세워 둔 기간 */
+  보관: { plan: PlanId; name: string; days: number; until: string }[];
   보관가능: boolean;
 };
 type 주문 = {
@@ -97,13 +97,13 @@ export default function CompanyBillingPage() {
           </Link>
         </div>
 
-        {it?.보관 && it.보관.days > 0 && it.보관.plan && (
-          <div className="co-bill-keep">
+        {it?.보관?.map((k) => (
+          <div key={k.plan} className="co-bill-keep">
             <span className="co-bill-keep-l">보관 중</span>
-            <b>{플랜[it.보관.plan].name} {it.보관.days}일</b>
-            <span className="co-bill-keep-t">{it.보관.until}까지 · 다음 신청 때 자동으로 더해집니다</span>
+            <b>{k.name} {k.days}일</b>
+            <span className="co-bill-keep-t">{k.until}까지 · {k.name}을 다시 신청하실 때 더해집니다</span>
           </div>
-        )}
+        ))}
         {it?.보관가능 && (
           <div className="co-bill-keep on">
             <span className="co-bill-keep-l">남은 기간 보관</span>

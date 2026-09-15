@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 이용권, 보관 } from "@/lib/companyEntitlement";
+import { 플랜 } from "@/lib/companyPlans";
 
 /**
  * 내 이용권 — 무엇을 언제까지 쓰는가, 그동안 얼마나 노출됐는가.
@@ -36,7 +37,10 @@ export async function GET(req: NextRequest) {
       진행중: r.진행중,
       노출: Number(r.노출),
       게재종료: r.먼저끝나는게재일,
-      보관: 세운것,
+      // 화면은 이름까지 받아야 「라이트 20일」을 그릴 수 있다.
+      보관: Object.entries(세운것).map(([plan, v]) => ({
+        plan, name: 플랜[plan as keyof typeof 플랜].name, days: v.days, until: v.until,
+      })),
       // 지금 보관할 수 있는가. 걸린 공고가 있으면 아직 채용 중이다.
       보관가능: !!plan && 남은일 > 0 && r.진행중 === 0,
     });
