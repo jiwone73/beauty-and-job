@@ -7,7 +7,7 @@ import { companyMeApi } from "@/lib/api/company";
 import StartJobModal from "@/components/company/StartJobModal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { 스타트 } from "@/lib/companyPlans";
+import { 스타트, 플랜 } from "@/lib/companyPlans";
 
 function CompanyJobNewForm() {
   const searchParams = useSearchParams();
@@ -116,7 +116,14 @@ function CompanyJobNewForm() {
         {무료남은 != null && (
           <p className={`co-quota${무료남은 === 0 ? " out" : ""}`}>
             {무료남은 === 0
-              ? <>무료 공고 {스타트.공고수}번을 모두 썼습니다. <Link href="/company/plans">이용권 신청하기 ›</Link></>
+              ? <>
+                  {/* 여기서 막힌 사람에게 필요한 것은 공고를 더 거는 일이다.
+                      요금제 넉 장을 다시 비교하게 하지 않고 그 일을 하는 상품
+                      하나로 바로 데려간다 — 인재 쪽에서 막힌 사람은 스탠다드로
+                      가는 것과 같은 규칙이다. */}
+                  무료 공고 {스타트.공고수}번을 모두 썼습니다.{" "}
+                  <Link href="/company/dashboard/plans/light">{플랜.LIGHT.name} 보기 ›</Link>
+                </>
               : <>무료 공고 {무료남은}번 남음 · 한 건당 {스타트.게재일}일 게재됩니다</>}
           </p>
         )}

@@ -13327,6 +13327,18 @@ button,
 .cs-ad-where { font-size: 12.5px; color: var(--cs); }
 .cs-ad-sum { font-size: 13px; color: #555; line-height: 1.5; word-break: keep-all; margin-top: 4px; }
 
+/* 막힌 자리의 안내 띠. 경고가 아니라 안내라 붉은색을 쓰지 않는다 —
+   사장님이 잘못한 것이 아니라 아직 안 산 것뿐이다. */
+.co-upsell { display: flex; align-items: center; gap: 8px; text-decoration: none;
+  background: #f7f7f8; border: 1px solid var(--card-line); border-radius: 10px;
+  padding: 11px 14px; margin: 0 0 14px; color: #555; font-size: 14px; }
+.co-upsell:hover { border-color: var(--color-primary); }
+.co-upsell svg { flex: none; color: var(--color-primary); }
+.co-upsell-t { flex: 1; min-width: 0; word-break: keep-all; }
+.co-upsell-t b { color: var(--color-primary); font-weight: 600; }
+.co-upsell-go { flex: none; display: inline-flex; align-items: center; gap: 2px;
+  font-size: 13.5px; color: var(--color-primary); font-weight: 600; }
+
 .cs-vat { text-align: center; font-size: 13px; color: #9a9aa0; margin: 26px 0 0; }
 /* 카드 판 바깥, 오른쪽 끝. 값 옆에 붙는 단서라 값이 선 쪽에 둔다. */
 .cs-vat.right { text-align: right; color: #555; margin: 10px 0 0; }

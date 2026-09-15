@@ -19,6 +19,8 @@ import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { shortSido } from "@/lib/regionShort";
 import { formatSalaryWon } from "@/lib/salary";
 import TalentCard from "@/components/company/TalentCard";
+import UpsellBar from "@/components/company/UpsellBar";
+import { 플랜 } from "@/lib/companyPlans";
 
 type JobTab = "OFFICE" | "STORE";
 
@@ -76,6 +78,9 @@ export default function TalentPage() {
   const [talents, setTalents]         = useState<TalentItem[]>([]);
   const [loading, setLoading]         = useState(true);
   const [total, setTotal]             = useState(0);
+  /** 인재 이름·연락처를 볼 수 있는가. 서버가 목록과 함께 알려 준다.
+   *  처음에는 true 로 두어 불러오는 동안 안내 띠가 깜빡이지 않게 한다. */
+  const [열람가능, set열람가능]        = useState(true);
 
   const [search, setSearch]                       = useState("");
   const [careerFilter, setCareerFilter]           = useState("전체");
@@ -236,6 +241,7 @@ export default function TalentPage() {
           set보낼사람(null);
         }
         setTotal(res.meta?.total ?? res.data.length);
+        set열람가능((res.meta as any)?.talentAccess !== false);
       }
     } catch (e) {
       console.error("[talent fetch]", e);
@@ -424,7 +430,15 @@ export default function TalentPage() {
         : t)));
       setProposeTarget(null);
     } catch (e: any) {
-      alert(e?.message || "제안 전송에 실패했습니다.");
+      // 못 보내는 까닭이 「아직 안 샀다」일 때는 알림창으로 끝내지 않는다 —
+      // 그 자리에서 무엇을 사면 되는지까지 데려다준다.
+      if (e?.code === "PROPOSAL_005") {
+        if (confirm(`채용 제안은 ${플랜.STANDARD.name}부터 보낼 수 있어요.\n상품을 볼까요?`)) {
+          router.push(`${base}/plans/standard`);
+        }
+      } else {
+        alert(e?.message || "제안 전송에 실패했습니다.");
+      }
     } finally {
       setProposeSending(false);
     }
@@ -903,6 +917,9 @@ export default function TalentPage() {
         </div>
       ) : (
         <div className="tal-list">
+          {/* 이름이 가려진 카드는 그 자체로 광고다 — 「여기 사람이 있는데 지금은
+              못 본다」. 여태 막히기만 하고 사러 가는 길이 없었다. */}
+          {!열람가능 && <UpsellBar 무엇="인재 이름·연락처" />}
           {/* 표에서 카드로. 표는 관리자 화면을 그대로 가져온 것이라 사람을 줄로
               읽게 만들었다. 채용공고 관리 카드와 같은 구조로 맞춘다 — 위에 이름과
               사진, 오른쪽에 할 일, 아랫줄에 연락처. */}
