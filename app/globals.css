@@ -13243,13 +13243,16 @@ button,
 .cs-plan-nm { font-size: 19px; color: #2b2b2e; margin: 0 0 6px; letter-spacing: -.3px;
   display: flex; align-items: center; gap: 7px; }
 .cs-plan-nm svg { flex: none; color: var(--cs); }
-/* 카드마다 설명 길이가 달라도 값 줄은 같은 높이에 서야 한다. 안쪽 여백을
-   줄이고 나니 제일 긴 것도 두 줄에 들어, 넉 장 중 가장 좁은 판(198px)에서
-   두 줄만큼만 잡아 둔다 — 더 잡아 두면 그만큼이 값 위의 빈자리가 된다. */
-.cs-plan-ln { font-size: 13.5px; color: #555; margin: 0 0 11px; line-height: 1.55; word-break: keep-all; min-height: 42px; }
-.cs-plan-pr { font-size: 27px; color: #2b2b2e; margin: 0; letter-spacing: -1px; line-height: 1.1; }
+/* 카드마다 설명 길이가 달라도 값 줄은 같은 높이에 서야 한다. 제일 긴 스탠다드가
+   가장 좁은 판(198px)에서 세 줄이라 그만큼만 잡아 둔다 — 더 잡으면 그대로 값
+   위의 빈자리가 되고, 덜 잡으면 스탠다드만 값이 23px 내려가 줄이 어긋난다. */
+.cs-plan-ln { font-size: 14.5px; color: #555; margin: 0 0 11px; line-height: 1.55; word-break: keep-all; min-height: 68px; }
+/* 기간은 값의 단서라 값 옆에 붙인다. 아래로 내리면 한 줄이 더 생기고, 값과
+   기간을 따로 읽게 된다. 바닥선을 맞춰야 숫자와 글자가 한 덩어리로 보인다. */
+.cs-plan-pr { font-size: 25px; color: #2b2b2e; margin: 0 0 20px; letter-spacing: -1px; line-height: 1.1;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 6px; }
 .cs-plan-pr i { font-size: 15px; font-style: normal; letter-spacing: -.2px; }
-.cs-plan-du { font-size: 13px; color: #555; margin: 6px 0 20px; }
+.cs-plan-du { font-size: 13px; color: #555; letter-spacing: -.2px; }
 .cs-plan-du.free { color: #9a9aa0; }
 .cs-plan-btn { display: flex; align-items: center; justify-content: center; height: 44px;
   border-radius: 9px; font-size: 14.5px; text-decoration: none; letter-spacing: -.3px;
