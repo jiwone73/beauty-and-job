@@ -53,7 +53,15 @@ export default function AdminOrdersPage() {
   useEffect(() => { 불러오기(); /* eslint-disable-next-line */ }, [상태]);
   useEffect(() => {
     fetch("/api/admin/companies?member=true", { headers: 머리() }).then((x) => x.json())
-      .then((r) => { if (r?.success && Array.isArray(r.data)) set기업들(r.data.map((c: any) => ({ id: c.id, company_name: c.company_name }))); })
+      .then((r) => {
+        // 이 API 는 { items: [...] } 로 돌려준다. 예전에 data 가 곧 배열인 줄 알고
+        // Array.isArray 로 걸렀더니 늘 거짓이라 기업 목록이 통째로 비어 있었다 —
+        // 자동완성이 안 뜨고 「넣기」는 「목록에 있는 기업을 골라 주세요」만 냈다.
+        const list = Array.isArray(r?.data) ? r.data : r?.data?.items;
+        if (r?.success && Array.isArray(list)) {
+          set기업들(list.map((c: any) => ({ id: c.id, company_name: c.company_name })));
+        }
+      })
       .catch(() => {});
   }, []);
 
