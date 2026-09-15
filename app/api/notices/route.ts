@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `SELECT id, type, title, target, is_pinned, published_at, created_at
+      `SELECT id, type, title, short_title, target, is_pinned, published_at, created_at
          FROM notices
         WHERE ${where.join(" AND ")}
         ORDER BY is_pinned DESC, COALESCE(published_at, created_at) DESC`,

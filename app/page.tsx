@@ -129,7 +129,11 @@ function Hero() {
       .then((r) => r.json())
       .then((res) => {
         const list = Array.isArray(res?.data) ? res.data : [];
-        set이벤트(list.find((n: any) => n.type === "event") || null);
+        // 메인 첫 화면은 일자리를 찾으러 온 사람이 먼저 본다. 기업 이벤트는
+        // 기업 서비스와 상품안내가 따로 맡으므로 여기서는 개인 것을 건다.
+        const 이벤트들 = list.filter((n: any) => n.type === "event");
+        set이벤트(이벤트들.find((n: any) => n.target === "user" || n.target === "all")
+                 || 이벤트들[0] || null);
         set공지(list.find((n: any) => n.type !== "event") || null);
       })
       .catch(() => {});
@@ -170,7 +174,8 @@ function Hero() {
           <span className="mt-hero-in">
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
             <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
-            <span className="mt-hero-sub">{이벤트?.title || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`}</span>
+            <span className="mt-hero-sub">{이벤트?.short_title || 이벤트?.title
+              || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`}</span>
           </span>
         </Link>
 

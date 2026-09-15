@@ -60,7 +60,11 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
   }, [id]);
 
   const 기본 = 원(것.가격[일수]);
+  // 온라인 신청이 닫혀 있으면 단추가 고객센터로 간다. 그때는 이름도 같이
+  // 바뀌어야 한다 — 「신청하기」를 눌렀는데 문의 화면이 뜨면 누른 사람은
+  // 자기가 잘못 누른 줄 안다.
   const 신청 = 팔림 ? `/company/plans/order?plan=${id}&days=${일수}` : "/support";
+  const 신청글 = 팔림 ? "신청하기" : "문의하기";
   // 이 상품이 목록에서 누구 사이에 서는가. 맨 위·맨 아래면 한쪽이 없다.
   const 자리 = 칸 === 3
     ? "목록 맨 위에 섭니다"
@@ -113,7 +117,7 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
               </p>
               {안엶
                 ? <span className="pi-btn off">{준비중}</span>
-                : <Link href={신청} className="pi-btn">신청하기</Link>}
+                : <Link href={신청} className="pi-btn">{신청글}</Link>}
             </div>
           </div>
         </div>
