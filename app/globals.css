@@ -13346,6 +13346,18 @@ button,
 .co-upsell-go { flex: none; display: inline-flex; align-items: center; gap: 2px;
   font-size: 13.5px; color: var(--color-primary); font-weight: 600; }
 
+/* 지금 하는 이벤트 한 줄. 상품을 보러 온 사람에게 「지금 사면 이런 게 있다」를
+   그 자리에서 말한다 — 문구는 공지사항에서 받아 온다. */
+.co-evtband { display: flex; align-items: center; gap: 8px; text-decoration: none;
+  background: linear-gradient(100deg, #f4f0fc 0%, #f7f4fe 100%);
+  border: 1px solid #e7e0f5; border-radius: 12px; padding: 12px 15px; margin: 0 0 18px;
+  color: #2b2b2e; font-size: 14.5px; }
+.co-evtband:hover { border-color: var(--color-primary); }
+.co-evtband svg { flex: none; color: var(--color-primary); }
+.co-evtband-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.co-evtband-go { flex: none; display: inline-flex; align-items: center; gap: 1px;
+  font-size: 13.5px; color: var(--color-primary); font-weight: 600; }
+
 .cs-vat { text-align: center; font-size: 13px; color: #9a9aa0; margin: 26px 0 0; }
 /* 카드 판 바깥, 오른쪽 끝. 값 옆에 붙는 단서라 값이 선 쪽에 둔다. */
 .cs-vat.right { text-align: right; color: #555; margin: 10px 0 0; }
@@ -15936,3 +15948,59 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   -webkit-line-clamp: 3; overflow: hidden; white-space: normal; word-break: keep-all; }
 .prop-sentpos { margin: 0 0 12px; font-size: 13px; color: var(--color-text); }
 .prop-sentpos b { font-weight: 400; color: var(--color-text-strong); }
+
+/* ===========================================
+   상품 안내 화면 (.pi) — 상품 하나를 자세히
+   색은 로고의 보라 하나와 무채색만 쓴다. 표와 실제 화면 캡처로 말하고
+   광고 문장을 쓰지 않는다.
+   =========================================== */
+.pi { max-width: 780px; margin: 0 auto; color: #555; font-size: 14px; }
+.pi-evt { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--color-primary); color: #fff; text-decoration: none;
+  font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 4px 4px 0 0; }
+.pi-evt span { font-weight: 400; opacity: .85; font-size: 12.5px; flex: none; }
+.pi-hd { border-bottom: 2px solid #1f1f22; padding: 22px 0 16px; }
+.pi-kind { font-size: 12px; color: var(--color-primary); font-weight: 700; margin: 0 0 6px; }
+.pi-nm { font-size: 26px; font-weight: 700; color: #1f1f22; margin: 0 0 7px; letter-spacing: -.5px; }
+.pi-ln { font-size: 14.5px; color: #555; margin: 0; line-height: 1.55; word-break: keep-all; }
+.pi-sum { display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  border: 1px solid var(--card-line); border-top: 0; padding: 18px 20px; }
+.pi-lbl { font-size: 12.5px; color: #8a8a90; margin: 0 0 4px; }
+.pi-amt { font-size: 26px; font-weight: 700; color: #1f1f22; letter-spacing: -.8px; margin: 0; line-height: 1.1; }
+.pi-amt i { font-size: 15px; font-style: normal; font-weight: 600; }
+.pi-note { font-size: 12.5px; color: #8a8a90; margin: 6px 0 0; }
+.pi-btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 28px;
+  background: var(--color-primary); color: #fff; font-size: 15px; font-weight: 700;
+  text-decoration: none; border-radius: 3px; white-space: nowrap; flex: none; }
+.pi-btn:hover { background: var(--cs-deep, #431a63); }
+.pi-btn.off { background: #ececf0; color: #8a8a90; cursor: default; }
+
+.pi-sec { margin-top: 34px; }
+.pi-st { font-size: 15.5px; font-weight: 700; color: #1f1f22; margin: 0 0 12px;
+  padding-bottom: 8px; border-bottom: 1px solid #1f1f22; }
+.pi-tb { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.pi-tb th, .pi-tb td { border-bottom: 1px solid #f0f0f3; padding: 10px 12px; text-align: left; line-height: 1.55; }
+.pi-tb th { width: 130px; color: #1f1f22; font-weight: 600; background: #f7f7f8; white-space: nowrap; }
+.pi-tb td.off { color: #8a8a90; }
+.pi-tb td.num { text-align: right; font-weight: 700; color: #1f1f22; width: 120px; }
+.pi-tb td.day { text-align: right; color: #8a8a90; width: 110px; }
+.pi-tb tr.on td { background: #fbfbfc; }
+.pi-tb tr.on td:first-child { font-weight: 700; color: #1f1f22; }
+.pi-mark { display: inline-block; border: 1px solid var(--color-primary); color: var(--color-primary);
+  border-radius: 2px; font-size: 11px; font-weight: 700; padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+
+/* 노출 자리는 그려서 설명하지 않고 실제 화면을 찍어 보여 준다. */
+.pi-shot { border: 1px solid var(--card-line); }
+.pi-shot img { display: block; width: 100%; }
+.pi-cap { font-size: 12px; color: #8a8a90; margin: 6px 0 18px; line-height: 1.5; }
+.pi-cap b { color: var(--color-primary); font-weight: 600; }
+
+.pi-warn { margin: 0; padding: 0; list-style: none; }
+.pi-warn li { font-size: 12.5px; color: #8a8a90; line-height: 1.75; padding-left: 11px; position: relative; }
+.pi-warn li::before { content: "·"; position: absolute; left: 2px; }
+
+.pi-foot { border-top: 1px solid var(--card-line); margin-top: 34px; padding: 18px 2px;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  position: sticky; bottom: 0; background: #fff; }
+.pi-fl { font-size: 12.5px; color: #8a8a90; }
+.pi-fl b { display: block; font-size: 15.5px; color: #1f1f22; font-weight: 700; margin-top: 2px; }

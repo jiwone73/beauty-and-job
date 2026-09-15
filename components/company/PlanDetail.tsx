@@ -2,112 +2,131 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { 플랜, 기간들, 비교칸, 원, 메인칸, 준비중, type PlanId } from "@/lib/companyPlans";
-import { 혜택목록 } from "@/components/company/PlanCards";
+import { 플랜, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, type PlanId } from "@/lib/companyPlans";
 
 /**
- * 플랜 하나를 자세히 — 무엇을 주는지 · 기간별 얼마인지 · 어디에 뜨는지.
+ * 상품 하나를 자세히 — 상품 안내서다.
  *
- * 로그인 전(기업서비스)과 로그인 후(기업 대시보드)가 같은 것을 본다. 두 군데에
- * 따로 적으면 값을 고칠 때 한쪽만 바뀐다 — 껍데기만 각자 두르고 알맹이는 하나다.
+ * 광고 문장을 쓰지 않는다. 다른 회사 공식 상품 페이지가 그렇듯 **항목과 내용**
+ * 으로 적고, 노출 자리는 말 대신 **실제 화면을 찍어** 보여 준다. 사장님이 여기서
+ * 확인하려는 것은 「무엇이 되고 무엇이 안 되는가」와 「얼마인가」 둘뿐이다.
+ *
+ * 안 되는 항목도 지우지 않고 「스탠다드부터」처럼 어디서 되는지까지 적는다 —
+ * 없다고만 하면 그럼 어디서 되는지 다시 물어야 한다.
+ *
+ * 로그인 전(기업서비스)과 로그인 후(대시보드)가 같은 것을 본다.
  */
+const 칸이름 = ["스타트", "라이트", "스탠다드", "프리미엄"];
+
 export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; 이름보임?: boolean }) {
   const 것 = 플랜[id];
-  const 메인 = 것.메인;
+  const 칸 = 비교칸[id];
 
-  // 통신판매업 신고 전에는 결제를 열 수 없다. 그동안은 고객센터로 받는다.
   const [팔림, set팔림] = useState(false);
   const [안엶, set안엶] = useState(false);
+  const [이벤트, set이벤트] = useState<{ id: string; title: string } | null>(null);
   useEffect(() => {
-    fetch("/api/plans").then((r) => r.json())
-      .then((r) => {
-        set팔림(!!r?.data?.sales);
-        set안엶(Array.isArray(r?.data?.open) && !r.data.open.includes(id));
-      }).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetch("/api/plans").then((r) => r.json()).then((r) => {
+      set팔림(!!r?.data?.sales);
+      set안엶(Array.isArray(r?.data?.open) && !r.data.open.includes(id));
+    }).catch(() => {});
+    fetch("/api/notices?type=event").then((r) => r.json())
+      .then((r) => set이벤트(r?.success && r.data?.[0] ? r.data[0] : null)).catch(() => {});
+  }, [id]);
+
+  const 기본 = 원(것.가격[30]);
 
   return (
-    <>
-      {/* 대시보드에서는 머리줄 제목이 이미 플랜 이름을 적고 있어 한 줄만 남긴다. */}
-      <section className="cs-wrap">
-        {이름보임 && <h2 className="cs-h2">{것.name}</h2>}
-        <p className="cs-lead" style={이름보임 ? undefined : { marginTop: 0 }}>{것.한줄}</p>
-      </section>
+    <div className="pi">
+      {이벤트 && (
+        <Link href={`/event?open=${이벤트.id}`} className="pi-evt">
+          {이벤트.title}
+          <span>자세히 ›</span>
+        </Link>
+      )}
 
-      <section className="cs-wrap">
-        <h3 className="cs-h3">이 플랜이 주는 것</h3>
-        <div className="cs-feat-wide">
-          <혜택목록 칸={비교칸[id]} />
+      <div className="pi-hd">
+        <p className="pi-kind">채용공고 상품</p>
+        {이름보임 && <h2 className="pi-nm">{것.name}</h2>}
+        <p className="pi-ln">{것.한줄}</p>
+      </div>
+
+      <div className="pi-sum">
+        <div>
+          <p className="pi-lbl">30일 기준</p>
+          <p className="pi-amt">{기본.replace("원", "")}<i>원</i></p>
+          <p className="pi-note">부가세 포함 · 7일 {원(것.가격[7])}부터</p>
         </div>
+        {안엶
+          ? <span className="pi-btn off">{준비중}</span>
+          : <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="pi-btn">신청하기</Link>}
+      </div>
+
+      <section className="pi-sec">
+        <h3 className="pi-st">제공 내역</h3>
+        <table className="pi-tb">
+          <tbody>
+            {사양.map((r) => {
+              const v = r.값[칸];
+              const 부터 = v ? null : 언제부터(r.값);
+              return (
+                <tr key={r.항목}>
+                  <th>{r.항목}</th>
+                  <td className={v ? undefined : "off"}>{v ?? (부터 ? `${부터}부터` : "미제공")}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </section>
 
-      <section className="cs-band">
-        <div className="cs-wrap">
-          <h3 className="cs-h3">기간별 요금</h3>
-          <div className="cs-tablewrap">
-            <table className="cs-per">
-              <tbody>
-                {기간들.map((d) => (
-                  <tr key={d}>
-                    <td>{d}일</td>
-                    <td>{원(것.가격[d])}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="cs-vat">모든 금액은 부가세 포함입니다</p>
+      <section className="pi-sec">
+        <h3 className="pi-st">이용 요금</h3>
+        <table className="pi-tb">
+          <tbody>
+            {기간들.map((d) => (
+              <tr key={d} className={d === 30 ? "on" : undefined}>
+                <td>{d}일{d === 30 && <span className="pi-mark">추천</span>}</td>
+                <td className="num">{원(것.가격[d])}</td>
+                <td className="day">1일 {Math.round(것.가격[d] / d).toLocaleString("ko-KR")}원</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="pi-sec">
+        <h3 className="pi-st">노출 위치</h3>
+        <div className="pi-shot"><img src="/images/plans/jobs-list.png" alt="채용공고 목록 화면" /></div>
+        <p className="pi-cap">
+          ▲ 채용공고 목록 — <b>{사양[2].값[칸]}</b>
+        </p>
+        <div className="pi-shot">
+          <img src={`/images/plans/main-${것.메인 === "PREMIUM" ? "premium" : "standard"}.png`} alt="메인 채용관 화면" />
         </div>
+        <p className="pi-cap">
+          ▲ 메인 채용관 — {사양[6].값[칸]
+            ? <b>{사양[6].값[칸]}</b>
+            : <>미포함 ({칸이름[2]}부터)</>}
+        </p>
       </section>
 
-      <section className="cs-wrap">
-        <h3 className="cs-h3">노출 자리</h3>
-        <div className="cs-expo">
-          {메인 && (
-            <div className="cs-mock">
-              <p className="cs-mock-cap">메인 화면</p>
-              <p className="cs-mock-lab">
-                {것.name} 채용관 · {메인칸[메인].열}칸 × {메인칸[메인].줄}줄
-              </p>
-              <div className={`cs-cells c${메인칸[메인].열}`}>
-                {Array.from({ length: 메인칸[메인].열 }).map((_, i) => (
-                  <span key={i} className={`cs-cell ${메인 === "PREMIUM" ? "p" : "s"}`} />
-                ))}
-              </div>
-              <p className="cs-mock-note">5초마다 바뀌며, 덜 노출된 공고가 먼저 앞자리에 섭니다</p>
-            </div>
-          )}
-          <div className="cs-mock">
-            <p className="cs-mock-cap">검색 결과</p>
-            <div className="cs-slist">
-              <span className={`cs-srow p${id === "PREMIUM" ? " me" : ""}`}><i>프리미엄</i>최상단</span>
-              <span className={`cs-srow s${id === "STANDARD" ? " me" : ""}`}><i>스탠다드</i>상단</span>
-              <span className={`cs-srow${id === "LIGHT" ? " me" : ""}`}>라이트 · 일반</span>
-              <span className="cs-srow">스타트 · 일반</span>
-            </div>
-            <p className="cs-mock-note">굵게 표시된 줄이 이 플랜의 자리입니다</p>
-          </div>
-        </div>
+      <section className="pi-sec">
+        <h3 className="pi-st">유의사항</h3>
+        <ul className="pi-warn">
+          <li>무통장입금으로 접수하며, 입금 확인일부터 기산합니다.</li>
+          <li>자동 결제·자동 연장은 없습니다. 종료 3일 전 알림을 보내드립니다.</li>
+          <li>미사용 시 7일 이내 전액 환불, 이용 후에는 잔여 기간을 일할 계산해 환불합니다.</li>
+          <li>이용 중 상위 상품 신청 시 남은 기간에 이어서 적용됩니다.</li>
+        </ul>
       </section>
 
-      <section className="cs-wrap cs-center">
-        {안엶 ? (
-          // 이력서가 쌓이기 전에는 인재를 파는 상품을 열지 않는다. 돈을 받고
-          // 열었는데 볼 사람이 없으면 그게 첫 환불이다.
-          <>
-            <span className="cs-btn-fill lg off">{준비중}</span>
-            <p className="cs-vat" style={{ marginTop: 12 }}>
-              인재 이력서가 쌓이는 대로 엽니다. 그동안은 라이트로 공고를 걸어 두세요.
-            </p>
-          </>
-        ) : (
-          <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="cs-btn-fill lg">
-            {팔림 ? `${것.name} 신청하기` : "고객센터 문의하기"} <ArrowRight size={15} />
-          </Link>
-        )}
-      </section>
-    </>
+      <div className="pi-foot">
+        <span className="pi-fl">30일 기준<b>{안엶 ? 준비중 : 기본}</b></span>
+        {안엶
+          ? <span className="pi-btn off">{준비중}</span>
+          : <Link href={팔림 ? `/company/plans/order?plan=${id}` : "/support"} className="pi-btn">신청하기</Link>}
+      </div>
+    </div>
   );
 }

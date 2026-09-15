@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Plus, Minus, ArrowRight } from "lucide-react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import PlanCards from "@/components/company/PlanCards";
+import EventBand from "@/components/company/EventBand";
 import { 요금제FAQ } from "@/lib/companyPlans";
 
 /**
@@ -20,6 +21,7 @@ export default function CompanyDashboardPlansPage() {
   return (
     <CompanyLayout activePage="plans">
       <div className="co-plans">
+        <EventBand />
         <PlanCards 안쪽 />
 
         <h2 className="cs-h2" style={{ marginTop: 56 }}>자주 묻는 질문</h2>
