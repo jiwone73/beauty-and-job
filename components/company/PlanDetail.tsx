@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { 플랜, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 상품 하나를 자세히 — 상품 안내서다.
@@ -16,7 +16,24 @@ import { 플랜, 기간들, 비교칸, 사양, 언제부터, 원, 준비중, typ
  *
  * 로그인 전(기업서비스)과 로그인 후(대시보드)가 같은 것을 본다.
  */
-const 칸이름 = ["스타트", "라이트", "스탠다드", "프리미엄"];
+const 칸이름 = [스타트.name, 플랜.LIGHT.name, 플랜.STANDARD.name, 플랜.PREMIUM.name];
+
+/**
+ * 목록 화면(list-full.png) 위에 그리는 구간 띠.
+ *
+ * 노출 자리를 말로 적으면 「상단」과 「최상단」이 얼마나 다른지 알 수 없다.
+ * 화면을 통째로 찍어 두고 그 위에 구간만 그린다 — 줄여 놓으면 글자는 안
+ * 읽히지만, 산 상품이 **화면 어디쯤에** 서는지는 그걸로 다 보인다.
+ *
+ * 위·높이는 그 캡처에서 실제 카드 줄이 끝나는 자리를 재서 넣은 값(%)이다.
+ * 캡처를 다시 찍으면 이 값도 같이 본다.
+ */
+const 구간: { 칸: 0 | 1 | 2 | 3; 위: number; 높이: number }[] = [
+  { 칸: 3, 위: 9.2, 높이: 14.8 },
+  { 칸: 2, 위: 24.0, 높이: 29.5 },
+  { 칸: 1, 위: 53.5, 높이: 29.6 },
+  { 칸: 0, 위: 83.1, 높이: 13.9 },
+];
 
 export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; 이름보임?: boolean }) {
   const 것 = 플랜[id];
@@ -24,27 +41,26 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
 
   const [팔림, set팔림] = useState(false);
   const [안엶, set안엶] = useState(false);
-  const [이벤트, set이벤트] = useState<{ id: string; title: string } | null>(null);
   useEffect(() => {
     fetch("/api/plans").then((r) => r.json()).then((r) => {
       set팔림(!!r?.data?.sales);
       set안엶(Array.isArray(r?.data?.open) && !r.data.open.includes(id));
     }).catch(() => {});
-    fetch("/api/notices?type=event").then((r) => r.json())
-      .then((r) => set이벤트(r?.success && r.data?.[0] ? r.data[0] : null)).catch(() => {});
   }, [id]);
 
   const 기본 = 원(것.가격[30]);
+  // 이 상품이 목록에서 누구 사이에 서는가. 맨 위·맨 아래면 한쪽이 없다.
+  // 확대해서 보여 줄 두 줄 — 이 상품 구간과 바로 윗 구간의 경계다.
+  // 프리미엄은 위가 없으니 아랫 경계를 본다.
+  const 확대: { 칸: 0 | 1 | 2 | 3 }[] = 칸 === 3
+    ? [{ 칸: 3 }, { 칸: 2 }]
+    : [{ 칸: (칸 + 1) as 1 | 2 | 3 }, { 칸 }];
+  const 자리 = 칸 === 3
+    ? "목록 맨 위"
+    : `${칸이름[칸 + 1]} 구간 아래, ${칸이름[칸 - 1]} 구간 위`;
 
   return (
     <div className="pi">
-      {이벤트 && (
-        <Link href={`/event?open=${이벤트.id}`} className="pi-evt">
-          {이벤트.title}
-          <span>자세히 ›</span>
-        </Link>
-      )}
-
       <div className="pi-hd">
         <p className="pi-kind">채용공고 상품</p>
         {이름보임 && <h2 className="pi-nm">{것.name}</h2>}
@@ -97,18 +113,53 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
 
       <section className="pi-sec">
         <h3 className="pi-st">노출 위치</h3>
-        <div className="pi-shot"><img src="/images/plans/jobs-list.png" alt="채용공고 목록 화면" /></div>
-        <p className="pi-cap">
-          ▲ 채용공고 목록 — <b>{사양[2].값[칸]}</b>
-        </p>
-        <div className="pi-shot">
-          <img src={`/images/plans/main-${것.메인 === "PREMIUM" ? "premium" : "standard"}.png`} alt="메인 채용관 화면" />
+        <div className="pi-where">
+          <div>
+            <div className="pi-list">
+              <img src="/images/plans/list-full.png" alt="전체 채용공고 목록 화면" />
+              <div className="pi-tiers">
+                {구간.map((t) => (
+                  <div key={t.칸} className={`pi-tier${t.칸 === 칸 ? " on" : ""}`}
+                       style={{ top: `${t.위}%`, height: `${t.높이}%` }}>
+                    <span>{칸이름[t.칸]} 구간</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="pi-cap">▲ 전체 채용공고 목록</p>
+          </div>
+          <div>
+            <div className="pi-list">
+              <img src="/images/plans/list-zoom.png" alt="목록에서 구간이 바뀌는 자리" />
+              <div className="pi-tiers">
+                {확대.map((t, i) => (
+                  <div key={t.칸} className={`pi-tier${t.칸 === 칸 ? " on" : ""}`}
+                       style={{ top: `${i * 50}%`, height: "50%" }}>
+                    <span>{칸이름[t.칸]} 구간</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="pi-cap">▲ 구간이 바뀌는 자리</p>
+            <p className="pi-where-t">
+              목록은 상품 순서로 줄을 세웁니다. {것.name} 공고는 <b>{자리}</b>에 서고,
+              같은 구간 안에서는 최근 등록 순입니다.
+            </p>
+          </div>
         </div>
-        <p className="pi-cap">
-          ▲ 메인 채용관 — {사양[6].값[칸]
-            ? <b>{사양[6].값[칸]}</b>
-            : <>미포함 ({칸이름[2]}부터)</>}
-        </p>
+
+        {사양[6].값[칸] ? (
+          <>
+            <div className="pi-shot">
+              <img src={`/images/plans/main-${것.메인 === "PREMIUM" ? "premium" : "standard"}.png`} alt="메인 채용관 화면" />
+            </div>
+            <p className="pi-cap">▲ 메인 화면 채용관 — <b>{사양[6].값[칸]}</b></p>
+          </>
+        ) : (
+          <p className="pi-cap">
+            메인 화면 채용관에는 노출되지 않습니다 — 메인 노출은 {칸이름[2]}부터입니다.
+          </p>
+        )}
       </section>
 
       <section className="pi-sec">
