@@ -25,6 +25,7 @@ import {
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
+import { 오픈일글 } from "@/lib/launchPlan";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 import { mapJob } from "@/lib/jobCard";
@@ -169,7 +170,7 @@ function Hero() {
           <span className="mt-hero-in">
             <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
             <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
-            <span className="mt-hero-sub">{이벤트?.title || "10월 1일 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요."}</span>
+            <span className="mt-hero-sub">{이벤트?.title || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`}</span>
           </span>
         </Link>
 

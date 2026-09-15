@@ -4,6 +4,7 @@ import Link from "next/link";
 import { RefreshCw } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { TEST_CASES, TEST_TEAM, type Area } from "@/lib/testCases";
+import { 오픈일 } from "@/lib/launchPlan";
 
 // 클로드 테스트팀 근무현황 — 알바 근무현황과 같은 얼개.
 //
@@ -45,7 +46,7 @@ export default function TestTeamPage() {
   };
   useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const 남은날 = Math.max(0, Math.ceil((new Date("2026-10-01T00:00:00+09:00").getTime() - Date.now()) / 86400000));
+  const 남은날 = Math.max(0, Math.ceil((new Date(오픈일 + "T00:00:00+09:00").getTime() - Date.now()) / 86400000));
   const 결과맵 = useMemo(() => Object.fromEntries(runs.map((r) => [r.case_id, r])), [runs]);
 
   const 조별 = useMemo(() => TEST_TEAM.map((m) => {

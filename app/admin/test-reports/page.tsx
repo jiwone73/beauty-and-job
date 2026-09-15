@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { TEST_CASES, AREAS, type Area } from "@/lib/testCases";
+import { 오픈일, 오픈일글 } from "@/lib/launchPlan";
 
 // 테스트 리포트 — 왼쪽에서 고르고 오른쪽에서 본다(공지사항과 같은 짜임).
 //
@@ -64,8 +65,8 @@ export default function TestReportsPage() {
       .catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 오픈까지 며칠 남았나 — 목표일 2026-10-01.
-  const 남은날 = Math.max(0, Math.ceil((new Date("2026-10-01T00:00:00+09:00").getTime() - Date.now()) / 86400000));
+  // 오픈까지 며칠 남았나 — 목표일은 lib/launchPlan.ts 가 갖고 있다.
+  const 남은날 = Math.max(0, Math.ceil((new Date(오픈일 + "T00:00:00+09:00").getTime() - Date.now()) / 86400000));
 
   const 결과맵 = useMemo(() => Object.fromEntries(runs.map((r) => [r.case_id, r.result])), [runs]);
   // 아직 못 도는 것(PG·요금제 대기)은 분모에서 뺀다. 넣어 두면 진행률이 영영
@@ -122,7 +123,7 @@ export default function TestReportsPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="admin-stat-grid">
             {[
-              { label: "오픈까지", value: `D-${남은날}`, sub: "10월 1일" },
+              { label: "오픈까지", value: `D-${남은날}`, sub: 오픈일글() },
               { label: "테스트 케이스", value: `${해본것} / ${전체}`, sub: `안 해본 것 ${전체 - 해본것}건` },
               { label: "정해야 할 것", value: String(counts.open ?? 0), sub: "사람이 골라야 진행됨" },
               { label: "기다리는 것", value: String(기다림.length), sub: "PG·요금제가 정해져야 돌림" },

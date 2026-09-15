@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
-  LAUNCH_TASKS, GROUPS, GROUP_COLOR, CRITICAL_PATH, 오픈일, 일정시작, 연휴, 영업일,
+  LAUNCH_TASKS, GROUPS, GROUP_COLOR, CRITICAL_PATH, 오픈일, 오픈일글, 일정시작, 연휴, 영업일,
   type LaunchTask,
 } from "@/lib/launchPlan";
 
@@ -83,7 +83,7 @@ export default function LaunchPage() {
 
         <div className="admin-stat-grid">
           {[
-            { label: "오픈까지", value: `D-${남은날}`, sub: "2026년 10월 1일" },
+            { label: "오픈까지", value: `D-${남은날}`, sub: 오픈일글(true) },
             { label: "남은 영업일", value: `${남은영업일}일`, sub: `추석 ${짧게(연휴.start)}~${짧게(연휴.end)} 제외` },
             { label: "끝난 일", value: `${센다("done")} / ${LAUNCH_TASKS.length}`, sub: `하는 중 ${센다("doing")}` },
             { label: "가장 긴 사슬 여유", value: `${사슬여유}일`, sub: "여기가 밀리면 오픈이 밀린다" },
