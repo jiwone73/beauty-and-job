@@ -7,13 +7,14 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE, SALARY_OFFICE } from "@/components/FilterSheet";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { shortSido } from "@/lib/regionShort";
+import AdBanner from "@/components/ads/AdBanner";
 import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Bookmark, ChevronDown, ChevronRight, RotateCcw, X } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
-import { getJobSubGroups } from "@/lib/data/jobGroups";
+import { getJobSubGroups, getGroupOfItem } from "@/lib/data/jobGroups";
 import JobCard from "@/components/JobCard";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline } from "@/lib/jobFormat";
@@ -272,6 +273,16 @@ function JobsPageInner() {
   const benefitOptions = curatedBenefits;
   // 사이드바 직군 목록은 매장/오피스에 따라 통째로 갈린다(매장 8 · 오피스 5).
   const 대분류목록 = jobTypeFilter === "오피스" ? OFFICE_JOB_GROUPS : STORE_JOB_GROUPS;
+  /** 지금 고른 직군의 대분류 하나. 여럿 골랐어도 첫 번째 것을 쓴다 — 배너는 한 장이다.
+   *  아무것도 안 골랐으면 빈 값이고, 그때는 직군을 안 가리는 배너가 선다. */
+  const 고른대분류 = useMemo(() => {
+    const t = jobTypeFilter === "오피스" ? "OFFICE" : "STORE";
+    for (const x of selectedJobs) {
+      const g = getGroupOfItem(t as any, x);
+      if (g) return g;
+    }
+    return "";
+  }, [selectedJobs, jobTypeFilter]);
   // 지금 몇 가지가 걸려 있는지. 0 이면 초기화 버튼을 눌러도 바뀔 것이 없다.
   const 걸린조건 = selectedRegions.length + selectedJobs.length + selectedBenefits.length
     + (selectedEmployment !== "고용형태 전체" ? 1 : 0)
@@ -472,6 +483,10 @@ function JobsPageInner() {
         </aside>
 
         <div className="jobs-main">
+        {/* 파는 배너 자리. 고른 직군에 맞는 배너가 있으면 그것이, 없으면 직군을
+            안 가리는 배너가 뜬다. 아무것도 안 걸렸으면 자리 자체가 안 생긴다 —
+            직군을 고르지 않은 화면에도 같은 자리가 선다. */}
+        <AdBanner slot="jobs" group={고른대분류 || undefined} />
         <div className="jobs-head">
           <b>{jobTypeFilter} 채용공고</b>
           <span>{총건수}건</span>

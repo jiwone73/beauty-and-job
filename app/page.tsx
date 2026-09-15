@@ -4,6 +4,7 @@ import { jobCompanyName } from "@/lib/companyName";
 import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
+import AdBanner from "@/components/ads/AdBanner";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { workTypeLabel } from "@/lib/constants";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
@@ -153,6 +154,10 @@ function Hero() {
   return (
     <section className="mainTop">
       <div className="container">
+
+        {/* 0. 파는 배너 자리. 걸린 것이 없으면 자리 자체가 안 생기므로, 안 팔린
+            동안에는 지금 화면 그대로다. */}
+        <AdBanner slot="main" />
 
         {/* 1. 사진 배너 — 1320x190. 문구는 공지에서 받아 관리자가 고칠 수 있다. */}
         <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/company"} className="mt-hero">
