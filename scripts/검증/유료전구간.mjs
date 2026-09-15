@@ -53,6 +53,18 @@ console.log('\n1. 베이직(무료)')
     `SELECT to_char(MIN(listed_until),'YYYY-MM-DD') listed_until, COUNT(*)::int n
        FROM job_postings WHERE company_id=$1 AND status='ACTIVE'`, [기업])
   본다('게재 종료일이 등록일 + 7일', listed_until === 날(7), `${listed_until} vs ${날(7)} (${n}건)`)
+
+  const [{ 쓴것 }] = await q(`SELECT free_posts_used AS 쓴것 FROM companies WHERE id=$1`, [기업])
+  본다('무료 다섯 장을 다 썼다고 적힌다', 쓴것 === 5, String(쓴것))
+
+  // 마감해도 자리가 돌아오지 않는다 — 소진되는 횟수다.
+  const [닫을것] = await q(`SELECT id FROM job_postings WHERE company_id=$1 LIMIT 1`, [기업])
+  await 부른다(`/api/company/jobs/${닫을것.id}`, { method: 'PATCH', token: 기업토큰, body: { status: 'CLOSED' } })
+  const 또 = await 공고내기(9)
+  본다('마감해도 무료 자리는 안 돌아온다', 또.status === 403 && 또.code === 'PLAN_001', `${또.status} ${또.code}`)
+  await 부른다(`/api/company/jobs/${닫을것.id}`, { method: 'PATCH', token: 기업토큰, body: { status: 'ACTIVE' } })
+  const [{ 쓴것2 }] = await q(`SELECT free_posts_used AS 쓴것2 FROM companies WHERE id=$1`, [기업])
+  본다('마감한 것을 다시 열 때는 한 장을 더 쓰지 않는다', 쓴것2 === 5, String(쓴것2))
 }
 
 // ── 2. 주문 ────────────────────────────────────────────────────────
@@ -201,7 +213,7 @@ console.log('\n7. 만료')
   await q(`UPDATE job_postings SET listed_until = CURRENT_DATE - 1 WHERE company_id=$1`, [기업])
 
   const p = await 부른다('/api/company/me/plan', { token: 기업토큰 })
-  본다('이용권이 베이직으로 떨어진다', p.data?.plan === null, JSON.stringify(p.data))
+  본다('이용권이 스타트로 떨어진다', p.data?.plan === null, JSON.stringify(p.data))
   본다('진행 중 공고가 0건으로 센다', p.data?.진행중 === 0, String(p.data?.진행중))
 
   const [v] = await q(`SELECT COUNT(*)::int n FROM v_active_jobs WHERE company_id=$1`, [기업])
@@ -216,25 +228,44 @@ console.log('\n7. 만료')
        JSON.stringify(한명 && { name: 한명.name }))
 
   const 새공고 = await 공고내기(7)
-  본다('만료 뒤에는 다시 공고를 걸 수 있다(5건 한도가 새로 산다)', 새공고.ok === true, `${새공고.status} ${새공고.code}`)
+  본다('무료 다섯 장을 다 썼으면 만료 뒤에도 못 건다', 새공고.status === 403 && 새공고.code === 'PLAN_001',
+       `${새공고.status} ${새공고.code}`)
+
+  // 한 장을 돌려주면 다시 걸리고, 그 공고는 7일짜리다.
+  await q(`UPDATE companies SET free_posts_used = free_posts_used - 1 WHERE id=$1`, [기업])
+  const 다시 = await 공고내기(8)
+  본다('한 장이 남아 있으면 걸린다', 다시.ok === true, `${다시.status} ${다시.code}`)
   const [j] = await q(`SELECT to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings
                         WHERE company_id=$1 ORDER BY created_at DESC LIMIT 1`, [기업])
-  본다('그 공고는 다시 7일짜리다', j.lu === 날(7), `${j.lu} vs ${날(7)}`)
+  본다('그 공고는 7일짜리다', j.lu === 날(7), `${j.lu} vs ${날(7)}`)
 }
 
 
 // ── 8. 뒷문 ────────────────────────────────────────────────────────
 console.log('\n8. 뒷문')
 {
-  // 임시저장으로 넣고 상태만 ACTIVE 로 바꾸면 게재 기간과 5건 한도를 건너뛰는가.
+  // 임시저장으로 넣고 상태만 ACTIVE 로 바꾸면 게재 기간과 무료 한도를 건너뛰는가.
+  const [{ 넣기전 }] = await q(`SELECT free_posts_used AS 넣기전 FROM companies WHERE id=$1`, [기업])
   const d = await 부른다('/api/company/jobs', { method: 'POST', token: 기업토큰,
     body: { title: `${표시} 임시저장`, job_type: 'STORE', status: 'DRAFT' } })
   const 임시 = d.data?.id
+  const [{ 넣은뒤 }] = await q(`SELECT free_posts_used AS 넣은뒤 FROM companies WHERE id=$1`, [기업])
+  본다('임시저장을 넣는 것만으로는 한 장도 안 쓴다', 넣은뒤 === 넣기전, `${넣기전} → ${넣은뒤}`)
+
+  // 자리가 없으면 펴는 것부터 막힌다.
+  await q(`UPDATE companies SET free_posts_used = $2 WHERE id=$1`, [기업, 5])
+  const 막힘 = await 부른다(`/api/company/jobs/${임시}`, { method: 'PATCH', token: 기업토큰, body: { status: 'ACTIVE' } })
+  본다('무료 자리가 없으면 임시저장도 못 편다', 막힘.status === 403 && 막힘.code === 'PLAN_001',
+       `${막힘.status} ${막힘.code}`)
+
+  await q(`UPDATE companies SET free_posts_used = $2 WHERE id=$1`, [기업, 4])
   const 펴기 = await 부른다(`/api/company/jobs/${임시}`, { method: 'PATCH', token: 기업토큰,
     body: { status: 'ACTIVE' } })
   const [dj] = await q(`SELECT status::text status, to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings WHERE id=$1`, [임시])
   본다('임시저장을 펴면 게재 종료일이 붙는다', dj?.lu != null,
        `status=${dj?.status} listed_until=${dj?.lu} (${펴기.status})`)
+  const [{ 펴고쓴것 }] = await q(`SELECT free_posts_used AS 펴고쓴것 FROM companies WHERE id=$1`, [기업])
+  본다('펼 때 한 장을 쓴다', 펴고쓴것 === 5, `4 → ${펴고쓴것}`)
 
   // 마감한 공고를 다시 여는 경우.
   const [되살릴것] = await q(`SELECT id FROM job_postings WHERE company_id=$1 AND status='ACTIVE' LIMIT 1`, [기업])

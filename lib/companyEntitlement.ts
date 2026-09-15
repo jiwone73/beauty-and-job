@@ -48,21 +48,41 @@ export function 게재종료일(plan: PlanId | null, paidUntil: string | null): 
 }
 
 /**
- * 무료(스타트)가 걸 수 있는 건수를 이미 다 썼는가.
+ * 무료로 공고를 한 번 올린다 — 남았으면 한 장 쓰고 true.
  *
- * 지금 걸려 있는 것만 센다 — 게재 기간이 끝난 공고는 자리를 차지하지 않는다.
- * `빼고` 는 지금 다시 열려는 공고다. 자기 자신을 세면 다섯 번째 공고를 다시
- * 열 수 없다.
+ * 스타트의 다섯 건은 **평생 다섯 번**이다. 진행 중인 공고만 세던 때에는
+ * 이레 뒤 게재가 끝나면 자리가 다시 비어 무료로 끝없이 올릴 수 있었다.
+ *
+ * 공고 행을 세지 않고 기업에 쓴 횟수를 적어 두는 까닭은, 행을 세면 공고를
+ * 지웠을 때 횟수가 되살아나기 때문이다.
+ *
+ * 세는 것과 쓰는 것을 한 문장으로 한다 — 따로 하면 동시에 두 건을 올릴 때
+ * 둘 다 검사를 통과한다.
  */
-export async function 무료한도넘음(companyId: string, 빼고?: string): Promise<boolean> {
-  const { rows } = await pool.query(
-    `SELECT COUNT(*)::int AS n FROM job_postings
-      WHERE company_id = $1 AND status = 'ACTIVE'
-        AND (listed_until IS NULL OR listed_until >= CURRENT_DATE)
-        AND ($2::uuid IS NULL OR id <> $2::uuid)`,
-    [companyId, 빼고 ?? null]
+export async function 무료공고한장(companyId: string): Promise<boolean> {
+  const { rowCount } = await pool.query(
+    `UPDATE companies SET free_posts_used = free_posts_used + 1, updated_at = now()
+      WHERE id = $1 AND free_posts_used < $2`,
+    [companyId, 스타트.공고수]
   );
-  return rows[0].n >= 스타트.공고수;
+  return (rowCount ?? 0) > 0;
+}
+
+/** 써 둔 한 장을 돌려준다 — 공고를 실제로 넣지 못했을 때. */
+export async function 무료공고되돌리기(companyId: string): Promise<void> {
+  await pool.query(
+    `UPDATE companies SET free_posts_used = GREATEST(0, free_posts_used - 1) WHERE id = $1`,
+    [companyId]
+  ).catch(() => { /* 되돌리기에 실패해도 공고 등록 응답을 가리지 않는다 */ });
+}
+
+/** 무료로 몇 장 남았는가. 화면에 보여 주기 위한 값. */
+export async function 무료남은장(companyId: string): Promise<number> {
+  const { rows } = await pool.query(
+    `SELECT GREATEST(0, $2 - free_posts_used)::int AS n FROM companies WHERE id = $1`,
+    [companyId, 스타트.공고수]
+  );
+  return rows[0]?.n ?? 0;
 }
 
 /**

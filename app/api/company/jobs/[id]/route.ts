@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 게재종료일, 무료한도넘음 } from "@/lib/companyEntitlement";
+import { 이용권, 게재종료일, 무료공고한장 } from "@/lib/companyEntitlement";
 import { 한도안내 } from "@/lib/companyPlans";
 
 // 공고 단건 조회
@@ -99,7 +99,9 @@ export async function PATCH(
     if (지금.rowCount === 0) return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);
     if (지금.rows[0].status !== "ACTIVE") {
       const { plan, paidUntil } = await 이용권(auth!.sub);
-      if (!plan && (await 무료한도넘음(auth!.sub, params.id))) {
+      // 임시저장을 펴는 것은 처음 거는 것이라 무료 한 장을 쓴다. 마감한 것을
+      // 다시 여는 것은 이미 쓴 자리라 또 세지 않는다.
+      if (!plan && 지금.rows[0].status === "DRAFT" && !(await 무료공고한장(auth!.sub))) {
         return err("PLAN_001", 한도안내, 403);
       }
       updates.push(`listed_until = $${idx++}::date`);

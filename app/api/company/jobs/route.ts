@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
-import { 이용권, 게재종료일, 무료한도넘음 } from '@/lib/companyEntitlement'
+import { 이용권, 게재종료일, 무료공고한장, 무료공고되돌리기 } from '@/lib/companyEntitlement'
 import { 한도안내 } from '@/lib/companyPlans'
 
 // 내 공고 목록
@@ -89,18 +89,21 @@ export async function POST(req: NextRequest) {
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
-  // 무료(스타트)는 진행 중 공고를 다섯 건까지만 건다. 이미 그보다 많이 올려 둔
-  // 곳은 그대로 두고 새로 거는 것만 막는다 — 어제까지 보이던 공고가 안내 없이
-  // 사라지면 안 된다. 임시저장은 목록에 안 뜨므로 세지 않는다.
+  // 무료(스타트)는 평생 다섯 번이다. 임시저장은 아직 건 것이 아니라 세지 않는다.
+  // 자리를 먼저 집어 두고 넣는다 — 넣고 나서 세면 동시에 들어온 두 건이
+  // 둘 다 통과한다.
   const { plan, paidUntil } = await 이용권(auth!.sub)
-  if (!plan && jobStatus === 'ACTIVE' && await 무료한도넘음(auth!.sub)) {
+  const 무료로걺 = !plan && jobStatus === 'ACTIVE'
+  if (무료로걺 && !(await 무료공고한장(auth!.sub))) {
     return err('PLAN_001', 한도안내, 403)
   }
 
   // 게재 종료일. 임시저장은 목록에 뜨지 않으니 비워 둔다(펼 때 정해진다).
   const listedUntil = jobStatus !== 'ACTIVE' ? null : 게재종료일(plan, paidUntil)
 
-  const result = await pool.query(
+  let result
+  try {
+  result = await pool.query(
     `INSERT INTO job_postings (
        company_id, title, job_type, job_category_id, description,
        requirements, preferred_qualifications, salary_min, salary_max,
@@ -156,5 +159,10 @@ export async function POST(req: NextRequest) {
       listedUntil
     ]
   )
+  } catch (e) {
+    // 자리를 먼저 집어 두었으니 넣지 못하면 돌려준다.
+    if (무료로걺) await 무료공고되돌리기(auth!.sub)
+    throw e
+  }
   return ok(result.rows[0], 201)
 }
