@@ -196,16 +196,18 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     //   건도 없었다(리멤버 말투다). 사람인 「후보자 관리」·잡코리아 「포지션
     //   제안」은 경력직 사무직 말투라 헤어 스텝·네일 인턴에는 무겁다.
     { id: "proposals",  label: "제안·스크랩",  href: `${base}/proposals` },
-    // 「채용상품」은 요금제로 간다. 예전에는 광고 상품(/company/ads)으로 갔는데,
-    // 채용상품과 광고상품은 다른 물건이라 사장님이 공고 상품을 찾다 광고 판을 봤다.
-    { id: "plans",      label: "채용상품",     href: `${base}/plans` },
+    // 「상품안내」는 요금제로 간다. 예전에는 광고 상품(/company/ads)으로 갔는데,
+    // 채용 상품과 광고 상품은 다른 물건이라 사장님이 공고 상품을 찾다 광고 판을 봤다.
+    // 이름이 「채용상품」이었을 때는 그 아래 배너광고가 있는 줄을 몰랐다 — 파는
+    // 것이 둘이면 머리줄 이름은 둘을 다 품는 말이어야 한다.
+    { id: "plans",      label: "상품안내",     href: `${base}/plans` },
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
   //   사이드는 짧게 훑는 자리라 이름만 적고, 무엇을 하는 곳인지는 오른쪽 제목이
   //   말한다(title). 라벨이 함수인 것은 매장/오피스에 따라 이름이 갈리는 칸이 있어서다.
   //   묶음이 늘면 여기에 한 줄 더 넣으면 된다 — 껍데기는 손댈 것이 없다.
   const SIDE_NAV: Record<string, { id: string; label: (i: string) => string;
-    title: (i: string) => string; href: string }[]> = {
+    title: (i: string) => string; href: string; 아래?: boolean }[]> = {
     // 채용공고 — 셀렉미가 '채용 정보 등록 / 관리·수정'을 나눠 둔 것과 같은 짜임.
     //   목록이 들어오는 문이라 위에 두고, 등록을 아래에 둔다.
     jobs: [
@@ -230,12 +232,19 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     // 채용상품 — 파는 물건이 둘이다. 공고를 거는 상품(채용공고)과 자리를 파는
     //   상품(배너광고). 한 화면에 같이 두었더니 요금제 카드 아래에 광고가 딸린
     //   꼴이라 둘째 물건이 곁다리로 읽혔다. 페이지를 나눠 각자 제 제목을 갖는다.
+    //   파는 물건이 둘이라 둘을 같은 높이에 세우고, 그 아래에 낱개를 단다.
+    //   다섯을 한 높이로 늘어놓았더니 라이트·스탠다드·프리미엄이 배너광고와
+    //   같은 종류의 물건처럼 보였다.
     plans: [
       { id: "plans",          label: () => "채용공고", title: () => "채용공고 상품 안내", href: `${base}/plans` },
-      { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light` },
-      { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard` },
-      { id: "plan-premium",   label: () => "프리미엄", title: () => "프리미엄", href: `${base}/plans/premium` },
+      { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light`,    아래: true },
+      { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard`, 아래: true },
+      { id: "plan-premium",   label: () => "프리미엄", title: () => "프리미엄", href: `${base}/plans/premium`,  아래: true },
       { id: "plans-ads",      label: () => "배너광고", title: () => "배너광고 상품 안내", href: `${base}/plans/ads` },
+      { id: "ads-main",       label: () => "메인페이지 노출", title: () => "메인페이지 노출 광고",
+        href: `${base}/plans/ads/main`, 아래: true },
+      { id: "ads-jobs",       label: () => "공고페이지 노출", title: () => "공고페이지 노출 광고",
+        href: `${base}/plans/ads/jobs`, 아래: true },
     ],
     settings: [
       { id: "settings",      label: (i: string) => i,      title: (i: string) => `${i} 설정`, href: `${base}/settings` },
@@ -469,6 +478,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
+        /* 아랫단 — 위 줄에 딸린 낱개다. 들여쓰고 한 호수 줄여 둘의 높이를
+           눈으로 가른다. 같은 크기로 두면 무엇이 묶음이고 무엇이 그 안인지
+           이름만 읽어서는 알 수 없다. */
+        .co-set-item.sub { padding-left: 24px; font-size: 14.5px; }
         /* 인재풀 — 탭이 제목 자리를 대신한다. 그래서 글자도 제목과 같은 크기·굵기·
            색(.co-set-title)을 쓴다. 켜진 탭이 곧 지금 보고 있는 화면의 이름이다.
            다른 화면 제목이 모두 가운데 서 있으므로 이 줄도 가운데 세운다. */
@@ -613,7 +626,8 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                     </div>
                   )
                   : 사이드?.map((m) => (
-                    <Link key={m.id} href={m.href} className={`co-set-item ${activePage === m.id ? "on" : ""}`}>
+                    <Link key={m.id} href={m.href}
+                          className={`co-set-item${m.아래 ? " sub" : ""} ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>
                   ))}
