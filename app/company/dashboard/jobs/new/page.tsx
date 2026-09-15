@@ -6,6 +6,8 @@ import JobPostForm from "@/components/jobs/JobPostForm";
 import { companyMeApi } from "@/lib/api/company";
 import StartJobModal from "@/components/company/StartJobModal";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { 스타트 } from "@/lib/companyPlans";
 
 function CompanyJobNewForm() {
   const searchParams = useSearchParams();
@@ -16,10 +18,19 @@ function CompanyJobNewForm() {
   // 빈 폼으로 들어올 때만 묻는다. 이어서 쓰거나 복사해서 온 길에는 끼어들지 않는다.
   // 모달은 고를 것이 있을 때만 스스로 뜬다(임시저장도 지난 공고도 없으면 안 뜬다).
   const [고르기, set고르기] = useState(!editId && !copyId);
+  /** 무료로 더 올릴 수 있는 공고 수. 유료 기간 안이면 null */
+  const [무료남은, set무료남은] = useState<number | null>(null);
 
   useEffect(() => {
     companyMeApi.get()
       .then((res) => setCompanyType(res.data.company_type))
+      .catch(() => {});
+    // 쓰기 전에 알려 준다. 다 채워 넣고 「등록」을 눌렀을 때 막히면 그동안 쓴
+    // 것이 헛일이 된다.
+    const token = localStorage.getItem("access_token");
+    fetch("/api/company/me/plan", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((r) => { if (r?.success) set무료남은(r.data?.무료남은 ?? null); })
       .catch(() => {});
   }, []);
 
@@ -101,6 +112,13 @@ function CompanyJobNewForm() {
             onClose={() => set고르기(false)}
             onPick={(href) => { set고르기(false); router.push(href); }}
           />
+        )}
+        {무료남은 != null && (
+          <p className={`co-quota${무료남은 === 0 ? " out" : ""}`}>
+            {무료남은 === 0
+              ? <>무료 공고 {스타트.공고수}번을 모두 썼습니다. <Link href="/company/plans">이용권 신청하기 ›</Link></>
+              : <>무료 공고 {무료남은}번 남음 · 한 건당 {스타트.게재일}일 게재됩니다</>}
+          </p>
         )}
         <JobPostForm
           mode="company"

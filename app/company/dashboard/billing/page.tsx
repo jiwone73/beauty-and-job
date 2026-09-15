@@ -15,6 +15,8 @@ import { 플랜, 스타트, 원, type PlanId } from "@/lib/companyPlans";
 type 이용권 = {
   plan: PlanId | null; paidUntil: string | null; 남은일: number;
   진행중: number; 노출: number; 게재종료: string | null;
+  /** 무료로 더 올릴 수 있는 공고 수. 유료 기간 안이면 null */
+  무료남은: number | null;
 };
 type 주문 = {
   id: string; plan: PlanId; days: number; amount: number;
@@ -49,6 +51,14 @@ export default function CompanyBillingPage() {
             <span className="co-bill-nm">{이름}</span>
             {it?.plan && it.paidUntil && (
               <span className="co-bill-until">{it.paidUntil}까지 · {it.남은일}일 남음</span>
+            )}
+            {/* 스타트는 기간이 아니라 횟수가 줄어든다. 날짜 자리에 남은 횟수를 둔다. */}
+            {!it?.plan && it?.무료남은 != null && (
+              <span className={`co-bill-until${it.무료남은 === 0 ? " out" : ""}`}>
+                {it.무료남은 === 0
+                  ? `무료 공고 ${스타트.공고수}번을 모두 썼습니다`
+                  : `무료 공고 ${it.무료남은}번 남음 (${스타트.공고수}번 중)`}
+              </span>
             )}
           </div>
           <Link href="/company/plans" className="co-bill-go">

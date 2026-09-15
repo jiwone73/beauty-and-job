@@ -13346,6 +13346,14 @@ button,
 .co-bill-plan { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .co-bill-nm { font-size: 20px; color: var(--color-primary); letter-spacing: -.3px; }
 .co-bill-until { font-size: 14px; color: #555; }
+/* 다 썼을 때는 이 줄이 곧 「사야 한다」는 말이다 — 옆의 「이용권 신청」과
+   같은 무게로 읽히게 색을 준다. */
+.co-bill-until.out { color: #e74c3c; }
+/* 공고 등록 화면 맨 위 — 쓰기 전에 몇 번 남았는지 알려 준다. */
+.co-quota { margin: 0 auto 14px; max-width: 900px; font-size: 14px; color: #555; }
+.co-quota.out { color: #e74c3c; }
+.co-quota a { color: var(--color-primary); text-decoration: none; font-weight: 600; }
+.co-quota a:hover { text-decoration: underline; }
 .co-bill-go { font-size: 14px; color: #555; text-decoration: none; white-space: nowrap; }
 .co-bill-go:hover { color: var(--color-primary); }
 .co-bill-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }

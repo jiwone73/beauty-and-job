@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권 } from "@/lib/companyEntitlement";
+import { 이용권, 무료남은장 } from "@/lib/companyEntitlement";
 
 /**
  * 내 이용권 — 무엇을 언제까지 쓰는가, 그동안 얼마나 노출됐는가.
@@ -15,6 +15,9 @@ export async function GET(req: NextRequest) {
   if (authErr) return authErr;
   try {
     const { plan, paidUntil, 남은일 } = await 이용권(auth!.sub);
+    // 무료로 몇 번 더 올릴 수 있는가. 소진되는 횟수라, 다 쓰고 나서 막히기 전에
+    // 미리 보여야 한다 — 여섯 번째를 누르다 막혀서 알게 되면 늦다.
+    const 무료남은 = plan ? null : await 무료남은장(auth!.sub);
     const { rows } = await pool.query(
       `SELECT COUNT(*)::int AS 진행중,
               COALESCE(SUM(main_impressions), 0)::bigint AS 노출,
@@ -26,7 +29,7 @@ export async function GET(req: NextRequest) {
     );
     const r = rows[0];
     return ok({
-      plan, paidUntil, 남은일,
+      plan, paidUntil, 남은일, 무료남은,
       진행중: r.진행중,
       노출: Number(r.노출),
       게재종료: r.먼저끝나는게재일,
