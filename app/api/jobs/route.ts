@@ -129,10 +129,29 @@ export async function GET(req: NextRequest) {
 
   // 샘플은 가짜라 진짜 공고 뒤에 세운다.
   const activeOrderBy = `j.is_sample NULLS FIRST, j.created_at DESC`
-  // 유료로 산 자리. 프리미엄이 최상단, 스탠다드가 그 아래, 나머지는 최신순이다.
+  // 유료로 산 자리. 프리미엄이 최상단, 스탠다드가 그 아래, 나머지는 그 밑이다.
   // 예전에 여기 있던 is_featured 는 아무 데서도 켜 주지 않는 죽은 칸이었다.
   const 노출등급 = (a = '') =>
     `CASE ${a}company_plan WHEN 'PREMIUM' THEN 2 WHEN 'STANDARD' THEN 1 ELSE 0 END DESC`
+  /**
+   * 같은 구간 안에서 줄 세우는 법. 최신순이 아니다.
+   *
+   * 마감일이 있는 공고가 먼저다 — 마감이 가까울수록 급한 자리이고, 지원자도
+   * 늦게 보면 못 넣는 것부터 봐야 한다. 상시채용은 내일 봐도 그대로라 뒤다.
+   *
+   * 최신순으로 두면 상시채용 공고를 며칠에 한 번씩 다시 올리는 곳이 늘 위에
+   * 서고, 마감이 사흘 남은 공고가 그 밑으로 밀린다.
+   *
+   * 상시끼리는 날마다 차례를 섞는다. 등록순으로 고정하면 작년에 올린 곳이
+   * 1년 내내 그 자리에 서고 어제 올린 곳은 영영 뒤다 — 같은 값(무료 또는
+   * 같은 상품)을 낸 자리끼리는 돌아가며 서는 것이 맞다.
+   *
+   * 다만 매 요청마다 새로 섞으면 안 된다. 2쪽을 넘길 때 다시 섞이면 1쪽에
+   * 봤던 공고가 또 나오고 어떤 공고는 영영 안 보인다. 그래서 날짜를 씨앗으로
+   * 준다 — 하루 안에서는 같은 차례고, 날이 바뀌면 바뀐다.
+   */
+  const 같은구간 = (a = '') =>
+    `${a}deadline ASC NULLS LAST, md5(${a}id::text || CURRENT_DATE::text)`
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
@@ -159,7 +178,7 @@ export async function GET(req: NextRequest) {
            experience_level, is_featured, deadline, created_at, categories, benefit_tags
     FROM v_active_jobs
     ${whereClause}
-    ORDER BY is_sample NULLS FIRST, ${노출등급()}, created_at DESC
+    ORDER BY is_sample NULLS FIRST, ${노출등급()}, ${같은구간()}
     LIMIT $${idx++} OFFSET $${idx++}
   `
 

@@ -15981,6 +15981,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-amt { font-size: 26px; font-weight: 700; color: #1f1f22; letter-spacing: -.8px; margin: 0; line-height: 1.1; }
 .pi-amt i { font-size: 15px; font-style: normal; font-weight: 600; }
 .pi-note { font-size: 12.5px; color: #8a8a90; margin: 6px 0 0; }
+.pi-buy .pi-btn { display: flex; width: 100%; margin-top: 12px; }
 .pi-btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 28px;
   background: var(--color-primary); color: #fff; font-size: 15px; font-weight: 700;
   text-decoration: none; border-radius: 3px; white-space: nowrap; flex: none; }
@@ -15997,9 +15998,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 기간은 고르는 것이지 읽는 것이 아니다. 값만 줄줄이 적어 두면 며칠짜리를
    사는지 신청 화면에 가서야 정하게 되고, 거기서 한 번 더 망설인다. */
-.pi-pick { margin-top: 2px; }
-.pi-opt { display: flex; align-items: center; gap: 10px; cursor: pointer;
-  border-bottom: 1px solid #f0f0f3; padding: 12px 12px; }
+.pi-pick { margin: 0; }
+.pi-opt { display: flex; align-items: center; gap: 9px; cursor: pointer;
+  border-bottom: 1px solid #f0f0f3; padding: 11px 14px; }
 .pi-opt:last-child { border-bottom: 0; }
 .pi-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
 .pi-tick { flex: none; width: 19px; height: 19px; border: 1px solid #d8d8de; border-radius: 3px;
@@ -16009,7 +16010,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   color: var(--color-primary); border-radius: 2px; font-size: 11px; font-weight: 700;
   padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
 .pi-opt-a { font-size: 15px; font-weight: 700; color: #1f1f22; letter-spacing: -.3px; }
-.pi-opt-u { font-size: 12px; color: #8a8a90; width: 96px; text-align: right; }
 .pi-opt:hover .pi-tick { border-color: var(--color-primary); }
 .pi-opt.on { background: #fbfafc; }
 .pi-opt.on .pi-tick { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
@@ -16023,31 +16023,57 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 목록 캡처 위에 구간만 그린다. 글자는 안 읽혀도 된다 — 어느 칸에 서는지가
    전부라서, 오히려 매장 이름이 또렷하면 그 매장이 그 등급을 산 것처럼 읽힌다. */
-/* 전체 화면은 작게, 경계만 크게. 캡처는 자리를 가리키는 그림이지 읽을 것이
-   아니라서, 원본 크기로 깔면 안내서가 아니라 화면 구경이 된다. */
-.pi-where { display: grid; grid-template-columns: 250px 1fr; gap: 18px; align-items: start; }
-.pi-where-t { font-size: 13px; color: #555; line-height: 1.65; margin: 12px 0 0; word-break: keep-all; }
-.pi-where-t b { color: var(--color-primary); font-weight: 600; }
+/* 상품 내용 — 왼쪽은 무엇이 되는가, 오른쪽은 얼마이고 어떻게 사는가.
+   위아래로 쌓아 두었더니 표 여덟 줄을 지나야 값이 나왔다. */
+.pi-body { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+.pi-side { border: 1px solid var(--card-line); }
+
+/* 노출 자리는 말로 적으면 「상단」과 「최상단」이 얼마나 다른지 알 수 없다.
+   화면을 통째로 찍어 두고 그 위에 자리만 그린다. 줄여 놓으면 글자는 안 읽히지만
+   어디쯤에 서는지는 그걸로 다 보인다 — 오히려 매장 이름이 또렷하면 그 매장이
+   그 등급을 산 것처럼 읽힌다. */
+.pi-spot { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.pi-spot th { font-size: 12.5px; font-weight: 700; color: #1f1f22; text-align: left;
+  padding: 0 0 8px; border-bottom: 1px solid #1f1f22; }
+.pi-spot th + th, .pi-spot td + td { padding-left: 16px; }
+.pi-spot td { vertical-align: top; padding-top: 14px; }
+
 .pi-list { position: relative; border: 1px solid var(--card-line); overflow: hidden; }
 .pi-list img { display: block; width: 100%; }
-.pi-tiers { position: absolute; inset: 0; }
-.pi-tier { position: absolute; left: 0; right: 0;
-  border-top: 1px dashed rgba(31, 31, 34, .32); border-bottom: 1px dashed rgba(31, 31, 34, .32); }
-.pi-tier span { position: absolute; top: 6px; left: 6px;
-  background: rgba(255, 255, 255, .94); border: 1px solid var(--card-line); color: #555;
-  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 2px; white-space: nowrap; }
-.pi-tier.on { background: rgba(88, 38, 129, .09);
+.pi-zone { position: absolute; left: 0; right: 0; }
+.pi-zl { position: absolute; top: 5px; left: 5px; font-style: normal;
+  background: rgba(255, 255, 255, .94); border: 1px solid var(--card-line); color: #8a8a90;
+  font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 2px; white-space: nowrap; }
+.pi-zone.on { background: rgba(88, 38, 129, .1);
   box-shadow: inset 0 0 0 1px var(--color-primary), inset 4px 0 0 var(--color-primary); }
-.pi-tier.on span { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.pi-zone.on .pi-zl { display: none; }
+
+/* 말풍선 — 어느 자리인지 가리키고 무엇인지 한마디로 적는다. */
+.pi-bub { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: var(--color-primary); color: #fff; font-size: 12px; font-weight: 700;
+  line-height: 1.4; padding: 7px 12px; border-radius: 4px; white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .22); }
+.pi-bub::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px;
+  border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-top: 5px solid var(--color-primary); }
+
+/* 안 되는 칸은 비워 두지 않는다 — 비면 아직 안 그린 화면처럼 보인다.
+   같은 화면을 흐려 두고 그 위에 「여기 없다」를 적는다. */
+.pi-list.off img { filter: grayscale(1); opacity: .3; }
+.pi-list.off .pi-zl { opacity: .5; }
+.pi-x { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #fff; border: 1px solid var(--card-line); border-radius: 4px;
+  padding: 12px 18px; text-align: center; white-space: nowrap;
+  font-size: 13.5px; font-weight: 700; color: #555; box-shadow: 0 2px 10px rgba(0, 0, 0, .1); }
+.pi-x i { display: block; font-style: normal; font-size: 12px; font-weight: 400; color: #8a8a90; margin-top: 3px; }
 
 .pi-warn { margin: 0; padding: 0; list-style: none; }
 .pi-warn li { font-size: 12.5px; color: #8a8a90; line-height: 1.75; padding-left: 11px; position: relative; }
 .pi-warn li::before { content: "·"; position: absolute; left: 2px; }
 
 /* 값과 신청 단추는 기간을 고른 자리에 하나만 둔다. */
-.pi-buy { display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  border-top: 1px solid #1f1f22; margin: 4px 0 26px; padding: 18px 12px; }
+.pi-buy { border-top: 1px solid #1f1f22; padding: 16px 14px; background: #fbfafc; }
 .pi-buy-l { font-size: 13px; color: #8a8a90; margin: 0; }
-.pi-buy-l b { display: block; font-size: 24px; font-weight: 700; color: #1f1f22;
+.pi-buy-l b { display: block; font-size: 23px; font-weight: 700; color: #1f1f22;
   letter-spacing: -.8px; margin: 3px 0 2px; }
 .pi-buy-l i { font-style: normal; font-size: 12px; color: #8a8a90; }

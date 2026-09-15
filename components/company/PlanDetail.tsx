@@ -37,6 +37,12 @@ const 구간: { 칸: 0 | 1 | 2 | 3; 위: number; 높이: number }[] = [
   { 칸: 0, 위: 83.1, 높이: 13.9 },
 ];
 
+/** 메인 화면(main-full.png)에서 채용관 두 자리. 라이트·스타트는 여기 없다. */
+const 채용관: { 칸: 2 | 3; 위: number; 높이: number }[] = [
+  { 칸: 3, 위: 33.4, 높이: 37.8 },
+  { 칸: 2, 위: 72.2, 높이: 27.8 },
+];
+
 export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; 이름보임?: boolean }) {
   const 것 = 플랜[id];
   const 칸 = 비교칸[id];
@@ -56,14 +62,11 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
   const 기본 = 원(것.가격[일수]);
   const 신청 = 팔림 ? `/company/plans/order?plan=${id}&days=${일수}` : "/support";
   // 이 상품이 목록에서 누구 사이에 서는가. 맨 위·맨 아래면 한쪽이 없다.
-  // 확대해서 보여 줄 두 줄 — 이 상품 구간과 바로 윗 구간의 경계다.
-  // 프리미엄은 위가 없으니 아랫 경계를 본다.
-  const 확대: { 칸: 0 | 1 | 2 | 3 }[] = 칸 === 3
-    ? [{ 칸: 3 }, { 칸: 2 }]
-    : [{ 칸: (칸 + 1) as 1 | 2 | 3 }, { 칸 }];
   const 자리 = 칸 === 3
-    ? "목록 맨 위"
-    : `${칸이름[칸 + 1]} 구간 아래, ${칸이름[칸 - 1]} 구간 위`;
+    ? "목록 맨 위에 섭니다"
+    : `${칸이름[칸 + 1]} 아래, ${칸이름[칸 - 1]} 위에 섭니다`;
+  /** 메인 채용관 자리. 없는 상품이면 null 이고 칸이 통째로 「미노출」이 된다. */
+  const 메인자리 = 사양[6].값[칸];
 
   return (
     <div className="pi">
@@ -75,94 +78,95 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
 
       <section className="pi-sec">
         <h3 className="pi-st">상품 내용</h3>
-        <div className="pi-pick">
-          {기간들.map((d) => (
-            <label key={d} className={`pi-opt${d === 일수 ? " on" : ""}`}>
-              <input type="radio" name={`pi-days-${id}`} checked={d === 일수}
-                     onChange={() => set일수(d)} />
-              <i className="pi-tick"><Check size={12} strokeWidth={3.5} /></i>
-              <span className="pi-opt-d">{d}일{d === 30 && <em>추천</em>}</span>
-              <b className="pi-opt-a">{원(것.가격[d])}</b>
-              <span className="pi-opt-u">1일 {Math.round(것.가격[d] / d).toLocaleString("ko-KR")}원</span>
-            </label>
-          ))}
-        </div>
+        <div className="pi-body">
+          <table className="pi-tb">
+            <tbody>
+              {사양.map((r) => {
+                const v = r.값[칸];
+                const 부터 = v ? null : 언제부터(r.값);
+                return (
+                  <tr key={r.항목}>
+                    <th>{r.항목}</th>
+                    <td className={v ? undefined : "off"}>{v ?? (부터 ? `${부터}부터` : "미제공")}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
 
-        <div className="pi-buy">
-          <p className="pi-buy-l">
-            {것.name} {일수}일
-            <b>{기본}</b>
-            <i>부가세 포함</i>
-          </p>
-          {안엶
-            ? <span className="pi-btn off">{준비중}</span>
-            : <Link href={신청} className="pi-btn">신청하기</Link>}
+          <div className="pi-side">
+            <div className="pi-pick">
+              {기간들.map((d) => (
+                <label key={d} className={`pi-opt${d === 일수 ? " on" : ""}`}>
+                  <input type="radio" name={`pi-days-${id}`} checked={d === 일수}
+                         onChange={() => set일수(d)} />
+                  <i className="pi-tick"><Check size={12} strokeWidth={3.5} /></i>
+                  <span className="pi-opt-d">{d}일{d === 30 && <em>추천</em>}</span>
+                  <b className="pi-opt-a">{원(것.가격[d])}</b>
+                </label>
+              ))}
+            </div>
+            <div className="pi-buy">
+              <p className="pi-buy-l">
+                {것.name} {일수}일
+                <b>{기본}</b>
+                <i>부가세 포함</i>
+              </p>
+              {안엶
+                ? <span className="pi-btn off">{준비중}</span>
+                : <Link href={신청} className="pi-btn">신청하기</Link>}
+            </div>
+          </div>
         </div>
-        <table className="pi-tb">
-          <tbody>
-            {사양.map((r) => {
-              const v = r.값[칸];
-              const 부터 = v ? null : 언제부터(r.값);
-              return (
-                <tr key={r.항목}>
-                  <th>{r.항목}</th>
-                  <td className={v ? undefined : "off"}>{v ?? (부터 ? `${부터}부터` : "미제공")}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </section>
 
       <section className="pi-sec">
         <h3 className="pi-st">노출 위치</h3>
-        <div className="pi-where">
-          <div>
-            <div className="pi-list">
-              <img src="/images/plans/list-full.png" alt="전체 채용공고 목록 화면" />
-              <div className="pi-tiers">
-                {구간.map((t) => (
-                  <div key={t.칸} className={`pi-tier${t.칸 === 칸 ? " on" : ""}`}
-                       style={{ top: `${t.위}%`, height: `${t.높이}%` }}>
-                    <span>{칸이름[t.칸]} 구간</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <p className="pi-cap">▲ 전체 채용공고 목록</p>
-          </div>
-          <div>
-            <div className="pi-list">
-              <img src="/images/plans/list-zoom.png" alt="목록에서 구간이 바뀌는 자리" />
-              <div className="pi-tiers">
-                {확대.map((t, i) => (
-                  <div key={t.칸} className={`pi-tier${t.칸 === 칸 ? " on" : ""}`}
-                       style={{ top: `${i * 50}%`, height: "50%" }}>
-                    <span>{칸이름[t.칸]} 구간</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <p className="pi-cap">▲ 구간이 바뀌는 자리</p>
-            <p className="pi-where-t">
-              목록은 상품 순서로 줄을 세웁니다. {것.name} 공고는 <b>{자리}</b>에 서고,
-              같은 구간 안에서는 최근 등록 순입니다.
-            </p>
-          </div>
-        </div>
-
-        {사양[6].값[칸] ? (
-          <>
-            <div className="pi-shot">
-              <img src={`/images/plans/main-${것.메인 === "PREMIUM" ? "premium" : "standard"}.png`} alt="메인 채용관 화면" />
-            </div>
-            <p className="pi-cap">▲ 메인 화면 채용관 — <b>{사양[6].값[칸]}</b></p>
-          </>
-        ) : (
-          <p className="pi-cap">
-            메인 화면 채용관에는 노출되지 않습니다 — 메인 노출은 {칸이름[2]}부터입니다.
-          </p>
-        )}
+        <table className="pi-spot">
+          <thead>
+            <tr><th>메인 페이지</th><th>채용공고 페이지 (검색·목록)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                {/* 안 되는 상품도 빈 칸으로 두지 않는다. 같은 화면을 흐려 놓고
+                    「여기 없다」고 적어야, 무엇이 없다는 말인지가 보인다. */}
+                <div className={`pi-list${메인자리 ? "" : " off"}`}>
+                  <img src="/images/plans/main-full.png" alt="메인 페이지 화면" />
+                  {채용관.map((t) => (
+                    <div key={t.칸} className={`pi-zone${t.칸 === 칸 ? " on" : ""}`}
+                         style={{ top: `${t.위}%`, height: `${t.높이}%` }}>
+                      <i className="pi-zl">{칸이름[t.칸]} 채용관</i>
+                      {t.칸 === 칸 && <span className="pi-bub">{메인자리}</span>}
+                    </div>
+                  ))}
+                  {!메인자리 && (
+                    <span className="pi-x">
+                      노출되지 않습니다
+                      <i>메인 채용관은 {칸이름[2]}부터</i>
+                    </span>
+                  )}
+                </div>
+              </td>
+              <td>
+                <div className="pi-list">
+                  <img src="/images/plans/list-full.png" alt="전체 채용공고 목록 화면" />
+                  {구간.map((t) => (
+                    <div key={t.칸} className={`pi-zone${t.칸 === 칸 ? " on" : ""}`}
+                         style={{ top: `${t.위}%`, height: `${t.높이}%` }}>
+                      <i className="pi-zl">{칸이름[t.칸]}</i>
+                      {t.칸 === 칸 && <span className="pi-bub">{자리}</span>}
+                    </div>
+                  ))}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="pi-cap">
+          같은 구간 안에서는 <b>마감일이 빠른 공고가 먼저</b> 섭니다. 상시채용은 그 뒤에
+          서고, 상시채용끼리는 날마다 차례가 바뀝니다.
+        </p>
       </section>
 
       <section className="pi-sec">
