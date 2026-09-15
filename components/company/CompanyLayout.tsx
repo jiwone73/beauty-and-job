@@ -193,7 +193,9 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     //   건도 없었다(리멤버 말투다). 사람인 「후보자 관리」·잡코리아 「포지션
     //   제안」은 경력직 사무직 말투라 헤어 스텝·네일 인턴에는 무겁다.
     { id: "proposals",  label: "제안·스크랩",  href: `${base}/proposals` },
-    { id: "ads",        label: "채용상품",     href: "/company/ads" },
+    // 「채용상품」은 요금제로 간다. 예전에는 광고 상품(/company/ads)으로 갔는데,
+    // 채용상품과 광고상품은 다른 물건이라 사장님이 공고 상품을 찾다 광고 판을 봤다.
+    { id: "plans",      label: "채용상품",     href: `${base}/plans` },
   ];
   // 사이드 메뉴. 머리줄에서 한 갈래로 들어오면 그 안에서 다시 나뉜다.
   //   사이드는 짧게 훑는 자리라 이름만 적고, 무엇을 하는 곳인지는 오른쪽 제목이
@@ -219,6 +221,17 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
     ],
     // 설정 — 비밀번호만 이름과 제목이 같다. 여기서 하는 일이 설정이 아니라 변경
     //   하나뿐이라 "변경설정"처럼 겹쳐 쓸 말이 없다.
+    // 채용상품 — 첫 화면은 요금제(카드 넉 장)고, 그 아래는 상품 하나하나다.
+    //   카드의 「자세히 보기」와 이 사이드가 같은 곳으로 간다. 스타트는 사는
+    //   물건이 아니라 가입하면 놓이는 자리라 상세 화면이 없다.
+    plans: [
+      { id: "plans",          label: () => "요금제",   title: () => "요금제",   href: `${base}/plans` },
+      { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light` },
+      { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard` },
+      { id: "plan-premium",   label: () => "프리미엄", title: () => "프리미엄", href: `${base}/plans/premium` },
+      // 다른 물건이지만 대시보드에서 들어갈 문이 여기밖에 없다.
+      { id: "ads",            label: () => "광고·노출 상품", title: () => "광고·노출 상품", href: "/company/ads" },
+    ],
     settings: [
       { id: "settings",      label: (i: string) => i,      title: (i: string) => `${i} 설정`, href: `${base}/settings` },
       { id: "account",       label: () => "계정정보",       title: () => "계정정보 설정",      href: `${base}/account` },
@@ -237,7 +250,9 @@ export default function CompanyLayout({ children, activePage, title, side, sideE
   // 스크랩 인재는 제안·스크랩의 갈래라 '제안·스크랩'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
-    id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new" || activePage === "applicants")
+    // 채용상품은 그 안의 상품 상세까지 한 갈래다.
+    id === "plans" ? 묶음 === "plans"
+    : id === "jobs" ? (activePage === "jobs" || activePage === "jobs-new" || activePage === "applicants")
     : id === "talent" ? activePage === "talent"
     : id === "proposals" ? (activePage === "proposals" || activePage === "scrapped")
     : id === "settings" ? 묶음 === "settings"
