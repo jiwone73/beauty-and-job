@@ -16030,7 +16030,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    어디쯤에 서는지는 그걸로 다 보인다 — 오히려 매장 이름이 또렷하면 그 매장이
    그 등급을 산 것처럼 읽힌다. */
 .pi-spot { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.pi-spot th { font-size: 13.5px; font-weight: 700; color: #1f1f22; text-align: left;
+.pi-spot th { font-size: 14.5px; font-weight: 400; color: #555; text-align: left;
   padding: 0 0 8px; border-bottom: 1px solid #1f1f22; }
 .pi-spot th + th, .pi-spot td + td { padding-left: 16px; }
 .pi-spot td { vertical-align: top; padding-top: 14px; }
@@ -16066,6 +16066,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 .pi-warn { margin: 0; padding: 0; list-style: none; }
 .pi-warn li { font-size: 13.5px; color: #8a8a90; line-height: 1.75; padding-left: 11px; position: relative; }
+.pi-warn li b { color: #555; font-weight: 700; }
 .pi-warn li::before { content: "·"; position: absolute; left: 2px; }
 
 /* 값과 신청 단추는 기간을 고른 자리에 하나만 둔다. */

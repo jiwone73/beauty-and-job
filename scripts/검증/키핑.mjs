@@ -58,14 +58,13 @@ r = await c.query(
 검사("보관 만료 1년 뒤", r.rows[0].만료맞음, true);
 검사("이용권 종료됨", r.rows[0].이용권끝, true);
 
-// ── 4. 환산 — 라이트 20일을 프리미엄/스탠다드에서 쓰면
-console.log("\n4. 다른 플랜 환산 (하루 값 비율, 내림)");
-const 하루 = { LIGHT: 49000/30, STANDARD: 89000/30, PREMIUM: 149000/30 };
-const 환산 = (from, days, to) => from === to ? days : Math.floor(days * 하루[from] / 하루[to]);
+// ── 4. 보관은 같은 상품에만
+console.log("\n4. 같은 상품에만 쓰인다");
+const 환산 = (from, days, to) => (days > 0 && from === to ? days : 0);
 검사("라이트20 → 라이트", 환산("LIGHT",20,"LIGHT"), 20);
-검사("라이트20 → 스탠다드", 환산("LIGHT",20,"STANDARD"), 11);
-검사("라이트20 → 프리미엄", 환산("LIGHT",20,"PREMIUM"), 6);
-검사("프리미엄10 → 라이트", 환산("PREMIUM",10,"LIGHT"), 30);
+검사("라이트20 → 스탠다드", 환산("LIGHT",20,"STANDARD"), 0);
+검사("라이트20 → 프리미엄", 환산("LIGHT",20,"PREMIUM"), 0);
+검사("프리미엄10 → 라이트", 환산("PREMIUM",10,"LIGHT"), 0);
 
 // ── 5. 라이트 30일 주문을 입금확인 → 30+20=50일, 보관함 비워짐
 console.log("\n5. 입금 확인 시 보관분 합산");
