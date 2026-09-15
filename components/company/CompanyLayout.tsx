@@ -236,6 +236,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     //   다섯을 한 높이로 늘어놓았더니 라이트·스탠다드·프리미엄이 배너광고와
     //   같은 종류의 물건처럼 보였다.
     plans: [
+      // 오픈이벤트가 맨 위인 까닭은 지금 라이트를 살 이유가 이것이어서다.
+      // 기간이 끝나면 이 줄만 빼면 된다.
+      { id: "plans-event",    label: () => "오픈이벤트", title: () => "오픈이벤트 안내", href: `${base}/plans/event` },
       { id: "plans",          label: () => "채용공고 상품", title: () => "채용공고 상품 안내", href: `${base}/plans` },
       { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light`,    아래: true },
       { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard`, 아래: true },

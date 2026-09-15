@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import PlanCards from "@/components/company/PlanCards";
 import ServiceHeader from "@/components/company/ServiceHeader";
+import EventBand from "@/components/company/EventBand";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
   CheckCircle2, ArrowRight, Plus, Minus,
@@ -127,6 +128,19 @@ export default function CompanyServicePage() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* ── 오픈이벤트 ──
+          기업 서비스로 들어온 사람이 이벤트를 못 보고 지나가고 있었다. 지금
+          라이트를 살 이유가 이것이라 요금제보다 먼저 선다. 내용은 공지에서
+          받아 오므로 이벤트가 끝나면 저절로 사라진다. */}
+      <section className="cs-wrap">
+        <EventBand />
+        <div className="cs-center">
+          <Link href="/company/plans/event" className="cs-btn-line lg">
+            오픈이벤트 자세히 보기 <ArrowRight size={15} />
+          </Link>
         </div>
       </section>
 
