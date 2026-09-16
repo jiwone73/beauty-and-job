@@ -8,35 +8,21 @@ import { useAuthStore } from "@/lib/store/authStore";
 import {
   Scissors, FileText, Users, Wallet, Gift, TrendingUp, ArrowRight,
 } from "lucide-react";
-import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS, 유형이름 } from "@/lib/data/jobGroups";
-import { 서비스안내, 노출계단, 서비스방향 } from "@/lib/serviceGuide";
-
-/** 안내 묶음마다 붙는 그림 */
-const 안내아이콘 = { start: Wallet, apply: Users, expose: TrendingUp, pay: FileText } as const;
+import EventDetail from "@/components/company/EventDetail";
 
 /**
  * 기업 서비스 소개.
  *
- * 구직자 화면과 달리 여기 오는 사람은 "쓸지 말지"를 정하러 온다. 그래서
- * 무엇을 주는지(직군 범위·대시보드·절차·값)를 위에서 아래로 한 번에 훑을 수
- * 있게 세운다.
+ * 배너와 이벤트, 둘뿐이다. 지금 이 서비스를 쓸 이유가 이벤트 하나라, 직군·
+ * 서비스 안내·포부를 그 앞에 세워 두면 정작 볼 것이 밀린다. 그런 것들은 상품
+ * 안내와 고객센터가 이미 맡고 있다.
+ *
+ * 이벤트가 끝나 공지를 내리면 배너도 이벤트도 사라지고 히어로의 강점 넷만
+ * 남는다 — 그때 이 화면을 다시 채울지 정하면 된다.
  *
  * 클래스는 cs- 로 새로 뗀다. 기존 co- 는 기업 대시보드와 공고 등록 폼이
  * 아직 쓰고 있어 건드리면 그쪽이 깨진다.
  */
-
-/**
- * 다루는 직군 — 실제 목록에서 만든다.
- *
- * 여기 따로 적어 두었더니 화면과 어긋나 있었다. 매장은 열 묶음인데 넷만
- * 적혀 있었고(두피·탈모, 웨딩·이벤트, 뷰티 리테일, 샵 운영·상담, 미용강사,
- * 의료미용이 빠졌다), 오피스는 직무가 아니라 업종(화장품 브랜드·제조·유통·
- * 교육기관)으로 적혀 있었다 — 직무 축으로 바꾸기로 한 것과 반대다.
- */
-const 직군묶음 = [
-  { 유형: 유형이름.STORE, 것들: STORE_JOB_GROUPS.map((g) => g.group) },
-  { 유형: 유형이름.OFFICE, 것들: OFFICE_JOB_GROUPS.map((g) => g.group) },
-];
 
 /**
  * 히어로 아래 띠 — 지금 우리가 실제로 하는 것만 적는다.
@@ -54,9 +40,6 @@ const 히어로강점 = [
   { Icon: Users, name: "지원자는 이용권 없이", sub: "이력서와 연락처를 그대로 봅니다" },
   { Icon: Wallet, name: "자동 결제 없음", sub: "기간이 끝나면 그대로 끝납니다" },
 ];
-
-/** 이벤트 중에는 넷을 늘어놓지 않는다. 그 줄에서 제일 센 말 하나만 굵게 뽑는다 —
- *  네 개를 같은 크기로 세우면 어느 것도 세지 않다. 이벤트가 끝나면 넷이 돌아온다. */
 
 export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이벤트 | null }) {
   // 로그인 상태를 보고 단추가 갈 곳을 정한다. 이 화면은 그동안 로그인 여부를
@@ -98,8 +81,8 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
                   className="cs-btn-fill lg">
               {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ArrowRight size={16} />
             </Link>
-            <Link href={이벤트 ? "/company/plans/event" : "/company/plans"} className="cs-btn-line lg">
-              {이벤트 ? "이벤트 자세히 보기" : "상품안내 보기"} <ArrowRight size={16} />
+            <Link href="/company/plans" className="cs-btn-line lg">
+              상품안내 보기 <ArrowRight size={16} />
             </Link>
           </div>
 
@@ -116,75 +99,15 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
         </div>
       </section>
 
-      {/* ── 다루는 직군 ── */}
-      <section className="cs-wrap" id="직군">
-        <h2 className="cs-h2">다루는 직군</h2>
-        <div className="cs-groups">
-          {직군묶음.map(({ 유형, 것들 }) => (
-            <div key={유형} className="cs-group">
-              <b>{유형}</b>
-              <div className="cs-group-li">
-                {것들.map((g) => <span key={g}>{g}</span>)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 서비스 안내 ──
-          줄글로 풀면 「내 경우엔 어떤가」를 찾으려 다시 훑어야 한다. 네 덩이로
-          끊고, 줄 서는 차례는 막대 길이로 보인다. */}
-      <section className="cs-wrap">
-        <h2 className="cs-h2">서비스 안내</h2>
-        <div className="cs-guide">
-          {서비스안내.map((b) => {
-            const I = 안내아이콘[b.아이콘];
-            return (
-              <div key={b.머리} className="cs-guide-card">
-                <span className="cs-guide-ic"><I size={22} strokeWidth={1.8} /></span>
-                <p className="cs-guide-h">{b.머리}</p>
-                <p className="cs-guide-big">{b.큰말}</p>
-                <ul>{b.줄.map((l) => <li key={l}>{l}</li>)}</ul>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="cs-ladder">
-          <p className="cs-ladder-t">검색 목록에서 줄 서는 차례</p>
-          {노출계단.map((r) => (
-            <div key={r.이름} className="cs-ladder-row">
-              <b>{r.이름}</b>
-              <span className="cs-ladder-bar" style={{ width: `${r.길이}%` }} />
-              <em>{r.곁}</em>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 어디로 가는가 ──
-          이미 그렇게 만든 것만 적는다. 화면에서 확인할 수 없는 포부는 자랑이지
-          약속이 아니다. */}
-      <section className="cs-wrap cs-vision">
-        <h2 className="cs-h2">뷰티워크가 지키는 것</h2>
-        <div className="cs-vision-list">
-          {서비스방향.map((v) => (
-            <div key={v.머리}>
-              <b>{v.머리}</b>
-              <p>{v.글}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 요금제·배너광고·FAQ 를 이 화면에서 들어냈다. 상품안내와 고객센터가
-          같은 것을 이미 말하고 있었고, 여기서 또 말하면 값이 갈리는 날 한쪽이
-          남는다. 대신 그리로 가는 길만 둔다. */}
-      <section className="cs-wrap cs-center">
-        <Link href="/company/plans" className="cs-btn-line lg">
-          상품과 요금 보기 <ArrowRight size={15} />
-        </Link>
-      </section>
+      {/* 배너 아래는 이벤트가 전부다. 지금 이 서비스를 쓸 이유가 그것이라
+          직군·서비스 안내·포부를 그 앞에 세워 두면 정작 볼 것이 밀린다.
+          이벤트가 없으면 아무것도 그리지 않는다 — 그때는 히어로의 강점 넷이
+          화면을 맡는다. */}
+      {이벤트 && (
+        <section className="cs-wrap">
+          <EventDetail 머리숨김 />
+        </section>
+      )}
 
     </div>
   );

@@ -21,9 +21,11 @@ const 이벤트자리 = { 위: 33.4, 높이: 33.1 };
 
 type 공지 = { id: string; title: string; target?: string | null };
 
-export default function EventDetail({ 안쪽 = false }: {
+export default function EventDetail({ 안쪽 = false, 머리숨김 = false }: {
   /** 대시보드 안이면 단추가 「공고 등록하기」, 밖이면 「기업회원 가입하기」 */
   안쪽?: boolean;
+  /** 제목을 세우지 않는다 — 기업 서비스 첫 화면처럼 배너가 이미 말한 자리용 */
+  머리숨김?: boolean;
 }) {
   const [것, set것] = useState<공지 | null>(null);
   const [본문, set본문] = useState("");
@@ -61,10 +63,12 @@ export default function EventDetail({ 안쪽 = false }: {
 
   return (
     <div className="pi">
-      <div className="pi-hd">
-        <h2 className="pi-nm">{것.title}</h2>
-        {여는말 && <p className="pi-ln">{여는말}</p>}
-      </div>
+      {!머리숨김 && (
+        <div className="pi-hd">
+          <h2 className="pi-nm">{것.title}</h2>
+          {여는말 && <p className="pi-ln">{여는말}</p>}
+        </div>
+      )}
 
       <section className="pi-sec">
         <h3 className="pi-st">혜택</h3>
