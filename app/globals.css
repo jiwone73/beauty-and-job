@@ -13362,6 +13362,10 @@ button,
 .co-evtband-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .co-evtband-go { flex: none; display: inline-flex; align-items: center; gap: 1px;
   font-size: 15px; font-weight: 600; color: var(--color-primary); }
+/* 값이 같이 보이는 화면에서만. 「무료」와 「19,000원~」이 나란히 서면
+   무료라면서 왜 값을 받느냐로 읽힌다. */
+.co-evtband-n { margin: -12px 2px 20px; font-size: 13.5px; color: #8a8a90; line-height: 1.6;
+  word-break: keep-all; }
 
 .cs-vat { text-align: center; font-size: 13px; color: #9a9aa0; margin: 26px 0 0; }
 /* 카드 판 바깥, 오른쪽 끝. 값 옆에 붙는 단서라 값이 선 쪽에 둔다. */

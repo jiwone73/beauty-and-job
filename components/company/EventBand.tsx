@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Gift, ChevronRight } from "lucide-react";
+import { 플랜 } from "@/lib/companyPlans";
 
 /**
  * 지금 하는 이벤트 한 줄.
@@ -17,11 +18,19 @@ import { Gift, ChevronRight } from "lucide-react";
  */
 type 공지 = { id: string; title: string; short_title?: string | null; target?: string | null };
 
-export default function EventBand({ 받는쪽 = "company", 안쪽 = false }: {
+export default function EventBand({ 받는쪽 = "company", 안쪽 = false, 요금안내 = false }: {
   /** 이 화면을 보는 사람. 받는 쪽이 다른 이벤트는 걸러 낸다. */
   받는쪽?: "company" | "user";
   /** 대시보드 안이면 안쪽 경로로 보낸다 */
   안쪽?: boolean;
+  /**
+   * 값이 같이 보이는 화면에서 한 줄 더 적는다.
+   *
+   * 요금제 화면에는 「1개월 무제한 공고등록 무료」와 「19,000원~」이 나란히
+   * 선다. 무료라면서 왜 값을 받느냐로 읽힌다 — 이벤트는 한시적이고 끝나면
+   * 아래 요금제대로라는 말이 그 자리에 있어야 한다.
+   */
+  요금안내?: boolean;
 }) {
   const [것, set것] = useState<공지 | null>(null);
 
@@ -43,10 +52,18 @@ export default function EventBand({ 받는쪽 = "company", 안쪽 = false }: {
     : `/event?open=${것.id}`;
 
   return (
-    <Link href={갈곳} className="co-evtband">
-      <Gift size={16} />
-      <span className="co-evtband-t">{것.title}</span>
-      <span className="co-evtband-go">자세히 보기<ChevronRight size={15} /></span>
-    </Link>
+    <>
+      <Link href={갈곳} className="co-evtband">
+        <Gift size={16} />
+        <span className="co-evtband-t">{것.title}</span>
+        <span className="co-evtband-go">자세히 보기<ChevronRight size={15} /></span>
+      </Link>
+      {요금안내 && (
+        <p className="co-evtband-n">
+          이벤트 기간에 가입하고 공고를 등록하시면 {플랜.LIGHT.name}를 1개월 무료로 쓰십니다.
+          1개월이 끝나면 아래 요금제대로 적용됩니다.
+        </p>
+      )}
+    </>
   );
 }

@@ -26,7 +26,7 @@ export default function CompanyPlansPage() {
 
       <section className="cs-wrap">
         <h2 className="cs-h2">요금제</h2>
-        <EventBand />
+        <EventBand 요금안내 />
         <PlanCards />
       </section>
 
