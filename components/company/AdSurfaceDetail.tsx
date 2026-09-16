@@ -17,11 +17,19 @@ import { 원 } from "@/lib/companyPlans";
  * 약속이 된다.
  */
 
-/** 캡처에서 배너가 선 자리(%). 캡처를 다시 찍으면 이 값도 같이 본다. */
+/**
+ * 캡처에서 배너가 선 자리(%). 캡처를 다시 찍으면 이 값도 같이 본다.
+ *
+ * 좌우도 잰다. 공고 목록의 배너는 왼쪽 사이드바 오른쪽에서 시작하는데, 상자를
+ * 좌우로 꽉 채웠더니 배너가 사이드까지 먹는 것처럼 보였다.
+ */
 const 자리표 = {
-  "main-banner":       { 그림: "ad-main-slot",        위: 6.9, 높이: 14.5, 이름: "메인 페이지" },
-  "jobs-banner":       { 그림: "ad-jobs-slot",        위: 6.1, 높이: 12.0, 이름: "채용공고 목록 (직군 미선택)" },
-  "jobs-group-banner": { 그림: "ad-jobs-group-slot",  위: 6.1, 높이: 12.0, 이름: "채용공고 목록 (직군 선택)" },
+  "main-banner":       { 그림: "ad-main-slot",       위: 6.3,  높이: 16.3, 왼: 2.5, 오: 2.6,
+                         이름: "메인 페이지 상단 배너" },
+  "jobs-banner":       { 그림: "ad-jobs-slot",       위: 6.1,  높이: 12.0, 왼: 19.1, 오: 2.6,
+                         이름: "채용공고 목록 (직군 미선택)" },
+  "jobs-group-banner": { 그림: "ad-jobs-group-slot", 위: 6.1,  높이: 12.0, 왼: 19.1, 오: 2.6,
+                         이름: "채용공고 목록 (직군 선택)" },
 } as const;
 
 function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
@@ -72,11 +80,16 @@ function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
         <>
           <div className="pi-list" style={{ marginTop: 22 }}>
             <img src={`/images/plans/${자리.그림}.png`} alt={`${자리.이름} 배너 자리`} />
-            <div className="pi-zone on" style={{ top: `${자리.위}%`, height: `${자리.높이}%` }}>
+            <div className="pi-zone on"
+                 style={{ top: `${자리.위}%`, height: `${자리.높이}%`,
+                          left: `${자리.왼}%`, right: `${자리.오}%` }}>
               <span className="pi-bub">{것.name} 자리</span>
             </div>
           </div>
-          <p className="pi-cap">▲ {자리.이름} — 빨간 테두리가 배너가 서는 자리입니다.</p>
+          <p className="pi-cap">
+            ▲ {자리.이름} — 빨간 테두리가 배너가 서는 자리입니다.
+            {것.면 === "MAIN" && " 지금 뷰티워크 배너가 선 그 자리이며, 광고가 걸리면 그 자리를 광고가 씁니다."}
+          </p>
         </>
       )}
     </section>

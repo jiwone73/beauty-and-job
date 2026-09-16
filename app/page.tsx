@@ -164,20 +164,20 @@ function Hero() {
     <section className="mainTop">
       <div className="container">
 
-        {/* 0. 파는 배너 자리. 걸린 것이 없으면 자리 자체가 안 생기므로, 안 팔린
-            동안에는 지금 화면 그대로다. */}
-        <AdBanner slot="main" />
-
-        {/* 1. 사진 배너 — 1320x190. 문구는 공지에서 받아 관리자가 고칠 수 있다. */}
-        <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/company"} className="mt-hero">
-          <span className="mt-hero-photo" />
-          <span className="mt-hero-in">
-            <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
-            <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
-            <span className="mt-hero-sub">{이벤트?.short_title || 이벤트?.title
-              || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`}</span>
-          </span>
-        </Link>
+        {/* 1. 상단 배너 — 파는 자리다. 광고가 걸리면 그 자리를 광고가 쓰고,
+            안 걸렸으면 뷰티워크 배너가 선다. 광고를 위에 하나 더 얹지 않는다 —
+            첫 화면에 배너가 둘이면 어느 것이 이 사이트 이야기인지 흐려진다. */}
+        <AdBanner slot="main" 대신={
+          <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/company"} className="mt-hero">
+            <span className="mt-hero-photo" />
+            <span className="mt-hero-in">
+              <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
+              <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
+              <span className="mt-hero-sub">{이벤트?.short_title || 이벤트?.title
+                || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`}</span>
+            </span>
+          </Link>
+        } />
 
         {/* 2. 일자리 찾기 블록 */}
         <div className="mt-jobs">

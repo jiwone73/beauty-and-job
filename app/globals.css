@@ -16036,6 +16036,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 .pi-list { position: relative; border: 1px solid var(--card-line); overflow: hidden; }
 .pi-list img { display: block; width: 100%; }
+/* 왼·오른쪽도 값을 받는다. 전에는 좌우로 꽉 채웠더니 공고 목록 캡처에서
+   빨간 상자가 왼쪽 사이드바까지 덮어, 배너가 사이드까지 먹는 것처럼 보였다. */
 .pi-zone { position: absolute; left: 0; right: 0; }
 .pi-zl { position: absolute; top: 5px; left: 5px; font-style: normal;
   background: rgba(255, 255, 255, .94); border: 1px solid var(--card-line); color: #8a8a90;

@@ -14,10 +14,17 @@ import Link from "next/link";
  */
 type 배너 = { image: string; href?: string; alt?: string };
 
-export default function AdBanner({ slot, group, className }: {
+export default function AdBanner({ slot, group, className, 대신 = null }: {
   slot: "main" | "jobs";
   group?: string;
   className?: string;
+  /**
+   * 안 팔렸을 때 그 자리에 대신 서는 것.
+   *
+   * 메인 상단은 원래 뷰티워크 배너가 서 있던 자리다. 광고를 그 **위에** 하나 더
+   * 얹으면 첫 화면에 배너가 둘이 된다 — 파는 것은 새 자리가 아니라 **그 자리**다.
+   */
+  대신?: React.ReactNode;
 }) {
   const [것, set것] = useState<배너 | null>(null);
 
@@ -29,7 +36,7 @@ export default function AdBanner({ slot, group, className }: {
       .catch(() => set것(null));
   }, [slot, group]);
 
-  if (!것) return null;
+  if (!것) return <>{대신}</>;
 
   const 그림 = <img className="ad-banner-img" src={것.image} alt={것.alt || "광고"} loading="lazy" />;
   return (
