@@ -1,48 +1,52 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronRight, Megaphone } from "lucide-react";
 import InfoHeader from "@/components/InfoHeader";
 import InquiryModal from "@/components/support/InquiryModal";
+import FaqBoard from "@/components/support/FaqBoard";
 
-const FAQS = [
-  { q: "회원가입은 어떻게 하나요?", a: "상단 '회원가입' 버튼을 클릭하고 휴대폰 인증 후 기본 정보를 입력하시면 됩니다." },
-  { q: "이력서는 어떻게 작성하나요?", a: "로그인 후 '이력서' 메뉴에서 각 섹션별로 정보를 입력하실 수 있습니다. 작성한 이력서는 PDF로 다운로드도 가능합니다." },
-  { q: "채용공고 지원은 어떻게 하나요?", a: "원하는 채용공고 상세 페이지에서 '지원하기' 버튼을 클릭하면 이력서와 함께 지원할 수 있습니다." },
-  { q: "기업 계정은 어떻게 만드나요?", a: "'기업 서비스' 메뉴를 통해 기업 회원 가입을 진행할 수 있습니다. 기업 인증 후 채용공고를 등록하실 수 있습니다." },
-  { q: "뉴스레터 수신을 취소하고 싶어요.", a: "수신하신 뉴스레터 하단의 '수신 거부' 링크를 클릭하시거나, 고객센터로 문의해 주세요." },
-  { q: "개인정보는 어떻게 관리되나요?", a: "뷰티워크는 개인정보보호법에 따라 안전하게 개인정보를 관리합니다. 자세한 내용은 개인정보처리방침을 확인해주세요." },
-];
-
-function FaqItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="faq-item">
-      <button className="faq-question" onClick={() => setOpen(!open)}>
-        <span>{q}</span>
-        {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-      </button>
-      {open && <div className="faq-answer">{a}</div>}
-    </div>
-  );
-}
+/**
+ * 고객센터 첫 화면.
+ *
+ * 묻는 길(1:1·메일)과 스스로 찾는 길(공지·FAQ)을 한 화면에 둔다. 예전에는 문의
+ * 카드 셋과 FAQ 여섯 줄이 전부여서, 공지사항이 머리줄 탭에만 있고 여기서는
+ * 보이지 않았다 — 점검이나 이벤트 안내를 찾으러 온 사람이 제일 먼저 닿는 곳이
+ * 여긴데도 그렇다.
+ *
+ * FAQ 목록은 lib/faq.ts 한 곳에서 온다. 이 화면과 /support/faq 가 각자 들고
+ * 있던 때에는 같은 질문에 답이 서로 달랐다.
+ */
+type 공지 = { id: string; type: string; title: string; published_at: string | null; created_at: string };
 
 export default function SupportPage() {
   const [inquiryOpen, setInquiryOpen] = useState(false);
+  const [공지들, set공지들] = useState<공지[]>([]);
+
+  useEffect(() => {
+    fetch("/api/notices")
+      .then((r) => r.json())
+      .then((r) => { if (r?.success && Array.isArray(r.data)) set공지들(r.data.slice(0, 4)); })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="info-page">
       <InfoHeader active="/support" />
       <main className="info-main">
         <div className="info-hero">
           <h1 className="info-hero-title">무엇을 도와드릴까요?</h1>
-          <p className="info-hero-desc">뷰티워크 이용 중 궁금한 점이 있으시면 아래에서 확인해보세요.</p>
+          <p className="info-hero-desc">궁금한 점을 아래에서 찾아보시고, 없으면 물어봐 주세요.</p>
         </div>
+
         <div className="support-cards">
           {[
-            { icon: "💬", title: "1:1 문의", desc: "접수 후 1~2일 내 답변", action: "문의하기", onClick: () => setInquiryOpen(true) },
-            { icon: "📧", title: "이메일 문의", desc: "support@beautywork.co.kr", action: "메일 보내기", onClick: () => { window.location.href = "mailto:support@beautywork.co.kr"; } },
-            { icon: "📋", title: "자주 묻는 질문", desc: "빠른 해결책을 찾아보세요", action: "바로가기", onClick: () => { const el = document.querySelector(".faq-list"); el?.scrollIntoView({ behavior: "smooth" }); } },
+            { icon: "💬", title: "1:1 문의", desc: "접수 후 1~2일 내 답변", action: "문의하기",
+              onClick: () => setInquiryOpen(true) },
+            { icon: "📧", title: "이메일 문의", desc: "support@beautywork.co.kr", action: "메일 보내기",
+              onClick: () => { window.location.href = "mailto:support@beautywork.co.kr"; } },
+            { icon: "📋", title: "자주 묻는 질문", desc: "찾으시는 답이 여기 있을 수 있어요", action: "바로가기",
+              onClick: () => document.querySelector(".faq-board")?.scrollIntoView({ behavior: "smooth" }) },
           ].map((c) => (
             <div key={c.title} className="support-card">
               <span className="support-card-icon">{c.icon}</span>
@@ -52,11 +56,34 @@ export default function SupportPage() {
             </div>
           ))}
         </div>
+
+        {/* 공지 — 점검·이벤트를 찾으러 온 사람이 제일 먼저 닿는 곳이 여기다.
+            없으면 자리를 만들지 않는다. */}
+        {공지들.length > 0 && (
+          <div className="info-section">
+            <div className="sup-sec-head">
+              <h2><Megaphone size={18} />공지사항</h2>
+              <Link href="/notice" className="sup-more">전체 보기<ChevronRight size={15} /></Link>
+            </div>
+            <ul className="sup-notice">
+              {공지들.map((n) => (
+                <li key={n.id}>
+                  <Link href={n.type === "event" ? `/event?open=${n.id}` : `/notice/${n.id}`}>
+                    <i className={n.type === "event" ? "evt" : undefined}>
+                      {n.type === "event" ? "이벤트" : "공지"}
+                    </i>
+                    <span>{n.title}</span>
+                    <em>{(n.published_at || n.created_at).slice(0, 10)}</em>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="info-section">
           <h2>자주 묻는 질문</h2>
-          <div className="faq-list">
-            {FAQS.map((faq) => <FaqItem key={faq.q} {...faq} />)}
-          </div>
+          <FaqBoard />
         </div>
       </main>
       <InquiryModal isOpen={inquiryOpen} onClose={() => setInquiryOpen(false)} />
