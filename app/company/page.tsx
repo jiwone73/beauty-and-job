@@ -6,11 +6,12 @@ import Image from "next/image";
 import PlanCards from "@/components/company/PlanCards";
 import ServiceHeader from "@/components/company/ServiceHeader";
 import EventBand from "@/components/company/EventBand";
+import { 면이름, 면설명, 면상품, type 광고면 } from "@/lib/adProducts";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
   CheckCircle2, ArrowRight, Plus, Minus,
   UserPlus, FileText, Users, CircleCheck,
-  Megaphone, Star, TrendingUp, Gift,
+  Megaphone, Star, TrendingUp,
   ShieldCheck, Zap, Wallet, RefreshCw, Headphones,
   UserRoundCheck, Crosshair,
 } from "lucide-react";
@@ -57,13 +58,6 @@ const 절차 = [
   { no: "02", Icon: FileText, name: "채용공고 등록", sub: "직무, 근무조건, 혜택 등 상세 정보 등록" },
   { no: "03", Icon: Users, name: "인재 추천 및 지원", sub: "맞춤 추천 인재 확인 및 지원 접수" },
   { no: "04", Icon: CircleCheck, name: "면접 및 채용", sub: "지원자와 면접 후 진행하고 채용을 완료합니다" },
-];
-
-const 광고상품 = [
-  { Icon: Megaphone, name: "메인 AD 배너", sub: "메인 상단 배너 노출", price: "20만원 ~" },
-  { Icon: Star, name: "뷰티워크 Pick", sub: "공고 상단 노출 및 추천", price: "10만원 ~" },
-  { Icon: TrendingUp, name: "프리미엄 상단공고", sub: "검색 결과 상단 고정 노출", price: "5만원 ~" },
-  { Icon: Gift, name: "추천 뷰티 서비스", sub: "서비스 제휴 및 배너 노출", price: "별도 협의" },
 ];
 
 // 메인 AD 배너 상품이 실제로 어떻게 걸리는지 보여주는 예시 이미지.
@@ -242,16 +236,18 @@ export default function CompanyServicePage() {
       {/* ── 광고·노출 상품 ── */}
       <section className="cs-band" id="광고">
         <div className="cs-wrap">
-          <h2 className="cs-h2">프리미엄 광고 · 노출 상품</h2>
-          <p className="cs-sub">더 많은 지원자에게 노출하고 싶다면</p>
+          <h2 className="cs-h2">배너광고 상품</h2>
+          <p className="cs-sub">공고가 아니라 <b>자리</b>를 사는 상품입니다</p>
+          {/* 목록을 여기 또 적지 않는다. 상품안내와 두 벌을 들고 있었더니 값도
+              이름도 갈라졌다 — 여기는 「이런 갈래가 있다」까지만 말한다. */}
           <div className="cs-ads">
-            {광고상품.map(({ Icon, name, sub, price }) => (
-              <div key={name} className="cs-ad">
-                <Icon size={26} strokeWidth={1.6} />
-                <b>{name}</b>
-                <span>{sub}</span>
-                <em>{price}</em>
-              </div>
+            {(["MAIN", "JOBS"] as 광고면[]).map((면) => (
+              <Link key={면} href="/company/plans/ads" className="cs-ad">
+                {면 === "MAIN" ? <Megaphone size={26} strokeWidth={1.6} /> : <Star size={26} strokeWidth={1.6} />}
+                <b>{면이름[면]}</b>
+                <span>{면설명[면]}</span>
+                <em>{면상품(면).map((x) => x.name).join(" · ")}</em>
+              </Link>
             ))}
           </div>
 
@@ -267,8 +263,8 @@ export default function CompanyServicePage() {
           </div>
 
           <div className="cs-center">
-            <Link href="/support" className="cs-btn-fill lg">
-              광고·노출 상품 자세히 보기 <ArrowRight size={16} />
+            <Link href="/company/plans/ads" className="cs-btn-fill lg">
+              배너광고 상품 자세히 보기 <ArrowRight size={16} />
             </Link>
           </div>
         </div>

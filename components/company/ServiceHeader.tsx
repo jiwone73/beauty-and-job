@@ -24,7 +24,7 @@ export default function ServiceHeader({ 소개화면 = false }: { 소개화면?:
           <a href={닻("직군")}>오피스 채용</a>
           <Link href="/company/plans/event" className="cs-nav-evt">오픈이벤트</Link>
           <Link href="/company/plans">요금제</Link>
-          <a href={닻("광고")}>광고·노출 상품</a>
+          <Link href="/company/plans/ads">배너광고</Link>
           <Link href="/support">고객센터</Link>
         </nav>
         <div className="cs-header-btns">
