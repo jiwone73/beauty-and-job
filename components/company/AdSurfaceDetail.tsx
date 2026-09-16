@@ -67,7 +67,7 @@ function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
             <p className="pi-buy-l">
               {것.name} {일수}일
               <b>{값 === null ? "협의" : 원(값)}</b>
-              <i>부가세 별도</i>
+              <i>부가세 포함</i>
             </p>
             <Link href={안쪽 ? "/company/dashboard/support" : "/company/ads/inquiry"} className="pi-btn">
               광고 문의하기

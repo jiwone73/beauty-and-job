@@ -18,6 +18,7 @@ export default function AdPlanCards({ 안쪽 = false }: { 안쪽?: boolean }) {
   const 면들: 광고면[] = ["MAIN", "JOBS"];
 
   return (
+    <>
     <div className="cs-plans ad2">
       {면들.map((면) => {
         const Icon = 아이콘[면];
@@ -29,10 +30,13 @@ export default function AdPlanCards({ 안쪽 = false }: { 안쪽?: boolean }) {
           <div key={면} className="cs-plan">
             <p className="cs-plan-nm"><Icon size={17} />{면이름[면]}</p>
             <p className="cs-plan-ln">{면설명[면]}</p>
-            <p className="cs-plan-amt">
-              {시작값 === null ? <em>협의</em> : <>{원(시작값).replace("원", "")}<i>원</i><em>~</em></>}
+            {/* 요금제 카드와 같은 클래스를 쓴다. 전에 제 이름(cs-plan-amt)을 지어
+                썼더니 바탕 스타일이 없어 값만 작게 나왔다 — 「협의」만 따로 키운
+                규칙이 걸려서 둘의 크기가 어긋나 보였다. */}
+            <p className="cs-plan-pr">
+              {시작값 === null ? "협의" : <>{원(시작값).replace("원", "")}<i>원</i><em>~</em></>}
+              <span className="cs-plan-du">{시작값 === null ? "기간·자리별 견적" : `${광고기간[0]}일 기준`}</span>
             </p>
-            <p className="cs-vat right">{시작값 === null ? "기간·자리에 따라 견적" : `${광고기간[0]}일 기준 · 부가세 별도`}</p>
             <ul className="cs-plan-li">
               {것들.map((x) => (
                 <li key={x.id}><b>{x.name}</b><span>{x.자리}</span></li>
@@ -43,5 +47,7 @@ export default function AdPlanCards({ 안쪽 = false }: { 안쪽?: boolean }) {
         );
       })}
     </div>
+    <p className="cs-vat right">부가세 포함</p>
+    </>
   );
 }
