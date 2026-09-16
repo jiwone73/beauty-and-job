@@ -22,8 +22,9 @@ export default function ServiceHeader() {
           <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
         </Link>
         <nav className="cs-nav">
-          {/* 지금 상품을 살 이유가 이벤트라 맨 앞이다. 끝나면 이 줄만 빼면 된다. */}
-          <Link href="/company/plans/event" className="cs-nav-evt">오픈이벤트</Link>
+          {/* 기업 서비스 첫 화면이 곧 이벤트 화면이다 — 같은 내용을 두 주소로
+              두면 어느 쪽이 진짜인지 갈린다. 끝나면 이 줄만 빼면 된다. */}
+          <Link href="/company" className="cs-nav-evt">오픈이벤트</Link>
           <Link href="/company/plans">채용공고 상품</Link>
           <Link href="/company/plans/ads">배너광고 상품</Link>
           <Link href="/support">고객센터</Link>

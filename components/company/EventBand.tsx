@@ -47,8 +47,10 @@ export default function EventBand({ 받는쪽 = "company", 안쪽 = false, 요�
   if (!것) return null;
 
   // 기업 이벤트는 오픈이벤트 안내로, 개인 이벤트는 이벤트 목록으로 보낸다.
+  // 공개 쪽은 기업 서비스 첫 화면이 곧 이벤트 화면이다. 대시보드 안에는 그런
+  // 화면이 없어 따로 둔 이벤트 안내로 간다.
   const 갈곳 = 받는쪽 === "company"
-    ? `${안쪽 ? "/company/dashboard" : "/company"}/plans/event`
+    ? (안쪽 ? "/company/dashboard/plans/event" : "/company")
     : `/event?open=${것.id}`;
 
   return (
