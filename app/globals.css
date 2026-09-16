@@ -13350,12 +13350,12 @@ button,
    페이지가 맡는다 — 본문을 여기 펼쳐 두었더니 같은 글이 두 곳에 실렸다. */
 .co-evtband { display: flex; align-items: center; gap: 9px; text-decoration: none;
   border: 1px solid var(--card-line); border-radius: 10px; background: #fbfafc;
-  padding: 13px 16px; margin: 0 0 20px; color: #1f1f22; font-size: 14.5px; font-weight: 600; }
+  padding: 14px 17px; margin: 0 0 20px; color: #1f1f22; font-size: 16px; font-weight: 600; }
 .co-evtband:hover { border-color: var(--color-primary); }
 .co-evtband svg { flex: none; color: var(--color-primary); }
 .co-evtband-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .co-evtband-go { flex: none; display: inline-flex; align-items: center; gap: 1px;
-  font-size: 13.5px; font-weight: 600; color: var(--color-primary); }
+  font-size: 15px; font-weight: 600; color: var(--color-primary); }
 
 .cs-vat { text-align: center; font-size: 13px; color: #9a9aa0; margin: 26px 0 0; }
 /* 카드 판 바깥, 오른쪽 끝. 값 옆에 붙는 단서라 값이 선 쪽에 둔다. */
