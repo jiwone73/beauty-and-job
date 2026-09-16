@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import ServiceHeader from "@/components/company/ServiceHeader";
-import EventPill from "@/components/company/EventPill";
+import { useCompanyEvent } from "@/lib/useCompanyEvent";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
   CheckCircle2, ArrowRight,
-  UserPlus, FileText, Users, CircleCheck, Wallet,
+  UserPlus, FileText, Users, CircleCheck, Wallet, Gift,
 } from "lucide-react";
 
 /**
@@ -71,6 +71,9 @@ export default function CompanyServicePage() {
   // 로그인 상태를 보고 단추가 갈 곳을 정한다. 이 화면은 그동안 로그인 여부를
   // 아예 보지 않아, 이미 가입한 사장님도 가입 화면으로 떨어졌다.
   const { isLoggedIn, ownerType } = useAuthStore();
+  // 이벤트 중에는 이벤트가 제목이다. 지금 이 서비스를 쓸 이유가 그것이라
+  // 작은 링크로 곁들일 것이 아니다. 끝나면 원래 제목으로 돌아간다.
+  const 이벤트 = useCompanyEvent();
   const 기업인가 = isLoggedIn && ownerType === "company";
   const [열린질문, set열린질문] = useState<number | null>(null);
 
@@ -81,31 +84,28 @@ export default function CompanyServicePage() {
 
       {/* ── 히어로 ── */}
       <section className="cs-hero" id="소개">
-        <div className="cs-hero-photo" aria-hidden />
+        {/* 이벤트 중에는 이벤트 그림이 선다. 원래 사진에는 지어낸 숫자
+            (지원자 248명·채용 성공률 73%)가 박혀 있어, 이벤트가 끝나면 그
+            사진으로 돌아가기 전에 갈아야 한다. */}
+        <div className={`cs-hero-photo${이벤트 ? " evt" : ""}`} aria-hidden />
         <div className="cs-hero-in">
-          <EventPill />
+          {이벤트 && <p className="cs-hero-eyebrow"><Gift size={15} />뷰티워크 오픈이벤트</p>}
           <h1 className="cs-hero-t">
-            뷰티 인재 채용,<br />
-            <b>뷰티워크</b>에서 시작하세요
+            {이벤트
+              ? <>{이벤트.short_title || 이벤트.title}</>
+              : <>뷰티 인재 채용,<br /><b>뷰티워크</b>에서 시작하세요</>}
           </h1>
           <p className="cs-hero-d">
             헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관까지<br />
             뷰티 채용만 다룹니다.
           </p>
-          {/* 매장·오피스로 단추를 나눠 두었지만 ?type= 을 가입 화면이 읽지
-              않아 어느 쪽을 눌러도 같은 빈 화면이었다. 업체 성격은 가입 때 한 번
-              고르고, 오피스 자리를 뽑을지는 공고를 만들 때 유형으로 고른다 —
-              여기서 미리 물을 것이 아니다.
-
-              이미 기업회원이면 가입 화면으로 보내지 않는다. 이 화면에 온 목적은
-              채용이라 공고 등록으로 바로 보낸다. */}
           <div className="cs-hero-btns">
             <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
                   className="cs-btn-fill lg">
               {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ArrowRight size={16} />
             </Link>
-            <Link href="/company/plans" className="cs-btn-line lg">
-              상품안내 보기 <ArrowRight size={16} />
+            <Link href={이벤트 ? "/company/plans/event" : "/company/plans"} className="cs-btn-line lg">
+              {이벤트 ? "이벤트 자세히 보기" : "상품안내 보기"} <ArrowRight size={16} />
             </Link>
           </div>
 

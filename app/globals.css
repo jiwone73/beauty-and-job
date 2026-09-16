@@ -16174,20 +16174,20 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .sup-file-n { font-size: 13.5px; color: #8a8a90; margin: 10px 2px 0; }
 .sup-file-n a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
 
-/* 히어로 맨 위의 오픈이벤트 한 줄. 블록으로 아래에 두었더니 스크롤해야
-   보였다 — 지금 상품을 살 이유가 이것인데 첫 화면에 없으면 없는 것과 같다. */
-.cs-evtpill { display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
-  background: #fff; border: 1px solid var(--color-primary); border-radius: 100px;
-  padding: 7px 16px 7px 14px; margin-bottom: 18px; color: #1f1f22; font-size: 14.5px;
-  box-shadow: 0 1px 6px rgba(88, 38, 129, .1); }
-.cs-evtpill:hover { background: #fbfafc; }
-.cs-evtpill svg { flex: none; color: var(--color-primary); }
-.cs-evtpill b { color: var(--color-primary); font-weight: 700; }
-.cs-evtpill span { font-weight: 600; }
-@media (max-width: 640px) {
-  .cs-evtpill { font-size: 13px; padding: 6px 12px; gap: 6px; }
-  .cs-evtpill b { display: none; }
-}
+/* 이벤트 중에는 이벤트가 제목이다 — 그 위에 붙는 작은 이름표.
+   링크가 아니다. 누를 곳은 아래 단추 하나면 된다. */
+.cs-hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px;
+  font-size: 14px; font-weight: 700; color: var(--color-primary);
+  border: 1px solid var(--color-primary); border-radius: 100px; padding: 5px 14px; }
+.cs-hero-eyebrow svg { flex: none; }
+/* 이벤트 중의 히어로 그림. 사진이 아니라 그린 것이라 가장자리를 흐리지 않고
+   그대로 보여 준다 — 글자가 든 그림은 흐리면 읽히지 않는다. */
+.cs-hero-photo.evt { background-image: url("/images/company-hero-event.png");
+  background-size: contain; background-position: center right; background-repeat: no-repeat;
+  /* 글자가 든 그림이라 가장자리를 깊이 흐리면 읽히지 않는다. 카드가 그림의
+     14% 지점부터 시작하므로 그 앞만 살짝 녹인다. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 11%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 11%); }
 
 /* 배너 소재 예시 — 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다. */
 .pi-samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
