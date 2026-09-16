@@ -63,7 +63,7 @@ export default function EventBand({ 받는쪽 = "company", 안쪽 = false, 요�
       {요금안내 && (
         <p className="co-evtband-n">
           이벤트 기간에 가입하고 공고를 등록하시면 {플랜.LIGHT.name}를 1개월 무료로 쓰십니다.
-          1개월이 끝나면 아래 요금제대로 적용됩니다.
+          1개월이 끝나면 자동 결제 없이 무료 회원으로 돌아가며, 계속 쓰시려면 아래에서 신청하시면 됩니다.
         </p>
       )}
     </>
