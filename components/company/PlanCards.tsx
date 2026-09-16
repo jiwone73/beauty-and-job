@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Zap, Star, Crown } from "lucide-react";
 import Link from "next/link";
 import { use기업CTA } from "@/lib/companyCta";
-import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, 준비중, type PlanId } from "@/lib/companyPlans";
+import { 플랜, 스타트, 혜택, 비교칸, 대표기간, 원, 준비중, type PlanId } from "@/lib/companyPlans";
 
 /**
  * 요금제 카드 넉 장. 기업서비스 첫 화면과 요금제 화면이 같은 것을 쓴다.
@@ -77,8 +77,8 @@ export default function PlanCards({ 안쪽 = false }: {
               </p>
               <p className="cs-plan-ln">{것.한줄}</p>
               <p className="cs-plan-pr">
-                {원(것.가격[시작기간]).replace("원", "")}<i>원</i><em>~</em>
-                <span className="cs-plan-du">{시작기간}일 기준</span>
+                {원(것.가격[대표기간]).replace("원", "")}<i>원</i>
+                <span className="cs-plan-du">{대표기간}일 기준</span>
               </p>
               {/* 여기서는 고르는 것까지만 한다. 신청은 자세히 보기 안에서 —
                   기간과 값을 보고 나서 누르는 것이 순서다. */}
