@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { Megaphone, Search } from "lucide-react";
-import { 면상품, 면이름, 면설명, 광고기간, type 광고면 } from "@/lib/adProducts";
+import { 면상품, 면이름, 면설명, 면요약, 광고기간, type 광고면 } from "@/lib/adProducts";
 import { 원 } from "@/lib/companyPlans";
 
 /**
  * 배너광고 두 장 — 요금제 카드와 같은 짜임이다.
  *
- * 고르는 기준이 「어디에 뜨는가」 하나라 카드도 화면 단위로 둘이다. 상품
- * 낱개(직군별 배너 등)는 카드에 다 늘어놓지 않고 「자세히 보기」 뒤로 보낸다.
+ * 카드에서 정하는 것은 「어느 화면에 걸까」 하나다. 그 안의 낱개 상품은 자세히
+ * 보기가 말한다 — 카드에 다 적으면 고르기도 전에 낱개를 견주게 된다.
  */
 const 아이콘 = { MAIN: Megaphone, JOBS: Search } as const;
 
@@ -19,35 +19,34 @@ export default function AdPlanCards({ 안쪽 = false }: { 안쪽?: boolean }) {
 
   return (
     <>
-    <div className="cs-plans ad2">
-      {면들.map((면) => {
-        const Icon = 아이콘[면];
-        const 것들 = 면상품(면);
-        // 값이 있는 것 중 제일 짧은 기간의 값을 「…부터」로 적는다. 다 협의면 협의다.
-        const 값들 = 것들.flatMap((x) => 광고기간.map((d) => x.가격[d]).filter((v): v is number => v !== null));
-        const 시작값 = 값들.length ? Math.min(...값들) : null;
-        return (
-          <div key={면} className="cs-plan">
-            <p className="cs-plan-nm"><Icon size={17} />{면이름[면]}</p>
-            <p className="cs-plan-ln">{면설명[면]}</p>
-            {/* 요금제 카드와 같은 클래스를 쓴다. 전에 제 이름(cs-plan-amt)을 지어
-                썼더니 바탕 스타일이 없어 값만 작게 나왔다 — 「협의」만 따로 키운
-                규칙이 걸려서 둘의 크기가 어긋나 보였다. */}
-            <p className="cs-plan-pr">
-              {시작값 === null ? "협의" : <>{원(시작값).replace("원", "")}<i>원</i><em>~</em></>}
-              <span className="cs-plan-du">{시작값 === null ? "기간·자리별 견적" : `${광고기간[0]}일 기준`}</span>
-            </p>
-            <ul className="cs-plan-li">
-              {것들.map((x) => (
-                <li key={x.id}><b>{x.name}</b><span>{x.자리}</span></li>
-              ))}
-            </ul>
-            <Link href={`${바탕}/${면 === "MAIN" ? "main" : "jobs"}`} className="cs-plan-btn">자세히 보기</Link>
-          </div>
-        );
-      })}
-    </div>
-    <p className="cs-vat right">부가세 포함</p>
+      <div className="cs-plans ad2">
+        {면들.map((면) => {
+          const Icon = 아이콘[면];
+          // 값이 있는 것 중 제일 싼 것을 「…부터」로 적는다. 다 협의면 협의다.
+          const 값들 = 면상품(면).flatMap((x) =>
+            광고기간.map((d) => x.가격[d]).filter((v): v is number => v !== null));
+          const 시작값 = 값들.length ? Math.min(...값들) : null;
+          return (
+            <div key={면} className="cs-plan">
+              <p className="cs-plan-nm"><Icon size={17} strokeWidth={2.2} />{면이름[면]}</p>
+              <p className="cs-plan-ln">{면설명[면]}</p>
+              <p className="cs-plan-pr">
+                {시작값 === null ? "협의" : <>{원(시작값).replace("원", "")}<i>원</i><em>~</em></>}
+                <span className="cs-plan-du">{시작값 === null ? "기간·자리별 견적" : `${광고기간[0]}일 기준`}</span>
+              </p>
+              {/* 단추가 목록 위에 선다 — 요금제 카드와 같은 차례다. 목록을 위에
+                  두면 갈래마다 줄 수가 달라 단추 자리가 어긋난다. */}
+              <Link href={`${바탕}/${면 === "MAIN" ? "main" : "jobs"}`} className="cs-plan-btn">
+                자세히 보기
+              </Link>
+              <ul className="cs-plan-feat">
+                {면요약[면].map((줄) => <li key={줄}>{줄}</li>)}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+      <p className="cs-vat right">부가세 포함</p>
     </>
   );
 }
