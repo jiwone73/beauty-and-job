@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, Megaphone } from "lucide-react";
+import { ChevronRight, Megaphone, Download } from "lucide-react";
 import InfoHeader from "@/components/InfoHeader";
 import InquiryModal from "@/components/support/InquiryModal";
 import FaqBoard from "@/components/support/FaqBoard";
@@ -80,6 +80,24 @@ export default function SupportPage() {
             </ul>
           </div>
         )}
+
+        {/* 이력서 서식 — 손으로 쓰거나 인쇄해 가실 분을 위한 빈 양식.
+            온라인 이력서를 대신하는 것이 아니라서 아래쪽에 한 줄로만 둔다 —
+            위에 크게 걸면 정작 등록하러 온 사람이 파일만 받아 가고 나간다. */}
+        <div className="info-section">
+          <a className="sup-file" href="/files/뷰티워크-이력서-양식.pdf" download>
+            <Download size={20} />
+            <span className="sup-file-t">
+              <b>미용 이력서 양식 내려받기</b>
+              손으로 쓰거나 인쇄해 가실 분을 위한 빈 양식입니다 (PDF · A4 한 장)
+            </span>
+            <em>받기</em>
+          </a>
+          <p className="sup-file-n">
+            뷰티워크에서 온라인으로 쓰시면 지원까지 한 번에 되고, 매장이 보내는 제안도 받으실 수 있습니다.{" "}
+            <Link href="/profile/resume">이력서 쓰러 가기 ›</Link>
+          </p>
+        </div>
 
         <div className="info-section">
           <h2>자주 묻는 질문</h2>
