@@ -15,9 +15,16 @@ import { 플랜, 스타트 } from "@/lib/companyPlans";
  * 공지만 고치고, 끝나면 공지를 내리면 된다.
  */
 
-/** 캡처에서 배너가 선 자리(%) */
-const 메인자리 = { 위: 6.3, 높이: 16.3, 왼: 2.5, 오: 2.6 };
-const 목록자리 = { 위: 6.1, 높이: 12.0, 왼: 19.1, 오: 2.6 };
+/**
+ * 캡처에서 이벤트 공고가 서는 자리(%).
+ *
+ * 한때 배너광고 캡처를 그대로 가져다 썼다. 이벤트는 배너를 주는 것이 아니라
+ * **목록 안에** 올려 주는 것이라, 배너 자리에 빨간 테두리를 두르면 파는 물건이
+ * 아예 달라 보인다 — 메인은 「오픈이벤트 채용관」이라는 공고 줄이고, 채용공고
+ * 쪽은 목록 맨 위다.
+ */
+const 메인자리 = { 위: 42.4, 높이: 42.3, 왼: 2.5, 오: 2.6 };
+const 목록자리 = { 위: 9.2, 높이: 14.8, 왼: 2.5, 오: 2.6 };
 
 const 참여 = [
   { Icon: UserPlus, 머리: "기업회원으로 가입합니다.", 글: "이벤트 기간 안에 가입하셔야 합니다." },
@@ -121,7 +128,7 @@ export default function EventDetail({ 머리숨김 = false }: {
             <tr>
               <td>
                 <div className="pi-list">
-                  <img src="/images/plans/ad-main-slot.png" alt="메인 페이지" />
+                  <img src="/images/plans/event-main-slot.png" alt="메인 페이지" />
                   <div className="pi-zone on" style={{ top: `${메인자리.위}%`, height: `${메인자리.높이}%`,
                                                        left: `${메인자리.왼}%`, right: `${메인자리.오}%` }}>
                     <span className="pi-bub">오픈이벤트 채용관</span>
@@ -130,10 +137,10 @@ export default function EventDetail({ 머리숨김 = false }: {
               </td>
               <td>
                 <div className="pi-list">
-                  <img src="/images/plans/ad-jobs-slot.png" alt="채용공고 목록" />
+                  <img src="/images/plans/list-full.png" alt="채용공고 목록" />
                   <div className="pi-zone on" style={{ top: `${목록자리.위}%`, height: `${목록자리.높이}%`,
                                                        left: `${목록자리.왼}%`, right: `${목록자리.오}%` }}>
-                    <span className="pi-bub">검색 결과 상단</span>
+                    <span className="pi-bub">목록 맨 위</span>
                   </div>
                 </div>
               </td>
