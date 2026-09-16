@@ -16180,6 +16180,16 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 14px; font-weight: 700; color: var(--color-primary);
   border: 1px solid var(--color-primary); border-radius: 100px; padding: 5px 14px; }
 .cs-hero-eyebrow svg { flex: none; }
+/* 이벤트 중의 한 방 — 넷을 같은 크기로 늘어놓으면 어느 것도 세지 않다. */
+.cs-hero-hit { display: flex; align-items: center; gap: 12px; margin: 22px 0 0; }
+.cs-hero-hit svg { flex: none; color: var(--color-primary); }
+.cs-hero-hit b { font-size: 24px; font-weight: 800; color: #1f1f22; letter-spacing: -.6px;
+  white-space: nowrap; }
+.cs-hero-hit span { font-size: 15px; color: #555; }
+@media (max-width: 760px) {
+  .cs-hero-hit { flex-wrap: wrap; gap: 6px 10px; }
+  .cs-hero-hit b { font-size: 20px; }
+}
 /* 이벤트 중의 히어로 그림. 사진이 아니라 그린 것이라 가장자리를 흐리지 않고
    그대로 보여 준다 — 글자가 든 그림은 흐리면 읽히지 않는다. */
 /* 이벤트 중의 히어로 그림 — 선물상자. 사진이라 원래 사진과 같은 결로 녹인다. */

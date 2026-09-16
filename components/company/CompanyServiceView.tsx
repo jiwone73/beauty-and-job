@@ -50,10 +50,8 @@ const 히어로강점 = [
   { Icon: Wallet, name: "자동 결제 없음", sub: "기간이 끝나면 그대로 끝납니다" },
 ];
 
-/** 이벤트 중에는 마지막 한 칸을 이벤트 혜택이 쓴다. 지금 이 줄에서 제일 센
- *  말이 「선착순 상단 노출」인데, 그것이 빠진 채로 「자동 결제 없음」이 서
- *  있을 이유가 없다. 이벤트가 끝나면 저절로 돌아간다. */
-const 이벤트강점 = { Icon: TrendingUp, name: "메인·검색 상단 노출", sub: "선착순 · 먼저 올리신 순서대로" };
+/** 이벤트 중에는 넷을 늘어놓지 않는다. 그 줄에서 제일 센 말 하나만 굵게 뽑는다 —
+ *  네 개를 같은 크기로 세우면 어느 것도 세지 않다. 이벤트가 끝나면 넷이 돌아온다. */
 
 // 대시보드에서 실제로 되는 것. 「성과 분석」·「맞춤 추천」은 없는 기능이었다.
 const 대시보드혜택 = [
@@ -111,14 +109,22 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             </Link>
           </div>
 
-          <ul className="cs-hero-pts">
-            {[...히어로강점.slice(0, 3), 이벤트 ? 이벤트강점 : 히어로강점[3]].map(({ Icon, name, sub }) => (
-              <li key={name}>
-                <Icon size={22} strokeWidth={1.7} />
-                <span><b>{name}</b>{sub}</span>
-              </li>
-            ))}
-          </ul>
+          {이벤트 ? (
+            <p className="cs-hero-hit">
+              <TrendingUp size={22} />
+              <b>선착순 메인·검색 상단 노출</b>
+              <span>먼저 올리신 순서대로 위에 섭니다</span>
+            </p>
+          ) : (
+            <ul className="cs-hero-pts">
+              {히어로강점.map(({ Icon, name, sub }) => (
+                <li key={name}>
+                  <Icon size={22} strokeWidth={1.7} />
+                  <span><b>{name}</b>{sub}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 
