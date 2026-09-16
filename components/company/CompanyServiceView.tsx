@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import ServiceHeader from "@/components/company/ServiceHeader";
 import type { 기업이벤트 } from "@/lib/companyEvent.server";
-import { useAuthStore } from "@/lib/store/authStore";
+import { use기업CTA } from "@/lib/companyCta";
 import {
   Scissors, FileText, Users, Wallet, ArrowRight, CalendarDays, ChevronRight,
 } from "lucide-react";
@@ -44,8 +44,7 @@ const 히어로강점 = [
 export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이벤트 | null }) {
   // 로그인 상태를 보고 단추가 갈 곳을 정한다. 이 화면은 그동안 로그인 여부를
   // 아예 보지 않아, 이미 가입한 사장님도 가입 화면으로 떨어졌다.
-  const { isLoggedIn, ownerType } = useAuthStore();
-  const 기업인가 = isLoggedIn && ownerType === "company";
+  const { 갈곳, 글: 단추글 } = use기업CTA();
   const [열린질문, set열린질문] = useState<number | null>(null);
 
   return (
@@ -76,10 +75,7 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             <p className="cs-hero-when"><CalendarDays size={17} />{이벤트.기간}</p>
           )}
           <div className="cs-hero-btns">
-            <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
-                  className="cs-btn-fill lg">
-              {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ChevronRight size={17} />
-            </Link>
+            <Link href={갈곳} className="cs-btn-fill lg">{단추글} <ChevronRight size={17} /></Link>
             <Link href="/company/plans" className="cs-btn-line lg">
               상품안내 보기 <ChevronRight size={17} />
             </Link>

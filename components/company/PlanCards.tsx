@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Zap, Star, Crown } from "lucide-react";
 import Link from "next/link";
+import { use기업CTA } from "@/lib/companyCta";
 import { 플랜, 스타트, 혜택, 비교칸, 시작기간, 원, 준비중, type PlanId } from "@/lib/companyPlans";
 
 /**
@@ -40,6 +41,7 @@ export default function PlanCards({ 안쪽 = false }: {
    *  가입 화면으로 가면 안 된다 — 그쪽에는 바로 공고를 거는 길을 준다. */
   안쪽?: boolean;
 } = {}) {
+  const { 기업인가, 갈곳 } = use기업CTA();
   // 지금 팔 수 있는 상품. 인재 열람을 파는 상품은 이력서가 쌓이기 전에는 팔
   // 물건이 없어 「오픈 준비중」으로 세워 둔다. 켜는 것은 운영 스위치 하나다.
   const [열린것, set열린것] = useState<string[] | null>(null);
@@ -55,8 +57,10 @@ export default function PlanCards({ 안쪽 = false }: {
           <p className="cs-plan-nm">{스타트.name}</p>
           <p className="cs-plan-ln">{스타트.한줄}</p>
           <p className="cs-plan-pr">무료<span className="cs-plan-du free">{스타트.게재일}일 체험</span></p>
-          <Link href={안쪽 ? "/company/dashboard/jobs/new" : "/company/signup"} className="cs-plan-btn free">
-            {안쪽 ? "공고 등록하기" : "시작하기"}
+          {/* 대시보드 안인지가 아니라 로그인했는지로 정한다. 밖에서도 이미
+              가입한 사장님이면 가입 화면이 아니라 공고 등록으로 가야 한다. */}
+          <Link href={갈곳} className="cs-plan-btn free">
+            {기업인가 ? "공고 등록하기" : "시작하기"}
           </Link>
           <혜택목록 칸={비교칸.BASIC} />
         </div>

@@ -8,7 +8,7 @@ export default function CompanyDashboardEventPage() {
   return (
     <CompanyLayout activePage="plans-event" 제목숨김>
       <div className="co-plans">
-        <EventDetail 안쪽 />
+        <EventDetail />
       </div>
     </CompanyLayout>
   );

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FileText, Monitor, Users, ChevronRight, UserPlus, CheckCircle2 } from "lucide-react";
 import { 플랜, 스타트 } from "@/lib/companyPlans";
+import { use기업CTA } from "@/lib/companyCta";
 
 /**
  * 오픈이벤트 안내 한 장.
@@ -28,12 +29,11 @@ const 참여 = [
 
 type 공지 = { id: string; title: string; target?: string | null };
 
-export default function EventDetail({ 안쪽 = false, 머리숨김 = false }: {
-  /** 대시보드 안이면 단추가 「공고 등록하기」, 밖이면 「기업회원 가입하기」 */
-  안쪽?: boolean;
+export default function EventDetail({ 머리숨김 = false }: {
   /** 제목을 세우지 않는다 — 기업 서비스 첫 화면처럼 배너가 이미 말한 자리용 */
   머리숨김?: boolean;
 }) {
+  const { 갈곳, 글: 단추글 } = use기업CTA();
   const [것, set것] = useState<공지 | null>(null);
   const [본문, set본문] = useState("");
 
@@ -63,8 +63,6 @@ export default function EventDetail({ 안쪽 = false, 머리숨김 = false }: {
   const 여는말 = !덩이[0]?.startsWith("■") ? 덩이[0] : "";
   const 맺는말 = 덩이.length > 1 && !덩이[덩이.length - 1].startsWith("■") ? 덩이[덩이.length - 1] : "";
 
-  const 갈곳 = 안쪽 ? "/company/dashboard/jobs/new" : "/company/signup";
-  const 단추글 = 안쪽 ? "지금 공고 등록하기" : "지금 무료로 시작하기";
   const 혜택아이콘 = [FileText, Monitor, Users];
 
   return (
