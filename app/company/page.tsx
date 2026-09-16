@@ -341,12 +341,15 @@ export default function CompanyServicePage() {
             <b>지금 바로 뷰티워크를 시작하세요</b>
             <p>매장과 오피스 채용을 더 쉽고 빠르게</p>
           </div>
+          {/* 맨 위 단추와 같은 것이다 — 같은 화면에서 같은 일을 하는 단추가
+              위아래에서 다른 이름이면 다른 길로 읽힌다. */}
           <div className="cs-cta-btns">
-            <Link href="/company/signup?type=STORE" className="cs-btn-white">
-              매장 채용 시작하기 <ArrowRight size={16} />
+            <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
+                  className="cs-btn-white">
+              {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ArrowRight size={16} />
             </Link>
-            <Link href="/company/signup?type=OFFICE" className="cs-btn-white line">
-              오피스 채용 시작하기 <ArrowRight size={16} />
+            <Link href="/company/plans" className="cs-btn-white line">
+              상품안내 보기 <ArrowRight size={16} />
             </Link>
           </div>
         </div>
