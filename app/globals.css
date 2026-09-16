@@ -16252,7 +16252,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-vision-list p { margin: 0; font-size: 14.5px; color: #555; line-height: 1.7; word-break: keep-all; }
 
 /* ===========================================
-   오픈이벤트 안내 — 혜택부터 보이고 표는 뒤에.
+   오픈이벤트 안내 — 혜택 · 참여 방법 · 노출 자리 · 유의사항.
    =========================================== */
 .ev { max-width: 1160px; margin: 0 auto; color: #555; }
 .ev-sec { margin-top: 62px; }
@@ -16272,11 +16272,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ev-card b { display: block; margin: 16px 0 8px; font-size: 17.5px; color: #1f1f22; }
 .ev-card p { margin: 0; font-size: 14.5px; line-height: 1.7; color: #555; word-break: keep-all; }
 
-.ev-cta { display: flex; align-items: center; justify-content: center; gap: 36px;
-  flex-wrap: wrap; margin-top: 44px; padding: 30px 34px;
-  background: #f4f0f8; border-radius: 16px; }
-.ev-cta p { margin: 0; font-size: 20px; font-weight: 700; color: #1f1f22; line-height: 1.5; }
-.ev-cta p b { color: var(--color-primary); }
 
 .ev-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
 .ev-step { display: flex; align-items: flex-start; gap: 14px;
@@ -16291,6 +16286,4 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 @media (max-width: 720px) {
   .ev-h { font-size: 22px; }
-  .ev-cta { flex-direction: column; align-items: flex-start; gap: 18px; }
-  .ev-cta { text-align: left; }
 }

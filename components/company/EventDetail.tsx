@@ -1,17 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { FileText, Monitor, Users, ChevronRight, UserPlus, CheckCircle2 } from "lucide-react";
 import { 플랜, 스타트 } from "@/lib/companyPlans";
-import { use기업CTA } from "@/lib/companyCta";
 
 /**
  * 오픈이벤트 안내 한 장.
  *
- * 흐름은 배너 → 혜택 → 참여 방법 → 노출 자리 → 안내 → 유의사항이다. 표부터
- * 들이밀면 「그래서 뭘 주는데」가 표 안에 숨는다 — 혜택 셋을 먼저 카드로
- * 보이고, 표는 다 읽은 사람을 위한 요약으로 뒤에 둔다.
+ * 흐름은 배너 → 혜택 → 참여 방법 → 노출 자리 → 유의사항이다. 한때 같은 것을
+ * 표로 한 번 더 적고 부르는 띠를 두 개 두었는데, 혜택 카드가 이미 다 말하고
+ * 있어 표는 요약이 아니라 반복이었다. 누를 곳은 배너의 단추 하나로 족하다.
  *
  * 내용은 공지(type=event, target=company)에서 받아 온다. 이벤트가 바뀌면
  * 공지만 고치고, 끝나면 공지를 내리면 된다.
@@ -33,7 +31,6 @@ export default function EventDetail({ 머리숨김 = false }: {
   /** 제목을 세우지 않는다 — 기업 서비스 첫 화면처럼 배너가 이미 말한 자리용 */
   머리숨김?: boolean;
 }) {
-  const { 갈곳, 글: 단추글 } = use기업CTA();
   const [것, set것] = useState<공지 | null>(null);
   const [본문, set본문] = useState("");
 
@@ -99,12 +96,6 @@ export default function EventDetail({ 머리숨김 = false }: {
         </div>
       </section>
 
-      {/* ── 부르기 ── 혜택을 읽은 바로 그 자리에서 누를 수 있어야 한다. */}
-      <div className="ev-cta">
-        <p>좋은 인재와의 첫 연결,<br /><b>뷰티워크</b>에서 시작하세요</p>
-        <Link href={갈곳} className="cs-btn-fill lg">{단추글} <ChevronRight size={17} /></Link>
-      </div>
-
       <section className="ev-sec">
         <h3 className="ev-h">이벤트 <b>참여 방법</b></h3>
         <div className="ev-steps">
@@ -147,18 +138,6 @@ export default function EventDetail({ 머리숨김 = false }: {
                 </div>
               </td>
             </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section className="ev-sec">
-        <h3 className="ev-h">이벤트 안내</h3>
-        <table className="pi-tb">
-          <tbody>
-            {혜택.map((b) => (
-              <tr key={b.이름}><th>{b.이름.replace(/\s*\(.*\)$/, "")}</th><td>{b.글}</td></tr>
-            ))}
-            {맺는말 && <tr><th>이벤트 기간</th><td>{맺는말}</td></tr>}
           </tbody>
         </table>
       </section>
