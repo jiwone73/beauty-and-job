@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import ServiceHeader from "@/components/company/ServiceHeader";
-import EventHighlight from "@/components/company/EventHighlight";
+import EventPill from "@/components/company/EventPill";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
@@ -83,6 +83,7 @@ export default function CompanyServicePage() {
       <section className="cs-hero" id="소개">
         <div className="cs-hero-photo" aria-hidden />
         <div className="cs-hero-in">
+          <EventPill />
           <h1 className="cs-hero-t">
             뷰티 인재 채용,<br />
             <b>뷰티워크</b>에서 시작하세요
@@ -117,14 +118,6 @@ export default function CompanyServicePage() {
             ))}
           </ul>
         </div>
-      </section>
-
-      {/* ── 오픈이벤트 ──
-          기업 서비스로 들어온 사람이 이벤트를 못 보고 지나가고 있었다. 지금
-          라이트를 살 이유가 이것이라 요금제보다 먼저 선다. 내용은 공지에서
-          받아 오므로 이벤트가 끝나면 저절로 사라진다. */}
-      <section className="cs-wrap">
-        <EventHighlight />
       </section>
 
       {/* ── 다루는 직군 ── */}

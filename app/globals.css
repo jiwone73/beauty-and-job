@@ -16174,24 +16174,19 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .sup-file-n { font-size: 13.5px; color: #8a8a90; margin: 10px 2px 0; }
 .sup-file-n a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
 
-/* 기업 서비스 첫 화면의 오픈이벤트 블록. 지금 상품을 살 이유가 이것이라
-   소개 다음에 바로 선다 — 혜택 이름까지만 보이고 나머지는 이벤트 페이지가 맡는다. */
-.cs-evt { max-width: 1120px; margin: 0 auto; padding: 38px 32px 34px; text-align: center;
-  border: 1px solid var(--card-line); border-radius: 16px; background: #fbfafc; }
-.cs-evt-tag { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 10px;
-  font-size: 13.5px; font-weight: 700; color: var(--color-primary);
-  border: 1px solid var(--color-primary); border-radius: 100px; padding: 4px 13px; }
-.cs-evt-t { font-size: 25px; font-weight: 700; color: #1f1f22; margin: 0 0 24px;
-  letter-spacing: -.6px; word-break: keep-all; line-height: 1.35; }
-.cs-evt-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px; margin: 0 auto 26px; max-width: 800px; text-align: left; }
-.cs-evt-item { background: #fff; border: 1px solid var(--card-line); border-radius: 12px;
-  padding: 18px 20px; }
-.cs-evt-item b { display: block; font-size: 16px; color: var(--color-primary); margin-bottom: 6px; }
-.cs-evt-item span { font-size: 14px; color: #555; line-height: 1.6; word-break: keep-all; }
+/* 히어로 맨 위의 오픈이벤트 한 줄. 블록으로 아래에 두었더니 스크롤해야
+   보였다 — 지금 상품을 살 이유가 이것인데 첫 화면에 없으면 없는 것과 같다. */
+.cs-evtpill { display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+  background: #fff; border: 1px solid var(--color-primary); border-radius: 100px;
+  padding: 7px 16px 7px 14px; margin-bottom: 18px; color: #1f1f22; font-size: 14.5px;
+  box-shadow: 0 1px 6px rgba(88, 38, 129, .1); }
+.cs-evtpill:hover { background: #fbfafc; }
+.cs-evtpill svg { flex: none; color: var(--color-primary); }
+.cs-evtpill b { color: var(--color-primary); font-weight: 700; }
+.cs-evtpill span { font-weight: 600; }
 @media (max-width: 640px) {
-  .cs-evt { padding: 28px 18px 26px; }
-  .cs-evt-t { font-size: 20px; }
+  .cs-evtpill { font-size: 13px; padding: 6px 12px; gap: 6px; }
+  .cs-evtpill b { display: none; }
 }
 
 /* 배너 소재 예시 — 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다. */
