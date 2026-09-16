@@ -13220,7 +13220,10 @@ button,
 /* 시안은 이 글자도 분홍이지만, 로고와 다른 색이면 같은 이름으로 안 읽힌다.
    브랜드 보라를 그대로 쓴다. */
 .cs-hero-t b { color: #582681; font-weight: 700; }
-.cs-hero-d { font-size: 15.5px; line-height: 1.75; color: #5a5157; margin: 0 0 30px; word-break: keep-all; }
+.cs-hero-d { font-size: 19px; line-height: 1.7; color: #5a5157; margin: 0 0 30px; word-break: keep-all; }
+/* 제목이 상품 이름이라면 이 줄은 그것으로 무엇이 되는가다 — 그 안에서도
+   파는 말 하나만 굵게 뽑는다. */
+.cs-hero-d b { color: #1f1f22; font-weight: 800; }
 .cs-hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 /* 네 마디를 한 줄에 세우고 사이를 선으로만 가른다. 칸을 만들면 카드가 되어
    위의 제목·버튼과 무게를 다툰다. */
