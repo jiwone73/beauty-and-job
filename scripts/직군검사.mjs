@@ -6,7 +6,7 @@
 // 눈으로 보면 멀쩡해 보이는 종류의 어긋남이라 검사로 잡는다.
 //
 //   node scripts/직군검사.mjs
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 
 const 원본 = readFileSync("lib/data/jobGroups.ts", "utf8");
 const 흠 = [];
@@ -47,9 +47,14 @@ import { execSync } from "node:child_process";
  * 아닌 글자가 들어가면 경로를 통째로 따옴표로 감싸고 바이트를 \353 꼴로
  * 풀어 쓴다. 그 글자를 그대로 readFileSync 에 넘기면 없는 파일이라며 죽는다 —
  * 실제로 `[면]` 폴더 하나를 더한 날 배포가 여기서 멈췄다.
+ *
+ * 없는 파일은 걸러 낸다. git 은 **적힌 것**을 말하므로, 지웠지만 아직 담지
+ * 않은 파일도 목록에 낀다 — 그걸 읽으려다 빌드가 죽었다. 커밋하면 사라질
+ * 문제이긴 해도, 빌드가 작업 폴더 상태에 따라 되고 안 되고 하면 안 된다.
  */
 const 깃파일 = (패턴) =>
-  execSync(`git ls-files -z ${패턴}`, { encoding: "utf8" }).split("\0").filter(Boolean);
+  execSync(`git ls-files -z ${패턴}`, { encoding: "utf8" })
+    .split("\0").filter(Boolean).filter((f) => existsSync(f));
 const 모든항목 = [...매장, ...본사].flatMap((g) => g.항목);
 const 코드들 = 깃파일(`'app/**/*.tsx' 'app/**/*.ts' 'components/**/*.tsx' 'components/**/*.ts'`);
 for (const f of 코드들) {
