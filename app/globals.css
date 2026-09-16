@@ -16288,15 +16288,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ev-step b { display: block; font-size: 16px; color: #1f1f22; margin-bottom: 5px; }
 .ev-step p { margin: 0; font-size: 14px; color: #8a8a90; line-height: 1.6; word-break: keep-all; }
 
-.ev-foot { display: flex; align-items: center; justify-content: space-between; gap: 28px;
-  flex-wrap: wrap; margin-top: 62px; padding: 34px 36px;
-  background: var(--color-primary); border-radius: 16px; }
-.ev-foot p { margin: 0; color: #fff; font-size: 15px; line-height: 1.7; opacity: .9; }
-.ev-foot p b { display: block; font-size: 23px; font-weight: 800; opacity: 1; margin-bottom: 4px;
-  letter-spacing: -.5px; }
 
 @media (max-width: 720px) {
   .ev-h { font-size: 22px; }
-  .ev-cta, .ev-foot { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .ev-cta { flex-direction: column; align-items: flex-start; gap: 18px; }
   .ev-cta { text-align: left; }
 }

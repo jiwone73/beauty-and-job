@@ -181,10 +181,6 @@ export default function EventDetail({ 머리숨김 = false }: {
         </ul>
       </section>
 
-      <div className="ev-foot">
-        <p><b>뷰티의 내일을 함께 만들어갑니다.</b><br />지금 무료로 공고 등록하고 새로운 인재를 만나보세요.</p>
-        <Link href={갈곳} className="cs-btn-white">{단추글} <ChevronRight size={17} /></Link>
-      </div>
     </div>
   );
 }
