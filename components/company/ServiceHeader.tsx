@@ -4,14 +4,17 @@ import Link from "next/link";
 import Image from "next/image";
 
 /**
- * 기업 서비스 화면의 머리. 소개 화면과 요금제 상세가 같은 것을 쓴다.
+ * 기업 서비스 화면의 머리. 소개 화면과 상품 화면이 같은 것을 쓴다.
  *
- * 같은 머리를 두 화면에 따로 적어 두면 메뉴를 하나 고칠 때마다 한쪽이 남는다.
- * 닻(#요금제 같은 것)은 소개 화면에서만 쓸모가 있어, 다른 화면에서는 소개로
- * 돌아가는 길로 바꿔 준다.
+ * 넷만 둔다. 「매장 채용」과 「오피스 채용」은 둘 다 같은 닻(#직군)으로 가고
+ * 있었다 — 이름이 둘인데 목적지가 하나였고, 그 자리는 직군 아이콘이 늘어선
+ * 소개 섹션이지 채용을 시작하는 곳도 아니었다. 「서비스 소개」는 이 화면 맨
+ * 위라 로고가 이미 하는 일이다.
+ *
+ * 이름은 로그인 뒤 사이드와 맞춘다. 가입 전에 「요금제」로 부르고 가입 뒤에
+ * 「채용공고 상품」으로 부르면 같은 것을 두 이름으로 배우게 된다.
  */
-export default function ServiceHeader({ 소개화면 = false }: { 소개화면?: boolean }) {
-  const 닻 = (id: string) => (소개화면 ? `#${id}` : `/company#${id}`);
+export default function ServiceHeader() {
   return (
     <header className="cs-header">
       <div className="cs-header-in">
@@ -19,12 +22,10 @@ export default function ServiceHeader({ 소개화면 = false }: { 소개화면?:
           <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
         </Link>
         <nav className="cs-nav">
-          <a href={닻("소개")}>서비스 소개</a>
-          <a href={닻("직군")}>매장 채용</a>
-          <a href={닻("직군")}>오피스 채용</a>
+          {/* 지금 상품을 살 이유가 이벤트라 맨 앞이다. 끝나면 이 줄만 빼면 된다. */}
           <Link href="/company/plans/event" className="cs-nav-evt">오픈이벤트</Link>
-          <Link href="/company/plans">요금제</Link>
-          <Link href="/company/plans/ads">배너광고</Link>
+          <Link href="/company/plans">채용공고 상품</Link>
+          <Link href="/company/plans/ads">배너광고 상품</Link>
           <Link href="/support">고객센터</Link>
         </nav>
         <div className="cs-header-btns">

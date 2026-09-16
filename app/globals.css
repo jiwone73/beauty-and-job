@@ -13171,10 +13171,13 @@ button,
 .cs-header { border-bottom: 1px solid #efeff1; background: #fff; position: sticky; top: 0; z-index: 30; }
 .cs-header-in { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 28px; }
 .cs-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
-.cs-nav { display: flex; gap: 26px; margin: 0 auto; }
-.cs-nav a { font-size: 15px; font-weight: 500; color: #4a4a4a; text-decoration: none; white-space: nowrap; }
+.cs-nav { display: flex; gap: 32px; margin: 0 auto; }
+.cs-nav a { font-size: 16.5px; font-weight: 500; color: #4a4a4a; text-decoration: none; white-space: nowrap; }
 .cs-nav a:hover { color: var(--cs); }
 .cs-header-btns { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* 머리줄 단추는 본문 단추보다 한 호수 크다 — 메뉴 글자와 나란히 서는 자리라
+   같이 커야 줄이 맞는다. */
+.cs-header-btns .cs-btn-ghost, .cs-header-btns .cs-btn-fill { height: 42px; font-size: 15.5px; padding: 0 20px; }
 
 /* 버튼 — 채운 것 하나, 테두리 하나. 둘 다 채우면 어디를 눌러야 할지 갈린다. */
 .cs-btn-fill, .cs-btn-line, .cs-btn-ghost, .cs-btn-white {

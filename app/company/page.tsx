@@ -6,6 +6,7 @@ import Image from "next/image";
 import PlanCards from "@/components/company/PlanCards";
 import ServiceHeader from "@/components/company/ServiceHeader";
 import EventBand from "@/components/company/EventBand";
+import { useAuthStore } from "@/lib/store/authStore";
 import { 면이름, 면설명, 면상품, type 광고면 } from "@/lib/adProducts";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
@@ -86,12 +87,16 @@ const FAQS = [
 ];
 
 export default function CompanyServicePage() {
+  // 로그인 상태를 보고 단추가 갈 곳을 정한다. 이 화면은 그동안 로그인 여부를
+  // 아예 보지 않아, 이미 가입한 사장님도 가입 화면으로 떨어졌다.
+  const { isLoggedIn, ownerType } = useAuthStore();
+  const 기업인가 = isLoggedIn && ownerType === "company";
   const [열린질문, set열린질문] = useState<number | null>(null);
 
   return (
     <div className="cs-page">
       {/* ── 헤더 ── */}
-      <ServiceHeader 소개화면 />
+      <ServiceHeader />
 
       {/* ── 히어로 ── */}
       <section className="cs-hero" id="소개">
@@ -105,12 +110,20 @@ export default function CompanyServicePage() {
             헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관까지<br />
             뷰티 분야 전반에 걸친 폭넓은 인재 풀과 맞춤형 인재추천 서비스를 제공합니다.
           </p>
+          {/* 매장·오피스로 단추를 나눠 두었지만 ?type= 을 가입 화면이 읽지
+              않아 어느 쪽을 눌러도 같은 빈 화면이었다. 업체 성격은 가입 때 한 번
+              고르고, 오피스 자리를 뽑을지는 공고를 만들 때 유형으로 고른다 —
+              여기서 미리 물을 것이 아니다.
+
+              이미 기업회원이면 가입 화면으로 보내지 않는다. 이 화면에 온 목적은
+              채용이라 공고 등록으로 바로 보낸다. */}
           <div className="cs-hero-btns">
-            <Link href="/company/signup?type=STORE" className="cs-btn-fill lg">
-              매장 채용 시작하기 <ArrowRight size={16} />
+            <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
+                  className="cs-btn-fill lg">
+              {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ArrowRight size={16} />
             </Link>
-            <Link href="/company/signup?type=OFFICE" className="cs-btn-line lg">
-              오피스 채용 시작하기 <ArrowRight size={16} />
+            <Link href="/company/plans" className="cs-btn-line lg">
+              상품안내 보기 <ArrowRight size={16} />
             </Link>
           </div>
 
