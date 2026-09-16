@@ -8,7 +8,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
   CheckCircle2, ArrowRight,
-  UserPlus, FileText, Users, CircleCheck, Wallet, Gift,
+  UserPlus, FileText, Users, CircleCheck, Wallet, Gift, TrendingUp,
 } from "lucide-react";
 
 /**
@@ -44,11 +44,16 @@ const 직군 = [
  * 남긴 넷은 지금 화면에서 그대로 확인되는 것들이다.
  */
 const 히어로강점 = [
-  { Icon: Scissors, name: "뷰티 채용만", sub: "매장부터 브랜드·제조·유통·교육까지" },
+  { Icon: Scissors, name: "뷰티 채용 전문", sub: "매장부터 브랜드·제조·유통·교육까지" },
   { Icon: FileText, name: "공고 건수 제한 없음", sub: "몇 건을 올리셔도 값이 같습니다" },
   { Icon: Users, name: "지원자는 이용권 없이", sub: "이력서와 연락처를 그대로 봅니다" },
   { Icon: Wallet, name: "자동 결제 없음", sub: "기간이 끝나면 그대로 끝납니다" },
 ];
+
+/** 이벤트 중에는 마지막 한 칸을 이벤트 혜택이 쓴다. 지금 이 줄에서 제일 센
+ *  말이 「선착순 상단 노출」인데, 그것이 빠진 채로 「자동 결제 없음」이 서
+ *  있을 이유가 없다. 이벤트가 끝나면 저절로 돌아간다. */
+const 이벤트강점 = { Icon: TrendingUp, name: "메인·검색 상단 노출", sub: "선착순 · 먼저 올리신 순서대로" };
 
 // 대시보드에서 실제로 되는 것. 「성과 분석」·「맞춤 추천」은 없는 기능이었다.
 const 대시보드혜택 = [
@@ -97,7 +102,7 @@ export default function CompanyServicePage() {
           </h1>
           <p className="cs-hero-d">
             헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관까지<br />
-            뷰티 채용만 다룹니다.
+            뷰티 채용 전문입니다.
           </p>
           <div className="cs-hero-btns">
             <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
@@ -110,7 +115,7 @@ export default function CompanyServicePage() {
           </div>
 
           <ul className="cs-hero-pts">
-            {히어로강점.map(({ Icon, name, sub }) => (
+            {[...히어로강점.slice(0, 3), 이벤트 ? 이벤트강점 : 히어로강점[3]].map(({ Icon, name, sub }) => (
               <li key={name}>
                 <Icon size={22} strokeWidth={1.7} />
                 <span><b>{name}</b>{sub}</span>
