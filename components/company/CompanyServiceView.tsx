@@ -6,7 +6,7 @@ import ServiceHeader from "@/components/company/ServiceHeader";
 import type { 기업이벤트 } from "@/lib/companyEvent.server";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Scissors, FileText, Users, Wallet, Gift, TrendingUp, ArrowRight,
+  Scissors, FileText, Users, Wallet, ArrowRight, CalendarDays, ChevronRight,
 } from "lucide-react";
 import EventDetail from "@/components/company/EventDetail";
 
@@ -60,29 +60,28 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             사진으로 돌아가기 전에 갈아야 한다. */}
         <div className={`cs-hero-photo${이벤트 ? " evt" : ""}`} aria-hidden />
         <div className="cs-hero-in">
-          {이벤트 && <p className="cs-hero-eyebrow"><Gift size={15} />뷰티워크 오픈이벤트</p>}
+          {이벤트 && <p className="cs-hero-eyebrow">BEAUTYWORK OPEN EVENT</p>}
           <h1 className="cs-hero-t">
             {이벤트
               ? <>{이벤트.short_title || 이벤트.title}</>
               : <>뷰티 인재 채용,<br /><b>뷰티워크</b>에서 시작하세요</>}
           </h1>
-          {이벤트 && (
-            <p className="cs-hero-hit">
-              <TrendingUp size={22} />
-              <b>선착순 메인·검색 상단 노출</b>
-            </p>
-          )}
           <p className="cs-hero-d">
-            헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관 채용까지<br />
-            모두 뷰티워크에서 만나보세요.
+            {이벤트
+              ? <>선착순 메인·검색 상단 노출로<br />더 많은 인재와 빠르게 연결됩니다.</>
+              : <>헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관 채용까지<br />
+                  모두 뷰티워크에서 만나보세요.</>}
           </p>
+          {이벤트?.기간 && (
+            <p className="cs-hero-when"><CalendarDays size={17} />{이벤트.기간}</p>
+          )}
           <div className="cs-hero-btns">
             <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
                   className="cs-btn-fill lg">
-              {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ArrowRight size={16} />
+              {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ChevronRight size={17} />
             </Link>
             <Link href="/company/plans" className="cs-btn-line lg">
-              상품안내 보기 <ArrowRight size={16} />
+              상품안내 보기 <ChevronRight size={17} />
             </Link>
           </div>
 
