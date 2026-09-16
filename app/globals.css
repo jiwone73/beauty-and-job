@@ -16073,6 +16073,13 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); color: #fff;
   font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .pi-step li b { color: #1f1f22; font-weight: 700; }
+/* 배너광고는 카드가 둘이라 넉 장짜리 폭으로 두면 허전하다. 가운데로 모은다. */
+.cs-plans.ad2 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 720px; margin-left: auto; margin-right: auto; }
+.cs-plans.ad2 .cs-plan-li li { display: block; padding-left: 11px; }
+.cs-plans.ad2 .cs-plan-li li b { display: block; color: #1f1f22; font-weight: 700; }
+.cs-plans.ad2 .cs-plan-li li span { font-size: 12.5px; color: #8a8a90; }
+.cs-plans.ad2 .cs-plan-amt em { font-size: 24px; font-style: normal; font-weight: 700; color: #1f1f22; }
+
 /* 머리줄의 오픈이벤트 — 기간 한정이라 한 번은 눈에 걸려야 한다. */
 .cs-nav-evt { color: var(--color-primary) !important; font-weight: 700; }
 
