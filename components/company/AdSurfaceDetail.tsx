@@ -23,14 +23,28 @@ import { 원 } from "@/lib/companyPlans";
  * 좌우도 잰다. 공고 목록의 배너는 왼쪽 사이드바 오른쪽에서 시작하는데, 상자를
  * 좌우로 꽉 채웠더니 배너가 사이드까지 먹는 것처럼 보였다.
  */
-const 자리표 = {
-  "main-banner":       { 그림: "ad-main-slot",       위: 6.3,  높이: 16.3, 왼: 2.5, 오: 2.6,
-                         이름: "메인 페이지 상단 배너" },
-  "jobs-banner":       { 그림: "ad-jobs-slot",       위: 6.1,  높이: 12.0, 왼: 19.1, 오: 2.6,
-                         이름: "채용공고 목록 (직군 미선택)" },
-  "jobs-group-banner": { 그림: "ad-jobs-group-slot", 위: 6.1,  높이: 12.0, 왼: 19.1, 오: 2.6,
-                         이름: "채용공고 목록 (직군 선택)" },
-} as const;
+type 상자 = { 위: number; 높이: number; 왼: number; 오: number; 말: string;
+  /** 상자가 좁으면 말풍선이 안을 덮는다 — 그럴 때 옆으로 뺀다. */
+  옆?: boolean };
+const 자리표: Record<string, { 그림: string; 이름: string; 상자들: 상자[] }> = {
+  "main-banner": {
+    그림: "ad-main-slot", 이름: "메인 페이지 상단 배너",
+    상자들: [{ 위: 6.3, 높이: 16.3, 왼: 2.5, 오: 2.6, 말: "메인 AD 배너 자리" }],
+  },
+  "jobs-banner": {
+    그림: "ad-jobs-slot", 이름: "채용공고 목록 (직군 미선택)",
+    상자들: [{ 위: 6.1, 높이: 12.0, 왼: 19.1, 오: 2.6, 말: "채용공고 페이지 배너 자리" }],
+  },
+  "jobs-group-banner": {
+    그림: "ad-jobs-group-slot", 이름: "채용공고 목록 (직군 선택)",
+    // 두 곳을 두른다. 배너만 두르면 이 배너가 **왜** 떴는지가 안 보인다 —
+    // 왼쪽에서 그 직군을 고른 사람에게만 뜨는 자리다.
+    상자들: [
+      { 위: 6.1,  높이: 12.0, 왼: 19.1, 오: 2.6,  말: "직군별 배너 자리" },
+      { 위: 36.3, 높이: 3.0,  왼: 3.0,  오: 83.2, 말: "고른 직군", 옆: true },
+    ],
+  },
+};
 
 function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
   const [일수, set일수] = useState<기간>(30);
@@ -80,15 +94,18 @@ function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
         <>
           <div className="pi-list" style={{ marginTop: 22 }}>
             <img src={`/images/plans/${자리.그림}.png`} alt={`${자리.이름} 배너 자리`} />
-            <div className="pi-zone on"
-                 style={{ top: `${자리.위}%`, height: `${자리.높이}%`,
-                          left: `${자리.왼}%`, right: `${자리.오}%` }}>
-              <span className="pi-bub">{것.name} 자리</span>
-            </div>
+            {자리.상자들.map((상자) => (
+              <div key={상자.말} className="pi-zone on"
+                   style={{ top: `${상자.위}%`, height: `${상자.높이}%`,
+                            left: `${상자.왼}%`, right: `${상자.오}%` }}>
+                <span className={`pi-bub${상자.옆 ? " side" : ""}`}>{상자.말}</span>
+              </div>
+            ))}
           </div>
           <p className="pi-cap">
             ▲ {자리.이름} — 빨간 테두리가 배너가 서는 자리입니다.
-            {것.면 === "MAIN" && " 지금 뷰티워크 배너가 선 그 자리이며, 광고가 걸리면 그 자리를 광고가 씁니다."}
+            {것.id === "main-banner" && " 지금 뷰티워크 배너가 선 그 자리이며, 광고가 걸리면 그 자리를 광고가 씁니다."}
+            {것.id === "jobs-group-banner" && " 왼쪽에서 그 직군을 고른 사람에게만 이 배너가 뜹니다."}
           </p>
         </>
       )}

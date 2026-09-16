@@ -16056,6 +16056,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-bub::after { content: ""; position: absolute; left: 50%; bottom: -5px; margin-left: -5px;
   border-left: 5px solid transparent; border-right: 5px solid transparent;
   border-top: 5px solid #e02020; }
+/* 상자가 좁으면 말풍선이 안을 덮는다. 오른쪽으로 빼고 화살표도 왼쪽을 본다. */
+.pi-bub.side { left: 100%; top: 50%; transform: translate(9px, -50%); }
+.pi-bub.side::after { left: -5px; top: 50%; bottom: auto; margin: -5px 0 0;
+  border: 5px solid transparent; border-right-color: #e02020; border-top-color: transparent; }
 
 /* 안 되는 칸은 비워 두지 않는다 — 비면 아직 안 그린 화면처럼 보인다.
    같은 화면을 흐려 두고 그 위에 「여기 없다」를 적는다. */
