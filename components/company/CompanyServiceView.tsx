@@ -75,9 +75,10 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             <p className="cs-hero-when"><CalendarDays size={17} />{이벤트.기간}</p>
           )}
           <div className="cs-hero-btns">
-            <Link href={갈곳} className="cs-btn-fill lg">{단추글} <ChevronRight size={17} /></Link>
-            <Link href="/company/plans" className="cs-btn-line lg">
-              상품안내 보기 <ChevronRight size={17} />
+            {/* 이벤트 중에는 무엇이 무료인지까지 단추가 말한다. 이벤트가 끝나면
+                로그인 여부에 따른 기본 이름으로 돌아간다. */}
+            <Link href={갈곳} className="cs-btn-fill lg">
+              {이벤트 ? "무료 공고 등록하기" : 단추글} <ChevronRight size={17} />
             </Link>
           </div>
 

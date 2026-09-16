@@ -13220,7 +13220,12 @@ button,
 /* 시안은 이 글자도 분홍이지만, 로고와 다른 색이면 같은 이름으로 안 읽힌다.
    브랜드 보라를 그대로 쓴다. */
 .cs-hero-t b { color: #582681; font-weight: 700; }
-.cs-hero-d { font-size: 19px; line-height: 1.7; color: #5a5157; margin: 0 0 30px; word-break: keep-all; }
+.cs-hero-d { font-size: 19px; line-height: 1.7; color: #1f1f22; margin: 0 0 22px; word-break: keep-all; }
+/* 기간 — 단추 바로 위라 그 사이를 넉넉히 둔다. 붙여 놓으면 단추가 기간에
+   딸린 것처럼 읽힌다. */
+.cs-hero-when { display: flex; align-items: center; gap: 7px; margin: 0 0 30px;
+  font-size: 16px; font-weight: 600; color: #1f1f22; }
+.cs-hero-when svg { flex: none; color: var(--color-primary); }
 /* 제목이 상품 이름이라면 이 줄은 그것으로 무엇이 되는가다 — 그 안에서도
    파는 말 하나만 굵게 뽑는다. */
 .cs-hero-d b { color: #1f1f22; font-weight: 800; }
