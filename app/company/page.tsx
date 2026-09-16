@@ -2,19 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import PlanCards from "@/components/company/PlanCards";
 import ServiceHeader from "@/components/company/ServiceHeader";
-import EventBand from "@/components/company/EventBand";
+import EventHighlight from "@/components/company/EventHighlight";
 import { useAuthStore } from "@/lib/store/authStore";
-import { 면이름, 면설명, 면상품, type 광고면 } from "@/lib/adProducts";
 import {
   Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
-  CheckCircle2, ArrowRight, Plus, Minus,
-  UserPlus, FileText, Users, CircleCheck,
-  Megaphone, Star, TrendingUp,
-  ShieldCheck, Zap, Wallet, RefreshCw, Headphones,
-  UserRoundCheck, Crosshair,
+  CheckCircle2, ArrowRight,
+  UserPlus, FileText, Users, CircleCheck, Wallet,
 } from "lucide-react";
 
 /**
@@ -39,52 +33,39 @@ const 직군 = [
   { Icon: GraduationCap, name: "교육기관", sub: "강사, 교육 운영" },
 ];
 
-// 히어로 아래 띠. 무엇을 믿고 맡기라는 것인지 네 마디로 먼저 못 박는다.
+/**
+ * 히어로 아래 띠 — 지금 우리가 실제로 하는 것만 적는다.
+ *
+ * 전에는 「검증된 인재 DB 보유」·「맞춤형 인재추천」·「합리적인 비용」이 적혀
+ * 있었다. 우리는 인재를 검증하지 않고, 추천 기능은 아직 돌지 않으며, 값이
+ * 싸다는 근거도 없다. 광고 문장은 첫 거짓말이 드러나는 순간 나머지도 같이
+ * 못 믿게 만든다.
+ *
+ * 남긴 넷은 지금 화면에서 그대로 확인되는 것들이다.
+ */
 const 히어로강점 = [
-  { Icon: UserRoundCheck, name: "뷰티 전문 인재 풀", sub: "검증된 인재 DB 보유" },
-  { Icon: Crosshair, name: "맞춤형 인재추천", sub: "직군·지역 기반 추천 매칭" },
-  { Icon: ShieldCheck, name: "합리적인 비용", sub: "효율적인 채용 프로세스" },
-  { Icon: TrendingUp, name: "지속적인 업그레이드", sub: "서비스 기능 지속 강화" },
+  { Icon: Scissors, name: "뷰티 채용만", sub: "매장부터 브랜드·제조·유통·교육까지" },
+  { Icon: FileText, name: "공고 건수 제한 없음", sub: "몇 건을 올리셔도 값이 같습니다" },
+  { Icon: Users, name: "지원자는 이용권 없이", sub: "이력서와 연락처를 그대로 봅니다" },
+  { Icon: Wallet, name: "자동 결제 없음", sub: "기간이 끝나면 그대로 끝납니다" },
 ];
 
+// 대시보드에서 실제로 되는 것. 「성과 분석」·「맞춤 추천」은 없는 기능이었다.
 const 대시보드혜택 = [
-  "실시간 지원 현황 및 데이터 확인",
-  "공고 성과 분석으로 효율적 채용",
-  "직군·지역 기반 맞춤 인재 추천",
-  "간편한 서류 검토 및 면접 관리",
+  "지원자 이력서와 연락처를 바로 확인",
+  "열람·면접·합격까지 지원 상태 관리",
+  "공고별 지원자 수를 한 화면에서",
+  "메인 노출 횟수와 남은 기간 확인",
 ];
 
 const 절차 = [
-  { no: "01", Icon: UserPlus, name: "기업회원 가입", sub: "간단한 정보 입력 후 빠르게 가입" },
-  { no: "02", Icon: FileText, name: "채용공고 등록", sub: "직무, 근무조건, 혜택 등 상세 정보 등록" },
-  { no: "03", Icon: Users, name: "인재 추천 및 지원", sub: "맞춤 추천 인재 확인 및 지원 접수" },
-  { no: "04", Icon: CircleCheck, name: "면접 및 채용", sub: "지원자와 면접 후 진행하고 채용을 완료합니다" },
+  { no: "01", Icon: UserPlus, name: "기업회원 가입", sub: "사업자 정보를 확인하고 가입합니다" },
+  { no: "02", Icon: FileText, name: "채용공고 등록", sub: "직무·근무조건·복리후생을 적어 올립니다" },
+  { no: "03", Icon: Users, name: "지원자 확인", sub: "이력서와 연락처를 보고 연락합니다" },
+  { no: "04", Icon: CircleCheck, name: "면접 및 채용", sub: "면접을 진행하고 지원 상태를 옮깁니다" },
 ];
 
-// 메인 AD 배너 상품이 실제로 어떻게 걸리는지 보여주는 예시 이미지.
-// 말로 "20만원~"만 적어 두면 뭘 사는 건지 그려지지 않는다.
-const 배너샘플 = [
-  "/images/company/ad-banner-sample-1.png",
-  "/images/company/ad-banner-sample-2.png",
-  "/images/company/ad-banner-sample-3.png",
-  "/images/company/ad-banner-sample-4.png",
-  "/images/company/ad-banner-sample-5.png",
-];
 
-const 이유 = [
-  { Icon: Sparkles, name: "뷰티 전문 플랫폼", sub: "뷰티 분야에 특화된 인재 풀과 데이터 보유" },
-  { Icon: ShieldCheck, name: "검증된 인재 풀", sub: "경력·자격 검토를 통한 검증된 인재 매칭" },
-  { Icon: Zap, name: "빠른 매칭 & 추천", sub: "맞춤 추천으로 채용 기간 단축" },
-  { Icon: Wallet, name: "합리적인 비용", sub: "효율적인 채용을 위한 합리적인 광고 비용" },
-  { Icon: RefreshCw, name: "지속적인 서비스 개선", sub: "기업의 의견을 반영하여 기능을 자속적으로 업데이트" },
-];
-
-const FAQS = [
-  { q: "매장과 오피스 채용을 동시에 진행할 수 있나요?", a: "네. 가입 시 유형을 고르고, 공고를 만들 때마다 매장·오피스 중에서 선택하실 수 있습니다. 한 계정에서 양쪽을 함께 관리합니다." },
-  { q: "지원자 매칭은 어떻게 이루어지나요?", a: "직군, 지역, 경력, 고용형태를 견주어 점수를 매기고 높은 순으로 보여드립니다. 지원자가 프로필을 공개한 경우에만 추천됩니다." },
-  { q: "광고 상품은 언제든 변경할 수 있나요?", a: "네. 진행 중인 상품은 잔여 기간을 정산해 다른 상품으로 바꾸실 수 있습니다. 자세한 조건은 고객센터로 문의해 주세요." },
-  { q: "이용 요금은 어떻게 되나요?", a: "채용공고 등록과 지원자 확인은 무료입니다. 상단 노출·배너 등 노출을 늘리는 상품만 유료로 운영합니다." },
-];
 
 export default function CompanyServicePage() {
   // 로그인 상태를 보고 단추가 갈 곳을 정한다. 이 화면은 그동안 로그인 여부를
@@ -108,7 +89,7 @@ export default function CompanyServicePage() {
           </h1>
           <p className="cs-hero-d">
             헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관까지<br />
-            뷰티 분야 전반에 걸친 폭넓은 인재 풀과 맞춤형 인재추천 서비스를 제공합니다.
+            뷰티 채용만 다룹니다.
           </p>
           {/* 매장·오피스로 단추를 나눠 두었지만 ?type= 을 가입 화면이 읽지
               않아 어느 쪽을 눌러도 같은 빈 화면이었다. 업체 성격은 가입 때 한 번
@@ -143,7 +124,7 @@ export default function CompanyServicePage() {
           라이트를 살 이유가 이것이라 요금제보다 먼저 선다. 내용은 공지에서
           받아 오므로 이벤트가 끝나면 저절로 사라진다. */}
       <section className="cs-wrap">
-        <EventBand />
+        <EventHighlight />
       </section>
 
       {/* ── 다루는 직군 ── */}
@@ -159,19 +140,33 @@ export default function CompanyServicePage() {
         </div>
       </section>
 
-      {/* ── 요금제 ── */}
-      <section className="cs-wrap" id="요금제">
-        <h2 className="cs-h2">요금제</h2>
-        <PlanCards />
+
+      {/* ── 이용 절차 ── */}
+      <section className="cs-wrap">
+        <h2 className="cs-h2">이렇게 진행됩니다</h2>
+        <div className="cs-steps">
+          {절차.map(({ no, Icon, name, sub }, i) => (
+            <div key={no} className="cs-step">
+              <span className="cs-step-ic"><Icon size={30} strokeWidth={1.5} /></span>
+              <span className="cs-step-no">{no}</span>
+              <b>{name}</b>
+              <span className="cs-step-s">{sub}</span>
+              {i < 절차.length - 1 && <ArrowRight className="cs-step-ar" size={18} />}
+            </div>
+          ))}
+        </div>
       </section>
+
+
+
 
       {/* ── 대시보드 ── */}
       <section className="cs-wrap cs-dash">
         <div className="cs-dash-l">
           <h2 className="cs-h2 left">채용이 쉬워지는<br />기업회원 대시보드</h2>
           <p className="cs-sub left">
-            직관적인 대시보드로 채용 전 과정을 한눈에 관리하고<br />
-            데이터 기반 인사이트로 더 빠르고 정확한 채용을 경험하세요.
+            공고를 올린 뒤에 하는 일이 다 여기 있습니다.<br />
+            지원자를 보고, 상태를 옮기고, 남은 기간을 확인합니다.
           </p>
           <ul className="cs-checks">
             {대시보드혜택.map((t) => (
@@ -230,108 +225,13 @@ export default function CompanyServicePage() {
         </div>
       </section>
 
-      {/* ── 이용 절차 ── */}
-      <section className="cs-wrap">
-        <h2 className="cs-h2">간단한 4단계로 최적의 인재를 만나보세요</h2>
-        <div className="cs-steps">
-          {절차.map(({ no, Icon, name, sub }, i) => (
-            <div key={no} className="cs-step">
-              <span className="cs-step-ic"><Icon size={30} strokeWidth={1.5} /></span>
-              <span className="cs-step-no">{no}</span>
-              <b>{name}</b>
-              <span className="cs-step-s">{sub}</span>
-              {i < 절차.length - 1 && <ArrowRight className="cs-step-ar" size={18} />}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 광고·노출 상품 ── */}
-      <section className="cs-band" id="광고">
-        <div className="cs-wrap">
-          <h2 className="cs-h2">배너광고 상품</h2>
-          <p className="cs-sub">공고가 아니라 <b>자리</b>를 사는 상품입니다</p>
-          {/* 목록을 여기 또 적지 않는다. 상품안내와 두 벌을 들고 있었더니 값도
-              이름도 갈라졌다 — 여기는 「이런 갈래가 있다」까지만 말한다. */}
-          <div className="cs-ads">
-            {(["MAIN", "JOBS"] as 광고면[]).map((면) => (
-              <Link key={면} href="/company/plans/ads" className="cs-ad">
-                {면 === "MAIN" ? <Megaphone size={26} strokeWidth={1.6} /> : <Star size={26} strokeWidth={1.6} />}
-                <b>{면이름[면]}</b>
-                <span>{면설명[면]}</span>
-                <em>{면상품(면).map((x) => x.name).join(" · ")}</em>
-              </Link>
-            ))}
-          </div>
-
-          <div className="cs-banner-gallery">
-            <p className="cs-banner-gallery-label">메인 AD 배너 예시</p>
-            <div className="cs-banner-gallery-row">
-              {배너샘플.map((src, i) => (
-                <div key={src} className="cs-banner-sample">
-                  <Image src={src} alt={`메인 AD 배너 예시 ${i + 1}`} width={1024} height={384} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="cs-center">
-            <Link href="/company/plans/ads" className="cs-btn-fill lg">
-              배너광고 상품 자세히 보기 <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 선택 이유 ── */}
-      <section className="cs-wrap">
-        <h2 className="cs-h2">뷰티워크를 선택해야 하는 이유</h2>
-        <div className="cs-why">
-          <div className="cs-why-grid">
-            {이유.map(({ Icon, name, sub }) => (
-              <div key={name} className="cs-why-c">
-                <Icon size={24} strokeWidth={1.6} />
-                <b>{name}</b>
-                <span>{sub}</span>
-              </div>
-            ))}
-          </div>
-          <div className="cs-why-up">
-            <b>계속해서 업그레이드 됩니다!</b>
-            <p>
-              뷰티워크는 고객사의 의견을 반영하여 더 나은 채용 경험을 제공하기 위해
-              지속적으로 기능을 추가하고 서비스를 개선해 나가겠습니다.
-            </p>
-            <TrendingUp size={40} strokeWidth={1.5} />
-          </div>
-        </div>
-      </section>
-
-      {/* ── 자주 묻는 질문 ── */}
-      <section className="cs-wrap cs-faq-wrap">
-        <div>
-          <h2 className="cs-h2 left">자주 묻는 질문</h2>
-          <ul className="cs-faq">
-            {FAQS.map((f, i) => (
-              <li key={f.q} className={열린질문 === i ? "on" : undefined}>
-                <button type="button" onClick={() => set열린질문(열린질문 === i ? null : i)} aria-expanded={열린질문 === i}>
-                  <i>Q.</i>
-                  <span>{f.q}</span>
-                  {열린질문 === i ? <Minus size={16} /> : <Plus size={16} />}
-                </button>
-                {열린질문 === i && <p>{f.a}</p>}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="cs-help">
-          <Headphones size={34} strokeWidth={1.5} />
-          <b>궁금한 점이 있으신가요?</b>
-          <p>고객센터로 문의하시면<br />빠르게 답변해 드립니다.</p>
-          <Link href="/support" className="cs-btn-line">
-            고객센터 문의하기 <ArrowRight size={15} />
-          </Link>
-        </div>
+      {/* 요금제·배너광고·FAQ 를 이 화면에서 들어냈다. 상품안내와 고객센터가
+          같은 것을 이미 말하고 있었고, 여기서 또 말하면 값이 갈리는 날 한쪽이
+          남는다. 대신 그리로 가는 길만 둔다. */}
+      <section className="cs-wrap cs-center">
+        <Link href="/company/plans" className="cs-btn-line lg">
+          상품과 요금 보기 <ArrowRight size={15} />
+        </Link>
       </section>
 
       {/* ── 마지막 부르기 ── */}

@@ -16173,3 +16173,29 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   color: #fff; background: var(--color-primary); border-radius: 100px; padding: 8px 20px; }
 .sup-file-n { font-size: 13.5px; color: #8a8a90; margin: 10px 2px 0; }
 .sup-file-n a { color: var(--color-primary); font-weight: 600; text-decoration: none; }
+
+/* 기업 서비스 첫 화면의 오픈이벤트 블록. 지금 상품을 살 이유가 이것이라
+   소개 다음에 바로 선다 — 혜택 이름까지만 보이고 나머지는 이벤트 페이지가 맡는다. */
+.cs-evt { max-width: 1120px; margin: 0 auto; padding: 38px 32px 34px; text-align: center;
+  border: 1px solid var(--card-line); border-radius: 16px; background: #fbfafc; }
+.cs-evt-tag { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 10px;
+  font-size: 13.5px; font-weight: 700; color: var(--color-primary);
+  border: 1px solid var(--color-primary); border-radius: 100px; padding: 4px 13px; }
+.cs-evt-t { font-size: 25px; font-weight: 700; color: #1f1f22; margin: 0 0 24px;
+  letter-spacing: -.6px; word-break: keep-all; line-height: 1.35; }
+.cs-evt-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px; margin: 0 auto 26px; max-width: 800px; text-align: left; }
+.cs-evt-item { background: #fff; border: 1px solid var(--card-line); border-radius: 12px;
+  padding: 18px 20px; }
+.cs-evt-item b { display: block; font-size: 16px; color: var(--color-primary); margin-bottom: 6px; }
+.cs-evt-item span { font-size: 14px; color: #555; line-height: 1.6; word-break: keep-all; }
+@media (max-width: 640px) {
+  .cs-evt { padding: 28px 18px 26px; }
+  .cs-evt-t { font-size: 20px; }
+}
+
+/* 배너 소재 예시 — 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다. */
+.pi-samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px; margin-top: 10px; }
+.pi-samples img { display: block; width: 100%; height: 92px; object-fit: cover;
+  border: 1px solid var(--card-line); border-radius: 6px; }

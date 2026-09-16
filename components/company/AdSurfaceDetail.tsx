@@ -18,6 +18,12 @@ import { 원 } from "@/lib/companyPlans";
  */
 
 /**
+ * 메인 AD 배너가 실제로 어떻게 걸리는지 보여 주는 예시 소재.
+ * 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다.
+ */
+const 배너예시: string[] = [1, 2, 3, 4, 5].map((n) => `/images/company/ad-banner-sample-${n}.png`);
+
+/**
  * 캡처에서 배너가 선 자리(%). 캡처를 다시 찍으면 이 값도 같이 본다.
  *
  * 좌우도 잰다. 공고 목록의 배너는 왼쪽 사이드바 오른쪽에서 시작하는데, 상자를
@@ -102,6 +108,13 @@ function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
               </div>
             ))}
           </div>
+          {것.id === "main-banner" && (
+            <div className="pi-samples">
+              {배너예시.map((src, i) => (
+                <img key={src} src={src} alt={`배너 소재 예시 ${i + 1}`} />
+              ))}
+            </div>
+          )}
           <p className="pi-cap">
             ▲ {자리.이름} — 빨간 테두리가 배너가 서는 자리입니다.
             {것.id === "main-banner" && " 지금 뷰티워크 배너가 선 그 자리이며, 광고가 걸리면 그 자리를 광고가 씁니다."}
