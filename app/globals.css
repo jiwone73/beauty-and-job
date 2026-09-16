@@ -16182,12 +16182,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-hero-eyebrow svg { flex: none; }
 /* 이벤트 중의 히어로 그림. 사진이 아니라 그린 것이라 가장자리를 흐리지 않고
    그대로 보여 준다 — 글자가 든 그림은 흐리면 읽히지 않는다. */
+/* 이벤트 중의 히어로 그림 — 선물상자. 사진이라 원래 사진과 같은 결로 녹인다. */
 .cs-hero-photo.evt { background-image: url("/images/company-hero-event.png");
-  background-size: contain; background-position: center right; background-repeat: no-repeat;
-  /* 글자가 든 그림이라 가장자리를 깊이 흐리면 읽히지 않는다. 카드가 그림의
-     14% 지점부터 시작하므로 그 앞만 살짝 녹인다. */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 11%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 11%); }
+  background-position: 50% 45%; }
 
 /* 배너 소재 예시 — 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다. */
 .pi-samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
