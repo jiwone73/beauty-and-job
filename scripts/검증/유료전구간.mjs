@@ -5,6 +5,11 @@ import jwt from 'jsonwebtoken'
 
 const BASE = 'http://localhost:3000'
 const 표시 = '[검증]'
+// 무료 체험 날수는 lib/companyPlans 가 정한다. 숫자를 여기 박아 두면 값이
+// 바뀔 때마다 검증이 먼저 깨져, 정작 무엇이 틀렸는지 알 수 없다.
+const 체험일 = Number((await import('node:fs')).readFileSync('lib/companyPlans.ts', 'utf8')
+  .match(/게재일:\s*(\d+)/)[1])
+const 체험끝 = 체험일 - 1
 let 통과 = 0, 실패 = 0
 const 결과 = []
 function 본다(이름, 맞나, 설명 = '') {
@@ -21,7 +26,8 @@ async function 부른다(path, { method = 'GET', token, body } = {}) {
   let j = null; try { j = await r.json() } catch {}
   return { status: r.status, ok: j?.success, data: j?.data, code: j?.error?.code, msg: j?.error?.message }
 }
-const 날 = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10) }
+// 한국 날짜로 센다. DB 연결도 한국 시간대라 둘이 같은 날을 본다.
+const 날 = (n) => { const d = new Date(Date.now() + 9 * 36e5); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
 
 // ── 준비 ────────────────────────────────────────────────────────────
 const [{ id: 기업 }] = await q(
@@ -37,7 +43,7 @@ const 공고내기 = (n) => 부른다('/api/company/jobs', { method: 'POST', tok
 
 try {
 // ── 1. 스타트(무료 체험) ────────────────────────────────────────────
-console.log('\n1. 스타트 — 라이트 30일 체험')
+console.log(`\n1. 스타트 — 라이트 ${체험일}일 체험`)
 {
   const p = await 부른다('/api/company/me/plan', { token: 기업토큰 })
   본다('이용권이 스타트(plan=null)', p.data?.plan === null, JSON.stringify(p.data))
@@ -49,15 +55,15 @@ console.log('\n1. 스타트 — 라이트 30일 체험')
        낸것.map(r => r.status + ':' + (r.code || '')).join(' '))
 
   const [c] = await q(`SELECT to_char(trial_until,'YYYY-MM-DD') t FROM companies WHERE id=$1`, [기업])
-  본다('첫 공고를 거는 날 체험이 시작된다(오늘 + 29)', c.t === 날(29), `${c.t} vs ${날(29)}`)
+  본다(`첫 공고를 거는 날 체험이 시작된다(오늘 + ${체험끝})`, c.t === 날(체험끝), `${c.t} vs ${날(체험끝)}`)
 
   const [{ a: 처음, b: 끝 }] = await q(
     `SELECT to_char(MIN(listed_until),'YYYY-MM-DD') a, to_char(MAX(listed_until),'YYYY-MM-DD') b
        FROM job_postings WHERE company_id=$1 AND status='ACTIVE'`, [기업])
-  본다('무료 공고는 모두 체험 끝나는 날까지다', 처음 === 날(29) && 끝 === 날(29), `${처음} ~ ${끝}`)
+  본다('무료 공고는 모두 체험 끝나는 날까지다', 처음 === 날(체험끝) && 끝 === 날(체험끝), `${처음} ~ ${끝}`)
 
   const p2 = await 부른다('/api/company/me/plan', { token: 기업토큰 })
-  본다('내 이용권에 체험 남은 날이 보인다', p2.data?.체험중 === true && p2.data?.체험남은일 === 30,
+  본다('내 이용권에 체험 남은 날이 보인다', p2.data?.체험중 === true && p2.data?.체험남은일 === 체험일,
        JSON.stringify({ 중: p2.data?.체험중, 남은: p2.data?.체험남은일 }))
 
   // 체험이 끝나면 못 건다.
@@ -70,8 +76,8 @@ console.log('\n1. 스타트 — 라이트 30일 체험')
        `${막힘.status} ${막힘.code}`)
   const [v] = await q(`SELECT COUNT(*)::int n FROM v_active_jobs WHERE company_id=$1`, [기업])
   본다('체험이 끝나면 걸어 둔 공고가 함께 내려간다', v.n === 0, `${v.n}건 남음`)
-  await q(`UPDATE companies SET trial_until = CURRENT_DATE + 29 WHERE id=$1`, [기업])
-  await q(`UPDATE job_postings SET listed_until = CURRENT_DATE + 29 WHERE company_id=$1`, [기업])
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE + ${체험끝} WHERE id=$1`, [기업])
+  await q(`UPDATE job_postings SET listed_until = CURRENT_DATE + ${체험끝} WHERE company_id=$1`, [기업])
 }
 
 // ── 2. 주문 ────────────────────────────────────────────────────────
@@ -253,7 +259,7 @@ console.log('\n7. 만료')
 // ── 8. 뒷문 ────────────────────────────────────────────────────────
 console.log('\n8. 뒷문')
 {
-  await q(`UPDATE companies SET trial_until = CURRENT_DATE + 29 WHERE id=$1`, [기업])
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE + ${체험끝} WHERE id=$1`, [기업])
 
   // 임시저장으로 넣고 상태만 ACTIVE 로 바꾸면 게재 기간을 건너뛰는가.
   const d = await 부른다('/api/company/jobs', { method: 'POST', token: 기업토큰,
@@ -262,7 +268,10 @@ console.log('\n8. 뒷문')
   const 펴기 = await 부른다(`/api/company/jobs/${임시}`, { method: 'PATCH', token: 기업토큰,
     body: { status: 'ACTIVE' } })
   const [dj] = await q(`SELECT status::text status, to_char(listed_until,'YYYY-MM-DD') lu FROM job_postings WHERE id=$1`, [임시])
-  본다('임시저장을 펴면 게재 종료일이 붙는다', dj?.lu === 날(29),
+  // 여기서는 체험 중이다(바로 위에서 trial_until 을 되돌렸다) — 게재 종료일은
+  // 체험이 끝나는 날이어야 한다. 29 가 박혀 있던 것은 체험이 30일이던 때
+  // 우연히 같은 값이어서였다.
+  본다('임시저장을 펴면 게재 종료일이 붙는다', dj?.lu === 날(체험끝),
        `status=${dj?.status} listed_until=${dj?.lu} (${펴기.status})`)
 
   await q(`UPDATE companies SET trial_until = CURRENT_DATE - 1 WHERE id=$1`, [기업])
@@ -272,7 +281,7 @@ console.log('\n8. 뒷문')
     body: { status: 'ACTIVE' } })
   본다('체험이 끝났으면 임시저장도 못 편다', 막힘2.status === 403 && 막힘2.code === 'PLAN_001',
        `${막힘2.status} ${막힘2.code}`)
-  await q(`UPDATE companies SET trial_until = CURRENT_DATE + 29 WHERE id=$1`, [기업])
+  await q(`UPDATE companies SET trial_until = CURRENT_DATE + ${체험끝} WHERE id=$1`, [기업])
 
   // 노출 수 — 로그인 없이 아무 공고나 올릴 수 있는가.
   const [남의것] = await q(`SELECT id, main_impressions FROM job_postings
