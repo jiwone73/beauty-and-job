@@ -6,10 +6,13 @@ import ServiceHeader from "@/components/company/ServiceHeader";
 import type { 기업이벤트 } from "@/lib/companyEvent.server";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
-  Scissors, Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
-  CheckCircle2, ArrowRight,
-  UserPlus, FileText, Users, CircleCheck, Wallet, Gift, TrendingUp,
+  Scissors, FileText, Users, Wallet, Gift, TrendingUp, ArrowRight,
 } from "lucide-react";
+import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS, 유형이름 } from "@/lib/data/jobGroups";
+import { 서비스안내, 노출계단, 서비스방향 } from "@/lib/serviceGuide";
+
+/** 안내 묶음마다 붙는 그림 */
+const 안내아이콘 = { start: Wallet, apply: Users, expose: TrendingUp, pay: FileText } as const;
 
 /**
  * 기업 서비스 소개.
@@ -22,15 +25,17 @@ import {
  * 아직 쓰고 있어 건드리면 그쪽이 깨진다.
  */
 
-const 직군 = [
-  { Icon: Scissors, name: "헤어", sub: "헤어디자이너, 스탭" },
-  { Icon: Sparkles, name: "네일", sub: "네일리스트, 스탭" },
-  { Icon: Droplets, name: "피부", sub: "피부관리사, 에스테틱" },
-  { Icon: Brush, name: "메이크업", sub: "메이크업 아티스트" },
-  { Icon: SprayCan, name: "화장품 브랜드", sub: "마케팅, MD, 영업" },
-  { Icon: FlaskConical, name: "제조·OEM/ODM", sub: "연구개발, 품질, 생산" },
-  { Icon: ShoppingCart, name: "유통·이커머스", sub: "유통, 물류, CS" },
-  { Icon: GraduationCap, name: "교육기관", sub: "강사, 교육 운영" },
+/**
+ * 다루는 직군 — 실제 목록에서 만든다.
+ *
+ * 여기 따로 적어 두었더니 화면과 어긋나 있었다. 매장은 열 묶음인데 넷만
+ * 적혀 있었고(두피·탈모, 웨딩·이벤트, 뷰티 리테일, 샵 운영·상담, 미용강사,
+ * 의료미용이 빠졌다), 오피스는 직무가 아니라 업종(화장품 브랜드·제조·유통·
+ * 교육기관)으로 적혀 있었다 — 직무 축으로 바꾸기로 한 것과 반대다.
+ */
+const 직군묶음 = [
+  { 유형: 유형이름.STORE, 것들: STORE_JOB_GROUPS.map((g) => g.group) },
+  { 유형: 유형이름.OFFICE, 것들: OFFICE_JOB_GROUPS.map((g) => g.group) },
 ];
 
 /**
@@ -52,23 +57,6 @@ const 히어로강점 = [
 
 /** 이벤트 중에는 넷을 늘어놓지 않는다. 그 줄에서 제일 센 말 하나만 굵게 뽑는다 —
  *  네 개를 같은 크기로 세우면 어느 것도 세지 않다. 이벤트가 끝나면 넷이 돌아온다. */
-
-// 대시보드에서 실제로 되는 것. 「성과 분석」·「맞춤 추천」은 없는 기능이었다.
-const 대시보드혜택 = [
-  "지원자 이력서와 연락처를 바로 확인",
-  "열람·면접·합격까지 지원 상태 관리",
-  "공고별 지원자 수를 한 화면에서",
-  "메인 노출 횟수와 남은 기간 확인",
-];
-
-const 절차 = [
-  { no: "01", Icon: UserPlus, name: "기업회원 가입", sub: "사업자 정보를 확인하고 가입합니다" },
-  { no: "02", Icon: FileText, name: "채용공고 등록", sub: "직무·근무조건·복리후생을 적어 올립니다" },
-  { no: "03", Icon: Users, name: "지원자 확인", sub: "이력서와 연락처를 보고 연락합니다" },
-  { no: "04", Icon: CircleCheck, name: "면접 및 채용", sub: "면접을 진행하고 지원 상태를 옮깁니다" },
-];
-
-
 
 export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이벤트 | null }) {
   // 로그인 상태를 보고 단추가 갈 곳을 정한다. 이 화면은 그동안 로그인 여부를
@@ -95,9 +83,15 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
               ? <>{이벤트.short_title || 이벤트.title}</>
               : <>뷰티 인재 채용,<br /><b>뷰티워크</b>에서 시작하세요</>}
           </h1>
+          {이벤트 && (
+            <p className="cs-hero-hit">
+              <TrendingUp size={22} />
+              <b>선착순 메인·검색 상단 노출</b>
+            </p>
+          )}
           <p className="cs-hero-d">
-            헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관까지<br />
-            뷰티 채용 전문입니다.
+            헤어·네일·피부·메이크업 매장부터 화장품 브랜드, 제조, 유통, 교육기관 채용까지<br />
+            모두 뷰티워크에서 만나보세요.
           </p>
           <div className="cs-hero-btns">
             <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
@@ -109,13 +103,7 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             </Link>
           </div>
 
-          {이벤트 ? (
-            <p className="cs-hero-hit">
-              <TrendingUp size={22} />
-              <b>선착순 메인·검색 상단 노출</b>
-              <span>먼저 올리신 순서대로 위에 섭니다</span>
-            </p>
-          ) : (
+          {!이벤트 && (
             <ul className="cs-hero-pts">
               {히어로강점.map(({ Icon, name, sub }) => (
                 <li key={name}>
@@ -130,99 +118,62 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
 
       {/* ── 다루는 직군 ── */}
       <section className="cs-wrap" id="직군">
-        <div className="cs-jobs">
-          {직군.map(({ Icon, name, sub }) => (
-            <div key={name} className="cs-job">
-              <Icon size={26} strokeWidth={1.6} />
-              <b>{name}</b>
-              <span>{sub}</span>
+        <h2 className="cs-h2">다루는 직군</h2>
+        <div className="cs-groups">
+          {직군묶음.map(({ 유형, 것들 }) => (
+            <div key={유형} className="cs-group">
+              <b>{유형}</b>
+              <div className="cs-group-li">
+                {것들.map((g) => <span key={g}>{g}</span>)}
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-
-      {/* ── 이용 절차 ── */}
+      {/* ── 서비스 안내 ──
+          줄글로 풀면 「내 경우엔 어떤가」를 찾으려 다시 훑어야 한다. 네 덩이로
+          끊고, 줄 서는 차례는 막대 길이로 보인다. */}
       <section className="cs-wrap">
-        <h2 className="cs-h2">이렇게 진행됩니다</h2>
-        <div className="cs-steps">
-          {절차.map(({ no, Icon, name, sub }, i) => (
-            <div key={no} className="cs-step">
-              <span className="cs-step-ic"><Icon size={30} strokeWidth={1.5} /></span>
-              <span className="cs-step-no">{no}</span>
-              <b>{name}</b>
-              <span className="cs-step-s">{sub}</span>
-              {i < 절차.length - 1 && <ArrowRight className="cs-step-ar" size={18} />}
+        <h2 className="cs-h2">서비스 안내</h2>
+        <div className="cs-guide">
+          {서비스안내.map((b) => {
+            const I = 안내아이콘[b.아이콘];
+            return (
+              <div key={b.머리} className="cs-guide-card">
+                <span className="cs-guide-ic"><I size={22} strokeWidth={1.8} /></span>
+                <p className="cs-guide-h">{b.머리}</p>
+                <p className="cs-guide-big">{b.큰말}</p>
+                <ul>{b.줄.map((l) => <li key={l}>{l}</li>)}</ul>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="cs-ladder">
+          <p className="cs-ladder-t">검색 목록에서 줄 서는 차례</p>
+          {노출계단.map((r) => (
+            <div key={r.이름} className="cs-ladder-row">
+              <b>{r.이름}</b>
+              <span className="cs-ladder-bar" style={{ width: `${r.길이}%` }} />
+              <em>{r.곁}</em>
             </div>
           ))}
         </div>
       </section>
 
-
-
-
-      {/* ── 대시보드 ── */}
-      <section className="cs-wrap cs-dash">
-        <div className="cs-dash-l">
-          <h2 className="cs-h2 left">채용이 쉬워지는<br />기업회원 대시보드</h2>
-          <p className="cs-sub left">
-            공고를 올린 뒤에 하는 일이 다 여기 있습니다.<br />
-            지원자를 보고, 상태를 옮기고, 남은 기간을 확인합니다.
-          </p>
-          <ul className="cs-checks">
-            {대시보드혜택.map((t) => (
-              <li key={t}><CheckCircle2 size={17} />{t}</li>
-            ))}
-          </ul>
-          <Link href="/company/signup" className="cs-btn-fill lg">
-            대시보드 미리보기 <ArrowRight size={16} />
-          </Link>
-        </div>
-
-        {/* 실제 화면을 줄여 옮긴 그림. 숫자는 보기용이라 서버에서 받아오지 않는다. */}
-        <div className="cs-shot" aria-label="기업회원 대시보드 미리보기">
-          <div className="cs-shot-side">
-            <span className="cs-shot-brand">뷰티워크</span>
-            {["대시보드", "공고 관리", "지원자 관리", "인재 추천", "면접 관리", "분석 리포트", "채용 제안", "계정 관리"].map((m, i) => (
-              <span key={m} className={`cs-shot-menu${i === 0 ? " on" : ""}`}>{m}</span>
-            ))}
-          </div>
-          <div className="cs-shot-main">
-            <p className="cs-shot-h">대시보드</p>
-            <div className="cs-shot-stats">
-              {[["진행 중 공고", "12", "건"], ["총 지원자", "248", "명"], ["면접 예정", "18", "명"], ["최종 합격", "7", "명"]].map(([k, v, u]) => (
-                <div key={k} className="cs-shot-stat"><span>{k}</span><b>{v}<i>{u}</i></b></div>
-              ))}
+      {/* ── 어디로 가는가 ──
+          이미 그렇게 만든 것만 적는다. 화면에서 확인할 수 없는 포부는 자랑이지
+          약속이 아니다. */}
+      <section className="cs-wrap cs-vision">
+        <h2 className="cs-h2">뷰티워크가 지키는 것</h2>
+        <div className="cs-vision-list">
+          {서비스방향.map((v) => (
+            <div key={v.머리}>
+              <b>{v.머리}</b>
+              <p>{v.글}</p>
             </div>
-            <div className="cs-shot-row">
-              <div className="cs-shot-card">
-                <p>지원자 추이</p>
-                <svg viewBox="0 0 240 80" preserveAspectRatio="none" className="cs-shot-line">
-                  <polyline points="0,62 34,50 68,58 102,34 136,44 170,22 204,26 240,10" />
-                </svg>
-              </div>
-              <div className="cs-shot-card">
-                <p>공고 성과 요약</p>
-                <div className="cs-shot-donut">
-                  <svg viewBox="0 0 42 42">
-                    <circle className="bg" cx="21" cy="21" r="16" />
-                    <circle className="fg" cx="21" cy="21" r="16" />
-                  </svg>
-                  <span>73<i>%</i></span>
-                </div>
-              </div>
-            </div>
-            <div className="cs-shot-card wide">
-              <p>최근 지원자</p>
-              {[["강○현", "네일리스트 경력 3년", "서류 검토"], ["이○수", "피부관리사 경력 5년", "면접 예정"], ["박○현", "메이크업 아티스트 경력 4년", "최종 합격"]].map(([n, j, st]) => (
-                <div key={n} className="cs-shot-appl">
-                  <span className="cs-shot-av" />
-                  <span className="cs-shot-n">{n}<i>{j}</i></span>
-                  <span className="cs-shot-st">{st}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
@@ -235,26 +186,6 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
         </Link>
       </section>
 
-      {/* ── 마지막 부르기 ── */}
-      <section className="cs-cta">
-        <div className="cs-cta-in">
-          <div>
-            <b>지금 바로 뷰티워크를 시작하세요</b>
-            <p>매장과 오피스 채용을 더 쉽고 빠르게</p>
-          </div>
-          {/* 맨 위 단추와 같은 것이다 — 같은 화면에서 같은 일을 하는 단추가
-              위아래에서 다른 이름이면 다른 길로 읽힌다. */}
-          <div className="cs-cta-btns">
-            <Link href={기업인가 ? "/company/dashboard/jobs/new" : "/company/signup"}
-                  className="cs-btn-white">
-              {기업인가 ? "공고 등록하기" : "1개월 무료로 시작하기"} <ArrowRight size={16} />
-            </Link>
-            <Link href="/company/plans" className="cs-btn-white line">
-              상품안내 보기 <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

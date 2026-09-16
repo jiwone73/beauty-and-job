@@ -16181,7 +16181,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   border: 1px solid var(--color-primary); border-radius: 100px; padding: 5px 14px; }
 .cs-hero-eyebrow svg { flex: none; }
 /* 이벤트 중의 한 방 — 넷을 같은 크기로 늘어놓으면 어느 것도 세지 않다. */
-.cs-hero-hit { display: flex; align-items: center; gap: 12px; margin: 22px 0 0; }
+.cs-hero-hit { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; }
 .cs-hero-hit svg { flex: none; color: var(--color-primary); }
 .cs-hero-hit b { font-size: 24px; font-weight: 800; color: #1f1f22; letter-spacing: -.6px;
   white-space: nowrap; }
@@ -16202,3 +16202,48 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   gap: 8px; margin-top: 10px; }
 .pi-samples img { display: block; width: 100%; height: 92px; object-fit: cover;
   border: 1px solid var(--card-line); border-radius: 6px; }
+
+/* ===========================================
+   기업 서비스 — 직군 / 서비스 안내 / 포부
+   =========================================== */
+
+/* 다루는 직군. 아이콘 카드 여덟 장이던 것을 두 묶음으로 바꿨다 — 실제
+   대분류가 매장 열, 오피스 여덟이라 여덟 칸에 담기지 않는다. */
+.cs-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.cs-group { border: 1px solid var(--card-line); border-radius: 14px; background: #fff; padding: 22px 24px; }
+.cs-group > b { display: block; font-size: 17px; color: var(--color-primary); margin-bottom: 14px; }
+.cs-group-li { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-group-li span { font-size: 14.5px; color: #555; background: #f7f7f8;
+  border-radius: 100px; padding: 6px 13px; white-space: nowrap; }
+
+/* 서비스 안내 — 네 덩이. 줄글로 풀면 「내 경우엔 어떤가」를 다시 훑어야 한다. */
+.cs-guide { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.cs-guide-card { border: 1px solid var(--card-line); border-radius: 14px; background: #fff; padding: 24px 22px; }
+.cs-guide-ic { display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 12px; background: #f4f0f8; color: var(--color-primary); }
+.cs-guide-h { margin: 14px 0 2px; font-size: 13.5px; font-weight: 700; color: #8a8a90; }
+.cs-guide-big { margin: 0 0 14px; font-size: 21px; font-weight: 800; color: #1f1f22; letter-spacing: -.5px; }
+.cs-guide-card ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid #f0f0f3; padding-top: 12px; }
+.cs-guide-card li { font-size: 14.5px; color: #555; line-height: 1.6; padding: 4px 0 4px 13px;
+  position: relative; word-break: keep-all; }
+.cs-guide-card li::before { content: "·"; position: absolute; left: 3px; color: var(--color-primary); font-weight: 700; }
+
+/* 줄 서는 차례 — 막대 길이가 곧 자리다. 말로 「상단」·「최상단」이라 적으면
+   둘이 얼마나 다른지 알 수 없다. */
+.cs-ladder { margin-top: 26px; border: 1px solid var(--card-line); border-radius: 14px;
+  background: #fbfafc; padding: 22px 24px; }
+.cs-ladder-t { margin: 0 0 14px; font-size: 14px; font-weight: 700; color: #1f1f22; }
+.cs-ladder-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.cs-ladder-row:last-child { margin-bottom: 0; }
+.cs-ladder-row b { flex: none; width: 74px; font-size: 14px; color: #555; }
+.cs-ladder-bar { height: 13px; border-radius: 100px; background: var(--color-primary); }
+.cs-ladder-row:nth-child(3) .cs-ladder-bar { opacity: .78; }
+.cs-ladder-row:nth-child(4) .cs-ladder-bar { opacity: .56; }
+.cs-ladder-row:nth-child(5) .cs-ladder-bar { opacity: .34; }
+.cs-ladder-row em { flex: none; font-style: normal; font-size: 13px; color: #8a8a90; }
+
+/* 포부 — 이미 만든 것만 적는다. 확인할 수 없는 말은 자랑이지 약속이 아니다. */
+.cs-vision-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.cs-vision-list > div { border-top: 2px solid var(--color-primary); padding-top: 16px; }
+.cs-vision-list b { display: block; font-size: 18px; color: #1f1f22; margin-bottom: 8px; }
+.cs-vision-list p { margin: 0; font-size: 14.5px; color: #555; line-height: 1.7; word-break: keep-all; }
