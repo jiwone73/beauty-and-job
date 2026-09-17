@@ -6,7 +6,8 @@
 // 눈으로 보면 멀쩡해 보이는 종류의 어긋남이라 검사로 잡는다.
 //
 //   node scripts/직군검사.mjs
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 
 const 원본 = readFileSync("lib/data/jobGroups.ts", "utf8");
 const 흠 = [];
@@ -39,24 +40,24 @@ for (const [무엇, 묶음] of [["매장", 매장], ["본사", 본사]]) {
 // 3) 직군 목록을 제 손으로 또 쓴 화면이 없어야 한다.
 //    (인재검색이 경력 목록을 따로 들고 있다가 서버와 어긋났었다.)
 //    한두 번 스쳐 나오는 것은 소개 문구다 — 세 개 넘게 나오면 목록을 베낀 것이다.
-import { execSync } from "node:child_process";
 /**
- * git 이 준 파일 목록.
+ * 폴더를 걸어 소스 파일을 모은다.
  *
- * `-z` 로 받는 까닭은 한글이 든 경로 때문이다. 그냥 `git ls-files` 는 아스키가
- * 아닌 글자가 들어가면 경로를 통째로 따옴표로 감싸고 바이트를 \353 꼴로
- * 풀어 쓴다. 그 글자를 그대로 readFileSync 에 넘기면 없는 파일이라며 죽는다 —
- * 실제로 `[면]` 폴더 하나를 더한 날 배포가 여기서 멈췄다.
- *
- * 없는 파일은 걸러 낸다. git 은 **적힌 것**을 말하므로, 지웠지만 아직 담지
- * 않은 파일도 목록에 낀다 — 그걸 읽으려다 빌드가 죽었다. 커밋하면 사라질
- * 문제이긴 해도, 빌드가 작업 폴더 상태에 따라 되고 안 되고 하면 안 된다.
+ * 전에는 `git ls-files` 로 물었다. 그런데 배포하는 곳에는 .git 이 없어
+ * 빌드가 통째로 죽었다 — `fatal: not a git repository`. 검사가 보고 싶은 것은
+ * 「지금 디스크에 있는 소스」이지 「git 에 적힌 것」이 아니므로 직접 걷는다.
+ * 작업 폴더 상태(담았는지 안 담았는지)에 따라 빌드가 되고 안 되고 하던 문제도
+ * 같이 없어진다.
  */
-const 깃파일 = (패턴) =>
-  execSync(`git ls-files -z ${패턴}`, { encoding: "utf8" })
-    .split("\0").filter(Boolean).filter((f) => existsSync(f));
+const 소스파일 = (뿌리, 확장자) =>
+  existsSync(뿌리)
+    ? readdirSync(뿌리, { withFileTypes: true, recursive: true })
+        .filter((d) => d.isFile() && 확장자.some((e) => d.name.endsWith(e)))
+        .map((d) => join(d.parentPath ?? d.path, d.name))
+    : [];
+
 const 모든항목 = [...매장, ...본사].flatMap((g) => g.항목);
-const 코드들 = 깃파일(`'app/**/*.tsx' 'app/**/*.ts' 'components/**/*.tsx' 'components/**/*.ts'`);
+const 코드들 = ["app", "components"].flatMap((d) => 소스파일(d, [".tsx", ".ts"]));
 for (const f of 코드들) {
   const 글 = readFileSync(f, "utf8");
   const 든것 = new Set(모든항목.filter((i) => 글.includes(`"${i}"`)));
@@ -68,8 +69,11 @@ for (const f of 코드들) {
 //    걸러져 모집분야가 통째로 빈다. 실제로 셀렉트미 파서가 직군을 「헤어 스탭
 //    (시니어·주니어)」로 내고 있었다 — 이름을 「헤어 스텝」으로 바꾼 뒤로 계속
 //    걸러지고 있었고, 아무 오류도 안 났다.
-const 파서들 = 깃파일(`'lib/external/**/*.ts'`);
-const 정식 = new Set(모든항목);
+const 파서들 = 소스파일("lib/external", [".ts"]);
+// 대분류 이름도 우리 이름이다. 「메이크업」처럼 소분류의 앞토막과 겹치는
+// 대분류가 있어서, 이걸 빼 두면 낱말 목록에 적힌 「메이크업」이 잘못 쓴
+// 소분류로 몰린다 — 오타를 잡자는 검사가 멀쩡한 이름을 잡는다.
+const 정식 = new Set([...모든항목, ...[...매장, ...본사].map((g) => g.이름)]);
 for (const f of 파서들) {
   const 글 = readFileSync(f, "utf8");
   // 직군을 값으로 내는 자리만 본다: return "…" / mappedCats = ["…"] / , "…"] 표
