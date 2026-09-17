@@ -10,7 +10,9 @@ const nextConfig = {
         headers: [
           {
             key: "X-Robots-Tag",
-            value: "noindex, nofollow, noarchive, nosnippet",
+            // noai·noimageai 는 일부 AI 수집기가 보는 값이다. 표준은 아니지만
+            // 읽는 곳이 있으니 같이 적는다. 오픈하면 이 줄을 통째로 뺀다.
+            value: "noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate, nocache, noai, noimageai",
           },
         ],
       },

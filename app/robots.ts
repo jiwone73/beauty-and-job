@@ -1,10 +1,38 @@
 import type { MetadataRoute } from "next";
 
+/**
+ * 아직 오픈 전이다. 어디에도 걸리지 않게 막는다.
+ *
+ * `User-agent: *` 하나로 끝나야 맞지만, 실제로는 이름을 따로 불러 줘야
+ * 멈추는 수집기가 있다. 특히 AI 학습용 수집기는 일반 규칙을 검색 색인용으로만
+ * 읽고 지나가는 것들이 있어, 아래처럼 하나씩 적어 둔다.
+ *
+ * 오픈(2026-10-12)하면 이 파일과 next.config.js 의 X-Robots-Tag,
+ * app/layout.tsx 의 robots 메타를 **셋 다** 같이 푼다. 한 곳만 풀면
+ * 나머지 둘이 계속 막는다.
+ */
+const 수집기 = [
+  // 검색
+  "Googlebot", "Googlebot-Image", "Googlebot-News", "Googlebot-Video",
+  "Bingbot", "Yeti", "Daum", "DaumOA", "NaverBot",
+  "Slurp", "DuckDuckBot", "Baiduspider", "YandexBot", "Sogou", "Exabot",
+  // AI 학습·검색
+  "GPTBot", "OAI-SearchBot", "ChatGPT-User",
+  "ClaudeBot", "Claude-Web", "anthropic-ai",
+  "Google-Extended", "Applebot", "Applebot-Extended",
+  "PerplexityBot", "Perplexity-User",
+  "CCBot", "Bytespider", "Amazonbot", "Meta-ExternalAgent",
+  "FacebookBot", "cohere-ai", "Diffbot", "Omgilibot", "Timpibot",
+  // 통째로 긁어가는 것들
+  "AhrefsBot", "SemrushBot", "MJ12bot", "DotBot", "DataForSeoBot",
+  "HTTrack", "wget", "curl", "Scrapy",
+];
+
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      disallow: "/",
-    },
+    rules: [
+      { userAgent: "*", disallow: "/" },
+      ...수집기.map((userAgent) => ({ userAgent, disallow: "/" })),
+    ],
   };
 }
