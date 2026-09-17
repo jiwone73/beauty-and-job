@@ -301,8 +301,12 @@ function Hero() {
                   <button
                     type="button"
                     className="mt-evt-p ev-co"
+                    // 로그인한 사장님은 단추 글대로 등록 폼으로 바로 간다.
+                    // 그 밖의 사람은 로그인 벽 대신 서비스 소개로 보낸다 —
+                    // 선착순·기간·1개월 무료가 무슨 말인지 모르는 채로 로그인
+                    // 창을 마주하면 그냥 나간다. 조건이 적힌 곳이 /company 다.
                     onClick={() => router.push(
-                      isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company/login"
+                      isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company"
                     )}
                   >
                     <span className="mt-evt-tag"><OfficeIcon size={12} />기업회원 EVENT</span>

@@ -16295,7 +16295,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   /* 연보라 물을 들인 뒤의 그림 바탕을 화면에서 찍어 잰 값이다. 파일 평균도
      테두리 값도 아니다 — 테두리에는 아래쪽 그늘이 섞여 한 단 어둡고, 그걸
      쓰던 동안 그림만 밝은 네모로 떠 보였다. 물 농도를 바꾸면 다시 잰다. */
-  background: #efebf0; }
+  background: #f7f2fa; }
 /* 사진은 원래 absolute 로 놓여 있다. 여기서 position 을 건드리면 흐름에
    들어가 높이가 0 이 되어 그림이 사라진다 — z-index 만 올린다. */
 .cs-hero.evt .cs-hero-photo { z-index: 1; }
@@ -16311,7 +16311,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
      면끼리 색감이 달라 「배너에 붙인 그림」으로 읽혔다. 그림에도 같은 물을
      들인다 — 곱하기라 거의 어두워지지 않고 초록만 빠져 연보라로 기운다.
      파일은 그대로 두고 화면에서만 물들이므로 되돌리기 쉽다. */
-  background-color: #fdfbff; background-blend-mode: multiply;
+  background-color: #fbf7ff; background-blend-mode: multiply;
+  /* 물만으로는 원본보다 밝아질 수 없다 — 곱하기는 어둡게만 한다. 원본 바탕이
+     #f4f2f3 이라 거기서 멈춘다. 한 겹 밝혀 놓고 물을 들여야 흰 쪽으로 간다. */
+  filter: brightness(1.06);
   /* 색을 맞춰도 그림 바탕은 고른 색이 아니라 은은한 그라데이션이라 어디선가
      단이 진다. 세 변을 녹여 그 단을 없앤다 — 위아래는 리본과 그늘이 변까지
      닿아 있고, 왼쪽은 글 쪽으로 다섯 단쯤 밝아지며 세로줄이 섰다.
