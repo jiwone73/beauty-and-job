@@ -2,38 +2,20 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const NAV_ITEMS = [
-  { href: "/support", label: "고객센터" },
-  { href: "/notice", label: "공지사항" },
-  { href: "/support/faq", label: "자주 묻는 질문" },
-  { href: "/support/terms", label: "이용약관" },
-  { href: "/support/privacy", label: "개인정보처리방침" },
-];
-
-// active: 현재 페이지 nav href를 넘기면 해당 탭에 active 표시
-export default function InfoHeader({ active }: { active: string }) {
+/**
+ * 고객센터·공지 화면의 머리줄 — 로고만 둔다.
+ *
+ * 탭 다섯 개가 여기 있었는데 옆줄(InfoSide)로 내렸다. 탭은 한 줄에 다 서야
+ * 해서 항목이 늘면 글자를 줄이거나 버려야 한다.
+ */
+export default function InfoHeader() {
   return (
-    <>
-      <header className="info-header">
-        <div className="info-header-inner">
-          <Link href="/" className="logo">
-            <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
-          </Link>
-        </div>
-      </header>
-      <div className="info-nav">
-        <div className="info-nav-inner">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`info-nav-item${active === item.href ? " active" : ""}`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
+    <header className="info-header">
+      <div className="info-header-inner">
+        <Link href="/" className="logo" aria-label="뷰티워크 홈">
+          <Image src="/images/logo.png" alt="뷰티워크" width={124} height={32} priority />
+        </Link>
       </div>
-    </>
+    </header>
   );
 }

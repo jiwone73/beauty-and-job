@@ -1,6 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import InfoHeader from "@/components/InfoHeader";
+import InfoSide from "@/components/InfoSide";
 import NoticeBoard from "@/components/NoticeBoard";
 
 /**
@@ -10,13 +11,16 @@ import NoticeBoard from "@/components/NoticeBoard";
 export default function NoticePage() {
   return (
     <div className="info-page">
-      <InfoHeader active="/notice" />
+      <InfoHeader />
       <main className="info-main">
-        <div style={{ maxWidth: 860, margin: "0 auto" }}>
-          <h1 className="info-page-title">공지사항</h1>
-          <Suspense fallback={<p className="nb-board-msg">불러오는 중...</p>}>
-            <NoticeBoard type="notice" emptyText="등록된 공지사항이 없습니다." />
-          </Suspense>
+        <div className="info-layout">
+          <InfoSide active="/notice" />
+          <div className="info-body">
+            <h1 className="info-page-title">공지사항</h1>
+            <Suspense fallback={<p className="nb-board-msg">불러오는 중...</p>}>
+              <NoticeBoard type="notice" emptyText="등록된 공지사항이 없습니다." />
+            </Suspense>
+          </div>
         </div>
       </main>
     </div>

@@ -4341,6 +4341,33 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   min-height: 100vh;
   background: #fafafa;
 }
+/* 고객센터 옆줄 메뉴. 머리줄 탭이던 것을 옆으로 내렸다 — 탭은 한 줄에 다
+   서야 해서 항목이 늘면 글자를 줄이거나 버려야 하고, FAQ 아래 개인·기업
+   같은 하위 항목을 둘 자리가 없다. */
+.info-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px;
+  max-width: 1160px; margin: 0 auto; padding: 8px 24px 0; align-items: start; }
+.info-body { min-width: 0; }
+.info-side { position: sticky; top: 24px; }
+.info-side-t { margin: 0 0 14px; font-size: 19px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
+.info-side ul { list-style: none; margin: 0; padding: 0; }
+.info-side-i { display: block; padding: 9px 12px; border-radius: 8px; text-decoration: none;
+  font-size: 15px; color: #555; transition: background .15s, color .15s; }
+.info-side-i:hover { background: #f7f7f9; }
+.info-side-i.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
+.info-side-sub { margin: 2px 0 6px; padding-left: 12px; }
+.info-side-s { display: block; padding: 6px 12px; border-radius: 8px; text-decoration: none;
+  font-size: 14px; color: #8a8a90; transition: background .15s, color .15s; }
+.info-side-s:hover { background: #f7f7f9; color: #555; }
+.info-side-s.on { color: var(--color-primary); font-weight: 600; }
+@media (max-width: 860px) {
+  /* 좁은 화면에서는 옆줄이 설 자리가 없다. 위로 올려 가로로 흘린다. */
+  .info-layout { grid-template-columns: 1fr; gap: 20px; }
+  .info-side { position: static; }
+  .info-side-t { display: none; }
+  .info-side > ul { display: flex; flex-wrap: wrap; gap: 6px; }
+  .info-side-sub { display: flex; gap: 4px; padding-left: 0; margin: 0 0 0 4px; }
+}
+
 .info-header {
   display: flex;
   align-items: center;

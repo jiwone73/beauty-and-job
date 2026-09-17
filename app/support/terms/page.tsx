@@ -1254,7 +1254,7 @@ function LegalBlock({ b }: { b: any }) {
 export default function TermsPage() {
   return (
     <div className="info-page">
-      <InfoHeader active="/support/terms" />
+      <InfoHeader />
       <main className="info-main">
         <div className="legal-layout">
           <div className="legal-content">

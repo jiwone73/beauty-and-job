@@ -1522,7 +1522,7 @@ function LegalBlock({ b }: { b: any }) {
 export default function PrivacyPage() {
   return (
     <div className="info-page">
-      <InfoHeader active="/support/privacy" />
+      <InfoHeader />
       <main className="info-main">
         <div className="legal-layout">
           <div className="legal-content">
