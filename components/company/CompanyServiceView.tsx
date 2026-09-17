@@ -7,9 +7,9 @@ import type { 기업이벤트 } from "@/lib/companyEvent.server";
 import { use기업CTA } from "@/lib/companyCta";
 import {
   Scissors, FileText, Users, Wallet, ArrowRight, CalendarDays, ChevronRight,
+  Sparkles, Droplets, Brush, SprayCan, FlaskConical, ShoppingCart, GraduationCap,
 } from "lucide-react";
 import EventDetail from "@/components/company/EventDetail";
-import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS, 유형이름 } from "@/lib/data/jobGroups";
 
 /**
  * 기업 서비스 소개.
@@ -42,15 +42,16 @@ const 히어로강점 = [
   { Icon: Wallet, name: "자동 결제 없음", sub: "기간이 끝나면 그대로 끝납니다" },
 ];
 
-/**
- * 다루는 직군 — 실제 목록에서 만든다.
- *
- * 여기 따로 적어 두면 화면과 어긋난다. 전에 매장은 열 묶음인데 넷만 적혀
- * 있었고, 오피스는 직무가 아니라 업종으로 적혀 있었다.
- */
-const 직군묶음 = [
-  { 유형: 유형이름.STORE, 것들: STORE_JOB_GROUPS.map((g) => g.group) },
-  { 유형: 유형이름.OFFICE, 것들: OFFICE_JOB_GROUPS.map((g) => g.group) },
+/** 다루는 자리 — 아이콘 여덟 칸. 제목 없이 배너 바로 아래에 띠로 깐다. */
+const 직군 = [
+  { Icon: Scissors, name: "헤어", sub: "헤어디자이너, 스탭" },
+  { Icon: Sparkles, name: "네일", sub: "네일리스트, 스탭" },
+  { Icon: Droplets, name: "피부", sub: "피부관리사, 에스테틱" },
+  { Icon: Brush, name: "메이크업", sub: "메이크업 아티스트" },
+  { Icon: SprayCan, name: "화장품 브랜드", sub: "마케팅, MD, 영업" },
+  { Icon: FlaskConical, name: "제조·OEM/ODM", sub: "연구개발, 품질, 생산" },
+  { Icon: ShoppingCart, name: "유통·이커머스", sub: "유통, 물류, CS" },
+  { Icon: GraduationCap, name: "교육기관", sub: "강사, 교육 운영" },
 ];
 
 export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이벤트 | null }) {
@@ -65,7 +66,7 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
       <ServiceHeader />
 
       {/* ── 히어로 ── */}
-      <section className="cs-hero" id="소개">
+      <section className={`cs-hero${이벤트 ? " evt" : ""}`} id="소개">
         {/* 이벤트 중에는 이벤트 그림이 선다. 원래 사진에는 지어낸 숫자
             (지원자 248명·채용 성공률 73%)가 박혀 있어, 이벤트가 끝나면 그
             사진으로 돌아가기 전에 갈아야 한다. */}
@@ -116,14 +117,12 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
         <>
           {/* 배너 바로 아래 — 어떤 자리를 다루는 곳인지부터 보인다. */}
           <section className="cs-wrap" id="직군">
-            <h2 className="cs-h2">다루는 직군</h2>
-            <div className="cs-groups">
-              {직군묶음.map(({ 유형, 것들 }) => (
-                <div key={유형} className="cs-group">
-                  <b>{유형}</b>
-                  <div className="cs-group-li">
-                    {것들.map((g) => <span key={g}>{g}</span>)}
-                  </div>
+            <div className="cs-jobs">
+              {직군.map(({ Icon, name, sub }) => (
+                <div key={name} className="cs-job">
+                  <Icon size={26} strokeWidth={1.6} />
+                  <b>{name}</b>
+                  <span>{sub}</span>
                 </div>
               ))}
             </div>
