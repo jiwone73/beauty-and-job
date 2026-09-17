@@ -29,7 +29,13 @@ const 칸이름 = [스타트.name, 플랜.LIGHT.name, 플랜.STANDARD.name, 플�
  *
  * 위·높이는 그 캡처에서 실제 카드 줄이 끝나는 자리를 재서 넣은 값(%)이다.
  * 캡처를 다시 찍으면 이 값도 같이 본다.
+ *
+ * 왼쪽도 잰다. 좌우로 꽉 채웠더니 빨간 상자가 **왼쪽 사이드바(지역·직군 필터)
+ * 까지 덮어**, 그 필터도 산 자리인 것처럼 보였다. 캡처에서 카드가 실제로
+ * 시작하는 곳이 가로 18.9% 라 그 앞은 비운다.
  */
+const 목록왼 = 18.4;
+const 목록오 = 2.2;
 const 구간: { 칸: 0 | 1 | 2 | 3; 위: number; 높이: number }[] = [
   { 칸: 3, 위: 9.2, 높이: 14.8 },
   { 칸: 2, 위: 24.0, 높이: 29.5 },
@@ -156,7 +162,8 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
                   <img src="/images/plans/list-full.png" alt="전체 채용공고 목록 화면" />
                   {구간.map((t) => (
                     <div key={t.칸} className={`pi-zone${t.칸 === 칸 ? " on" : ""}`}
-                         style={{ top: `${t.위}%`, height: `${t.높이}%` }}>
+                         style={{ top: `${t.위}%`, height: `${t.높이}%`,
+                                  left: `${목록왼}%`, right: `${목록오}%` }}>
                       <i className="pi-zl">{칸이름[t.칸]}</i>
                       {t.칸 === 칸 && <span className="pi-bub">{자리}</span>}
                     </div>
@@ -167,10 +174,35 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
           </tbody>
         </table>
         <p className="pi-cap">
-          같은 구간 안에서는 <b>마감일이 빠른 공고가 먼저</b> 나옵니다. 상시채용은 그 뒤이며,
-          상시채용끼리는 날마다 차례가 바뀝니다.
+          같은 구간 안에서는 <b>마지막으로 로그인한 매장이 먼저</b> 나옵니다.
+          자주 들어오실수록 위에 서고, 같은 날이면 차례가 날마다 바뀝니다.
         </p>
       </section>
+
+      {/* 인재 화면은 스탠다드부터 열린다. 이 등급이 파는 것의 대부분이 여기라
+          말로만 적어 두면 무엇을 사는지 그려지지 않는다. 다만 노출 자리처럼
+          크게 걸지는 않는다 — 어디에 서는지가 아니라 이런 것이 된다는 것만
+          보이면 되고, 크게 걸면 스크롤만 길어진다. */}
+      {플랜[id].인재열람 && (
+        <section className="pi-sec">
+          <h3 className="pi-st">인재 검색 · 제안 · 채팅</h3>
+          <div className="pi-shots">
+            {[
+              { 그림: "std-인재검색", 글: "지역·직군·경력으로 찾기" },
+              { 그림: "std-제안", 글: "보낸 제안 한눈에" },
+              { 그림: "std-채팅", 글: "채팅으로 면접 약속까지" },
+            ].map((s) => (
+              <figure key={s.그림}>
+                <img src={`/images/plans/${s.그림}.png`} alt={s.글} loading="lazy" />
+                <figcaption>{s.글}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="pi-cap">
+            실제 화면이며, 개인정보 보호를 위해 <b>이름은 가려 두었습니다</b>.
+          </p>
+        </section>
+      )}
 
       <section className="pi-sec">
         <h3 className="pi-st">유의사항</h3>
