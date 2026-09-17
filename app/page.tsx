@@ -553,20 +553,7 @@ function Footer() {
   return (
     <footer style={{ background: "#f7f7f8", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div style={{ maxWidth: 1360, margin: "0 auto", padding: "0 24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
-          <Link href="/" aria-label="뷰티워크 홈" style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", lineHeight: 1, textDecoration: "none" }}>
-            <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-1px", color: "#4B4954", display: "inline-flex", alignItems: "flex-end" }}>
-              <span>하이</span>
-              <span style={{ position: "relative", color: "#FA6400" }}>
-                어
-                <svg width="17" height="9" viewBox="0 0 38 20" fill="none" style={{ position: "absolute", left: "50%", top: "-0.5em", transform: "translateX(-50%)", display: "block" }}>
-                  <path d="M4 17 L19 5 L34 17" stroke="#FA6400" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <span>스</span>
-            </span>
-            <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "3px", color: "#9a9aa7", marginTop: 4, paddingLeft: 3 }}>HIRE US</span>
-          </Link>
+        <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
           <nav className="footer-topnav" style={{ display: "flex", flexWrap: "wrap", gap: 26 }}>
             {topNav.map((l) => (
               <Link key={l.href} href={l.href} className="footer-topnav-link" style={{ fontSize: 14, fontWeight: 600, color: "#555", textDecoration: "none" }}>{l.label}</Link>
@@ -575,7 +562,7 @@ function Footer() {
         </div>
         <div style={{ fontSize: 13, color: "#555", lineHeight: 2 }}>
           <div><span style={{ fontWeight: 400, color: "#555" }}>바를정</span><Sep />대표 : 정서우</div>
-          <div>주소 : 서울특별시 마포구 성미산로 109, 1층 102호 일부(연남동, 희승)<Sep />전화번호 : </div>
+          <div>주소 : 서울특별시 마포구 성미산로 109, 102호<Sep />전화번호 : </div>
           {/* 통신판매업·유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
               번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
           <div>사업자등록번호 : 734-25-01099<Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
