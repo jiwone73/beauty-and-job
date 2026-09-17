@@ -303,7 +303,7 @@ function Hero() {
                     className="mt-evt-p ev-co"
                     // 로그인한 사장님은 단추 글대로 등록 폼으로 바로 간다.
                     // 그 밖의 사람은 로그인 벽 대신 서비스 소개로 보낸다 —
-                    // 선착순·기간·1개월 무료가 무슨 말인지 모르는 채로 로그인
+                    // 선착순·기간·무료 공고등록이 무슨 말인지 모르는 채로 로그인
                     // 창을 마주하면 그냥 나간다. 조건이 적힌 곳이 /company 다.
                     onClick={() => router.push(
                       isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company"
@@ -315,7 +315,7 @@ function Hero() {
                         자리는 먼저 올린 순서대로 준다. 최상단은 원래 프리미엄
                         자리라 나중에 팔 때 「그때는 공짜였는데」가 될 수 있지만,
                         오픈 초기에 공고를 모으는 것이 먼저라고 정했다. */}
-                    <span className="mt-evt-h">선착순 채용공고 등록하고<br /><b>1개월 무료 + 최상단 노출</b></span>
+                    <span className="mt-evt-h">선착순 채용공고 등록하고<br /><b>기간 내내 무료 + 최상단 노출</b></span>
                     <span className="mt-evt-go">채용공고 등록하기 ›</span>
                     {/* 확성기를 걷고 「최상단」을 그림으로 말한다. 확성기는
                         「알린다」까지만 말하고 어디에 걸리는지는 말하지 않았다.
