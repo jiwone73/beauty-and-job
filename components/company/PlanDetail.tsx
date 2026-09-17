@@ -198,9 +198,6 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
               </figure>
             ))}
           </div>
-          <p className="pi-cap">
-            실제 화면이며, 개인정보 보호를 위해 <b>이름은 가려 두었습니다</b>.
-          </p>
         </section>
       )}
 
