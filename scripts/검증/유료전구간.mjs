@@ -7,6 +7,10 @@ const BASE = 'http://localhost:3000'
 const 표시 = '[검증]'
 // 무료 건수는 lib/companyPlans 가 정한다. 숫자를 여기 박아 두면 값이
 // 바뀔 때마다 검증이 먼저 깨져, 정작 무엇이 틀렸는지 알 수 없다.
+// 라이트 30일 값도 lib/companyPlans 에서 읽는다. 값이 바뀔 때마다 검증이 먼저
+// 깨지면 정작 무엇이 틀렸는지 알 수 없다.
+const 라이트30일 = Number((await import('node:fs')).readFileSync('lib/companyPlans.ts', 'utf8')
+  .match(/\uac00\uaca9:\s*\{[^}]*30:\s*(\d+)/)[1])
 const 무료건수 = Number((await import('node:fs')).readFileSync('lib/companyPlans.ts', 'utf8')
   .match(/무료건수:\s*(\d+)/)[1])
 /** 무료 칸을 되돌린다. 뒷 구간은 다시 무료로 걸어 봐야 하는 자리가 있다. */
@@ -102,7 +106,7 @@ let 주문id
   const 주문 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,
     body: { plan: 'LIGHT', days: 30, depositor: '검증' } })
   본다('라이트 주문이 들어간다', 주문.ok === true, `${주문.status} ${주문.code}`)
-  본다('금액을 서버가 다시 계산한다(49,000)', 주문.data?.amount === 49000, String(주문.data?.amount))
+  본다(`금액을 서버가 다시 계산한다(${라이트30일.toLocaleString()})`, 주문.data?.amount === 라이트30일, String(주문.data?.amount))
   주문id = 주문.data?.id
 
   const 값속임 = await 부른다('/api/company/orders', { method: 'POST', token: 기업토큰,

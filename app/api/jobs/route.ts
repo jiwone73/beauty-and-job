@@ -137,24 +137,28 @@ export async function GET(req: NextRequest) {
     (Object.keys(플랜) as PlanId[]).map((p) => `WHEN '${p}' THEN ${플랜[p].노출순위} `).join('') +
     `ELSE 0 END DESC`
   /**
-   * 같은 구간 안에서 줄 세우는 법. 최신순이 아니다.
+   * 같은 구간(상품) 안에서 줄 세우는 법 — **기업이 마지막으로 들어온 날**이다.
    *
-   * 마감일이 있는 공고가 먼저다 — 마감이 가까울수록 급한 자리이고, 지원자도
-   * 늦게 보면 못 넣는 것부터 봐야 한다. 상시채용은 내일 봐도 그대로라 뒤다.
+   * 헤어인잡이 쓰는 방식이다. 이용안내에 「채용정보 게시판의 노출순서는 접속일
+   * 순서입니다. 로그인을 하지 않을 경우 구인광고가 후순위로 밀려서 노출이
+   * 되지 않습니다」라고 대놓고 적어 두었고, 유료 상품마다 「접속일 오늘 날짜로
+   * 업데이트」를 혜택으로 판다.
    *
-   * 최신순으로 두면 상시채용 공고를 며칠에 한 번씩 다시 올리는 곳이 늘 위에
-   * 서고, 마감이 사흘 남은 공고가 그 밑으로 밀린다.
+   * 이 규칙이 하는 일은 **살아 있는 공고를 위로 올리는 것**이다. 채용이 끝났는데
+   * 안 내린 공고는 사장님이 안 들어오니 저절로 가라앉는다. 목록을 손으로
+   * 치우지 않아도 최근 것으로 채워진다.
    *
-   * 상시끼리는 날마다 차례를 섞는다. 등록순으로 고정하면 작년에 올린 곳이
-   * 1년 내내 그 자리에 서고 어제 올린 곳은 영영 뒤다 — 같은 값(무료 또는
-   * 같은 상품)을 낸 자리끼리는 돌아가며 서는 것이 맞다.
+   * 로그인한 적 없는 곳(우리가 모아 온 공고)은 접속일이 없어 등록일로 갈음한다.
+   * 그러지 않으면 그것들이 전부 맨 뒤에 무더기로 몰린다.
    *
-   * 다만 매 요청마다 새로 섞으면 안 된다. 2쪽을 넘길 때 다시 섞이면 1쪽에
-   * 봤던 공고가 또 나오고 어떤 공고는 영영 안 보인다. 그래서 날짜를 씨앗으로
-   * 준다 — 하루 안에서는 같은 차례고, 날이 바뀌면 바뀐다.
+   * 마감일이 빠른 공고를 먼저 세우던 규칙을 이걸로 갈았다. 마감이 급한 자리를
+   * 앞에 두는 것도 말이 되지만, 그러면 **공고를 걸어 두고 아무것도 안 하는 곳이
+   * 계속 위에 선다.** 자리를 파는 이상 움직이는 쪽이 위에 서야 한다.
    */
   const 같은구간 = (a = '') =>
-    `${a}deadline ASC NULLS LAST, md5(${a}id::text || CURRENT_DATE::text)`
+    `COALESCE((SELECT c_.last_login_at FROM companies c_ WHERE c_.id = ${a}company_id), ${a}created_at) DESC NULLS LAST, ` +
+    `md5(${a}id::text || CURRENT_DATE::text)`
+
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
