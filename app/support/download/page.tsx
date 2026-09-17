@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import { Download } from "lucide-react";
-import InfoHeader from "@/components/InfoHeader";
+import ServiceHeader from "@/components/company/ServiceHeader";
 import InfoSide from "@/components/InfoSide";
 
 /** 내려받을 것 — 지금은 이력서 빈 양식 하나뿐이다. 늘면 여기 줄을 더한다. */
 export default function DownloadPage() {
   return (
     <div className="info-page">
-      <InfoHeader />
+      <ServiceHeader />
       <main className="info-main">
         <div className="info-layout">
           <InfoSide active="/support/download" />

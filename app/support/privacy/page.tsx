@@ -1,5 +1,5 @@
 "use client";
-import InfoHeader from "@/components/InfoHeader";
+import ServiceHeader from "@/components/company/ServiceHeader";
 
 const SECTIONS: any[] = [
   {
@@ -1522,7 +1522,7 @@ function LegalBlock({ b }: { b: any }) {
 export default function PrivacyPage() {
   return (
     <div className="info-page">
-      <InfoHeader />
+      <ServiceHeader />
       <main className="info-main">
         <div className="legal-layout">
           <div className="legal-content">

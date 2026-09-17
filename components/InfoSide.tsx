@@ -10,6 +10,9 @@ import Link from "next/link";
  *
  * 이용약관·개인정보처리방침은 여기 두지 않는다. 궁금해서 찾아오는 곳이
  * 아니라 확인하러 오는 곳이고, 그 길은 푸터가 맡는다.
+ *
+ * 「고객센터」라는 제목은 두지 않는다. 머리줄이 이미 그 자리를 켜 두고 있어
+ * 같은 말이 두 번 선다.
  */
 const 메뉴: { href: string; label: string; 아래?: { href: string; label: string }[] }[] = [
   { href: "/notice", label: "공지사항" },
@@ -33,7 +36,6 @@ export default function InfoSide({ active, 아래활성 }: {
 }) {
   return (
     <nav className="info-side" aria-label="고객센터 메뉴">
-      <p className="info-side-t">고객센터</p>
       <ul>
         {메뉴.map((m) => (
           <li key={m.href}>

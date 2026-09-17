@@ -4344,26 +4344,28 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 고객센터 옆줄 메뉴. 머리줄 탭이던 것을 옆으로 내렸다 — 탭은 한 줄에 다
    서야 해서 항목이 늘면 글자를 줄이거나 버려야 하고, FAQ 아래 개인·기업
    같은 하위 항목을 둘 자리가 없다. */
+/* 폭과 여백은 감싸는 .info-main 이 정한다. 여기서 또 1160 을 주면 안쪽에
+   여백이 두 겹으로 들어가 옆줄이 머리줄 로고보다 안으로 밀린다. */
 .info-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px;
-  max-width: 1160px; margin: 0 auto; padding: 8px 24px 0; align-items: start; }
+  align-items: start; }
 .info-body { min-width: 0; }
 .info-side { position: sticky; top: 24px; }
-.info-side-t { margin: 0 0 14px; font-size: 19px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
+/* 글자 크기는 사이트의 다른 옆줄(공고 검색·기업 대시보드)과 같은 14px 다.
+   여기만 15px 이라 같은 자리에 선 메뉴가 화면마다 달라 보였다. */
 .info-side ul { list-style: none; margin: 0; padding: 0; }
 .info-side-i { display: block; padding: 9px 12px; border-radius: 8px; text-decoration: none;
-  font-size: 15px; color: #555; transition: background .15s, color .15s; }
+  font-size: 14px; color: #555; transition: background .15s, color .15s; }
 .info-side-i:hover { background: #f7f7f9; }
 .info-side-i.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
 .info-side-sub { margin: 2px 0 6px; padding-left: 12px; }
 .info-side-s { display: block; padding: 6px 12px; border-radius: 8px; text-decoration: none;
-  font-size: 14px; color: #8a8a90; transition: background .15s, color .15s; }
+  font-size: 13.5px; color: #8a8a90; transition: background .15s, color .15s; }
 .info-side-s:hover { background: #f7f7f9; color: #555; }
 .info-side-s.on { color: var(--color-primary); font-weight: 600; }
 @media (max-width: 860px) {
   /* 좁은 화면에서는 옆줄이 설 자리가 없다. 위로 올려 가로로 흘린다. */
   .info-layout { grid-template-columns: 1fr; gap: 20px; }
   .info-side { position: static; }
-  .info-side-t { display: none; }
   .info-side > ul { display: flex; flex-wrap: wrap; gap: 6px; }
   .info-side-sub { display: flex; gap: 4px; padding-left: 0; margin: 0 0 0 4px; }
 }
@@ -4417,17 +4419,21 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   font-weight: 700;
   border-bottom-color: #582681;
 }
+/* 머리줄(.cs-header-in)과 같은 1160 이다. 860 이던 때에는 옆줄이 로고보다
+   한참 안으로 들어가 두 줄이 어긋나 보였다. */
 .info-main {
-  max-width: 860px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 32px 24px 80px;
 }
+/* 가운데 정렬이던 것을 왼쪽으로 붙인다. 옆줄이 왼쪽에 서 있는데 제목만
+   가운데 있으면 어느 줄에 속한 제목인지 눈이 한 번 더 찾는다. */
 .info-page-title {
   font-size: 22px;
   font-weight: 700;
-  color: #555;
+  color: #1f1f22;
   margin: 0 0 20px;
-  text-align: center;
+  letter-spacing: -.4px;
 }
 .info-hero {
   text-align: center;
@@ -13086,20 +13092,28 @@ button,
    뒤로 오는 것은 무겁다. 누른 자리에서 펼친다. */
 .nb-board { list-style: none; margin: 0; padding: 0; border-top: 1px solid #eee; }
 .nb-board > li { border-bottom: 1px solid #eee; }
-.nb-board > li > button { display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 18px 4px; background: none; border: none; cursor: pointer; text-align: left;
-  font-family: inherit; }
-.nb-board > li > button:hover .nb-board-t { color: var(--color-primary); }
+.nb-board > li > a { display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 18px 4px; text-decoration: none; }
+.nb-board > li > a:hover .nb-board-t { color: var(--color-primary); }
 .nb-board-pin { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--color-primary);
   border: 1px solid var(--color-primary); border-radius: 4px; padding: 1px 5px; }
 .nb-board-t { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nb-board-d { flex-shrink: 0; font-size: 13px; color: #555; }
-.nb-board-ar { flex-shrink: 0; color: #555; transition: transform .15s; }
-.nb-board > li.on .nb-board-ar { transform: rotate(180deg); color: var(--color-primary); }
-.nb-board > li.on .nb-board-t { color: var(--color-primary); font-weight: 600; }
-.nb-board-body { font-size: 15px; line-height: 1.8; color: #555; white-space: pre-wrap;
-  padding: 4px 4px 24px; word-break: keep-all; }
+.nb-board-ar { flex-shrink: 0; color: #c9c4cf; }
+/* 글 하나를 읽는 자리 */
+.nb-view-tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px;
+  border-radius: 6px; background: #f7f7f8; color: var(--color-primary); }
+.nb-view-tag.evt { color: #c2185b; }
+.nb-view-h { font-size: 22px; font-weight: 700; color: #1f1f22; margin: 12px 0 8px;
+  line-height: 1.4; word-break: keep-all; }
+.nb-view-d { font-size: 13px; color: #8a8a90; margin: 0 0 20px;
+  border-bottom: 1px solid #eee; padding-bottom: 18px; }
+.nb-view-body { font-size: 15px; line-height: 1.85; color: #555; white-space: pre-wrap;
+  word-break: keep-all; }
+.nb-view-back { display: inline-flex; align-items: center; gap: 4px; margin-top: 36px;
+  font-size: 14px; color: #555; text-decoration: none; }
+.nb-view-back:hover { color: var(--color-primary); }
 .nb-board-msg { color: #555; text-align: center; padding: 60px 0; }
 
 /* 이벤트 페이지 — 고객센터 계열이 아니라 일반 헤더를 단다. */
@@ -13198,6 +13212,13 @@ button,
   --cs-soft: #f7f7f8;
 }
 .co-plans b, .co-plans strong { font-weight: 700; }
+/* 고객센터도 같은 머리줄(ServiceHeader)을 쓴다. 토큰이 없으면 「회원가입」
+   단추가 투명 바탕에 흰 글씨가 되어 통째로 사라진다 — 실제로 그랬다. */
+.info-page {
+  --cs: #582681;
+  --cs-deep: #431a63;
+  --cs-soft: #f7f7f8;
+}
 
 /* 머리 */
 .cs-header { border-bottom: 1px solid #efeff1; background: #fff; position: sticky; top: 0; z-index: 30; }

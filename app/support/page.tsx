@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import InfoHeader from "@/components/InfoHeader";
+import ServiceHeader from "@/components/company/ServiceHeader";
 import InfoSide from "@/components/InfoSide";
 import InquiryModal from "@/components/support/InquiryModal";
 
@@ -22,7 +22,7 @@ function 속() {
 
   return (
     <div className="info-page">
-      <InfoHeader />
+      <ServiceHeader />
       <main className="info-main">
         <div className="info-layout">
           <InfoSide active="/support?문의=1" />

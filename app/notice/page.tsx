@@ -1,6 +1,6 @@
 "use client";
 import { Suspense } from "react";
-import InfoHeader from "@/components/InfoHeader";
+import ServiceHeader from "@/components/company/ServiceHeader";
 import InfoSide from "@/components/InfoSide";
 import NoticeBoard from "@/components/NoticeBoard";
 
@@ -11,7 +11,7 @@ import NoticeBoard from "@/components/NoticeBoard";
 export default function NoticePage() {
   return (
     <div className="info-page">
-      <InfoHeader />
+      <ServiceHeader />
       <main className="info-main">
         <div className="info-layout">
           <InfoSide active="/notice" />

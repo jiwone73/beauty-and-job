@@ -1,7 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import InfoHeader from "@/components/InfoHeader";
+import ServiceHeader from "@/components/company/ServiceHeader";
 import InfoSide from "@/components/InfoSide";
 import FaqBoard from "@/components/support/FaqBoard";
 
@@ -22,7 +22,7 @@ function 속() {
 export default function FaqPage() {
   return (
     <div className="info-page">
-      <InfoHeader />
+      <ServiceHeader />
       <main className="info-main">
         <Suspense fallback={null}><속 /></Suspense>
       </main>
