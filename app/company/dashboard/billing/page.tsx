@@ -15,10 +15,10 @@ import { 플랜, 스타트, 원, 보관표기, type PlanId } from "@/lib/company
 type 이용권 = {
   plan: PlanId | null; paidUntil: string | null; 남은일: number;
   진행중: number; 노출: number; 게재종료: string | null;
-  /** 무료 체험이 끝나는 날. 아직 시작 전이면 null */
-  체험끝: string | null;
-  체험중: boolean;
-  체험남은일: number;
+  /** 무료로 올릴 수 있는 공고 건수와, 그 중 쓴 것·남은 것 */
+  무료건수: number;
+  무료쓴것: number;
+  무료남은것: number;
   /** 상품별로 세워 둔 기간 */
   보관: { plan: PlanId; name: string; days: number; until: string }[];
   보관가능: boolean;
@@ -80,15 +80,13 @@ export default function CompanyBillingPage() {
             {it?.plan && it.paidUntil && (
               <span className="co-bill-until">{it.paidUntil}까지 · {it.남은일}일 남음</span>
             )}
-            {/* 스타트는 유료와 같은 자리에 체험이 끝나는 날을 적는다. 그 날이
-                걸어 둔 공고가 함께 내려가는 날이다. */}
+            {/* 스타트는 유료가 날짜를 적는 자리에 남은 건수를 적는다. 무료는
+                기간이 아니라 건수로 끊기고, 올린 공고는 내려가지 않는다. */}
             {!it?.plan && it && (
-              <span className={`co-bill-until${it.체험끝 && !it.체험중 ? " out" : ""}`}>
-                {!it.체험끝
-                  ? `첫 공고를 올리면 ${스타트.게재일}일 무료 체험이 시작됩니다`
-                  : it.체험중
-                    ? `무료 체험 · ${it.체험끝}까지 · ${it.체험남은일}일 남음`
-                    : `${스타트.게재일}일 무료 체험이 끝났습니다`}
+              <span className={`co-bill-until${it.무료남은것 <= 0 ? " out" : ""}`}>
+                {it.무료남은것 > 0
+                  ? `무료 공고 ${it.무료건수}건 중 ${it.무료남은것}건 남음`
+                  : `무료 공고 ${it.무료건수}건을 모두 쓰셨습니다`}
               </span>
             )}
           </div>

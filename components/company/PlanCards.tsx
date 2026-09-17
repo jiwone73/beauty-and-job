@@ -56,7 +56,7 @@ export default function PlanCards({ 안쪽 = false }: {
         <div className="cs-plan">
           <p className="cs-plan-nm">{스타트.name}</p>
           <p className="cs-plan-ln">{스타트.한줄}</p>
-          <p className="cs-plan-pr">무료<span className="cs-plan-du free">{스타트.게재일}일 체험</span></p>
+          <p className="cs-plan-pr">무료<span className="cs-plan-du free">공고 {스타트.무료건수}건</span></p>
           {/* 대시보드 안인지가 아니라 로그인했는지로 정한다. 밖에서도 이미
               가입한 사장님이면 가입 화면이 아니라 공고 등록으로 가야 한다. */}
           <Link href={갈곳} className="cs-plan-btn free">

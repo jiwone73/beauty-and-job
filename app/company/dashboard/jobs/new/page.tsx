@@ -18,8 +18,8 @@ function CompanyJobNewForm() {
   // 빈 폼으로 들어올 때만 묻는다. 이어서 쓰거나 복사해서 온 길에는 끼어들지 않는다.
   // 모달은 고를 것이 있을 때만 스스로 뜬다(임시저장도 지난 공고도 없으면 안 뜬다).
   const [고르기, set고르기] = useState(!editId && !copyId);
-  /** 무료 체험 상태. 유료 기간 안이면 null 이라 아무것도 안 뜬다. */
-  const [체험, set체험] = useState<{ 끝: string | null; 중: boolean; 남은: number } | null>(null);
+  /** 무료 칸 상태. 유료 기간 안이면 null 이라 아무것도 안 뜬다. */
+  const [무료, set무료] = useState<{ 전부: number; 남은: number } | null>(null);
 
   useEffect(() => {
     companyMeApi.get()
@@ -32,7 +32,7 @@ function CompanyJobNewForm() {
       .then((r) => r.json())
       .then((r) => {
         if (!r?.success) return;
-        set체험(r.data?.plan ? null : { 끝: r.data?.체험끝 ?? null, 중: !!r.data?.체험중, 남은: r.data?.체험남은일 ?? 0 });
+        set무료(r.data?.plan ? null : { 전부: r.data?.무료건수 ?? 0, 남은: r.data?.무료남은것 ?? 0 });
       })
       .catch(() => {});
   }, []);
@@ -116,19 +116,17 @@ function CompanyJobNewForm() {
             onPick={(href) => { set고르기(false); router.push(href); }}
           />
         )}
-        {체험 && (
-          <p className={`co-quota${체험.끝 && !체험.중 ? " out" : ""}`}>
-            {!체험.끝
-              ? <>이 공고를 올리면 {스타트.게재일}일 무료 체험이 시작됩니다 · 그동안 공고를 몇 건이든 걸 수 있어요</>
-              : 체험.중
-                ? <>무료 체험 {체험.남은}일 남음 · {체험.끝}에 걸어 둔 공고가 함께 내려갑니다</>
-                : <>
-                    {/* 여기서 막힌 사람에게 필요한 것은 공고를 계속 걸어 두는
-                        일이다. 요금제 넉 장을 다시 비교하게 하지 않고 그 일을
-                        하는 상품 하나로 바로 데려간다. */}
-                    {스타트.게재일}일 무료 체험이 끝났습니다.{" "}
-                    <Link href="/company/dashboard/plans/light">{플랜.LIGHT.name} 보기 ›</Link>
-                  </>}
+        {무료 && (
+          <p className={`co-quota${무료.남은 <= 0 ? " out" : ""}`}>
+            {무료.남은 > 0
+              ? <>무료 공고 {무료.전부}건 중 <b>{무료.남은}건</b> 남음 · 한 번 올리신 공고는 내려가지 않습니다</>
+              : <>
+                  {/* 여기서 막힌 사람에게 필요한 것은 공고를 더 거는 일이다.
+                      요금제 넉 장을 다시 비교하게 하지 않고 그 일을 하는
+                      상품 하나로 바로 데려간다. */}
+                  무료 공고 {무료.전부}건을 모두 쓰셨습니다.{" "}
+                  <Link href="/company/dashboard/plans/light">{플랜.LIGHT.name} 보기 ›</Link>
+                </>}
           </p>
         )}
         <JobPostForm

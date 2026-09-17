@@ -2,8 +2,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 게재종료일, 체험시작, 오늘날짜 } from "@/lib/companyEntitlement";
-import { 체험끝안내 } from "@/lib/companyPlans";
+import { 이용권, 게재종료일, 무료칸쓰기 } from "@/lib/companyEntitlement";
+import { 무료소진안내 } from "@/lib/companyPlans";
 
 // 공고 단건 조회
 export async function GET(
@@ -99,14 +99,15 @@ export async function PATCH(
     if (지금.rowCount === 0) return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);
     if (지금.rows[0].status !== "ACTIVE") {
       const { plan, paidUntil } = await 이용권(auth!.sub);
-      // 무료로 다시 거는 것도 체험 안에서만 된다. 체험을 안 썼으면 여기서 시작한다.
-      let 체험끝: string | null = null;
+      // 임시저장을 펴거나 마감한 공고를 다시 여는 것도 무료 칸을 쓴다. 다만
+      // 칸은 공고마다 한 번만 센다 — 이미 무료로 걸렸던 공고를 다시 여는 것은
+      // 새 공고가 아니라, 같은 공고에 두 번 값을 치르게 할 수 없다.
       if (!plan) {
-        체험끝 = await 체험시작(auth!.sub);
-        if (!체험끝 || 체험끝 < 오늘날짜()) return err("PLAN_001", 체험끝안내, 403);
+        const 됐나 = await 무료칸쓰기(auth!.sub, params.id);
+        if (!됐나) return err("PLAN_001", 무료소진안내, 403);
       }
       updates.push(`listed_until = $${idx++}::date`);
-      values.push(게재종료일(plan, paidUntil, 체험끝));
+      values.push(게재종료일(plan, paidUntil));
       updates.push(`closed_at = NULL`);
     }
   }

@@ -8,10 +8,6 @@ export type 이용권정보 = {
   paidUntil: string | null;
   /** 오늘을 넣어 앞으로 며칠을 더 쓰는가. 마지막 날이 1, 기간 밖이면 0 */
   남은일: number;
-  /** 무료 체험이 끝나는 날(YYYY-MM-DD). 아직 시작 전이면 null */
-  체험끝: string | null;
-  /** 지금이 무료 체험 기간 안인가 */
-  체험중: boolean;
 };
 
 /**
@@ -26,21 +22,17 @@ export async function 이용권(companyId: string): Promise<이용권정보> {
             (paid_until IS NOT NULL AND paid_until >= CURRENT_DATE) AS 유효,
             -- 오늘을 넣어 센다. 30일권을 산 날은 30, 마지막 날은 1이다.
             -- 날짜 빼기를 서버(UTC)에서 하면 오전 아홉 시까지 하루가 어긋난다.
-            GREATEST(0, (paid_until - CURRENT_DATE) + 1) AS 남은일,
-            to_char(trial_until, 'YYYY-MM-DD') AS trial_until,
-            (trial_until IS NOT NULL AND trial_until >= CURRENT_DATE) AS 체험중
+            GREATEST(0, (paid_until - CURRENT_DATE) + 1) AS 남은일
        FROM companies WHERE id = $1`,
     [companyId]
   );
   const r = rows[0];
-  if (!r) return { plan: null, paidUntil: null, 남은일: 0, 체험끝: null, 체험중: false };
+  if (!r) return { plan: null, paidUntil: null, 남은일: 0 };
   const plan = r.유효 && 플랜인가(r.plan) ? (r.plan as PlanId) : null;
   return {
     plan,
     paidUntil: r.paid_until ?? null,
     남은일: plan ? Number(r.남은일) : 0,
-    체험끝: r.trial_until ?? null,
-    체험중: !!r.체험중,
   };
 }
 
@@ -88,41 +80,71 @@ export function 보관더하기(함: 보관함, plan: PlanId, days: number, 만�
 }
 
 /**
- * 무료 체험을 아직 안 썼으면 지금 시작한다 — 끝나는 날을 돌려준다.
+ * 무료로 몇 건까지 쓸 수 있고 몇 건을 썼는가.
  *
- * 가입한 날이 아니라 **첫 공고를 거는 날**부터 센다. 가입만 해 두고 며칠 뒤에
- * 들어온 사람이 체험을 이미 까먹은 채로 시작하면 써 보지도 못하고 끝난다.
- *
- * 이미 시작했으면 그 날짜를 그대로 돌려준다(끝났어도). 한 번 쓴 체험은 다시
- * 시작되지 않는다.
+ * 「총 몇 번」이지 「동시에 몇 건」이 아니다. 동시 제한은 마감하면 자리가 다시
+ * 비어 끝없이 쓸 수 있고, 무엇보다 회원기업 평균 공고가 0.02건이라 아무에게도
+ * 걸리지 않는다 — 있으나 마나인 제한이다.
  */
-export async function 체험시작(companyId: string): Promise<string | null> {
+export async function 무료칸(companyId: string): Promise<{ 쓴것: number; 남은것: number }> {
   const { rows } = await pool.query(
-    `UPDATE companies
-        SET trial_until = COALESCE(trial_until, CURRENT_DATE + ($2::int - 1)),
-            updated_at = now()
-      WHERE id = $1
-      RETURNING to_char(trial_until, 'YYYY-MM-DD') AS trial_until`,
-    [companyId, 스타트.게재일]
-  );
-  return rows[0]?.trial_until ?? null;
+    `SELECT free_posts_used FROM companies WHERE id = $1`, [companyId]);
+  const 쓴것 = Number(rows[0]?.free_posts_used ?? 0);
+  return { 쓴것, 남은것: Math.max(0, 스타트.무료건수 - 쓴것) };
 }
 
 /**
- * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD).
+ * 이 공고에 무료 칸을 하나 쓴다. 이미 쓴 공고면 그냥 통과다.
  *
- * 유료는 이용권이 끝나는 날까지, 무료는 등록일로부터 이레다. 공고를 처음 걸 때와
- * 마감한 것을 다시 열 때가 같은 규칙을 써야 한다 — 한쪽만 고치면 그쪽이 뒷문이 된다.
+ * 공고마다 한 번만 센다. 채용이 끝나 마감했다가 다시 여는 것은 새 공고가
+ * 아닌데, 걸 때마다 세면 같은 공고에 두 번 값을 치르게 된다.
+ *
+ * 남은 칸이 없으면 false 를 돌려주고 아무것도 바꾸지 않는다.
  */
+export async function 무료칸쓰기(companyId: string, jobId: string): Promise<boolean> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const { rows: [j] } = await client.query(
+      `SELECT free_slot FROM job_postings WHERE id = $1 AND company_id = $2 FOR UPDATE`,
+      [jobId, companyId]);
+    if (!j) { await client.query("ROLLBACK"); return false; }
+    // 이미 무료로 걸린 적 있는 공고 — 다시 여는 것이라 세지 않는다.
+    if (j.free_slot) { await client.query("COMMIT"); return true; }
+
+    const { rows: [c] } = await client.query(
+      `SELECT free_posts_used FROM companies WHERE id = $1 FOR UPDATE`, [companyId]);
+    if (Number(c?.free_posts_used ?? 0) >= 스타트.무료건수) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+    await client.query(
+      `UPDATE companies SET free_posts_used = free_posts_used + 1, updated_at = now() WHERE id = $1`,
+      [companyId]);
+    await client.query(`UPDATE job_postings SET free_slot = true WHERE id = $1`, [jobId]);
+    await client.query("COMMIT");
+    return true;
+  } catch (e) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("[무료칸쓰기]", e);
+    return false;
+  } finally {
+    client.release();
+  }
+}
+
 /** 한국 날짜 YYYY-MM-DD. 서버는 UTC 라 자정부터 아침 아홉 시까지는 아직 어제다. */
 export const 오늘날짜 = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
 
-export function 게재종료일(plan: PlanId | null, paidUntil: string | null, trialUntil: string | null): string | null {
-  if (plan && paidUntil) return paidUntil;
-  // 무료 공고는 체험이 끝나는 날까지다. 건건이 이레가 아니라 계정의 이레라,
-  // 체험 중에 올린 공고는 몇 건이든 같은 날 함께 내려간다 — 그 날이 라이트를
-  // 사는 날이 된다.
-  return trialUntil;
+/**
+ * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD). null 은 기한 없음.
+ *
+ * 유료는 이용권이 끝나는 날까지다. 무료는 **내려가지 않는다** — 기간으로
+ * 끊던 때는 이미 올린 공고를 내려야 했고, 사장님 쪽에서는 그것이 뺏긴 것이라
+ * 그 자리에서 떠났다. 무료의 제한은 기간이 아니라 건수다.
+ */
+export function 게재종료일(plan: PlanId | null, paidUntil: string | null): string | null {
+  return plan && paidUntil ? paidUntil : null;
 }
 
 /**

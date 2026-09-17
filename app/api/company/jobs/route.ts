@@ -3,8 +3,8 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
-import { 이용권, 게재종료일, 체험시작, 오늘날짜 } from '@/lib/companyEntitlement'
-import { 체험끝안내 } from '@/lib/companyPlans'
+import { 이용권, 게재종료일, 무료칸, 무료칸쓰기 } from '@/lib/companyEntitlement'
+import { 무료소진안내 } from '@/lib/companyPlans'
 
 // 내 공고 목록
 export async function GET(req: NextRequest) {
@@ -89,24 +89,23 @@ export async function POST(req: NextRequest) {
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
-  // 무료로 몇 건을 올리든 막지 않는다. 공고가 많이 올라오는 것은 우리에게
-  // 이득이다 — 공고가 많아야 구직자가 오고, 구직자가 있어야 유료가 팔린다.
-  // 무료와 유료를 가르는 것은 **건수가 아니라 날짜**다.
+  // 무료(스타트)는 **총 세 건**까지다. 동시에 세 건이 아니라 통틀어 세 번이다 —
+  // 동시 제한은 마감하면 자리가 다시 비어 끝없이 쓸 수 있고, 회원기업 평균
+  // 공고가 0.02건이라 아무에게도 걸리지 않는 있으나 마나인 제한이 된다.
   //
-  // 무료는 라이트를 이레 동안 그대로 써 보는 것이다. 첫 공고를 거는 순간
-  // 이레가 시작되고, 그 안에서는 몇 건이든 걸 수 있다. 이레가 지나면 걸려
-  // 있던 공고가 함께 내려가고 — 연장하려면 라이트를 산다.
+  // 기간으로 끊지는 않는다. 기간 제한은 **이미 올린 공고를 내리게** 만드는데,
+  // 사장님 쪽에서 그것은 뺏긴 것이라 그 자리에서 떠난다. 한 번 올린 공고는
+  // 무료라도 계속 걸려 있고, 다만 네 번째부터 라이트를 산다.
+  //
+  // 임시저장은 세지 않는다 — 목록에 뜨지 않으니 자리를 쓰는 것이 아니다.
   const { plan, paidUntil } = await 이용권(auth!.sub)
-  let 체험끝: string | null = null
   if (!plan && jobStatus === 'ACTIVE') {
-    체험끝 = await 체험시작(auth!.sub)
-    if (!체험끝 || 체험끝 < 오늘날짜()) {
-      return err('PLAN_001', 체험끝안내, 403)
-    }
+    const { 남은것 } = await 무료칸(auth!.sub)
+    if (남은것 <= 0) return err('PLAN_001', 무료소진안내, 403)
   }
 
   // 게재 종료일. 임시저장은 목록에 뜨지 않으니 비워 둔다(펼 때 정해진다).
-  const listedUntil = jobStatus !== 'ACTIVE' ? null : 게재종료일(plan, paidUntil, 체험끝)
+  const listedUntil = jobStatus !== 'ACTIVE' ? null : 게재종료일(plan, paidUntil)
 
   const result = await pool.query(
     `INSERT INTO job_postings (
@@ -164,5 +163,15 @@ export async function POST(req: NextRequest) {
       listedUntil
     ]
   )
+  // 무료 칸은 공고를 만든 **뒤에** 센다 — 어느 공고가 칸을 썼는지 공고에 적어
+  // 두어야 마감했다 다시 열 때 두 번 세지 않는다. 그 사이 다른 창에서 마지막
+  // 칸을 썼다면 여기서 막히고, 만들던 공고는 되돌린다.
+  if (!plan && jobStatus === 'ACTIVE') {
+    const 됐나 = await 무료칸쓰기(auth!.sub, result.rows[0].id)
+    if (!됐나) {
+      await pool.query(`DELETE FROM job_postings WHERE id = $1`, [result.rows[0].id])
+      return err('PLAN_001', 무료소진안내, 403)
+    }
+  }
   return ok(result.rows[0], 201)
 }
