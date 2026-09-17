@@ -13197,7 +13197,7 @@ button,
 .cs-btn-line:hover { border-color: var(--cs); }
 .cs-btn-ghost { background: #fff; color: #4a4a4a; border: 1px solid #efeff1; }
 .cs-btn-ghost:hover { border-color: #e3e3e6; }
-.cs-btn-fill.lg, .cs-btn-line.lg { height: 48px; padding: 0 22px; font-size: 15.5px; border-radius: 9px; }
+.cs-btn-fill.lg, .cs-btn-line.lg { height: 56px; padding: 0 30px; font-size: 18px; font-weight: 700; border-radius: 10px; }
 
 /* 히어로 */
 .cs-hero { position: relative; overflow: hidden; background: #f7f7f8; }
