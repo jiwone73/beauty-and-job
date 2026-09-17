@@ -72,7 +72,14 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             사진으로 돌아가기 전에 갈아야 한다. */}
         <div className={`cs-hero-photo${이벤트 ? " evt" : ""}`} aria-hidden />
         <div className="cs-hero-in">
-          {이벤트 && <p className="cs-hero-eyebrow">BEAUTYWORK OPEN EVENT</p>}
+          {이벤트 && (
+            <p className="cs-hero-eyebrow">
+              <Sparkles size={18} strokeWidth={2.2} aria-hidden />
+              {/* 글자를 따로 감싸는 까닭은 글에만 빛을 훑기 때문이다.
+                  p 에 걸면 아이콘까지 투명해져 사라진다. */}
+              <span>BEAUTYWORK OPEN EVENT</span>
+            </p>
+          )}
           <h1 className="cs-hero-t">
             {이벤트
               ? <>{이벤트.short_title || 이벤트.title}</>

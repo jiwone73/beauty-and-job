@@ -13673,6 +13673,9 @@ button,
 @media (max-width: 1024px) {
   .cs-nav { display: none; }
   .cs-hero-photo { opacity: .35; width: 100%; -webkit-mask-image: none; mask-image: none; }
+  /* 넓은 화면에서 칸을 그림 크기로 묶어 두었으니 여기서 풀어 준다. */
+  .cs-hero-photo.evt { top: 0; bottom: 0; transform: none; aspect-ratio: auto;
+    background-size: cover; background-position: center; }
   .cs-jobs { grid-template-columns: repeat(4, 1fr); }
   .cs-job:nth-child(4n+1) { border-left: none; }
   .cs-job:nth-child(n+5) { border-top: 1px solid #f7f7f8; }
@@ -16242,9 +16245,31 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 이벤트 중에는 이벤트가 제목이다 — 그 위에 붙는 작은 이름표.
    링크가 아니다. 누를 곳은 아래 단추 하나면 된다. */
-.cs-hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px;
-  font-size: 14px; font-weight: 700; color: var(--color-primary);
-  border: 1px solid var(--color-primary); border-radius: 100px; padding: 5px 14px; }
+.cs-hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px;
+  font-size: 17px; font-weight: 800; letter-spacing: 1.1px; color: var(--color-primary); }
+/* 테두리는 뺐다. 알약 선이 아래 제목과 단추까지 세 겹으로 둘러 보였고,
+   이름표는 두르지 않아도 이름표다. */
+.cs-hero-eyebrow svg { flex: none; animation: 눈짓 2.6s ease-in-out infinite; }
+/* 보라 글자 위로 옅은 보라 빛이 한 번씩 훑고 지나간다. 흰빛은 쓰지 않는다 —
+   바탕이 연보라라 흰 자리에서 글자가 끊겨 보인다. */
+.cs-hero-eyebrow span {
+  background-image: linear-gradient(105deg,
+    var(--color-primary) 0 32%, #a97fd6 41%, #d3b4ee 50%, #a97fd6 59%, var(--color-primary) 68% 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: 글반짝 2.6s ease-in-out infinite; }
+/* 빛은 절반쯤에서 다 지나가고 나머지는 쉰다. 쉬는 참이 없으면 글자가 계속
+   일렁여 읽기가 불편하다. */
+@keyframes 글반짝 { 0% { background-position: 120% 0; } 48%, 100% { background-position: -20% 0; } }
+@keyframes 눈짓 {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: .5; transform: scale(.84) rotate(-14deg); } }
+/* 움직임을 줄여 달라고 한 사람에게는 멈춰 둔다. */
+@media (prefers-reduced-motion: reduce) {
+  .cs-hero-eyebrow svg, .cs-hero-eyebrow span { animation: none; }
+  .cs-hero-eyebrow span { -webkit-text-fill-color: var(--color-primary); color: var(--color-primary); }
+}
 .cs-hero-eyebrow svg { flex: none; }
 /* 이벤트 중의 한 방 — 넷을 같은 크기로 늘어놓으면 어느 것도 세지 않다. */
 .cs-hero-hit { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; }
@@ -16266,22 +16291,37 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-hero.evt { background: transparent; }
 .cs-hero.evt::before { content: ""; position: absolute; inset: 0; z-index: 0;
   right: max(0px, calc(50% - 580px)); left: max(0px, calc(50% - 580px));
-  /* 그림 테두리를 재서 나온 값이다(가장자리 3px 중앙값 #ebe8ea). 전에 쓰던
-     #dfdbdd 는 그림 **전체** 평균이라 리본 그늘까지 섞여 한 톤 어두웠고,
-     그래서 사진만 밝은 네모로 떠 보였다. 그림을 바꾸면 이 값도 다시 잰다. */
-  background: #ebe8ea; }
+  /* 연보라 물을 들인 뒤의 그림 바탕을 화면에서 찍어 잰 값이다. 파일 평균도
+     테두리 값도 아니다 — 테두리에는 아래쪽 그늘이 섞여 한 단 어둡고, 그걸
+     쓰던 동안 그림만 밝은 네모로 떠 보였다. 물 농도를 바꾸면 다시 잰다. */
+  background: #ece7ef; }
 /* 사진은 원래 absolute 로 놓여 있다. 여기서 position 을 건드리면 흐름에
    들어가 높이가 0 이 되어 그림이 사라진다 — z-index 만 올린다. */
 .cs-hero.evt .cs-hero-photo { z-index: 1; }
 .cs-hero.evt .cs-hero-in { position: relative; z-index: 2; }
 .cs-hero-photo.evt { background-image: url("/images/company-hero-event.png");
-  /* 상자 전체가 들어오게 둔다. 확대해서 리본만 크게 깔면 그림에서 제일 진한
-     자리가 화면을 채워 분홍으로 읽힌다. 제목이 길어 오른쪽으로 뻗으니
-     글 끝과 상자 사이에 자리도 둔다. */
-  background-size: 74% auto; background-repeat: no-repeat;
-  background-position: right center;
-  /* 바탕이 같으니 가장자리를 녹일 필요가 없다. */
-  -webkit-mask-image: none; mask-image: none; }
+  /* 칸을 그림에 딱 맞춘다. 전에는 배너 높이만 한 칸에 그림을 74% 로 줄여
+     넣었는데, 남는 자리에 아래 물색이 그대로 드러나 왼쪽에 밝은 네모가
+     생긴다. 칸과 그림이 같으면 그럴 자리가 없다. */
+  top: 50%; bottom: auto; transform: translateY(-50%);
+  width: min(40%, 463px); aspect-ratio: 1100 / 719;
+  background-size: 100% 100%; background-repeat: no-repeat;
+  /* 그림 바탕은 중성 회색인데 배너는 연보라라, 경계를 아무리 녹여도 넓은
+     면끼리 색감이 달라 「배너에 붙인 그림」으로 읽혔다. 그림에도 같은 물을
+     들인다 — 곱하기라 거의 어두워지지 않고 초록만 빠져 연보라로 기운다.
+     파일은 그대로 두고 화면에서만 물들이므로 되돌리기 쉽다. */
+  background-color: #fcf8ff; background-blend-mode: multiply;
+  /* 색을 맞춰도 그림 바탕은 고른 색이 아니라 은은한 그라데이션이라 어디선가
+     단이 진다. 세 변을 녹여 그 단을 없앤다 — 위아래는 리본과 그늘이 변까지
+     닿아 있고, 왼쪽은 글 쪽으로 다섯 단쯤 밝아지며 세로줄이 섰다.
+     오른쪽은 배너 끝과 만나므로 녹일 것이 없다.
+     겹친 두 그라데이션은 둘 다 칠한 자리만 남긴다(intersect). */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 15%, #000 82%, transparent 100%),
+                      linear-gradient(to right, transparent 0%, #000 20%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 15%, #000 82%, transparent 100%),
+              linear-gradient(to right, transparent 0%, #000 20%);
+  mask-composite: intersect; }
 
 /* 배너 소재 예시 — 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다. */
 .pi-samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
