@@ -166,9 +166,14 @@ function Hero() {
 
         {/* 1. 상단 배너 — 파는 자리다. 광고가 걸리면 그 자리를 광고가 쓰고,
             안 걸렸으면 뷰티워크 배너가 선다. 광고를 위에 하나 더 얹지 않는다 —
-            첫 화면에 배너가 둘이면 어느 것이 이 사이트 이야기인지 흐려진다. */}
+            첫 화면에 배너가 둘이면 어느 것이 이 사이트 이야기인지 흐려진다.
+
+            눌러서 가는 곳은 기업 서비스 소개(/company)다. 전에는 이벤트가
+            걸려 있으면 이벤트 글로 보냈는데, 배너가 파는 것은 「공고를
+            올리세요」이고 올릴 마음이 든 사람에게 필요한 것은 공지 글이 아니라
+            상품과 등록 단추가 있는 화면이다. */}
         <AdBanner slot="main" 대신={
-          <Link href={이벤트 ? `/event?open=${이벤트.id}` : "/company"} className="mt-hero">
+          <Link href="/company" className="mt-hero">
             <span className="mt-hero-photo" />
             <span className="mt-hero-in">
               <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
@@ -308,10 +313,37 @@ function Hero() {
                         오픈 초기에 공고를 모으는 것이 먼저라고 정했다. */}
                     <span className="mt-evt-h">선착순 채용공고 등록하고<br /><b>1개월 무료 + 최상단 노출</b></span>
                     <span className="mt-evt-go">채용공고 등록하기 ›</span>
-                    <img className="mt-evt-art art-mega" src="/images/event/art-megaphone.png" alt="" />
-                    <span className="mt-evt-pts">
-                      <i>공고 등록 무제한</i><i>기간 내내 게재</i><i>선착순 최상단</i>
-                    </span>
+                    {/* 확성기를 걷고 「최상단」을 그림으로 말한다. 확성기는
+                        「알린다」까지만 말하고 어디에 걸리는지는 말하지 않았다.
+                        옅은 줄 셋 위로 보라 카드 하나가 떠올라 있는 그림이면
+                        목록 맨 위라는 말이 그림만으로 읽힌다.
+                        옆에 붙어 있던 알약 셋(공고 등록 무제한·기간 내내 게재·
+                        선착순 최상단)은 걷었다 — 맨 아래는 제목과 같은 말이고,
+                        나머지 둘은 /company 가 자세히 맡는다. */}
+                    <svg className="mt-evt-top" viewBox="0 0 118 104" fill="none" aria-hidden>
+                      <g opacity=".5">
+                        <rect x="20" y="52" width="92" height="15" rx="5" fill="#fff" />
+                        <rect x="28" y="57" width="34" height="5" rx="2.5" fill="#cfc4de" />
+                        <rect x="20" y="73" width="92" height="15" rx="5" fill="#fff" />
+                        <rect x="28" y="78" width="46" height="5" rx="2.5" fill="#cfc4de" />
+                        <rect x="20" y="94" width="92" height="10" rx="5" fill="#fff" />
+                      </g>
+                      <g filter="url(#evt-top-shadow)">
+                        <rect x="10" y="18" width="102" height="26" rx="8" fill="#582681" />
+                      </g>
+                      <rect x="20" y="26" width="42" height="5" rx="2.5" fill="#fff" opacity=".95" />
+                      <rect x="20" y="35" width="28" height="4" rx="2" fill="#fff" opacity=".55" />
+                      <circle cx="96" cy="31" r="9" fill="#fff" />
+                      <path d="M96 27.2v7.6M92.6 30.4 96 27l3.4 3.4" stroke="#582681"
+                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M61 10.5 63 6l2 4.5 4.5 2-4.5 2-2 4.5-2-4.5-4.5-2 4.5-2Z" fill="#a97fd6" />
+                      <defs>
+                        <filter id="evt-top-shadow" x="0" y="12" width="122" height="46"
+                                filterUnits="userSpaceOnUse">
+                          <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#582681" floodOpacity=".28" />
+                        </filter>
+                      </defs>
+                    </svg>
                   </button>
                 </div>
                 <p className="mt-evt-note">
