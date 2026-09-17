@@ -113,25 +113,22 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
           직군·서비스 안내·포부를 그 앞에 세워 두면 정작 볼 것이 밀린다.
           이벤트가 없으면 아무것도 그리지 않는다 — 그때는 히어로의 강점 넷이
           화면을 맡는다. */}
+      {/* 직군과 이벤트는 한 판이다. 판을 둘로 나눠 두었더니 양쪽 안쪽 여백이
+          겹쳐 직군 아래에만 178px 이 벌어졌다 — 안쪽 문단 사이(72px)의 두 배가
+          넘는 골이라 이벤트가 딴 페이지처럼 떨어져 보였다. */}
       {이벤트 && (
-        <>
-          {/* 배너 바로 아래 — 어떤 자리를 다루는 곳인지부터 보인다. */}
-          <section className="cs-wrap" id="직군">
-            <div className="cs-jobs">
-              {직군.map(({ Icon, name, sub }) => (
-                <div key={name} className="cs-job">
-                  <Icon size={26} strokeWidth={1.6} />
-                  <b>{name}</b>
-                  <span>{sub}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="cs-wrap">
-            <EventDetail 머리숨김 />
-          </section>
-        </>
+        <section className="cs-wrap" id="직군">
+          <div className="cs-jobs">
+            {직군.map(({ Icon, name, sub }) => (
+              <div key={name} className="cs-job">
+                <Icon size={26} strokeWidth={1.6} />
+                <b>{name}</b>
+                <span>{sub}</span>
+              </div>
+            ))}
+          </div>
+          <EventDetail 머리숨김 />
+        </section>
       )}
 
     </div>

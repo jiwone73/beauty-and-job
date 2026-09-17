@@ -16266,7 +16266,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-hero.evt { background: transparent; }
 .cs-hero.evt::before { content: ""; position: absolute; inset: 0; z-index: 0;
   right: max(0px, calc(50% - 580px)); left: max(0px, calc(50% - 580px));
-  background: #dfdbdd; }
+  /* 그림 테두리를 재서 나온 값이다(가장자리 3px 중앙값 #ebe8ea). 전에 쓰던
+     #dfdbdd 는 그림 **전체** 평균이라 리본 그늘까지 섞여 한 톤 어두웠고,
+     그래서 사진만 밝은 네모로 떠 보였다. 그림을 바꾸면 이 값도 다시 잰다. */
+  background: #ebe8ea; }
 /* 사진은 원래 absolute 로 놓여 있다. 여기서 position 을 건드리면 흐름에
    들어가 높이가 0 이 되어 그림이 사라진다 — z-index 만 올린다. */
 .cs-hero.evt .cs-hero-photo { z-index: 1; }
@@ -16334,17 +16337,23 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* ===========================================
    오픈이벤트 안내 — 혜택 · 참여 방법 · 노출 자리 · 유의사항.
    =========================================== */
-.ev { max-width: 1160px; margin: 0 auto; color: #555; }
-.ev-sec { margin-top: 78px; }
-.ev-sec:first-of-type { margin-top: 54px; }
-.ev-kicker { margin: 0 0 12px; text-align: center; font-size: 12.5px; font-weight: 700;
+/* 세로 간격은 세 가지뿐이다.
+     문단 사이 72 · 제목과 내용 사이 44 · 제목에 딸린 것(꼬리표·부제) 10.
+   전에는 78·54·40·36·12·10 이 섞여 있어서, 제목과 내용이 붙은 만큼 문단도
+   붙어 보이고 어디서 끊기는지가 흐렸다. 값을 바꿀 일이 있으면 여기 셋만
+   손댄다. */
+.ev { max-width: 1160px; margin: 0 auto; color: #555;
+  --ev-문단: 72px; --ev-제목: 44px; --ev-꼬리: 10px; }
+.ev-sec, .ev-sec:first-of-type { margin-top: var(--ev-문단); }
+.ev-kicker { margin: 0 0 var(--ev-꼬리); text-align: center; font-size: 12.5px; font-weight: 700;
   letter-spacing: 2px; color: #b0a6bd; }
-.ev-h { margin: 0 0 10px; text-align: center; font-size: 27px; font-weight: 800;
+.ev-h { margin: 0 0 var(--ev-꼬리); text-align: center; font-size: 27px; font-weight: 800;
   color: #1f1f22; letter-spacing: -.7px; }
 .ev-h b { color: var(--color-primary); font-weight: 800; }
-.ev-sub { margin: 0 0 36px; text-align: center; font-size: 15px; color: #8a8a90; }
+/* 부제는 제목에 딸린 것이라 제목 쪽에 붙고, 내용과는 제목만큼 띄운다. */
+.ev .ev-sub { margin: 0 0 var(--ev-제목); text-align: center; font-size: 15px; color: #8a8a90; }
 /* 제목과 내용이 붙어 있으면 어디까지가 제목인지 눈이 한 번 더 일한다. */
-.ev-h + .ev-cards, .ev-h + .ev-steps, .ev-h + .pi-spot, .ev-h + .pi-tb, .ev-h + .pi-warn { margin-top: 40px; }
+.ev-h + .ev-cards, .ev-h + .ev-steps, .ev-h + .pi-spot, .ev-h + .pi-tb, .ev-h + .pi-warn { margin-top: var(--ev-제목); }
 
 .ev-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
 .ev-card { text-align: center; padding: 8px 14px; }
