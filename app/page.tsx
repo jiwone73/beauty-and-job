@@ -554,7 +554,7 @@ function Footer() {
     <footer style={{ background: "#f7f7f8", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div style={{ maxWidth: 1360, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
-          <Link href="/" aria-label="하이어스" style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", lineHeight: 1, textDecoration: "none" }}>
+          <Link href="/" aria-label="뷰티워크 홈" style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", lineHeight: 1, textDecoration: "none" }}>
             <span style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-1px", color: "#4B4954", display: "inline-flex", alignItems: "flex-end" }}>
               <span>하이</span>
               <span style={{ position: "relative", color: "#FA6400" }}>
@@ -574,14 +574,14 @@ function Footer() {
           </nav>
         </div>
         <div style={{ fontSize: 13, color: "#555", lineHeight: 2 }}>
-          <div><span style={{ fontWeight: 400, color: "#555" }}>하이어스</span><Sep />대표 : 정은우</div>
-          <div>주소 : 서울특별시 구로구 디지털로34길 43, 702-54호<Sep />전화번호 : </div>
+          <div><span style={{ fontWeight: 400, color: "#555" }}>바를정</span><Sep />대표 : 정서우</div>
+          <div>주소 : 서울특별시 마포구 성미산로 109, 1층 102호 일부(연남동, 희승)<Sep />전화번호 : </div>
           {/* 통신판매업·유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
               번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
-          <div>사업자등록번호 : 431-05-03695<Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
+          <div>사업자등록번호 : 734-25-01099<Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
-          <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 하이어스. All rights reserved.</span>
+          <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             <Link href="/support" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>고객센터</Link>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>

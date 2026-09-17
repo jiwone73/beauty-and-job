@@ -85,8 +85,8 @@ export default function CompanyBillingPage() {
             {!it?.plan && it && (
               <span className={`co-bill-until${it.무료남은것 <= 0 ? " out" : ""}`}>
                 {it.무료남은것 > 0
-                  ? `무료 공고 ${it.무료건수}건 중 ${it.무료남은것}건 남음`
-                  : `무료 공고 ${it.무료건수}건을 모두 쓰셨습니다`}
+                  ? `무료 · 공고 ${it.무료건수}건까지 · ${스타트.게재일}일마다 재등록`
+                  : `공고 ${it.무료쓴것}건 게재 중 · 마감하시면 새로 올리실 수 있습니다`}
               </span>
             )}
           </div>

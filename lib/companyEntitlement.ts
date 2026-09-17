@@ -80,71 +80,37 @@ export function 보관더하기(함: 보관함, plan: PlanId, days: number, 만�
 }
 
 /**
- * 무료로 몇 건까지 쓸 수 있고 몇 건을 썼는가.
+ * 무료(스타트)로 지금 몇 건을 걸어 두었고 몇 건을 더 걸 수 있는가.
  *
- * 「총 몇 번」이지 「동시에 몇 건」이 아니다. 동시 제한은 마감하면 자리가 다시
- * 비어 끝없이 쓸 수 있고, 무엇보다 회원기업 평균 공고가 0.02건이라 아무에게도
- * 걸리지 않는다 — 있으나 마나인 제한이다.
+ * **동시에 몇 건**이지 통틀어 몇 번이 아니다. 무료 공고는 사흘이면 내려가고
+ * 다시 걸 수 있으므로, 총량으로 세면 한 번 쓴 곳은 영영 못 걸게 된다.
+ * 막는 것이 아니라 한 번에 하나만 걸게 하는 것이 목적이다.
  */
 export async function 무료칸(companyId: string): Promise<{ 쓴것: number; 남은것: number }> {
   const { rows } = await pool.query(
-    `SELECT free_posts_used FROM companies WHERE id = $1`, [companyId]);
-  const 쓴것 = Number(rows[0]?.free_posts_used ?? 0);
+    `SELECT COUNT(*)::int AS n FROM v_active_jobs WHERE company_id = $1`, [companyId]);
+  const 쓴것 = Number(rows[0]?.n ?? 0);
   return { 쓴것, 남은것: Math.max(0, 스타트.무료건수 - 쓴것) };
-}
-
-/**
- * 이 공고에 무료 칸을 하나 쓴다. 이미 쓴 공고면 그냥 통과다.
- *
- * 공고마다 한 번만 센다. 채용이 끝나 마감했다가 다시 여는 것은 새 공고가
- * 아닌데, 걸 때마다 세면 같은 공고에 두 번 값을 치르게 된다.
- *
- * 남은 칸이 없으면 false 를 돌려주고 아무것도 바꾸지 않는다.
- */
-export async function 무료칸쓰기(companyId: string, jobId: string): Promise<boolean> {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    const { rows: [j] } = await client.query(
-      `SELECT free_slot FROM job_postings WHERE id = $1 AND company_id = $2 FOR UPDATE`,
-      [jobId, companyId]);
-    if (!j) { await client.query("ROLLBACK"); return false; }
-    // 이미 무료로 걸린 적 있는 공고 — 다시 여는 것이라 세지 않는다.
-    if (j.free_slot) { await client.query("COMMIT"); return true; }
-
-    const { rows: [c] } = await client.query(
-      `SELECT free_posts_used FROM companies WHERE id = $1 FOR UPDATE`, [companyId]);
-    if (Number(c?.free_posts_used ?? 0) >= 스타트.무료건수) {
-      await client.query("ROLLBACK");
-      return false;
-    }
-    await client.query(
-      `UPDATE companies SET free_posts_used = free_posts_used + 1, updated_at = now() WHERE id = $1`,
-      [companyId]);
-    await client.query(`UPDATE job_postings SET free_slot = true WHERE id = $1`, [jobId]);
-    await client.query("COMMIT");
-    return true;
-  } catch (e) {
-    await client.query("ROLLBACK").catch(() => {});
-    console.error("[무료칸쓰기]", e);
-    return false;
-  } finally {
-    client.release();
-  }
 }
 
 /** 한국 날짜 YYYY-MM-DD. 서버는 UTC 라 자정부터 아침 아홉 시까지는 아직 어제다. */
 export const 오늘날짜 = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
 
 /**
- * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD). null 은 기한 없음.
+ * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD).
  *
- * 유료는 이용권이 끝나는 날까지다. 무료는 **내려가지 않는다** — 기간으로
- * 끊던 때는 이미 올린 공고를 내려야 했고, 사장님 쪽에서는 그것이 뺏긴 것이라
- * 그 자리에서 떠났다. 무료의 제한은 기간이 아니라 건수다.
+ * 유료는 이용권이 끝나는 날까지다. 무료는 오늘부터 사흘 — 오늘을 넣어 세므로
+ * 사흘권이면 오늘 + 2가 마지막 날이다(유료 30일권이 오늘 + 29인 것과 같다).
+ *
+ * 사흘이 지나면 내려가지만 **다시 걸면 그날부터 또 사흘**이고 횟수 제한이
+ * 없다. 공고를 뺏자는 것이 아니라 손이 가게 하려는 것이다 — 사흘마다 누르는
+ * 것이 귀찮으면 라이트를 산다. 목록이 늘 최근 것으로 채워지는 효과는 덤이다.
  */
 export function 게재종료일(plan: PlanId | null, paidUntil: string | null): string | null {
-  return plan && paidUntil ? paidUntil : null;
+  if (plan && paidUntil) return paidUntil;
+  const d = new Date(Date.now() + 9 * 36e5);
+  d.setUTCDate(d.getUTCDate() + 스타트.게재일 - 1);
+  return d.toISOString().slice(0, 10);
 }
 
 /**

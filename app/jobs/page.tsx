@@ -144,7 +144,8 @@ function JobsPageInner() {
   // 아직 안 온 것은 다른 일인데, 화면에는 똑같이 빈 목록으로 보인다.
   const [불러왔나, set불러왔나] = useState(false);
   const [apiJobs, setApiJobs] = useState<any[] | null>(null);
-  // 서버가 24건씩 준다. 「더 보기」는 다음 쪽을 받아 뒤에 잇는다.
+  // 서버가 24건씩 준다. 쪽 번호를 누르면 그 쪽으로 갈아 끼운다 —
+  // 뒤에 잇던 때는 5쪽까지 내려간 사람이 맨 위로 돌아갈 길이 없었다.
   const 한번에 = 24;
   const [쪽, set쪽] = useState(1);
   const [총건수, set총건수] = useState(0);
@@ -213,7 +214,7 @@ function JobsPageInner() {
             benefit_tags: j.benefit_tags || [],
             salary_min: j.salary_min ?? null,
           }));
-          setApiJobs((prev) => (쪽 === 1 ? mapped : [...(prev || []), ...mapped]));
+          setApiJobs(mapped);
           set총건수(res?.meta?.total ?? mapped.length);
         }
       })
@@ -319,6 +320,14 @@ function JobsPageInner() {
   };
   // 거르는 일은 전부 서버가 한다. 여기서는 받은 것을 그대로 그린다.
   const filteredJobs = apiJobs || [];
+  const 총쪽 = Math.max(1, Math.ceil(총건수 / 한번에));
+  /** 쪽을 옮기면 목록 맨 위로 올린다. 안 그러면 새 쪽의 한복판에서 시작한다. */
+  const 쪽이동 = (n: number) => {
+    const 갈곳 = Math.min(총쪽, Math.max(1, n));
+    if (갈곳 === 쪽) return;
+    set쪽(갈곳);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="jobs-page">
@@ -489,7 +498,6 @@ function JobsPageInner() {
         <AdBanner slot="jobs" group={고른대분류 || undefined} />
         <div className="jobs-head">
           <b>{jobTypeFilter} 채용공고</b>
-          <span>{총건수}건</span>
         </div>
 
         {/* ===== 고른 값 =====
@@ -556,18 +564,50 @@ function JobsPageInner() {
           </div>
         )}
 
-        {filteredJobs.length < 총건수 && (
-          <div className="jobs-more">
-            <button type="button" onClick={() => set쪽((n) => n + 1)}>
-              공고 더 보기 ({총건수 - filteredJobs.length}건)
+        {총쪽 > 1 && (
+          <nav className="jobs-pager" aria-label="페이지">
+            <button type="button" className="jobs-pager-arrow" disabled={쪽 <= 1}
+                    onClick={() => 쪽이동(쪽 - 1)} aria-label="이전 쪽">
+              <ChevronRight size={16} style={{ transform: "rotate(180deg)" }} />
             </button>
-          </div>
+            {쪽목록(쪽, 총쪽).map((n, i) =>
+              n === 0 ? (
+                <span key={`gap${i}`} className="jobs-pager-gap">…</span>
+              ) : (
+                <button key={n} type="button"
+                        className={`jobs-pager-num${n === 쪽 ? " on" : ""}`}
+                        aria-current={n === 쪽 ? "page" : undefined}
+                        onClick={() => 쪽이동(n)}>{n}</button>
+              ))}
+            <button type="button" className="jobs-pager-arrow" disabled={쪽 >= 총쪽}
+                    onClick={() => 쪽이동(쪽 + 1)} aria-label="다음 쪽">
+              <ChevronRight size={16} />
+            </button>
+          </nav>
         )}
         </div>
       </div>
     </div>
   );
 }
+
+/**
+ * 쪽 번호를 어떻게 늘어놓을까. 0 은 「…」 자리다.
+ *
+ * 지금 쪽 둘레만 보여 주고 첫 쪽과 끝 쪽은 늘 남긴다 — 여덟 쪽이든 쉰 쪽이든
+ * 줄 길이가 같아야 한 줄에 들어간다.
+ */
+const 쪽목록 = (현재: number, 총: number): number[] => {
+  if (총 <= 7) return Array.from({ length: 총 }, (_, i) => i + 1);
+  const 둘레 = [현재 - 1, 현재, 현재 + 1].filter((n) => n > 1 && n < 총);
+  const 낱장 = [...new Set([1, ...둘레, 총])].sort((a, b) => a - b);
+  const 줄: number[] = [];
+  낱장.forEach((n, i) => {
+    if (i > 0 && n - 낱장[i - 1] > 1) 줄.push(0);
+    줄.push(n);
+  });
+  return 줄;
+};
 
 export default function JobsPage() {
   return (

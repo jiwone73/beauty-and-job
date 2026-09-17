@@ -1,0 +1,518 @@
+[
+ {
+  "id": "fd9132f2-7579-41f4-86db-98a2a5f5b571",
+  "company_name": "코스메틱하우스 그룹 #59",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "c07a1253-f645-4e72-826c-fbe51288b26a",
+  "company_name": "뷰티프렌즈 그룹 #51",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "0e9a9919-02cd-4ead-b64b-c3a203d8d6b0",
+  "company_name": "뷰티커머스 그룹 #34",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "e2098de6-9cf8-4cc0-afb8-b8e32a261fe3",
+  "company_name": "글로우 클리닉 #16",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "d1271421-3bbb-4fcf-a5bc-95eeaf4cf9ed",
+  "company_name": "아모레살롱 뷰티샵 #29",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "dff0fe2f-a481-4f36-8eb4-7d774aeca420",
+  "company_name": "블룸 네일샵 #7",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "24da8381-3451-4e14-ba2c-6d5d0e7975a0",
+  "company_name": "제니 클리닉 #26",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "fda32652-9752-43de-8431-3bf197a02c98",
+  "company_name": "아모레살롱 뷰티샵 #14",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "6cb58fe5-f0e4-4326-9cbf-682a0dca26e5",
+  "company_name": "라비앙 살롱 #30",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "0550da82-358e-402c-8045-31bff93a0b03",
+  "company_name": "루체 뷰티샵 #9",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "8d11a0a1-9aea-467f-a893-3201ea090bc7",
+  "company_name": "오라 클리닉 #6",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "f0807f60-509e-4ea5-ba36-4bc805a3b810",
+  "company_name": "셀인 랩 #37",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "4b9ce36a-ea5a-4eaa-936e-32c680cfd4c5",
+  "company_name": "뷰티네이션 그룹 #58",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "e68e3ee3-964c-4a56-bcde-2d5d2812e481",
+  "company_name": "더마뷰티그룹 그룹 #60",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "3d4227d4-7d7f-45ff-a957-a90f7e57a8e0",
+  "company_name": "이노코스 그룹 #46",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "f20c60a0-5e4f-4ba6-8068-8cda2c41cfb5",
+  "company_name": "올리브영",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "d77d6ca7-a55a-450f-88a6-198bcc4c5cae",
+  "company_name": "뷰티풀 뷰티샵 #19",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "f86f0160-0ec2-4c13-9594-9b3bd70284c0",
+  "company_name": "아이콘 코리아 #48",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "b07ffe7b-62f6-4c05-8949-f38a14133595",
+  "company_name": "퓨어 코리아 #32",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "56972412-7c2e-4072-9469-8ef6b83e0f9d",
+  "company_name": "더마 #43",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "c391b7b2-d30c-4379-8b85-1499a274ee88",
+  "company_name": "블룸 네일샵 #22",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "498f5e05-c1ed-4466-ae6c-765cf8964584",
+  "company_name": "스타일리시 스튜디오 #3",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "090acf0c-1f70-4b4f-888c-d15ae1a2e2a2",
+  "company_name": "뷰티프렌즈 그룹 #56",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "a151bf85-5ba6-4c77-8ec3-e2124ebc6d2d",
+  "company_name": "케이뷰티 랩 #45",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "9f25e014-a878-4896-a6ce-f788d9504b5f",
+  "company_name": "올뷰티 그룹 #52",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "02ca5b9a-604a-40f2-8c67-4527df55e4c7",
+  "company_name": "라리엔 명동점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "adc62c52-897d-48c7-8261-821d46490e6a",
+  "company_name": "샤인 살롱 #20",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "7b75f16f-0356-4d80-ad7a-9faebd323119",
+  "company_name": "뷰티커머스 코리아 #44",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "b30c2030-5979-42eb-9bd8-f142e3657f5c",
+  "company_name": "셀인 #47",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "6e5d924e-c4e3-4d12-86ad-fc14336cd8ca",
+  "company_name": "네일앤코 네일샵 #2",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "f94efa5d-11f8-4865-8adc-88231269aaa3",
+  "company_name": "에스떼 스튜디오 #8",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "a7837cea-5e24-4850-9f00-f53e71bf8011",
+  "company_name": "미라클 살롱 #25",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "5544c8a1-cff1-4685-a462-d0a7846c1176",
+  "company_name": "이노코스 코리아 #36",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "eb75c221-d1a9-48cf-ab32-009d7b9d1989",
+  "company_name": "스타일리시 스튜디오 #18",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "65dbbe36-5f19-4524-afd6-36e62ef0f059",
+  "company_name": "코스메랩 그룹 #50",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "520e2141-8321-4814-8b0f-6445e478b452",
+  "company_name": "제니 클리닉 #11",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "12d8a307-9c88-4127-8858-7a6639791fdc",
+  "company_name": "케이뷰티 #35",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "6a7f2520-f2d5-48b8-a8ad-73c2e7d35ce0",
+  "company_name": "뷰티풀 뷰티샵 #4",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "39ad15da-a9f6-440e-8e51-933654d6b70c",
+  "company_name": "오라 클리닉 #21",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "ef9b3821-6d25-4755-909c-028d99ba061e",
+  "company_name": "뷰티인사이드 랩 #41",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "b5f22ab4-554d-4c59-96d0-9dd455baf975",
+  "company_name": "bizRegis",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "5c0a3cef-eaec-4012-957e-3aff7c1ec97d",
+  "company_name": "퓨어 그룹 #42",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "6eb7eecf-b565-41eb-a499-af2ac075cb19",
+  "company_name": "뷰티살롱",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "0df504c0-e6e5-4289-bdbe-795569ebf666",
+  "company_name": "에스떼 스튜디오 #23",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "05c33091-e3e7-45e2-aae4-376ff91ed6b5",
+  "company_name": "더마 랩 #33",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "b4ffb0ba-efe5-410f-bca5-687e7a6fec00",
+  "company_name": "나이스뷰티",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "0331df02-9ec6-416c-b55f-64cab046251c",
+  "company_name": "뷰티팜 랩 #49",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "80e1b96d-6be1-4193-b2e3-c428e5455e4e",
+  "company_name": "비앙카 스튜디오 #28",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "16f9669c-5dfe-46b4-95f5-4b42a215924e",
+  "company_name": "플로라 네일샵 #12",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "8b156899-93aa-418a-961c-33bfcba10354",
+  "company_name": "뷰티네이션 그룹 #53",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "0c06c1aa-a33e-41ea-ad42-2c2dfa78a889",
+  "company_name": "코스메틱하우스 그룹 #54",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "aef140a6-0dfe-4df4-9e1e-ab5c18cd8a0b",
+  "company_name": "올뷰티 그룹 #57",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "68948b38-16ec-4d79-ac55-3cf2365ca8d7",
+  "company_name": "뷰티팜 #39",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "cff86ea3-5b4a-4c05-93b0-75f88a9f9c2b",
+  "company_name": "코스메랩 코리아 #40",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "999410b9-984d-4129-897c-d57c2d791c34",
+  "company_name": "박승철헤어스투디오 잠실르엘점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "98385fac-e61c-4a41-862a-90d37259aaa4",
+  "company_name": "네일앤코 네일샵 #17",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "2e0f7248-4e7c-45d3-a35b-90b60785034a",
+  "company_name": "라온뷰티하우스",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "f3a2e78f-53b5-48e4-9778-4fe4a2f22565",
+  "company_name": "샤인 살롱 #5",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "cfd967c5-8498-40cf-9743-1ea78eb43566",
+  "company_name": "오하루헤어 퍼스트파크점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "aa524180-28f7-4ca3-b14e-378898e69ea1",
+  "company_name": "뷰티인사이드 #31",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "31ecd157-20b8-4dfb-851e-6ec46c14c108",
+  "company_name": "세이지헤어(Sage Hair)",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "60efe7d5-8137-4c0d-ab9e-c885e19546d0",
+  "company_name": "준오헤어 노원사거리점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "ce8b19ba-7a0b-4020-bf90-6da0d4510ab7",
+  "company_name": "준오헤어 천호로데오점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "5bc635c3-eb17-4c77-bb94-a2014a997e83",
+  "company_name": "준오헤어 홍대1호점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "a31e492e-e722-4c90-a60d-5491548d15a3",
+  "company_name": "준오헤어 다산역점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "de0bd3fe-8429-4a01-ba26-9099aec5baa8",
+  "company_name": "준오헤어 코엑스몰점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "6953d6e1-7697-443a-9532-c459c0c771f5",
+  "company_name": "준오헤어 목동41타워점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "95341df9-98e9-4f45-a0ba-451372349e00",
+  "company_name": "시흥은계지구 병원",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "95f8308f-d61a-499c-9ae2-5da29b3c12ec",
+  "company_name": "순수반포실버점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "95107ab5-a65a-4891-9147-ed9b2ab77ff0",
+  "company_name": "순수 잠실점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "a3981257-02cf-4989-afc6-004917246749",
+  "company_name": "이가자헤어비스 NC백화점 불광점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "a56b995c-7dc4-4351-8e99-83cd3c2378e4",
+  "company_name": "준오헤어 가든위례중앙타워",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "8a16dead-7ddf-4520-a0fb-9018be2ab763",
+  "company_name": "준오헤어 가든준오IFC몰점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "282b4a1a-5434-4a59-a20e-50c620ac7f62",
+  "company_name": "준오헤어 명동예술극장점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "1ff4ad49-e4c3-4fc1-b082-c251cdd12ba7",
+  "company_name": "이가자헤어비스 분당이마트점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "bb8bb7d4-acf1-48ef-a4e7-d96a0858f33f",
+  "company_name": "순수 청담본점",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "5bfbc30c-4d52-4428-869f-c95a1018d3e3",
+  "company_name": "라헬뷰티(본점)",
+  "plan": null,
+  "paid_until": null
+ },
+ {
+  "id": "3feab0ee-667c-4dd2-abd1-86343b8a073a",
+  "company_name": "글로우 클리닉 #1",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "ef165056-f978-40b4-ad3e-0088217f9698",
+  "company_name": "beautyLab",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "8f27911b-5eaf-43bb-ac8f-de6504c3081e",
+  "company_name": "아이콘 그룹 #38",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "6df62e0e-41e6-4f61-8540-63f5a97f7092",
+  "company_name": "비앙카 스튜디오 #13",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "64e15952-7d04-476c-94a9-43aeab094eda",
+  "company_name": "루체 뷰티샵 #24",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "bb3386c2-a934-4a62-b6b6-f488313e5c65",
+  "company_name": "더마뷰티그룹 그룹 #55",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "16526b8d-5edd-41c8-a063-6bd48a2c27d5",
+  "company_name": "플로라 네일샵 #27",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "620c94d6-9d73-4af9-8128-209da07617d7",
+  "company_name": "라비앙 살롱 #15",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ },
+ {
+  "id": "0daf386b-a00f-4f36-ab97-f1df47d58eea",
+  "company_name": "미라클 살롱 #10",
+  "plan": "STANDARD",
+  "paid_until": "2027-12-31"
+ }
+]

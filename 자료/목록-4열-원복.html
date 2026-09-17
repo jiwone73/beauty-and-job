@@ -1,9 +1,1358 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><link rel="preload" as="image" imagesrcset="/_next/image?url=%2Fimages%2Flogo.png&amp;w=128&amp;q=75 1x, /_next/image?url=%2Fimages%2Flogo.png&amp;w=256&amp;q=75 2x" fetchpriority="high"><style>
+/*!*************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/globals.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************/
 /* Pretendard 공식 CDN (SIL Open Font License · 무료) */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard-dynamic-subset.css");
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+*, ::before, ::after{
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+::backdrop{
+  --tw-border-spacing-x: 0;
+  --tw-border-spacing-y: 0;
+  --tw-translate-x: 0;
+  --tw-translate-y: 0;
+  --tw-rotate: 0;
+  --tw-skew-x: 0;
+  --tw-skew-y: 0;
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
+  --tw-pan-x:  ;
+  --tw-pan-y:  ;
+  --tw-pinch-zoom:  ;
+  --tw-scroll-snap-strictness: proximity;
+  --tw-gradient-from-position:  ;
+  --tw-gradient-via-position:  ;
+  --tw-gradient-to-position:  ;
+  --tw-ordinal:  ;
+  --tw-slashed-zero:  ;
+  --tw-numeric-figure:  ;
+  --tw-numeric-spacing:  ;
+  --tw-numeric-fraction:  ;
+  --tw-ring-inset:  ;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: #fff;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+  --tw-shadow-colored: 0 0 #0000;
+  --tw-blur:  ;
+  --tw-brightness:  ;
+  --tw-contrast:  ;
+  --tw-grayscale:  ;
+  --tw-hue-rotate:  ;
+  --tw-invert:  ;
+  --tw-saturate:  ;
+  --tw-sepia:  ;
+  --tw-drop-shadow:  ;
+  --tw-backdrop-blur:  ;
+  --tw-backdrop-brightness:  ;
+  --tw-backdrop-contrast:  ;
+  --tw-backdrop-grayscale:  ;
+  --tw-backdrop-hue-rotate:  ;
+  --tw-backdrop-invert:  ;
+  --tw-backdrop-opacity:  ;
+  --tw-backdrop-saturate:  ;
+  --tw-backdrop-sepia:  ;
+  --tw-contain-size:  ;
+  --tw-contain-layout:  ;
+  --tw-contain-paint:  ;
+  --tw-contain-style:  ;
+}
+
+/* ! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com */
+
+/*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: #e5e7eb; /* 2 */
+}
+
+::before,
+::after {
+  --tw-content: '';
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
+*/
+
+html,
+:host {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  -o-tab-size: 4;
+     tab-size: 4; /* 3 */
+  font-family: Pretendard, Noto Sans KR, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; /* 4 */
+  font-feature-settings: normal; /* 5 */
+  font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+body {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+          text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
+*/
+
+code,
+kbd,
+samp,
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-feature-settings: inherit; /* 1 */
+  font-variation-settings: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  letter-spacing: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+button,
+select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+button,
+input:where([type='button']),
+input:where([type='reset']),
+input:where([type='submit']) {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+:-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+[type='search'] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Reset default styling for dialogs.
+*/
+
+dialog {
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+input::placeholder,
+textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: #9ca3af; /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+
+:disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scrollbar-gutter: stable;
+  /* 이 앱은 밝은 화면 하나로만 만들어져 있다. 그걸 알리지 않으면 폰이 어두운
+     모드일 때 브라우저가 스스로 그리는 것들(날짜 선택기, 입력칸, 스크롤바)을
+     검게 그린다. 페이지는 흰데 그 부분만 검어 따로 논다. */
+  color-scheme: light;
+}
+
+html, body {
+  background: #f7f7f8 !important;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+a { text-decoration: none; color: inherit; }
+
+button { font-family: inherit; cursor: pointer; }
+.container{
+  width: 100%;
+}
+@media (min-width: 640px){
+
+  .container{
+    max-width: 640px;
+  }
+}
+@media (min-width: 768px){
+
+  .container{
+    max-width: 768px;
+  }
+}
+@media (min-width: 1024px){
+
+  .container{
+    max-width: 1024px;
+  }
+}
+@media (min-width: 1280px){
+
+  .container{
+    max-width: 1280px;
+  }
+}
+@media (min-width: 1536px){
+
+  .container{
+    max-width: 1536px;
+  }
+}
+.visible{
+  visibility: visible;
+}
+.collapse{
+  visibility: collapse;
+}
+.static{
+  position: static;
+}
+.fixed{
+  position: fixed;
+}
+.absolute{
+  position: absolute;
+}
+.relative{
+  position: relative;
+}
+.sticky{
+  position: sticky;
+}
+.right-1\.5{
+  right: 0.375rem;
+}
+.right-3{
+  right: 0.75rem;
+}
+.top-1\.5{
+  top: 0.375rem;
+}
+.top-1\/2{
+  top: 50%;
+}
+.mx-auto{
+  margin-left: auto;
+  margin-right: auto;
+}
+.my-7{
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+.-ml-1\.5{
+  margin-left: -0.375rem;
+}
+.mb-1{
+  margin-bottom: 0.25rem;
+}
+.mb-1\.5{
+  margin-bottom: 0.375rem;
+}
+.mb-10{
+  margin-bottom: 2.5rem;
+}
+.mb-11{
+  margin-bottom: 2.75rem;
+}
+.mb-2{
+  margin-bottom: 0.5rem;
+}
+.mb-3{
+  margin-bottom: 0.75rem;
+}
+.mb-4{
+  margin-bottom: 1rem;
+}
+.mb-5{
+  margin-bottom: 1.25rem;
+}
+.mb-6{
+  margin-bottom: 1.5rem;
+}
+.mb-8{
+  margin-bottom: 2rem;
+}
+.ml-1{
+  margin-left: 0.25rem;
+}
+.ml-6{
+  margin-left: 1.5rem;
+}
+.mt-0\.5{
+  margin-top: 0.125rem;
+}
+.mt-1{
+  margin-top: 0.25rem;
+}
+.mt-1\.5{
+  margin-top: 0.375rem;
+}
+.mt-14{
+  margin-top: 3.5rem;
+}
+.mt-2{
+  margin-top: 0.5rem;
+}
+.mt-2\.5{
+  margin-top: 0.625rem;
+}
+.mt-3{
+  margin-top: 0.75rem;
+}
+.mt-4{
+  margin-top: 1rem;
+}
+.mt-5{
+  margin-top: 1.25rem;
+}
+.mt-6{
+  margin-top: 1.5rem;
+}
+.mt-7{
+  margin-top: 1.75rem;
+}
+.mt-8{
+  margin-top: 2rem;
+}
+.block{
+  display: block;
+}
+.inline-block{
+  display: inline-block;
+}
+.\!inline{
+  display: inline !important;
+}
+.inline{
+  display: inline;
+}
+.flex{
+  display: flex;
+}
+.inline-flex{
+  display: inline-flex;
+}
+.table{
+  display: table;
+}
+.grid{
+  display: grid;
+}
+.contents{
+  display: contents;
+}
+.hidden{
+  display: none;
+}
+.h-10{
+  height: 2.5rem;
+}
+.h-14{
+  height: 3.5rem;
+}
+.h-16{
+  height: 4rem;
+}
+.h-20{
+  height: 5rem;
+}
+.h-4{
+  height: 1rem;
+}
+.h-5{
+  height: 1.25rem;
+}
+.h-\[44px\]{
+  height: 44px;
+}
+.h-\[46px\]{
+  height: 46px;
+}
+.h-\[48px\]{
+  height: 48px;
+}
+.h-\[52px\]{
+  height: 52px;
+}
+.h-full{
+  height: 100%;
+}
+.h-px{
+  height: 1px;
+}
+.min-h-\[48px\]{
+  min-height: 48px;
+}
+.min-h-screen{
+  min-height: 100vh;
+}
+.w-10{
+  width: 2.5rem;
+}
+.w-16{
+  width: 4rem;
+}
+.w-20{
+  width: 5rem;
+}
+.w-4{
+  width: 1rem;
+}
+.w-5{
+  width: 1.25rem;
+}
+.w-full{
+  width: 100%;
+}
+.min-w-0{
+  min-width: 0px;
+}
+.max-w-\[1060px\]{
+  max-width: 1060px;
+}
+.max-w-\[400px\]{
+  max-width: 400px;
+}
+.max-w-\[420px\]{
+  max-width: 420px;
+}
+.max-w-\[640px\]{
+  max-width: 640px;
+}
+.max-w-\[860px\]{
+  max-width: 860px;
+}
+.max-w-lg{
+  max-width: 32rem;
+}
+.max-w-md{
+  max-width: 28rem;
+}
+.flex-1{
+  flex: 1 1 0%;
+}
+.flex-shrink{
+  flex-shrink: 1;
+}
+.flex-shrink-0{
+  flex-shrink: 0;
+}
+.shrink-0{
+  flex-shrink: 0;
+}
+.-translate-y-1\/2{
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.transform{
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.cursor-pointer{
+  cursor: pointer;
+}
+.select-none{
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.resize-none{
+  resize: none;
+}
+.resize{
+  resize: both;
+}
+.grid-cols-1{
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.grid-cols-2{
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.flex-col{
+  flex-direction: column;
+}
+.flex-wrap{
+  flex-wrap: wrap;
+}
+.flex-nowrap{
+  flex-wrap: nowrap;
+}
+.items-start{
+  align-items: flex-start;
+}
+.items-center{
+  align-items: center;
+}
+.items-stretch{
+  align-items: stretch;
+}
+.justify-center{
+  justify-content: center;
+}
+.justify-between{
+  justify-content: space-between;
+}
+.gap-1{
+  gap: 0.25rem;
+}
+.gap-1\.5{
+  gap: 0.375rem;
+}
+.gap-2{
+  gap: 0.5rem;
+}
+.gap-3{
+  gap: 0.75rem;
+}
+.gap-4{
+  gap: 1rem;
+}
+.gap-5{
+  gap: 1.25rem;
+}
+.gap-x-4{
+  -moz-column-gap: 1rem;
+       column-gap: 1rem;
+}
+.gap-y-1{
+  row-gap: 0.25rem;
+}
+.space-y-2 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+.space-y-5 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.25rem * var(--tw-space-y-reverse));
+}
+.divide-y > :not([hidden]) ~ :not([hidden]){
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+.divide-gray-50 > :not([hidden]) ~ :not([hidden]){
+  --tw-divide-opacity: 1;
+  border-color: rgb(249 250 251 / var(--tw-divide-opacity, 1));
+}
+.overflow-hidden{
+  overflow: hidden;
+}
+.whitespace-nowrap{
+  white-space: nowrap;
+}
+.whitespace-pre-line{
+  white-space: pre-line;
+}
+.break-all{
+  word-break: break-all;
+}
+.break-keep{
+  word-break: keep-all;
+}
+.rounded-2xl{
+  border-radius: 1rem;
+}
+.rounded-full{
+  border-radius: 9999px;
+}
+.rounded-lg{
+  border-radius: 0.5rem;
+}
+.rounded-md{
+  border-radius: 0.375rem;
+}
+.rounded-xl{
+  border-radius: 0.75rem;
+}
+.border{
+  border-width: 1px;
+}
+.border-2{
+  border-width: 2px;
+}
+.border-b{
+  border-bottom-width: 1px;
+}
+.border-t{
+  border-top-width: 1px;
+}
+.border-dashed{
+  border-style: dashed;
+}
+.border-\[\#582681\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(88 38 129 / var(--tw-border-opacity, 1));
+}
+.border-\[\#c0c0c0\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(192 192 192 / var(--tw-border-opacity, 1));
+}
+.border-\[\#e0e0e0\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(224 224 224 / var(--tw-border-opacity, 1));
+}
+.border-\[\#e3e3e6\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(227 227 230 / var(--tw-border-opacity, 1));
+}
+.border-\[\#e5e5e5\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(229 229 229 / var(--tw-border-opacity, 1));
+}
+.border-\[\#e74c3c\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(231 76 60 / var(--tw-border-opacity, 1));
+}
+.border-\[\#e8e8e8\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(232 232 232 / var(--tw-border-opacity, 1));
+}
+.border-\[\#ececec\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(236 236 236 / var(--tw-border-opacity, 1));
+}
+.border-\[\#efeff1\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(239 239 241 / var(--tw-border-opacity, 1));
+}
+.border-\[\#f0f0f0\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(240 240 240 / var(--tw-border-opacity, 1));
+}
+.border-\[\#f7f7f8\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(247 247 248 / var(--tw-border-opacity, 1));
+}
+.border-gray-100{
+  --tw-border-opacity: 1;
+  border-color: rgb(243 244 246 / var(--tw-border-opacity, 1));
+}
+.border-gray-200{
+  --tw-border-opacity: 1;
+  border-color: rgb(229 231 235 / var(--tw-border-opacity, 1));
+}
+.bg-\[\#03C75A\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(3 199 90 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#582681\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(88 38 129 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#FEE500\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 229 0 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#d0d0d5\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(208 208 213 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#ececec\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 236 236 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#f7f7f8\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(247 247 248 / var(--tw-bg-opacity, 1));
+}
+.bg-\[\#f8f8f8\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 248 248 / var(--tw-bg-opacity, 1));
+}
+.bg-gray-50{
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+}
+.bg-pink-500{
+  --tw-bg-opacity: 1;
+  background-color: rgb(236 72 153 / var(--tw-bg-opacity, 1));
+}
+.bg-primary{
+  --tw-bg-opacity: 1;
+  background-color: rgb(95 0 128 / var(--tw-bg-opacity, 1));
+}
+.bg-purple-50{
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 245 255 / var(--tw-bg-opacity, 1));
+}
+.bg-white{
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+.object-cover{
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.p-10{
+  padding: 2.5rem;
+}
+.p-2{
+  padding: 0.5rem;
+}
+.p-3{
+  padding: 0.75rem;
+}
+.p-5{
+  padding: 1.25rem;
+}
+.p-8{
+  padding: 2rem;
+}
+.px-2{
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.px-4{
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.px-5{
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.px-6{
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.py-1{
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+.py-12{
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+.py-16{
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+.py-2{
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.py-2\.5{
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+.py-20{
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+.py-3{
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.py-3\.5{
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+}
+.py-8{
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.pb-16{
+  padding-bottom: 4rem;
+}
+.pr-10{
+  padding-right: 2.5rem;
+}
+.pt-10{
+  padding-top: 2.5rem;
+}
+.pt-4{
+  padding-top: 1rem;
+}
+.pt-6{
+  padding-top: 1.5rem;
+}
+.pt-8{
+  padding-top: 2rem;
+}
+.text-left{
+  text-align: left;
+}
+.text-center{
+  text-align: center;
+}
+.text-right{
+  text-align: right;
+}
+.font-sans{
+  font-family: Pretendard, Noto Sans KR, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+.text-2xl{
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.text-4xl{
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+.text-\[12px\]{
+  font-size: 12px;
+}
+.text-\[13px\]{
+  font-size: 13px;
+}
+.text-\[14px\]{
+  font-size: 14px;
+}
+.text-\[15px\]{
+  font-size: 15px;
+}
+.text-\[16px\]{
+  font-size: 16px;
+}
+.text-\[18px\]{
+  font-size: 18px;
+}
+.text-\[20px\]{
+  font-size: 20px;
+}
+.text-\[22px\]{
+  font-size: 22px;
+}
+.text-base{
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.text-lg{
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-sm{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-xl{
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.text-xs{
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.font-bold{
+  font-weight: 700;
+}
+.font-medium{
+  font-weight: 500;
+}
+.font-normal{
+  font-weight: 400;
+}
+.font-semibold{
+  font-weight: 600;
+}
+.tabular-nums{
+  --tw-numeric-spacing: tabular-nums;
+  font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
+}
+.leading-\[48px\]{
+  line-height: 48px;
+}
+.leading-\[52px\]{
+  line-height: 52px;
+}
+.leading-none{
+  line-height: 1;
+}
+.leading-relaxed{
+  line-height: 1.625;
+}
+.leading-snug{
+  line-height: 1.375;
+}
+.text-\[\#10b981\]{
+  --tw-text-opacity: 1;
+  color: rgb(16 185 129 / var(--tw-text-opacity, 1));
+}
+.text-\[\#111\]{
+  --tw-text-opacity: 1;
+  color: rgb(17 17 17 / var(--tw-text-opacity, 1));
+}
+.text-\[\#1a8a4a\]{
+  --tw-text-opacity: 1;
+  color: rgb(26 138 74 / var(--tw-text-opacity, 1));
+}
+.text-\[\#3a3a3a\]{
+  --tw-text-opacity: 1;
+  color: rgb(58 58 58 / var(--tw-text-opacity, 1));
+}
+.text-\[\#555\]{
+  --tw-text-opacity: 1;
+  color: rgb(85 85 85 / var(--tw-text-opacity, 1));
+}
+.text-\[\#582681\]{
+  --tw-text-opacity: 1;
+  color: rgb(88 38 129 / var(--tw-text-opacity, 1));
+}
+.text-\[\#6b6b6b\]{
+  --tw-text-opacity: 1;
+  color: rgb(107 107 107 / var(--tw-text-opacity, 1));
+}
+.text-\[\#999\]{
+  --tw-text-opacity: 1;
+  color: rgb(153 153 153 / var(--tw-text-opacity, 1));
+}
+.text-\[\#9a9a9a\]{
+  --tw-text-opacity: 1;
+  color: rgb(154 154 154 / var(--tw-text-opacity, 1));
+}
+.text-\[\#d0d0d0\]{
+  --tw-text-opacity: 1;
+  color: rgb(208 208 208 / var(--tw-text-opacity, 1));
+}
+.text-\[\#e74c3c\]{
+  --tw-text-opacity: 1;
+  color: rgb(231 76 60 / var(--tw-text-opacity, 1));
+}
+.text-gray-400{
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
+}
+.text-gray-500{
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity, 1));
+}
+.text-gray-700{
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity, 1));
+}
+.text-gray-800{
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity, 1));
+}
+.text-gray-900{
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
+}
+.text-pink-500{
+  --tw-text-opacity: 1;
+  color: rgb(236 72 153 / var(--tw-text-opacity, 1));
+}
+.text-purple-400{
+  --tw-text-opacity: 1;
+  color: rgb(192 132 252 / var(--tw-text-opacity, 1));
+}
+.text-purple-600{
+  --tw-text-opacity: 1;
+  color: rgb(147 51 234 / var(--tw-text-opacity, 1));
+}
+.text-red-500{
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+.text-white{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+.underline{
+  text-decoration-line: underline;
+}
+.line-through{
+  text-decoration-line: line-through;
+}
+.accent-\[\#582681\]{
+  accent-color: #582681;
+}
+.shadow{
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.outline{
+  outline-style: solid;
+}
+.blur{
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+.drop-shadow{
+  --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+.filter{
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+.transition{
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.transition-all{
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 
 /* ===========================================
    루트 변수 (회원가입 + 메인 공통)
@@ -60,27 +1409,6 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-}
-
-@layer base {
-  * { box-sizing: border-box; }
-
-  html {
-  scrollbar-gutter: stable;
-  /* 이 앱은 밝은 화면 하나로만 만들어져 있다. 그걸 알리지 않으면 폰이 어두운
-     모드일 때 브라우저가 스스로 그리는 것들(날짜 선택기, 입력칸, 스크롤바)을
-     검게 그린다. 페이지는 흰데 그 부분만 검어 따로 논다. */
-  color-scheme: light;
-}
-  html, body {
-  background: #f7f7f8 !important;
-  color: var(--color-text);
-  font-family: var(--font-sans);
-}
-
-  a { text-decoration: none; color: inherit; }
-
-  button { font-family: inherit; cursor: pointer; }
 }
 
 /* ===========================================
@@ -457,14 +1785,10 @@
 .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
 .card-grid-5 { grid-template-columns: repeat(5, 1fr); }
 /* 목록 「더 보기」 — 한 번에 24건씩 늘린다. */
-.jobs-pager { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 32px 0 8px; }
-.jobs-pager button { font-family: inherit; font-size: 14px; color: #555; background: #fff;
-  border: 1px solid #e5e5e5; border-radius: 8px; min-width: 34px; height: 34px; padding: 0 8px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
-.jobs-pager button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
-.jobs-pager button:disabled { color: #ccc; cursor: default; }
-.jobs-pager .jobs-pager-num.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; font-weight: 700; }
-.jobs-pager-gap { color: #bbb; font-size: 14px; padding: 0 2px; }
+.jobs-more { display: flex; justify-content: center; padding: 28px 0 4px; }
+.jobs-more button { font-family: inherit; font-size: 15px; color: #555; background: #fff;
+  border: 1px solid var(--color-border); border-radius: 10px; height: 48px; padding: 0 26px; cursor: pointer; }
+.jobs-more button:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
 /* 메인 채용관 머리. 파는 자리라 「광고」를 붙인다(표시 의무). */
 /* 채용관 제목 위 여백은 둘이 같아야 한다. 프리미엄은 히어로 판 바로 아래라
@@ -975,6 +2299,7 @@
   outline: none;
   transition: all 0.15s;
 }
+.text-input::-moz-placeholder { color: var(--color-text-mute); }
 .text-input::placeholder { color: var(--color-text-mute); }
 .text-input:focus {
   border-color: var(--color-primary);
@@ -1035,7 +2360,8 @@ input[type="checkbox"]:checked + .checkbox-visual::after {
 /* 슬라이더 (STEP 6 경력) */
 input[type="range"].career-slider {
   -webkit-appearance: none;
-  appearance: none;
+  -moz-appearance: none;
+       appearance: none;
   height: 6px;
   background: var(--color-border);
   border-radius: 3px;
@@ -1050,6 +2376,7 @@ input[type="range"].career-slider::-webkit-slider-thumb {
   cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 2px 8px rgba(95, 0, 128, 0.3);
+  -webkit-transition: transform 0.1s;
   transition: transform 0.1s;
 }
 input[type="range"].career-slider::-webkit-slider-thumb:hover {
@@ -1672,8 +2999,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-back:hover, .cv-close:hover { background: transparent; }
 .cv-body { padding: 20px 48px 28px; overflow-y: auto; flex: 1; min-height: 0; }
 .cv-footer { flex-shrink: 0; padding: 12px 48px 16px; border-top: 1px solid var(--color-border); background: white; border-radius: 0 0 16px 16px; }
-@media (max-width: 640px) { .cv-footer { padding: 10px 18px 14px; } }
-@media (max-width: 640px) { .cv-body { padding: 16px 18px 24px; } }
+@media (max-width: 640px) { .cv-footer { padding: 10px 18px 14px; } .cv-body { padding: 16px 18px 24px; } }
 .cv-heading { font-size: 20px; font-weight: 400; color: var(--color-text); line-height: 1.4; margin-bottom: 8px; letter-spacing: -0.3px; }
 .cv-desc { font-size: 14px; color: var(--color-text-sub); line-height: 1.6; margin-bottom: 24px; }
 .cv-field-label { display: block; font-size: 14px; font-weight: 400; color: var(--color-text); margin-top: 20px; margin-bottom: 8px; }
@@ -1687,12 +3013,13 @@ input[type="range"].career-slider::-moz-range-thumb {
 .cv-gender-btn.active { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-soft); font-weight: 400; }
 .cv-input { width: 100%; height: 48px; padding: 0 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; transition: border-color 0.15s; background: white; font-family: inherit; }
 .cv-input:focus { border-color: var(--color-primary); }
+.cv-input::-moz-placeholder { color: var(--color-text-mute); }
 .cv-input::placeholder { color: var(--color-text-mute); }
 .cv-textarea { width: 100%; min-height: 120px; padding: 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; resize: vertical; transition: border-color 0.15s; font-family: inherit; line-height: 1.6; }
 .cv-textarea:focus { border-color: var(--color-primary); }
 
 .apply-textarea { outline: none; transition: border-color 0.15s; font-size: 14px; line-height: 1.75; color: #555; }
-.apply-textarea:focus { border-color: #7c3aed !important; }.cv-textarea::placeholder { color: var(--color-text-mute); }
+.apply-textarea:focus { border-color: #7c3aed !important; }.cv-textarea::-moz-placeholder { color: var(--color-text-mute); }.cv-textarea::placeholder { color: var(--color-text-mute); }
 .cv-chip-short { display: none; }
 @media (max-width: 640px) { .cv-chip-full { display: none; } .cv-chip-short { display: inline; } }.cv-char-count { text-align: right; font-size: 12px; color: var(--color-text-mute); margin-top: 4px; margin-bottom: 16px; }
 .cv-select-btn { width: 100%; height: 48px; padding: 0 14px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); background: white; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s; font-family: inherit; text-align: left; }
@@ -1806,6 +3133,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .brand-search-box { display: flex; align-items: center; gap: 10px; border: 1px solid var(--color-border); border-radius: 8px; padding: 0 14px; margin-bottom: 16px; }
 .brand-search-icon { color: var(--color-text-mute); flex-shrink: 0; }
 .brand-search-input { flex: 1; height: 44px; border: none; outline: none; font-size: 14px; font-family: inherit; background: transparent; }
+.brand-search-input::-moz-placeholder { color: var(--color-text-mute); }
 .brand-search-input::placeholder { color: var(--color-text-mute); }
 .brand-selected-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .brand-selected-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--color-primary); color: white; font-size: 12px; font-weight: 500; padding: 5px 10px; border-radius: var(--chip-radius); }
@@ -1887,6 +3215,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   width: 100%; height: 38px; padding: 0 12px; border: 1px solid var(--color-border);
   border-radius: 9px; font-family: inherit; font-size: 13.5px; color: #555; box-sizing: border-box;
 }
+.cl-say::-moz-placeholder { color: #c4c4c9; }
 .cl-say::placeholder { color: #c4c4c9; }
 .cl-say:focus { outline: none; border-color: var(--color-primary); }
 .cl-modal-foot { flex-shrink: 0; padding: 14px 48px 18px; border-top: 1px solid var(--color-border); }
@@ -1899,6 +3228,7 @@ input[type="range"].career-slider::-moz-range-thumb {
   border: 1px solid var(--color-border); border-radius: var(--chip-radius); background: #fff;
   font-family: inherit; font-size: 12.5px; color: #555;
 }
+.cl-key::-moz-placeholder { color: #c4c4c9; }
 .cl-key::placeholder { color: #c4c4c9; }
 .cl-key:focus { outline: none; border-color: var(--color-primary); }
 .cl-tool {
@@ -1971,6 +3301,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .resume-input:focus { border-color: var(--color-primary); }
 .resume-textarea { width: 100%; min-height: 100px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; color: var(--color-text); outline: none; resize: vertical; transition: border-color 0.15s; font-family: inherit; line-height: 1.6; margin-bottom: 4px; }
 .resume-textarea:focus { border-color: var(--color-primary); }
+.resume-textarea::-moz-placeholder { color: var(--color-text-mute); }
 .resume-textarea::placeholder { color: var(--color-text-mute); }
 
 .resume-tag-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -2087,6 +3418,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jobs-search-back { background: transparent; border: none; cursor: pointer; color: #555; display: flex; padding: 4px; }
 .jobs-search-bar-icon { color: var(--color-text-mute); flex-shrink: 0; }
 .jobs-search-input { flex: 1; border: none; outline: none; font-size: 16px; font-family: inherit; color: var(--color-text); }
+.jobs-search-input::-moz-placeholder { color: var(--color-text-mute); }
 .jobs-search-input::placeholder { color: var(--color-text-mute); }
 .jobs-search-body { padding: 20px; }
 .jobs-search-desc { font-size: 14px; color: var(--color-text-mute); margin-bottom: 20px; }
@@ -2478,9 +3810,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 .job-detail-hero { position: relative; width: 100%; aspect-ratio: 3 / 1; border-radius: 16px 16px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .job-detail-hero-logo { position: absolute; left: 16px; bottom: 16px; width: 56px; height: 56px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px; }
-.job-detail-hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+.job-detail-hero-logo img { width: 100%; height: 100%; -o-object-fit: contain; object-fit: contain; }
 .job-detail-hero-logo { position: absolute; left: 16px; bottom: 16px; width: 56px; height: 56px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 6px; }
-.job-detail-hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+.job-detail-hero-logo img { width: 100%; height: 100%; -o-object-fit: contain; object-fit: contain; }
 .job-detail-hero-placeholder { display: flex; align-items: center; justify-content: center; }
 .job-detail-hero-placeholder span { font-size: 80px; font-weight: 900; color: rgba(0,0,0,0.15); }
 
@@ -2535,7 +3867,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-brand-desc { font-size: 15px; color: var(--color-text-sub); line-height: 1.7; margin-bottom: 16px; }
 
 /* 회사 정보 */
-.job-detail-company-info { background: transparent; border-radius: 8px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
+.job-detail-company-info { background: transparent; border-radius: 8px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; -moz-column-gap: 28px; column-gap: 28px; }
 .job-detail-company-row { display: flex; gap: 16px; padding: 7px 0; font-size: 15px; }
 .job-detail-company-label { color: var(--color-text-mute); width: 72px; flex-shrink: 0; white-space: nowrap; }
 @media (max-width: 640px) { .job-detail-company-info { grid-template-columns: 1fr; } }
@@ -2658,7 +3990,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .apply-pick-f select {
   width: 100%; height: 40px; padding: 0 30px 0 11px; border: 1px solid var(--color-border);
   border-radius: 9px; background: #fff; font-family: inherit; font-size: 13.5px; color: #555;
-  cursor: pointer; appearance: none;
+  cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat; background-position: right 10px center;
   text-overflow: ellipsis;
@@ -2686,6 +4018,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 .apply-info-in:hover { border-bottom-color: #e8e8ea; }
 .apply-info-in:focus { outline: none; border-bottom-color: var(--color-primary); }
+.apply-info-in::-moz-placeholder { color: #c4c4c9; }
 .apply-info-in::placeholder { color: #c4c4c9; }
 /* 한줄소개 — 이력서 화면의 그 칸과 같은 모양(테두리 있는 한 줄 입력). */
 .apply-intro-in {
@@ -2694,6 +4027,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   font-family: inherit; font-size: 14px; color: #555;
 }
 .apply-intro-in:focus { outline: none; border-color: var(--color-primary); }
+.apply-intro-in::-moz-placeholder { color: #c4c4c9; }
 .apply-intro-in::placeholder { color: #c4c4c9; }
 
 /* 모바일 CTA */
@@ -2839,6 +4173,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   flex: 1; height: 44px; border: none; outline: none;
   font-size: 14px; font-family: inherit; background: transparent;
 }
+.insights-search-input::-moz-placeholder { color: var(--color-text-mute); }
 .insights-search-input::placeholder { color: var(--color-text-mute); }
 
 /* 카테고리 탭 */
@@ -3322,6 +4657,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .brands-search-box:focus-within { border-color: var(--color-primary); }
 .brands-search-icon { color: var(--color-text-mute); flex-shrink: 0; }
 .brands-search-input { flex: 1; height: 48px; border: none; outline: none; font-size: 15px; font-family: inherit; }
+.brands-search-input::-moz-placeholder { color: var(--color-text-mute); }
 .brands-search-input::placeholder { color: var(--color-text-mute); }
 
 .brands-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0 12px; }
@@ -4253,6 +5589,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   transition: border-color 0.15s;
   box-sizing: border-box;
 }
+.newsletter-input-wrap input::-moz-placeholder {
+  color: #999;
+}
 .newsletter-input-wrap input::placeholder {
   color: #999;
 }
@@ -4734,8 +6073,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   /* 모달 */
   .rp-modal { border-radius: 0; min-height: 100vh; width: 100% !important; max-width: 100% !important; }
   .rp-modal-overlay { padding: 0; }
-  .rp-modal-body { padding: 10px 5px; }
-  .rp-modal-body { padding: 20px; }
+  .rp-modal-body { padding: 10px 5px; padding: 20px; }
 }
 
 @media (max-width: 480px) {
@@ -5760,6 +7098,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 /* 표를 담은 카드는 표 너비에 맞춰 좌측 정렬 → 상단 툴바(선택삭제 등) 버튼이 표 오른쪽 끝에 정합 */
 .admin-card:has(.admin-table) {
+  width: -moz-fit-content;
   width: fit-content;
   max-width: 100%;
 }
@@ -5939,7 +7278,8 @@ div:has(> table.admin-table),
   font-size: 14px;
   color: #555;
   cursor: pointer;
-  appearance: none;
+  -moz-appearance: none;
+       appearance: none;
   -webkit-appearance: none;
   font-family: var(--font-sans);
 }
@@ -6085,7 +7425,8 @@ div:has(> table.admin-table),
 .jobpost-form .admin-form-row:has(> .admin-form-label) {
   display: grid;
   grid-template-columns: 150px 1fr;
-  column-gap: 16px;
+  -moz-column-gap: 16px;
+       column-gap: 16px;
   align-items: center;
   padding: 18px 0;
   border-bottom: 1px solid var(--color-border);
@@ -6108,7 +7449,8 @@ div:has(> table.admin-table),
 @media (max-width: 767px) {
   .jobpost-form .admin-form-row:has(> .admin-form-label) {
     grid-template-columns: 76px 1fr;
-    column-gap: 10px;
+    -moz-column-gap: 10px;
+         column-gap: 10px;
     padding: 14px 0;
   }
   /* 2단 배치는 모바일에서 모두 1열로 스택 */
@@ -6133,9 +7475,9 @@ div:has(> table.admin-table),
 /* 기업정보 컴팩트 폼: 개인 프로필처럼 라벨 좌·값 우 1행 */
 .admin-form-body.settings-compact { gap: 0; }
 /* 기업정보는 공고등록의 '기업정보' 블록과 동일하게 2열로. 좁은 화면에선 1열로 쌓는다. */
-.settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; row-gap: 0; }
+.settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); -moz-column-gap: 28px; column-gap: 28px; row-gap: 0; }
 @media (max-width: 767px) {
-  .settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+  .settings-compact .admin-form-row-2col { grid-template-columns: minmax(0, 1fr); -moz-column-gap: 0; column-gap: 0; }
 }
 .settings-compact .admin-form-row {
   padding: 13px 0;
@@ -6162,12 +7504,18 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-label { color: #555; font-weight: 400; }
 /* 빈 칸은 56px 회색 블록으로 덮고 placeholder 를 투명하게 두고 있었다. 무엇을 적는
    자리인지 알 길이 없어, 공고 등록 폼처럼 자리글을 그대로 보여준다. */
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:-moz-placeholder {
+  background: transparent !important;
+  width: auto;
+  color: #cfcfcf;
+}
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select[data-empty="true"] {
   background: transparent !important;
   width: auto;
   color: #cfcfcf;
 }
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input::-moz-placeholder { color: #cfcfcf; }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input::placeholder { color: #cfcfcf; }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus {
   background: transparent !important; width: 100%; color: #555;
@@ -6194,7 +7542,8 @@ div:has(> table.admin-table),
   height: 24px !important;
   line-height: 24px !important;
   text-align: left;
-  text-align-last: left;
+  -moz-text-align-last: left;
+       text-align-last: left;
   font-size: 14px;
 }
 /* 네이티브 화살표는 걷고 값만 남긴다 */
@@ -6223,7 +7572,7 @@ div:has(> table.admin-table),
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
 }
-.jobpost-form select.admin-form-select { text-align-last: right; }
+.jobpost-form select.admin-form-select { -moz-text-align-last: right; text-align-last: right; }
 /* 셀렉트도 다른 선택 항목처럼 오른쪽 화살표(›) 표시 */
 .jobpost-form select.admin-form-select {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c9c9c9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") !important;
@@ -6233,8 +7582,10 @@ div:has(> table.admin-table),
 }
 /* 네이티브 셀렉트 화살표 자리 제거 */
 .jobpost-form .admin-form-select::-ms-expand { display: none; }
+.jobpost-form .admin-form-input::-moz-placeholder { color: #cfcfcf; font-size: 12px; }
 .jobpost-form .admin-form-input::placeholder { color: #cfcfcf; font-size: 12px; }
 /* 미리보기형 인라인 입력(제목·지역검색 등)도 placeholder 흐리게 */
+.jobpost-form input::-moz-placeholder, .jobpost-form textarea::-moz-placeholder { color: #d3d3d3; }
 .jobpost-form input::placeholder,
 .jobpost-form textarea::placeholder { color: #d3d3d3; }
 /* 원티드식 인라인 편집 카드: 편집 중이면 보라 테두리 강조 */
@@ -6245,6 +7596,7 @@ div:has(> table.admin-table),
 .jobpost-form input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .jobpost-form input[type="number"] { -moz-appearance: textfield; }
 /* 기업 정보 입력칸: 값이 안 들어온(빈) 필드는 연한 회색으로 죽여 표시 */
+.jp-company-box input::-moz-placeholder, .jp-company-box textarea::-moz-placeholder { color: #cfcfcf; }
 .jp-company-box input::placeholder,
 .jp-company-box textarea::placeholder { color: #cfcfcf; }
 /* 직군/시술분야 선택 트리거도 박스 제거 */
@@ -6585,7 +7937,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
   overflow: hidden;
 }
-.admin-resume-photo img { width: 100%; height: 100%; object-fit: cover; }
+.admin-resume-photo img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
 .admin-resume-photo.large {
   width: 56px;
   height: 56px;
@@ -7065,7 +8417,8 @@ div:has(> table.admin-table),
   border: 1.5px solid transparent;
   cursor: pointer;
   outline: none;
-  appearance: none;
+  -moz-appearance: none;
+       appearance: none;
   -webkit-appearance: none;
   background-repeat: no-repeat;
   background-position: right 8px center;
@@ -7338,7 +8691,7 @@ div:has(> table.admin-table),
   flex-shrink: 0;
   overflow: hidden;
 }
-.company-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
+.company-logo-mark img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
 .company-logo-info { display: flex; flex-direction: column; gap: 2px; }
 .company-logo-name { font-size: 14px; font-weight: 700; color: #555; }
 .company-logo-category { font-size: 13px; color: #555; }
@@ -7548,7 +8901,8 @@ div:has(> table.admin-table),
   grid-template-columns: auto 1fr;
   grid-template-areas: "icon value" "icon label";
   align-items: center;
-  column-gap: 12px; row-gap: 0;
+  -moz-column-gap: 12px;
+       column-gap: 12px; row-gap: 0;
 }
 .company-stat-card:has(.company-stat-icon) .company-stat-icon { flex-shrink: 0; grid-area: icon; }
 .company-stat-card:has(.company-stat-icon) .company-stat-value { grid-area: value; }
@@ -7651,7 +9005,8 @@ div:has(> table.admin-table),
     grid-template-columns: auto auto;
     grid-template-areas: "icon value" "label label";
     justify-content: center; align-items: center;
-    column-gap: 5px; row-gap: 1px; padding: 8px 4px; text-align: center;
+    -moz-column-gap: 5px;
+         column-gap: 5px; row-gap: 1px; padding: 8px 4px; text-align: center;
   }
   .co-m-content .company-stat-icon { width: 20px; height: 20px; border-radius: 5px; }
   .co-m-content .company-stat-icon svg { width: 13px; height: 13px; }
@@ -8268,6 +9623,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   min-width: 0;
 }
+.hero-search-input::-moz-placeholder { color: #aaa; }
 .hero-search-input::placeholder { color: #aaa; }
 .hero-search-btn {
   width: 44px;
@@ -8710,6 +10066,7 @@ div:has(> table.admin-table),
   padding: 4px;
   gap: 2px;
   flex-shrink: 0;
+  width: -moz-fit-content;
   width: fit-content;
 }
 .hero-type-btn {
@@ -8775,7 +10132,9 @@ div:has(> table.admin-table),
   color: #555;
   cursor: pointer;
   margin-bottom: 16px;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 .baj-login-save input[type="checkbox"] {
   width: 18px;
@@ -8821,6 +10180,7 @@ div:has(> table.admin-table),
 }
 .baj-login-input:last-child, .baj-login-pw-wrap .baj-login-input { border-bottom: none; }
 .baj-login-input.error { background: #fff9f9; }
+.baj-login-input::-moz-placeholder { color: #aaa; }
 .baj-login-input::placeholder { color: #aaa; }
 .baj-login-pw-wrap { position: relative; }
 .baj-login-pw-wrap .baj-login-input { padding-right: 48px; }
@@ -8833,7 +10193,7 @@ div:has(> table.admin-table),
 .baj-login-save {
   display: flex; align-items: center; gap: 8px;
   font-size: 14px; color: #555; cursor: pointer;
-  margin-bottom: 16px; user-select: none;
+  margin-bottom: 16px; -webkit-user-select: none; -moz-user-select: none; user-select: none;
 }
 .baj-login-save input[type="checkbox"] {
   width: 18px; height: 18px;
@@ -9099,6 +10459,7 @@ div:has(> table.admin-table),
   min-width: 0;
   font-family: inherit;
 }
+.hero-m-input::-moz-placeholder { color: #bbb; }
 .hero-m-input::placeholder { color: #bbb; }
 .hero-m-search-btn {
   width: 38px;
@@ -9536,8 +10897,7 @@ div:has(> table.admin-table),
 @media (max-width: 380px) {
   .header-inner { padding: 0 12px; gap: 8px; height: 56px; }
 
-  .profile-header-inner { height: 56px; }
-  .profile-header-inner { padding-left: 12px; padding-right: 12px; }
+  .profile-header-inner { height: 56px; padding-left: 12px; padding-right: 12px; }
   .profile-logo img { width: 100px !important; height: auto !important; }
   /* 로고 축소 */
   .logo img { width: 100px !important; height: auto !important; }
@@ -9581,9 +10941,6 @@ div:has(> table.admin-table),
     left: auto !important;
     right: 0 !important;
   }
-}
-
-@media (max-width: 768px) {
   .jobs-type-tabs {
     padding: 12px 16px 0;
     flex-wrap: nowrap;
@@ -9932,6 +11289,7 @@ div:has(> table.admin-table),
   border-radius: 4px;
   background: #f7f7f8;
   color: #582681;
+  width: -moz-fit-content;
   width: fit-content;
 }
 .service-name { font-size: 14px; font-weight: 700; color: #555; }
@@ -10494,6 +11852,7 @@ div:has(> table.admin-table),
   background: #f7f7f8;
   padding: 2px 8px;
   border-radius: 20px;
+  width: -moz-fit-content;
   width: fit-content;
   letter-spacing: 0.04em;
 }
@@ -10924,6 +12283,7 @@ div:has(> table.admin-table),
   background: #f7f7f8;
   padding: 2px 8px;
   border-radius: 20px;
+  width: -moz-fit-content;
   width: fit-content;
   letter-spacing: 0.04em;
 }
@@ -11603,8 +12963,7 @@ div:has(> table.admin-table),
   gap: 12px;
   transition: border-color 0.15s;
 }
-.co-type-card:hover { border-color: #a78bfa; }
-.co-type-card:hover { border-color: #582681; }
+.co-type-card:hover { border-color: #a78bfa; border-color: #582681; }
 .co-type-featured-badge { display: none; }
 .co-type-icon { color: #582681; flex-shrink: 0; }
 .co-type-body { flex: 1; min-width: 0; }
@@ -11926,6 +13285,7 @@ div:has(> table.admin-table),
   font-family: inherit;
   padding: 0;
 }
+.hero-search-input-v2::-moz-placeholder { color: #aaa; }
 .hero-search-input-v2::placeholder { color: #aaa; }
 /* 돋보기만 남긴다. 칸 전체가 이미 검색을 위한 자리라, 보라 덩어리를 하나 더
    놓으면 그 색이 칸보다 먼저 읽힌다. 누를 수 있는 넓이는 그대로 두고 색만
@@ -12018,7 +13378,7 @@ div:has(> table.admin-table),
 .jobcard { display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .jobcard:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
 .jobcard-cover { position: relative; flex: none; overflow: hidden; background: #f7f7f8; }
-.jobcard-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.jobcard-cover-img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; display: block; }
 .jobcard-cover-empty { aspect-ratio: 3 / 2; }   /* 사진이 없어도 칸 크기는 같다 */
 .jobcard-cover-initial { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 800; color: rgba(95,0,128,.18); }
 /* 사진 위에 얹는 회사명. 카드 본문은 제목·모집분야·지역까지로 이미 꽉 차서
@@ -12227,7 +13587,7 @@ div:has(> table.admin-table),
   .nb-page { max-width: 1080px; }
   .nearby-map-wrap { height: 560px; }
   /* 지도가 넓어지면 목록도 그만큼 넓어져 한 줄이 휑해진다. 두 줄로 나눈다. */
-  .nb-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8px; }
+  .nb-list { display: grid; grid-template-columns: 1fr 1fr; -moz-column-gap: 8px; column-gap: 8px; }
   .nb-list > p { grid-column: 1 / -1; }
 }
 .nb-list { padding: 8px 0; }
@@ -12238,6 +13598,7 @@ div:has(> table.admin-table),
   background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.16); color: #8a8a8a; }
 .nb-find-box input { flex: 1; min-width: 0; border: none; outline: none; background: none;
   font-family: inherit; font-size: 14px; color: #555; }
+.nb-find-box input::-moz-placeholder { color: #a5a0ad; }
 .nb-find-box input::placeholder { color: #a5a0ad; }
 .nb-find-box button { border: none; background: none; cursor: pointer; color: #999;
   font-size: 17px; line-height: 1; padding: 0; }
@@ -12490,7 +13851,7 @@ div:has(> table.admin-table),
    덩어리로 읽힌다. 모서리는 칸마다 주면 안쪽에서 서로 물리므로 바깥에만 준다. */
 .portfolio-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-radius: 10px; overflow: hidden; }
 .portfolio-cell { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: #f7f7f8; }
-.portfolio-cell > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portfolio-cell > img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; display: block; }
 .portfolio-del { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border: none; border-radius: 8px; background: rgba(0,0,0,0.5); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
 
 /* === 지원현황·관심공고 위쪽 '선택' 줄 === */
@@ -12639,12 +14000,12 @@ button,
    auto-fill 열 수가 흔들리지 않도록 최소 폭을 줄인 만큼 키운다(238+12 = 230+20).
    좁은 화면은 열 수가 고정이라 여기서 건드리지 않는다. */
 @media (min-width: 1025px) {
-  .jobs-grid { grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); column-gap: 12px; }
+  .jobs-grid { grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); -moz-column-gap: 12px; column-gap: 12px; }
 }
 
 /* 메인 카드도 같은 규칙. 열 수가 고정(3·4)이라 좁힌 만큼 카드가 넓어진다. */
 @media (min-width: 769px) {
-  .card-grid-4, .card-grid-3 { column-gap: 12px; }
+  .card-grid-4, .card-grid-3 { -moz-column-gap: 12px; column-gap: 12px; }
 }
 
 /* 메인 카드(가로 스크롤): 카드 사이 여백과 본문 위·아래 여백을 조인다.
@@ -12692,7 +14053,7 @@ button,
 /* 모바일 가입 카드: 1행 = 아이콘 + 제목, 2행 = 설명(카드 폭 전체).
    설명이 아이콘 옆 좁은 칸에 갇히지 않아 한 줄로 들어간다. */
 @media (max-width: 767px) {
-  .jt-card { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 2px; align-items: center; }
+  .jt-card { display: grid; grid-template-columns: auto 1fr; -moz-column-gap: 12px; column-gap: 12px; row-gap: 2px; align-items: center; }
   .jt-card .jt-text { display: contents; }
   .jt-card .jt-title { grid-column: 2; }
   .jt-card .jt-desc { grid-column: 1 / -1; margin-top: 0; }
@@ -13096,6 +14457,7 @@ button,
   border-radius: 11px;
   padding: 4px;
   gap: 2px;
+  width: -moz-fit-content;
   width: fit-content;
   flex-wrap: nowrap;
 }
@@ -13339,7 +14701,7 @@ button,
 .ad-banner { position: relative; margin: 0 0 16px; border-radius: 12px; overflow: hidden;
   background: #f7f7f8; line-height: 0; aspect-ratio: 1320 / 190; }
 .ad-banner-a { display: block; height: 100%; }
-.ad-banner-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ad-banner-img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; display: block; }
 /* 표시 의무 — 판 자리라는 것을 밝힌다. 사진 위라 흰 알약으로 띄운다. */
 .ad-banner-tag { position: absolute; right: 8px; bottom: 8px; background: rgba(255,255,255,.92);
   border-radius: 100px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: #555;
@@ -13957,7 +15319,7 @@ button,
     border: 1px solid #f2f2f2; background: #f7f7f8; padding: 0; cursor: pointer;
     display: flex; align-items: center; justify-content: center; font-size: 18px;
   }
-  .pf-side-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pf-side-avatar img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; display: block; }
   .pf-side-avatar-busy {
     position: absolute; inset: 0; background: rgba(255,255,255,.85); color: var(--color-primary);
     font-size: 9px; font-style: normal; font-weight: 600; display: flex; align-items: center; justify-content: center;
@@ -13981,7 +15343,7 @@ button,
     background: #f5f5f7; display: flex; align-items: center; justify-content: center;
     font-size: 14px; color: #555; line-height: 1;
   }
-  .pf-side-me-av img { width: 100%; height: 100%; object-fit: cover; }
+  .pf-side-me-av img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
   .pf-side-me-type { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; font-size: 12px; color: #555; }
   /* 본문 왼쪽 위 제목 — 이력서 페이지의 '기본 이력서' 제목과 같은 글자
      (.resume-top-title: 19px/700/#555). 페이지 제목끼리는 사이트
@@ -14102,8 +15464,10 @@ button,
      자리가 비어도 그만큼 늘어난다. 여러 단으로 흘리면 아래 칸이 빈자리를
      채우며 올라온다. */
   .resume-editor {
-    columns: 2;
-    column-gap: 12px;
+    -moz-columns: 2;
+         columns: 2;
+    -moz-column-gap: 12px;
+         column-gap: 12px;
     display: block;
     /* "이력서 폼 넓이가 많이 큰거 같은데. 15% 만 줄여보자" — 1054px → 896px.
        "여기서 10% 만 폭을 더 줄이자" — 896px → 806px.
@@ -14117,7 +15481,8 @@ button,
      않는다. 배경은 테두리 안쪽까지만 칠해(background-clip) 그 12px 이
      빈 자리로 보이게 한다. */
   .resume-editor > * {
-    break-inside: avoid;
+    -moz-column-break-inside: avoid;
+         break-inside: avoid;
     -webkit-column-break-inside: avoid;
     margin: 0;
     border-top: 12px solid transparent;
@@ -14134,7 +15499,8 @@ button,
   /* 자기소개서도 한 단이 아니라 통줄이다 — 여러 줄 글이라 좁은 단에 들어가면
      줄이 잘게 끊긴다. */
   #section-headline, #section-basic, #section-cover, .resume-bottom-save {
-    column-span: all;
+    -moz-column-span: all;
+         column-span: all;
     -webkit-column-span: all;
   }
   .resume-editor .resume-section { margin-bottom: 0; }
@@ -14149,7 +15515,8 @@ button,
     /* 제목은 본문 가운데, 단추는 오른쪽 — 다른 화면(.co-set-title)과 같은 결이다.
        한 줄에 나란히 두면 제목이 단추 폭만큼 왼쪽으로 밀린다. */
     display: flex; flex-direction: column; align-items: stretch; gap: 12px;
-    column-span: all; -webkit-column-span: all;
+    -moz-column-span: all;
+         column-span: all; -webkit-column-span: all;
     /* 아래 여백은 첫 카드가 이고 있는 투명 테두리 12px 이 이미 만든다.
        여기 또 12px 을 두면 단추 줄만 위아래로 넉넉히 떠 보인다. */
     margin: 0;
@@ -14215,7 +15582,8 @@ button,
      28px 여백으로 가르고, 줄은 아래 선으로만 나눈다. */
   .pf-main .profile-info-card.pf-grid {
     display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 28px; row-gap: 0;
+    -moz-column-gap: 28px;
+         column-gap: 28px; row-gap: 0;
     border: 1px solid var(--color-border); border-radius: 12px;
     padding: 8px 20px; overflow: hidden;
   }
@@ -14373,7 +15741,7 @@ button,
 /* 지금 다니는 곳만 이름을 가릴 수 있다 — 회사명 옆 작은 켜기/끄기. */
 .career-open {
   display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; flex-shrink: 0;
-  font-size: 12.5px; color: #555; cursor: pointer; user-select: none; white-space: nowrap;
+  font-size: 12.5px; color: #555; cursor: pointer; -webkit-user-select: none; -moz-user-select: none; user-select: none; white-space: nowrap;
 }
 .career-open input { width: 14px; height: 14px; margin: 0; accent-color: var(--color-primary); cursor: pointer; }
 .career-open-note { margin-left: 6px; font-size: 12px; color: #555; white-space: nowrap; }
@@ -14445,6 +15813,7 @@ button,
    같은 뜻("아직 안 적었다")을 네 가지 색으로 말하고 있었다 — #555,
    #9a9a9a, #a8a8ad, gray-400. 한 단계 옅게 하나로 모은다. 적힌 값
    (#2b2b2b)과 충분히 갈라지면서, 무엇을 적는 칸인지는 읽힌다. */
+input::-moz-placeholder, textarea::-moz-placeholder { color: #b4b4b9; opacity: 1; }
 input::placeholder,
 textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .if-slot:not(.on),
@@ -14633,7 +16002,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal select, .jp-sal input { border: none; outline: none; background: none;
   font-family: inherit; font-size: 13px; color: #555; height: 100%; }
 /* 셀렉트 화살표는 아래로 향한 갈매기 하나만 — 맥 기본 위아래 두 개는 상자 안에서 무겁다. */
-.jp-sal select { appearance: none; -webkit-appearance: none; background: #fff
+.jp-sal select { -moz-appearance: none; appearance: none; -webkit-appearance: none; background: #fff
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
   no-repeat right 9px center; cursor: pointer; }
 .jp-sal-unit { padding: 0 24px 0 11px; color: #555; }
@@ -14662,7 +16031,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-cond-f > span { font-size: 13px; color: #555; padding-left: 1px; }
 .jp-cond-sel { min-height: 34px; border: 1px solid #ececf0; border-radius: 8px; background: #fff
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
-  no-repeat right 9px center; appearance: none; -webkit-appearance: none;
+  no-repeat right 9px center; -moz-appearance: none; appearance: none; -webkit-appearance: none;
   font-family: inherit; font-size: 13px; color: #555; padding: 0 24px 0 11px; cursor: pointer; }
 .jp-cond-sel:focus { outline: none; border-color: var(--color-primary); }
 .jp-cond-shift {
@@ -14700,6 +16069,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-set-settings .co-set-main .if-sep { font-size: 15px; }
 /* 아직 안 채운 칸의 자리글은 한 단 낮춘다 — 적어 넣은 값과 같은 크기면 이미 채운
    것처럼 보인다. 값이 들어오는 순간 15px 로 커진다. */
+.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input:-moz-placeholder, .co-set-settings .co-set-main .admin-form-input:-moz-placeholder, .co-set-settings .co-set-main .admin-form-textarea:-moz-placeholder, .co-set-settings .co-set-main .if-input:-moz-placeholder { font-size: 14px; }
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input:placeholder-shown,
 .co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-select[data-empty="true"],
 .co-set-settings .co-set-main .admin-form-input:placeholder-shown,
@@ -14780,6 +16150,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   font-size: 14px; font-family: inherit; line-height: 1.5; color: #555;
   resize: none; outline: none;
 }
+.prop-interest-box textarea::-moz-placeholder { color: #b0b0b6; font-size: 13px; }
 .prop-interest-box textarea::placeholder { color: #b0b0b6; font-size: 13px; }
 .prop-interest-acts { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
 .prop-interest-acts button {
@@ -14921,7 +16292,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 22px;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
-.tal-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.tal-avatar img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
 .tal-avatar:hover { border-color: var(--color-primary); }
 .tal-main { flex: 1; min-width: 0; }
 .tal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
@@ -15271,7 +16642,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .apl-bar-sep { color: #dcdce2; }
 .apl-bar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .apl-sel {
-  appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 13px; color: #555;
+  -moz-appearance: none;
+       appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 13px; color: #555;
   border: none; background: none; padding: 4px 18px 4px 2px; cursor: pointer;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat; background-position: right 2px center;
@@ -15279,7 +16651,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .apl-sel:focus { outline: none; }
 /* 상태 고르개 — 테두리 없이 글자와 화살표만. */
 .apl-state {
-  appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 13.5px; color: #555;
+  -moz-appearance: none;
+       appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 13.5px; color: #555;
   border: none; background: none; padding: 4px 20px 4px 2px; cursor: pointer;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat; background-position: right 2px center;
@@ -15289,6 +16662,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: #fff; border: 1px solid #e6e6ea; border-radius: 8px; padding: 6px 10px; }
 .apl-find input { border: none; outline: none; background: none; font-family: inherit; font-size: 13px;
   color: #555; width: 200px; min-width: 0; }
+.apl-find input::-moz-placeholder { color: #c4c4c9; }
 .apl-find input::placeholder { color: #c4c4c9; }
 @media (max-width: 1000px) { .apl-find input { width: 110px; } }
 .apl-none { padding: 22px 18px; font-size: 13px; color: #555; }
@@ -15317,7 +16691,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: #efeff1; display: flex; align-items: center; justify-content: center;
   font-size: 14px; color: #555;
 }
-.apl-av img { width: 100%; height: 100%; object-fit: cover; }
+.apl-av img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
 .apl-who { width: 160px; flex-shrink: 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .apl-who b { font-weight: 400; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .apl-who i { font-style: normal; font-size: 12.5px; color: #555; }
@@ -15457,27 +16831,30 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 브라우저 기본 고르개는 바탕이 회색이라 옆 입력칸과 결이 갈렸다. 바탕을 지우고
    아래 화살표만 그려 붙인다. */
 .pf-pay-sel {
-  appearance: none; -webkit-appearance: none; cursor: pointer;
+  -moz-appearance: none;
+       appearance: none; -webkit-appearance: none; cursor: pointer;
   padding: 4px 18px 4px 6px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat; background-position: right 2px center;
 }
 /* 오른쪽 정렬 — 왼쪽에 붙이면 「400」과 「만원」 사이가 칸 너비만큼 벌어진다. */
 .pf-pay-in { width: 52px; text-align: right; padding-left: 2px; padding-right: 4px; }
+.pf-pay-in::-moz-placeholder { color: #cfcfcf; font-size: 12.5px; }
 .pf-pay-in::placeholder { color: #cfcfcf; font-size: 12.5px; }
 /* 고르개는 눌러도 바탕을 남기지 않는다 — 고르고 나면 색만 남아 무슨 표시인지
    알 수 없다. 적는 칸만 어디를 치고 있는지 옅은 회색으로 알린다. */
 .pf-pay-sel:focus { outline: none; background-color: transparent; }
 .pf-pay-in:focus { outline: none; background: #f2f2f4; }
 .pf-pay-unit { font-size: 15px; color: #555; }
-.pf-pay-nego { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; font-size: 15px; color: #555; cursor: pointer; user-select: none; }
+.pf-pay-nego { display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; font-size: 15px; color: #555; cursor: pointer; -webkit-user-select: none; -moz-user-select: none; user-select: none; }
 .pf-pay-nego input { width: 16px; height: 16px; accent-color: var(--color-primary); cursor: pointer; margin: 0; }
 .pf-pay-in:disabled { color: #c4c4c9; cursor: default; background: transparent; }
+.pf-pay-in:disabled::-moz-placeholder { color: #dcdce0; }
 .pf-pay-in:disabled::placeholder { color: #dcdce0; }
 
 /* 희망 근무 조건 — 이름표와 값이 두 칸으로 선다. 급여의 앞말(월·연·시급)만
    색을 주어 어느 단위인지 먼저 읽히게 한다. */
-.rp-cond { display: grid; grid-template-columns: 96px minmax(0, 1fr); row-gap: 10px; column-gap: 12px; }
+.rp-cond { display: grid; grid-template-columns: 96px minmax(0, 1fr); row-gap: 10px; -moz-column-gap: 12px; column-gap: 12px; }
 .rp-cond-k { font-size: 14px; color: #555; }
 .rp-cond-v { font-size: 14px; color: #555; }
 .rp-cond-unit { color: #555; font-weight: 400; }
@@ -15634,6 +17011,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border: 1px solid var(--card-line); border-radius: 7px;
   font-family: inherit; font-size: 13px; color: var(--color-text); background: #fff;
 }
+.prop-side-search::-moz-placeholder { color: var(--color-text); }
 .prop-side-search::placeholder { color: var(--color-text); }
 .prop-side-item {
   display: flex; align-items: center; gap: 6px; width: 100%;
@@ -15789,7 +17167,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: #f5f5f5; color: var(--color-primary); font-size: 20px;
   display: flex; align-items: center; justify-content: center;
 }
-.prop-av img { width: 100%; height: 100%; object-fit: cover; }
+.prop-av img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
 .prop-who b { display: block; font-weight: 500; font-size: inherit; color: var(--color-text-strong); }
 /* 이름 밑 공고명 — 기본 글자색으로. 옅은 회색으로 두었더니 안 보인다. */
 .prop-who i { display: block; font-style: normal; font-size: inherit; color: var(--color-text); }
@@ -15892,7 +17270,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   border: 1px solid var(--card-line); background: #f7f7f8; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; font-weight: 600; color: #555; }
-.ap-logo img { width: 100%; height: 100%; object-fit: cover; }
+.ap-logo img { width: 100%; height: 100%; -o-object-fit: cover; object-fit: cover; }
 .ap-job-t { display: block; color: var(--color-text-strong); text-decoration: none;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ap-job-t:hover { color: var(--color-primary); }
@@ -16224,7 +17602,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 배너 소재 예시 — 값만 적어 두면 무엇을 사는 것인지 그려지지 않는다. */
 .pi-samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px; margin-top: 10px; }
-.pi-samples img { display: block; width: 100%; height: 92px; object-fit: cover;
+.pi-samples img { display: block; width: 100%; height: 92px; -o-object-fit: cover; object-fit: cover;
   border: 1px solid var(--card-line); border-radius: 6px; }
 
 /* ===========================================
@@ -16309,3 +17687,234 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 720px) {
   .ev-h { font-size: 22px; }
 }
+
+
+.hover\:border-\[\#582681\]:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(88 38 129 / var(--tw-border-opacity, 1));
+}
+
+
+.hover\:border-\[\#a8a8ad\]:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(168 168 173 / var(--tw-border-opacity, 1));
+}
+
+
+.hover\:border-\[\#c0c0c0\]:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(192 192 192 / var(--tw-border-opacity, 1));
+}
+
+
+.hover\:border-purple-300:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(216 180 254 / var(--tw-border-opacity, 1));
+}
+
+
+.hover\:bg-\[\#b8b8c0\]:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(184 184 192 / var(--tw-bg-opacity, 1));
+}
+
+
+.hover\:bg-\[\#f5f5f5\]:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 245 245 / var(--tw-bg-opacity, 1));
+}
+
+
+.hover\:bg-\[\#f7f7f8\]:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(247 247 248 / var(--tw-bg-opacity, 1));
+}
+
+
+.hover\:bg-\[\#fafafa\]:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity, 1));
+}
+
+
+.hover\:bg-pink-600:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(219 39 119 / var(--tw-bg-opacity, 1));
+}
+
+
+.hover\:text-\[\#555\]:hover{
+  --tw-text-opacity: 1;
+  color: rgb(85 85 85 / var(--tw-text-opacity, 1));
+}
+
+
+.hover\:text-\[\#582681\]:hover{
+  --tw-text-opacity: 1;
+  color: rgb(88 38 129 / var(--tw-text-opacity, 1));
+}
+
+
+.hover\:underline:hover{
+  text-decoration-line: underline;
+}
+
+
+.hover\:opacity-90:hover{
+  opacity: 0.9;
+}
+
+
+.hover\:shadow-sm:hover{
+  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+
+.focus\:border-\[\#582681\]:focus{
+  --tw-border-opacity: 1;
+  border-color: rgb(88 38 129 / var(--tw-border-opacity, 1));
+}
+
+
+.focus\:border-\[\#e74c3c\]:focus{
+  --tw-border-opacity: 1;
+  border-color: rgb(231 76 60 / var(--tw-border-opacity, 1));
+}
+
+
+.focus\:outline-none:focus{
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+
+.focus\:ring-2:focus{
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+
+.focus\:ring-pink-300:focus{
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(249 168 212 / var(--tw-ring-opacity, 1));
+}
+
+
+.disabled\:cursor-not-allowed:disabled{
+  cursor: not-allowed;
+}
+
+
+.disabled\:border-\[\#ddd\]:disabled{
+  --tw-border-opacity: 1;
+  border-color: rgb(221 221 221 / var(--tw-border-opacity, 1));
+}
+
+
+.disabled\:bg-\[\#e0e0e0\]:disabled{
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 224 224 / var(--tw-bg-opacity, 1));
+}
+
+
+.disabled\:bg-\[\#f2f2f2\]:disabled{
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 242 242 / var(--tw-bg-opacity, 1));
+}
+
+
+.disabled\:bg-\[\#f5f5f5\]:disabled{
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 245 245 / var(--tw-bg-opacity, 1));
+}
+
+
+.disabled\:text-\[\#9a9a9a\]:disabled{
+  --tw-text-opacity: 1;
+  color: rgb(154 154 154 / var(--tw-text-opacity, 1));
+}
+
+
+.disabled\:text-\[\#aaa\]:disabled{
+  --tw-text-opacity: 1;
+  color: rgb(170 170 170 / var(--tw-text-opacity, 1));
+}
+
+
+.disabled\:text-\[\#b0b0b0\]:disabled{
+  --tw-text-opacity: 1;
+  color: rgb(176 176 176 / var(--tw-text-opacity, 1));
+}
+
+
+.disabled\:opacity-40:disabled{
+  opacity: 0.4;
+}
+
+
+.disabled\:opacity-50:disabled{
+  opacity: 0.5;
+}
+
+
+.disabled\:hover\:opacity-100:hover:disabled{
+  opacity: 1;
+}
+
+
+@media (min-width: 768px){
+
+  .md\:mb-0{
+    margin-bottom: 0px;
+  }
+
+  .md\:mt-0{
+    margin-top: 0px;
+  }
+
+  .md\:grid-cols-2{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:pt-10{
+    padding-top: 2.5rem;
+  }
+
+  .md\:pt-14{
+    padding-top: 3.5rem;
+  }
+
+  .md\:text-\[13px\]{
+    font-size: 13px;
+  }
+
+  .md\:text-\[14px\]{
+    font-size: 14px;
+  }
+
+  .md\:text-\[15px\]{
+    font-size: 15px;
+  }
+
+  .md\:text-\[16px\]{
+    font-size: 16px;
+  }
+
+  .md\:text-\[17px\]{
+    font-size: 17px;
+  }
+
+  .md\:text-\[24px\]{
+    font-size: 24px;
+  }
+
+  .md\:text-\[26px\]{
+    font-size: 26px;
+  }
+}
+
+
+</style><link rel="preload" as="script" fetchpriority="low" href="http://localhost:3000/_next/static/chunks/webpack.js?v=1789619582972"><link rel="manifest" href="http://localhost:3000/manifest.json"><meta name="theme-color" content="#582681"><meta name="color-scheme" content="light"><title>뷰티워크 | 뷰티 커리어의 시작과 성장</title><meta name="description" content="전문가 채용부터 업계 트렌드까지, 뷰티 산업 종사자를 위한 채용 플랫폼 뷰티워크"><meta name="keywords" content="뷰티 채용,화장품 채용,뷰티 커리어,BeautyWork"><meta name="robots" content="noindex, nofollow"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="뷰티워크"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="icon" href="http://localhost:3000/icons/icon-192.png"><link rel="apple-touch-icon" href="http://localhost:3000/icons/icon-180.png"></head><body class="font-sans"><!--$--><div class="jobs-page"><header class="header"><div class="header-inner"><a class="logo" href="http://localhost:3000/"><img alt="뷰티워크" fetchpriority="high" width="124" height="32" decoding="async" data-nimg="1" style="color:transparent" srcset="/_next/image?url=%2Fimages%2Flogo.png&amp;w=128&amp;q=75 1x, /_next/image?url=%2Fimages%2Flogo.png&amp;w=256&amp;q=75 2x" src="http://localhost:3000/_next/image?url=%2Fimages%2Flogo.png&amp;w=256&amp;q=75"></a><nav class="gnb"><a class="gnb-with-tag gnb-active" href="http://localhost:3000/jobs">채용공고</a><a class="gnb-with-tag gnb-shine " href="http://localhost:3000/jobs/nearby"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" style="flex-shrink:0"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><span class="gnb-shine-t">내 주변 공고</span></a><a class="gnb-with-tag " href="http://localhost:3000/profile/resume">이력서</a><a class="gnb-with-tag" href="http://localhost:3000/stories">현장이야기</a></nav><div class="header-right"><button class="btn btn-outline-auth">회원가입/로그인</button><a class="btn btn-outline-biz gnb-biz-btn" href="http://localhost:3000/company">기업 서비스 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></a><button class="icon-btn mob-hamburger" aria-label="이력서 등록"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-plus"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M9 15h6"></path><path d="M12 18v-6"></path></svg></button></div></div></header><div class="jobs-container jobs-layout"><aside class="jobs-side"><div class="seg jobs-side-type"><button type="button" class="seg-btn active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M3.2 9.2 5.1 4.6Q5.4 3.9 6.2 3.9H17.8Q18.6 3.9 18.9 4.6L20.8 9.2a2.2 2.2 0 0 1-4.4 0a2.2 2.2 0 0 1-4.4 0a2.2 2.2 0 0 1-4.4 0a2.2 2.2 0 0 1-4.4 0Z" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M5.2 11.5V19.4a1.2 1.2 0 0 0 1.2 1.2h11.2a1.2 1.2 0 0 0 1.2-1.2V11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M10.1 20.6v-3.9a1.9 1.9 0 0 1 3.8 0v3.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="7.5" cy="15.2" r="1.35" stroke="currentColor" stroke-width="1.4"></circle><path d="M16.5 13.3 16.95 14.45 18.1 14.9 16.95 15.35 16.5 16.5 16.05 15.35 14.9 14.9 16.05 14.45Z" fill="currentColor"></path></svg>매장</button><button type="button" class="seg-btn "><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M12.6 20.6V5.2a1.3 1.3 0 0 1 1.3-1.3h5.1a1.3 1.3 0 0 1 1.3 1.3v15.4" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M3.7 20.6V10.7a1.3 1.3 0 0 1 1.3-1.3h7.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15.1 7.4h2.7M15.1 10.6h2.7M15.1 13.8h2.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path><path d="M6.3 13h3M6.3 16.2h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path><path d="M15.1 20.6v-2.5a1.7 1.7 0 0 1 3.4 0v2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.6 20.6h18.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>오피스</button></div><div class="jobs-side-box"><p class="jobs-side-t">지역</p><div class="jobs-side-grid c3"><span class="jobs-pop-wrap"><button type="button"><span>서울</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>부산</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>대구</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>인천</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>광주</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>대전</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>울산</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>세종</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>경기</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>강원</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>충북</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>충남</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>전북</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>전남</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>경북</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>경남</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap"><button type="button"><span>제주</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span></div></div><div class="jobs-side-box"><p class="jobs-side-t">직군</p><div class="jobs-side-list"><span class="jobs-pop-wrap block"><button type="button"><span>헤어·바버</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>메이크업</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>네일·속눈썹</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>피부·바디</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>두피·탈모</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>웨딩·이벤트</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>뷰티 리테일</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>샵 운영·상담</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>미용강사</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>의료미용</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span></div></div><div class="jobs-side-box"><p class="jobs-side-t">근무조건</p><div class="jobs-side-list"><span class="jobs-pop-wrap block"><button type="button"><span>고용형태</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>경력</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span><span class="jobs-pop-wrap block"><button type="button"><span>복리후생</span><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right jobs-side-arr"><path d="m9 18 6-6-6-6"></path></svg></button></span></div></div></aside><div class="jobs-main"><div class="jobs-head"><b>매장<!-- --> 채용공고</b><span>179<!-- -->건</span></div><div class="jobs-mobile-only" style="padding:10px 0 0"><button class="jobs-filter-btn ">상세 필터<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"></path></svg></button></div><div class="jobs-grid"><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1789264646219-50bb54-t400.webp" alt="라리엔 명동점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">라리엔 명동점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">체계적인 1년 승급 로드맵🚀 주5일·일요일휴무✨ 라리엔 명동 인턴/디자이너 채용</p><p class="jobcard-company">헤어 스텝 · 헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 중구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1789276632621-42nle9-t400.webp" alt="라헬뷰티(본점)" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">라헬뷰티(본점)</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">★디자이너(1명),스탭(1명) 모집합니다★</p><p class="jobcard-company">헤어 디자이너 · 헤어 스텝</p><div class="jobcard-metarow"><p class="jobcard-meta">부산 강서구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1789272749822-6bs30h-t400.webp" alt="라온뷰티하우스" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">라온뷰티하우스</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">라온뷰티하우스와 함께하실 인턴한분,주말스페어한분(장기스페어가능) 추가모집합니다^^</p><p class="jobcard-company">헤어 스텝</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 송파구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://file.selectme.co.kr/recruit/2026/09/05677403-8b73-4acf-8ea4-9db8f56492cb_640.webp" alt="박승철헤어스투디오 잠실르엘점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">박승철헤어스투디오 잠실르엘점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">서울특별시 송파구 박승철헤어스투디오 잠실르엘점 헤어디자이너/헤어스탭 채용</p><p class="jobcard-company">헤어 스텝 · 헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 송파구 · 경력</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/admin/1788251416904-9aov15.jpg" alt="시흥은계지구 병원" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">시흥은계지구 병원</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">시흥 은계지구//병원내//문제성발 관리사 구인</p><p class="jobcard-company">문제성 네일 손발톱 관리사</p><div class="jobcard-metarow"><p class="jobcard-meta">경기 시흥시 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1789275855308-sahrsy-t400.webp" alt="세이지헤어(Sage Hair)" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">세이지헤어(Sage Hair)</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">[연봉3000~]용산 프리미엄살롱 세이지헤어에서 함께 근무할 인턴 및 디자이너 구합니다.</p><p class="jobcard-company">헤어 디자이너 · 헤어 스텝</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 용산구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1787471520945-xz1u8r.jpg" alt="순수반포실버점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">순수반포실버점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">순수 반포실버점 9 to 6 근무 워라밸과 성장을 함께! (인턴 스페어 15만)</p><p class="jobcard-company">헤어 스탭(시니어·주니어)</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 서초구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1788699869889-gbfzxv.jpg" alt="순수 청담본점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">순수 청담본점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">순수 청담본점 묵 부원장님 메인 헤어 인턴채용</p><p class="jobcard-company">헤어 스텝</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 강남구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1787472264604-k2kk4h.jpg" alt="순수 잠실점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">순수 잠실점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">순수 잠실점 마지막 TO.헤어디자이너 멘즈헤어 or 컬러 (1명) &amp; 파트너(마감) 채용</p><p class="jobcard-company">메이크업 아티스트 · 헤어 디자이너 외 1</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 송파구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1788241432598-lgm1vm.jpg" alt="이가자헤어비스 NC백화점 불광점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">이가자헤어비스 NC백화점 불광점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">이가자헤어비스 NC백화점 불광점에서 함께 일할 인재를 구합니다.(주말휴무가능)</p><p class="jobcard-company">로드숍 매니저·부매니저 · 헤어 디자이너 외 1</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 은평구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/admin/1788262210792-lm7pq7.png" alt="끌리메홍대점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">끌리메홍대점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">[끌리메홍대점] [끌리메 목동점] 뷰티스트 / 인센티브 / 목동 피부관리</p><p class="jobcard-company">피부 관리사(일반·경락)</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 양천구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(88, 38, 129);">D-7</span></div></div></div><div class="jobcard"><div class="jobcard-cover jobcard-cover-empty"><span class="jobcard-cover-name">리안헤어 영통역점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">영통역 중심상가 리안헤어 영통역점</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">경기 수원시 영통구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/admin/1787058256961-71av6l.jpg" alt="네일 위자드" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">네일 위자드</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">네일 위자드 합정점에서 함께 하실 선생님 구해요</p><p class="jobcard-company">네일 아티스트</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 마포구 · 경력무관 · 프리랜서</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1787491330014-g47hs5.jpg" alt="리안헤어 검암로열파크씨티점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">리안헤어 검암로열파크씨티점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">리안헤어 검암로열파크씨티점 정착 280  인센50% ~!!!!</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">인천 검단구 · 경력</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1788622771219-67kcpc.jpg" alt="이철헤어커커" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">이철헤어커커</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">이철헤어커커 신불당점</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">충남 천안시 서북구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1786893043732-gubequ.jpg" alt="준오헤어 목동41타워점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">준오헤어 목동41타워점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">*여자 기숙사 제공* 준오헤어 목동41타워점에서 함께 행복 미용할 ♥파트너♥를 찾습니다!</p><p class="jobcard-company">헤어 디자이너 · 헤어 스탭(시니어·주니어)</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 양천구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1787472538198-z6lq31.jpg" alt="장루이다비드" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">장루이다비드</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">[청담순수] 순수서울대점open 7시반마감</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 관악구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1788698714581-brfub8.png" alt="제오헤어 이문아이파크자이점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">제오헤어 이문아이파크자이점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">★7월 22일 GRAND OPEN오픈★ 제오헤어 이문아이파크자이점 오픈 멤버 모집</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 동대문구 · 경력무관 · 협의</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1786602192076-fr8zyq.jpg" alt="리안헤어 크레파스 마들역점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">리안헤어 크레파스 마들역점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">[오픈멤버]9월7일오픈예정! 리안헤어 마들역점 디자이너&amp;인턴 구인중!</p><p class="jobcard-company">헤어 디자이너 · 헤어 스탭(시니어·주니어)</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 노원구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1786892310107-lq6x3n.jpg" alt="준오헤어 다산역점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">준오헤어 다산역점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">준오헤어 다산역점 인턴 모집 ㅣ 함께 성장할 열정 있는 인턴을 찾습니다</p><p class="jobcard-company">헤어 스탭(시니어·주니어)</p><div class="jobcard-metarow"><p class="jobcard-meta">경기 남양주시 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1789288767863-nb3jod-t400.webp" alt="디투에이 아카데미" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">디투에이 아카데미</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">디자이너 데뷔 과정 78기 9월 30일 마감! 79기 교육생 조기 모집</p><p class="jobcard-company">헤어 디자이너 · 헤어 스텝</p><div class="jobcard-metarow"><p class="jobcard-meta">경기 부천시 · 경력무관 · 인턴</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1789289152543-9nrg3f-t400.webp" alt="에이투비아카데미" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">에이투비아카데미</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">★90일 디자이너 전환 시스템★교육/실습 무료교육</p><p class="jobcard-company">헤어 디자이너 · 헤어 스텝</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 광진구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1787491138084-ztskx5.png" alt="리안헤어 목동파리공원점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">리안헤어 목동파리공원점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">신규오픈매장 리안헤어 목동파리공원점에서 같이 하실 선생님!</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 양천구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div><div class="jobcard jobcard-photo"><div class="jobcard-cover"><div style="width: 100%; height: 100%; overflow: hidden;"><img src="https://iglvjgyjanvxeyuqurko.supabase.co/storage/v1/object/public/job-images/external/1787042436132-ivzfui.jpg" alt="에이바헤어정릉시장점" loading="lazy" decoding="async" draggable="false" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div><span class="jobcard-cover-badge">에이바헤어정릉시장점</span><button aria-label="스크랩" class="jobcard-bookmark "><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg></button></div><div class="jobcard-body"><p class="jobcard-title">에이바헤어 정릉시장점에서 가족같이 지내실 선생님을 모집합니다</p><p class="jobcard-company">헤어 디자이너</p><div class="jobcard-metarow"><p class="jobcard-meta">서울 성북구 · 경력무관</p><span class="jobcard-deadline" style="color: rgb(15, 110, 86);">상시채용</span></div></div></div></div><div class="jobs-more"><button type="button">공고 더 보기 (155건)</button></div></div></div></div><!--/$--><nav class="bottom-tab-bar"><a class="bottom-tab-item " href="http://localhost:3000/"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span>홈</span></a><a class="bottom-tab-item active" href="http://localhost:3000/jobs"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect width="20" height="14" x="2" y="6" rx="2"></rect></svg><span>채용</span></a><a class="bottom-tab-item " href="http://localhost:3000/stories"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg><span>이야기</span></a><a class="bottom-tab-item " href="http://localhost:3000/profile"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>마이</span></a></nav><next-route-announcer style="position: absolute;"></next-route-announcer></body></html>

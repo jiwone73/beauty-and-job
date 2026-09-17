@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 게재종료일, 무료칸쓰기 } from "@/lib/companyEntitlement";
+import { 이용권, 게재종료일, 무료칸 } from "@/lib/companyEntitlement";
 import { 무료소진안내 } from "@/lib/companyPlans";
 
 // 공고 단건 조회
@@ -99,12 +99,12 @@ export async function PATCH(
     if (지금.rowCount === 0) return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);
     if (지금.rows[0].status !== "ACTIVE") {
       const { plan, paidUntil } = await 이용권(auth!.sub);
-      // 임시저장을 펴거나 마감한 공고를 다시 여는 것도 무료 칸을 쓴다. 다만
-      // 칸은 공고마다 한 번만 센다 — 이미 무료로 걸렸던 공고를 다시 여는 것은
-      // 새 공고가 아니라, 같은 공고에 두 번 값을 치르게 할 수 없다.
+      // 임시저장을 펴거나 사흘이 지나 내려간 공고를 다시 거는 자리다. 무료는
+      // 한 번에 한 건이라, 다른 공고가 이미 걸려 있으면 막는다. 다시 거는 것
+      // 자체는 횟수 제한이 없다 — 게재종료일이 오늘부터 다시 사흘로 붙는다.
       if (!plan) {
-        const 됐나 = await 무료칸쓰기(auth!.sub, params.id);
-        if (!됐나) return err("PLAN_001", 무료소진안내, 403);
+        const { 남은것 } = await 무료칸(auth!.sub);
+        if (남은것 <= 0) return err("PLAN_001", 무료소진안내, 403);
       }
       updates.push(`listed_until = $${idx++}::date`);
       values.push(게재종료일(plan, paidUntil));

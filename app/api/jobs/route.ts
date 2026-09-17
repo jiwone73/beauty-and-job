@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok } from '@/lib/api'
+import { 플랜, type PlanId } from '@/lib/companyPlans'
 
 // 화면 라벨은 '오피스'다. 예전에 쓰던 '본사'·'기업'도 그대로 받는다 —
 // 밖에 나간 링크와 북마크가 조용히 안 걸리면 안 된다.
@@ -132,7 +133,9 @@ export async function GET(req: NextRequest) {
   // 유료로 산 자리. 프리미엄이 최상단, 스탠다드가 그 아래, 나머지는 그 밑이다.
   // 예전에 여기 있던 is_featured 는 아무 데서도 켜 주지 않는 죽은 칸이었다.
   const 노출등급 = (a = '') =>
-    `CASE ${a}company_plan WHEN 'PREMIUM' THEN 2 WHEN 'STANDARD' THEN 1 ELSE 0 END DESC`
+    `CASE ${a}company_plan ` +
+    (Object.keys(플랜) as PlanId[]).map((p) => `WHEN '${p}' THEN ${플랜[p].노출순위} `).join('') +
+    `ELSE 0 END DESC`
   /**
    * 같은 구간 안에서 줄 세우는 법. 최신순이 아니다.
    *
@@ -155,7 +158,8 @@ export async function GET(req: NextRequest) {
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,
            j.location, j.work_type, j.employment_type, j.salary_min, j.salary_max, j.salary_type,
-           j.experience_level, j.is_featured, j.deadline, j.created_at, j.categories, j.benefit_tags
+           j.experience_level, j.is_featured, j.deadline, j.created_at, j.categories, j.benefit_tags,
+           j.company_plan
     FROM v_active_jobs j
     LEFT JOIN (
       SELECT
@@ -175,7 +179,8 @@ export async function GET(req: NextRequest) {
   ` : `
     SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, cover_images, signboard_url, company_type,
            location, work_type, employment_type, salary_min, salary_max, salary_type,
-           experience_level, is_featured, deadline, created_at, categories, benefit_tags
+           experience_level, is_featured, deadline, created_at, categories, benefit_tags,
+           company_plan
     FROM v_active_jobs
     ${whereClause}
     ORDER BY is_sample NULLS FIRST, ${노출등급()}, ${같은구간()}
