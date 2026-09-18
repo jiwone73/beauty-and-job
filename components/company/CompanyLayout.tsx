@@ -458,13 +458,16 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
           width: 1018px; max-width: 100%; }
         /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
            바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
+        /* 옆줄은 테두리로 둘러싼 상자다 — 고객센터 옆줄(.info-side)과 같은 모양.
+           사이트의 다른 화면이 모두 이 꼴이라 여기만 맨몸으로 서면 어디까지가
+           메뉴인지 흐리다. 상자 높이는 메뉴 글자만 감싼다. */
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
-          position: sticky; top: 92px; }
-        /* 사이드와 본문 사이 세로 구분선. 사이드가 아니라 본문 쪽에 붙인다 — 사이드는
-           네 줄뿐이라 거기 붙이면 선이 중간에서 끊긴다(218px vs 894px). 선은 여백
-           28px 의 한가운데에 서게 밀어 넣어 양쪽 거리를 같게 둔다. */
-        .co-set-main { flex: 1; min-width: 0;
-          border-left: 1px solid #eeeef0; margin-left: -14px; padding-left: 14px; }
+          position: sticky; top: 92px; align-self: flex-start;
+          background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+          padding: 8px; box-sizing: border-box; }
+        /* 세로 구분선은 걷는다. 옆줄이 상자가 되면서 선이 상자 테두리 바로 옆에
+           한 줄 더 서는 꼴이 됐다. */
+        .co-set-main { flex: 1; min-width: 0; }
         /* 제목은 머리줄(헤더) 한가운데에 선다 — 사이드가 없는 화면(.co-top-title)과 같은 자리.
            본문 칸 안에서 가운데로 두면 사이드 폭(176) + 간격(28) + 구분선(1)의 절반만큼
            오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.

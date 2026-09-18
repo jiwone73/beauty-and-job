@@ -5514,18 +5514,24 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-layout button { font-weight: 400 !important; }
 
 /* 사이드바 */
+/* 옆줄은 테두리로 둘러싼 상자다 — 고객센터·기업 화면과 같은 모양.
+   본문과 가르던 세로선(border-right)은 걷는다. 상자 테두리가 이미 그 일을
+   하고 있어, 두면 선이 나란히 두 줄 선다. */
 .admin-sidebar {
   width: 220px;
-  min-height: 100vh;
   background: #fff;
-  border-right: 1px solid #f0f0f0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   transition: width 0.2s;
   flex-shrink: 0;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 16px;
+  align-self: flex-start;
+  max-height: calc(100vh - 32px);
+  margin: 16px 0 16px 16px;
+  overflow: hidden;
 }
 .admin-sidebar.closed { width: 64px; }
 
