@@ -4359,7 +4359,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 옆줄도 상자다 — 채용공고 사이드(.jobs-side-box)와 같은 모양을 쓴다.
    바탕이 회색으로 통일되면서 옆줄만 테두리 없이 떠 있어 어디까지가
    메뉴인지 흐렸다. */
-.info-side { position: sticky; top: 24px;
+/* 상자 높이는 본문에 맞춘다. sticky 로 띄워 두면 상자가 제 글자 높이에서
+   끊겨, 본문 판과 나란히 서지 않고 위쪽에만 짧게 붙어 있었다. */
+.info-side {
   background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 10px;
   padding: 8px; }
 /* 글자 크기는 사이트의 다른 옆줄(공고 검색·기업 대시보드)과 같은 14px 다.
@@ -5754,7 +5756,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   gap: 16px;
 }
 .admin-stat-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #f0f0f0;
@@ -5815,7 +5817,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 /* 카드 */
 .admin-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border-radius: 12px;
   border: 1px solid #f0f0f0;
   overflow: hidden;
@@ -6394,7 +6396,7 @@ div:has(> table.admin-table),
   gap: 12px;
 }
 .admin-mini-stat {
-  background: #fff;
+  background: var(--color-bg-soft);
   border: 1px solid #f0f0f0;
   border-radius: 10px;
   padding: 10px 20px;
@@ -6608,7 +6610,7 @@ div:has(> table.admin-table),
 .admin-resume-stats {
   display: flex;
   gap: 0;
-  background: #fff;
+  background: var(--color-bg-soft);
   border: 1px solid #f0f0f0;
   border-radius: 12px;
   overflow: hidden;
@@ -6703,7 +6705,7 @@ div:has(> table.admin-table),
   gap: 14px;
 }
 .admin-resume-stat-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border: 1px solid #f0f0f0;
   border-radius: 12px;
   padding: 18px 20px;
@@ -6842,7 +6844,7 @@ div:has(> table.admin-table),
   gap: 14px;
 }
 .admin-resume-stat-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border: 1px solid #f0f0f0;
   border-radius: 12px;
   padding: 18px 20px;
@@ -7596,7 +7598,7 @@ div:has(> table.admin-table),
   .company-stat-grid { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); }
 }
 .company-stat-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border-radius: 10px;
   padding: 11px 14px;
   border: 1px solid #f0f0f0;
@@ -7631,7 +7633,7 @@ div:has(> table.admin-table),
 
 /* 카드 */
 .company-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border-radius: 12px;
   border: 1px solid #f0f0f0;
   overflow: hidden;
@@ -7953,7 +7955,7 @@ div:has(> table.admin-table),
   gap: 16px;
 }
 .talent-card {
-  background: #fff;
+  background: var(--color-bg-soft);
   border: 1px solid #f0f0f0;
   border-radius: 12px;
   padding: 20px;
@@ -13603,7 +13605,7 @@ button,
 .co-bill-h { font-size: 16px; color: #1a1a1a; margin: 34px 0 12px; }
 .co-bill-empty { font-size: 14px; color: #555; padding: 26px 0; text-align: center;
   border: 1px solid var(--color-border); border-radius: 12px; background: #fff; margin: 0; }
-.co-bill-tb { width: 100%; border-collapse: collapse; background: #fff;
+.co-bill-tb { width: 100%; border-collapse: collapse; background: var(--color-bg-soft);
   border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; }
 .co-bill-tb th { font-size: 14px; font-weight: 400; color: #555; text-align: left;
   padding: 13px 16px; background: #f7f7f8; white-space: nowrap; }
@@ -15009,7 +15011,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    채용공고 관리 카드와 같은 구조로 맞춘다. */
 .tal-list { display: flex; flex-direction: column; gap: 10px; }
 .tal-card {
-  border: 1px solid #ececf0; border-radius: 12px; background: #fff;
+  border: 1px solid #ececf0; border-radius: 12px; background: var(--color-bg-soft);
   padding: 14px 18px 0;
 }
 .tal-card:hover { border-color: var(--color-primary); }
@@ -15157,7 +15159,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border: none; background: none; font-family: inherit; font-size: 13.5px; color: #666; cursor: pointer; }
 .tres-back:hover { color: var(--color-primary); }
 .tres-acts { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-.tres-sheet { border: 1px solid #ececf0; border-radius: 12px; background: #fff; padding: 8px; }
+.tres-sheet { border: 1px solid #ececf0; border-radius: 12px; background: var(--color-bg-soft); padding: 8px; }
 
 /* 포트폴리오 안의 「사진」·「SNS」 줄 이름. 편집 화면(resume-career-head)과 같은
    무게로 — 구역 제목이 아니라 그 안을 가르는 작은 이름이다. */
