@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import { FAQ, FAQ_묶음, FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
+import { FAQ_묶음, FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
+import InfoSeg from "@/components/InfoSeg";
 
 /**
  * 자주 묻는 질문 판 — 받는 쪽으로 나누고, 갈래로 묶고, 찾을 수 있게 한다.
@@ -32,15 +33,9 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
           내렸다 — 갈리는 것은 FAQ 뿐이고(공지·문의·다운로드는 누구에게나
           같다), 고객센터 전체에 걸린 탭으로 보이면 나머지 셋도 사람마다
           다른 줄 알게 된다. */}
+      <InfoSeg 값={묶} 고르기={(m) => { set묶(m); set열린것(null); }}
+               목록={(Object.keys(FAQ_묶음) as 묶음[]).map((m) => [m, FAQ_묶음[m]] as const)} />
       <div className="faq-top">
-        <div className="faq-tabs">
-          {(Object.keys(FAQ_묶음) as 묶음[]).map((m) => (
-            <button key={m} type="button" className={m === 묶 ? "on" : undefined}
-                    onClick={() => { set묶(m); set열린것(null); }}>
-              {FAQ_묶음[m]}<i>{FAQ[m].length}</i>
-            </button>
-          ))}
-        </div>
         <label className="faq-search">
           <Search size={16} />
           <input value={말} onChange={(e) => set말(e.target.value)}

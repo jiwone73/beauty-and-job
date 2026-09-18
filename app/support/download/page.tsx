@@ -1,20 +1,82 @@
 "use client";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Download } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import InfoShell from "@/components/InfoShell";
 
-/** 내려받을 것 — 지금은 이력서 빈 양식 하나뿐이다. 늘면 여기 줄을 더한다. */
+/**
+ * 다운로드 — 공지사항과 같은 게시판 짜임(갈래 고르기 · 검색 · 목록).
+ *
+ * 지금은 이력서 양식 하나뿐이라 줄 하나짜리 게시판이다. 그래도 카드 한 장으로
+ * 두지 않는 까닭은, 늘어날 때마다 화면을 다시 짜지 않으려는 것이다 — 줄을
+ * 더하면 갈래와 검색이 그대로 걸린다.
+ */
+type 자료 = { 갈래: string; 이름: string; 설명: string; 파일: string; 날짜: string };
+
+const 목록: 자료[] = [
+  {
+    갈래: "이력서",
+    이름: "미용 이력서 양식",
+    설명: "손으로 쓰거나 인쇄해 가실 분을 위한 빈 양식입니다 (PDF · A4 한 장)",
+    파일: "/files/뷰티워크-이력서-양식.pdf",
+    날짜: "2026-09-01",
+  },
+];
+
+const 갈래들 = ["전체", ...Array.from(new Set(목록.map((d) => d.갈래)))];
+
 export default function DownloadPage() {
+  const [갈래, set갈래] = useState("전체");
+  const [적은말, set적은말] = useState("");
+  const [찾는말, set찾는말] = useState("");
+
+  const 보일것 = useMemo(() => {
+    const m = 찾는말.trim();
+    return 목록.filter((d) =>
+      (갈래 === "전체" || d.갈래 === 갈래) &&
+      (!m || d.이름.includes(m) || d.설명.includes(m)));
+  }, [갈래, 찾는말]);
+
   return (
     <InfoShell active="/support/download" title="다운로드">
-      <a className="sup-file" href="/files/뷰티워크-이력서-양식.pdf" download>
-        <Download size={20} />
-        <span className="sup-file-t">
-          <b>미용 이력서 양식 내려받기</b>
-          손으로 쓰거나 인쇄해 가실 분을 위한 빈 양식입니다 (PDF · A4 한 장)
-        </span>
-        <em>받기</em>
-      </a>
+      <form className="nb-top" onSubmit={(e) => { e.preventDefault(); set찾는말(적은말); }}>
+        <select className="nb-pick" value={갈래} aria-label="갈래"
+                onChange={(e) => set갈래(e.target.value)}>
+          {갈래들.map((g) => <option key={g} value={g}>{g}</option>)}
+        </select>
+        <label className="nb-search">
+          <input value={적은말} onChange={(e) => set적은말(e.target.value)}
+                 placeholder="검색어를 입력하세요." />
+          <button type="submit" aria-label="검색"><Search size={17} /></button>
+        </label>
+      </form>
+
+      <div className="nb-th dl-th">
+        <span>제목</span><span>등록일자</span><span>받기</span>
+      </div>
+
+      {보일것.length === 0 ? (
+        <p className="nb-board-msg">
+          {찾는말 ? `「${찾는말}」에 대한 자료가 없습니다.` : "등록된 자료가 없습니다."}
+        </p>
+      ) : (
+        <ul className="nb-board dl-board">
+          {보일것.map((d) => (
+            <li key={d.파일}>
+              <a href={d.파일} download>
+                <span className="nb-board-k">[{d.갈래}]</span>
+                <span className="nb-board-t">
+                  {d.이름}
+                  <i>{d.설명}</i>
+                </span>
+                <span className="nb-board-d">{d.날짜}</span>
+                <span className="dl-get"><Download size={16} />받기</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
       <p className="sup-file-n">
         뷰티워크에서 온라인으로 쓰시면 지원까지 한 번에 되고, 매장이 보내는 제안도 받으실 수 있습니다.{" "}
         <Link href="/profile/resume">이력서 쓰러 가기 ›</Link>

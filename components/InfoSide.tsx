@@ -22,7 +22,7 @@ export default function InfoSide({ active }: {
     { href: "/support/policy", label: "회원정책" },
     { href: "/support/guide", label: "사용가이드" },
     { href: "/support/faq", label: "자주 묻는 질문" },
-    { href: "/support", label: "1:1 문의하기", 주소: "/support?문의=1" },
+    { href: "/support", label: "1:1 문의하기" },
     { href: "/support/download", label: "다운로드" },
   ];
 
@@ -31,7 +31,7 @@ export default function InfoSide({ active }: {
       <ul>
         {메뉴.map((m) => (
           <li key={m.href}>
-            <Link href={m.주소 ?? m.href} className={`info-side-i${active === m.href ? " on" : ""}`}>
+            <Link href={m.href} className={`info-side-i${active === m.href ? " on" : ""}`}>
               {m.label}
             </Link>
           </li>

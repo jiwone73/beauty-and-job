@@ -4,6 +4,7 @@ import Link from "next/link";
 import { UserPlus, FileText, Search, Send, MessageSquare,
          Building2, FilePlus2, Users, TrendingUp } from "lucide-react";
 import InfoShell from "@/components/InfoShell";
+import InfoSeg from "@/components/InfoSeg";
 import { 플랜, 스타트 } from "@/lib/companyPlans";
 
 /**
@@ -51,16 +52,8 @@ export default function GuidePage() {
 
   return (
     <InfoShell active="/support/guide" title="사용가이드">
-      <div className="faq-top">
-        <div className="faq-tabs">
-          {(["개인", "기업"] as 묶음[]).map((m) => (
-            <button key={m} type="button" className={m === 묶 ? "on" : undefined}
-                    onClick={() => set묶(m)}>
-              {m}회원<i>{걸음[m].length}</i>
-            </button>
-          ))}
-        </div>
-      </div>
+      <InfoSeg 값={묶} 고르기={set묶}
+               목록={[["개인", "개인회원"], ["기업", "기업회원"]] as const} />
 
       <div className="guide-steps">
         {걸음[묶].map(({ Icon, 이름, 말 }, i) => (
