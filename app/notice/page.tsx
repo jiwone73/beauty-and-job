@@ -9,7 +9,7 @@ import NoticeBoard from "@/components/NoticeBoard";
 export default function NoticePage() {
   return (
     <InfoShell active="/notice" title="공지사항">
-      <NoticeBoard type="notice" emptyText="등록된 공지사항이 없습니다." />
+      <NoticeBoard emptyText="등록된 글이 없습니다." />
     </InfoShell>
   );
 }

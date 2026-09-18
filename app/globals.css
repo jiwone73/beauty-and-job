@@ -13103,17 +13103,41 @@ button,
 /* ── 공지·이벤트 목록 (아코디언) ────────────────────────────────
    글 하나가 대개 한두 문단이다. 그걸 보자고 화면을 통째로 갈아 끼우고 다시
    뒤로 오는 것은 무겁다. 누른 자리에서 펼친다. */
-.nb-board { list-style: none; margin: 0; padding: 0; border-top: 1px solid #eee; }
-.nb-board > li { border-bottom: 1px solid #eee; }
-.nb-board > li > a { display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 18px 4px; text-decoration: none; }
+/* 게시판 — 고르는 칸 · 검색 · 목록 · 쪽 번호.
+   글이 쌓이면 반드시 필요해지는 셋이라 처음부터 자리를 잡아 둔다. */
+.nb-top { display: flex; gap: 8px; margin-bottom: 18px; }
+.nb-pick { flex: none; height: 40px; padding: 0 32px 0 13px; font-family: inherit; font-size: 14px;
+  color: #555; background: #fff no-repeat right 12px center/9px 6px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' stroke='%238a8a90' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  border: 1px solid #e4e1e8; border-radius: 8px; appearance: none; cursor: pointer; }
+.nb-search { flex: 1; display: flex; align-items: center; height: 40px; padding: 0 4px 0 13px;
+  border: 1px solid #e4e1e8; border-radius: 8px; background: #fff; }
+.nb-search input { flex: 1; min-width: 0; border: none; outline: none; background: none;
+  font-family: inherit; font-size: 14px; color: #555; }
+.nb-search input::placeholder { color: #b5b0bc; }
+.nb-search button { flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border: none; background: none; color: #8a8a90; cursor: pointer; }
+.nb-search button:hover { color: var(--color-primary); }
+
+/* 목록 머리줄 — 오른쪽 날짜 칸 폭을 아래 줄과 맞춘다.
+   이름은 .nb-th 다. .nb-head 는 메인 공지 위젯이 먼저 쓰고 있다. */
+.nb-th { display: flex; align-items: center; padding: 12px 14px;
+  border-top: 1px solid #1f1f22; border-bottom: 1px solid #ececef;
+  font-size: 13.5px; font-weight: 700; color: #1f1f22; }
+.nb-th > span:first-child { flex: 1; text-align: center; }
+.nb-th > span:last-child { flex: none; width: 110px; text-align: center; }
+
+.nb-board { list-style: none; margin: 0; padding: 0; }
+.nb-board > li { border-bottom: 1px solid #f2f1f4; }
+.nb-board > li > a { display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 15px 14px; text-decoration: none; }
 .nb-board > li > a:hover .nb-board-t { color: var(--color-primary); }
+.nb-board-k { flex: none; font-size: 13.5px; color: #a9a4b0; }
 .nb-board-pin { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--color-primary);
   border: 1px solid var(--color-primary); border-radius: 4px; padding: 1px 5px; }
-.nb-board-t { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; color: #555;
+.nb-board-t { flex: 1; min-width: 0; font-size: 14.5px; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nb-board-d { flex-shrink: 0; font-size: 13px; color: #555; }
-.nb-board-ar { flex-shrink: 0; color: #c9c4cf; }
+.nb-board-d { flex: none; width: 110px; text-align: center; font-size: 13px; color: #a9a4b0; }
 /* 글 하나를 읽는 자리 */
 .nb-view-tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px;
   border-radius: 6px; background: #f7f7f8; color: var(--color-primary); }

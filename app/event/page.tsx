@@ -16,9 +16,9 @@ export default function EventPage() {
       <Header />
       <main className="ev-page">
         <h1 className="ev-title">이벤트·혜택</h1>
-        <p className="ev-sub">지금 받을 수 있는 혜택이에요. 제목을 누르면 자세한 내용이 펼쳐집니다.</p>
+        <p className="ev-sub">지금 받을 수 있는 혜택이에요.</p>
         <Suspense fallback={<p className="nb-board-msg">불러오는 중...</p>}>
-          <NoticeBoard type="event" emptyText="진행 중인 이벤트가 없습니다." />
+          <NoticeBoard 갈래고정="event" emptyText="진행 중인 이벤트가 없습니다." />
         </Suspense>
       </main>
     </>
