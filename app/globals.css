@@ -4359,9 +4359,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 옆줄도 상자다 — 채용공고 사이드(.jobs-side-box)와 같은 모양을 쓴다.
    바탕이 회색으로 통일되면서 옆줄만 테두리 없이 떠 있어 어디까지가
    메뉴인지 흐렸다. */
-/* 상자 높이는 본문에 맞춘다. sticky 로 띄워 두면 상자가 제 글자 높이에서
-   끊겨, 본문 판과 나란히 서지 않고 위쪽에만 짧게 붙어 있었다. */
-.info-side {
+/* 상자는 메뉴 글자만 감싼다. 본문 높이까지 늘였더니 아래가 텅 빈 회색
+   기둥이 됐다 — 셀렉미도 메뉴만 감싼다. */
+.info-side { position: sticky; top: 24px; align-self: start;
   background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 10px;
   padding: 8px; }
 /* 글자 크기는 사이트의 다른 옆줄(공고 검색·기업 대시보드)과 같은 14px 다.
