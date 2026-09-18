@@ -15,7 +15,7 @@ import { AuthButtons } from "@/components/Header";
  * 끝은 사이트 머리줄과 같은 것을 쓴다 — 고객센터에서 답을 찾은 사람이
  * 가입하거나 로그인할 데가 없어 뒤로 나가야 했다.
  */
-export default function InfoHeader() {
+export default function InfoHeader({ 이름 = "고객센터" }: { 이름?: string } = {}) {
   const router = useRouter();
   return (
     <header className="info-header">
@@ -24,7 +24,7 @@ export default function InfoHeader() {
           <Image src="/images/logo.png" alt="뷰티워크" width={112} height={29} priority />
         </Link>
         <span className="info-brand-bar" aria-hidden />
-        <span className="info-brand-t">고객센터</span>
+        <span className="info-brand-t">{이름}</span>
         <div className="header-right info-header-right">
           <AuthButtons onLoginClick={() => router.push("/login")} />
         </div>

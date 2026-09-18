@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import AboutHeader from "@/components/AboutHeader";
+import InfoShell from "@/components/InfoShell";
+import AboutSide from "@/components/AboutSide";
 
 export default function AboutPage() {
   return (
-    <div className="info-page">
-      <AboutHeader active="/about" />
-      <main className="info-main">
+    <InfoShell active="/about" title="회사 소개" 머리이름="회사 소개"
+               옆줄={<AboutSide active="/about" />}>
         <div className="info-hero">
           <h1 className="info-hero-title">뷰티 업계 커리어의 모든 것,<br /><span>뷰티워크</span></h1>
           <p className="info-hero-desc">뷰티워크는 네일·속눈썹·헤어부터 뷰티 브랜드까지, 뷰티 업계 채용만 모은 특화 채용 플랫폼입니다.</p>
@@ -60,7 +60,6 @@ export default function AboutPage() {
           </Link>
         </div>
 
-      </main>
-    </div>
+      </InfoShell>
   );
 }

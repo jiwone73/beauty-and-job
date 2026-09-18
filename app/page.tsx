@@ -584,6 +584,9 @@ function Footer() {
     { label: "제휴 문의", href: "/about/partnership" },
     { label: "광고 문의", href: "/about/advertise" },
     { label: "기타 문의", href: "/about/contact" },
+    /* 고객센터는 아래 저작권 줄에 잔글씨로 있었다. 회사 소개·제휴·광고·기타
+       문의와 같은 성격(물어보러 가는 곳)이라 같은 줄, 같은 크기로 세운다. */
+    { label: "고객센터", href: "/support" },
   ];
   const Sep = () => <span style={{ margin: "0 8px", color: "#e2e2e2" }}>|</span>;
   return (
@@ -609,7 +612,6 @@ function Footer() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            <Link href="/support" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>고객센터</Link>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
             <Link href="/support/privacy" style={{ fontSize: 13, color: "#582681", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
           </div>

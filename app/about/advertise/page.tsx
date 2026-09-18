@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import AboutHeader from "@/components/AboutHeader";
+import InfoShell from "@/components/InfoShell";
+import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
 export default function AdvertisePage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", content: "" });
@@ -28,11 +29,9 @@ export default function AdvertisePage() {
     setDone(true);
   };
   return (
-    <div className="info-page">
-      <AboutHeader active="/about/advertise" />
-      <main className="info-main">
+    <InfoShell active="/about/advertise" title="광고 문의" 머리이름="회사 소개"
+               옆줄={<AboutSide active="/about/advertise" />}>
         <div className="info-hero">
-          <h1 className="info-hero-title">광고 문의</h1>
           <p className="info-hero-desc">뷰티워크의 다양한 광고 상품을 통해 브랜드를 알려보세요.</p>
         </div>
         
@@ -57,7 +56,6 @@ export default function AdvertisePage() {
             </form>
           </div>
         )}
-      </main>
-    </div>
+      </InfoShell>
   );
 }

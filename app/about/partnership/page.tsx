@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import AboutHeader from "@/components/AboutHeader";
+import InfoShell from "@/components/InfoShell";
+import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
 export default function PartnershipPage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", content: "" });
@@ -27,11 +28,9 @@ export default function PartnershipPage() {
     setDone(true);
   };
   return (
-    <div className="info-page">
-      <AboutHeader active="/about/partnership" />
-      <main className="info-main">
+    <InfoShell active="/about/partnership" title="제휴 문의" 머리이름="회사 소개"
+               옆줄={<AboutSide active="/about/partnership" />}>
         <div className="info-hero">
-          <h1 className="info-hero-title">제휴 문의</h1>
           <p className="info-hero-desc">뷰티워크와 함께 성장할 파트너사를 환영합니다.</p>
         </div>
         {done ? (
@@ -55,7 +54,6 @@ export default function PartnershipPage() {
             </form>
           </div>
         )}
-      </main>
-    </div>
+      </InfoShell>
   );
 }

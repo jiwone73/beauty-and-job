@@ -17,19 +17,23 @@ export function 누구읽기(sp: URLSearchParams): "개인" | "기업" {
   return sp.get("누구") === "기업" ? "기업" : "개인";
 }
 
-export default function InfoShell({ active, title, children }: {
+export default function InfoShell({ active, title, children, 옆줄, 머리이름 }: {
   /** 옆줄에서 켤 항목의 href */
   active: string;
   /** 본문 제목 */
   title: string;
   children: ReactNode;
+  /** 다른 옆줄을 세울 때. 안 주면 고객센터 옆줄이다. */
+  옆줄?: ReactNode;
+  /** 머리줄에 적을 이름. 안 주면 「고객센터」. */
+  머리이름?: string;
 }) {
   return (
     <div className="info-page">
-      <InfoHeader />
+      <InfoHeader 이름={머리이름} />
       <main className="info-main">
         <div className="info-layout">
-          <InfoSide active={active} />
+          {옆줄 ?? <InfoSide active={active} />}
           <div className="info-body">
             <h1 className="info-page-title">{title}</h1>
             {/* 본문이 주소의 값을 읽을 수 있다(공지 갈래·쪽, FAQ 갈래).

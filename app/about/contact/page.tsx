@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import AboutHeader from "@/components/AboutHeader";
+import InfoShell from "@/components/InfoShell";
+import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", category: "", content: "" });
@@ -29,11 +30,9 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="info-page">
-      <AboutHeader active="/about/contact" />
-      <main className="info-main">
+    <InfoShell active="/about/contact" title="기타 문의" 머리이름="회사 소개"
+               옆줄={<AboutSide active="/about/contact" />}>
         <div className="info-hero">
-          <h1 className="info-hero-title">기타 문의</h1>
           <p className="info-hero-desc">궁금한 점이 있으시면 언제든지 문의해주세요.</p>
         </div>
         {done ? (
@@ -66,7 +65,6 @@ export default function ContactPage() {
             </form>
           </div>
         )}
-      </main>
-    </div>
+      </InfoShell>
   );
 }
