@@ -4378,14 +4378,27 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
 }
+/* 폭은 본문(.info-main)과 같은 1160 이다. 860 이던 때에는 로고가 옆줄보다
+   한참 안으로 들어가 두 줄이 어긋나 보였다. */
 .info-header-inner {
   width: 100%;
-  max-width: 860px;
+  max-width: 1160px;
   padding: 0 24px;
   display: flex;
   align-items: center;
+  gap: 12px;
 }
-.info-header-inner .logo { margin-left: -4px; }
+.info-brand { display: inline-flex; align-items: center; margin-left: -4px; }
+.info-brand-bar { width: 1px; height: 18px; background: #e4e1e8; }
+.info-brand-t { font-size: 17px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
+
+/* 개인·기업 탭 — 고객센터 전체에 걸리는 갈림이라 옆줄 위에 선다.
+   FAQ 아래에만 접어 두었을 때는 공지가 누구 것인지 고를 데가 없었다. */
+.info-tabs { display: flex; gap: 4px; border-bottom: 1px solid #ececef; margin-bottom: 24px; }
+.info-tab { padding: 11px 18px 13px; font-size: 15px; color: #8a8a90; text-decoration: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s; }
+.info-tab:hover { color: #555; }
+.info-tab.on { color: var(--color-primary); font-weight: 700; border-bottom-color: var(--color-primary); }
 .info-nav {
   display: flex;
   align-items: center;
@@ -13212,13 +13225,6 @@ button,
   --cs-soft: #f7f7f8;
 }
 .co-plans b, .co-plans strong { font-weight: 700; }
-/* 고객센터도 같은 머리줄(ServiceHeader)을 쓴다. 토큰이 없으면 「회원가입」
-   단추가 투명 바탕에 흰 글씨가 되어 통째로 사라진다 — 실제로 그랬다. */
-.info-page {
-  --cs: #582681;
-  --cs-deep: #431a63;
-  --cs-soft: #f7f7f8;
-}
 
 /* 머리 */
 .cs-header { border-bottom: 1px solid #efeff1; background: #fff; position: sticky; top: 0; z-index: 30; }

@@ -1,5 +1,5 @@
 "use client";
-import ServiceHeader from "@/components/company/ServiceHeader";
+import InfoHeader from "@/components/InfoHeader";
 
 const SECTIONS: any[] = [
   {
@@ -1254,7 +1254,7 @@ function LegalBlock({ b }: { b: any }) {
 export default function TermsPage() {
   return (
     <div className="info-page">
-      <ServiceHeader />
+      <InfoHeader />
       <main className="info-main">
         <div className="legal-layout">
           <div className="legal-content">

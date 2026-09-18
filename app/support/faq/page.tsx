@@ -1,31 +1,20 @@
 "use client";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import ServiceHeader from "@/components/company/ServiceHeader";
-import InfoSide from "@/components/InfoSide";
+import InfoShell, { 누구읽기 } from "@/components/InfoShell";
 import FaqBoard from "@/components/support/FaqBoard";
 
 /** 자주 묻는 질문 — 목록은 lib/faq.ts 한 곳에서 온다. */
-function 속() {
-  const 누구 = useSearchParams().get("누구") === "기업" ? "기업" : "개인";
-  return (
-    <div className="info-layout">
-      <InfoSide active="/support/faq" 아래활성={`${누구}회원`} />
-      <div className="info-body">
-        <h1 className="info-page-title">자주 묻는 질문</h1>
-        <FaqBoard key={누구} 처음={누구} />
-      </div>
-    </div>
-  );
+function 판() {
+  const 누구 = 누구읽기(useSearchParams());
+  // key 를 주어 갈래가 바뀌면 판을 새로 세운다 — 펼쳐 둔 답이 남지 않게.
+  return <FaqBoard key={누구} 처음={누구} />;
 }
 
 export default function FaqPage() {
   return (
-    <div className="info-page">
-      <ServiceHeader />
-      <main className="info-main">
-        <Suspense fallback={null}><속 /></Suspense>
-      </main>
-    </div>
+    <InfoShell active="/support/faq" title="자주 묻는 질문">
+      <Suspense fallback={null}><판 /></Suspense>
+    </InfoShell>
   );
 }

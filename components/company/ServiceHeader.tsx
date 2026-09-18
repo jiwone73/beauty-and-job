@@ -13,6 +13,10 @@ import Image from "next/image";
  *
  * 이름은 로그인 뒤 사이드와 맞춘다. 가입 전에 「요금제」로 부르고 가입 뒤에
  * 「채용공고 상품」으로 부르면 같은 것을 두 이름으로 배우게 된다.
+ *
+ * 고객센터는 여기 없다. 고객센터에는 상품 이야기가 없고, 구직자도 같은 곳을
+ * 쓴다 — 기업 서비스 안에 넣어 두면 구직자가 푸터로 들어와도 상품 메뉴를
+ * 보게 된다. 별도 화면으로 세우고 푸터가 그 길을 맡는다.
  */
 export default function ServiceHeader() {
   return (
@@ -27,7 +31,6 @@ export default function ServiceHeader() {
           <Link href="/company" className="cs-nav-evt">오픈이벤트</Link>
           <Link href="/company/plans">채용공고 상품</Link>
           <Link href="/company/plans/ads">배너광고 상품</Link>
-          <Link href="/support">고객센터</Link>
         </nav>
         <div className="cs-header-btns">
           <Link href="/company/login" className="cs-btn-ghost">로그인</Link>

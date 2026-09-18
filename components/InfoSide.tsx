@@ -2,58 +2,44 @@
 import Link from "next/link";
 
 /**
- * 고객센터 사이드 메뉴.
+ * 고객센터 옆줄.
  *
- * 머리줄 탭이던 것을 옆으로 내린다. 탭은 한 줄에 다 서야 해서 항목이 늘면
- * 글자를 줄이거나 버려야 하는데, 옆줄은 하위 항목까지 품을 수 있다 —
- * FAQ 아래에 개인회원·기업회원을 접지 않고 그대로 펼쳐 둔다.
+ * 머리줄 탭이던 것을 옆으로 내렸다. 탭은 한 줄에 다 서야 해서 항목이 늘면
+ * 글자를 줄이거나 버려야 한다.
+ *
+ * FAQ 아래에 개인회원·기업회원을 접어 두었던 때가 있다. 지금은 그 갈림이
+ * 고객센터 전체에 걸리는 일이라 위쪽 탭으로 올렸다 — 공지도 FAQ도 보는
+ * 사람에 따라 내용이 다르다.
  *
  * 이용약관·개인정보처리방침은 여기 두지 않는다. 궁금해서 찾아오는 곳이
  * 아니라 확인하러 오는 곳이고, 그 길은 푸터가 맡는다.
- *
- * 「고객센터」라는 제목은 두지 않는다. 머리줄이 이미 그 자리를 켜 두고 있어
- * 같은 말이 두 번 선다.
  */
-const 메뉴: { href: string; label: string; 아래?: { href: string; label: string }[] }[] = [
-  { href: "/notice", label: "공지사항" },
-  {
-    href: "/support/faq",
-    label: "FAQ",
-    아래: [
-      { href: "/support/faq?누구=개인", label: "개인회원" },
-      { href: "/support/faq?누구=기업", label: "기업회원" },
-    ],
-  },
-  { href: "/support?문의=1", label: "1:1 문의" },
-  { href: "/support/download", label: "다운로드" },
-];
-
-export default function InfoSide({ active, 아래활성 }: {
+export default function InfoSide({ active, 누구 }: {
   /** 지금 서 있는 자리. 메뉴 href 와 맞춘다. */
   active: string;
-  /** FAQ 안에서 개인·기업 중 어느 쪽인지 */
-  아래활성?: string;
+  누구: "개인" | "기업";
 }) {
+  const 메뉴 = [
+    { href: "/notice", label: "공지사항" },
+    { href: "/support/faq", label: "FAQ" },
+    { href: "/support", label: "1:1 문의", 더: { 문의: "1" } as Record<string, string> },
+    // 내려받을 것이 이력서 양식뿐이라 기업회원에게는 빈 화면이 된다.
+    ...(누구 === "개인" ? [{ href: "/support/download", label: "다운로드" }] : []),
+  ];
+
+  const 주소 = (m: { href: string; 더?: Record<string, string> }) => {
+    const p = new URLSearchParams({ 누구, ...(m.더 ?? {}) });
+    return `${m.href}?${p.toString()}`;
+  };
+
   return (
     <nav className="info-side" aria-label="고객센터 메뉴">
       <ul>
         {메뉴.map((m) => (
           <li key={m.href}>
-            <Link href={m.href} className={`info-side-i${active === m.href ? " on" : ""}`}>
+            <Link href={주소(m)} className={`info-side-i${active === m.href ? " on" : ""}`}>
               {m.label}
             </Link>
-            {m.아래 && (
-              <ul className="info-side-sub">
-                {m.아래.map((s) => (
-                  <li key={s.href}>
-                    <Link href={s.href}
-                          className={`info-side-s${아래활성 === s.label ? " on" : ""}`}>
-                      {s.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
           </li>
         ))}
       </ul>

@@ -18,6 +18,7 @@ import { ChevronRight } from "lucide-react";
  */
 type Row = {
   id: string; type: "notice" | "event"; title: string;
+  target: string | null;
   is_pinned: boolean; published_at: string | null; created_at: string;
 };
 
@@ -35,9 +36,11 @@ export default function NoticeBoard({
   emptyText: string;
 }) {
   const router = useRouter();
+  const sp = useSearchParams();
+  const 누구 = sp.get("누구") === "기업" ? "기업" : "개인";
   // 예전 주소(?open=…)로 들어온 사람은 그 글 페이지로 보낸다. 메인 화면과
   // 지난 안내 메일이 아직 이 꼴을 쓴다.
-  const 열고들어온글 = useSearchParams().get("open");
+  const 열고들어온글 = sp.get("open");
 
   const [list, setList] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,14 +58,21 @@ export default function NoticeBoard({
       .finally(() => setLoading(false));
   }, [type]);
 
+  // 보는 사람에게 해당하는 것만 남긴다. target 이 비어 있으면 모두에게 가는
+  // 글로 본다 — 예전에 쓰던 글에는 이 값이 없다.
+  const 볼것 = list.filter((n) => {
+    const t = n.target ?? "all";
+    return t === "all" || t === (누구 === "기업" ? "company" : "user");
+  });
+
   if (loading) return <p className="nb-board-msg">불러오는 중...</p>;
-  if (list.length === 0) return <p className="nb-board-msg">{emptyText}</p>;
+  if (볼것.length === 0) return <p className="nb-board-msg">{emptyText}</p>;
 
   return (
     <ul className="nb-board">
-      {list.map((n) => (
+      {볼것.map((n) => (
         <li key={n.id}>
-          <Link href={`/notice/${n.id}`}>
+          <Link href={`/notice/${n.id}?누구=${누구}`}>
             {n.is_pinned && <span className="nb-board-pin">고정</span>}
             <span className="nb-board-t">{n.title}</span>
             <span className="nb-board-d">{날짜(n.published_at || n.created_at)}</span>
