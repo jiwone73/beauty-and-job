@@ -464,11 +464,7 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         /* 인재풀 옆줄은 지역·직군·조건이 저마다 상자다. 바깥을 한 번 더 두르면
            테두리가 두 겹으로 겹친다 — 그 화면만 상자를 벗는다. */
         .co-set-side.co-tal-side { background: none; border: 0; border-radius: 0; padding: 0; }
-        /* 옆줄 꼭대기는 제목이 아니라 본문 첫 줄에 맞춘다. 제목은 본문 판 위에
-           한 줄 서 있는 것이라, 옆줄을 제목에 맞추면 옆줄만 한 단 높이 뜬다.
-           제목 한 줄(20px × 1.4) + 아래 여백 12px 만큼 내린다. */
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
-          margin-top: calc(var(--page-title) * 1.4 + 12px);
           position: sticky; top: 92px; align-self: flex-start;
           background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
           padding: 8px; box-sizing: border-box; }
@@ -479,8 +475,7 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
            본문 칸 안에서 가운데로 두면 사이드 폭(176) + 간격(28) + 구분선(1)의 절반만큼
            오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.
            옮긴 상자가 사이드 윗부분에 걸치므로 누름은 통과시킨다. */
-        .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center;
-          position: relative; left: calc((176px + 28px + 1px) / -2); pointer-events: none; }
+        .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.
@@ -617,6 +612,15 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         ) : 사이드있나 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
+          <>
+          {/* 제목은 옆줄·본문 위에 한 줄로 선다. 본문 안에 두면 본문만 제목 높이만큼
+              내려가 옆줄 꼭대기와 어긋났다 — 줄을 맞추려고 옆줄에 여백을 주면 화면마다
+              제목 줄 수가 달라 또 어긋난다. */}
+          {!제목숨김 && (
+            <h1 className="co-set-title">
+              {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
+            </h1>
+          )}
           <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
             {/* 옆줄은 어느 화면이든 같은 모양이다 — 설정도 제안·스크랩도 같은 글줄
                 목록. 제안·스크랩만 「보낸 제안 | 스크랩 인재」를 한 줄 세그먼트로
@@ -635,15 +639,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
               {sideExtra}
             </nav>
             <main className="company-content co-set-main">
-              {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
-              {!제목숨김 && (
-                <h1 className="co-set-title">
-                  {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
-                </h1>
-              )}
               {children}
             </main>
           </div>
+          </>
         ) : (
           <main className="company-content">{children}</main>
         )}
