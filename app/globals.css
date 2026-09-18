@@ -15806,19 +15806,24 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    공고명은 길어서(평균 35자) 한 줄로 자른다. 잘린 것은 마우스를 올리면 보인다. */
 .prop-post { max-width: 100%; font-family: inherit; font-size: 13.5px; color: #555;
   background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
-  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 공고명은 평균 35자다. 한 줄로 자르면 어느 공고인지 못 가린다 — 세 줄까지
+     보이고 그 뒤로만 …으로 접는다. 줄이 이미 인재 칸 세 줄 높이라 표는 안 늘어난다. */
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; line-height: 1.45; white-space: normal; }
 .prop-post:hover { color: var(--color-primary); text-decoration: underline; }
 .prop-post.none { color: #a9a2b2; cursor: default; }
 /* 공고 열이 붙으면 열이 일곱이다. 판 폭(옆줄 176 + 간격 28 을 뺀 814)에 다
    들어가도록 나머지 열을 한 번에 조인다 — 못 조이면 표가 옆으로 굴러 「진행
    상황」과 「업데이트」가 화면 밖으로 나간다. 남는 자리는 진행 상황이 쓴다. */
-.prop-table .c-post { width: 118px; max-width: 118px; }
+/* 업데이트 열을 걷고 그 96px 를 공고명과 희망직군에 얹는다 — 둘 다 말줄임이
+   잦은 칸이라 폭이 곧 읽히는 양이다. */
+.prop-table .c-post { width: 170px; max-width: 170px; }
 .prop-table.has-post .c-who  { width: 152px; }
-.prop-table.has-post .c-job  { width: 92px; }
+.prop-table.has-post .c-job  { width: 140px; }
 .prop-table.has-post .c-date { width: 76px; }
 .prop-table.has-post .c-st   { width: 84px; }
-/* 「9.12 15:29」가 다 들어가야 한다 — 모자라면 오른쪽 끝이 잘린다. */
-.prop-table.has-post .c-time { width: 96px; }
+/* 시각은 「무슨 일이 있었나」 아래에 한 줄로 붙는다. */
+.prop-when { display: block; margin-top: 3px; font-style: normal; font-size: 12.5px; color: #8a8a90; }
 /* 공고 하나만 볼 때 전체로 돌아가는 길 */
 .prop-back { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 8px;
   font-family: inherit; font-size: 13.5px; color: #555; background: none; border: 0;

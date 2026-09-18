@@ -622,7 +622,6 @@ export default function CompanyProposalsPage() {
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
                 <th>진행 상황 (채팅)</th>
-                <th className="c-time">업데이트</th>
               </tr>
             </thead>
             <tbody>
@@ -683,12 +682,14 @@ export default function CompanyProposalsPage() {
                     </td>
                     {/* 무슨 일이 있었나. 대화가 열린 줄은 이 글자가 곧 채팅으로 가는 문이다 —
                         버튼 열을 따로 두지 않고 여기 하나로 모았다. 미답변이면 빨갛다. */}
+                    {/* 언제 그랬는지는 무슨 일이 있었는지에 딸린 값이다. 열을 따로
+                        두면 그 폭만큼 공고명과 희망직군이 눌린다 — 같은 칸 아래줄에 둔다. */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
                       {대화열림(p)
                         ? <button type="button" onClick={() => set대화(p)}>{활.글}</button>
                         : <span>{활.글}</span>}
+                      {활.때 && <em className="prop-when">{때(활.때)}</em>}
                     </td>
-                    <td className="c-time">{활.때 ? 때(활.때) : ""}</td>
                   </tr>
                 );
               })}

@@ -464,7 +464,11 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         /* 인재풀 옆줄은 지역·직군·조건이 저마다 상자다. 바깥을 한 번 더 두르면
            테두리가 두 겹으로 겹친다 — 그 화면만 상자를 벗는다. */
         .co-set-side.co-tal-side { background: none; border: 0; border-radius: 0; padding: 0; }
+        /* 옆줄 꼭대기는 제목이 아니라 본문 첫 줄에 맞춘다. 제목은 본문 판 위에
+           한 줄 서 있는 것이라, 옆줄을 제목에 맞추면 옆줄만 한 단 높이 뜬다.
+           제목 한 줄(20px × 1.4) + 아래 여백 12px 만큼 내린다. */
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+          margin-top: calc(var(--page-title) * 1.4 + 12px);
           position: sticky; top: 92px; align-self: flex-start;
           background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
           padding: 8px; box-sizing: border-box; }
