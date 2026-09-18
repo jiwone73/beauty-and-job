@@ -4349,8 +4349,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    같은 하위 항목을 둘 자리가 없다. */
 /* 폭과 여백은 감싸는 .info-main 이 정한다. 여기서 또 1160 을 주면 안쪽에
    여백이 두 겹으로 들어가 옆줄이 머리줄 로고보다 안으로 밀린다. */
-.info-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px;
-  align-items: start; }
+/* 읽는 판은 좁게 가운데로. 머리줄 폭(1360)을 그대로 쓰면 글줄이 너무 길어
+   눈이 줄을 놓친다 — 기업 대시보드 판(1018)과 같은 값이다. */
+.info-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px;
+  align-items: start; max-width: 1018px; margin: 0 auto; }
 /* 본문도 흰 판이다. 옆줄만 상자로 세워 두었더니 오른쪽 넓은 자리가 통째로
    회색이라 화면의 절반이 바탕이었다. 회색은 판을 띄우는 바닥이지 읽을 것을
    까는 자리가 아니다 — 채용공고가 그렇듯 회색은 판 바깥 여백으로만 남는다. */
@@ -4395,19 +4397,24 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
 }
-/* 폭은 본문(.info-main)과 같은 1160 이다. 860 이던 때에는 로고가 옆줄보다
-   한참 안으로 들어가 두 줄이 어긋나 보였다. */
+/* 머리줄 판은 사이트 머리줄(.header-inner)과 같은 1360 이다 — 로고가 화면
+   바깥쪽 끝에 선다. 아래 본문 판(1018)은 그보다 좁아 가운데로 모이는데,
+   기업 대시보드가 쓰는 그 짜임을 그대로 따른다. */
 .info-header-inner {
   width: 100%;
-  max-width: 1160px;
-  padding: 0 24px;
+  max-width: 1360px;
+  padding: 0 32px;
   display: flex;
   align-items: center;
   gap: 12px;
 }
+/* 로고와 글자 크기는 사이트 머리줄(.logo img 32px)과 같다. 여기만 작으면
+   고객센터가 딴 사이트처럼 보인다. 판 폭은 1160 그대로 둔다 — 아래 옆줄과
+   같은 선에서 시작해야 두 줄이 안 어긋난다. */
 .info-brand { display: inline-flex; align-items: center; margin-left: -4px; }
-.info-brand-bar { width: 1px; height: 18px; background: #e4e1e8; }
-.info-brand-t { font-size: 17px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
+.info-brand img { height: 32px !important; width: auto !important; }
+.info-brand-bar { width: 1px; height: 20px; background: #e4e1e8; }
+.info-brand-t { font-size: 18px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
 
 /* 오른쪽 끝은 사이트 머리줄과 같은 단추를 쓴다. 로고·「고객센터」와 같은
    줄에서 반대쪽 끝으로 밀어 둔다. */
@@ -4456,9 +4463,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 머리줄(.cs-header-in)과 같은 1160 이다. 860 이던 때에는 옆줄이 로고보다
    한참 안으로 들어가 두 줄이 어긋나 보였다. */
 .info-main {
-  max-width: 1160px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 32px 24px 80px;
+  padding: 26px 32px 80px;
 }
 /* 가운데 정렬이던 것을 왼쪽으로 붙인다. 옆줄이 왼쪽에 서 있는데 제목만
    가운데 있으면 어느 줄에 속한 제목인지 눈이 한 번 더 찾는다. */
@@ -16331,6 +16338,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   width: 92px; font-size: 13.5px; font-weight: 700; color: var(--color-primary); }
 
 .sup-form { max-width: 720px; }
+.sup-form-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.sup-form-2 > div > .sup-f-l:first-child { margin-top: 16px; }
+.sup-form-2 > div:nth-child(-n+2) > .sup-f-l:first-child { margin-top: 0; }
+@media (max-width: 640px) { .sup-form-2 { grid-template-columns: 1fr; } }
 .sup-f-l { display: block; margin: 16px 0 6px; font-size: 14px; color: #555; }
 .sup-f-l:first-child { margin-top: 0; }
 .sup-f-l.req::before { content: "*"; margin-right: 3px; color: var(--color-primary); }

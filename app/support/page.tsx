@@ -74,22 +74,31 @@ export default function SupportPage() {
         </div>
       ) : (
         <div className="sup-form">
-          <label className="sup-f-l">문의 유형</label>
-          <select className="sup-f-i" value={유형} onChange={(e) => set유형(e.target.value)}>
-            {유형들.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
-
-          <label className="sup-f-l req">이름</label>
-          <input className="sup-f-i" placeholder="이름을 입력해주세요"
-                 value={이름} onChange={(e) => set이름(e.target.value)} />
-
-          <label className="sup-f-l req">이메일 (답변 받으실 주소)</label>
-          <input className="sup-f-i" type="email" placeholder="답변 받으실 이메일을 입력해주세요"
-                 value={메일} onChange={(e) => set메일(e.target.value)} />
-
-          <label className="sup-f-l">전화번호</label>
-          <input className="sup-f-i" type="tel" placeholder="연락 가능한 전화번호 (선택)"
-                 value={전화} onChange={(e) => set전화(e.target.value)} />
+          {/* 짧은 칸 넷은 두 줄로 접는다 — 한 칸씩 내려 쌓으면 정작 길게 쓰는
+              제목·내용이 화면 밖으로 밀린다. */}
+          <div className="sup-form-2">
+            <div>
+              <label className="sup-f-l">문의 유형</label>
+              <select className="sup-f-i" value={유형} onChange={(e) => set유형(e.target.value)}>
+                {유형들.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="sup-f-l req">이름</label>
+              <input className="sup-f-i" placeholder="이름을 입력해주세요"
+                     value={이름} onChange={(e) => set이름(e.target.value)} />
+            </div>
+            <div>
+              <label className="sup-f-l req">이메일 (답변 받으실 주소)</label>
+              <input className="sup-f-i" type="email" placeholder="답변 받으실 이메일을 입력해주세요"
+                     value={메일} onChange={(e) => set메일(e.target.value)} />
+            </div>
+            <div>
+              <label className="sup-f-l">전화번호</label>
+              <input className="sup-f-i" type="tel" placeholder="연락 가능한 전화번호 (선택)"
+                     value={전화} onChange={(e) => set전화(e.target.value)} />
+            </div>
+          </div>
 
           <label className="sup-f-l req">문의 제목</label>
           <input className="sup-f-i" placeholder="입력해주세요."
