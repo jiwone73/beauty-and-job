@@ -597,17 +597,20 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
       </header>
 
       <div className="co-top-body">
-        {/* 설정 계열은 제목을 여기 두지 않는다 — 왼쪽 사이드에서 고른 것이 무엇인지는
-            그 옆 본문 위에서 말하는 게 맞다(아래 .co-set-title). */}
-        {!사이드있나 && (
+        {/* 옆줄이 있는 화면은 제목을 본문 판 안에 둔다 — 판 밖에 두면 옆줄 꼭대기가
+            제목 줄에 걸려 판과 어긋난다. 인재 검색도 옆줄(필터 기둥)이 있어 같다. */}
+        {!사이드있나 && activePage !== "talent" && (
           <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
         {activePage === "talent" ? (
-          /* 인재 검색은 한 갈래라 탭 없이, 제목 아래 필터 기둥과 목록만 선다. */
+          /* 인재 검색은 한 갈래라 탭 없이, 필터 기둥과 목록만 선다. */
           <div className="co-set-wrap co-tal">
             <div className="co-tal-body">
               {sideExtra && <aside className="co-set-side co-tal-side">{sideExtra}</aside>}
-              <main className={`company-content co-set-main${sideExtra ? "" : " co-tal-solo"}`}>{children}</main>
+              <main className={`company-content co-set-main${sideExtra ? "" : " co-tal-solo"}`}>
+                <h1 className="co-set-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
+                {children}
+              </main>
             </div>
           </div>
         ) : 사이드있나 ? (
