@@ -461,6 +461,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         /* 옆줄은 테두리로 둘러싼 상자다 — 고객센터 옆줄(.info-side)과 같은 모양.
            사이트의 다른 화면이 모두 이 꼴이라 여기만 맨몸으로 서면 어디까지가
            메뉴인지 흐리다. 상자 높이는 메뉴 글자만 감싼다. */
+        /* 인재풀 옆줄은 지역·직군·조건이 저마다 상자다. 바깥을 한 번 더 두르면
+           테두리가 두 겹으로 겹친다 — 그 화면만 상자를 벗는다. */
+        .co-set-side.co-tal-side { background: none; border: 0; border-radius: 0; padding: 0; }
         .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; align-self: flex-start;
           background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
