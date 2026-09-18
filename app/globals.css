@@ -73,7 +73,10 @@
   color-scheme: light;
 }
   html, body {
-  background: #f7f7f8 !important;
+  /* 바탕은 머리줄과 같은 흰색이다. 회색이던 때에는 머리줄 아래에서 색이 한 번
+     꺾여, 머리줄이 페이지에 얹힌 딴 판처럼 보였다. 흰 것은 바탕이고, 카드와
+     상자는 옅은 테두리 하나로만 갈린다. */
+  background: #fff !important;
   color: var(--color-text);
   font-family: var(--font-sans);
 }
@@ -4339,7 +4342,6 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    ============================================ */
 .info-page {
   min-height: 100vh;
-  background: var(--color-bg-soft);
 }
 /* 고객센터 옆줄 메뉴. 머리줄 탭이던 것을 옆으로 내렸다 — 탭은 한 줄에 다
    서야 해서 항목이 늘면 글자를 줄이거나 버려야 하고, FAQ 아래 개인·기업
@@ -4352,13 +4354,13 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    회색이라 화면의 절반이 바탕이었다. 회색은 판을 띄우는 바닥이지 읽을 것을
    까는 자리가 아니다 — 채용공고가 그렇듯 회색은 판 바깥 여백으로만 남는다. */
 .info-body { min-width: 0;
-  background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+  background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 10px;
   padding: 24px 24px 28px; }
 /* 옆줄도 상자다 — 채용공고 사이드(.jobs-side-box)와 같은 모양을 쓴다.
    바탕이 회색으로 통일되면서 옆줄만 테두리 없이 떠 있어 어디까지가
    메뉴인지 흐렸다. */
 .info-side { position: sticky; top: 24px;
-  background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+  background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 10px;
   padding: 8px; }
 /* 글자 크기는 사이트의 다른 옆줄(공고 검색·기업 대시보드)과 같은 14px 다.
    여기만 15px 이라 같은 자리에 선 메뉴가 화면마다 달라 보였다. */
@@ -12075,7 +12077,7 @@ div:has(> table.admin-table),
 .resume-header-nav { margin-right: auto; font-size: 15px; font-weight: 600; color: #555; text-decoration: none; white-space: nowrap; }
 .resume-header-nav:hover { color: #582681; }
 /* ===== 공용 JobCard (메인·채용공고 통일) — 정사각형 60/40 ===== */
-.jobcard { display: flex; flex-direction: column; background: #fff; border: 1px solid #eee; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
+.jobcard { display: flex; flex-direction: column; background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .18s, box-shadow .18s; }
 .jobcard:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
 .jobcard-cover { position: relative; flex: none; overflow: hidden; background: #f7f7f8; }
 .jobcard-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -12945,8 +12947,9 @@ button,
    얹으면 묻힌다. 개인회원·기업회원 세로 구분선이 바로 그 꼴로 묻혀
    있었다(#f7f7f8 위에 #f7f7f8) — 테두리 색(--color-border)으로 살린다. */
 @media (min-width: 1025px) {
-  .mt-jobs { background-color: #fff; border: 1px solid var(--color-border); }
-  .mt-card { background: #fff; border: 1px solid var(--color-border); }
+  /* 테두리 안쪽은 바탕(흰색)과 달라야 한다 — 같으면 판이 아니라 선만 남는다. */
+  .mt-jobs { background-color: var(--color-bg-soft); border: 1px solid var(--color-border); }
+  .mt-card { background: var(--color-bg-soft); border: 1px solid var(--color-border); }
 }
 
 /* 한 줄짜리 카드. 세로 여백을 조여 제 높이만 쓰게 한다. */
@@ -13810,7 +13813,7 @@ button,
 .jobs-side-type { display: flex; width: 100%; margin-bottom: 10px; }
 .jobs-side-type .seg-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 0; }
 
-.jobs-side-box { background: #fff; border: 1px solid #f7f7f8; border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
+.jobs-side-box { background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: 10px; padding: 12px 12px 13px; margin-bottom: 8px; }
 .jobs-side-t { display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; color: var(--color-text-strong); margin: 0 0 9px; }
 .jobs-side-t i { font-style: normal; font-size: 12px; font-weight: 500; color: #b7b0bf; }
 .jobs-side-sub { font-size: 12.5px; color: #a9a2b2; margin: 12px 0 5px; }
@@ -15972,7 +15975,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 14px; font-family: inherit; color: var(--color-text-strong); background: #fff; }
 .ap-search:focus { outline: none; border-color: var(--color-primary); }
 
-.ap-tablewrap { overflow-x: auto; border: 1px solid var(--card-line); border-radius: 12px; background: #fff; }
+.ap-tablewrap { overflow-x: auto; border: 1px solid var(--card-line); border-radius: 12px; background: var(--color-bg-soft); }
 .ap-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .ap-table th { padding: 13px 14px; text-align: left; font-weight: 400; color: var(--color-text);
   background: #fafafb; border-bottom: 1px solid var(--card-line); white-space: nowrap; }
