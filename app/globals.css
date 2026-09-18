@@ -4430,6 +4430,19 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 /* 회원정책의 점 목록은 잔글씨가 아니라 본문이다. .pi-warn 은 상품 화면의
    유의사항용이라 옅은 회색인데, 여기서는 그게 읽을 것의 전부다. */
+/* 회원정책의 약속 목록 — 제목 한 줄, 설명 한 줄. 점만 찍힌 목록으로 두면
+   여덟 줄이 한 덩어리로 보여 무엇이 몇 개인지 안 읽힌다. */
+.pol-list { margin: 18px 0 0; }
+.info-section > .pol-list:first-child { margin-top: 0; }
+.pol-list > div + div { margin-top: 18px; }
+.pol-list dt { font-size: 15px; font-weight: 700; color: #1f1f22; }
+.pol-list dd { margin: 5px 0 0; font-size: 15px; color: #555; line-height: 1.75; word-break: keep-all; }
+/* 어느 조문에서 온 말인지 — 뒷받침이지 읽을 것이 아니라 한 단 작게. */
+.pol-list dd em { font-style: normal; font-size: 13px; color: #8a8a90; white-space: nowrap; }
+.pol-src { margin: 14px 0 0; font-size: 13px; color: #8a8a90; }
+.pol-more { margin: 0; font-size: 14px; color: #555; line-height: 1.8; }
+.pol-more a { color: var(--color-primary); font-weight: 700; margin-left: 6px; }
+
 .info-section .pi-warn li { font-size: 15px; color: #555; }
 .info-nav {
   display: flex;
@@ -13175,8 +13188,9 @@ button,
    이름은 .nb-th 다. .nb-head 는 메인 공지 위젯이 먼저 쓰고 있다. */
 .nb-th { display: flex; align-items: center; padding: 12px 14px;
   border-top: 1px solid #1f1f22; border-bottom: 1px solid #ececef;
-  font-size: 13.5px; font-weight: 700; color: #1f1f22; }
-.nb-th > span:first-child { flex: 1; text-align: center; }
+  font-size: 13.5px; font-weight: 700; color: #555; }
+/* 제목은 왼쪽. 값이 왼쪽인데 머리글자만 가운데라 줄이 어긋났다. */
+.nb-th > span:first-child { flex: 1; text-align: left; }
 .nb-th > span:last-child { flex: none; width: 110px; text-align: center; }
 
 .nb-board { list-style: none; margin: 0; padding: 0; }
@@ -13184,12 +13198,12 @@ button,
 .nb-board > li > a { display: flex; align-items: center; gap: 8px; width: 100%;
   padding: 15px 14px; text-decoration: none; }
 .nb-board > li > a:hover .nb-board-t { color: var(--color-primary); }
-.nb-board-k { flex: none; font-size: 13.5px; color: #a9a4b0; }
+.nb-board-k { flex: none; font-size: 13.5px; color: #555; }
 .nb-board-pin { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--color-primary);
   border: 1px solid var(--color-primary); border-radius: 4px; padding: 1px 5px; }
 .nb-board-t { flex: 1; min-width: 0; font-size: 14.5px; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nb-board-d { flex: none; width: 110px; text-align: center; font-size: 13px; color: #a9a4b0; }
+.nb-board-d { flex: none; width: 110px; text-align: center; font-size: 13px; color: #555; }
 /* 글 하나를 읽는 자리 */
 .nb-view-tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px;
   border-radius: 6px; background: #f7f7f8; color: var(--color-primary); }
@@ -16366,10 +16380,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    보내기. 폼 폭은 글을 쓰는 칸이라 판 전체를 쓰지 않고 읽기 좋은 데까지만. */
 /* 다운로드 게시판 — 공지 목록(.nb-*)을 그대로 쓰되 오른쪽에 받기 칸이 하나 더 있다. */
 .dl-th > span:last-child { flex: none; width: 92px; }
-.dl-board .nb-board-t { display: flex; flex-direction: column; gap: 2px; white-space: normal; }
-.dl-board .nb-board-t i { font-style: normal; font-size: 13px; color: #8a8a90; }
 .dl-get { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-  width: 92px; font-size: 13.5px; font-weight: 700; color: var(--color-primary); }
+  width: 92px; font-size: 13.5px; font-weight: 700; color: #555; }
 
 /* 폼은 판 전체를 쓴다. 720 으로 묶어 두니 왼쪽은 판 여백(24)인데 오른쪽만
    150 가까이 남아 좌우가 어긋나 보였다. */
