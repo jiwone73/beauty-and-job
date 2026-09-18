@@ -4469,12 +4469,20 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 /* 가운데 정렬이던 것을 왼쪽으로 붙인다. 옆줄이 왼쪽에 서 있는데 제목만
    가운데 있으면 어느 줄에 속한 제목인지 눈이 한 번 더 찾는다. */
+/* 제목은 판 가운데. 왼쪽에 붙여 두면 아래 내용의 첫 줄과 구분이 안 된다. */
+/* 기업 본문 판 바로 밑에 또 판이 오면 테두리가 두 겹이다 — 설정 화면이 그
+   꼴이었다. 바깥 판이 이미 테두리를 가졌으니 안쪽 것은 벗는다.
+   (styled-jsx 는 제 컴포넌트 안만 고르므로 자식 화면이 그리는 카드는 여기서 다룬다.) */
+.co-set-main .admin-form-grid > .company-card { border: 0 !important; box-shadow: none !important;
+  background: none !important; }
+
 .info-page-title {
   font-size: 22px;
   font-weight: 700;
   color: #1f1f22;
   margin: 0 0 20px;
   letter-spacing: -.4px;
+  text-align: center;
 }
 .info-hero {
   text-align: center;
@@ -12523,6 +12531,9 @@ div:has(> table.admin-table),
   .profile-header-nav { font-size: 18px; }
   .resume-logo img { height: 36px !important; }
   .resume-header-nav { font-size: 18px; }
+  /* 고객센터 머리줄도 같은 단계로 — 여기만 32px 이라 로고가 작았다. */
+  .info-brand img { height: 36px !important; }
+  .info-brand-t { font-size: 19px; }
 }
 
 /* === PC(≥769px) 프로필 탭(프로필·이력서·지원현황·관심공고) 본문 텍스트 한 단계 상향 (모바일 유지) === */
@@ -15826,11 +15837,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    상황」과 「업데이트」가 화면 밖으로 나간다. 남는 자리는 진행 상황이 쓴다. */
 /* 업데이트 열을 걷고 그 96px 를 공고명과 희망직군에 얹는다 — 둘 다 말줄임이
    잦은 칸이라 폭이 곧 읽히는 양이다. */
-.prop-table .c-post { width: 170px; max-width: 170px; }
-.prop-table.has-post .c-who  { width: 152px; }
-.prop-table.has-post .c-job  { width: 140px; }
-.prop-table.has-post .c-date { width: 76px; }
-.prop-table.has-post .c-st   { width: 84px; }
+.prop-table .c-post { width: 140px; max-width: 140px; }
+.prop-table.has-post .c-who  { width: 140px; }
+.prop-table.has-post .c-job  { width: 110px; }
+.prop-table.has-post .c-date { width: 72px; }
+.prop-table.has-post .c-st   { width: 78px; }
 /* 시각은 「무슨 일이 있었나」 아래에 한 줄로 붙는다. */
 .prop-when { display: block; margin-top: 3px; font-style: normal; font-size: 12.5px; color: #8a8a90; }
 /* 공고 하나만 볼 때 전체로 돌아가는 길 */
@@ -15873,7 +15884,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 열 폭은 정한 대로 지킨다. 그냥 두면 브라우저가 「제안」처럼 내용 긴 열에
    자리를 더 떼어 주고, 그만큼 진행 상황이 눌린다. 말줄임(…)도 폭이 고정돼야 든다. */
-.prop-table { width: 100%; min-width: 800px; table-layout: fixed; border-collapse: collapse; font-size: 14.5px; }
+.prop-table { width: 100%; min-width: 740px; table-layout: fixed; border-collapse: collapse; font-size: 14.5px; }
 .prop-table th {
   padding: 8px 10px; text-align: left; font-weight: 500; font-size: 14.5px;
   color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;

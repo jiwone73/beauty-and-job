@@ -468,9 +468,11 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
           position: sticky; top: 92px; align-self: flex-start;
           background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
           padding: 8px; box-sizing: border-box; }
-        /* 세로 구분선은 걷는다. 옆줄이 상자가 되면서 선이 상자 테두리 바로 옆에
-           한 줄 더 서는 꼴이 됐다. */
-        .co-set-main { flex: 1; min-width: 0; }
+        /* 본문도 테두리 판이다 — 고객센터(.info-body)와 같은 모양. 제목이 이 안에
+           들어오면서 옆줄 꼭대기와 판 꼭대기가 저절로 같은 줄에 선다. */
+        .co-set-main { flex: 1; min-width: 0;
+          background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+          padding: 24px 24px 28px; }
         /* 제목은 머리줄(헤더) 한가운데에 선다 — 사이드가 없는 화면(.co-top-title)과 같은 자리.
            본문 칸 안에서 가운데로 두면 사이드 폭(176) + 간격(28) + 구분선(1)의 절반만큼
            오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.
@@ -516,10 +518,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         .co-top-body .co-tal-solo { border-left: none; margin-left: 0; padding-left: 0 !important; }
         /* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
         .co-top-body .company-content { padding: 0 !important; }
-        /* 다만 설정 화면은 왼쪽에 구분선이 있어 그만큼 안쪽으로 밀어야 한다. 위 규칙이
-           !important 라 같은 무게로 뒤에 한 번 더 적는다 — 안 그러면 선과 카드 테두리가
-           1px 차이로 겹쳐 두 줄로 보인다. */
-        .co-top-body .co-set-main { padding-left: 14px !important; }
+        /* 본문 판의 안쪽 여백은 .co-set-main 이 정한다 — 위 .company-content 규칙이
+           !important 라 같은 무게로 뒤에 한 번 더 적는다. */
+        .co-top-body .co-set-main { padding: 24px 24px 28px !important; }
       `}</style>
 
       <header className="header">
@@ -612,15 +613,6 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         ) : 사이드있나 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
-          <>
-          {/* 제목은 옆줄·본문 위에 한 줄로 선다. 본문 안에 두면 본문만 제목 높이만큼
-              내려가 옆줄 꼭대기와 어긋났다 — 줄을 맞추려고 옆줄에 여백을 주면 화면마다
-              제목 줄 수가 달라 또 어긋난다. */}
-          {!제목숨김 && (
-            <h1 className="co-set-title">
-              {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
-            </h1>
-          )}
           <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
             {/* 옆줄은 어느 화면이든 같은 모양이다 — 설정도 제안·스크랩도 같은 글줄
                 목록. 제안·스크랩만 「보낸 제안 | 스크랩 인재」를 한 줄 세그먼트로
@@ -639,10 +631,16 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
               {sideExtra}
             </nav>
             <main className="company-content co-set-main">
+              {/* 제목은 본문 판 안 맨 위에 선다 — 고객센터와 같은 짜임이다. 판 밖에
+                  두면 옆줄 꼭대기가 제목 줄에 걸려 본문 판과 어긋난다. */}
+              {!제목숨김 && (
+                <h1 className="co-set-title">
+                  {title || 사이드?.find((m) => m.id === activePage)?.title(infoLabel(companyInfo.type)) || PAGE_TITLES[activePage]}
+                </h1>
+              )}
               {children}
             </main>
           </div>
-          </>
         ) : (
           <main className="company-content">{children}</main>
         )}
