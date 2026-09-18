@@ -186,17 +186,26 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
       {플랜[id].인재열람 && (
         <section className="pi-sec">
           <h3 className="pi-st">인재 검색 · 제안 · 채팅</h3>
+          {/* 셋을 한 줄에 늘어놓으니 화면 하나가 엄지손톱만 해져 무엇을 찍은
+              것인지 안 보였다. 두 줄로 접고 칸마다 제목과 한 줄 설명을 얹는다 —
+              그림은 그 말의 증거다. */}
           <div className="pi-shots">
             {/* 파일 이름은 영문으로. 한글 이름은 주소에서 한 번 더 인코딩되는데,
                그 인코딩을 어디선가 놓치면 그림이 통째로 깨진다 — 실제로 깨졌다. */}
             {[
-              { 그림: "std-talent", 글: "지역·직군·경력으로 찾기" },
-              { 그림: "std-proposal", 글: "보낸 제안 한눈에" },
-              { 그림: "std-chat", 글: "채팅으로 면접 약속까지" },
+              { 그림: "std-talent", 제목: "인재 검색",
+                글: "지역·직군·경력으로 조건에 맞는 분을 찾습니다" },
+              { 그림: "std-proposal", 제목: "제안 보내기",
+                글: "보낸 제안이 어디까지 갔는지 한눈에 봅니다" },
+              { 그림: "std-chat", 제목: "채팅",
+                글: "대화로 면접 약속까지 잡습니다" },
             ].map((s) => (
               <figure key={s.그림}>
-                <img src={`/images/plans/${s.그림}.png`} alt={s.글} loading="lazy" />
-                <figcaption>{s.글}</figcaption>
+                <figcaption>
+                  <b>{s.제목}</b>
+                  <span>{s.글}</span>
+                </figcaption>
+                <img src={`/images/plans/${s.그림}.png`} alt={s.제목} loading="lazy" />
               </figure>
             ))}
           </div>

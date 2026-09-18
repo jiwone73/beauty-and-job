@@ -16215,8 +16215,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    표 폭을 좁혀 비율 그대로 줄인다. */
 /* 캡처는 판 가운데에 둔다. 왼쪽에 붙여 두면 제목 밑줄은 판 끝까지 가는데
    그림만 왼쪽에 몰려, 오른쪽이 통째로 비어 보인다. */
-.pi-spot { width: 100%; max-width: 660px; margin-left: auto; margin-right: auto;
-  border-collapse: collapse; table-layout: fixed; }
+.pi-spot { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .pi-spot th { font-size: 14.5px; font-weight: 400; color: #1f1f22; text-align: left;
   padding: 0 0 8px; border-bottom: 1px solid #1f1f22; }
 .pi-spot th + th, .pi-spot td + td { padding-left: 16px; }
@@ -16224,15 +16223,20 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 인재 화면 예시 — 작게 셋. 노출 자리처럼 크게 걸면 스크롤만 길어진다.
    여기서 보일 것은 「어디에 서는가」가 아니라 「이런 것이 된다」뿐이다. */
-/* 위 노출 위치 캡처와 같은 폭·같은 자리 — 두 줄의 그림이 폭이 다르면
-   같은 화면을 찍은 것으로 안 읽힌다. */
-.pi-shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-  max-width: 660px; margin-left: auto; margin-right: auto; }
-.pi-shots figure { margin: 0; }
-.pi-shots img { display: block; width: 100%; border: 1px solid var(--card-line); border-radius: 8px;
+/* 두 줄로 접는다. 셋을 한 줄에 늘어놓으면 화면 하나가 엄지손톱만 해져 무엇을
+   찍은 것인지 안 보인다. 칸마다 제목과 한 줄 설명이 위에 서고 그림이 그 아래
+   증거로 붙는다 — 그림은 아래를 잘라 띄운다(윗부분이 요점이다). */
+.pi-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.pi-shots figure { margin: 0; padding: 22px 22px 0; background: var(--color-bg-soft);
+  border-radius: 14px; overflow: hidden; }
+.pi-shots figcaption { margin-bottom: 18px; }
+.pi-shots figcaption b { display: block; font-size: 17px; font-weight: 700; color: #1f1f22; }
+.pi-shots figcaption span { display: block; margin-top: 6px; font-size: 14px; color: #555;
+  line-height: 1.55; word-break: keep-all; }
+.pi-shots img { display: block; width: 100%; border: 1px solid var(--card-line);
+  border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 0;
   aspect-ratio: 4 / 3; object-fit: cover; object-position: top center; background: #fff; }
-.pi-shots figcaption { margin-top: 7px; font-size: 13px; color: #555; text-align: center; }
-@media (max-width: 720px) { .pi-shots { grid-template-columns: 1fr; gap: 18px; } }
+@media (max-width: 720px) { .pi-shots { grid-template-columns: 1fr; } }
 
 .pi-list { position: relative; border: 1px solid var(--card-line); overflow: hidden; }
 .pi-list img { display: block; width: 100%; }
