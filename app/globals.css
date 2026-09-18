@@ -2057,7 +2057,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* ===========================================
    채용공고 페이지
    =========================================== */
-.jobs-page { min-height: 100vh; background: white; }
+.jobs-page { min-height: 100vh; }
 
 /* 헤더 */
 .jobs-header { background: white; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
@@ -4339,7 +4339,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    ============================================ */
 .info-page {
   min-height: 100vh;
-  background: #fafafa;
+  background: var(--color-bg-soft);
 }
 /* 고객센터 옆줄 메뉴. 머리줄 탭이던 것을 옆으로 내렸다 — 탭은 한 줄에 다
    서야 해서 항목이 늘면 글자를 줄이거나 버려야 하고, FAQ 아래 개인·기업
@@ -4349,7 +4349,12 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 40px;
   align-items: start; }
 .info-body { min-width: 0; }
-.info-side { position: sticky; top: 24px; }
+/* 옆줄도 상자다 — 채용공고 사이드(.jobs-side-box)와 같은 모양을 쓴다.
+   바탕이 회색으로 통일되면서 옆줄만 테두리 없이 떠 있어 어디까지가
+   메뉴인지 흐렸다. */
+.info-side { position: sticky; top: 24px;
+  background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+  padding: 8px; }
 /* 글자 크기는 사이트의 다른 옆줄(공고 검색·기업 대시보드)과 같은 14px 다.
    여기만 15px 이라 같은 자리에 선 메뉴가 화면마다 달라 보였다. */
 .info-side ul { list-style: none; margin: 0; padding: 0; }
@@ -4395,6 +4400,14 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 오른쪽 끝은 사이트 머리줄과 같은 단추를 쓴다. 로고·「고객센터」와 같은
    줄에서 반대쪽 끝으로 밀어 둔다. */
 .info-header-right { margin-left: auto; }
+
+/* 사용가이드 걸음 — 이벤트 화면의 걸음 칸(.ev-step)을 그대로 쓰되 한 줄로
+   세운다. 가이드는 순서가 뜻이라, 셋씩 접히면 어디서 이어지는지 흐려진다. */
+.guide-steps { display: grid; gap: 12px; margin-top: 20px; }
+
+/* 회원정책의 점 목록은 잔글씨가 아니라 본문이다. .pi-warn 은 상품 화면의
+   유의사항용이라 옅은 회색인데, 여기서는 그게 읽을 것의 전부다. */
+.info-section .pi-warn li { font-size: 15px; color: #555; }
 .info-nav {
   display: flex;
   align-items: center;
@@ -11301,7 +11314,7 @@ div:has(> table.admin-table),
 /* ════════════════════════════════════════
    광고·노출 상품 랜딩페이지 (ads-*)
 ════════════════════════════════════════ */
-.ads-page { background: #fff; min-height: 100vh; }
+.ads-page { min-height: 100vh; }
 
 .ads-header {
   position: sticky; top: 0; z-index: 50;
@@ -11443,7 +11456,7 @@ div:has(> table.admin-table),
 /* ════════════════════════════════════════
    채용성공형 매칭 랜딩페이지 (mat-*)
 ════════════════════════════════════════ */
-.mat-page { background: #fff; min-height: 100vh; }
+.mat-page { min-height: 100vh; }
 
 /* 히어로 */
 .mat-hero {
@@ -12927,7 +12940,6 @@ button,
    얹으면 묻힌다. 개인회원·기업회원 세로 구분선이 바로 그 꼴로 묻혀
    있었다(#f7f7f8 위에 #f7f7f8) — 테두리 색(--color-border)으로 살린다. */
 @media (min-width: 1025px) {
-  .main-page { background: #fff; }
   .mt-jobs { background-color: #fff; border: 1px solid var(--color-border); }
   .mt-card { background: #fff; border: 1px solid var(--color-border); }
 }
@@ -13776,7 +13788,6 @@ button,
    한 줄만 여기 있는 까닭: styled-jsx 가 그 파일 루트 <main> 에는
    스코프 클래스를 안 붙여(중첩 요소는 붙는데 루트만 빠진다 — 실측
    확인), 지역 스타일로는 .stories-page 를 못 건드린다. */
-@media (min-width: 768px) { .stories-page { background: #fff; } }
 
 /* ══ 채용공고 — 왼쪽 사이드바 ══════════════════════════════════════
    드롭다운에 접어 두면 무엇이 있는지 모르는 사람은 못 고른다. 뷰티는 직군
@@ -13992,7 +14003,6 @@ button,
      그 위에 흰 카드가 떠 있어, 카드 사이 회색 틈이 '조각조각 붙어 있다'는
      인상을 줬다. 채용공고는 페이지 자체가 흰색이고 카드는 옅은 테두리
      하나로만 갈린다 — 그 방식을 그대로 가져온다. */
-  .profile-page { background: #fff; }
   /* 채용공고·이력서와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을
      쓰므로 사이드 왼쪽 끝이 로고와 저절로 맞고, 화면을 옮겨도 머리줄이
      제자리에 있다. 예전에는 여기서만 판을 통짜로 벌려, 프로필로 들어올 때
@@ -14132,7 +14142,6 @@ button,
      border 대신 inset box-shadow 를 쓴다: 이 아래 .resume-editor > *
      의 border-top(칸 사이 간격을 만드는 장치)과 같은 속성을 다퉈
      서로 지우는 일이 없게 하려는 것이다. */
-  .resume-page { background: #fff; }
   .resume-section { box-shadow: inset 0 0 0 1px var(--color-border); }
   /* 채용공고와 같은 판이다 — 1360 안쪽에 32px 여백. 머리줄도 같은 판을 쓰므로
      사이드 왼쪽 끝이 로고와 저절로 맞는다(1800 창에서 둘 다 252).

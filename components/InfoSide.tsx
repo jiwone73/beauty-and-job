@@ -19,8 +19,10 @@ export default function InfoSide({ active }: {
 }) {
   const 메뉴 = [
     { href: "/notice", label: "공지사항" },
-    { href: "/support/faq", label: "FAQ" },
-    { href: "/support", label: "1:1 문의", 주소: "/support?문의=1" },
+    { href: "/support/policy", label: "회원정책" },
+    { href: "/support/guide", label: "사용가이드" },
+    { href: "/support/faq", label: "자주 묻는 질문" },
+    { href: "/support", label: "1:1 문의하기", 주소: "/support?문의=1" },
     { href: "/support/download", label: "다운로드" },
   ];
 
