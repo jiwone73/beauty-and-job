@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { AuthButtons } from "@/components/Header";
 
 /**
  * 고객센터 머리줄.
@@ -9,10 +11,12 @@ import Image from "next/image";
  * 서비스 머리줄(오픈이벤트·상품)을 그대로 썼는데, 구직자가 메인 푸터로
  * 들어와도 상품 메뉴가 떴다. 고객센터에 상품 이야기는 없다.
  *
- * 그래서 여기서는 로고와 「고객센터」만 세운다. 로고를 누르면 홈으로 간다 —
- * 나가는 문은 그 하나면 된다.
+ * 그래서 가운데 메뉴는 두지 않고 로고와 「고객센터」만 세운다. 다만 오른쪽
+ * 끝은 사이트 머리줄과 같은 것을 쓴다 — 고객센터에서 답을 찾은 사람이
+ * 가입하거나 로그인할 데가 없어 뒤로 나가야 했다.
  */
 export default function InfoHeader() {
+  const router = useRouter();
   return (
     <header className="info-header">
       <div className="info-header-inner">
@@ -21,6 +25,9 @@ export default function InfoHeader() {
         </Link>
         <span className="info-brand-bar" aria-hidden />
         <span className="info-brand-t">고객센터</span>
+        <div className="header-right info-header-right">
+          <AuthButtons onLoginClick={() => router.push("/login")} />
+        </div>
       </div>
     </header>
   );

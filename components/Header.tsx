@@ -11,7 +11,14 @@ import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import NotificationBell from "@/components/NotificationBell";
 
-function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
+/**
+ * 머리줄 오른쪽 — 로그인 전이면 「회원가입/로그인」과 「기업 서비스」, 뒤면
+ * 아바타와 종.
+ *
+ * 고객센터 머리줄(InfoHeader)도 이걸 쓴다. 거기 단추를 따로 적어 두었다가
+ * 로그인한 사람에게도 「회원가입/로그인」이 뜨는 꼴이 되면 안 된다.
+ */
+export function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   const router = useRouter();
   const { isLoggedIn, ownerType, userName, avatarUrl, setAvatar } = useAuthStore();
   const pathname = usePathname();

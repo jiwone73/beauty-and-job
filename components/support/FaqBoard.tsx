@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import { FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
+import { FAQ, FAQ_묶음, FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
 
 /**
  * 자주 묻는 질문 판 — 받는 쪽으로 나누고, 갈래로 묶고, 찾을 수 있게 한다.
@@ -19,7 +19,7 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
   /** false 면 갈래 제목 없이 한 줄로 — 첫 화면에 몇 개만 얹을 때 */
   접기?: boolean;
 }) {
-  const 묶: 묶음 = 처음;
+  const [묶, set묶] = useState<묶음>(처음);
   const [말, set말] = useState("");
   const [열린것, set열린것] = useState<string | null>(null);
 
@@ -28,9 +28,19 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
 
   return (
     <div className="faq-board">
-      {/* 개인·기업을 고르는 자리는 화면 위쪽 탭 하나뿐이다. 여기에도 두었더니
-          같은 것을 고르는 곳이 한 화면에 둘이었다. */}
+      {/* 개인·기업은 여기서 고른다. 한때 화면 위쪽 탭으로 올렸다가 다시
+          내렸다 — 갈리는 것은 FAQ 뿐이고(공지·문의·다운로드는 누구에게나
+          같다), 고객센터 전체에 걸린 탭으로 보이면 나머지 셋도 사람마다
+          다른 줄 알게 된다. */}
       <div className="faq-top">
+        <div className="faq-tabs">
+          {(Object.keys(FAQ_묶음) as 묶음[]).map((m) => (
+            <button key={m} type="button" className={m === 묶 ? "on" : undefined}
+                    onClick={() => { set묶(m); set열린것(null); }}>
+              {FAQ_묶음[m]}<i>{FAQ[m].length}</i>
+            </button>
+          ))}
+        </div>
         <label className="faq-search">
           <Search size={16} />
           <input value={말} onChange={(e) => set말(e.target.value)}
