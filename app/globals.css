@@ -15838,11 +15838,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    상황」과 「업데이트」가 화면 밖으로 나간다. 남는 자리는 진행 상황이 쓴다. */
 /* 업데이트 열을 걷고 그 96px 를 공고명과 희망직군에 얹는다 — 둘 다 말줄임이
    잦은 칸이라 폭이 곧 읽히는 양이다. */
-.prop-table .c-post { width: 140px; max-width: 140px; }
-.prop-table.has-post .c-who  { width: 140px; }
-.prop-table.has-post .c-job  { width: 110px; }
-.prop-table.has-post .c-date { width: 72px; }
-.prop-table.has-post .c-st   { width: 78px; }
+.prop-table .c-post { width: 172px; max-width: 172px; }
+.prop-table.has-post .c-who  { width: 172px; }
+.prop-table.has-post .c-job  { width: 104px; }
+.prop-table.has-post .c-date { width: 70px; }
+.prop-table.has-post .c-st   { width: 72px; }
+/* 인재 칸은 아바타와 글이 칸 끝까지 차서, 여백이 없으면 옆 칸 공고명과 붙어
+   한 덩이로 읽혔다. 오른쪽만 한 칸 더 띄운다. */
+.prop-table.has-post .c-who { padding-right: 18px; }
 /* 시각은 「무슨 일이 있었나」 아래에 한 줄로 붙는다. */
 .prop-when { display: block; margin-top: 3px; font-style: normal; font-size: 12.5px; color: #8a8a90; }
 /* 공고 하나만 볼 때 전체로 돌아가는 길 */
