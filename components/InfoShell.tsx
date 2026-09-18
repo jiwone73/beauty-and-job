@@ -1,6 +1,5 @@
 "use client";
-import { type ReactNode } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, type ReactNode } from "react";
 import InfoHeader from "@/components/InfoHeader";
 import InfoSide from "@/components/InfoSide";
 
@@ -33,7 +32,10 @@ export default function InfoShell({ active, title, children }: {
           <InfoSide active={active} />
           <div className="info-body">
             <h1 className="info-page-title">{title}</h1>
-            {children}
+            {/* 본문이 주소의 값을 읽을 수 있다(공지 갈래·쪽, FAQ 갈래).
+                그러면 미리 그려 두기를 할 수 없어 빌드가 멈추므로, 판이
+                기다려 준다 — 화면마다 따로 감싸면 새 화면에서 또 잊는다. */}
+            <Suspense fallback={null}>{children}</Suspense>
           </div>
         </div>
       </main>
