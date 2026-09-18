@@ -23,9 +23,12 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
   const [묶, set묶] = useState<묶음>(처음);
   const [말, set말] = useState("");
   const [열린것, set열린것] = useState<string | null>(null);
+  const [고른갈래, set고른갈래] = useState("전체");
 
   const 걸린것 = FAQ찾기(묶, 말);
-  const 갈래목록 = 갈래들(묶).filter((g) => 걸린것.some((f) => f.갈래 === g));
+  const 갈래목록 = 갈래들(묶)
+    .filter((g) => 고른갈래 === "전체" || g === 고른갈래)
+    .filter((g) => 걸린것.some((f) => f.갈래 === g));
 
   return (
     <div className="faq-board">
@@ -33,9 +36,16 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
           내렸다 — 갈리는 것은 FAQ 뿐이고(공지·문의·다운로드는 누구에게나
           같다), 고객센터 전체에 걸린 탭으로 보이면 나머지 셋도 사람마다
           다른 줄 알게 된다. */}
-      <InfoSeg 값={묶} 고르기={(m) => { set묶(m); set열린것(null); }}
+      <InfoSeg 값={묶} 고르기={(m) => { set묶(m); set열린것(null); set고른갈래("전체"); }}
                목록={(Object.keys(FAQ_묶음) as 묶음[]).map((m) => [m, FAQ_묶음[m]] as const)} />
+      {/* 갈래 고르기 + 검색. 스무 개가 한 줄로 늘어서면 스크롤로 찾는 수밖에
+          없다 — 공지·다운로드 게시판과 같은 짜임이다. */}
       <div className="faq-top">
+        <select className="nb-pick" aria-label="갈래" value={고른갈래}
+                onChange={(e) => { set고른갈래(e.target.value); set열린것(null); }}>
+          <option value="전체">전체</option>
+          {갈래들(묶).map((g) => <option key={g} value={g}>{g}</option>)}
+        </select>
         <label className="faq-search">
           <Search size={16} />
           <input value={말} onChange={(e) => set말(e.target.value)}

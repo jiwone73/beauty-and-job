@@ -7706,7 +7706,9 @@ div:has(> table.admin-table),
 /* 공고명처럼 긴 값은 칸이 모자라면 두 줄까지 감싸고, 넘치면 말줄임(…). 한 줄로 버티며 표를 밀어내지 않는다. */
 .company-table .td-clamp2 {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  white-space: normal; line-height: 1.4; max-width: 260px; margin: 0 auto;
+  /* margin: 0 auto 이던 것을 걷는다. 값을 가운데 두던 때의 잔재라, 왼쪽 정렬로
+     바꾼 뒤에도 이 칸만 가운데로 밀려 머리글자와 줄이 어긋났다. */
+  white-space: normal; line-height: 1.4; max-width: 260px; margin: 0;
   overflow-wrap: anywhere;
 }
 /* 표는 카드를 채우되, 남는 폭을 이름 칸 하나가 다 먹지 않게 한다.
@@ -16353,8 +16355,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 자주 묻는 질문 판 — 받는 쪽으로 가르고, 갈래로 묶고, 찾을 수 있게. */
 .faq-board { margin-top: 14px; }
-.faq-top { display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+/* 갈래 고르기와 검색이 한 줄. 검색이 남는 폭을 다 쓴다 — 공지·다운로드
+   게시판(.nb-top)과 같은 짜임이다. */
+.faq-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.faq-top .faq-search { flex: 1; min-width: 200px; }
 /* 개인회원 / 기업회원 — 판 너비를 고르게 나눠 쓰는 탭. 고른 쪽만 흰 판이라
    아래 내용과 이어 붙는다. 칩이던 때에는 둘이 왼쪽에 몰려 있어 고르는 자리가
    아니라 딱지로 읽혔다. */
