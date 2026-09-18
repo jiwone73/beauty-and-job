@@ -16366,7 +16366,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .dl-get { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   width: 92px; font-size: 13.5px; font-weight: 700; color: var(--color-primary); }
 
-.sup-form { max-width: 720px; }
+/* 폼은 판 전체를 쓴다. 720 으로 묶어 두니 왼쪽은 판 여백(24)인데 오른쪽만
+   150 가까이 남아 좌우가 어긋나 보였다. */
+.sup-form { width: 100%; }
 .sup-form-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
 .sup-form-2 > div > .sup-f-l:first-child { margin-top: 16px; }
 .sup-form-2 > div:nth-child(-n+2) > .sup-f-l:first-child { margin-top: 0; }
