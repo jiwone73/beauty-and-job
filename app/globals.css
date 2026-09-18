@@ -16192,7 +16192,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 노출 위치 표. 캡처가 세로로 긴 전체 화면이라 폭을 다 쓰면 스크롤이 길어진다.
    빨간 상자 자리는 이미지 **높이의 %** 로 잡혀 있어 잘라내면 어긋나므로,
    표 폭을 좁혀 비율 그대로 줄인다. */
-.pi-spot { width: 100%; max-width: 660px; border-collapse: collapse; table-layout: fixed; }
+/* 캡처는 판 가운데에 둔다. 왼쪽에 붙여 두면 제목 밑줄은 판 끝까지 가는데
+   그림만 왼쪽에 몰려, 오른쪽이 통째로 비어 보인다. */
+.pi-spot { width: 100%; max-width: 660px; margin-left: auto; margin-right: auto;
+  border-collapse: collapse; table-layout: fixed; }
 .pi-spot th { font-size: 14.5px; font-weight: 400; color: #1f1f22; text-align: left;
   padding: 0 0 8px; border-bottom: 1px solid #1f1f22; }
 .pi-spot th + th, .pi-spot td + td { padding-left: 16px; }
@@ -16200,7 +16203,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 인재 화면 예시 — 작게 셋. 노출 자리처럼 크게 걸면 스크롤만 길어진다.
    여기서 보일 것은 「어디에 서는가」가 아니라 「이런 것이 된다」뿐이다. */
-.pi-shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+/* 위 노출 위치 캡처와 같은 폭·같은 자리 — 두 줄의 그림이 폭이 다르면
+   같은 화면을 찍은 것으로 안 읽힌다. */
+.pi-shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  max-width: 660px; margin-left: auto; margin-right: auto; }
 .pi-shots figure { margin: 0; }
 .pi-shots img { display: block; width: 100%; border: 1px solid var(--card-line); border-radius: 8px;
   aspect-ratio: 4 / 3; object-fit: cover; object-position: top center; background: #fff; }

@@ -187,10 +187,12 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         <section className="pi-sec">
           <h3 className="pi-st">인재 검색 · 제안 · 채팅</h3>
           <div className="pi-shots">
+            {/* 파일 이름은 영문으로. 한글 이름은 주소에서 한 번 더 인코딩되는데,
+               그 인코딩을 어디선가 놓치면 그림이 통째로 깨진다 — 실제로 깨졌다. */}
             {[
-              { 그림: "std-인재검색", 글: "지역·직군·경력으로 찾기" },
-              { 그림: "std-제안", 글: "보낸 제안 한눈에" },
-              { 그림: "std-채팅", 글: "채팅으로 면접 약속까지" },
+              { 그림: "std-talent", 글: "지역·직군·경력으로 찾기" },
+              { 그림: "std-proposal", 글: "보낸 제안 한눈에" },
+              { 그림: "std-chat", 글: "채팅으로 면접 약속까지" },
             ].map((s) => (
               <figure key={s.그림}>
                 <img src={`/images/plans/${s.그림}.png`} alt={s.글} loading="lazy" />

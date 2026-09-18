@@ -616,8 +616,8 @@ export default function CompanyProposalsPage() {
           <table className={`prop-table${고른공고 ? "" : " has-post"}`}>
             <thead>
               <tr>
-                {!고른공고 && <th className="c-post">공고</th>}
                 <th className="c-who">인재</th>
+                {!고른공고 && <th className="c-post">공고</th>}
                 <th className="c-job">희망직군</th>
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
@@ -633,18 +633,6 @@ export default function CompanyProposalsPage() {
                 const 할 = 다음할일(p);
                 return (
                   <tr key={p.id} className={할?.우리차례 ? "mine" : undefined}>
-                    {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
-                        있던 공고 목록이 하던 일이다. */}
-                    {!고른공고 && (
-                      <td className="c-post">
-                        {p.jobPostingId ? (
-                          <button type="button" className="prop-post" title={p.jobTitle || undefined}
-                                  onClick={() => 공고고르기(p.jobPostingId!)}>
-                            {p.jobTitle || "공고 없음"}
-                          </button>
-                        ) : <span className="prop-post none">공고 없음</span>}
-                      </td>
-                    )}
                     <td className="c-who">
                       <button type="button" className="prop-who" onClick={() => 이력서열기(p)}>
                         <span className="prop-av">
@@ -665,6 +653,18 @@ export default function CompanyProposalsPage() {
                         </span>
                       </button>
                     </td>
+                    {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
+                        있던 공고 목록이 하던 일이다. */}
+                    {!고른공고 && (
+                      <td className="c-post">
+                        {p.jobPostingId ? (
+                          <button type="button" className="prop-post" title={p.jobTitle || undefined}
+                                  onClick={() => 공고고르기(p.jobPostingId!)}>
+                            {p.jobTitle || "공고 없음"}
+                          </button>
+                        ) : <span className="prop-post none">공고 없음</span>}
+                      </td>
+                    )}
                     {/* 직군은 열을 따로 준다. 이름 아래에 붙이면 사람에 따라 줄 수가
                         달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
                     {/* 좁은 칸이라 긴 값은 …으로 잘린다. 잘린 것은 마우스를 올리면 그대로 보인다. */}
