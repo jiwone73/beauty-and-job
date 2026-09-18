@@ -15802,6 +15802,20 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane > .co-pane-band:last-child { margin-bottom: 0; }
 
 
+/* 표의 공고명 — 누르면 그 공고만 본다. 옆줄의 공고 목록이 하던 일이다.
+   공고명은 길어서(평균 35자) 한 줄로 자른다. 잘린 것은 마우스를 올리면 보인다. */
+.prop-post { max-width: 100%; font-family: inherit; font-size: 13.5px; color: #555;
+  background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
+  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prop-post:hover { color: var(--color-primary); text-decoration: underline; }
+.prop-post.none { color: #a9a2b2; cursor: default; }
+.prop-table .c-post { width: 190px; max-width: 190px; }
+/* 공고 하나만 볼 때 전체로 돌아가는 길 */
+.prop-back { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 8px;
+  font-family: inherit; font-size: 13.5px; color: #555; background: none; border: 0;
+  padding: 0; cursor: pointer; }
+.prop-back:hover { color: var(--color-primary); }
+
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: -8px; }
 .prop-chipwrap { display: inline-flex; align-items: center; }
 /* 흐름 밖에서 끝난 것(제안취소·거절·공고마감)은 칩 줄 오른쪽 끝에 떼어 둔다. */

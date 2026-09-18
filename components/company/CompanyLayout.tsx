@@ -474,6 +474,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
            옮긴 상자가 사이드 윗부분에 걸치므로 누름은 통과시킨다. */
         .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center;
           position: relative; left: calc((176px + 28px + 1px) / -2); pointer-events: none; }
+        /* 옆줄이 없는 화면은 밀 이유도 없다 — 본문이 판 전체를 쓴다. */
+        .co-set-noside .co-set-title { left: 0; }
+        /* 두 갈래(보낸 제안 | 스크랩 인재)는 제목 위 왼쪽에 선다. */
+        .co-seg-top { margin-bottom: 10px; }
         /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
            지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
            선 대신 여백으로 아래 목록과 뗀다.
@@ -610,28 +614,14 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         ) : 사이드있나 ? (
           /* 설정 계열 세 화면은 서로 오가는 일이 잦다. 머리줄까지 올라갔다 내려오는
              대신 옆에 늘 세워 둔다 — 개인회원 프로필 사이드(.pf-side)와 같은 짜임. */
-          <div className={`co-set-wrap co-set-${묶음 || activePage}`}>
-            <nav className={`co-set-side${묶음 === "proposals" ? " co-side-prop" : ""}`}>
+          <div className={`co-set-wrap co-set-${묶음 || activePage}${묶음 === "proposals" ? " co-set-noside" : ""}`}>
+            {묶음 !== "proposals" && (
+            <nav className="co-set-side">
               {/* 화면이 제 사이드를 주면 그것이 먼저다 — 고정 메뉴를 우선하면
                   넘겨준 사이드가 조용히 무시된다. */}
               {side
                 ? side
-                : 묶음 === "proposals"
-                  ? (
-                    /* 제안·스크랩은 두 갈래를 한 줄로 — 「보낸 제안 | 스크랩 인재」. 그 아래로
-                       고른 화면의 판(공고 목록)이 이어지고, 고른 쪽이 오른쪽 제목이 된다. */
-                    <div className="co-set-seg">
-                      {사이드?.map((m, i) => (
-                        <span key={m.id} className="co-set-seg-item">
-                          {i > 0 && <i aria-hidden="true" />}
-                          <Link href={m.href} className={activePage === m.id ? "on" : ""}>
-                            {m.label(infoLabel(companyInfo.type))}
-                          </Link>
-                        </span>
-                      ))}
-                    </div>
-                  )
-                  : 사이드?.map((m) => (
+                : 사이드?.map((m) => (
                     <Link key={m.id} href={m.href}
                           className={`co-set-item${m.아래 ? " sub" : ""} ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
@@ -639,7 +629,23 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                   ))}
               {sideExtra}
             </nav>
+            )}
             <main className="company-content co-set-main">
+              {/* 제안·스크랩은 옆줄을 두지 않는다. 옆줄에 있던 공고 목록은 표 안의
+                  공고명이 대신한다 — 공고가 한둘인 매장에서는 같은 숫자를 옆줄과
+                  본문이 두 번 말하고 있었다. 남은 두 갈래는 본문 위로 올린다. */}
+              {묶음 === "proposals" && (
+                <div className="co-set-seg co-seg-top">
+                  {사이드?.map((m, i) => (
+                    <span key={m.id} className="co-set-seg-item">
+                      {i > 0 && <i aria-hidden="true" />}
+                      <Link href={m.href} className={activePage === m.id ? "on" : ""}>
+                        {m.label(infoLabel(companyInfo.type))}
+                      </Link>
+                    </span>
+                  ))}
+                </div>
+              )}
               {/* 사이드 이름을 품되 무엇을 하는 곳인지까지 말한다(매장정보 → 매장정보 설정). */}
               {!제목숨김 && (
                 <h1 className="co-set-title">

@@ -451,66 +451,9 @@ export default function CompanyProposalsPage() {
 
   const 공고고르기 = (id: string) => { set고른공고(id); set고른상태("전체"); };
 
-  // 스크랩 인재의 왼쪽 — 보낸 제안과 같은 모양의 공고 목록. 숫자는 그 공고로 담은 사람 수.
-  // 공고 목록은 공고 지원자 화면(ApplicantsScreen)과 같은 부품이다 — 제목 두 줄까지.
-  const 스크랩사이드 = (
-    <>
-      <button type="button" className={`co-set-item co-jobitem${고른스크랩 === "" ? " on" : ""}`}
-        onClick={() => set고른스크랩("")}>
-        <span className="co-jobitem-t">전체 스크랩</span>
-        <span className="co-jobitem-n">{담긴사람.length}</span>
-      </button>
-      <p className="prop-side-group">공고별 스크랩</p>
-      {진행공고.map((g) => (
-        <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른스크랩 === g.id ? " on" : ""}`}
-          onClick={() => set고른스크랩(g.id)} title={g.title}>
-          <span className="co-jobitem-t">{g.title}</span>
-          <span className="co-jobitem-n">{스크랩수(g.id)}</span>
-        </button>
-      ))}
-      {/* 진행 중인 공고가 없으면 공고별 스크랩 아래가 비어 보인다. 머리줄의 「공고 등록」과
-          같은 단추 하나만 둔다 — 설명은 붙이지 않는다. */}
-      {!스크랩로딩 && 진행공고.length === 0 && (
-        <Link href={`${base}/jobs/new`} className="co-top-post"
-          style={{ justifyContent: "center", margin: "4px 12px 0" }}>
-          채용공고 등록
-        </Link>
-      )}
-    </>
-  );
-
-  const 사이드 = (
-    <>
-      <button type="button" className={`co-set-item co-jobitem${고른공고 === "" ? " on" : ""}`}
-        onClick={() => 공고고르기("")}>
-        <span className="co-jobitem-t">전체 보낸 제안</span>
-        <span className="co-jobitem-n">{목록.length}</span>
-      </button>
-      <p className="prop-side-group">공고별 보낸 제안</p>
-      {보일공고.map((g) => (
-        <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른공고 === g.id ? " on" : ""}`}
-          onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
-          <span className="co-jobitem-t">{g.제목}{g.마감 && <span className="co-jobitem-off">마감</span>}</span>
-          <span className="co-jobitem-n">{g.수}</span>
-        </button>
-      ))}
-      {접힌공고.length > 0 && (
-        <>
-          <button type="button" className="prop-side-more"
-            onClick={() => set지난것펼침((v) => !v)}>
-            지난 공고 {접힌공고.length}
-          </button>
-          {지난것펼침 && 접힌공고.map((g) => (
-            <button key={g.id} type="button" className={`co-set-item co-jobitem sub${고른공고 === g.id ? " on" : ""}`}
-              onClick={() => 공고고르기(g.id)} title={g.제목 || undefined}>
-              <span className="co-jobitem-t">{g.제목}<span className="co-jobitem-off">마감</span></span>
-              <span className="co-jobitem-n">{g.수}</span>
-            </button>
-          ))}
-        </>
-      )}
-    </>
-  );
+  /* 옆줄(공고 목록)은 걷었다. 공고가 한둘인 매장에서는 옆줄의 「전체 N」과
+     「공고별 N」, 표 안의 공고 띠가 같은 숫자를 세 번 말했다. 이제 표의 공고명
+     한 칸이 그 일을 한다 — 누르면 그 공고만 본다. */
 
   // 공고 머리 판 — 보낸 제안과 스크랩 인재가 같은 것을 그린다. 같은 공고를 두 탭에서
   // 다르게 그리면 같은 것으로 안 읽힌다. 「이 공고로 제안 보내기」도 두 탭에 같이 선다.
@@ -555,11 +498,14 @@ export default function CompanyProposalsPage() {
   );
 
   return (
-    <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"} sideExtra={스크랩모드 ? 스크랩사이드 : 사이드}>
+    <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"}>
       {스크랩모드 ? (
         <>
           {스크랩머리 && (
             <div className="co-pane">
+              <button type="button" className="prop-back" onClick={() => set고른스크랩("")}>
+                ‹ 스크랩 인재 전체
+              </button>
               {머리판(스크랩머리, 고른스크랩)}
               {띠(`이 공고로 스크랩한 인재 ${보일스크랩.length}명`)}
             </div>
@@ -597,6 +543,10 @@ export default function CompanyProposalsPage() {
           위에 하나 더 두면 같은 말이 두 번이다. 스크랩 인재의 전체와 같다. */}
       {공고머리 && (
         <div className="co-pane">
+          {/* 공고 하나만 보는 중. 옆줄이 없으니 돌아가는 길을 여기 둔다. */}
+          <button type="button" className="prop-back" onClick={() => 공고고르기("")}>
+            ‹ 보낸 제안 전체
+          </button>
           {머리판(공고머리, 고른공고)}
           {띠(`이 공고로 제안한 인재 ${공고고른것.length}명`,
             우리차례수 > 0 ? <><span className="apl-bar-sep">|</span><span className="prop-mine">미답변 {우리차례수}</span></> : null)}
@@ -666,6 +616,7 @@ export default function CompanyProposalsPage() {
           <table className="prop-table">
             <thead>
               <tr>
+                {!고른공고 && <th className="c-post">공고</th>}
                 <th className="c-who">인재</th>
                 <th className="c-job">희망직군</th>
                 <th className="c-date">제안일</th>
@@ -677,19 +628,24 @@ export default function CompanyProposalsPage() {
             <tbody>
               {묶음들.map((묶음) => (
               <Fragment key={묶음.키}>
-              {묶음.제목 && (
-                <tr className="prop-grouprow">
-                  <td colSpan={6}>
-                    {띠(`${묶음.제목} · ${묶음.줄.length}명`)}
-                  </td>
-                </tr>
-              )}
               {묶음.줄.map((p, i) => {
                 const st = 상태(p);
                 const 활 = 최근활동(p);
                 const 할 = 다음할일(p);
                 return (
                   <tr key={p.id} className={할?.우리차례 ? "mine" : undefined}>
+                    {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
+                        있던 공고 목록이 하던 일이다. */}
+                    {!고른공고 && (
+                      <td className="c-post">
+                        {p.jobPostingId ? (
+                          <button type="button" className="prop-post" title={p.jobTitle || undefined}
+                                  onClick={() => 공고고르기(p.jobPostingId!)}>
+                            {p.jobTitle || "공고 없음"}
+                          </button>
+                        ) : <span className="prop-post none">공고 없음</span>}
+                      </td>
+                    )}
                     <td className="c-who">
                       <button type="button" className="prop-who" onClick={() => 이력서열기(p)}>
                         <span className="prop-av">
