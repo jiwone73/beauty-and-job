@@ -94,9 +94,7 @@
 
 .header {
   position: sticky; top: 0; z-index: 100;
-  /* 머리줄은 바탕과 같은 색이다. 흰색이면 머리줄 아래에서 색이 한 번 꺾여
-     머리줄만 페이지에 얹힌 딴 판으로 보인다. 흰 것은 테두리 안쪽(판)뿐이다. */
-  background: rgba(247, 247, 248, 0.96);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: saturate(180%) blur(10px);
   border-bottom: 1px solid var(--color-border);
 }
