@@ -4351,8 +4351,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    여백이 두 겹으로 들어가 옆줄이 머리줄 로고보다 안으로 밀린다. */
 /* 읽는 판은 좁게 가운데로. 머리줄 폭(1360)을 그대로 쓰면 글줄이 너무 길어
    눈이 줄을 놓친다 — 기업 대시보드 판(1018)과 같은 값이다. */
-.info-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px;
-  align-items: start; max-width: 1018px; margin: 0 auto; }
+/* 옆줄 218 / 판 1086 — 테두리 판이 먹는 안쪽 여백(본문 50, 옆줄 18)만큼
+   더 준다. 기업 화면(.co-set-wrap)과 같은 값이다. */
+.info-layout { display: grid; grid-template-columns: 218px minmax(0, 1fr); gap: 28px;
+  align-items: start; max-width: 1086px; margin: 0 auto; }
 /* 본문도 흰 판이다. 옆줄만 상자로 세워 두었더니 오른쪽 넓은 자리가 통째로
    회색이라 화면의 절반이 바탕이었다. 회색은 판을 띄우는 바닥이지 읽을 것을
    까는 자리가 아니다 — 채용공고가 그렇듯 회색은 판 바깥 여백으로만 남는다. */
@@ -5537,7 +5539,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    본문과 가르던 세로선(border-right)은 걷는다. 상자 테두리가 이미 그 일을
    하고 있어, 두면 선이 나란히 두 줄 선다. */
 .admin-sidebar {
-  width: 220px;
+  /* 202 → 220 이 아니라, 상자가 되면서 먹은 안쪽 여백(8×2 + 테두리 2 = 18)만큼
+     더해 238 이다 — 메뉴 글자가 설 자리는 예전과 같다. */
+  width: 238px;
   background: #fff;
   border: 1px solid var(--color-border);
   border-radius: 10px;

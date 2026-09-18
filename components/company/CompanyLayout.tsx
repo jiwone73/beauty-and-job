@@ -454,8 +454,11 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
            이 style 안에서는 자식 선택자(꺾쇠) 를 쓰지 않는다 — 서버가 그 글자를
            빠져나가게 적어 보내는 바람에 클라이언트 글자와 어긋나 hydration 오류가
            났다. 자식만 고르려면 여기 .co-set-main 처럼 class 를 하나 더 준다. */
+        /* 1018 이던 것을 1086 으로. 옆줄과 본문이 테두리 판이 되면서 안쪽 여백
+           (본문 24×2 + 테두리 2 = 50, 옆줄 8×2 + 테두리 2 = 18)만큼 글이 들어갈
+           자리가 줄었다 — 줄어든 만큼 판을 키워 안쪽 폭을 예전으로 돌린다. */
         .co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
-          width: 1018px; max-width: 100%; }
+          width: 1086px; max-width: 100%; }
         /* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
            바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
         /* 옆줄은 테두리로 둘러싼 상자다 — 고객센터 옆줄(.info-side)과 같은 모양.
@@ -464,7 +467,7 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         /* 인재풀 옆줄은 지역·직군·조건이 저마다 상자다. 바깥을 한 번 더 두르면
            테두리가 두 겹으로 겹친다 — 그 화면만 상자를 벗는다. */
         .co-set-side.co-tal-side { background: none; border: 0; border-radius: 0; padding: 0; }
-        .co-set-side { width: 176px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+        .co-set-side { width: 194px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
           position: sticky; top: 92px; align-self: flex-start;
           background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
           padding: 8px; box-sizing: border-box; }
