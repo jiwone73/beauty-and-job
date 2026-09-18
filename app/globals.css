@@ -4414,7 +4414,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-brand { display: inline-flex; align-items: center; margin-left: -4px; }
 .info-brand img { height: 32px !important; width: auto !important; }
 .info-brand-bar { width: 1px; height: 20px; background: #e4e1e8; }
-.info-brand-t { font-size: 18px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
+/* 「고객센터」는 화면 제목(.info-page-title)과 같은 22px 다 — 같은 이름을
+   머리줄과 본문이 다른 크기로 적으면 둘이 다른 말처럼 보인다. */
+.info-brand-t { font-size: 22px; font-weight: 700; color: #1f1f22; letter-spacing: -.4px; }
 
 /* 오른쪽 끝은 사이트 머리줄과 같은 단추를 쓴다. 로고·「고객센터」와 같은
    줄에서 반대쪽 끝으로 밀어 둔다. */
@@ -12533,7 +12535,6 @@ div:has(> table.admin-table),
   .resume-header-nav { font-size: 18px; }
   /* 고객센터 머리줄도 같은 단계로 — 여기만 32px 이라 로고가 작았다. */
   .info-brand img { height: 36px !important; }
-  .info-brand-t { font-size: 19px; }
 }
 
 /* === PC(≥769px) 프로필 탭(프로필·이력서·지원현황·관심공고) 본문 텍스트 한 단계 상향 (모바일 유지) === */

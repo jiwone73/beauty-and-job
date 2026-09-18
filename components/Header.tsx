@@ -137,10 +137,17 @@ export default function Header() {
             {/* 이력서는 구직자가 가장 자주 손대는 것인데 프로필 안 두 단계에
                 있었다. 메뉴로 올려 지름길을 낸다. 프로필에서 '현재 프로필로
                 이력서 만들기'로 넘어가는 길은 그대로 두어, 처음 온 사람의
-                순서(프로필 → 이력서)는 흐트러지지 않는다. */}
-            <Link href="/profile/resume" className={`gnb-with-tag ${pathname === "/profile/resume" ? "gnb-active" : ""}`}>
-              이력서
-            </Link>
+                순서(프로필 → 이력서)는 흐트러지지 않는다.
+
+                기업으로 로그인했으면 이 메뉴는 없다. 내 이력서를 쓰는 자리라
+                기업 계정으로는 열리지 않고 대시보드로 튕겼다 — 누를 수 있게 해
+                놓고 딴 데로 보내는 것은 없는 문을 열어 둔 것이다. 채용공고와
+                현장이야기는 기업도 볼 것이 있어 그대로 둔다. */}
+            {!isCompany && (
+              <Link href="/profile/resume" className={`gnb-with-tag ${pathname === "/profile/resume" ? "gnb-active" : ""}`}>
+                이력서
+              </Link>
+            )}
             <Link href="/stories" className="gnb-with-tag">
               현장이야기
             </Link>
