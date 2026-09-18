@@ -15809,7 +15809,16 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .prop-post:hover { color: var(--color-primary); text-decoration: underline; }
 .prop-post.none { color: #a9a2b2; cursor: default; }
-.prop-table .c-post { width: 190px; max-width: 190px; }
+/* 공고 열이 붙으면 열이 일곱이다. 판 폭(옆줄 176 + 간격 28 을 뺀 814)에 다
+   들어가도록 나머지 열을 한 번에 조인다 — 못 조이면 표가 옆으로 굴러 「진행
+   상황」과 「업데이트」가 화면 밖으로 나간다. 남는 자리는 진행 상황이 쓴다. */
+.prop-table .c-post { width: 118px; max-width: 118px; }
+.prop-table.has-post .c-who  { width: 152px; }
+.prop-table.has-post .c-job  { width: 92px; }
+.prop-table.has-post .c-date { width: 76px; }
+.prop-table.has-post .c-st   { width: 84px; }
+/* 「9.12 15:29」가 다 들어가야 한다 — 모자라면 오른쪽 끝이 잘린다. */
+.prop-table.has-post .c-time { width: 96px; }
 /* 공고 하나만 볼 때 전체로 돌아가는 길 */
 .prop-back { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 8px;
   font-family: inherit; font-size: 13.5px; color: #555; background: none; border: 0;

@@ -613,7 +613,7 @@ export default function CompanyProposalsPage() {
               제안한 자리 · <b>{제안한자리.join(" / ")}</b>
             </p>
           )}
-          <table className="prop-table">
+          <table className={`prop-table${고른공고 ? "" : " has-post"}`}>
             <thead>
               <tr>
                 {!고른공고 && <th className="c-post">공고</th>}
