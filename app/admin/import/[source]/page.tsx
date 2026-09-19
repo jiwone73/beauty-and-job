@@ -129,8 +129,9 @@ export default function ImportListPage() {
   }
 
   return (
-    <AdminLayout activeMenu={`import-${source}`}>
+    <AdminLayout activeMenu={`import-${source}`} 제목숨김>
       <div className="admin-card">
+        <h1 className="adm-mail-title">{이름[source]} 공고 불러오기</h1>
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span>
             {이름[source]} <strong>{목록.length}</strong>건

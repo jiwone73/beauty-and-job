@@ -229,15 +229,6 @@ export default function AdminStoriesPage() {
         {/* 옆줄 — 갈래. 「어느 함을 여는가」만 맡는다. 글 관리와 승인대기가 먼저고,
             그 아래 카테고리다. */}
         <nav className="adm-mail-side" aria-label="글 갈래">
-          <p className="adm-mail-side-t">보기</p>
-          <button type="button" className={`adm-mail-side-i${tab === "posts" ? " on" : ""}`}
-            onClick={() => { setTab("posts"); setChecked([]); setExpandedId(null); }}>
-            글 관리<i>{posts.filter((p) => p.status !== "pending").length}</i>
-          </button>
-          <button type="button" className={`adm-mail-side-i${tab === "pending" ? " on" : ""}`}
-            onClick={() => { setTab("pending"); setChecked([]); setExpandedId(null); }}>
-            승인대기<i>{pendingCount}</i>
-          </button>
           <p className="adm-mail-side-t">카테고리</p>
           {["전체", "공감", "꿀팁", "질문", "정보"].map((v) => (
             <button key={v} type="button"
@@ -252,11 +243,30 @@ export default function AdminStoriesPage() {
           <h1 className="adm-mail-title">현장이야기</h1>
           {!지금것 ? (
             <>
+              {/* 보기(글 관리·승인대기)와 글 만드는 장치는 목록 위에 둔다. 옆줄에
+                  두었을 때는 카테고리와 같은 무게로 읽혔고, 자동 게시·AI 글 생성은
+                  화면 맨 아래에 있어 매번 끝까지 내려가야 했다. */}
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
+                <select className="nb-pick" aria-label="보기" value={tab}
+                        onChange={(e) => { setTab(e.target.value as "posts" | "pending"); setChecked([]); setExpandedId(null); }}>
+                  <option value="posts">글 관리 {posts.filter((p: any) => p.status !== "pending").length}</option>
+                  <option value="pending">승인대기 {pendingCount}</option>
+                </select>
                 <label className="nb-search">
                   <input value={searchQ} onChange={(e) => setSearchQ(e.target.value)} placeholder="제목·내용 검색" />
                   <button type="submit" aria-label="검색"><Search size={17} /></button>
                 </label>
+                <button onClick={toggleAutogen} disabled={autogenSaving} type="button"
+                  title="현장이야기 매일 자동 생성+게시 on/off"
+                  style={{ flex: "none", display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13.5, color: "#555", cursor: "pointer" }}>
+                  자동 게시
+                  <span style={{ width: 34, height: 20, borderRadius: 10, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                    <span style={{ position: "absolute", top: 2, left: autogen ? 16 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+                  </span>
+                </button>
+                <button onClick={generateAI} disabled={generating} type="button" className="admin-secondary-btn" style={{ flex: "none" }}>
+                  {generating ? "생성 중…" : "AI 글 생성"}
+                </button>
                 {tab === "posts" && (
                   <button type="button" onClick={() => setWriting(true)} className="admin-primary-btn" style={{ flex: "none" }}>
                     <Plus size={15} /> 발제 글
@@ -371,21 +381,6 @@ export default function AdminStoriesPage() {
             </div>
           )}
         </div>
-      </div>
-
-      {/* 자동 게시·AI 생성은 늘 쓰는 것이 아니라 아래에 둔다 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, justifyContent: "flex-end" }}>
-        <button onClick={toggleAutogen} disabled={autogenSaving}
-          title="현장이야기 매일 자동 생성+게시 on/off"
-          style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13.5, color: "#555", cursor: "pointer" }}>
-          자동 게시
-          <span style={{ width: 34, height: 20, borderRadius: 10, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
-            <span style={{ position: "absolute", top: 2, left: autogen ? 16 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
-          </span>
-        </button>
-        <button onClick={generateAI} disabled={generating} className="admin-secondary-btn">
-          {generating ? "생성 중…" : "AI 글 생성"}
-        </button>
       </div>
 
       {/* 발제 글 쓰기 — 가끔 하는 일이라 모달로 */}

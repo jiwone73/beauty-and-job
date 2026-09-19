@@ -5809,11 +5809,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   /* 볼드 20 이라 아래가 붙어 보였다. 제목과 내용 사이를 한 칸 더 띄운다. */
   margin: 0 0 26px;
   text-align: center;
-  /* 윗줄 띠는 사이드까지 한 덩어리로 보인다. 본문 칸만 기준으로 가운데를 잡으면
-     사이드 폭의 절반만큼 오른쪽으로 밀린다. 사이드 폭만큼 오른쪽을 비워 되돌린다. */
-  padding-right: 220px;
 }
-.admin-sidebar.closed ~ .admin-main .admin-page-title { padding-right: 64px; }
 .admin-header-right {
   display: flex;
   align-items: center;
