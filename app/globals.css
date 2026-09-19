@@ -4507,7 +4507,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    오른쪽이 통째로 비어 보였다. */
 .adm-mail-list .admin-table { width: 100%; }
 /* 아직 회신하지 않은 줄만 굵게 — 메일함에서 안 읽은 것이 굵은 것과 같다. */
-.adm-mail-new td { font-weight: 700; color: #1f1f22; }
+/* 아직 답하지 않은 줄은 제목만 굵힌다 — 「회신완료」가 줄마다 되풀이되는
+   상태 열 대신 줄의 생김새로 가른다. 표 전체를 평체로 누르는 규칙(.admin-table
+   td)이 !important 라 여기도 같이 건다. */
+.adm-mail-new .adm-mail-td-subj { font-weight: 700 !important; color: #1f1f22; }
 /* 제목 앞에 붙는 작은 딱지(고정 등) */
 /* 판 안에 또 판이 오면 테두리가 두 겹이다 — 바깥 판이 이미 두르고 있으니
    안쪽 것은 벗는다. */

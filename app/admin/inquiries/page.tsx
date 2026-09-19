@@ -49,7 +49,6 @@ export default function AdminInquiriesPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
-  const [typeFilter, setTypeFilter] = useState("");
   const [검색, set검색] = useState("");
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
@@ -165,18 +164,13 @@ export default function AdminInquiriesPage() {
     </span>
   );
 
-  /* 옆줄은 회원구분(문의 유형)만 맡는다 — 「어느 함을 여는가」다. 처리상태와
-     검색은 목록 위에서 건다. 사업문의와 같은 짜임이다. */
-  const 유형갈래 = ["전체", ...Array.from(new Set(items.map((i2) => i2.type).filter(Boolean)))];
-  /* 회원구분 아래에 받은·보낸을 단다. 함을 먼저 고르고 구분을 다시 고르면
-     둘이 서로를 덮어, 무엇을 보고 있는지가 흐려졌다. */
-  const 갈래수 = (ty: string, st = "") => items.filter((it) =>
-    (ty === "전체" || it.type === ty) && (!st || it.status === st)).length;
+  /* 옆줄은 함(받은·보낸)만 맡는다. 회원구분은 표의 한 열이고, 찾는 일은 검색이 한다.
+     사업문의와 같은 짜임이다. */
+  const 갈래수 = (st: string) => items.filter((it) => !st || it.status === st).length;
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
-    (typeFilter === "" || it.type === typeFilter) &&
     (statusFilter === "" || it.status === statusFilter) &&
-    (!찾는말 || [it.name, it.email, it.subject, it.message]
+    (!찾는말 || [it.name, it.email, it.subject, it.type, it.message]
       .some((v) => (v || "").includes(찾는말))));
 
   const 목록으로 = () => { setSelected(null); setReplyBody(""); setFiles([]); };
@@ -186,28 +180,20 @@ export default function AdminInquiriesPage() {
       <div className="adm-mail">
         <nav className="adm-mail-side" aria-label="문의함">
           {/* 받은문의는 아직 답하지 않은 것, 보낸문의는 답장을 보낸 것.
-              늘 펼쳐 둔다 — 접을 까닭이 없다. */}
-          <p className="adm-mail-side-h">회원구분<ChevronDown size={15} /></p>
-          {유형갈래.map((v) => {
-            const 이유형 = v === "전체" ? "" : v;
-            const 열림 = typeFilter === 이유형;
-            return (
-              <div key={v}>
-                <button type="button"
-                  className={`adm-mail-side-i${열림 && !statusFilter ? " on" : ""}`}
-                  onClick={() => { setTypeFilter(이유형); setStatusFilter(""); setChecked([]); 목록으로(); }}>
-                  {v}<i>{갈래수(v)}</i>
-                </button>
-                {[["new", "받은문의"], ["done", "보낸문의"]].map(([k, 이름]) => (
-                  <button key={k} type="button"
-                    className={`adm-mail-side-i sub${열림 && statusFilter === k ? " on" : ""}`}
-                    onClick={() => { setTypeFilter(이유형); setStatusFilter(k); setChecked([]); 목록으로(); }}>
-                    {이름}<i>{갈래수(v, k)}</i>
-                  </button>
-                ))}
-              </div>
-            );
-          })}
+              회원구분은 표의 한 열로 옮겼다 — 옆줄과 표가 같은 것을 두 번 말했다. */}
+          <p className="adm-mail-side-h">문의함<ChevronDown size={15} /></p>
+          <button type="button"
+            className={`adm-mail-side-i${!statusFilter ? " on" : ""}`}
+            onClick={() => { setStatusFilter(""); setChecked([]); 목록으로(); }}>
+            전체<i>{갈래수("")}</i>
+          </button>
+          {[["new", "받은문의"], ["done", "보낸문의"]].map(([k, 이름]) => (
+            <button key={k} type="button"
+              className={`adm-mail-side-i sub${statusFilter === k ? " on" : ""}`}
+              onClick={() => { setStatusFilter(k); setChecked([]); 목록으로(); }}>
+              {이름}<i>{갈래수(k)}</i>
+            </button>
+          ))}
         </nav>
 
         <div className="admin-card adm-mail-body">
@@ -217,7 +203,7 @@ export default function AdminInquiriesPage() {
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
                 <label className="nb-search">
                   <input value={검색} onChange={(e) => set검색(e.target.value)}
-                         placeholder="이름·이메일·제목·내용 검색" />
+                         placeholder="이름·이메일·제목·회원구분·내용 검색" />
                   <button type="submit" aria-label="검색"><Search size={17} /></button>
                 </label>
               </form>
@@ -249,10 +235,9 @@ export default function AdminInquiriesPage() {
                     <thead>
                       <tr>
                         <th style={{ width: 38 }}></th>
-                        <th style={{ width: 84 }}>상태</th>
-                        <th>제목</th>
-                        <th style={{ width: 110 }}>이름</th>
                         <th style={{ width: 110 }}>회원구분</th>
+                        <th style={{ width: 110 }}>이름</th>
+                        <th>제목</th>
                         <th style={{ width: 150 }}>접수일</th>
                       </tr>
                     </thead>
@@ -263,10 +248,9 @@ export default function AdminInquiriesPage() {
                             <input type="checkbox" checked={checked.includes(item.id)}
                               onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
                           </td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{badge(item.status)}</td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.subject || "(제목 없음)"}</td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.name}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type}</td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.name}</td>
+                          <td className="adm-mail-td-subj" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.subject || "(제목 없음)"}</td>
                           <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
                         </tr>
                       ))}
