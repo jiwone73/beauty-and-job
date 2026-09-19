@@ -4446,6 +4446,55 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 머리줄과 그 아래를 한 묶음으로 — 묶음 사이만 한 칸 띄운다. */
 .co-set-branch + .co-set-branch { margin-top: 2px; }
 
+/* ══ 관리자 사업문의 — 메일함 짜임 ════════════════════════════════
+   갈래는 옆줄이 늘 펼쳐 보이고, 목록과 상세는 한 자리를 번갈아 쓴다.
+   좌우로 나눠 두었을 때는 목록이 460px 에 갇혀 회사명·담당자·접수일이 두 줄로
+   접혔고, 상세는 라벨-값 일곱 줄이 세로로 길었다. */
+.adm-mail { display: flex; gap: 18px; align-items: stretch; flex: 1; min-height: 0; }
+.adm-mail-side { width: 168px; flex: none; }
+.adm-mail-side-t { margin: 16px 0 6px; padding: 0 12px; font-size: 12.5px; color: #8a8a90; }
+.adm-mail-side-t:first-child { margin-top: 0; }
+.adm-mail-side-i { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; padding: 9px 12px; border: 0; border-radius: 8px; background: none;
+  font-family: inherit; font-size: 15px; color: #555; text-align: left; cursor: pointer; }
+.adm-mail-side-i:hover { background: #f7f7f8; }
+.adm-mail-side-i.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
+.adm-mail-side-i i { font-style: normal; font-size: 13px; color: #8a8a90; }
+.adm-mail-side-i.on i { color: var(--color-primary); }
+
+.adm-mail-body { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+/* 위 한 줄 — 전체 선택·삭제·건수. 목록과 상세가 같은 자리에 둔다. */
+.adm-mail-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-bottom: 1px solid #f2f2f4; }
+.adm-mail-all { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: #555; cursor: pointer; }
+.adm-mail-del { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px;
+  border: 1px solid #efeff1; border-radius: 6px; background: #fff; color: #c0392b;
+  font-family: inherit; font-size: 13.5px; cursor: pointer; }
+.adm-mail-count { margin-left: auto; font-size: 13px; color: #8a8a90; }
+.adm-mail-back { border: 0; background: none; padding: 0; font-family: inherit; font-size: 14px;
+  color: #555; cursor: pointer; }
+.adm-mail-back:hover { color: var(--color-primary); }
+.adm-mail-list { flex: 1; overflow-y: auto; }
+/* 표는 판 전체를 쓴다. .admin-table 은 width:auto 라 내용만큼만 차지해,
+   오른쪽이 통째로 비어 보였다. */
+.adm-mail-list .admin-table { width: 100%; }
+/* 아직 회신하지 않은 줄만 굵게 — 메일함에서 안 읽은 것이 굵은 것과 같다. */
+.adm-mail-new td { font-weight: 700; color: #1f1f22; }
+
+.adm-mail-read { flex: 1; overflow-y: auto; }
+.adm-mail-subj { margin: 18px 20px 12px; font-size: 20px; font-weight: 700; color: #1f1f22; }
+.adm-mail-from { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 0 20px 10px; font-size: 14px; color: #555; }
+.adm-mail-from b { font-weight: 700; color: #1f1f22; }
+.adm-mail-from em { margin-left: auto; font-style: normal; font-size: 13px; color: #8a8a90; }
+.adm-mail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 20px 16px; }
+.adm-mail-tags span { padding: 3px 9px; border: 1px solid var(--color-border); border-radius: 999px;
+  font-size: 12.5px; color: #555; }
+.adm-mail-msg { margin: 0 20px; padding: 16px; background: #f7f7f8; border-radius: 10px;
+  font-size: 14.5px; line-height: 1.75; color: #555; white-space: pre-wrap; }
+.adm-mail-reply { margin: 18px 20px 24px; padding-top: 16px; border-top: 1px solid #f2f2f4; }
+.adm-mail-reply-t { margin-bottom: 10px; font-size: 14.5px; color: #555; }
+
 .pol-list { margin: 18px 0 0; }
 .info-section > .pol-list:first-child { margin-top: 0; }
 .pol-list > div + div { margin-top: 18px; }

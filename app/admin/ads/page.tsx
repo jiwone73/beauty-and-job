@@ -1,15 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import FilterDropdown from "@/components/company/FilterDropdown";
 import { formatPhone } from "@/lib/phone";
 import { Trash2 } from "lucide-react";
 
-const STATUS_TABS = [
-  { key: "", label: "전체" },
-  { key: "new", label: "신규" },
-  { key: "done", label: "회신완료" },
-];
 const PRODUCT_LABELS: Record<string, string> = {
   top_exposure: "공고 상단 노출",
   brand_page: "브랜드 페이지 제작",
@@ -165,89 +159,128 @@ export default function AdminAdsPage() {
     </span>
   );
 
+  /* 갈래는 옆줄이 맡는다. 드롭다운 둘로 두었을 때는 지금 무엇을 보고 있는지가
+     접힌 채였다 — 열어 봐야 알았다. 네이버 메일함처럼 늘 펼쳐 두고, 고른 것만
+     켠다. */
+  const 상태갈래 = [
+    { key: "", label: "전체" },
+    { key: "new", label: "신규" },
+    { key: "done", label: "회신완료" },
+  ];
+  const 유형갈래 = ["전체", "광고", "제휴", "기타"];
+  const 갈래수 = (st: string, ty: string) => items.filter((it) =>
+    (!st || it.status === st) && (ty === "전체" || (it.type || "광고") === ty)).length;
+
+  /* 고르면 목록 자리에 상세가 선다. 좌우로 나눠 두었을 때는 목록이 460px 에
+     갇혀 회사명·담당자·접수일이 두 줄로 접혔고, 상세는 라벨-값 일곱 줄이
+     세로로 길었다. 메일함이 그렇듯 한 자리를 번갈아 쓴다. */
+  const 목록으로 = () => { setSelected(null); setReplyBody(""); setFiles([]); };
+
   return (
     <AdminLayout activeMenu="ads">
-      {/* 왼쪽에서 고르고 오른쪽에서 본다. 모달로 띄우면 목록이 가려져 다음 것을
-          보려면 매번 닫아야 했다. 공지사항·뉴스레터와 같은 짜임으로 맞춘다. */}
-      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
-        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
-        flex: 1, minHeight: 0 }}>
+      <div className="adm-mail">
+        {/* 옆줄 — 갈래 */}
+        <nav className="adm-mail-side" aria-label="문의 갈래">
+          <p className="adm-mail-side-t">처리상태</p>
+          {상태갈래.map((t) => (
+            <button key={t.key} type="button"
+              className={`adm-mail-side-i${statusFilter === t.key ? " on" : ""}`}
+              onClick={() => { setStatusFilter(t.key); 목록으로(); }}>
+              {t.label}<i>{갈래수(t.key, typeFilter === "" ? "전체" : typeFilter)}</i>
+            </button>
+          ))}
+          <p className="adm-mail-side-t">유형</p>
+          {유형갈래.map((v) => (
+            <button key={v} type="button"
+              className={`adm-mail-side-i${(typeFilter === "" ? "전체" : typeFilter) === v ? " on" : ""}`}
+              onClick={() => { setTypeFilter(v === "전체" ? "" : v); 목록으로(); }}>
+              {v}<i>{갈래수(statusFilter, v)}</i>
+            </button>
+          ))}
+        </nav>
 
-        {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-          <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <FilterDropdown label="처리상태"
-              value={STATUS_TABS.find((t) => t.key === statusFilter)?.label || "전체"}
-              options={STATUS_TABS.map((t) => t.label)}
-              onChange={(lbl) => setStatusFilter(STATUS_TABS.find((t) => t.label === lbl)?.key ?? "")} />
-            <FilterDropdown label="유형"
-              value={typeFilter === "" ? "전체" : typeFilter}
-              options={["전체", "광고", "제휴", "기타"]}
-              onChange={(v) => setTypeFilter(v === "전체" ? "" : v)} />
-            {checked.length > 0 && (
-              <button onClick={handleDelete}
-                style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5,
-                  padding: "6px 11px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff",
-                  color: "#c0392b", fontSize: 13.5, cursor: "pointer" }}>
-                <Trash2 size={14} /> 삭제 ({checked.length})
-              </button>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
-          ) : items.length === 0 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>문의가 없습니다.</div>
-          ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
-              {items.map((item) => (
-                <li key={item.id} style={{ display: "flex", alignItems: "center", gap: 8,
-                  borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
-                  background: selected?.id === item.id ? "#f7f7f8" : "#fff" }}>
-                  <input type="checkbox" checked={checked.includes(item.id)} onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
-                  <button type="button" onClick={() => openDetail(item)}
-                    style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {item.company_name || item.contact_name || "-"}
-                      </span>
-                      <span style={{ marginLeft: "auto", flexShrink: 0, fontSize: 12.5, color: "#555" }}>{badge(item.status)}</span>
-                    </div>
-                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {fmtDate(item.created_at)}{item.email ? ` · ${item.email}` : ""}
-                    </div>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* 오른쪽 — 고른 문의 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+        {/* 오른쪽 — 목록과 상세가 한 자리를 번갈아 쓴다 */}
+        <div className="admin-card adm-mail-body">
           {!selected ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 문의를 고르세요.</div>
+            <>
+              <div className="adm-mail-bar">
+                <label className="adm-mail-all">
+                  <input type="checkbox"
+                    checked={items.length > 0 && checked.length === items.length}
+                    onChange={(e) => setChecked(e.target.checked ? items.map((i2) => i2.id) : [])} />
+                  전체 선택
+                </label>
+                {checked.length > 0 && (
+                  <button type="button" className="adm-mail-del" onClick={handleDelete}>
+                    <Trash2 size={14} /> 삭제 ({checked.length})
+                  </button>
+                )}
+                <span className="adm-mail-count">{items.length}건</span>
+              </div>
+
+              {loading ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+              ) : items.length === 0 ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>문의가 없습니다.</div>
+              ) : (
+                <div className="adm-mail-list">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 38 }}></th>
+                        <th style={{ width: 84 }}>상태</th>
+                        <th>회사명</th>
+                        <th style={{ width: 120 }}>담당자</th>
+                        <th style={{ width: 70 }}>유형</th>
+                        <th style={{ width: 150 }}>접수일</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.map((item) => (
+                        <tr key={item.id} className={item.status === "done" ? undefined : "adm-mail-new"}>
+                          <td onClick={(e) => e.stopPropagation()}>
+                            <input type="checkbox" checked={checked.includes(item.id)}
+                              onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
+                          </td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{badge(item.status)}</td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
+                            {item.company_name || item.contact_name || "-"}
+                          </td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.contact_name}</td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type || "광고"}</td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           ) : (
-            <div style={{ padding: 18 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "92px 1fr", rowGap: 10, columnGap: 12, fontSize: 14.5, marginBottom: 18 }}>
-                <span style={{ color: "#555" }}>유형</span><span style={{ color: "#555" }}>{selected.type || "광고"}</span>
-                <span style={{ color: "#555" }}>회사명</span><span>{selected.company_name || "-"}</span>
-                <span style={{ color: "#555" }}>담당자</span><span>{selected.contact_name}</span>
-                <span style={{ color: "#555" }}>전화번호</span><span>{selected.phone ? formatPhone(selected.phone) : "-"}</span>
-                <span style={{ color: "#555" }}>이메일</span><span style={{ wordBreak: "break-all" }}>{selected.email || "-"}</span>
-                {selected.product && (<><span style={{ color: "#555" }}>관심상품</span><span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span></>)}
-                <span style={{ color: "#555" }}>접수일</span><span>{fmtDate(selected.created_at)}</span>
-                <span style={{ color: "#555" }}>상태</span><span>{badge(selected.status)}</span>
-                {selected.replied_at && (<><span style={{ color: "#555" }}>회신완료</span><span>{fmtDate(selected.replied_at)}</span></>)}
+            <div className="adm-mail-read">
+              <div className="adm-mail-bar">
+                <button type="button" className="adm-mail-back" onClick={목록으로}>‹ 목록</button>
+                <span className="adm-mail-count">{badge(selected.status)}</span>
               </div>
-              <div style={{ marginBottom: 18 }}>
-                <div style={{ color: "#555", fontSize: 13.5, marginBottom: 6 }}>문의 내용</div>
-                <div style={{ background: "#f7f7f8", borderRadius: 10, padding: 14, fontSize: 14.5, lineHeight: 1.7, color: "#555", whiteSpace: "pre-wrap" }}>{selected.message}</div>
+
+              <h2 className="adm-mail-subj">{selected.company_name || selected.contact_name || "문의"}</h2>
+              <div className="adm-mail-from">
+                <b>{selected.contact_name}</b>
+                <span>{selected.email || "이메일 없음"}</span>
+                <span>{selected.phone ? formatPhone(selected.phone) : "전화번호 없음"}</span>
+                <em>{fmtDate(selected.created_at)}</em>
               </div>
+              <div className="adm-mail-tags">
+                <span>{selected.type || "광고"}</span>
+                {selected.product && <span>{PRODUCT_LABELS[selected.product] ?? selected.product}</span>}
+                {selected.replied_at && <span>회신 {fmtDate(selected.replied_at)}</span>}
+              </div>
+
+              <div className="adm-mail-msg">{selected.message}</div>
 
               {selected.email ? (
-                <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16 }}>
-                  <div style={{ fontSize: 14.5, color: "#555", marginBottom: 10 }}>답변 메일 작성</div>
+                <div className="adm-mail-reply">
+                  <div className="adm-mail-reply-t">답변 메일 작성</div>
                   <textarea className="cv-input" value={replyBody} onChange={(e) => setReplyBody(e.target.value)}
                     spellCheck lang="ko"
                     style={{ minHeight: 320, resize: "vertical", lineHeight: 1.6, fontFamily: "inherit" }} />
@@ -267,7 +300,7 @@ export default function AdminAdsPage() {
                   </p>
                 </div>
               ) : (
-                <div style={{ borderTop: "1px solid #f2f2f4", paddingTop: 16, fontSize: 14, color: "#555" }}>
+                <div className="adm-mail-reply" style={{ fontSize: 14, color: "#555" }}>
                   이메일 주소가 없어 답변 메일을 보낼 수 없습니다. 전화로 연락해 주세요.
                   {selected.status !== "done" && (
                     <button onClick={() => markDone(selected.id)} className="admin-secondary-btn" style={{ marginLeft: 10 }}>
