@@ -2124,10 +2124,12 @@ export default function JobPostForm({
   const handleSubmit = async (status: "draft" | "publish") => {
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
-    // 급여 단위는 대행 등록에서도 본다 — 저장이 통째로 실패하는 값이라,
-    // 「필수 검증 없이」의 예외다.
-    const 급여말 = 급여단위확인();
-    if (급여말) { alert(급여말); return; }
+    /* 급여 단위는 올릴 때만 본다. 임시저장은 쓰다 만 것을 남기는 자리라
+       막으면 안 된다 — 값을 고치려고 저장해 두는 일도 있다. */
+    if (status === "publish") {
+      const 급여말 = 급여단위확인();
+      if (급여말) { alert(급여말); return; }
+    }
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
     if (isNmAdmin) {
       if (!jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }

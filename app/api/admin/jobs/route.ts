@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
   for (const [이름, 값] of [['급여', salary_min], ['급여 상한', salary_max]] as const) {
     const n = Number(값)
     if (Number.isFinite(n) && Math.abs(n) > 돈한계) {
-      return err('JOB_003',
+      return err('JOB_004',
         `${이름}가 너무 큽니다(${n.toLocaleString()}원). 급여 칸은 만원 단위입니다 — ` +
         `${Math.round(n / 1e8).toLocaleString()}만원이라면 그 숫자로 적어주세요.`)
     }

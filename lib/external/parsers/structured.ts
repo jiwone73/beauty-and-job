@@ -1187,8 +1187,16 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
       const won = Number((firstCond.match(/"salaryAmount":(\d+)/) || [])[1] || "") || 0;
       const styp = (firstCond.match(/"salaryType":"([^"]*)"/) || [])[1] || "";
       salary_type = /month/.test(styp) ? "MONTHLY" : /year|annual/.test(styp) ? "ANNUAL" : /hour/.test(styp) ? "HOURLY" : /week/.test(styp) ? "WEEKLY" : "";
-      // 금액은 원 단위 값을 그대로 쓴다. 라벨에서 숫자만 긁으면 「280만원」이 280이 된다.
-      salary_amount = won || Number((amt.match(/([\d,]+)/) || [])[1]?.replace(/,/g, "") || "") || 0;
+      /* 금액 단위는 다른 파서와 같은 약속을 따른다 — 시급·일급은 원, 그 밖은 만원.
+         폼의 급여 칸이 만원 단위라, 여기서 원 단위(2,800,000)를 내보내면 저장할 때
+         만 배가 되어 280 억이 된다. DB 가 담는 수를 넘어 저장이 통째로 실패했다
+         (등록 이슈 1472·1475). 셀렉미가 주는 salaryAmount 는 원 단위(2800000)이고
+         salaryLabel 은 만원 단위(「280만원」)다. */
+      const 원단위칸 = salary_type === "HOURLY" || salary_type === "DAILY";
+      const 라벨숫자 = Number((amt.match(/([\d,]+)/) || [])[1]?.replace(/,/g, "") || "") || 0;
+      salary_amount = won
+        ? (원단위칸 ? won : Math.round(won / 10000))
+        : 라벨숫자;
       salary = amt ? (salary_type === "MONTHLY" ? `월급 ${amt}` : amt) : "";
     }
   }
@@ -1212,12 +1220,14 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
       const 원 = Number((f.match(/"salaryAmount":(\d+)/) || [])[1] || "") || 0;
       const 인원 = Number((f.match(/"headCount":(\d+)/) || [])[1] || "") || 0;
       const styp2 = (f.match(/"salaryType":"([^"]*)"/) || [])[1] || "";
+      // 대표 급여와 같은 약속 — 시급·일급은 원, 그 밖은 만원.
+      const 시급인가 = /hour|day/.test(styp2);
       positions.push({
         category: 직종,
         career: 단계이름[ct] || "",
         headcount: 인원 ? `${인원}명` : "",
         salary: 협의 ? "협의" : (라벨 ? (/month/.test(styp2) ? `월급 ${라벨}` : 라벨) : ""),
-        salary_amount: 원,
+        salary_amount: 원 ? (시급인가 ? 원 : Math.round(원 / 10000)) : 0,
         salary_negotiable: 협의,
       });
     }
