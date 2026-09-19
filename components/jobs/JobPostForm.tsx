@@ -179,6 +179,9 @@ export interface JobPostFormProps {
 // 경우를 새로고침과 구분하려고 둔다. 새로고침하면 문서가 새로 뜨므로 false 로 돌아간다.
 let 폼이열린적있음 = false;
 
+/** 만원 단위로 말이 되는 최대값(10억). 그 위는 원 단위로 잘못 적은 것으로 본다. */
+const 급여상한 = 100000;
+
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
   uploadImage, onSubmit, loadEditData, listDrafts, deleteDraft, initialFindQuery = "", initialImportMode, initialParsed,
@@ -827,6 +830,16 @@ export default function JobPostForm({
       "nmManagerName", "nmManagerPhone", "nmContactEmail", "nmKakaoId", "contactMethods", "externalApplyUrl"];
     if (!살펴볼것.some((k) => 뭔가있음(d[k]))) return;
     const set = <T,>(fn: (v: T) => void, v: T | undefined) => { if (v !== undefined && v !== null) fn(v); };
+    /* 급여 칸은 만원 단위다. 셀렉미 불러오기가 원 단위(2,500,000)를 넣던 시절의
+       자동저장이 브라우저에 남아 있으면, 파서를 고쳐도 화면을 열 때마다 그 값이
+       되살아나 저장할 때 또 만 배가 된다. 만원 단위로 말이 안 되는 크기면 버린다
+       — 나머지 쓰던 내용은 그대로 살린다. */
+    const 성한급여 = (v: any) => {
+      const n = parseInt(String(v ?? "").replace(/[^0-9]/g, "")) || 0;
+      return n > 급여상한 ? "" : v;
+    };
+    if (d.form && typeof d.form === "object") d.form = { ...d.form, salary: 성한급여(d.form.salary) };
+    d.salaryMax = 성한급여(d.salaryMax);
     set(setForm, d.form); set(setCategories, d.categories); set(setPosMeta, d.posMeta);
     set(setRegionList, d.regionList); set(setAlwaysOpen, d.alwaysOpen); set(setJobGroupType, d.jobGroupType);
     set(setExtraLocations, d.extraLocations);
@@ -2107,7 +2120,6 @@ export default function JobPostForm({
 
      자동으로 고치지 않는다. 2,800,000 이 280 만원인지 280 억인지는 적은
      사람만 안다. 막고 어떻게 적으면 되는지 알린다. */
-  const 급여상한 = 100000; // 만원 단위 10억. 그 위는 단위를 잘못 적은 것으로 본다.
   const 급여단위확인 = (): string | null => {
     if (salaryNego) return null;
     if (salaryType === "HOURLY" || salaryType === "DAILY") return null; // 원 단위 칸
@@ -2124,12 +2136,10 @@ export default function JobPostForm({
   const handleSubmit = async (status: "draft" | "publish") => {
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
-    /* 급여 단위는 올릴 때만 본다. 임시저장은 쓰다 만 것을 남기는 자리라
-       막으면 안 된다 — 값을 고치려고 저장해 두는 일도 있다. */
-    if (status === "publish") {
-      const 급여말 = 급여단위확인();
-      if (급여말) { alert(급여말); return; }
-    }
+    /* 임시저장도 본다. 안 막으면 서버가 막고 「is out of range for type integer」가
+       그대로 뜬다 — 막는 것은 같고 어느 쪽 말이 나가느냐만 다르다. */
+    const 급여말 = 급여단위확인();
+    if (급여말) { alert(급여말); return; }
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
     if (isNmAdmin) {
       if (!jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
