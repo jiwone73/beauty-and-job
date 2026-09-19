@@ -244,7 +244,7 @@ export default function AdminNewslettersPage() {
                           </td>
                           <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{n.title}</td>
                           <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{STATUS_LABELS[n.status] || n.status}</td>
-                          <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{(n.created_at || "").slice(0, 10)}</td>
+                          <td className="admin-td-date" onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{(n.created_at || "").slice(0, 10)}</td>
                           <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>
                             {n.sent_at ? `${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0})` : "-"}
                           </td>

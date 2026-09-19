@@ -169,6 +169,7 @@ export default function AdminInquiriesPage() {
      검색은 목록 위에서 건다. 사업문의와 같은 짜임이다. */
   const 유형갈래 = ["전체", ...Array.from(new Set(items.map((i2) => i2.type).filter(Boolean)))];
   const 유형수 = (ty: string) => items.filter((it) => ty === "전체" || it.type === ty).length;
+  const 함수 = (st: string) => items.filter((it) => !st || it.status === st).length;
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
     (typeFilter === "" || it.type === typeFilter) &&
@@ -181,7 +182,17 @@ export default function AdminInquiriesPage() {
   return (
     <AdminLayout activeMenu="inquiries" 제목숨김>
       <div className="adm-mail">
-        <nav className="adm-mail-side" aria-label="문의 유형">
+        <nav className="adm-mail-side" aria-label="문의함">
+          {/* 메일함처럼 나눈다 — 받은문의는 아직 답하지 않은 것, 보낸문의는 답장을
+              보낸 것. 둘이 서로 겹치지 않아야 「할 일」이 한눈에 보인다. */}
+          <p className="adm-mail-side-t">문의함</p>
+          {[["", "전체"], ["new", "받은문의"], ["done", "보낸문의"]].map(([k, v]) => (
+            <button key={k} type="button"
+              className={`adm-mail-side-i${statusFilter === k ? " on" : ""}`}
+              onClick={() => { setStatusFilter(k); setChecked([]); 목록으로(); }}>
+              {v}<i>{함수(k)}</i>
+            </button>
+          ))}
           <p className="adm-mail-side-t">회원구분</p>
           {유형갈래.map((v) => (
             <button key={v} type="button"
@@ -197,10 +208,6 @@ export default function AdminInquiriesPage() {
           {!selected ? (
             <>
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
-                <select className="nb-pick" aria-label="처리상태" value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value); setChecked([]); }}>
-                  {STATUS_TABS.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
-                </select>
                 <label className="nb-search">
                   <input value={검색} onChange={(e) => set검색(e.target.value)}
                          placeholder="이름·이메일·제목·내용 검색" />
@@ -253,7 +260,7 @@ export default function AdminInquiriesPage() {
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.subject || "(제목 없음)"}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.name}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type}</td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
+                          <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
                         </tr>
                       ))}
                     </tbody>

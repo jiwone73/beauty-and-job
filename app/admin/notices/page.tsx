@@ -176,7 +176,7 @@ export default function AdminNoticesPage() {
                             {n.title}
                           </td>
                           <td>{n.status === "draft" ? "임시" : "게시중"}</td>
-                          <td>{fmtDate(n.published_at || n.created_at)}</td>
+                          <td className="admin-td-date">{fmtDate(n.published_at || n.created_at)}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -168,6 +168,7 @@ export default function AdminAdsPage() {
   const 유형갈래 = ["전체", "광고", "제휴", "기타"];
   const 유형수 = (ty: string) => items.filter((it) =>
     ty === "전체" || (it.type || "광고") === ty).length;
+  const 함수 = (st: string) => items.filter((it) => !st || it.status === st).length;
 
   /* 옆줄은 유형만 맡는다. 처리상태와 검색은 목록 위에서 건다 — 갈래는 「어느
      함을 여는가」이고 상태·검색은 「그 안에서 무엇을 찾는가」라 층이 다르다. */
@@ -186,8 +187,17 @@ export default function AdminAdsPage() {
   return (
     <AdminLayout activeMenu="ads" 제목숨김>
       <div className="adm-mail">
-        {/* 옆줄 — 유형. 「어느 함을 여는가」만 맡는다. */}
-        <nav className="adm-mail-side" aria-label="문의 유형">
+        <nav className="adm-mail-side" aria-label="문의함">
+          {/* 메일함처럼 나눈다 — 받은문의는 아직 답하지 않은 것, 보낸문의는 답장을
+              보낸 것. 둘이 서로 겹치지 않아야 「할 일」이 한눈에 보인다. */}
+          <p className="adm-mail-side-t">문의함</p>
+          {[["", "전체"], ["new", "받은문의"], ["done", "보낸문의"]].map(([k, v]) => (
+            <button key={k} type="button"
+              className={`adm-mail-side-i${statusFilter === k ? " on" : ""}`}
+              onClick={() => { setStatusFilter(k); setChecked([]); 목록으로(); }}>
+              {v}<i>{함수(k)}</i>
+            </button>
+          ))}
           <p className="adm-mail-side-t">유형</p>
           {유형갈래.map((v) => (
             <button key={v} type="button"
@@ -205,10 +215,6 @@ export default function AdminAdsPage() {
           {!selected ? (
             <>
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
-                <select className="nb-pick" aria-label="처리상태" value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value); setChecked([]); }}>
-                  {상태갈래.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
-                </select>
                 <label className="nb-search">
                   <input value={검색} onChange={(e) => set검색(e.target.value)}
                          placeholder="회사명·담당자·이메일·내용 검색" />
@@ -262,7 +268,7 @@ export default function AdminAdsPage() {
                           </td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.contact_name}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type || "광고"}</td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
+                          <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
                         </tr>
                       ))}
                     </tbody>
