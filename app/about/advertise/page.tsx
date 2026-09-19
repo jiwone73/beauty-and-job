@@ -5,7 +5,7 @@ import InfoShell from "@/components/InfoShell";
 import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
 export default function AdvertisePage() {
-  const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", content: "" });
+  const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", subject: "", content: "" });
   const [done, setDone] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,6 +20,7 @@ export default function AdvertisePage() {
           contact_name: form.name,
           email: form.email,
           phone: form.phone || null,
+          subject: form.subject,
           message: form.content,
           type: "광고",
           privacy_agreed: agreed,
@@ -50,8 +51,9 @@ export default function AdvertisePage() {
                 <div className="contact-form-row"><label>이메일 *</label><input type="email" required placeholder="답변 받으실 이메일" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
                 <div className="contact-form-row"><label>전화번호</label><input type="tel" placeholder="연락 가능한 전화번호 (선택)" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /></div>
               </div>
+              <div className="contact-form-row"><label>제목 *</label><input required placeholder="어떤 광고인지 한 줄로 적어주세요" value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} /></div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="광고 관련 문의 내용을 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
-              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 문의 내용" />
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 제목, 문의 내용" />
               <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
             </form>
           </div>

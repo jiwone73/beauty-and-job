@@ -4,7 +4,7 @@ import InfoShell from "@/components/InfoShell";
 import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", category: "", content: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", category: "", subject: "", content: "" });
   const [done, setDone] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
@@ -20,6 +20,7 @@ export default function ContactPage() {
           email: form.email,
           phone: form.phone || null,
           product: form.category,
+          subject: form.subject,
           message: form.content,
           type: "기타",
           privacy_agreed: agreed,
@@ -59,8 +60,9 @@ export default function ContactPage() {
                   </select>
                 </div>
               </div>
+              <div className="contact-form-row"><label>제목 *</label><input required placeholder="문의 내용을 한 줄로 적어주세요" value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} /></div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="문의 내용을 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
-              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 문의 내용" />
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 제목, 문의 내용" />
               <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
             </form>
           </div>

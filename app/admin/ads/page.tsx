@@ -18,12 +18,21 @@ type Inquiry = {
   phone: string | null;
   email: string | null;
   product: string | null;
+  subject: string | null;
   message: string;
   status: string;
   type: string;
   created_at: string;
   replied_at: string | null;
 };
+
+// 제목이 없던 시절의 문의는 상품명이 제목 노릇을 했다 — 그것으로 대신 채운다.
+// 내용 앞부분을 잘라 제목인 척 세우지는 않는다.
+function 제목(it: Inquiry) {
+  if (it.subject) return it.subject;
+  if (it.product) return PRODUCT_LABELS[it.product] ?? it.product;
+  return "(제목 없음)";
+}
 
 function fmtDate(s: string) {
   const d = new Date(s);
@@ -176,7 +185,7 @@ export default function AdminAdsPage() {
   const 보일것 = items.filter((it) =>
     (typeFilter === "" || (it.type || "광고") === typeFilter) &&
     (statusFilter === "" || it.status === statusFilter) &&
-    (!찾는말 || [it.company_name, it.contact_name, it.email, it.message]
+    (!찾는말 || [it.subject, it.company_name, it.contact_name, it.email, it.message]
       .some((v) => (v || "").includes(찾는말))));
 
   /* 고르면 목록 자리에 상세가 선다. 좌우로 나눠 두었을 때는 목록이 460px 에
@@ -217,7 +226,7 @@ export default function AdminAdsPage() {
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
                 <label className="nb-search">
                   <input value={검색} onChange={(e) => set검색(e.target.value)}
-                         placeholder="회사명·담당자·이메일·내용 검색" />
+                         placeholder="제목·회사명·담당자·이메일·내용 검색" />
                   <button type="submit" aria-label="검색"><Search size={17} /></button>
                 </label>
               </form>
@@ -249,8 +258,9 @@ export default function AdminAdsPage() {
                       <tr>
                         <th style={{ width: 38 }}></th>
                         <th style={{ width: 84 }}>상태</th>
-                        <th>회사명</th>
-                        <th style={{ width: 120 }}>담당자</th>
+                        <th>제목</th>
+                        <th style={{ width: 150 }}>회사명</th>
+                        <th style={{ width: 110 }}>담당자</th>
                         <th style={{ width: 70 }}>유형</th>
                         <th style={{ width: 150 }}>접수일</th>
                       </tr>
@@ -263,6 +273,7 @@ export default function AdminAdsPage() {
                               onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
                           </td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{badge(item.status)}</td>
+                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{제목(item)}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
                             {item.company_name || item.contact_name || "-"}
                           </td>
@@ -283,7 +294,7 @@ export default function AdminAdsPage() {
                 <span className="adm-mail-count">{badge(selected.status)}</span>
               </div>
 
-              <h2 className="adm-mail-subj">{selected.company_name || selected.contact_name || "문의"}</h2>
+              <h2 className="adm-mail-subj">{제목(selected)}</h2>
               <div className="adm-mail-from">
                 <b>{selected.contact_name}</b>
                 <span>{selected.email || "이메일 없음"}</span>
