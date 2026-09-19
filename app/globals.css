@@ -4432,13 +4432,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    유의사항용이라 옅은 회색인데, 여기서는 그게 읽을 것의 전부다. */
 /* 회원정책의 약속 목록 — 제목 한 줄, 설명 한 줄. 점만 찍힌 목록으로 두면
    여덟 줄이 한 덩어리로 보여 무엇이 몇 개인지 안 읽힌다. */
-/* 옆줄의 여닫는 화살표 — 머리줄 오른쪽 끝. 눌러도 그 줄의 링크로는 안 간다. */
-.co-set-item { position: relative; }
-.co-set-caret { position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
-  color: #8a8a90; cursor: pointer; transition: transform .15s; }
-.co-set-caret.open { transform: translateY(-50%) rotate(180deg); }
-.co-set-caret:hover { color: var(--color-primary); }
+/* 머리줄과 그 아래를 한 묶음으로 — 묶음 사이만 한 칸 띄운다. */
 .co-set-branch + .co-set-branch { margin-top: 2px; }
 
 .pol-list { margin: 18px 0 0; }

@@ -277,18 +277,6 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     return 줄기;
   })();
 
-  /* 지금 보고 있는 것이 속한 갈래만 펼쳐 둔다. 다 펼치면 옆줄이 아홉 줄이 되어
-     무엇이 무엇에 딸린 것인지가 도로 안 보인다. */
-  const [접힘, set접힘] = useState<Record<string, boolean>>({});
-  useEffect(() => {
-    const 열것 = 옆줄줄기.find((g) => g.머리.id === activePage
-      || g.아래.some((m) => m.id === activePage))?.머리.id;
-    set접힘(Object.fromEntries(옆줄줄기
-      .filter((g) => g.아래.length > 0)
-      .map((g) => [g.머리.id, g.머리.id !== 열것])));
-    // 갈래가 바뀔 때만 다시 정한다 — 사용자가 여닫은 것을 덮어쓰지 않으려는 것이다.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [묶음, activePage]);
   // 스크랩 인재는 제안·스크랩의 갈래라 '제안·스크랩'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
@@ -516,10 +504,20 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
+        /* 아래에 딸린 것이 있는 머리줄 — 오른쪽 끝에 화살표 하나. 접히지는
+           않는다. 「여기 아래로 이것들이 딸려 있다」는 표시일 뿐이다. */
+        .co-set-item.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .co-set-item.head svg { flex: none; color: #8a8a90; }
+        /* 머리줄은 글자와 화살표뿐이다. 회색 판을 깔면 그 줄만 단추처럼 보여,
+           아래 딸린 것들과 한 묶음으로 안 읽힌다. */
+        .co-set-item.head, .co-set-item.head.on, .co-set-item.head:hover { background: none; }
         /* 아랫단 — 위 줄에 딸린 낱개다. 들여쓰고 한 호수 줄여 둘의 높이를
            눈으로 가른다. 같은 크기로 두면 무엇이 묶음이고 무엇이 그 안인지
            이름만 읽어서는 알 수 없다. */
-        .co-set-item.sub { padding-left: 24px; font-size: 15.5px; }
+        /* 아랫단은 점을 하나 찍어 딸린 것임을 보인다 — 들여쓰기만으로는 두 단이
+           같은 무게로 읽힌다. */
+        .co-set-item.sub { padding-left: 24px; font-size: 15.5px; position: relative; }
+        .co-set-item.sub::before { content: "·"; position: absolute; left: 14px; color: #8a8a90; }
         /* 인재풀 — 탭이 제목 자리를 대신한다. 그래서 글자도 제목과 같은 크기·굵기·
            색(.co-set-title)을 쓴다. 켜진 탭이 곧 지금 보고 있는 화면의 이름이다.
            다른 화면 제목이 모두 가운데 서 있으므로 이 줄도 가운데 세운다. */
@@ -655,27 +653,16 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                   넘겨준 사이드가 조용히 무시된다. */}
               {side ? side : 옆줄줄기.map((줄기) => (
                 <div key={줄기.머리.id} className="co-set-branch">
-                  {/* 아래에 달린 것이 있으면 머리줄이 여닫는 단추를 겸한다.
-                      다섯을 한 높이로 늘어놓았을 때는 라이트·스탠다드·프리미엄이
-                      배너광고와 같은 종류처럼 보였다 — 접어 두면 지금 보는 갈래만
-                      펼쳐져 무엇이 무엇에 딸린 것인지가 읽힌다. */}
+                  {/* 아래에 달린 것이 있는 머리줄은 테두리를 두르고 오른쪽에
+                      화살표를 둔다. 접히지는 않는다 — 옆줄에 있는 것이 다섯
+                      줄뿐이라 접어서 아낄 자리가 없고, 화살표는 「아래로 이것들이
+                      딸려 있다」는 표시다. */}
                   <Link href={줄기.머리.href}
-                        className={`co-set-item${activePage === 줄기.머리.id ? " on" : ""}`}>
+                        className={`co-set-item${줄기.아래.length > 0 ? " head" : ""}${activePage === 줄기.머리.id ? " on" : ""}`}>
                     {줄기.머리.label(infoLabel(companyInfo.type))}
-                    {줄기.아래.length > 0 && (
-                      <i className={`co-set-caret${접힘[줄기.머리.id] ? "" : " open"}`}
-                         role="button" tabIndex={0}
-                         aria-label={접힘[줄기.머리.id] ? "펼치기" : "접기"}
-                         onClick={(e) => { e.preventDefault(); e.stopPropagation();
-                           set접힘((p) => ({ ...p, [줄기.머리.id]: !p[줄기.머리.id] })); }}
-                         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") {
-                           e.preventDefault(); e.stopPropagation();
-                           set접힘((p) => ({ ...p, [줄기.머리.id]: !p[줄기.머리.id] })); } }}>
-                        <ChevronDown size={16} />
-                      </i>
-                    )}
+                    {줄기.아래.length > 0 && <ChevronDown size={15} aria-hidden="true" />}
                   </Link>
-                  {줄기.아래.length > 0 && !접힘[줄기.머리.id] && 줄기.아래.map((m) => (
+                  {줄기.아래.map((m) => (
                     <Link key={m.id} href={m.href}
                           className={`co-set-item sub ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
