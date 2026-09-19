@@ -55,6 +55,24 @@ function parseHairinjob(html: string): StructuredResult | null {
   };
   const liValue = (label: string): string => strip(liRaw(label));
 
+  /* 상세요강 본문에 적힌 전화번호를 찾는다. 「채용담당자」 칸에 이름만 적고
+     번호는 글 속에 적는 공고가 흔하다 — 「010-0000-0000 연락주세요!」,
+     「문의/접수처 : …」, 「☎ …」 꼴이다. 그런 글이 「전화번호 안불러옴」
+     이슈로 반복해서 올라왔다.
+
+     아무 숫자나 줍지 않는다. 휴대폰·지역번호·대표번호의 꼴만 본다 —
+     예전 규칙은 1[0-9]{3}-[0-9]{4} 라서 사업자등록번호(10397912)까지
+     전화번호로 집어 들었다. 헤어인잡 제 고객센터 번호도 뺀다. */
+  const 본문전화 = (글: string): string => {
+    const 꼴 = /(?:01[016789][-.\s]?\d{3,4}[-.\s]?\d{4})|(?:0(?:2|[3-6][1-5])[-.\s]?\d{3,4}[-.\s]?\d{4})|(?:1[5-9]\d{2}[-.\s]?\d{4})/g;
+    for (const 찾은 of 글.match(꼴) || []) {
+      const 다듬음 = 찾은.replace(/[.\s]/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, "");
+      if (다듬음.replace(/-/g, "") === "16449185") continue; // 헤어인잡 고객센터
+      return 다듬음;
+    }
+    return "";
+  };
+
   const ogD = dec((html.match(/property="og:description" content="([^"]*)"/) || [])[1] || "");
   // 모집분야는 직종이 여러 개일 수 있다(각 <div> 한 블록). 필드가 서로 다른 직종에서 섞이지 않도록 "첫 직종"만 사용.
   const mjRaw = liRaw("모집분야");
@@ -210,7 +228,7 @@ function parseHairinjob(html: string): StructuredResult | null {
   // 채용담당자 li 안의 전화번호도 함께 뽑는다. 라우트의 전화번호 후보(phones)는
   // 렌더된 페이지 텍스트에서만 찾는데, 이 li가 거기 안 실리는 경우가 있어
   // "전화번호 안불러옴" 이슈가 반복됐다.
-  const contact_phone = ((contactRaw.match(/(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/) || [])[0] || "")
+  let contact_phone = ((contactRaw.match(/(?:1[0-9]{3}[-.\s]?[0-9]{4})|(?:0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4})/) || [])[0] || "")
     .replace(/[.\s]/g, "-").replace(/-{2,}/g, "-").replace(/^-|-$/g, "");
   const always_open = /채용시까지|상시|수시|충원/.test(ogD) || /채용시까지|상시|수시/.test(title);
 
@@ -248,6 +266,9 @@ function parseHairinjob(html: string): StructuredResult | null {
       .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&[a-z#0-9]+;/gi, " ")
       .replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
   let descText = "";
+  // 마커로 자르기 전의 상세요강 영역. 전화번호가 「상세내용」 머리글 앞이나
+  // 잘라낸 꼬리 쪽에 적힌 공고가 있어, 번호를 찾을 때만 이쪽도 본다.
+  let descArea = "";
   {
     const mIdx = html.search(/class="[^"]*mid_view_main/i);
     if (mIdx >= 0) {
@@ -261,6 +282,7 @@ function parseHairinjob(html: string): StructuredResult | null {
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<style[\s\S]*?<\/style>/gi, " ");
       let t = stripLines(raw);
+      descArea = t;
       // "상세내용"은 본문 머리글로도 나오지만, 로그인 안내("상세내용을 더 확인하시려면…")로도 나온다.
       // 안내를 머리글로 착각해 그 뒤부터 자르면 본문이 통째로 날아간다.
       // (로그인 없이 보이는 공고는 안내가 본문 뒤에 붙어 있어 실제로 그렇게 됐다.)
@@ -288,6 +310,10 @@ function parseHairinjob(html: string): StructuredResult | null {
       if (descText.length < 10) descText = "";
     }
   }
+
+  // 담당자 칸에 번호가 없으면 상세요강 본문에서 찾는다. 글 속에 적어 둔
+  // 공고가 흔해 여태 연락처가 빈 채로 등록됐다.
+  if (!contact_phone) contact_phone = 본문전화(descText) || 본문전화(descArea);
 
   // 공고 이미지 분리(핫링크 차단이라 재호스팅):
   //   원문 DOM 위치로 구분한다(파일명 규칙은 공고마다 달라 신뢰 불가):

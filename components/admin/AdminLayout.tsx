@@ -141,9 +141,15 @@ export default function AdminLayout({ children, activeMenu, pageTitle, 제목숨
     if (!authChecked) return;
     const token = localStorage.getItem("admin_token");
     const h = { Authorization: `Bearer ${token}` };
+    // 「지금 밀린 것」이라 답이 달린 이슈는 빼고 센다. 여태는 답한 것까지 세어,
+    // 실제로는 두 건 남았는데 머리줄에 65 가 떠 있었다.
     fetch("/api/admin/app-notes?list=jobissue", { headers: h })
       .then((r) => r.json())
-      .then((d) => setJobIssues(Array.isArray(d?.data) ? d.data.length : (d?.data?.items?.length || 0)))
+      .then((d) => {
+        const 목록 = Array.isArray(d?.data) ? d.data : (d?.data?.items || []);
+        const 답있나 = (p: any) => (p.replies || []).some((r: any) => /\[해결\]/.test(r.text || ""));
+        setJobIssues(목록.filter((p: any) => !답있나(p)).length);
+      })
       .catch(() => {});
     fetch("/api/admin/applications", { headers: h })
       .then((r) => r.json())
