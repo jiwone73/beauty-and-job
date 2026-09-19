@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { verifyAccessToken } from "@/lib/jwt";
-import { 고르기, RECOMMEND_MIN, type 구직자, type 공고 } from "@/lib/recommend";
+import { 고르기, RECOMMEND_MIN, type 구직자, type 공고, 총개월 } from "@/lib/recommend";
 import type { JobType } from "@/lib/data/jobGroups";
 
 // 맞춤 공고. 로그인하지 않았거나 이력서가 비어 있으면 점수를 매길 근거가 없으므로
@@ -100,16 +100,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function 총개월(rows: any[]): number {
-  let m = 0;
-  for (const r of rows) {
-    const s = new Date(r.start_date), e = r.end_date ? new Date(r.end_date) : new Date();
-    if (isNaN(+s) || isNaN(+e)) continue;
-    const d = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
-    if (d > 0) m += d;
-  }
-  return m;
-}
 
 // careers 는 점수 계산에만 쓰는 값이라 화면으로 내보내지 않는다.
 const 행 = (r: any) => { const { careers, ...쓸것 } = r || {}; return 쓸것; };

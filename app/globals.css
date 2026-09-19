@@ -4505,6 +4505,21 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .adm-mail-files button:hover { border-color: #d8d8dc; }
 .adm-mail-files em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
 
+/* 빠른 인재 추천 — 공고 한 줄 아래에 맞는 사람이 선다. */
+.co-rec-job { padding: 14px 18px; border-top: 1px solid #f4f4f6; }
+.co-rec-job:first-of-type { border-top: 0; }
+.co-rec-title { margin: 0 0 9px; font-size: 13.5px; color: #8a8a90; }
+.co-rec-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.co-rec-one { display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  padding: 10px 13px; border: 1px solid var(--color-border); border-radius: 10px;
+  background: #fff; font-family: inherit; text-align: left; cursor: pointer;
+  transition: border-color .15s, background .15s; }
+.co-rec-one:hover { border-color: #d8d8dc; background: #f7f7f8; }
+.co-rec-one b { font-size: 14.5px; font-weight: 600; color: #555; }
+.co-rec-one span { font-size: 13px; color: #555; }
+/* 왜 떴는지 — 점수를 준 항목 그대로다. 지어낸 설명이 아니다. */
+.co-rec-one em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
+
 /* 이슈 올리는 칸 — 칸 이름이 곧 「무엇을 적으면 되는지」다. */
 .tr-f { display: flex; flex-direction: column; gap: 6px; }
 .tr-f > span { font-size: 13px; color: #555; }

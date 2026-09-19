@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Briefcase, Plus, Inbox } from "lucide-react";
+import { Briefcase, Plus, Inbox, Sparkles } from "lucide-react";
 
 interface Stats {
   active_jobs: number;
@@ -110,6 +110,20 @@ export default function CompanyDashboard() {
   // 한 사람이 지금 어디까지 왔는지는 채용제안 화면이 맡는다.
   // 할 일과 현황을 가른다. 예전에는 숫자가 있으면 다 보라라서, 진행중 공고 7건처럼
   // 그냥 현황인 것도 손대야 할 것처럼 보였다. 지금 답해야 하는 것만 보라로 든다.
+  /* 빠른 인재 추천 — 프리미엄. 기업은 아무 조건도 고르지 않는다. 이미 올려 둔
+     공고가 곧 조건이다. 열려 있지 않으면 아무것도 그리지 않는다 — 못 쓰는
+     기능을 회색으로 깔아 두면 화면만 길어진다. */
+  const [추천, set추천] = useState<{ 열림: boolean; jobs: any[] } | null>(null);
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("company_token") : null;
+    if (!token) return;
+    fetch("/api/company/recommendations?limit=5", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((r) => { if (r?.success) set추천(r.data); })
+      .catch(() => {});
+  }, []);
+  const 추천있는공고 = (추천?.jobs || []).filter((j: any) => (j.사람들 || []).length > 0);
+
   const statCards: { label: string; value: number; href: string; 할일?: boolean }[] = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
     { label: "마감임박", value: stats?.deadline_today ?? 0, href: "/company/dashboard/jobs?status=마감임박" },
@@ -180,6 +194,38 @@ export default function CompanyDashboard() {
           )}
         </div>
       </div>
+
+      {/* 빠른 인재 추천 — 프리미엄. 인재검색은 직접 찾는 자리이고 여기는
+          찾지 않아도 서 있는 자리다. 왜 이 사람이 떴는지를 같이 적는다 —
+          까닭 없이 이름만 늘어놓으면 한 번 빗나갔을 때 다음부터 안 본다. */}
+      {추천?.열림 && 추천있는공고.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <div className="company-card">
+            <div className="company-card-head">
+              <h2 className="company-card-title">
+                <Sparkles size={15} style={{ verticalAlign: -2, marginRight: 5, color: "#582681" }} />
+                우리 공고에 맞는 인재
+              </h2>
+              <Link href="/company/dashboard/talent" className="company-card-more">인재검색 &rarr;</Link>
+            </div>
+            {추천있는공고.map((j: any) => (
+              <div key={j.id} className="co-rec-job">
+                <p className="co-rec-title">{j.title}</p>
+                <div className="co-rec-list">
+                  {(j.사람들 || []).map((t: any) => (
+                    <button key={t.id} type="button" className="co-rec-one"
+                      onClick={() => router.push(`/company/dashboard/talent/${t.id}`)}>
+                      <b>{t.name || "이름 없음"}</b>
+                      <span>{(t.areas || []).slice(0, 2).join(" · ")}</span>
+                      <em>{(t.reasons || []).join(" · ")}</em>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 내 채용공고 + 공고별 전환율 */}
       <div style={{ marginTop: 16 }}>

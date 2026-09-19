@@ -42,6 +42,21 @@ export type 공고 = {
 
 export type 결과 = { id: string; score: number; reasons: string[] };
 
+/** 경력 총 개월. 이력서의 날짜는 「2021-08」 꼴이다(일이 없다).
+ *  구직자 쪽 추천과 기업 쪽 추천이 같은 값을 봐야 한다 — 한쪽만 고치면
+ *  같은 사람의 경력이 보는 쪽에 따라 달라진다. */
+export function 총개월(rows: { start_date?: string | null; end_date?: string | null }[]): number {
+  let m = 0;
+  for (const r of rows || []) {
+    const s = new Date(String(r.start_date || "") + "-01");
+    const e = r.end_date ? new Date(String(r.end_date) + "-01") : new Date();
+    if (isNaN(+s) || isNaN(+e)) continue;
+    const d = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+    if (d > 0) m += d;
+  }
+  return m;
+}
+
 // "3년 이상" → 36. "신입" → 0. "경력 무관" → null(아무나).
 function 요구개월(s: string): number | null {
   const t = String(s || "").trim();
@@ -149,4 +164,114 @@ export function 고르기(u: 구직자, 공고들: 공고[], limit = 4): 결과[
       new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
     .slice(0, limit)
     .map(({ id, score, reasons }) => ({ id, score, reasons }));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   반대 방향 — 공고를 기준으로 사람을 고른다 (프리미엄 「빠른 인재 추천」)
+
+   위의 것은 구직자에게 공고를 골라 준다. 여기는 기업에게 이력서를 골라
+   준다. 재는 것은 같다 — 직군·지역·경력·고용형태가 맞는 만큼 더한다.
+   점수 배분도 같이 둔다. 한쪽만 손보면 같은 「맞음」이 보는 쪽에 따라
+   다른 무게가 되고, 왜 그런지 아무도 설명하지 못하게 된다.
+   ═══════════════════════════════════════════════════════════════ */
+
+export type 인재 = {
+  id: string;
+  /** 이력서에 적은 직군 — 대분류·소분류를 함께 담는다 */
+  areas: string[];
+  jobType: JobType;
+  /** 희망 근무지역. 없으면 사는 곳으로 물러선다 */
+  regions: { sido?: string; sigungu?: string }[];
+  /** 경력 총 개월. 신입이면 0 */
+  months: number;
+  isEntry: boolean;
+  workType?: string;
+  /** 이력서를 마지막으로 손본 때 */
+  updatedAt?: string | Date | null;
+};
+
+/** 공고 하나에 이 사람이 얼마나 맞는가. */
+export function 인재점수매기기(j: 공고, t: 인재): 결과 {
+  let score = 0;
+  const reasons: string[] = [];
+  const cats = Array.isArray(j.categories) ? j.categories : [];
+
+  // ── 직군 ──────────────────────────────────────────
+  // 여기가 0 이면 추천하지 않는다(아래 인재고르기). 구직자 쪽은 지역만 맞아도
+  // 「가까운 데 이런 자리가 있다」가 되지만, 기업 쪽은 다르다 — 헤어 디자이너를
+  // 뽑는 자리에 직군을 안 적은 사람을 올려 두면 「왜 이 사람이?」가 된다.
+  const 정확 = cats.some((c) => t.areas.includes(c));
+  let 직군점수 = 0;
+  if (정확) {
+    직군점수 = 40;
+    reasons.push("공고 직군");
+  } else if (cats.length && t.areas.length) {
+    const 그룹 = new Set(t.areas.map((a) => getGroupOfItem(t.jobType, a)).filter(Boolean));
+    if (cats.some((c) => 그룹.has(getGroupOfItem(t.jobType, c)))) {
+      직군점수 = 20;
+      reasons.push("비슷한 직군");
+    }
+  }
+  score += 직군점수;
+
+  // ── 지역 ──────────────────────────────────────────
+  const { sido, sigungu } = 쪼개기(j.location);
+  if (sido) {
+    const 시군구맞음 = t.regions.some((r) => r.sigungu && sigungu && r.sigungu === sigungu);
+    const 시도맞음 = t.regions.some((r) => (r.sido || "").slice(0, 2) === sido);
+    if (시군구맞음) { score += 25; reasons.push("희망 지역"); }
+    else if (시도맞음) { score += 12; reasons.push("같은 시·도"); }
+  }
+
+  // ── 경력 ──────────────────────────────────────────
+  if (j.careers.length) {
+    const 개월 = t.isEntry ? 0 : t.months;
+    let 최고 = 0;
+    for (const c of j.careers) {
+      const 요구 = 요구개월(c);
+      let s = 0;
+      if (요구 === null) s = 14;
+      else if (요구 === 0) s = 개월 <= 12 ? 20 : 2;
+      else if (개월 >= 요구) s = 개월 - 요구 <= 24 ? 20 : 12;
+      else s = 요구 - 개월 <= 12 ? 10 : 0;
+      if (s > 최고) 최고 = s;
+    }
+    score += 최고;
+    // 경력이 1년이 안 되면 「경력 0년」이 아니라 신입이다.
+    if (최고 >= 20) reasons.push(개월 < 12 ? "신입" : `경력 ${Math.floor(개월 / 12)}년`);
+  }
+
+  // ── 고용형태 ───────────────────────────────────────
+  if (t.workType && j.employmentType && t.workType === j.employmentType) {
+    score += 8;
+    reasons.push(j.employmentType);
+  }
+
+  // ── 이력서를 언제 손봤나 ────────────────────────────
+  // 공고의 「방금 올라옴」에 해당한다. 반년 넘게 손대지 않은 이력서는 지금
+  // 찾고 있는 사람이 아닐 때가 많다 — 빼지는 않고 뒤로 민다.
+  if (t.updatedAt) {
+    const 일 = Math.floor((Date.now() - new Date(t.updatedAt).getTime()) / 86400000);
+    if (Number.isFinite(일) && 일 >= 0) {
+      if (일 <= 7) { score += 7; reasons.push("이력서 새로 고침"); }
+      else if (일 <= 30) score += 4;
+      else if (일 <= 90) score += 2;
+    }
+  }
+
+  // 직군이 하나도 안 맞으면 점수를 내지 않는다 — 부르는 쪽이 이 값 하나만 보면 된다.
+  return { id: t.id, score: 직군점수 === 0 ? 0 : score, reasons: reasons.slice(0, 3) };
+}
+
+/** 이미 제안한 사람은 빼고, 점수 높은 순으로 고른다.
+ *  40점(RECOMMEND_MIN)에 못 미치면 세우지 않는다 — 억지로 채운 추천은
+ *  한 번 빗나가면 다음부터 아무도 안 본다. */
+export function 인재고르기(j: 공고, 인재들: 인재[], 제안함: string[] = [], limit = 20): 결과[] {
+  const 뺄것 = new Set(제안함);
+  return 인재들
+    .filter((t) => !뺄것.has(t.id))
+    .map((t) => 인재점수매기기(j, t))
+    .filter((r) => r.score >= RECOMMEND_MIN)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
 }
