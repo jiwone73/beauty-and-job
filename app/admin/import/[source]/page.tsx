@@ -131,7 +131,7 @@ export default function ImportListPage() {
 
   return (
     <AdminLayout activeMenu={`import-${source}`} 제목숨김>
-      <div className="admin-card">
+      <div className="admin-card" style={{ width: "100%" }}>
         <h1 className="adm-mail-title">{이름[source]} 공고 불러오기</h1>
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span>
@@ -191,7 +191,10 @@ export default function ImportListPage() {
         )}
 
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 1040 }}>
+          {/* 판을 꽉 채운다. 폭을 내용에 맡겨 두니 공고명이 짧은 셀렉미만
+              1060 에서 멈추고 헤어인잡·고용24 는 1160 이라, 같은 화면인데
+              소스마다 표 넓이가 달라 보였다. */}
+          <table className="admin-table" style={{ minWidth: 1040, width: "100%" }}>
             <thead>
               <tr>
                 {/* 지역·급여·연락처는 한 줄로 둔다. 「인천광역시 연수구」·
