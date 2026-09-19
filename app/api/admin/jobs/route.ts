@@ -39,6 +39,9 @@ export async function GET(req: NextRequest) {
   let idx = 1
 
   if (status) { where.push(`jp.status = $${idx++}`); params.push(status) }
+  // 내가 올린 것만. 임시저장 「이어쓰기」 목록이 이것을 쓴다 — 남이 쓰다 만
+  // 공고를 이어 쓸 일은 없고, 누가 올렸는지는 토큰이 안다.
+  if (searchParams.get('mine') === '1') { where.push(`jp.created_by = $${idx++}`); params.push(auth!.sub) }
   if (jobType) { where.push(`jp.job_type = $${idx++}`); params.push(jobType) }
   if (member === 'true') { where.push(`c.is_member = true`) }
   else if (member === 'false') { where.push(`c.is_member = false`) }
@@ -101,6 +104,19 @@ export async function POST(req: NextRequest) {
   } = body
 
   if (!title || !job_type) return err('JOB_002', '제목과 채용유형은 필수입니다.')
+
+  // 급여는 원 단위 정수로 담긴다. DB 가 담는 수(21억)를 넘으면 저장이 통째로
+  // 실패하고 「is out of range for type integer」가 그대로 화면에 떴다.
+  // 폼이 먼저 막지만 여기서도 본다 — 다른 길로 들어오는 값이 있다.
+  const 돈한계 = 2147483647
+  for (const [이름, 값] of [['급여', salary_min], ['급여 상한', salary_max]] as const) {
+    const n = Number(값)
+    if (Number.isFinite(n) && Math.abs(n) > 돈한계) {
+      return err('JOB_003',
+        `${이름}가 너무 큽니다(${n.toLocaleString()}원). 급여 칸은 만원 단위입니다 — ` +
+        `${Math.round(n / 1e8).toLocaleString()}만원이라면 그 숫자로 적어주세요.`)
+    }
+  }
 
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'

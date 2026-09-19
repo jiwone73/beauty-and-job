@@ -2101,9 +2101,33 @@ export default function JobPostForm({
     ? fiBenefits.split(",").map((s) => s.trim()).filter(Boolean)
     : benefitTags;
 
+  /* 급여 칸은 만원 단위다(시급·일급만 원 단위). 원문에 적힌 「2,800,000원」을
+     그대로 옮겨 적으면 저장할 때 만 배가 되어 280 억이 된다 — DB 가 담는 수를
+     넘어 「is out of range for type integer」가 그대로 화면에 떴다.
+
+     자동으로 고치지 않는다. 2,800,000 이 280 만원인지 280 억인지는 적은
+     사람만 안다. 막고 어떻게 적으면 되는지 알린다. */
+  const 급여상한 = 100000; // 만원 단위 10억. 그 위는 단위를 잘못 적은 것으로 본다.
+  const 급여단위확인 = (): string | null => {
+    if (salaryNego) return null;
+    if (salaryType === "HOURLY" || salaryType === "DAILY") return null; // 원 단위 칸
+    const 본다 = (v: string, 이름: string) => {
+      const n = parseInt(String(v || "").replace(/[^0-9]/g, "")) || 0;
+      if (n <= 급여상한) return null;
+      const 고쳐 = Math.round(n / 10000);
+      return `${이름}는 만원 단위로 적습니다. ${n.toLocaleString()} 을 적으시면 ` +
+        `${n.toLocaleString()}만원이 됩니다 — ${고쳐.toLocaleString()}만원이라면 ${고쳐.toLocaleString()} 으로 적어주세요.`;
+    };
+    return 본다(form.salary, "급여") || 본다(salaryMax, "급여 상한");
+  };
+
   const handleSubmit = async (status: "draft" | "publish") => {
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
+    // 급여 단위는 대행 등록에서도 본다 — 저장이 통째로 실패하는 값이라,
+    // 「필수 검증 없이」의 예외다.
+    const 급여말 = 급여단위확인();
+    if (급여말) { alert(급여말); return; }
     if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
     if (isNmAdmin) {
       if (!jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }

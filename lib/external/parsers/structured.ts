@@ -73,7 +73,14 @@ function parseHairinjob(html: string): StructuredResult | null {
     return "";
   };
 
-  const ogD = dec((html.match(/property="og:description" content="([^"]*)"/) || [])[1] || "");
+  /* content 를 끝까지 읽는다. 사이트가 값 안의 큰따옴표를 빠져나가게 적지
+     않아, 제목이 「"대구디자이너양성과정"무료90일…」 처럼 따옴표로 시작하면
+     content 가 거기서 끊겼다 — og:title 은 통째로 비고 og:description 은
+     「채용정보 [쌤헤어아카데미 채용] 」까지만 읽혀 제목이 사라졌다.
+     닫는 따옴표는 뒤에 > 가 오는 것 하나뿐이라 그것으로 끝을 잡는다. */
+  const 메타 = (이름: string) =>
+    (html.match(new RegExp(`property="og:${이름}" content="([\\s\\S]*?)"\\s*/?>`)) || [])[1] || "";
+  const ogD = dec(메타("description"));
   // 모집분야는 직종이 여러 개일 수 있다(각 <div> 한 블록). 필드가 서로 다른 직종에서 섞이지 않도록 "첫 직종"만 사용.
   const mjRaw = liRaw("모집분야");
   const firstDiv = (mjRaw.match(/<div\b[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || mjRaw;
@@ -82,7 +89,7 @@ function parseHairinjob(html: string): StructuredResult | null {
   // 제목·회사·지역·주소
   let title = (ogD.match(/채용\]\s*(.+?)\s*,\s*근무지역/) || [])[1] || "";
   if (!title) {
-    title = dec((html.match(/<meta property="og:title" content="([^"]+)"/) || [])[1] || "").replace(/\s*\|\s*헤어인잡.*$/, "").trim();
+    title = dec(메타("title")).replace(/\s*\|\s*헤어인잡.*$/, "").trim();
   }
   const company = (ogD.match(/\[([^\]]+?)\s*채용\]/) || [])[1] || "";
   if (!title && !company && !mj) return null;
@@ -218,7 +225,13 @@ function parseHairinjob(html: string): StructuredResult | null {
   const benefit_tags: string[] = [];
   if (/국민연금|고용보험|산재|건강보험|4대/.test(benefits)) benefit_tags.push("4대보험");
   if (/인센티브/.test(benefits)) benefit_tags.push("인센티브");
-  if (/식대|중식|조식|식사|식비/.test(benefits)) benefit_tags.push("식대 지원");
+  /* 밥을 주는 것과 밥값을 주는 것은 다르다. 여태 「조식제공」까지 「식대 지원」
+     으로 바꿔 달아, 원문에 없는 말이 공고에 붙었다(등록 이슈로 올라왔다).
+     쓰는 태그는 모두 benefit_tags 에 이미 있는 이름이다. */
+  if (/조식/.test(benefits)) benefit_tags.push("조식제공");
+  if (/중식|점심/.test(benefits)) benefit_tags.push("중식제공");
+  if (/숙식/.test(benefits)) benefit_tags.push("숙식 제공");
+  if (/식대|식비|식사\s*지원/.test(benefits)) benefit_tags.push("식대 지원");
   if (/주차/.test(benefits)) benefit_tags.push("주차 가능");
   if (/기숙사|숙소/.test(benefits)) benefit_tags.push("기숙사 제공");
   if (/교육비|교육\s*지원/.test(benefits)) benefit_tags.push("교육비 지원");
