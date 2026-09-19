@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Fragment } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Search, Trash2} from "lucide-react";
+import { ChevronDown, Plus, Search, Trash2 } from "lucide-react";
 import FilterDropdown from "@/components/company/FilterDropdown";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
@@ -229,7 +229,7 @@ export default function AdminStoriesPage() {
         {/* 옆줄 — 갈래. 「어느 함을 여는가」만 맡는다. 글 관리와 승인대기가 먼저고,
             그 아래 카테고리다. */}
         <nav className="adm-mail-side" aria-label="글 갈래">
-          <p className="adm-mail-side-t">카테고리</p>
+          <p className="adm-mail-side-h">현장이야기<ChevronDown size={15} /></p>
           {["전체", "공감", "꿀팁", "질문", "정보"].map((v) => (
             <button key={v} type="button"
               className={`adm-mail-side-i${catFilter === v ? " on" : ""}`}

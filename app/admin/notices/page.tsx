@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, Search, Trash2 } from "lucide-react";
 
 // 공지사항 — 왼쪽에서 고르고 오른쪽에서 본다.
 //
@@ -120,7 +120,7 @@ export default function AdminNoticesPage() {
       <div className="adm-mail">
         {/* 옆줄 — 갈래. 「어느 함을 여는가」만 맡는다. */}
         <nav className="adm-mail-side" aria-label="공지 갈래">
-          <p className="adm-mail-side-t">갈래</p>
+          <p className="adm-mail-side-h">공지사항<ChevronDown size={15} /></p>
           {["전체", "공지", "이벤트"].map((v) => (
             <button key={v} type="button"
               className={`adm-mail-side-i${갈래 === v ? " on" : ""}`}

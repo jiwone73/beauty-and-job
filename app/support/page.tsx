@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import InfoShell from "@/components/InfoShell";
 import PrivacyConsent from "@/components/PrivacyConsent";
+import { 문의유형 } from "@/lib/inquiryTypes";
 
 /**
  * 1:1 문의.
@@ -13,7 +14,7 @@ import PrivacyConsent from "@/components/PrivacyConsent";
  *
  * 공지·FAQ·다운로드는 옆줄이 맡으므로 여기서 또 세우지 않는다.
  */
-const 유형들 = ["계정/로그인", "이력서/프로필", "채용공고/지원", "기업회원", "신고/불편사항", "기타"];
+const 유형들 = [...문의유형];
 
 export default function SupportPage() {
   const { userName } = useAuthStore();

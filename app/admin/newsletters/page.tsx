@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, Trash2 } from "lucide-react";
+import { ChevronDown, Search, Trash2 } from "lucide-react";
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "검토 대기",
@@ -170,7 +170,7 @@ export default function AdminNewslettersPage() {
       <div className="adm-mail">
         {/* 옆줄 — 상태. 「어느 함을 여는가」만 맡는다. */}
         <nav className="adm-mail-side" aria-label="뉴스레터 상태">
-          <p className="adm-mail-side-t">상태</p>
+          <p className="adm-mail-side-h">뉴스레터<ChevronDown size={15} /></p>
           {["전체", "검토 대기", "발송 완료"].map((v) => (
             <button key={v} type="button"
               className={`adm-mail-side-i${갈래 === v ? " on" : ""}`}

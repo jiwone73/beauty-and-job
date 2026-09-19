@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { formatPhone } from "@/lib/phone";
 import { ChevronDown, Search, Trash2 } from "lucide-react";
+import FilterDropdown from "@/components/company/FilterDropdown";
+import { 문의유형 } from "@/lib/inquiryTypes";
 
 type Inquiry = {
   id: number;
@@ -47,6 +49,7 @@ export default function AdminInquiriesPage() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
+  const [유형고름, set유형고름] = useState("전체");
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [검색, set검색] = useState("");
@@ -170,7 +173,8 @@ export default function AdminInquiriesPage() {
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
     (statusFilter === "" || it.status === statusFilter) &&
-    (!찾는말 || [it.name, it.email, it.subject, it.type, it.message]
+    (유형고름 === "전체" || it.type === 유형고름) &&
+    (!찾는말 || [it.name, it.email, it.subject, it.message]
       .some((v) => (v || "").includes(찾는말))));
 
   const 목록으로 = () => { setSelected(null); setReplyBody(""); setFiles([]); };
@@ -203,9 +207,12 @@ export default function AdminInquiriesPage() {
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
                 <label className="nb-search">
                   <input value={검색} onChange={(e) => set검색(e.target.value)}
-                         placeholder="이름·이메일·제목·회원구분·내용 검색" />
+                         placeholder="이름·이메일·제목·내용 검색" />
                   <button type="submit" aria-label="검색"><Search size={17} /></button>
                 </label>
+                <FilterDropdown label="문의 유형" value={유형고름}
+                  options={["전체", ...문의유형]}
+                  onChange={(v) => { set유형고름(v); setChecked([]); 목록으로(); }} />
               </form>
 
               <div className="adm-mail-bar">
@@ -235,7 +242,7 @@ export default function AdminInquiriesPage() {
                     <thead>
                       <tr>
                         <th style={{ width: 38 }}></th>
-                        <th style={{ width: 110 }}>회원구분</th>
+                        <th style={{ width: 130 }}>문의 유형</th>
                         <th style={{ width: 110 }}>이름</th>
                         <th>제목</th>
                         <th style={{ width: 150 }}>접수일</th>
