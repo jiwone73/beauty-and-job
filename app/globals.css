@@ -7402,21 +7402,24 @@ div:has(> table.admin-table),
   padding: 2px 0 6px 36px;
 }
 .admin-sub-nav-item {
+  /* 한 단 들어간 자리임을 불렛으로 알린다 — 고객센터·기업 옆줄과 같은 결. */
+  position: relative;
   display: block;
-  padding: 7px 12px;
+  padding: 7px 12px 7px 26px;
   font-size: 15px;
   font-weight: 400;
   color: #555;
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.15s;
-  border-left: 2px solid transparent;
 }
+.admin-sub-nav-item::before { content: "·"; position: absolute; left: 14px; color: #b5b5bb; }
+.admin-sub-nav-item.active::before { color: #582681; }
 .admin-sub-nav-item:hover { color: #582681; background: #f7f7f8; }
+/* 고른 자리는 바탕과 불렛으로만 알린다 — 세로선까지 두면 장식이 둘이다. */
 .admin-sub-nav-item.active {
   color: #582681;
   font-weight: 700;
-  border-left-color: #582681;
   background: #f7f7f8;
 }
 
@@ -16574,13 +16577,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .sup-done-t { margin: 0 0 8px; font-size: 18px; font-weight: 700; color: #1f1f22; }
 .sup-done-d { margin: 0 0 22px; font-size: 14.5px; color: #555; line-height: 1.7; }
 
-.info-seg { display: flex; background: #f5f5f5; margin-bottom: 18px; }
+/* 고른 것이 회색이다 — 옆줄에서 고른 자리가 회색이라 같은 결로 맞춘다.
+   여태는 거꾸로여서, 옆줄과 견주면 고르지 않은 쪽이 골라진 것처럼 보였다. */
+.info-seg { display: flex; margin-bottom: 18px; border-bottom: 1px solid var(--color-border); }
 .info-seg button { flex: 1; height: 46px; padding: 0 12px; font-family: inherit;
-  font-size: 15px; color: #8a8a90; background: none; border: 0;
-  border-bottom: 2px solid transparent; cursor: pointer; transition: color .15s; }
-.info-seg button:hover { color: #555; }
-.info-seg button.on { background: #fff; color: #1f1f22; font-weight: 700;
-  border-bottom-color: #1f1f22; }
+  font-size: 15px; color: #8a8a90; background: #fff; border: 0;
+  border-radius: 8px 8px 0 0; cursor: pointer; transition: background .15s, color .15s; }
+.info-seg button:hover { color: #555; background: #fafafb; }
+.info-seg button.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
 
 .faq-tabs { display: flex; gap: 6px; }
 .faq-tabs button { display: inline-flex; align-items: center; gap: 6px; height: 40px;

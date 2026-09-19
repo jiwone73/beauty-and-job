@@ -1,6 +1,6 @@
 "use client";
-import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { UserPlus, FileText, Search, Send, MessageSquare,
          Building2, FilePlus2, Users, TrendingUp } from "lucide-react";
@@ -49,8 +49,12 @@ const 걸음: Record<묶음, { Icon: typeof UserPlus; 이름: string; 말: strin
 };
 
 function 판() {
-  const 처음 = 누구읽기(useSearchParams());
-  const [묶, set묶] = useState<묶음>(처음);
+  /* 고른 갈래는 주소가 쥔다. 여태는 처음 한 번만 읽어 두어, 옆줄에서 다른
+     갈래를 눌러도 주소만 바뀌고 본문은 그대로였다. 주소 하나만 보면
+     옆줄 표시와 본문이 따로 놀 수 없다. */
+  const router = useRouter();
+  const 묶 = 누구읽기(useSearchParams());
+  const set묶 = (v: 묶음) => router.replace(`/support/guide?누구=${v}`, { scroll: false });
 
   return (
     <InfoShell active="/support/guide" title="사용가이드" 누구={묶}>
