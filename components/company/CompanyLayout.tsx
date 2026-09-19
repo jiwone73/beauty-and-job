@@ -236,9 +236,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     //   다섯을 한 높이로 늘어놓았더니 라이트·스탠다드·프리미엄이 배너광고와
     //   같은 종류의 물건처럼 보였다.
     plans: [
-      // 오픈이벤트가 맨 위인 까닭은 지금 라이트를 살 이유가 이것이어서다.
-      // 기간이 끝나면 이 줄만 빼면 된다.
-      { id: "plans-event",    label: () => "오픈이벤트", title: () => "오픈이벤트 안내", href: `${base}/plans/event` },
+      // 오픈이벤트는 여기 두지 않는다. 이 옆줄은 이미 가입한 사장님이 보는
+      // 자리라 「어떻게 참여하나」는 지난 이야기다 — 이벤트 안내는 가입 전에
+      // 보는 것이고, 그 길(메인 배너·기업 서비스 소개의 「자세히 보기」)은
+      // 그대로 살아 있다. 페이지(/plans/event)도 지우지 않았다.
       { id: "plans",          label: () => "채용공고 상품", title: () => "채용공고 상품 안내", href: `${base}/plans` },
       { id: "plan-light",     label: () => "라이트",   title: () => "라이트",   href: `${base}/plans/light`,    아래: true },
       { id: "plan-standard",  label: () => "스탠다드", title: () => "스탠다드", href: `${base}/plans/standard`, 아래: true },
@@ -626,7 +627,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
       <div className="co-top-body">
         {/* 옆줄이 있는 화면은 제목을 본문 판 안에 둔다 — 판 밖에 두면 옆줄 꼭대기가
             제목 줄에 걸려 판과 어긋난다. 인재 검색도 옆줄(필터 기둥)이 있어 같다. */}
-        {!사이드있나 && activePage !== "talent" && (
+        {/* 제목숨김은 옆줄 없는 화면에도 걸린다. 오픈이벤트처럼 제 머리를 들고
+            오는 화면이 여기서 「대시보드」라는 제목을 하나 더 얻고 있었다. */}
+        {!사이드있나 && !제목숨김 && activePage !== "talent" && (
           <h1 className="co-top-title">{title || PAGE_TITLES[activePage] || "대시보드"}</h1>
         )}
         {activePage === "talent" ? (
