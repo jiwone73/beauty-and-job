@@ -4463,7 +4463,13 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .adm-mail-side-i.on i { color: var(--color-primary); }
 
 .adm-mail-body { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+/* 관리자 화면 제목과 같은 20 볼드. 판 안에 서므로 사이드 폭을 되돌리는 손질은
+   필요 없다 — 이 판 한가운데가 곧 제 자리다. */
+.adm-mail-title { margin: 18px 0 16px; font-size: 20px; font-weight: 700; color: #555;
+  text-align: center; }
 /* 위 한 줄 — 전체 선택·삭제·건수. 목록과 상세가 같은 자리에 둔다. */
+/* 목록 위 한 줄 — 처리상태와 검색. 공지·다운로드 게시판(.nb-top)과 같은 부품. */
+.adm-mail-find { margin: 0; padding: 0 16px 12px; }
 .adm-mail-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px;
   border-bottom: 1px solid #f2f2f4; }
 .adm-mail-all { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: #555; cursor: pointer; }

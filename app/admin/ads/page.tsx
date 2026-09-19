@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { formatPhone } from "@/lib/phone";
-import { Trash2 } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 
 const PRODUCT_LABELS: Record<string, string> = {
   top_exposure: "공고 상단 노출",
@@ -51,19 +51,20 @@ export default function AdminAdsPage() {
   const [typeFilter, setTypeFilter] = useState("");
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
+  const [검색, set검색] = useState("");
   const [replySubject, setReplySubject] = useState("");
   const [replyBody, setReplyBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
+  /* 서버에는 거르지 않고 전부 청한다. 걸러 받으면 옆줄의 건수가 지금 걸린
+     필터 안에서만 세어져, 「광고 0 · 제휴 2」처럼 실제와 다른 숫자가 보였다.
+     문의는 많아야 수백 건이라 받아 놓고 화면에서 거르는 편이 맞다. */
   const fetchData = async () => {
     setLoading(true);
     try {
-      const qs = new URLSearchParams();
-      if (statusFilter) qs.set("status", statusFilter);
-      if (typeFilter) qs.set("type", typeFilter);
-      const res = await fetch(`/api/admin/ads/inquiries?${qs.toString()}`, {
+      const res = await fetch(`/api/admin/ads/inquiries`, {
         headers: { Authorization: `Bearer ${token()}` },
       });
       const data = await res.json();
@@ -73,7 +74,7 @@ export default function AdminAdsPage() {
     }
   };
 
-  useEffect(() => { fetchData(); setChecked([]); }, [statusFilter, typeFilter]);
+  useEffect(() => { fetchData(); setChecked([]); }, []);
 
   const openDetail = (item: Inquiry) => {
     setSelected(item);
@@ -159,17 +160,23 @@ export default function AdminAdsPage() {
     </span>
   );
 
-  /* 갈래는 옆줄이 맡는다. 드롭다운 둘로 두었을 때는 지금 무엇을 보고 있는지가
-     접힌 채였다 — 열어 봐야 알았다. 네이버 메일함처럼 늘 펼쳐 두고, 고른 것만
-     켠다. */
   const 상태갈래 = [
     { key: "", label: "전체" },
     { key: "new", label: "신규" },
     { key: "done", label: "회신완료" },
   ];
   const 유형갈래 = ["전체", "광고", "제휴", "기타"];
-  const 갈래수 = (st: string, ty: string) => items.filter((it) =>
-    (!st || it.status === st) && (ty === "전체" || (it.type || "광고") === ty)).length;
+  const 유형수 = (ty: string) => items.filter((it) =>
+    ty === "전체" || (it.type || "광고") === ty).length;
+
+  /* 옆줄은 유형만 맡는다. 처리상태와 검색은 목록 위에서 건다 — 갈래는 「어느
+     함을 여는가」이고 상태·검색은 「그 안에서 무엇을 찾는가」라 층이 다르다. */
+  const 찾는말 = 검색.trim();
+  const 보일것 = items.filter((it) =>
+    (typeFilter === "" || (it.type || "광고") === typeFilter) &&
+    (statusFilter === "" || it.status === statusFilter) &&
+    (!찾는말 || [it.company_name, it.contact_name, it.email, it.message]
+      .some((v) => (v || "").includes(찾는말))));
 
   /* 고르면 목록 자리에 상세가 선다. 좌우로 나눠 두었을 때는 목록이 460px 에
      갇혀 회사명·담당자·접수일이 두 줄로 접혔고, 상세는 라벨-값 일곱 줄이
@@ -177,37 +184,42 @@ export default function AdminAdsPage() {
   const 목록으로 = () => { setSelected(null); setReplyBody(""); setFiles([]); };
 
   return (
-    <AdminLayout activeMenu="ads">
+    <AdminLayout activeMenu="ads" 제목숨김>
       <div className="adm-mail">
-        {/* 옆줄 — 갈래 */}
-        <nav className="adm-mail-side" aria-label="문의 갈래">
-          <p className="adm-mail-side-t">처리상태</p>
-          {상태갈래.map((t) => (
-            <button key={t.key} type="button"
-              className={`adm-mail-side-i${statusFilter === t.key ? " on" : ""}`}
-              onClick={() => { setStatusFilter(t.key); 목록으로(); }}>
-              {t.label}<i>{갈래수(t.key, typeFilter === "" ? "전체" : typeFilter)}</i>
-            </button>
-          ))}
+        {/* 옆줄 — 유형. 「어느 함을 여는가」만 맡는다. */}
+        <nav className="adm-mail-side" aria-label="문의 유형">
           <p className="adm-mail-side-t">유형</p>
           {유형갈래.map((v) => (
             <button key={v} type="button"
               className={`adm-mail-side-i${(typeFilter === "" ? "전체" : typeFilter) === v ? " on" : ""}`}
               onClick={() => { setTypeFilter(v === "전체" ? "" : v); 목록으로(); }}>
-              {v}<i>{갈래수(statusFilter, v)}</i>
+              {v}<i>{유형수(v)}</i>
             </button>
           ))}
         </nav>
 
         {/* 오른쪽 — 목록과 상세가 한 자리를 번갈아 쓴다 */}
         <div className="admin-card adm-mail-body">
+          {/* 제목은 판 안 맨 위에 선다 — 판 밖에 두면 옆줄 꼭대기와 어긋난다. */}
+          <h1 className="adm-mail-title">사업문의</h1>
           {!selected ? (
             <>
+              <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
+                <select className="nb-pick" aria-label="처리상태" value={statusFilter}
+                        onChange={(e) => { setStatusFilter(e.target.value); setChecked([]); }}>
+                  {상태갈래.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
+                </select>
+                <label className="nb-search">
+                  <input value={검색} onChange={(e) => set검색(e.target.value)}
+                         placeholder="회사명·담당자·이메일·내용 검색" />
+                  <button type="submit" aria-label="검색"><Search size={17} /></button>
+                </label>
+              </form>
               <div className="adm-mail-bar">
                 <label className="adm-mail-all">
                   <input type="checkbox"
-                    checked={items.length > 0 && checked.length === items.length}
-                    onChange={(e) => setChecked(e.target.checked ? items.map((i2) => i2.id) : [])} />
+                    checked={보일것.length > 0 && checked.length === 보일것.length}
+                    onChange={(e) => setChecked(e.target.checked ? 보일것.map((i2) => i2.id) : [])} />
                   전체 선택
                 </label>
                 {checked.length > 0 && (
@@ -215,13 +227,15 @@ export default function AdminAdsPage() {
                     <Trash2 size={14} /> 삭제 ({checked.length})
                   </button>
                 )}
-                <span className="adm-mail-count">{items.length}건</span>
+                <span className="adm-mail-count">{보일것.length}건</span>
               </div>
 
               {loading ? (
                 <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
-              ) : items.length === 0 ? (
-                <div className="admin-empty" style={{ textAlign: "center" }}>문의가 없습니다.</div>
+              ) : 보일것.length === 0 ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>
+                  {찾는말 ? `「${찾는말}」에 대한 문의가 없습니다.` : "문의가 없습니다."}
+                </div>
               ) : (
                 <div className="adm-mail-list">
                   <table className="admin-table">
@@ -236,7 +250,7 @@ export default function AdminAdsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {items.map((item) => (
+                      {보일것.map((item) => (
                         <tr key={item.id} className={item.status === "done" ? undefined : "adm-mail-new"}>
                           <td onClick={(e) => e.stopPropagation()}>
                             <input type="checkbox" checked={checked.includes(item.id)}

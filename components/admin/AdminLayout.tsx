@@ -82,13 +82,15 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "inquiries": "1:1 문의",
 };
 
-export default function AdminLayout({ children, activeMenu, pageTitle }: {
+export default function AdminLayout({ children, activeMenu, pageTitle, 제목숨김 }: {
   children: React.ReactNode;
   activeMenu: string;
   /** 사이드에서 켜질 메뉴와 화면 제목이 다를 때. 목록에서 넘어온 공고 등록 폼이
    *  그렇다 — 사이드는 그 소스를 켜 두어야 어디서 왔는지 보이지만, 제목은
    *  「셀렉미 공고 불러오기」가 아니라 「공고 등록」이어야 한다. */
   pageTitle?: string;
+  /** 화면이 제 판 안에 제목을 그릴 때 */
+  제목숨김?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -318,7 +320,9 @@ export default function AdminLayout({ children, activeMenu, pageTitle }: {
           </div>
         </header>
         <main className="admin-content">
-          {(pageTitle || PAGE_SUBTITLES[activeMenu]) && (
+          {/* 제 판 안에 제목을 그리는 화면은 여기서 또 그리지 않는다 — 옆줄이
+              있는 화면에서 제목이 판 밖에 있으면 옆줄 꼭대기와 어긋난다. */}
+          {!제목숨김 && (pageTitle || PAGE_SUBTITLES[activeMenu]) && (
             <h1 className="admin-page-title">{pageTitle || PAGE_SUBTITLES[activeMenu]}</h1>
           )}
           {children}
