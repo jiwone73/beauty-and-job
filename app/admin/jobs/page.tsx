@@ -210,18 +210,24 @@ function AdminJobsPageInner() {
     마감: jobs.filter((j) => j.status === "CLOSED" || j.status === "EXPIRED").length,
   };
   return (
-    <AdminLayout activeMenu="jobs">
-      <div className="admin-mini-stats">
-        {Object.entries(counts).map(([label, count]) => (
-          <div key={label} className="admin-mini-stat"
-            onClick={() => setStatusFilter(label)}
-            style={{ cursor: "pointer", ...(statusFilter === label ? { outline: "2px solid #582681", outlineOffset: "-2px" } : {}) }}>
-            <span className="admin-mini-stat-label">{label}</span>
-            <span className="admin-mini-stat-value">{count}<span className="admin-mini-unit">건</span></span>
-          </div>
-        ))}
-      </div>
-      <div style={{ width: "fit-content", maxWidth: "100%" }}>
+    <AdminLayout activeMenu="jobs" 제목숨김>
+      <div className="adm-mail">
+        {/* 옆줄 — 상태. 위에 카운터 카드 여섯을 늘어놓았을 때와 같은 일을 하지만
+            자리를 덜 먹고, 지금 무엇을 보고 있는지가 켜진 줄로 드러난다. */}
+        <nav className="adm-mail-side" aria-label="공고 상태">
+          <p className="adm-mail-side-t">상태</p>
+          {Object.entries(counts).map(([label, count]) => (
+            <button key={label} type="button"
+              className={`adm-mail-side-i${statusFilter === label ? " on" : ""}`}
+              onClick={() => setStatusFilter(label)}>
+              {label}<i>{count}</i>
+            </button>
+          ))}
+        </nav>
+
+        <div className="admin-card adm-mail-body" style={{ overflow: "visible" }}>
+          <h1 className="adm-mail-title">채용공고</h1>
+          <div style={{ padding: "0 16px 16px" }}>
       {/* 공고 구분 — 매장/오피스 라디오 (fit-content 래퍼 안이라 gap이 안 먹어 marginBottom으로 간격 확보) */}
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
         <span style={{ fontSize: 14, color: "#555" }}>공고 구분</span>
@@ -254,7 +260,7 @@ function AdminJobsPageInner() {
           <Plus size={16} /> 공고 직접 등록
         </Link>
       </div>
-      <div className="admin-card">
+      <div className="admin-card adm-inner">
         <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span>총 <strong>{filtered.length}</strong>건{checkedIds.size > 0 ? ` · ${checkedIds.size}건 선택` : ""}</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -431,6 +437,8 @@ function AdminJobsPageInner() {
           </table>
           </div>
       </div>
+          </div>
+        </div>
       </div>
 
       {companyModal && (

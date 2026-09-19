@@ -4487,6 +4487,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 아직 회신하지 않은 줄만 굵게 — 메일함에서 안 읽은 것이 굵은 것과 같다. */
 .adm-mail-new td { font-weight: 700; color: #1f1f22; }
 /* 제목 앞에 붙는 작은 딱지(고정 등) */
+/* 판 안에 또 판이 오면 테두리가 두 겹이다 — 바깥 판이 이미 두르고 있으니
+   안쪽 것은 벗는다. */
+.adm-mail-body .adm-inner { border: 0 !important; box-shadow: none !important; background: none !important; }
 .adm-mail-chip { display: inline-block; margin-right: 6px; padding: 1px 6px;
   border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px;
   font-weight: 400; color: #8a8a90; vertical-align: 1px; }
