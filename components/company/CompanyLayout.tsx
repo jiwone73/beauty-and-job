@@ -290,6 +290,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
   // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
   // 연장이니 그 메뉴가 계속 켜져 있어야 한다.
   const navActive = (id: string) => activePage === id || (id === "jobs" && activePage === "jobs-new");
+  // 옆줄에서 접은 묶음만 적어 둔다 — 처음에는 다 펴져 있다.
+  const [접은것, set접은것] = useState<string[]>([]);
+  const 접기 = (id: string) =>
+    set접은것((앞) => (앞.includes(id) ? 앞.filter((x) => x !== id) : [...앞, id]));
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -430,10 +434,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         /* 평소엔 테두리만, 마우스를 올렸을 때 뷰티워크 보라로 채운다 — 머리줄에 늘 떠 있는
            단추라 채워 두면 짙은 덩어리 하나가 화면에서 제일 먼저 읽힌다. */
         .co-top-post { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 15px;
-          border-radius: 8px; background: #fff; border: 1px solid var(--color-primary);
-          color: var(--color-primary); font-size: 14px; text-decoration: none; white-space: nowrap;
+          border-radius: 8px; background: #fff; border: 1px solid var(--color-border);
+          color: #555; font-size: 14px; text-decoration: none; white-space: nowrap;
           transition: background .15s, color .15s; }
-        .co-top-post:hover { background: var(--color-primary); color: #fff; }
+        .co-top-post:hover { background: #f7f7f8; }
         .co-top-me { display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
         .co-top-ava { width: 32px; height: 32px; border-radius: 7px; overflow: hidden; flex-shrink: 0;
           background: #f2f2f4; display: flex; align-items: center; justify-content: center;
@@ -504,10 +508,14 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
           white-space: nowrap; transition: background .15s, color .15s; }
         .co-set-item:hover { background: #f7f7f8; color: #555; }
         .co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
-        /* 아래에 딸린 것이 있는 머리줄 — 오른쪽 끝에 화살표 하나. 접히지는
-           않는다. 「여기 아래로 이것들이 딸려 있다」는 표시일 뿐이다. */
-        .co-set-item.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .co-set-item.head svg { flex: none; color: #8a8a90; }
+        /* 머리 글자는 그 화면으로 가고, 화살표는 접는다 */
+        .co-set-row { display: flex; align-items: center; }
+        .co-set-row .co-set-item.head { flex: 1; min-width: 0; }
+        .co-set-fold { flex: none; display: inline-flex; align-items: center; justify-content: center;
+          width: 30px; height: 30px; margin-right: 6px; padding: 0;
+          border: 0; border-radius: 8px; background: none; color: #8a8a90; cursor: pointer; }
+        .co-set-fold:hover { background: #f7f7f8; color: #555; }
+        .co-set-fold svg { transition: transform .15s; }
         /* 머리줄은 글자와 화살표뿐이다. 회색 판을 깔면 그 줄만 단추처럼 보여,
            아래 딸린 것들과 한 묶음으로 안 읽힌다. */
         .co-set-item.head, .co-set-item.head.on, .co-set-item.head:hover { background: none; }
@@ -653,16 +661,24 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                   넘겨준 사이드가 조용히 무시된다. */}
               {side ? side : 옆줄줄기.map((줄기) => (
                 <div key={줄기.머리.id} className="co-set-branch">
-                  {/* 아래에 달린 것이 있는 머리줄은 테두리를 두르고 오른쪽에
-                      화살표를 둔다. 접히지는 않는다 — 옆줄에 있는 것이 다섯
-                      줄뿐이라 접어서 아낄 자리가 없고, 화살표는 「아래로 이것들이
-                      딸려 있다」는 표시다. */}
-                  <Link href={줄기.머리.href}
-                        className={`co-set-item${줄기.아래.length > 0 ? " head" : ""}${activePage === 줄기.머리.id ? " on" : ""}`}>
-                    {줄기.머리.label(infoLabel(companyInfo.type))}
-                    {줄기.아래.length > 0 && <ChevronDown size={15} aria-hidden="true" />}
-                  </Link>
-                  {줄기.아래.map((m) => (
+                  {/* 머리 글자는 그 화면으로 가고, 화살표는 접는다. 한 자리에
+                      둘을 겹치면 누르기 전에 무엇이 일어날지 알 수 없다.
+                      처음에는 다 펴져 있다. */}
+                  <div className={줄기.아래.length > 0 ? "co-set-row" : undefined}>
+                    <Link href={줄기.머리.href}
+                          className={`co-set-item${줄기.아래.length > 0 ? " head" : ""}${activePage === 줄기.머리.id ? " on" : ""}`}>
+                      {줄기.머리.label(infoLabel(companyInfo.type))}
+                    </Link>
+                    {줄기.아래.length > 0 && (
+                      <button type="button" className="co-set-fold"
+                              onClick={() => 접기(줄기.머리.id)}
+                              aria-expanded={!접은것.includes(줄기.머리.id)}
+                              aria-label={접은것.includes(줄기.머리.id) ? "펴기" : "접기"}>
+                        <ChevronDown size={15} style={{ transform: 접은것.includes(줄기.머리.id) ? "rotate(-90deg)" : "none" }} />
+                      </button>
+                    )}
+                  </div>
+                  {!접은것.includes(줄기.머리.id) && 줄기.아래.map((m) => (
                     <Link key={m.id} href={m.href}
                           className={`co-set-item sub ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
