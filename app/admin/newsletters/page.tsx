@@ -6,6 +6,7 @@ import { ChevronDown, Search, Trash2 } from "lucide-react";
 const STATUS_LABELS: Record<string, string> = {
   draft: "검토 대기",
   sent: "발송 완료",
+  failed: "발송 실패",
 };
 
 export default function AdminNewslettersPage() {
@@ -171,7 +172,7 @@ export default function AdminNewslettersPage() {
         {/* 옆줄 — 상태. 「어느 함을 여는가」만 맡는다. */}
         <nav className="adm-mail-side" aria-label="뉴스레터 상태">
           <p className="adm-mail-side-h">뉴스레터<ChevronDown size={15} /></p>
-          {["전체", "검토 대기", "발송 완료"].map((v) => (
+          {["전체", "검토 대기", "발송 완료", "발송 실패"].map((v) => (
             <button key={v} type="button"
               className={`adm-mail-side-i${갈래 === v ? " on" : ""}`}
               onClick={() => { set갈래(v); setPreviewItem(null); }}>
@@ -246,7 +247,9 @@ export default function AdminNewslettersPage() {
                           <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{STATUS_LABELS[n.status] || n.status}</td>
                           <td className="admin-td-date" onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{(n.created_at || "").slice(0, 10)}</td>
                           <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>
-                            {n.sent_at ? `${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0})` : "-"}
+                            {n.sent_at
+                              ? `${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0}${n.target_count ? `/${n.target_count}` : ""})`
+                              : "-"}
                           </td>
                         </tr>
                       ))}

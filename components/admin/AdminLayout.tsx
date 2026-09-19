@@ -96,6 +96,14 @@ export default function AdminLayout({ children, activeMenu, pageTitle, 제목숨
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [openMenus, setOpenMenus] = useState<string[]>(["dashboard", "jobs", "members", "import"]);
+  // 화면을 옮기면 그 화면이 든 묶음을 펴 준다. 하위 메뉴를 누르면 사이드가
+  // 다시 그려지는데, 접힌 채로 서면 방금 누른 자리가 사라져 버린다.
+  // 펴는 것은 화면이 바뀔 때뿐이라, 같은 화면에서 접어 둔 것은 접힌 채로 있다
+  // — 여태는 보고 있는 묶음을 늘 펴 두어 대시보드가 접히지 않았다.
+  useEffect(() => {
+    const 묶음 = activeMenu.includes("-") ? activeMenu.split("-")[0] : activeMenu;
+    setOpenMenus((prev) => (prev.includes(묶음) ? prev : [...prev, 묶음]));
+  }, [activeMenu]);
   const [authChecked, setAuthChecked] = useState(false);
   const [newInquiries, setNewInquiries] = useState(0);
   const [newSupportInquiries, setNewSupportInquiries] = useState(0);
@@ -185,9 +193,7 @@ export default function AdminLayout({ children, activeMenu, pageTitle, 제목숨
     setOpenMenus(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]);
   };
 
-  // 지금 보고 있는 화면이 든 묶음은 늘 펴 둔다. 하위 메뉴를 누르면 화면이 바뀌며
-  // 사이드가 다시 그려지는데, 접힌 채로 시작하면 방금 누른 자리가 사라져 버린다.
-  const isMenuOpen = (id: string) => openMenus.includes(id) || activeMenu === id || activeMenu.startsWith(`${id}-`);
+  const isMenuOpen = (id: string) => openMenus.includes(id);
 
   return (
     <div className="admin-layout">

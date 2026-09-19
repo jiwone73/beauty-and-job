@@ -57,11 +57,15 @@ export async function POST(
     }
   }
 
-  // 전체 발송일 때만 sent 처리 (테스트는 상태 안 바꿈)
+  // 전체 발송일 때만 상태를 적는다 (테스트는 상태 안 바꿈).
+  // 한 통도 못 갔으면 「발송 완료」라 적지 않는다 — 여태는 전원 실패해도
+  // 완료로 남아, 화면만 보고는 나간 줄 알았다.
   if (!onlyEmail) {
     await pool.query(
-      `UPDATE newsletters SET status = 'sent', sent_at = NOW(), sent_count = $2 WHERE id = $1`,
-      [params.id, sent]
+      `UPDATE newsletters
+          SET status = $3, sent_at = NOW(), sent_count = $2, target_count = $4
+        WHERE id = $1`,
+      [params.id, sent, sent > 0 ? "sent" : "failed", targets.length]
     );
   }
 
