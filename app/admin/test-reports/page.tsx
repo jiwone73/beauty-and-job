@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { TEST_CASES, AREAS, type Area } from "@/lib/testCases";
+import { 사람점검들, 사람갈래들, type 사람점검 } from "@/lib/humanChecks";
 import { 오픈일, 오픈일글 } from "@/lib/launchPlan";
 import AttachFiles from "@/components/AttachFiles";
 import { Paperclip } from "lucide-react";
@@ -38,7 +39,7 @@ export default function TestReportsPage() {
   const [list, setList] = useState<Report[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
-  const [보기, set보기] = useState<"현황" | "리포트" | "케이스" | "올리기">("현황");
+  const [보기, set보기] = useState<"현황" | "리포트" | "케이스" | "돌아보기" | "올리기">("현황");
   const [runs, setRuns] = useState<{ case_id: string; area: Area; result: "pass" | "fail" | "blocked"; ran_at: string }[]>([]);
   const [메일실패, set메일실패] = useState<{ total: number; items: { to_addr: string; subject: string; reason: string; created_at: string }[] }>({ total: 0, items: [] });
   const [거르기, set거르기] = useState<"open" | "done" | "">("open");
@@ -69,6 +70,23 @@ export default function TestReportsPage() {
     const json = await res.json();
     if (!json.success) { alert(json.error?.message || "파일을 열 수 없습니다."); return; }
     window.open(json.data.url, "_blank", "noopener");
+  };
+
+  /* 점검 항목에서 바로 올린다. 어디서 · 누구로 · 무엇을 했나 · 이래야 한다는
+     목록이 이미 갖고 있는 값이라 알바가 다시 적을 까닭이 없다. 남는 칸은
+     「이렇게 됐다」 하나다. */
+  const 이걸로올리기 = (c: 사람점검) => {
+    set폼({
+      ...빈폼,
+      title: c.제목,
+      ref_url: c.어디,
+      as_who: c.누구로,
+      steps: c.차례.map((t, i) => `${i + 1}. ${t}`).join("\n"),
+      expected: c.이래야,
+      area: c.갈래 === "폰에서" ? "화면·모바일" : "연동 시나리오",
+    });
+    set사진들([]);
+    set보기("올리기");
   };
 
   const 올리기 = async () => {
@@ -162,7 +180,7 @@ export default function TestReportsPage() {
   return (
     <AdminLayout activeMenu="test-reports">
       <div style={{ display: "flex", gap: 8, marginBottom: 12, justifyContent: "center" }}>
-        {(["현황", "리포트", "케이스", "올리기"] as const).map((v) => (
+        {(["현황", "리포트", "케이스", "돌아보기", "올리기"] as const).map((v) => (
           <button key={v} type="button" onClick={() => set보기(v)}
             style={{ padding: "6px 14px", borderRadius: 8, fontSize: 14, cursor: "pointer",
               border: `1px solid ${보기 === v ? "#582681" : "#efeff1"}`,
@@ -170,6 +188,7 @@ export default function TestReportsPage() {
             {v === "현황" ? "현황"
               : v === "리포트" ? `리포트${counts.open ? ` ${counts.open}` : ""}`
               : v === "케이스" ? `테스트 케이스 ${TEST_CASES.length}`
+              : v === "돌아보기" ? `돌아보기 ${사람점검들.length}`
               : "이슈 올리기"}
           </button>
         ))}
@@ -239,6 +258,48 @@ export default function TestReportsPage() {
               ))
             )}
           </div>
+        </div>
+      ) : 보기 === "돌아보기" ? (
+        /* 사람이 손으로 돌아보는 목록(lib/humanChecks.ts). 테스트 케이스는
+           클로드가 도는 것이라 사람이 따라 하기엔 결이 다르다 — 여기 있는
+           것은 눌러 보고 읽어 봐야 아는 것들이다. */
+        <div className="admin-card" style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+          {사람갈래들.map((갈래) => {
+            const cs = 사람점검들.filter((c) => c.갈래 === 갈래);
+            if (!cs.length) return null;
+            return (
+              <div key={갈래}>
+                <div style={{ padding: "10px 14px", borderBottom: "1px solid #f2f2f4", background: "#fafafb", fontSize: 14, color: "#555" }}>
+                  {갈래} <span style={{ fontSize: 13 }}>{cs.length}가지</span>
+                </div>
+                {cs.map((c) => (
+                  <div key={c.id} style={{ display: "flex", gap: 14, padding: "12px 14px", borderBottom: "1px solid #f6f6f8" }}>
+                    <span style={{ width: 52, flexShrink: 0, fontSize: 12.5, color: "#555" }}>{c.id}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14.5, color: "#555", marginBottom: 4 }}>{c.제목}</div>
+                      <ol style={{ margin: "0 0 6px", paddingLeft: 18, fontSize: 13.5, color: "#555", lineHeight: 1.8 }}>
+                        {c.차례.map((t, i) => <li key={i}>{t}</li>)}
+                      </ol>
+                      <div style={{ fontSize: 13, color: "#555" }}>
+                        <b style={{ fontWeight: 600 }}>이래야 한다</b> · {c.이래야}
+                      </div>
+                    </div>
+                    <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+                      <a href={c.어디} target="_blank" rel="noreferrer"
+                         style={{ fontSize: 13, color: "#582681", textDecoration: "none", whiteSpace: "nowrap" }}>
+                        열기 ↗
+                      </a>
+                      <button type="button" onClick={() => 이걸로올리기(c)}
+                        style={{ padding: "5px 11px", borderRadius: 8, border: "1px solid #efeff1",
+                          background: "#fff", color: "#555", fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>
+                        이상해요
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       ) : 보기 === "올리기" ? (
         /* 이슈 올리기 — 쓰다 이상한 것을 만나면 여기에 적는다.
