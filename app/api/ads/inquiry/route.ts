@@ -2,10 +2,11 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
+import { 몸통읽기, 첨부저장 } from '@/lib/inquiryFiles'
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const { 값: body, 파일들 } = await 몸통읽기(req)
     const { company_name, contact_name, phone, email, product, subject, message, type, privacy_agreed } = body
 
     if (!contact_name || !message) {
@@ -21,7 +22,8 @@ export async function POST(req: NextRequest) {
          RETURNING id, created_at`,
         [company_name || null, contact_name, phone || null, email || null, product || null, subject || null, message, type || '광고', privacy_agreed === true, privacy_agreed === true ? new Date() : null]
       )
-      return ok({ id: result.rows[0].id, created_at: result.rows[0].created_at })
+      const 붙인수 = 파일들.length ? await 첨부저장('ad', result.rows[0].id, 파일들) : 0
+      return ok({ id: result.rows[0].id, created_at: result.rows[0].created_at, files: 붙인수 })
     } finally {
       client.release()
     }

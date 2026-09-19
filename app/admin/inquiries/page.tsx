@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { formatPhone } from "@/lib/phone";
-import { ChevronDown, Search, Trash2 } from "lucide-react";
+import { ChevronDown, Paperclip, Search, Trash2 } from "lucide-react";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import { 문의유형 } from "@/lib/inquiryTypes";
 
@@ -13,6 +13,7 @@ type Inquiry = {
   phone: string | null;
   type: string;
   subject: string | null;
+  files: { id: number; name: string; size: number }[];
   message: string;
   status: string;
   user_id: string | null;
@@ -177,6 +178,16 @@ export default function AdminInquiriesPage() {
     (!찾는말 || [it.name, it.email, it.subject, it.message]
       .some((v) => (v || "").includes(찾는말))));
 
+  /* 첨부는 비공개 버킷에 있어 주소를 바로 걸 수 없다. 누를 때 짧게 사는
+     주소를 받아 연다. */
+  const 첨부열기 = async (fid: number) => {
+    const res = await fetch(`/api/admin/inquiry-files/${fid}`, { headers: { Authorization: `Bearer ${token()}` } });
+    const json = await res.json();
+    if (!json.success) { alert(json.error?.message || "파일을 열 수 없습니다."); return; }
+    window.open(json.data.url, "_blank", "noopener");
+  };
+
+  const 지금첨부: any[] = selected?.files || [];
   const 목록으로 = () => { setSelected(null); setReplyBody(""); setFiles([]); };
 
   return (
@@ -257,7 +268,7 @@ export default function AdminInquiriesPage() {
                           </td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.name}</td>
-                          <td className="adm-mail-td-subj" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.subject || "(제목 없음)"}</td>
+                          <td className="adm-mail-td-subj" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.subject || "(제목 없음)"}{item.files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}</td>
                           <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
                         </tr>
                       ))}
@@ -286,6 +297,17 @@ export default function AdminInquiriesPage() {
               </div>
 
               <div className="adm-mail-msg">{selected.message}</div>
+
+              {지금첨부.length > 0 && (
+                <div className="adm-mail-files">
+                  {지금첨부.map((f: any) => (
+                    <button key={f.id} type="button" onClick={() => 첨부열기(f.id)}>
+                      <Paperclip size={13} />{f.name}
+                      <em>{Math.max(1, Math.round(f.size / 1024))}KB</em>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {selected.email ? (
                 <div className="adm-mail-reply">

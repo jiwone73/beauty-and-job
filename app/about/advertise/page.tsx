@@ -4,18 +4,18 @@ import Image from "next/image";
 import InfoShell from "@/components/InfoShell";
 import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
+import AttachFiles from "@/components/AttachFiles";
 export default function AdvertisePage() {
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", subject: "", content: "" });
   const [done, setDone] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [파일들, set파일들] = useState<File[]>([]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) { alert("개인정보 수집 및 이용에 동의해주세요."); return; }
     try {
-      await fetch("/api/ads/inquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      // 파일을 붙였으면 폼으로, 아니면 여태처럼 JSON 으로 보낸다.
+      const 값 = {
           company_name: form.company,
           contact_name: form.name,
           email: form.email,
@@ -24,8 +24,18 @@ export default function AdvertisePage() {
           message: form.content,
           type: "광고",
           privacy_agreed: agreed,
-        }),
-      });
+        };
+      let 몸통: BodyInit; const 머리: Record<string, string> = {};
+      if (파일들.length) {
+        const fd = new FormData();
+        fd.append("payload", JSON.stringify(값));
+        파일들.forEach((f) => fd.append("files", f));
+        몸통 = fd;
+      } else {
+        머리["Content-Type"] = "application/json";
+        몸통 = JSON.stringify(값);
+      }
+      await fetch("/api/ads/inquiry", { method: "POST", headers: 머리, body: 몸통 });
     } catch {}
     setDone(true);
   };
@@ -53,7 +63,9 @@ export default function AdvertisePage() {
               </div>
               <div className="contact-form-row"><label>제목 *</label><input required placeholder="어떤 광고인지 한 줄로 적어주세요" value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} /></div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="광고 관련 문의 내용을 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
-              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 제목, 문의 내용" />
+              <div className="contact-form-row"><label>파일 첨부</label>
+                <AttachFiles 파일들={파일들} 바뀜={set파일들} /></div>
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 제목, 문의 내용, 첨부파일" />
               <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
             </form>
           </div>

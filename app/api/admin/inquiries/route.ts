@@ -23,8 +23,17 @@ export async function GET(req: NextRequest) {
   try {
     const [listResult, countResult] = await Promise.all([
       client.query(
-        `SELECT id, name, email, phone, type, subject, message, status, user_id, created_at, replied_at
-         FROM inquiries ${whereClause}
+        `SELECT i.id, i.name, i.email, i.phone, i.type, i.subject, i.message, i.status,
+                i.user_id, i.created_at, i.replied_at,
+                COALESCE(f.files, '[]'::json) AS files
+         FROM inquiries i
+         LEFT JOIN LATERAL (
+           SELECT json_agg(json_build_object('id', x.id, 'name', x.file_name, 'size', x.file_size)
+                           ORDER BY x.id) AS files
+             FROM inquiry_files x
+            WHERE x.kind = 'support' AND x.inquiry_id = i.id
+         ) f ON true
+         ${whereClause}
          ORDER BY created_at DESC
          LIMIT $${idx} OFFSET $${idx + 1}`,
         [...params, limit, offset]

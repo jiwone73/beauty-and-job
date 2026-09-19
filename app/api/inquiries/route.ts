@@ -5,12 +5,13 @@ import { ok, err } from '@/lib/api'
 import { verifyAccessToken } from '@/lib/jwt'
 
 import { 문의유형 } from '@/lib/inquiryTypes'
+import { 몸통읽기, 첨부저장 } from '@/lib/inquiryFiles'
 
 const ALLOWED_TYPES: readonly string[] = 문의유형
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const { 값: body, 파일들 } = await 몸통읽기(req)
     const { name, email, phone, type, subject, message, privacy_agreed } = body
 
     if (!name || !message) {
@@ -37,7 +38,8 @@ export async function POST(req: NextRequest) {
          RETURNING id, created_at`,
         [name, email || null, phone || null, inquiryType, subject || null, message, userId, privacy_agreed === true, privacy_agreed === true ? new Date() : null]
       )
-      return ok({ id: result.rows[0].id, created_at: result.rows[0].created_at })
+      const 붙인수 = 파일들.length ? await 첨부저장('support', result.rows[0].id, 파일들) : 0
+      return ok({ id: result.rows[0].id, created_at: result.rows[0].created_at, files: 붙인수 })
     } finally {
       client.release()
     }

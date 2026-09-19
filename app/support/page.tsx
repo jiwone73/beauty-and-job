@@ -4,6 +4,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import InfoShell from "@/components/InfoShell";
 import PrivacyConsent from "@/components/PrivacyConsent";
 import { 문의유형 } from "@/lib/inquiryTypes";
+import AttachFiles from "@/components/AttachFiles";
 
 /**
  * 1:1 문의.
@@ -27,10 +28,11 @@ export default function SupportPage() {
   const [보내는중, set보내는중] = useState(false);
   const [끝, set끝] = useState(false);
   const [동의, set동의] = useState(false);
+  const [파일들, set파일들] = useState<File[]>([]);
 
   useEffect(() => { set이름((v) => v || userName || ""); }, [userName]);
 
-  const 비우기 = () => {
+  const 비우기 = () => { set파일들([]);
     set이름(userName || ""); set메일(""); set전화("");
     set유형(유형들[0]); set제목(""); set내용(""); set동의(false);
   };
@@ -44,14 +46,22 @@ export default function SupportPage() {
     set보내는중(true);
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-      const res = await fetch("/api/inquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          name: 이름.trim(), email: 메일.trim() || null, phone: 전화.trim() || null,
-          type: 유형, subject: 제목.trim() || null, message: 내용.trim(), privacy_agreed: 동의,
-        }),
-      });
+      // 파일을 붙였으면 폼으로, 아니면 여태처럼 JSON 으로 보낸다.
+      const 값 = {
+        name: 이름.trim(), email: 메일.trim() || null, phone: 전화.trim() || null,
+        type: 유형, subject: 제목.trim() || null, message: 내용.trim(), privacy_agreed: 동의,
+      };
+      let 몸통: BodyInit; const 머리: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+      if (파일들.length) {
+        const fd = new FormData();
+        fd.append("payload", JSON.stringify(값));
+        파일들.forEach((f) => fd.append("files", f));
+        몸통 = fd;
+      } else {
+        머리["Content-Type"] = "application/json";
+        몸통 = JSON.stringify(값);
+      }
+      const res = await fetch("/api/inquiries", { method: "POST", headers: 머리, body: 몸통 });
       const d = await res.json();
       if (d.success) set끝(true);
       else alert(d.error?.message || "문의 접수에 실패했습니다.");
@@ -109,8 +119,11 @@ export default function SupportPage() {
           <textarea className="sup-f-i sup-f-t" placeholder="내용을 입력해주세요. (3000자 입력 제한)"
                     maxLength={3000} value={내용} onChange={(e) => set내용(e.target.value)} />
 
+          <label className="sup-f-l">파일 첨부</label>
+          <AttachFiles 파일들={파일들} 바뀜={set파일들} />
+
           <PrivacyConsent agreed={동의} onChange={set동의}
-                          items="이름, 이메일, 전화번호, 문의 유형, 문의 내용" />
+                          items="이름, 이메일, 전화번호, 문의 유형, 제목, 문의 내용, 첨부파일" />
 
           <div className="sup-form-acts">
             <button type="button" className="sup-form-cancel" onClick={비우기}>취소</button>
