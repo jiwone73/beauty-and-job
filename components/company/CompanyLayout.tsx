@@ -264,6 +264,30 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
   const 묶음 = Object.keys(SIDE_NAV).find((k) => SIDE_NAV[k].some((m) => m.id === activePage));
   const 사이드 = 묶음 ? SIDE_NAV[묶음] : null;
   const 사이드있나 = !!(사이드 || side);
+
+  /* 평평한 목록을 머리줄과 그 아래로 묶는다 — 「아래: true」가 바로 앞 머리줄에
+     딸린다는 뜻이다. 묶어 두어야 여닫을 수 있다. */
+  const 옆줄줄기 = (() => {
+    const 줄기: { 머리: NonNullable<typeof 사이드>[number]; 아래: NonNullable<typeof 사이드> }[] = [];
+    for (const m of 사이드 ?? []) {
+      if (m.아래 && 줄기.length) 줄기[줄기.length - 1].아래.push(m);
+      else 줄기.push({ 머리: m, 아래: [] });
+    }
+    return 줄기;
+  })();
+
+  /* 지금 보고 있는 것이 속한 갈래만 펼쳐 둔다. 다 펼치면 옆줄이 아홉 줄이 되어
+     무엇이 무엇에 딸린 것인지가 도로 안 보인다. */
+  const [접힘, set접힘] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    const 열것 = 옆줄줄기.find((g) => g.머리.id === activePage
+      || g.아래.some((m) => m.id === activePage))?.머리.id;
+    set접힘(Object.fromEntries(옆줄줄기
+      .filter((g) => g.아래.length > 0)
+      .map((g) => [g.머리.id, g.머리.id !== 열것])));
+    // 갈래가 바뀔 때만 다시 정한다 — 사용자가 여닫은 것을 덮어쓰지 않으려는 것이다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [묶음, activePage]);
   // 스크랩 인재는 제안·스크랩의 갈래라 '제안·스크랩'이 켜져 있어야 한다.
   // 계정정보·비밀번호·알림설정은 '설정'의 갈래라(옆 사이드로 들어간다) '설정'이 켜져 있어야 한다.
   const topActive = (id: string) =>
@@ -626,14 +650,36 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
             <nav className="co-set-side">
               {/* 화면이 제 사이드를 주면 그것이 먼저다 — 고정 메뉴를 우선하면
                   넘겨준 사이드가 조용히 무시된다. */}
-              {side
-                ? side
-                : 사이드?.map((m) => (
+              {side ? side : 옆줄줄기.map((줄기) => (
+                <div key={줄기.머리.id} className="co-set-branch">
+                  {/* 아래에 달린 것이 있으면 머리줄이 여닫는 단추를 겸한다.
+                      다섯을 한 높이로 늘어놓았을 때는 라이트·스탠다드·프리미엄이
+                      배너광고와 같은 종류처럼 보였다 — 접어 두면 지금 보는 갈래만
+                      펼쳐져 무엇이 무엇에 딸린 것인지가 읽힌다. */}
+                  <Link href={줄기.머리.href}
+                        className={`co-set-item${activePage === 줄기.머리.id ? " on" : ""}`}>
+                    {줄기.머리.label(infoLabel(companyInfo.type))}
+                    {줄기.아래.length > 0 && (
+                      <i className={`co-set-caret${접힘[줄기.머리.id] ? "" : " open"}`}
+                         role="button" tabIndex={0}
+                         aria-label={접힘[줄기.머리.id] ? "펼치기" : "접기"}
+                         onClick={(e) => { e.preventDefault(); e.stopPropagation();
+                           set접힘((p) => ({ ...p, [줄기.머리.id]: !p[줄기.머리.id] })); }}
+                         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") {
+                           e.preventDefault(); e.stopPropagation();
+                           set접힘((p) => ({ ...p, [줄기.머리.id]: !p[줄기.머리.id] })); } }}>
+                        <ChevronDown size={16} />
+                      </i>
+                    )}
+                  </Link>
+                  {줄기.아래.length > 0 && !접힘[줄기.머리.id] && 줄기.아래.map((m) => (
                     <Link key={m.id} href={m.href}
-                          className={`co-set-item${m.아래 ? " sub" : ""} ${activePage === m.id ? "on" : ""}`}>
+                          className={`co-set-item sub ${activePage === m.id ? "on" : ""}`}>
                       {m.label(infoLabel(companyInfo.type))}
                     </Link>
                   ))}
+                </div>
+              ))}
               {sideExtra}
             </nav>
             <main className="company-content co-set-main">
