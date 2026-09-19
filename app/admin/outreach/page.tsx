@@ -71,6 +71,17 @@ function normUrl(u: string) {
   return u.startsWith("http") ? u : `https://${u}`;
 }
 
+/* 브랜드 로고는 우리가 가진 값이 아니다. 홈페이지가 적힌 곳은 그 사이트가
+   쓰는 아이콘(파비콘)을 빌려 온다 — 로고 그 자체는 아니지만 줄을 눈으로
+   가르는 데는 이것으로 족하다. 주소가 없거나 아이콘이 없는 곳은 비워 둔다. */
+function 파비콘(home: string) {
+  try {
+    return `https://www.google.com/s2/favicons?domain=${new URL(normUrl(home)).hostname}&sz=32`;
+  } catch {
+    return null;
+  }
+}
+
 export default function AdminOutreachPage() {
   const [items, setItems] = useState<Row[]>([]);
   const [counts, setCounts] = useState<CountRow[]>([]);
@@ -456,6 +467,13 @@ export default function AdminOutreachPage() {
                             onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} />
                         ) : (
                           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            {home && 파비콘(String(home)) && (
+                              /* 못 받아 오면 자리까지 지운다 — 깨진 그림 자국이 남지 않는다 */
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={파비콘(String(home))!} alt="" width={16} height={16}
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                style={{ flex: "none", borderRadius: 3, objectFit: "contain" }} />
+                            )}
                             {home ? (
                               <a href={normUrl(String(home))} target="_blank" rel="noreferrer"
                                 style={{ fontWeight: 400, color: PURPLE, textDecoration: "none" }}>
