@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { 처리됐나 } from "@/lib/jobIssue";
 
 type Issue = { field: string; note: string };
 type Reply = { at: string; by: string; text: string };
@@ -62,16 +63,14 @@ export default function JobIssuesPage() {
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
-    const 해결 = (p: any) => (p.replies || []).some((r: any) => /\[해결\]/.test(r.text || ""));
-    const 탭걸러 = 탭 === "전체" ? list : list.filter((p) => (탭 === "해결") === 해결(p));
+    const 탭걸러 = 탭 === "전체" ? list : list.filter((p) => (탭 === "해결") === 처리됐나(p));
     if (!k) return 탭걸러;
     return 탭걸러.filter((p) => `${p.title} ${p.url} ${p.items.map((i) => `${i.field} ${i.note}`).join(" ")}`.toLowerCase().includes(k));
   }, [list, q, 탭]);
 
-  // 답글에 「[해결]」이 있으면 정리된 것으로 본다. 해결된 것이 미해결과 섞여 있어
-  // 정작 봐야 할 것이 묻혔다 — 기본은 미해결만 보여 준다.
-  const 해결됐나 = (p: any) => (p.replies || []).some((r: any) => /\[해결\]/.test(r.text || ""));
-  const 미해결수 = list.filter((p) => !해결됐나(p)).length;
+  // 답글 머리표가 있으면 손을 떠난 것으로 본다(lib/jobIssue.ts). 해결된 것이
+  // 미해결과 섞여 있어 정작 봐야 할 것이 묻혔다 — 기본은 미해결만 보여 준다.
+  const 미해결수 = list.filter((p) => !처리됐나(p)).length;
   const 해결수 = list.length - 미해결수;
   const totalIssues = list.reduce((s, p) => s + p.items.length, 0);
   const fmtDate = (s?: string) => { if (!s) return ""; try { return new Date(s).toLocaleDateString("ko-KR"); } catch { return ""; } };

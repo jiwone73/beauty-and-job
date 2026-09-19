@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { TEST_CASES, AREAS, type Area } from "@/lib/testCases";
 import { 오픈일, 오픈일글 } from "@/lib/launchPlan";
+import AttachFiles from "@/components/AttachFiles";
+import { Paperclip } from "lucide-react";
 
 // 테스트 리포트 — 왼쪽에서 고르고 오른쪽에서 본다(공지사항과 같은 짜임).
 //
@@ -18,6 +20,8 @@ type Report = {
   decided_by: "admin" | "alba" | null;
   decision: string | null; decided_at: string | null;
   ref_url: string | null; created_at: string;
+  reported_by?: string; as_who?: string | null; env?: string | null;
+  files?: { id: number; name: string; size: number }[];
 };
 
 const 무게색: Record<string, { bg: string; fg: string }> = {
@@ -34,12 +38,61 @@ export default function TestReportsPage() {
   const [list, setList] = useState<Report[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
-  const [보기, set보기] = useState<"현황" | "리포트" | "케이스">("현황");
+  const [보기, set보기] = useState<"현황" | "리포트" | "케이스" | "올리기">("현황");
   const [runs, setRuns] = useState<{ case_id: string; area: Area; result: "pass" | "fail" | "blocked"; ran_at: string }[]>([]);
   const [메일실패, set메일실패] = useState<{ total: number; items: { to_addr: string; subject: string; reason: string; created_at: string }[] }>({ total: 0, items: [] });
   const [거르기, set거르기] = useState<"open" | "done" | "">("open");
   const [고른것, set고른것] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  /* 사람이 찾은 것을 올리는 칸. 클로드가 고치려면 「어디서 · 누구로 · 무엇을 했나 ·
+     이래야 한다 · 이렇게 됐다」 다섯이 있어야 한다. 그 다섯이 곧 이 폼이다. */
+  const 빈폼 = { title: "", ref_url: "", as_who: "비로그인", steps: "", expected: "", actual: "",
+                 severity: "정해야 함", area: "화면·모바일" };
+  const [폼, set폼] = useState({ ...빈폼 });
+  const [사진들, set사진들] = useState<File[]>([]);
+  const [올리는중, set올리는중] = useState(false);
+
+  // 기기·브라우저는 고르게 하지 않는다 — 매번 고르는 일은 번거롭고, 고르다
+  // 틀리면 없느니만 못하다. 브라우저가 알려 주는 값을 그대로 적는다.
+  const 환경 = () => {
+    if (typeof navigator === "undefined") return "";
+    const ua = navigator.userAgent;
+    const 기기 = /iPhone|iPad/.test(ua) ? "아이폰·아이패드" : /Android/.test(ua) ? "안드로이드" : "큰 화면";
+    const 브 = /Edg\//.test(ua) ? "엣지" : /Chrome\//.test(ua) ? "크롬" : /Safari\//.test(ua) ? "사파리" : /Firefox\//.test(ua) ? "파이어폭스" : "";
+    return [기기, 브, `${window.innerWidth}×${window.innerHeight}`].filter(Boolean).join(" · ");
+  };
+
+  // 화면 사진은 비공개 버킷에 있어 주소를 바로 걸 수 없다. 누를 때 받아 연다.
+  const 사진열기 = async (fid: number) => {
+    const res = await fetch(`/api/admin/inquiry-files/${fid}`, { headers: { Authorization: `Bearer ${token()}` } });
+    const json = await res.json();
+    if (!json.success) { alert(json.error?.message || "파일을 열 수 없습니다."); return; }
+    window.open(json.data.url, "_blank", "noopener");
+  };
+
+  const 올리기 = async () => {
+    if (!폼.title.trim()) { alert("한 줄로 무엇이 문제인지 적어주세요."); return; }
+    if (!폼.actual.trim()) { alert("실제로 어떻게 됐는지 적어주세요."); return; }
+    set올리는중(true);
+    try {
+      const 값 = { ...폼, env: 환경() };
+      let 몸통: BodyInit; const 머리: Record<string, string> = { Authorization: `Bearer ${token()}` };
+      if (사진들.length) {
+        const fd = new FormData();
+        fd.append("payload", JSON.stringify(값));
+        사진들.forEach((f) => fd.append("files", f));
+        몸통 = fd;
+      } else {
+        머리["Content-Type"] = "application/json";
+        몸통 = JSON.stringify(값);
+      }
+      const res = await fetch("/api/admin/test-reports", { method: "POST", headers: 머리, body: 몸통 });
+      const json = await res.json();
+      if (!json.success) { alert(json.error?.message || "올리지 못했습니다."); return; }
+      set폼({ ...빈폼 }); set사진들([]); set거르기("open"); set보기("리포트"); load();
+    } finally { set올리는중(false); }
+  };
 
   const load = () => {
     setLoading(true);
@@ -109,12 +162,15 @@ export default function TestReportsPage() {
   return (
     <AdminLayout activeMenu="test-reports">
       <div style={{ display: "flex", gap: 8, marginBottom: 12, justifyContent: "center" }}>
-        {(["현황", "리포트", "케이스"] as const).map((v) => (
+        {(["현황", "리포트", "케이스", "올리기"] as const).map((v) => (
           <button key={v} type="button" onClick={() => set보기(v)}
             style={{ padding: "6px 14px", borderRadius: 8, fontSize: 14, cursor: "pointer",
               border: `1px solid ${보기 === v ? "#582681" : "#efeff1"}`,
               background: 보기 === v ? "#582681" : "#fff", color: 보기 === v ? "#fff" : "#555" }}>
-            {v === "현황" ? "현황" : v === "리포트" ? `리포트${counts.open ? ` ${counts.open}` : ""}` : `테스트 케이스 ${TEST_CASES.length}`}
+            {v === "현황" ? "현황"
+              : v === "리포트" ? `리포트${counts.open ? ` ${counts.open}` : ""}`
+              : v === "케이스" ? `테스트 케이스 ${TEST_CASES.length}`
+              : "이슈 올리기"}
           </button>
         ))}
       </div>
@@ -182,6 +238,84 @@ export default function TestReportsPage() {
                 </button>
               ))
             )}
+          </div>
+        </div>
+      ) : 보기 === "올리기" ? (
+        /* 이슈 올리기 — 쓰다 이상한 것을 만나면 여기에 적는다.
+           칸 이름이 곧 「무엇을 봐 주면 되는지」다. 따로 안내문을 깔지 않는다. */
+        <div className="admin-card" style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "18px 20px" }}>
+          <div style={{ maxWidth: 720, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
+            <label className="tr-f">
+              <span>한 줄로</span>
+              <input value={폼.title} onChange={(e) => set폼({ ...폼, title: e.target.value })}
+                placeholder="예) 기업회원으로 공고 등록하면 마감일이 하루 전으로 저장됨" />
+            </label>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <label className="tr-f">
+                <span>어느 화면</span>
+                <input value={폼.ref_url} onChange={(e) => set폼({ ...폼, ref_url: e.target.value })}
+                  placeholder="그 화면 주소를 붙여넣기" />
+              </label>
+              <label className="tr-f">
+                <span>어떤 계정으로</span>
+                <select value={폼.as_who} onChange={(e) => set폼({ ...폼, as_who: e.target.value })}>
+                  {["비로그인", "개인회원", "기업회원", "관리자"].map((v) => <option key={v}>{v}</option>)}
+                </select>
+              </label>
+            </div>
+
+            <label className="tr-f">
+              <span>무엇을 했나</span>
+              <textarea rows={4} value={폼.steps} onChange={(e) => set폼({ ...폼, steps: e.target.value })}
+                spellCheck lang="ko"
+                placeholder={"한 일을 순서대로. 이대로 따라 하면 똑같이 나와야 합니다.\n1. \n2. \n3. "} />
+            </label>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <label className="tr-f">
+                <span>이래야 한다</span>
+                <textarea rows={3} value={폼.expected} onChange={(e) => set폼({ ...폼, expected: e.target.value })}
+                  spellCheck lang="ko" placeholder="무엇이 맞는 것인지" />
+              </label>
+              <label className="tr-f">
+                <span>이렇게 됐다</span>
+                <textarea rows={3} value={폼.actual} onChange={(e) => set폼({ ...폼, actual: e.target.value })}
+                  spellCheck lang="ko" placeholder="실제로 눈에 보인 것. 오류 글자가 떴으면 그대로" />
+              </label>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <label className="tr-f">
+                <span>얼마나 급한가</span>
+                <select value={폼.severity} onChange={(e) => set폼({ ...폼, severity: e.target.value })}>
+                  <option value="막힘">막힘 — 더 못 함</option>
+                  <option value="정해야 함">정해야 함 — 어느 쪽이 맞는지 모르겠음</option>
+                  <option value="알림">알림 — 쓰는 데는 지장 없음</option>
+                </select>
+              </label>
+              <label className="tr-f">
+                <span>어느 갈래</span>
+                <select value={폼.area} onChange={(e) => set폼({ ...폼, area: e.target.value })}>
+                  {AREAS.map((v) => <option key={v}>{v}</option>)}
+                </select>
+              </label>
+            </div>
+
+            <label className="tr-f">
+              <span>화면 사진</span>
+              <AttachFiles 파일들={사진들} 바뀜={set사진들} />
+            </label>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <button type="button" onClick={() => { set폼({ ...빈폼 }); set사진들([]); }}
+                style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", color: "#555", fontSize: 14, cursor: "pointer" }}>
+                비우기
+              </button>
+              <button type="button" className="admin-primary-btn" disabled={올리는중} onClick={올리기}>
+                {올리는중 ? "올리는 중…" : "올리기"}
+              </button>
+            </div>
           </div>
         </div>
       ) : 보기 === "케이스" ? (
@@ -260,6 +394,9 @@ export default function TestReportsPage() {
                   {` · ${날짜(지금것.created_at)}`}
                   {지금것.decided_by ? ` · ${지금것.decided_by === "alba" ? "알바가 정할 일" : "관리자가 정할 일"}` : ""}
                   {지금것.status !== "open" ? ` · ${상태이름[지금것.status]}` : ""}
+                  {지금것.reported_by && 지금것.reported_by !== "claude" ? ` · ${지금것.reported_by === "alba" ? "알바" : "관리자"}가 올림` : ""}
+                  {지금것.as_who ? ` · ${지금것.as_who}으로 봄` : ""}
+                  {지금것.env ? ` · ${지금것.env}` : ""}
                 </div>
 
                 {지금것.steps && (
@@ -285,6 +422,17 @@ export default function TestReportsPage() {
                     <a href={지금것.ref_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13.5, color: "#582681", textDecoration: "none" }}>
                       그 화면 열기 ↗
                     </a>
+                  </div>
+                )}
+
+                {(지금것.files || []).length > 0 && (
+                  <div className="adm-mail-files" style={{ padding: "0 0 12px" }}>
+                    {(지금것.files || []).map((f) => (
+                      <button key={f.id} type="button" onClick={() => 사진열기(f.id)}>
+                        <Paperclip size={13} />{f.name}
+                        <em>{Math.max(1, Math.round(f.size / 1024))}KB</em>
+                      </button>
+                    ))}
                   </div>
                 )}
 

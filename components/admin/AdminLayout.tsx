@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { ALBA_ADMIN_ID } from "@/lib/alba";
+import { 처리됐나 } from "@/lib/jobIssue";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
@@ -147,8 +148,7 @@ export default function AdminLayout({ children, activeMenu, pageTitle, 제목숨
       .then((r) => r.json())
       .then((d) => {
         const 목록 = Array.isArray(d?.data) ? d.data : (d?.data?.items || []);
-        const 답있나 = (p: any) => (p.replies || []).some((r: any) => /\[해결\]/.test(r.text || ""));
-        setJobIssues(목록.filter((p: any) => !답있나(p)).length);
+        setJobIssues(목록.filter((p: any) => !처리됐나(p)).length);
       })
       .catch(() => {});
     fetch("/api/admin/applications", { headers: h })

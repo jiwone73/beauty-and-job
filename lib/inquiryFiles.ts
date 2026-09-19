@@ -12,12 +12,14 @@ function 확장자(이름: string) {
   return 조각.length < 2 ? "" : 조각.pop()!.toLowerCase();
 }
 
-export type 문의갈래 = "support" | "ad";
+/** 어디에 붙은 파일인가. report 는 테스트 리포트의 화면 사진이다 —
+ *  저장하는 방식이 같아 문의 첨부와 같은 자리를 쓴다. */
+export type 문의갈래 = "support" | "ad" | "report";
 
 /** 올린 파일을 버킷에 두고 어느 문의의 것인지 적어 둔다.
  *  한 개라도 실패하면 그 파일만 건너뛴다 — 문의 자체는 이미 접수됐으므로
  *  파일 때문에 접수를 되돌리지 않는다. */
-export async function 첨부저장(갈래: 문의갈래, 문의번호: number, 파일들: File[]) {
+export async function 첨부저장(갈래: 문의갈래, 문의번호: string | number, 파일들: File[]) {
   let 저장됨 = 0;
   for (const 파일 of 파일들.slice(0, 첨부최대개수)) {
     const 확 = 확장자(파일.name);

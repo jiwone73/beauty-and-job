@@ -4498,6 +4498,16 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .adm-mail-files button:hover { border-color: #d8d8dc; }
 .adm-mail-files em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
 
+/* 이슈 올리는 칸 — 칸 이름이 곧 「무엇을 적으면 되는지」다. */
+.tr-f { display: flex; flex-direction: column; gap: 6px; }
+.tr-f > span { font-size: 13px; color: #555; }
+.tr-f input, .tr-f textarea, .tr-f select {
+  width: 100%; padding: 9px 11px; box-sizing: border-box;
+  border: 1px solid #e4e1e8; border-radius: 8px; background: #fff;
+  font-family: inherit; font-size: 14px; color: #555; outline: none; }
+.tr-f textarea { resize: vertical; line-height: 1.7; }
+.tr-f input::placeholder, .tr-f textarea::placeholder { color: #b5b0bc; }
+
 /* 문의 폼의 파일 붙이는 칸 */
 .att { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .att-pick { display: inline-flex; align-items: center; gap: 6px; padding: 9px 13px;

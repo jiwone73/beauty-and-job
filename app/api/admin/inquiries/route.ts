@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
            SELECT json_agg(json_build_object('id', x.id, 'name', x.file_name, 'size', x.file_size)
                            ORDER BY x.id) AS files
              FROM inquiry_files x
-            WHERE x.kind = 'support' AND x.inquiry_id = i.id
+            WHERE x.kind = 'support' AND x.inquiry_id = i.id::text
          ) f ON true
          ${whereClause}
          ORDER BY created_at DESC
