@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2 } from "lucide-react";
 
 // 공지사항 — 왼쪽에서 고르고 오른쪽에서 본다.
 //
@@ -34,6 +34,8 @@ export default function AdminNoticesPage() {
   const [edit, setEdit] = useState({ ...빈값 });
   const [새공지열림, set새공지열림] = useState(false);
   const [form, setForm] = useState({ ...빈값 });
+  const [갈래, set갈래] = useState("전체");
+  const [검색, set검색] = useState("");
 
   const inputStyle = { width: "100%", padding: "9px 11px", border: "1px solid #efeff1", borderRadius: 8, fontSize: 14.5, boxSizing: "border-box" as const, outline: "none" };
   const selStyle = { padding: "8px 10px", border: "1px solid #efeff1", borderRadius: 8, fontSize: 14, background: "#fff" };
@@ -48,12 +50,9 @@ export default function AdminNoticesPage() {
   };
   useEffect(() => { fetchList(); }, []);
 
-  // 목록이 오면 첫 건을 열어 둔다. 오른쪽이 비어 있으면 무엇을 하는 화면인지 안 보인다.
-  useEffect(() => {
-    if (고른것 || !list.length) return;
-    고르기(list[0]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list]);
+  /* 첫 건을 자동으로 열던 것을 걷는다. 좌우로 나눠 두었을 때는 오른쪽이 비어
+     있으면 무엇을 하는 화면인지 안 보여 열어 두었지만, 이제 목록이 그 자리를
+     채운다 — 열어 두면 목록을 보러 온 사람이 매번 「목록」을 눌러야 한다. */
 
   const 고르기 = (n: Notice) => {
     set고른것(n.id);
@@ -107,56 +106,91 @@ export default function AdminNoticesPage() {
 
   const 지금것 = list.find((n) => n.id === 고른것) || null;
 
+  /* 옆줄 건수와 목록은 받아 둔 것에서 센다 — 서버에 걸러 받으면 옆줄 숫자가
+     지금 걸린 필터 안에서만 세어져 실제와 달라진다. */
+  const 갈래수 = (v: string) => list.filter((n) =>
+    v === "전체" || TYPE_LABELS[n.type] === v).length;
+  const 찾는말 = 검색.trim();
+  const 보일것 = list.filter((n) =>
+    (갈래 === "전체" || TYPE_LABELS[n.type] === 갈래) &&
+    (!찾는말 || (n.title || "").includes(찾는말) || (n.body || "").includes(찾는말)));
+
   return (
-    <AdminLayout activeMenu="notices">
-      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
-        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
-        flex: 1, minHeight: 0 }}>
-
-        {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-          <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span>전체 <strong>{list.length}</strong>건</span>
-            <button onClick={() => { setForm({ ...빈값 }); set새공지열림(true); }} className="admin-primary-btn">
-              <Plus size={15} /> 새 공지
+    <AdminLayout activeMenu="notices" 제목숨김>
+      <div className="adm-mail">
+        {/* 옆줄 — 갈래. 「어느 함을 여는가」만 맡는다. */}
+        <nav className="adm-mail-side" aria-label="공지 갈래">
+          <p className="adm-mail-side-t">갈래</p>
+          {["전체", "공지", "이벤트"].map((v) => (
+            <button key={v} type="button"
+              className={`adm-mail-side-i${갈래 === v ? " on" : ""}`}
+              onClick={() => { set갈래(v); set고른것(null); }}>
+              {v}<i>{갈래수(v)}</i>
             </button>
-          </div>
-          {loading ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
-          ) : list.length === 0 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>등록된 공지가 없습니다.</div>
-          ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
-              {list.map((n) => (
-                <li key={n.id}>
-                  <button type="button" onClick={() => 고르기(n)}
-                    style={{ display: "block", width: "100%", textAlign: "left", border: "none", cursor: "pointer",
-                      borderBottom: "1px solid #f6f6f8", padding: "12px 16px",
-                      background: 고른것 === n.id ? "#f7f7f8" : "#fff" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-                      <span style={{ fontSize: 12, color: "#555", background: "#f7f7f8", borderRadius: 6, padding: "1px 7px" }}>
-                        {TYPE_LABELS[n.type]}
-                      </span>
-                      {n.is_pinned && <span style={{ fontSize: 12, color: "#555", border: "1px solid #efeff1", borderRadius: 4, padding: "0 5px" }}>고정</span>}
-                      {n.status === "draft" && <span style={{ fontSize: 12, color: "#555", border: "1px solid #efeff1", borderRadius: 4, padding: "0 5px" }}>임시</span>}
-                      <span style={{ marginLeft: "auto", fontSize: 12.5, color: "#555" }}>{fmtDate(n.published_at || n.created_at)}</span>
-                    </div>
-                    <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {n.title}
-                    </div>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          ))}
+        </nav>
 
-        {/* 오른쪽 — 고른 공지 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+        <div className="admin-card adm-mail-body">
+          <h1 className="adm-mail-title">공지사항</h1>
           {!지금것 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 공지를 고르세요.</div>
+            <>
+              <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
+                <label className="nb-search">
+                  <input value={검색} onChange={(e) => set검색(e.target.value)}
+                         placeholder="제목·내용 검색" />
+                  <button type="submit" aria-label="검색"><Search size={17} /></button>
+                </label>
+                <button type="button" onClick={() => { setForm({ ...빈값 }); set새공지열림(true); }}
+                        className="admin-primary-btn" style={{ flex: "none" }}>
+                  <Plus size={15} /> 새 공지
+                </button>
+              </form>
+
+              <div className="adm-mail-bar">
+                <span className="adm-mail-count" style={{ marginLeft: 0 }}>{보일것.length}건</span>
+              </div>
+
+              {loading ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+              ) : 보일것.length === 0 ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>
+                  {찾는말 ? `「${찾는말}」에 대한 공지가 없습니다.` : "등록된 공지가 없습니다."}
+                </div>
+              ) : (
+                <div className="adm-mail-list">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 76 }}>갈래</th>
+                        <th>제목</th>
+                        <th style={{ width: 90 }}>상태</th>
+                        <th style={{ width: 120 }}>게시일</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {보일것.map((n) => (
+                        <tr key={n.id} onClick={() => 고르기(n)} style={{ cursor: "pointer" }}>
+                          <td>{TYPE_LABELS[n.type]}</td>
+                          <td>
+                            {n.is_pinned && <span className="adm-mail-chip">고정</span>}
+                            {n.title}
+                          </td>
+                          <td>{n.status === "draft" ? "임시" : "게시중"}</td>
+                          <td>{fmtDate(n.published_at || n.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           ) : (
-            <div style={{ padding: 18 }}>
+            <div className="adm-mail-read">
+              <div className="adm-mail-bar">
+                <button type="button" className="adm-mail-back" onClick={() => set고른것(null)}>‹ 목록</button>
+              </div>
+
+              <div style={{ padding: "0 20px 24px" }}>
               <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
                 <select value={edit.type} onChange={(e) => setEdit({ ...edit, type: e.target.value })} style={selStyle}>
                   <option value="notice">공지(필수)</option>
@@ -190,6 +224,7 @@ export default function AdminNoticesPage() {
                 <button onClick={() => saveEdit(지금것.id)} disabled={busy} className="admin-primary-btn">
                   {busy ? "저장 중…" : "저장"}
                 </button>
+              </div>
               </div>
             </div>
           )}

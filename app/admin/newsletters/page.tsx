@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { Search, Trash2 } from "lucide-react";
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "검토 대기",
@@ -17,6 +18,8 @@ export default function AdminNewslettersPage() {
   const [checked, setChecked] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
   const [previewItem, setPreviewItem] = useState<any | null>(null);
+  const [갈래, set갈래] = useState("전체");
+  const [검색, set검색] = useState("");
 
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
 
@@ -155,76 +158,111 @@ export default function AdminNewslettersPage() {
 
   const 지금것 = list.find((n) => n.id === previewItem?.id) || previewItem;
 
+  const 갈래수 = (v: string) => list.filter((n: any) =>
+    v === "전체" || (STATUS_LABELS[n.status] || n.status) === v).length;
+  const 찾는말 = 검색.trim();
+  const 보일것 = list.filter((n: any) =>
+    (갈래 === "전체" || (STATUS_LABELS[n.status] || n.status) === 갈래) &&
+    (!찾는말 || (n.title || "").includes(찾는말)));
+
   return (
-    <AdminLayout activeMenu="newsletters">
-      {/* 왼쪽에서 고르고 오른쪽에서 본다. 미리보기를 모달로 띄우면 목록이 가려져
-          「다음 것」을 보려면 매번 닫아야 했다. 공지사항과 같은 짜임으로 맞춘다. */}
-      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
-        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
-        flex: 1, minHeight: 0 }}>
-
-        {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-          <div className="admin-table-meta" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button onClick={toggleAutogen} disabled={autogenSaving}
-                title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13.5, color: "#555", cursor: "pointer" }}>
-                자동 발송
-                <span style={{ width: 34, height: 20, borderRadius: 10, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
-                  <span style={{ position: "absolute", top: 2, left: autogen ? 16 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
-                </span>
-              </button>
-              <button onClick={generate} disabled={generating} className="admin-primary-btn">
-                {generating ? "생성 중…" : "뉴스레터 생성"}
-              </button>
-            </div>
-            <button onClick={handleBulkDelete} disabled={checked.length === 0 || deleting}
-              style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff",
-                color: checked.length ? "#c0392b" : "#c4c4c9", fontSize: 13.5,
-                cursor: checked.length ? "pointer" : "default" }}>
-              선택 삭제{checked.length ? ` (${checked.length})` : ""}
+    <AdminLayout activeMenu="newsletters" 제목숨김>
+      <div className="adm-mail">
+        {/* 옆줄 — 상태. 「어느 함을 여는가」만 맡는다. */}
+        <nav className="adm-mail-side" aria-label="뉴스레터 상태">
+          <p className="adm-mail-side-t">상태</p>
+          {["전체", "검토 대기", "발송 완료"].map((v) => (
+            <button key={v} type="button"
+              className={`adm-mail-side-i${갈래 === v ? " on" : ""}`}
+              onClick={() => { set갈래(v); setPreviewItem(null); }}>
+              {v}<i>{갈래수(v)}</i>
             </button>
-          </div>
+          ))}
+        </nav>
 
-          {loading ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
-          ) : list.length === 0 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>
-              생성된 뉴스레터가 없습니다. 「뉴스레터 생성」을 눌러보세요.
-            </div>
-          ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
-              {list.map((n) => (
-                <li key={n.id} style={{ display: "flex", alignItems: "center", gap: 8,
-                  borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
-                  background: previewItem?.id === n.id ? "#f7f7f8" : "#fff" }}>
-                  <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
-                  <button type="button" onClick={() => setPreviewItem(n)}
-                    style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
-                    <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {n.title}
-                    </div>
-                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 2 }}>
-                      {STATUS_LABELS[n.status] || n.status}
-                      {" · "}{(n.created_at || "").slice(0, 10)}
-                      {n.sent_at ? ` · 발송 ${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0})` : ""}
-                    </div>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* 오른쪽 — 고른 뉴스레터 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div className="admin-card adm-mail-body">
+          <h1 className="adm-mail-title">뉴스레터</h1>
           {!지금것 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 뉴스레터를 고르세요.</div>
-          ) : (
             <>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px", borderBottom: "1px solid #f2f2f4" }}>
-                <span style={{ fontSize: 15, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{지금것.title}</span>
+              <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
+                <label className="nb-search">
+                  <input value={검색} onChange={(e) => set검색(e.target.value)} placeholder="제목 검색" />
+                  <button type="submit" aria-label="검색"><Search size={17} /></button>
+                </label>
+                <button onClick={toggleAutogen} disabled={autogenSaving} type="button"
+                  title="매주 월요일 뉴스레터 자동 생성+발송 on/off"
+                  style={{ flex: "none", display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 8, border: "1px solid #efeff1", background: "#fff", fontSize: 13.5, color: "#555", cursor: "pointer" }}>
+                  자동 발송
+                  <span style={{ width: 34, height: 20, borderRadius: 10, position: "relative", background: autogen ? "#582681" : "#ccc", transition: "background 0.2s", display: "inline-block", flexShrink: 0 }}>
+                    <span style={{ position: "absolute", top: 2, left: autogen ? 16 : 2, width: 16, height: 16, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+                  </span>
+                </button>
+                <button onClick={generate} disabled={generating} type="button" className="admin-primary-btn" style={{ flex: "none" }}>
+                  {generating ? "생성 중…" : "뉴스레터 생성"}
+                </button>
+              </form>
+
+              <div className="adm-mail-bar">
+                <label className="adm-mail-all">
+                  <input type="checkbox"
+                    checked={보일것.length > 0 && checked.length === 보일것.length}
+                    onChange={(e) => setChecked(e.target.checked ? 보일것.map((n: any) => n.id) : [])} />
+                  전체 선택
+                </label>
+                {checked.length > 0 && (
+                  <button type="button" className="adm-mail-del" onClick={handleBulkDelete} disabled={deleting}>
+                    <Trash2 size={14} /> 삭제 ({checked.length})
+                  </button>
+                )}
+                <span className="adm-mail-count">{보일것.length}건</span>
+              </div>
+
+              {loading ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+              ) : 보일것.length === 0 ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>
+                  {찾는말 ? `「${찾는말}」에 대한 뉴스레터가 없습니다.`
+                          : "생성된 뉴스레터가 없습니다. 「뉴스레터 생성」을 눌러보세요."}
+                </div>
+              ) : (
+                <div className="adm-mail-list">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 38 }}></th>
+                        <th>제목</th>
+                        <th style={{ width: 100 }}>상태</th>
+                        <th style={{ width: 110 }}>만든 날</th>
+                        <th style={{ width: 150 }}>발송</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {보일것.map((n: any) => (
+                        <tr key={n.id} className={n.status === "sent" ? undefined : "adm-mail-new"}>
+                          <td onClick={(e) => e.stopPropagation()}>
+                            <input type="checkbox" checked={checked.includes(n.id)} onChange={() => toggleCheck(n.id)} />
+                          </td>
+                          <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{n.title}</td>
+                          <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{STATUS_LABELS[n.status] || n.status}</td>
+                          <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>{(n.created_at || "").slice(0, 10)}</td>
+                          <td onClick={() => setPreviewItem(n)} style={{ cursor: "pointer" }}>
+                            {n.sent_at ? `${(n.sent_at || "").slice(0, 10)} (${n.sent_count ?? 0})` : "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="adm-mail-read" style={{ display: "flex", flexDirection: "column" }}>
+              <div className="adm-mail-bar">
+                <button type="button" className="adm-mail-back" onClick={() => setPreviewItem(null)}>‹ 목록</button>
+                <span className="adm-mail-count">{STATUS_LABELS[지금것.status] || 지금것.status}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 20px", borderBottom: "1px solid #f2f2f4" }}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: "#1f1f22", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{지금것.title}</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
                   <button onClick={() => testSend(지금것.id)} disabled={busyId === 지금것.id} style={btnPurpleOutline}>테스트 발송</button>
                   {지금것.status !== "sent" && (
@@ -235,7 +273,7 @@ export default function AdminNewslettersPage() {
               <iframe title="뉴스레터 미리보기"
                 srcDoc={(지금것.content_html || "").replace(/\{\{UNSUBSCRIBE_URL\}\}/g, "#")}
                 style={{ flex: 1, width: "100%", border: "none", minHeight: 560 }} />
-            </>
+            </div>
           )}
         </div>
       </div>
