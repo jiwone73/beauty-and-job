@@ -132,7 +132,45 @@ export default function AdminNoticesPage() {
 
         <div className="admin-card adm-mail-body">
           <h1 className="adm-mail-title">공지사항</h1>
-          {!지금것 ? (
+          {새공지열림 ? (
+            /* 쓰기 — 창을 따로 띄우지 않고 목록이 서던 자리에 선다.
+               읽기(상세)와 같은 짜임이라 오가도 자리가 흔들리지 않는다. */
+            <div className="adm-mail-read">
+              <div className="adm-mail-bar">
+                <button type="button" className="adm-mail-back" onClick={() => set새공지열림(false)}>‹ 목록</button>
+              </div>
+
+              <div style={{ padding: "0 20px 24px" }}>
+                <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
+                  <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} style={selStyle}>
+                    <option value="notice">공지(필수)</option>
+                    <option value="event">이벤트·혜택(광고성)</option>
+                  </select>
+                  <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} style={selStyle}>
+                    <option value="published">게시</option>
+                    <option value="draft">임시저장</option>
+                  </select>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555" }}>
+                    <input type="checkbox" checked={form.is_pinned} onChange={(e) => setForm({ ...form, is_pinned: e.target.checked })} />
+                    상단 고정
+                  </label>
+                </div>
+                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder="제목" style={{ ...inputStyle, marginBottom: 8, fontSize: 16 }} />
+                <input value={form.short_title} onChange={(e) => setForm({ ...form, short_title: e.target.value })}
+                  placeholder="짧은 제목 (메인 배너용 · 비우면 위 제목을 씁니다)"
+                  style={{ ...inputStyle, marginBottom: 10 }} />
+                <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
+                  spellCheck lang="ko" placeholder="내용"
+                  style={{ ...inputStyle, resize: "vertical", minHeight: 420, lineHeight: 1.7 }} />
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
+                  <button type="button" className="admin-primary-btn" onClick={create} disabled={busy}>
+                    {busy ? "올리는 중…" : "올리기"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : !지금것 ? (
             <>
               <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
                 <label className="nb-search">
@@ -140,7 +178,7 @@ export default function AdminNoticesPage() {
                          placeholder="제목·내용 검색" />
                   <button type="submit" aria-label="검색"><Search size={17} /></button>
                 </label>
-                <button type="button" onClick={() => { setForm({ ...빈값 }); set새공지열림(true); }}
+                <button type="button" onClick={() => { setForm({ ...빈값 }); set고른것(null); set새공지열림(true); }}
                         className="admin-primary-btn" style={{ flex: "none" }}>
                   <Plus size={15} /> 새 공지
                 </button>
@@ -231,45 +269,6 @@ export default function AdminNoticesPage() {
         </div>
       </div>
 
-      {/* 새 공지 — 쓰는 일은 가끔이라 모달로 밀어 둔다 */}
-      {새공지열림 && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 1200, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
-          onClick={() => !busy && set새공지열림(false)}>
-          <div onClick={(e) => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 12, width: "100%", maxWidth: 720, maxHeight: "86vh", overflow: "auto", padding: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <strong style={{ fontSize: 16, color: "#555" }}>새 공지</strong>
-              <button type="button" onClick={() => set새공지열림(false)} aria-label="닫기"
-                style={{ border: "none", background: "none", fontSize: 20, color: "#555", cursor: "pointer" }}>×</button>
-            </div>
-            <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap", alignItems: "center" }}>
-              <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} style={selStyle}>
-                <option value="notice">공지(필수)</option>
-                <option value="event">이벤트·혜택(광고성)</option>
-              </select>
-              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} style={selStyle}>
-                <option value="published">게시</option>
-                <option value="draft">임시저장</option>
-              </select>
-              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555" }}>
-                <input type="checkbox" checked={form.is_pinned} onChange={(e) => setForm({ ...form, is_pinned: e.target.checked })} />
-                상단 고정
-              </label>
-            </div>
-            <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="제목" style={{ ...inputStyle, marginBottom: 10, fontSize: 16 }} />
-            <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
-              spellCheck lang="ko" placeholder="내용"
-              style={{ ...inputStyle, resize: "vertical", minHeight: 300, lineHeight: 1.7 }} />
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
-              <button type="button" className="admin-secondary-btn" onClick={() => set새공지열림(false)} disabled={busy}>닫기</button>
-              <button type="button" className="admin-primary-btn" onClick={create} disabled={busy}>
-                {busy ? "올리는 중…" : "올리기"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }
