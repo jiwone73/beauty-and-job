@@ -4459,6 +4459,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   width: 1086px; max-width: 100%; margin: 0 auto; }
 /* 옆줄도 상자다 — 고객센터(.info-side)·기업(.co-set-side)과 같은 모양.
    맨몸으로 서 있으면 어디까지가 메뉴인지 흐리다. 상자 높이는 글자만 감싼다. */
+/* 표가 넓은 화면은 판을 화면 폭까지 쓴다 — 1086 에 가두면 열이 잘린다. */
+.adm-mail.adm-mail-wide { width: 100%; }
 .adm-mail-side { width: 186px; flex: none; align-self: flex-start;
   background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
   padding: 8px; box-sizing: border-box; }
@@ -4510,6 +4512,18 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .admin-stat-line > span b { font-weight: 400; color: #8a8a90; }
 .admin-stat-line > span + span::before { content: ""; width: 1px; height: 12px;
   margin-right: 18px; background: var(--color-border); }
+
+/* 채용공고의 상태 고르기 — 옆줄 대신 목록 위 한 줄. 표가 넓어 옆줄에 자리를
+   내줄 수 없다. 켜진 것만 진하게, 건수는 옆에 작게. */
+.adm-jobs-state { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.adm-jobs-state-i { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 12px;
+  border: 1px solid var(--color-border); border-radius: 999px; background: #fff;
+  font-family: inherit; font-size: 14px; color: #555; cursor: pointer; }
+.adm-jobs-state-i:hover { border-color: var(--color-primary); }
+.adm-jobs-state-i i { font-style: normal; font-size: 12.5px; color: #8a8a90; }
+.adm-jobs-state-i.on { border-color: var(--color-primary); background: #fbfafc;
+  color: var(--color-primary); font-weight: 700; }
+.adm-jobs-state-i.on i { color: var(--color-primary); }
 
 .adm-mail-chip { display: inline-block; margin-right: 6px; padding: 1px 6px;
   border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px;

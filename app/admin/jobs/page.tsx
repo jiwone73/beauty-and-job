@@ -211,23 +211,21 @@ function AdminJobsPageInner() {
   };
   return (
     <AdminLayout activeMenu="jobs" 제목숨김>
-      <div className="adm-mail">
-        {/* 옆줄 — 상태. 위에 카운터 카드 여섯을 늘어놓았을 때와 같은 일을 하지만
-            자리를 덜 먹고, 지금 무엇을 보고 있는지가 켜진 줄로 드러난다. */}
-        <nav className="adm-mail-side" aria-label="공고 상태">
-          <p className="adm-mail-side-t">상태</p>
-          {Object.entries(counts).map(([label, count]) => (
-            <button key={label} type="button"
-              className={`adm-mail-side-i${statusFilter === label ? " on" : ""}`}
-              onClick={() => setStatusFilter(label)}>
-              {label}<i>{count}</i>
-            </button>
-          ))}
-        </nav>
-
+      {/* 옆줄은 두지 않는다. 표가 열 여덟에 사진까지 있어, 옆줄에 186px 을 내주면
+          지역·등록일이 화면 밖으로 밀렸다 — 상태는 위 한 줄에서 고른다. */}
+      <div className="adm-mail adm-mail-wide">
         <div className="admin-card adm-mail-body" style={{ overflow: "visible" }}>
           <h1 className="adm-mail-title">채용공고</h1>
           <div style={{ padding: "0 16px 16px" }}>
+          <div className="adm-jobs-state">
+            {Object.entries(counts).map(([label, count]) => (
+              <button key={label} type="button"
+                className={`adm-jobs-state-i${statusFilter === label ? " on" : ""}`}
+                onClick={() => setStatusFilter(label)}>
+                {label}<i>{count}</i>
+              </button>
+            ))}
+          </div>
       {/* 공고 구분 — 매장/오피스 라디오 (fit-content 래퍼 안이라 gap이 안 먹어 marginBottom으로 간격 확보) */}
       <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 14 }}>
         <span style={{ fontSize: 14, color: "#555" }}>공고 구분</span>
