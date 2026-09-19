@@ -121,18 +121,14 @@ export default function TestReportsPage() {
 
       {보기 === "현황" ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div className="admin-stat-grid">
+          <div className="admin-stat-line">
             {[
               { label: "오픈까지", value: `D-${남은날}`, sub: 오픈일글() },
               { label: "테스트 케이스", value: `${해본것} / ${전체}`, sub: `안 해본 것 ${전체 - 해본것}건` },
               { label: "정해야 할 것", value: String(counts.open ?? 0), sub: "사람이 골라야 진행됨" },
               { label: "기다리는 것", value: String(기다림.length), sub: "PG·요금제가 정해져야 돌림" },
             ].map((c) => (
-              <div key={c.label} className="admin-stat-card">
-                <div className="admin-stat-label">{c.label}</div>
-                <div className="admin-stat-value">{c.value}</div>
-                <div className="admin-stat-sub-text" style={{ color: "#555" }}>{c.sub}</div>
-              </div>
+              <span key={c.label} title={c.sub}><b>{c.label}</b>{c.value}</span>
             ))}
           </div>
 

@@ -44,7 +44,9 @@
   --card-meta: 12.5px;       /* 태그·부가정보 */
   --card-badge: 11.5px;      /* 뱃지 */
   /* 화면 제목 — 머리줄로 들어오든 사이드로 들어오든 한 값이다. */
-  --page-title: 20px;
+  /* 화면 제목은 한 값이다 — 고객센터가 22, 기업·관리자가 20 이라 같은 자리에
+     선 제목이 화면마다 달라 보였다. 22 로 맞춘다. */
+  --page-title: 22px;
   /* 칩·태그·탭의 모서리. 알약(100px)에서 둥근 네모로 바꾸면서 값을 한 곳에 모았다 —
      같은 것을 34군데에 적어 두면 다음에 또 갈릴 때 몇 개는 남는다.
      동그라미여야 하는 것(알림 점, 진행 막대, 숫자 배지)은 이 값을 쓰지 않는다. */
@@ -4465,7 +4467,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .adm-mail-body { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
 /* 관리자 화면 제목과 같은 20 볼드. 판 안에 서므로 사이드 폭을 되돌리는 손질은
    필요 없다 — 이 판 한가운데가 곧 제 자리다. */
-.adm-mail-title { margin: 18px 0 16px; font-size: 20px; font-weight: 700; color: #555;
+.adm-mail-title { margin: 18px 0 16px; font-size: var(--page-title); font-weight: 700; color: #555;
   text-align: center; }
 /* 위 한 줄 — 전체 선택·삭제·건수. 목록과 상세가 같은 자리에 둔다. */
 /* 목록 위 한 줄 — 처리상태와 검색. 공지·다운로드 게시판(.nb-top)과 같은 부품. */
@@ -4490,6 +4492,17 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 판 안에 또 판이 오면 테두리가 두 겹이다 — 바깥 판이 이미 두르고 있으니
    안쪽 것은 벗는다. */
 .adm-mail-body .adm-inner { border: 0 !important; box-shadow: none !important; background: none !important; }
+/* 숫자 넷을 카드 넉 장으로 늘어놓으면 화면 위 4분의 1이 숫자만으로 찬다.
+   한 줄에 「이름 값」으로 놓고 사이를 세로선으로 가른다 — 훑는 데는 이만큼이면
+   되고, 설명은 마우스를 올리면 나온다. */
+.admin-stat-line { display: flex; align-items: center; flex-wrap: wrap;
+  gap: 8px 18px; padding: 2px 0 6px; }
+.admin-stat-line > span { display: inline-flex; align-items: baseline; gap: 7px;
+  font-size: 15px; color: #1f1f22; }
+.admin-stat-line > span b { font-weight: 400; color: #8a8a90; }
+.admin-stat-line > span + span::before { content: ""; width: 1px; height: 12px;
+  margin-right: 18px; background: var(--color-border); }
+
 .adm-mail-chip { display: inline-block; margin-right: 6px; padding: 1px 6px;
   border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px;
   font-weight: 400; color: #8a8a90; vertical-align: 1px; }
@@ -4570,7 +4583,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   background: none !important; }
 
 .info-page-title {
-  font-size: 22px;
+  font-size: var(--page-title);
   font-weight: 700;
   color: #1f1f22;
   margin: 0 0 20px;
@@ -5788,9 +5801,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   justify-content: space-between;
 }
 .admin-page-title {
-  /* 관리자 화면 제목은 20 볼드로 통일한다. 화면마다 크기·굵기가 달라
+  /* 화면 제목은 사이트 한 값(--page-title)을 쓴다. 화면마다 크기·굵기가 달라
      어디가 제목인지 한눈에 안 들어왔다. */
-  font-size: 20px;
+  font-size: var(--page-title);
   font-weight: 700;
   color: #555;
   /* 볼드 20 이라 아래가 붙어 보였다. 제목과 내용 사이를 한 칸 더 띄운다. */

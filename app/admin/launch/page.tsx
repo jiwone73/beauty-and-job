@@ -81,20 +81,16 @@ export default function LaunchPage() {
     <AdminLayout activeMenu="launch">
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
-        <div className="admin-stat-grid">
-          {[
+          <div className="admin-stat-line">
+            {[
             { label: "오픈까지", value: `D-${남은날}`, sub: 오픈일글(true) },
             { label: "남은 영업일", value: `${남은영업일}일`, sub: `추석 ${짧게(연휴.start)}~${짧게(연휴.end)} 제외` },
             { label: "끝난 일", value: `${센다("done")} / ${LAUNCH_TASKS.length}`, sub: `하는 중 ${센다("doing")}` },
             { label: "가장 긴 사슬 여유", value: `${사슬여유}일`, sub: "여기가 밀리면 오픈이 밀린다" },
-          ].map((c) => (
-            <div key={c.label} className="admin-stat-card">
-              <div className="admin-stat-label">{c.label}</div>
-              <div className="admin-stat-value">{c.value}</div>
-              <div className="admin-stat-sub-text">{c.sub}</div>
-            </div>
-          ))}
-        </div>
+            ].map((c) => (
+              <span key={c.label} title={c.sub}><b>{c.label}</b>{c.value}</span>
+            ))}
+          </div>
 
         {/* ── 가장 긴 사슬 ── */}
         <div className="admin-card">
