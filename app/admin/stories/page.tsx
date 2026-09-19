@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Fragment } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Trash2} from "lucide-react";
 import FilterDropdown from "@/components/company/FilterDropdown";
 
 const CATEGORIES = ["공감", "꿀팁", "질문", "정보"];
@@ -217,87 +217,123 @@ export default function AdminStoriesPage() {
 
   const 지금것 = visiblePosts.find((x) => x.id === expandedId) || null;
 
+  /* 옆줄 건수는 지금 보고 있는 갈래(글 관리·승인대기) 안에서 센다 — 카테고리는
+     그 안을 다시 나누는 것이라 같은 모수를 써야 숫자가 맞는다. */
+  const 갈래안 = posts.filter((p: any) =>
+    tab === "pending" ? p.status === "pending" : p.status !== "pending");
+  const 카테고리수 = (v: string) => 갈래안.filter((p: any) => v === "전체" || p.category === v).length;
+
   return (
-    <AdminLayout activeMenu="stories">
-      {/* 왼쪽에서 고르고 오른쪽에서 본다. 표 안에서 행을 펴 고치던 방식은 글이
-          길어지면 아래 목록이 통째로 밀려, 어디를 보고 있었는지 잃어버렸다.
-          공지사항·뉴스레터·문의와 같은 짜임으로 맞춘다. */}
-      <div style={{ display: "flex", gap: 18, alignItems: "stretch",
-        /* 화면 아래가 비어 있는데 칸 안에서만 스크롤됐다. 남는 높이를 그대로 쓴다. */
-        flex: 1, minHeight: 0 }}>
-
-        {/* 왼쪽 — 목록 */}
-        <div className="admin-card" style={{ width: 460, flexShrink: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-          <div className="admin-table-meta" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <button onClick={() => { setTab("posts"); setChecked([]); setExpandedId(null); }} style={tabStyle(tab === "posts")}>글 관리</button>
-            <button onClick={() => { setTab("pending"); setChecked([]); setExpandedId(null); }} style={tabStyle(tab === "pending")}>
-              승인대기{pendingCount > 0 ? ` ${pendingCount}` : ""}
+    <AdminLayout activeMenu="stories" 제목숨김>
+      <div className="adm-mail">
+        {/* 옆줄 — 갈래. 「어느 함을 여는가」만 맡는다. 글 관리와 승인대기가 먼저고,
+            그 아래 카테고리다. */}
+        <nav className="adm-mail-side" aria-label="글 갈래">
+          <p className="adm-mail-side-t">보기</p>
+          <button type="button" className={`adm-mail-side-i${tab === "posts" ? " on" : ""}`}
+            onClick={() => { setTab("posts"); setChecked([]); setExpandedId(null); }}>
+            글 관리<i>{posts.filter((p) => p.status !== "pending").length}</i>
+          </button>
+          <button type="button" className={`adm-mail-side-i${tab === "pending" ? " on" : ""}`}
+            onClick={() => { setTab("pending"); setChecked([]); setExpandedId(null); }}>
+            승인대기<i>{pendingCount}</i>
+          </button>
+          <p className="adm-mail-side-t">카테고리</p>
+          {["전체", "공감", "꿀팁", "질문", "정보"].map((v) => (
+            <button key={v} type="button"
+              className={`adm-mail-side-i${catFilter === v ? " on" : ""}`}
+              onClick={() => { setCatFilter(v); setExpandedId(null); }}>
+              {v}<i>{카테고리수(v)}</i>
             </button>
-            {tab === "posts" && (
-              <button onClick={() => setWriting(true)} className="admin-primary-btn" style={{ marginLeft: "auto" }}>
-                <Plus size={15} /> 발제 글
-              </button>
-            )}
-          </div>
+          ))}
+        </nav>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderBottom: "1px solid #f2f2f4", flexWrap: "wrap" }}>
-            <div className="admin-search-wrap" style={{ flex: "1 1 150px", minWidth: 140 }}>
-              <Search size={15} className="admin-search-icon" />
-              <input className="admin-search-input" value={searchQ} onChange={(e) => setSearchQ(e.target.value)} placeholder="제목·내용 검색" />
-            </div>
-            <FilterDropdown label="카테고리" value={catFilter}
-              options={["전체", "공감", "꿀팁", "질문", "정보"]} onChange={setCatFilter} />
-          </div>
-
-          {checked.length > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderBottom: "1px solid #f2f2f4" }}>
-              <span style={{ fontSize: 13, color: "#555" }}>{checked.length}건</span>
-              <button onClick={() => bulkChangeStatus("hidden")} disabled={busy} className="admin-secondary-btn" style={{ marginLeft: "auto" }}>숨김</button>
-              <button onClick={() => bulkChangeStatus("published")} disabled={busy} className="admin-secondary-btn">복구</button>
-              <button onClick={handleBulkDelete} disabled={busy}
-                style={{ padding: "6px 11px", borderRadius: 6, border: "1px solid #efeff1", background: "#fff", color: "#c0392b", fontSize: 13.5, cursor: "pointer" }}>
-                삭제
-              </button>
-            </div>
-          )}
-
-          {loading ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
-          ) : visiblePosts.length === 0 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>
-              {tab === "pending" ? "승인 대기 중인 글이 없습니다." : "글이 없습니다."}
-            </div>
-          ) : (
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, flex: 1, overflowY: "auto" }}>
-              {visiblePosts.map((p) => (
-                <li key={p.id} style={{ display: "flex", alignItems: "center", gap: 8,
-                  borderBottom: "1px solid #f6f6f8", padding: "10px 14px",
-                  background: expandedId === p.id ? "#f7f7f8" : "#fff" }}>
-                  <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
-                  <button type="button" onClick={() => openExpand(p)}
-                    style={{ flex: 1, minWidth: 0, textAlign: "left", border: "none", background: "none", cursor: "pointer", padding: 0 }}>
-                    <div style={{ fontSize: 14.5, color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {p.title || p.body?.slice(0, 40) || "(제목 없음)"}
-                    </div>
-                    <div style={{ fontSize: 12.5, color: "#555", marginTop: 2 }}>
-                      {p.category}
-                      {" · "}{p.source === "ai" ? "AI" : p.source === "user_story" ? "사용자" : "운영자"}
-                      {" · "}{STATUS_LABELS[p.status] || p.status}
-                      {tab !== "pending" ? ` · 공감 ${p.like_count} · 댓글 ${p.comment_count} · 조회 ${p.view_count ?? 0}` : ""}
-                    </div>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* 오른쪽 — 고른 글 */}
-        <div className="admin-card" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+        <div className="admin-card adm-mail-body">
+          <h1 className="adm-mail-title">현장이야기</h1>
           {!지금것 ? (
-            <div className="admin-empty" style={{ textAlign: "center" }}>왼쪽에서 글을 고르세요.</div>
+            <>
+              <form className="nb-top adm-mail-find" onSubmit={(e) => e.preventDefault()}>
+                <label className="nb-search">
+                  <input value={searchQ} onChange={(e) => setSearchQ(e.target.value)} placeholder="제목·내용 검색" />
+                  <button type="submit" aria-label="검색"><Search size={17} /></button>
+                </label>
+                {tab === "posts" && (
+                  <button type="button" onClick={() => setWriting(true)} className="admin-primary-btn" style={{ flex: "none" }}>
+                    <Plus size={15} /> 발제 글
+                  </button>
+                )}
+              </form>
+
+              <div className="adm-mail-bar">
+                <label className="adm-mail-all">
+                  <input type="checkbox"
+                    checked={visiblePosts.length > 0 && checked.length === visiblePosts.length}
+                    onChange={(e) => setChecked(e.target.checked ? visiblePosts.map((p: any) => p.id) : [])} />
+                  전체 선택
+                </label>
+                {checked.length > 0 && (
+                  <>
+                    <button onClick={() => bulkChangeStatus("hidden")} disabled={busy} className="admin-secondary-btn">숨김</button>
+                    <button onClick={() => bulkChangeStatus("published")} disabled={busy} className="admin-secondary-btn">복구</button>
+                    <button type="button" className="adm-mail-del" onClick={handleBulkDelete} disabled={busy}>
+                      <Trash2 size={14} /> 삭제 ({checked.length})
+                    </button>
+                  </>
+                )}
+                <span className="adm-mail-count">{visiblePosts.length}건</span>
+              </div>
+
+              {loading ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>불러오는 중…</div>
+              ) : visiblePosts.length === 0 ? (
+                <div className="admin-empty" style={{ textAlign: "center" }}>
+                  {tab === "pending" ? "승인 대기 중인 글이 없습니다." : "글이 없습니다."}
+                </div>
+              ) : (
+                <div className="adm-mail-list">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 38 }}></th>
+                        <th style={{ width: 66 }}>갈래</th>
+                        <th>제목</th>
+                        <th style={{ width: 76 }}>쓴 곳</th>
+                        <th style={{ width: 80 }}>상태</th>
+                        {tab !== "pending" && <th style={{ width: 150 }}>공감·댓글·조회</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visiblePosts.map((p: any) => (
+                        <tr key={p.id} className={p.status === "pending" ? "adm-mail-new" : undefined}>
+                          <td onClick={(e) => e.stopPropagation()}>
+                            <input type="checkbox" checked={checked.includes(p.id)} onChange={() => toggleCheck(p.id)} />
+                          </td>
+                          <td onClick={() => openExpand(p)} style={{ cursor: "pointer" }}>{p.category}</td>
+                          <td onClick={() => openExpand(p)} style={{ cursor: "pointer" }}>
+                            {p.title || p.body?.slice(0, 40) || "(제목 없음)"}
+                          </td>
+                          <td onClick={() => openExpand(p)} style={{ cursor: "pointer" }}>
+                            {p.source === "ai" ? "AI" : p.source === "user_story" ? "사용자" : "운영자"}
+                          </td>
+                          <td onClick={() => openExpand(p)} style={{ cursor: "pointer" }}>{STATUS_LABELS[p.status] || p.status}</td>
+                          {tab !== "pending" && (
+                            <td onClick={() => openExpand(p)} style={{ cursor: "pointer" }}>
+                              {p.like_count} · {p.comment_count} · {p.view_count ?? 0}
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           ) : (
-            <div style={{ padding: 18 }}>
+            <div className="adm-mail-read">
+              <div className="adm-mail-bar">
+                <button type="button" className="adm-mail-back" onClick={() => setExpandedId(null)}>‹ 목록</button>
+              </div>
+              <div style={{ padding: "0 20px 24px" }}>
               <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
                 {CATEGORIES.map((c) => (
                   <button key={c} onClick={() => setEdit((e) => ({ ...e, category: c }))}
@@ -330,6 +366,7 @@ export default function AdminStoriesPage() {
                   className="admin-secondary-btn" style={{ marginLeft: "auto" }}>
                   {지금것.status === "hidden" ? "복구" : "숨김"}
                 </button>
+              </div>
               </div>
             </div>
           )}
