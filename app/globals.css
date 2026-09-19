@@ -4462,8 +4462,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 판 폭은 사이트 한 값이다 — 기업 대시보드·고객센터가 쓰는 1086 을 그대로
    쓴다. 화면 끝까지(1360) 늘여 두었더니 한 줄이 너무 길어 눈이 줄을 놓쳤고,
    같은 표가 화면마다 다른 폭으로 보였다. */
+/* 왼쪽에 붙인다. 가운데로 세워 두니 옆줄 왼쪽에 빈 띠가 생겨, 관리자
+   메뉴와 옆줄 사이가 멀어 보였다. 폭은 그대로 1160 이다. */
 .adm-mail { display: flex; gap: 20px; align-items: stretch; flex: 1; min-height: 0;
-  width: 1160px; max-width: 100%; margin: 0 auto; }
+  width: 1160px; max-width: 100%; margin: 0; }
 /* 옆줄도 상자다 — 고객센터(.info-side)·기업(.co-set-side)과 같은 모양.
    맨몸으로 서 있으면 어디까지가 메뉴인지 흐리다. 상자 높이는 글자만 감싼다. */
 /* 표가 넓은 화면은 판을 화면 폭까지 쓴다 — 1086 에 가두면 열이 잘린다. */
