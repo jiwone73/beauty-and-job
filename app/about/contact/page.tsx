@@ -5,7 +5,7 @@ import AboutSide from "@/components/AboutSide";
 import PrivacyConsent from "@/components/PrivacyConsent";
 import AttachFiles from "@/components/AttachFiles";
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", category: "", subject: "", content: "" });
+  const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", subject: "", content: "" });
   const [done, setDone] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [파일들, set파일들] = useState<File[]>([]);
@@ -16,10 +16,10 @@ export default function ContactPage() {
     try {
       // 파일을 붙였으면 폼으로, 아니면 여태처럼 JSON 으로 보낸다.
       const 값 = {
+          company_name: form.company,
           contact_name: form.name,
           email: form.email,
           phone: form.phone || null,
-          product: form.category,
           subject: form.subject,
           message: form.content,
           type: "기타",
@@ -55,26 +55,20 @@ export default function ContactPage() {
         ) : (
           <div className="info-section">
             <form className="contact-form" onSubmit={handleSubmit}>
+              {/* 제휴·광고 문의와 같은 양식이다 — 셋 다 기업이 보내는 사업문의라
+                  칸이 서로 다르면 같은 함에 담기는 글이 화면마다 달라 보인다.
+                  문의 유형을 고르던 칸은 걷는다. 제목이 그 일을 한다. */}
               <div className="contact-form-grid">
-                <div className="contact-form-row"><label>이름 *</label><input required placeholder="성함을 입력해주세요" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
+                <div className="contact-form-row"><label>회사명 *</label><input required placeholder="회사명을 입력해주세요" value={form.company} onChange={e=>setForm({...form,company:e.target.value})} /></div>
+                <div className="contact-form-row"><label>담당자명 *</label><input required placeholder="담당자 성함을 입력해주세요" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
                 <div className="contact-form-row"><label>이메일 *</label><input type="email" required placeholder="답변 받으실 이메일" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
                 <div className="contact-form-row"><label>전화번호</label><input type="tel" placeholder="연락 가능한 전화번호 (선택)" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} /></div>
-                <div className="contact-form-row">
-                  <label>문의 유형 *</label>
-                  <select required value={form.category} onChange={e=>setForm({...form,category:e.target.value})}>
-                    <option value="">선택해주세요</option>
-                    <option>서비스 이용 문의</option>
-                    <option>계정 관련 문의</option>
-                    <option>채용공고 관련 문의</option>
-                    <option>기타</option>
-                  </select>
-                </div>
               </div>
-              <div className="contact-form-row"><label>제목 *</label><input required placeholder="문의 내용을 한 줄로 적어주세요" value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} /></div>
+              <div className="contact-form-row"><label>제목 *</label><input required placeholder="어떤 문의인지 한 줄로 적어주세요" value={form.subject} onChange={e=>setForm({...form,subject:e.target.value})} /></div>
               <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="문의 내용을 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
               <div className="contact-form-row"><label>파일 첨부</label>
                 <AttachFiles 파일들={파일들} 바뀜={set파일들} /></div>
-              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="이름, 이메일, 전화번호, 문의 유형, 제목, 문의 내용, 첨부파일" />
+              <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 제목, 문의 내용, 첨부파일" />
               <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
             </form>
           </div>
