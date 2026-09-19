@@ -5,6 +5,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import HeroMobile from "@/components/HeroMobile";
 import AdBanner from "@/components/ads/AdBanner";
+import HeroBanner from "@/components/ads/HeroBanner";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { workTypeLabel } from "@/lib/constants";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
@@ -173,15 +174,7 @@ function Hero() {
             올리세요」이고 올릴 마음이 든 사람에게 필요한 것은 공지 글이 아니라
             상품과 등록 단추가 있는 화면이다. */}
         <AdBanner slot="main" 대신={
-          <Link href="/company" className="mt-hero">
-            <span className="mt-hero-photo" />
-            <span className="mt-hero-in">
-              <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
-              <span className="mt-hero-h">뷰티 커리어의 시작,<br /><b>뷰티워크</b></span>
-              <span className="mt-hero-sub">{이벤트?.short_title || 이벤트?.title
-                || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`}</span>
-            </span>
-          </Link>
+          <HeroBanner 문구={이벤트?.short_title || 이벤트?.title || undefined} />
         } />
 
         {/* 2. 일자리 찾기 블록 */}

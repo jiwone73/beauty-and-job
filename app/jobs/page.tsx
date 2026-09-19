@@ -8,6 +8,7 @@ import FilterSheet, { CAREER_OPTS, EMPLOYMENT_OPTS, BENEFIT_FILTER, SALARY_STORE
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { shortSido } from "@/lib/regionShort";
 import AdBanner from "@/components/ads/AdBanner";
+import HeroBanner from "@/components/ads/HeroBanner";
 import { STORE_JOB_GROUPS, OFFICE_JOB_GROUPS } from "@/lib/data/jobGroups";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -493,9 +494,9 @@ function JobsPageInner() {
 
         <div className="jobs-main">
         {/* 파는 배너 자리. 고른 직군에 맞는 배너가 있으면 그것이, 없으면 직군을
-            안 가리는 배너가 뜬다. 아무것도 안 걸렸으면 자리 자체가 안 생긴다 —
-            직군을 고르지 않은 화면에도 같은 자리가 선다. */}
-        <AdBanner slot="jobs" group={고른대분류 || undefined} />
+            안 가리는 배너가 뜬다. 아무것도 안 걸렸으면 메인과 같은 뷰티워크
+            배너가 선다 — 자리는 늘 있고, 팔리면 광고가 그 자리를 쓴다. */}
+        <AdBanner slot="jobs" group={고른대분류 || undefined} 대신={<HeroBanner 작게 />} />
         <div className="jobs-head">
           <b>{jobTypeFilter} 채용공고</b>
         </div>

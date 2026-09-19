@@ -13106,6 +13106,14 @@ button,
 .mt-hero-h b { color: #582681; font-weight: 700; }
 .mt-hero-sub { font-size: 15px; color: #7a7878; margin-top: 11px; }
 
+/* 채용공고 자리 — 메인보다 한 단 낮다. 그 화면의 주인공은 공고 목록이라
+   메인과 같은 키로 서면 목록을 아래로 밀어낸다. */
+.mt-hero.sm { height: 132px; border-radius: 12px; }
+.mt-hero.sm .mt-hero-in { padding: 0 30px; }
+.mt-hero.sm .mt-hero-h { font-size: 22px; margin-top: 6px; }
+.mt-hero.sm .mt-hero-sub { font-size: 13.5px; margin-top: 7px; }
+.mt-hero.sm .mt-eyebrow { font-size: 11.5px; }
+
 /* 바탕.
    · 페이지 바탕(#f7f7f8)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
      화면에서 떠 보이고, 같게 두면 경계가 사라진다.
@@ -13319,6 +13327,7 @@ button,
 @media (max-width: 1024px) {
   .mt-cols { grid-template-columns: 1fr; }
   .mt-hero { height: auto; min-height: 210px; }
+  .mt-hero.sm { height: auto; min-height: 150px; }
   .mt-hero-photo { background-position: 78% center; }
 }
 @media (max-width: 640px) {
