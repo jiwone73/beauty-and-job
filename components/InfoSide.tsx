@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 
@@ -9,7 +10,9 @@ import { ChevronDown } from "lucide-react";
  * 글자를 줄이거나 버려야 한다.
  *
  * 아래에 딸린 것이 있는 항목은 오른쪽에 화살표를, 딸린 줄에는 점을 찍는다.
- * 접히지는 않는다 — 기업 화면 옆줄과 같은 짜임이다.
+ * 처음에는 다 펴져 있고, 화살표를 누르면 접힌다. 머리 글자를 누르면 그
+ * 화면으로 간다 — 접는 일과 가는 일을 한 자리에 두면 무엇이 일어날지
+ * 누르기 전에 알 수 없다.
  *
  * 이용약관·개인정보처리방침은 여기 두지 않는다. 궁금해서 찾아오는 곳이
  * 아니라 확인하러 오는 곳이고, 그 길은 푸터가 맡는다.
@@ -37,23 +40,38 @@ export default function InfoSide({ active, 누구 }: {
   /** 갈래가 있는 화면에서 지금 보고 있는 쪽 */
   누구?: "개인" | "기업";
 }) {
+  // 접은 것만 적어 둔다 — 처음에는 다 펴져 있다.
+  const [접은것, set접은것] = useState<string[]>([]);
+  const 접기 = (href: string) =>
+    set접은것((앞) => (앞.includes(href) ? 앞.filter((x) => x !== href) : [...앞, href]));
+
   return (
     <nav className="info-side" aria-label="고객센터 메뉴">
-      {메뉴.map(({ 머리, 아래 }) => (
-        <div key={머리.href} className="info-side-branch">
-          <Link href={머리.주소 ?? 머리.href}
-                className={`info-side-i${아래.length ? " head" : ""}${active === 머리.href ? " on" : ""}`}>
-            {머리.label}
-            {아래.length > 0 && <ChevronDown size={15} aria-hidden="true" />}
-          </Link>
-          {아래.map((m) => (
-            <Link key={m.label} href={m.주소 ?? m.href}
-                  className={`info-side-i sub${active === 머리.href && 누구 === m.label.slice(0, 2) ? " on" : ""}`}>
-              {m.label}
-            </Link>
-          ))}
-        </div>
-      ))}
+      {메뉴.map(({ 머리, 아래 }) => {
+        const 접힘 = 접은것.includes(머리.href);
+        return (
+          <div key={머리.href} className="info-side-branch">
+            <div className={아래.length ? "info-side-row" : undefined}>
+              <Link href={머리.주소 ?? 머리.href}
+                    className={`info-side-i${아래.length ? " head" : ""}${active === 머리.href ? " on" : ""}`}>
+                {머리.label}
+              </Link>
+              {아래.length > 0 && (
+                <button type="button" className="info-side-fold" onClick={() => 접기(머리.href)}
+                        aria-expanded={!접힘} aria-label={`${머리.label} ${접힘 ? "펴기" : "접기"}`}>
+                  <ChevronDown size={15} style={{ transform: 접힘 ? "rotate(-90deg)" : "none" }} />
+                </button>
+              )}
+            </div>
+            {!접힘 && 아래.map((m) => (
+              <Link key={m.label} href={m.주소 ?? m.href}
+                    className={`info-side-i sub${active === 머리.href && 누구 === m.label.slice(0, 2) ? " on" : ""}`}>
+                {m.label}
+              </Link>
+            ))}
+          </div>
+        );
+      })}
     </nav>
   );
 }

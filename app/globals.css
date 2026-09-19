@@ -31,7 +31,7 @@
   --card-bg: #ffffff;
   --card-line: #ececf0;
   --card-shadow: 0 1px 2px rgba(30, 25, 20, .025), 0 2px 6px rgba(30, 25, 20, .02);
-  --color-bg-soft: #f7f7f8;
+  --color-bg-soft: #f7f7f8;  /* 고른 자리 바탕도 이 값이다 — 화면마다 따로 정하면 같은 「고름」이 진했다 옅었다 한다. */
   --color-dark: #1f2024;
   --color-error: #d4537e;
   --color-warn: #e8a317;
@@ -4378,8 +4378,15 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-side-branch + .info-side-branch { margin-top: 2px; }
 /* 아래에 딸린 것이 있는 머리줄은 글자와 화살표뿐이다. 회색 판을 깔면 그 줄만
    단추처럼 보여 아래 딸린 것들과 한 묶음으로 안 읽힌다. */
-.info-side-i.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.info-side-i.head svg { flex: none; color: #8a8a90; }
+/* 머리 글자는 그 화면으로 가고, 화살표는 접는다. 한 자리에 둘을 겹치면
+   누르기 전에 무엇이 일어날지 알 수 없다. */
+.info-side-row { display: flex; align-items: center; }
+.info-side-row .info-side-i.head { flex: 1; min-width: 0; }
+.info-side-fold { flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; margin-right: 6px; padding: 0;
+  border: 0; border-radius: 8px; background: none; color: #8a8a90; cursor: pointer; }
+.info-side-fold:hover { background: var(--color-bg-soft); color: #555; }
+.info-side-fold svg { transition: transform .15s; }
 .info-side-i.head, .info-side-i.head.on, .info-side-i.head:hover { background: none; }
 /* 아랫단 — 점을 하나 찍어 딸린 것임을 보인다. 들여쓰기만으로는 두 단이 같은
    무게로 읽힌다. */
@@ -4390,7 +4397,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-side-i { display: block; padding: 11px 12px; border-radius: 8px; text-decoration: none;
   font-size: 16px; color: #555; transition: background .15s, color .15s; }
 .info-side-i:hover { background: #f7f7f9; }
-.info-side-i.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
+.info-side-i.on { background: var(--color-bg-soft); color: var(--color-primary); font-weight: 700; }
 .info-side-sub { margin: 2px 0 6px; padding-left: 12px; }
 .info-side-s { display: block; padding: 7px 12px; border-radius: 8px; text-decoration: none;
   font-size: 13.5px; color: #8a8a90; transition: background .15s, color .15s; }
@@ -4480,7 +4487,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   width: 100%; padding: 9px 12px; border: 0; border-radius: 8px; background: none;
   font-family: inherit; font-size: 15px; color: #555; text-align: left; cursor: pointer; }
 .adm-mail-side-i:hover { background: #f7f7f8; }
-.adm-mail-side-i.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
+.adm-mail-side-i.on { background: var(--color-bg-soft); color: var(--color-primary); font-weight: 700; }
 .adm-mail-side-i i { font-style: normal; font-size: 13px; color: #8a8a90; }
 .adm-mail-side-i.on i { color: var(--color-primary); }
 
@@ -7366,7 +7373,7 @@ div:has(> table.admin-table),
   font-size: 12px;
   font-weight: 600;
   border-radius: 20px;
-  background-color: #f1f1f3;
+  background-color: #f7f7f8;
   color: #555;
   border: 1.5px solid transparent;
 }
@@ -15501,7 +15508,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   border-radius: 8px; color: #555; font-size: 14px; line-height: 1.45;
 }
 .co-side-item:hover { background: #f7f7f9; }
-.co-side-item.on { background: #f1f1f3; color: #555; }
+.co-side-item.on { background: var(--color-bg-soft); color: #555; }
 /* 이름은 두 줄까지. 넘치면 줄인다 — 목록이 들쭉날쭉하면 훑기가 어렵다. */
 .co-side-t { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* 아직 안 본 지원자가 있는 공고에만 점 하나. */
@@ -16593,7 +16600,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 15px; color: #8a8a90; background: #fff; border: 0;
   border-radius: 8px 8px 0 0; cursor: pointer; transition: background .15s, color .15s; }
 .info-seg button:hover { color: #555; background: #fafafb; }
-.info-seg button.on { background: #f1f1f3; color: var(--color-primary); font-weight: 700; }
+.info-seg button.on { background: var(--color-bg-soft); color: var(--color-primary); font-weight: 700; }
 
 .faq-tabs { display: flex; gap: 6px; }
 .faq-tabs button { display: inline-flex; align-items: center; gap: 6px; height: 40px;
@@ -16787,7 +16794,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ev-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
 .ev-card { text-align: center; padding: 8px 14px; }
 .ev-card-ic { display: inline-flex; align-items: center; justify-content: center;
-  width: 78px; height: 78px; border-radius: 50%; background: #f1f1f3; color: var(--color-primary); }
+  width: 78px; height: 78px; border-radius: 50%; background: #f7f7f8; color: var(--color-primary); }
 .ev-card b { display: block; margin: 16px 0 8px; font-size: 17.5px; color: #1f1f22; }
 .ev-card p { margin: 0; font-size: 14.5px; line-height: 1.7; color: #555; word-break: keep-all; }
 
@@ -16796,7 +16803,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ev-step { display: flex; align-items: flex-start; gap: 14px;
   border: 1px solid var(--card-line); border-radius: 14px; background: #fff; padding: 22px 20px; }
 .ev-step-ic { flex: none; display: inline-flex; align-items: center; justify-content: center;
-  width: 54px; height: 54px; border-radius: 50%; background: #f1f1f3; color: var(--color-primary); }
+  width: 54px; height: 54px; border-radius: 50%; background: #f7f7f8; color: var(--color-primary); }
 .ev-step-no { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px;
   color: var(--color-primary); margin-bottom: 4px; }
 .ev-step b { display: block; font-size: 16px; color: #1f1f22; margin-bottom: 5px; }
