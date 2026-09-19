@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { UserPlus, FileText, Search, Send, MessageSquare,
          Building2, FilePlus2, Users, TrendingUp } from "lucide-react";
-import InfoShell from "@/components/InfoShell";
+import InfoShell, { 누구읽기 } from "@/components/InfoShell";
 import InfoSeg from "@/components/InfoSeg";
 import { 플랜, 스타트 } from "@/lib/companyPlans";
 
@@ -47,11 +48,12 @@ const 걸음: Record<묶음, { Icon: typeof UserPlus; 이름: string; 말: strin
   ],
 };
 
-export default function GuidePage() {
-  const [묶, set묶] = useState<묶음>("개인");
+function 판() {
+  const 처음 = 누구읽기(useSearchParams());
+  const [묶, set묶] = useState<묶음>(처음);
 
   return (
-    <InfoShell active="/support/guide" title="사용가이드">
+    <InfoShell active="/support/guide" title="사용가이드" 누구={묶}>
       <InfoSeg 값={묶} 고르기={set묶}
                목록={[["개인", "개인회원"], ["기업", "기업회원"]] as const} />
 
@@ -74,4 +76,10 @@ export default function GuidePage() {
       </p>
     </InfoShell>
   );
+}
+
+export default function GuidePage() {
+  // 주소에서 갈래를 읽으므로 Suspense 로 감싼다 — 감싸지 않으면 미리 그려 두기가
+  // 막혀 배포 빌드가 멈춘다.
+  return <Suspense fallback={null}><판 /></Suspense>;
 }

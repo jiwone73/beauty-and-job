@@ -11,10 +11,15 @@ function 판() {
   return <FaqBoard key={누구} 처음={누구} />;
 }
 
-export default function FaqPage() {
+function 껍데기() {
+  const 누구 = 누구읽기(useSearchParams());
   return (
-    <InfoShell active="/support/faq" title="자주 묻는 질문">
-      <Suspense fallback={null}><판 /></Suspense>
+    <InfoShell active="/support/faq" title="자주 묻는 질문" 누구={누구}>
+      <판 />
     </InfoShell>
   );
+}
+
+export default function FaqPage() {
+  return <Suspense fallback={null}><껍데기 /></Suspense>;
 }

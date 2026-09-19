@@ -4372,6 +4372,17 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 /* 글자 크기는 사이트의 다른 옆줄(공고 검색·기업 대시보드)과 같은 14px 다.
    여기만 15px 이라 같은 자리에 선 메뉴가 화면마다 달라 보였다. */
 .info-side ul { list-style: none; margin: 0; padding: 0; }
+/* 머리줄과 그 아래가 한 묶음 — 묶음 사이만 한 칸 띄운다. */
+.info-side-branch + .info-side-branch { margin-top: 2px; }
+/* 아래에 딸린 것이 있는 머리줄은 글자와 화살표뿐이다. 회색 판을 깔면 그 줄만
+   단추처럼 보여 아래 딸린 것들과 한 묶음으로 안 읽힌다. */
+.info-side-i.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.info-side-i.head svg { flex: none; color: #8a8a90; }
+.info-side-i.head, .info-side-i.head.on, .info-side-i.head:hover { background: none; }
+/* 아랫단 — 점을 하나 찍어 딸린 것임을 보인다. 들여쓰기만으로는 두 단이 같은
+   무게로 읽힌다. */
+.info-side-i.sub { padding-left: 26px; font-size: 15px; position: relative; }
+.info-side-i.sub::before { content: "·"; position: absolute; left: 15px; color: #8a8a90; }
 /* 옆줄은 화면 이름을 읽는 자리다 — 본문 글자(15px)보다 작으면 메뉴가 곁다리로
    보인다. 셀렉미 옆줄도 16px 다. */
 .info-side-i { display: block; padding: 11px 12px; border-radius: 8px; text-decoration: none;
