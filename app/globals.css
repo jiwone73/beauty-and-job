@@ -4505,6 +4505,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .adm-mail-files button:hover { border-color: #d8d8dc; }
 .adm-mail-files em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
 
+/* 불러오기 목록 — 지역·급여·연락처는 접지 않는다. */
+.admin-table th.imp-nw, .admin-table td.imp-nw { white-space: nowrap; }
+
 /* 빠른 인재 추천 — 공고 한 줄 아래에 맞는 사람이 선다. */
 .co-rec-job { padding: 14px 18px; border-top: 1px solid #f4f4f6; }
 .co-rec-job:first-of-type { border-top: 0; }

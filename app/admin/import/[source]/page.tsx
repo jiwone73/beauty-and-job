@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminLayout from "@/components/admin/AdminLayout";
+import { shortRegion } from "@/lib/regionShort";
 import { RefreshCw } from "lucide-react";
 
 // 외부공고 불러오기 — 소스 하나의 목록.
@@ -193,11 +194,14 @@ export default function ImportListPage() {
           <table className="admin-table" style={{ minWidth: 1040 }}>
             <thead>
               <tr>
-                <th style={{ width: 340 }}>공고명</th>
-                <th style={{ width: 180 }}>매장</th>
-                <th style={{ width: 120 }}>지역</th>
-                <th style={{ width: 130 }}>급여</th>
-                <th style={{ width: 140 }}>연락처</th>
+                {/* 지역·급여·연락처는 한 줄로 둔다. 「인천광역시 연수구」·
+                    「010-4732-3087」이 두 줄로 접혀 줄 높이가 들쭉날쭉했다.
+                    늘린 만큼은 공고명에서 뗀다 — 거기는 어차피 두 줄로 자른다. */}
+                <th style={{ width: 320 }}>공고명</th>
+                <th style={{ width: 170 }}>매장</th>
+                <th className="imp-nw" style={{ width: 150 }}>지역</th>
+                <th className="imp-nw" style={{ width: 110 }}>급여</th>
+                <th className="imp-nw" style={{ width: 150 }}>연락처</th>
                 <th style={{ width: 70 }}>원문</th>
                 <th style={{ width: 88 }}>상태</th>
               </tr>
@@ -218,9 +222,9 @@ export default function ImportListPage() {
                     <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>{x.categories.join(" · ")}</div>
                   </td>
                   <td>{x.company || "-"}</td>
-                  <td>{x.region || "-"}</td>
-                  <td className="num">{x.salary || "-"}</td>
-                  <td className="num">{x.contact || "-"}</td>
+                  <td className="imp-nw">{x.region ? shortRegion(x.region) : "-"}</td>
+                  <td className="num imp-nw">{x.salary || "-"}</td>
+                  <td className="num imp-nw">{x.contact || "-"}</td>
                   <td>
                     <a href={x.url} target="_blank" rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
