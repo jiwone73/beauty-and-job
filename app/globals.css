@@ -4466,6 +4466,16 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   padding: 8px; box-sizing: border-box; }
 .adm-mail-side-t { margin: 14px 0 6px; padding: 0 12px; font-size: 12.5px; color: #8a8a90; }
 .adm-mail-side-t:first-child { margin-top: 2px; }
+/* 갈래 머리 — 아래 서브가 늘 펼쳐져 있다는 표시로 화살표만 단다.
+   누르는 자리가 아니라 이름표라 배경도 테두리도 두지 않는다. */
+.adm-mail-side-h { display: flex; align-items: center; justify-content: space-between;
+  margin: 2px 0 6px; padding: 9px 12px; font-size: 15px; color: #555; }
+.adm-mail-side-h svg { color: #8a8a90; }
+/* 서브는 불렛으로 한 단 들인다 — 고객센터·기업 옆줄과 같은 결. */
+.adm-mail-side-i.sub { padding-left: 26px; font-size: 14.5px; }
+.adm-mail-side-i.sub::before { content: "·"; position: absolute; left: 14px; color: #b5b5bb; }
+.adm-mail-side-i.sub { position: relative; }
+.adm-mail-side-i.sub.on::before { color: var(--color-primary); }
 .adm-mail-side-i { display: flex; align-items: center; justify-content: space-between; gap: 8px;
   width: 100%; padding: 9px 12px; border: 0; border-radius: 8px; background: none;
   font-family: inherit; font-size: 15px; color: #555; text-align: left; cursor: pointer; }

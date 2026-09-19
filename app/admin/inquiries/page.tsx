@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { formatPhone } from "@/lib/phone";
-import { Search, Trash2 } from "lucide-react";
+import { ChevronDown, Search, Trash2 } from "lucide-react";
 
 type Inquiry = {
   id: number;
@@ -168,8 +168,10 @@ export default function AdminInquiriesPage() {
   /* 옆줄은 회원구분(문의 유형)만 맡는다 — 「어느 함을 여는가」다. 처리상태와
      검색은 목록 위에서 건다. 사업문의와 같은 짜임이다. */
   const 유형갈래 = ["전체", ...Array.from(new Set(items.map((i2) => i2.type).filter(Boolean)))];
-  const 유형수 = (ty: string) => items.filter((it) => ty === "전체" || it.type === ty).length;
-  const 함수 = (st: string) => items.filter((it) => !st || it.status === st).length;
+  /* 회원구분 아래에 받은·보낸을 단다. 함을 먼저 고르고 구분을 다시 고르면
+     둘이 서로를 덮어, 무엇을 보고 있는지가 흐려졌다. */
+  const 갈래수 = (ty: string, st = "") => items.filter((it) =>
+    (ty === "전체" || it.type === ty) && (!st || it.status === st)).length;
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
     (typeFilter === "" || it.type === typeFilter) &&
@@ -183,24 +185,29 @@ export default function AdminInquiriesPage() {
     <AdminLayout activeMenu="inquiries" 제목숨김>
       <div className="adm-mail">
         <nav className="adm-mail-side" aria-label="문의함">
-          {/* 메일함처럼 나눈다 — 받은문의는 아직 답하지 않은 것, 보낸문의는 답장을
-              보낸 것. 둘이 서로 겹치지 않아야 「할 일」이 한눈에 보인다. */}
-          <p className="adm-mail-side-t">문의함</p>
-          {[["", "전체"], ["new", "받은문의"], ["done", "보낸문의"]].map(([k, v]) => (
-            <button key={k} type="button"
-              className={`adm-mail-side-i${statusFilter === k ? " on" : ""}`}
-              onClick={() => { setStatusFilter(k); setChecked([]); 목록으로(); }}>
-              {v}<i>{함수(k)}</i>
-            </button>
-          ))}
-          <p className="adm-mail-side-t">회원구분</p>
-          {유형갈래.map((v) => (
-            <button key={v} type="button"
-              className={`adm-mail-side-i${(typeFilter === "" ? "전체" : typeFilter) === v ? " on" : ""}`}
-              onClick={() => { setTypeFilter(v === "전체" ? "" : v); 목록으로(); }}>
-              {v}<i>{유형수(v)}</i>
-            </button>
-          ))}
+          {/* 받은문의는 아직 답하지 않은 것, 보낸문의는 답장을 보낸 것.
+              늘 펼쳐 둔다 — 접을 까닭이 없다. */}
+          <p className="adm-mail-side-h">회원구분<ChevronDown size={15} /></p>
+          {유형갈래.map((v) => {
+            const 이유형 = v === "전체" ? "" : v;
+            const 열림 = typeFilter === 이유형;
+            return (
+              <div key={v}>
+                <button type="button"
+                  className={`adm-mail-side-i${열림 && !statusFilter ? " on" : ""}`}
+                  onClick={() => { setTypeFilter(이유형); setStatusFilter(""); setChecked([]); 목록으로(); }}>
+                  {v}<i>{갈래수(v)}</i>
+                </button>
+                {[["new", "받은문의"], ["done", "보낸문의"]].map(([k, 이름]) => (
+                  <button key={k} type="button"
+                    className={`adm-mail-side-i sub${열림 && statusFilter === k ? " on" : ""}`}
+                    onClick={() => { setTypeFilter(이유형); setStatusFilter(k); setChecked([]); 목록으로(); }}>
+                    {이름}<i>{갈래수(v, k)}</i>
+                  </button>
+                ))}
+              </div>
+            );
+          })}
         </nav>
 
         <div className="admin-card adm-mail-body">
