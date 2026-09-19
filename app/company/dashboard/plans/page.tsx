@@ -6,7 +6,7 @@ import { Plus, Minus, ArrowRight } from "lucide-react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import PlanCards from "@/components/company/PlanCards";
 import EventBand from "@/components/company/EventBand";
-import { 요금제FAQ } from "@/lib/companyPlans";
+import { 상품FAQ } from "@/lib/faq";
 
 /**
  * 채용상품 — 로그인한 기업이 머리줄에서 들어오는 첫 화면.
@@ -26,7 +26,7 @@ export default function CompanyDashboardPlansPage() {
 
         <h2 className="cs-h2" style={{ marginTop: 56 }}>자주 묻는 질문</h2>
         <ul className="cs-faq">
-          {요금제FAQ.map((f, i) => (
+          {상품FAQ.map((f, i) => (
             <li key={f.q} className={열린질문 === i ? "on" : undefined}>
               <button type="button" onClick={() => set열린질문(열린질문 === i ? null : i)} aria-expanded={열린질문 === i}>
                 <i>Q.</i>
