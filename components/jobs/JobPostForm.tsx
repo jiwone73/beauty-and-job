@@ -2369,9 +2369,10 @@ export default function JobPostForm({
     const 원값 = m ? Number(m[1].replace(/,/g, "")) * (m[2] === "만원" ? 10000 : 1) : null;
     const 금액 = 원값 == null ? ""
       : 원단위(u?.label || "") ? String(원값) : String(원값 / 10000);
-    // 금액을 적기 전까지는 '이상'으로 둔다 — 문자열에 '이상'은 금액이 있어야 붙기 때문에,
-    // 형태만 고른 상태에서 '정액'으로 뒤집혀 보이던 것을 막는다(기존 공고도 대부분 '이상'이다).
-    return { 형태: u?.label || "", 금액, 이상: 금액 ? /이상/.test(v) : true };
+    /* 늘 「이상」으로 둔다. 매장 공고의 급여는 거의 다 하한이고(「월 250 이상」),
+       원문이 「250만원」이라고만 적어도 그 뜻이다. 「정액」이 필요하면 표에서
+       바꾸면 된다 — 흔한 쪽을 기본으로 두고 드문 쪽을 고르게 한다. */
+    return { 형태: u?.label || "", 금액, 이상: true };
   };
   const 급여쓰기 = (형태: string, 금액: string, 이상: boolean) => {
     if (!형태 && !금액) return "";
@@ -3543,12 +3544,17 @@ export default function JobPostForm({
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
                             <span className="jp-job-lab">{row.career || "경력무관"}</span>
                             {!isOffice && (() => {
-                              const n = Math.max(1, Number(row.headcount.replace(/[^0-9]/g, "")) || 1);
+                              /* 1 아래로 내리면 「00」— 몇 명인지 정하지 않았다는 뜻이다.
+                                 원문이 「00명」으로 적힌 공고가 흔한데 여태 1 이 하한이라
+                                 없는 인원을 적어 넣어야 했다. 적은 적 없는 칸(빈 값)은
+                                 여태처럼 1 로 본다. */
+                              const 적힌것 = row.headcount.replace(/[^0-9]/g, "");
+                              const n = 적힌것 === "" ? 1 : Math.max(0, Number(적힌것));
                               return (<>
                                 <span className="jp-step-num">
-                                  <button type="button" onClick={() => setPos(c, "headcount", String(Math.max(1, n - 1)))}
-                                    disabled={미정 || n <= 1} aria-label="한 명 줄이기">−</button>
-                                  <b>{n}</b>
+                                  <button type="button" onClick={() => setPos(c, "headcount", String(Math.max(0, n - 1)))}
+                                    disabled={미정 || n <= 0} aria-label="한 명 줄이기">−</button>
+                                  <b>{n === 0 ? "00" : n}</b>
                                   <button type="button" disabled={잠금} onClick={() => setPos(c, "headcount", String(Math.min(99, n + 1)))}
                                     aria-label="한 명 늘리기">＋</button>
                                 </span>

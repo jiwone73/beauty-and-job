@@ -176,7 +176,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
     // 시간을 안 정했다는 것도 값이다. 빈 줄을 돌려주면 조립부의 filter(Boolean)이
     // 그 줄을 통째로 버려 「주 5일」만 남았다 — 시간을 협의하기로 한 사실이
     // 등록폼에도 미리보기에도 안 보였고, 구직자는 시간을 아예 안 적은 공고로 읽었다.
-    if (생략) return "시간은 협의";
+    if (생략) return "시간협의";
     // 둘째 타임은 어느 갈래에서든 마지막 줄로 따라붙는다. 여기 한 곳에 두면
     // 주 N일·지정 요일·근무시간·평일·주말이 모두 같은 꼴로 담긴다.
     //
@@ -375,7 +375,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             onChange={(e) => { const 켬 = e.target.checked; set시간생략(켬); set확정(r.type);
                               applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, 둘째타임, 켬); }}
                             style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                          시간은 협의
+                          시간협의
                         </label>
                         <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", opacity: 시간생략 ? 0.45 : 1, pointerEvents: 시간생략 ? "none" : "auto" }}>
                           <select className="ws-hourSel" disabled={시간생략} value={qStart} onChange={(e) => { const s = Number(e.target.value); setQStart(s); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], s, qStartMin, qEnd, qEndMin); }}>
