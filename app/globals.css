@@ -4444,24 +4444,6 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    줄에서 반대쪽 끝으로 밀어 둔다. */
 .info-header-right { margin-left: auto; }
 
-/* 사용가이드 걸음 — 이벤트 화면의 걸음 칸(.ev-step)을 그대로 쓰되 한 줄로
-   세운다. 가이드는 순서가 뜻이라, 셋씩 접히면 어디서 이어지는지 흐려진다. */
-.guide-steps { display: grid; gap: 12px; margin-top: 20px; }
-
-/* 인재 제안·채팅·면접 흐름 — 실제 화면 캡처를 순서대로 늘어놓는다. 그림이
-   증거라 카드로 크게 두고, 글은 그 밑에 한 줄만 — 화면이 스스로 설명한다. */
-.guide-flow, .guide-faq { margin-top: 44px; }
-.guide-flow-h { font-size: 19px; color: #1f1f22; margin: 0 0 6px; }
-.guide-flow-sub { font-size: 14px; color: #8a8a90; margin: 0 0 20px; }
-.guide-flow-list { display: grid; gap: 28px; }
-.guide-flow-item img {
-  display: block; width: 100%; max-width: 480px; border-radius: 10px;
-  border: 1px solid var(--card-line);
-}
-.guide-flow-no { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px;
-  color: var(--color-primary); margin: 10px 0 4px; }
-.guide-flow-item p { margin: 0; font-size: 14.5px; color: #555; line-height: 1.6; word-break: keep-all; }
-
 /* 회원정책의 점 목록은 잔글씨가 아니라 본문이다. .pi-warn 은 상품 화면의
    유의사항용이라 옅은 회색인데, 여기서는 그게 읽을 것의 전부다. */
 /* 회원정책의 약속 목록 — 제목 한 줄, 설명 한 줄. 점만 찍힌 목록으로 두면
@@ -16599,10 +16581,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 자주 묻는 질문 판 — 받는 쪽으로 가르고, 갈래로 묶고, 찾을 수 있게. */
 .faq-board { margin-top: 14px; }
-/* 갈래 고르기와 검색이 한 줄. 검색이 남는 폭을 다 쓴다 — 공지·다운로드
-   게시판(.nb-top)과 같은 짜임이다. */
-.faq-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-.faq-top .faq-search { flex: 1; min-width: 200px; }
 /* 개인회원 / 기업회원 — 판 너비를 고르게 나눠 쓰는 탭. 고른 쪽만 흰 판이라
    아래 내용과 이어 붙는다. 칩이던 때에는 둘이 왼쪽에 몰려 있어 고르는 자리가
    아니라 딱지로 읽혔다. */
@@ -16648,16 +16626,19 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .info-seg button:hover { color: #555; background: #fafafb; }
 .info-seg button.on { background: var(--color-bg-soft); color: var(--color-primary); font-weight: 700; }
 
-.faq-tabs { display: flex; gap: 6px; }
-.faq-tabs button { display: inline-flex; align-items: center; gap: 6px; height: 40px;
-  padding: 0 18px; border: 1px solid var(--card-line); background: #fff; cursor: pointer;
-  border-radius: 100px; font-size: 15px; color: #555; }
-.faq-tabs button i { font-style: normal; font-size: 12.5px; color: #8a8a90; }
-.faq-tabs button.on { border-color: var(--color-primary); background: #fbfafc;
-  color: var(--color-primary); font-weight: 700; }
-.faq-tabs button.on i { color: var(--color-primary); }
+/* 갈래 탭 — 드롭다운 대신 이름을 다 펼쳐 두고 | 로 끊는다. 골라 담는
+   자리가 아니라 훑어보는 자리라, 접어 두면 무엇을 물을 수 있는지부터
+   안 보인다. */
+.faq-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin: 14px 0 16px; }
+.faq-tabs-sep { color: var(--card-line); font-size: 14px; }
+.faq-tabs button { padding: 0; border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-size: 15px; color: #8a8a90; }
+.faq-tabs button:hover { color: #555; }
+.faq-tabs button.on { color: var(--color-primary); font-weight: 700; }
 .faq-search { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px;
-  border: 1px solid var(--card-line); border-radius: 100px; background: #fff; min-width: 260px; }
+  border: 1px solid var(--card-line); border-radius: 100px; background: #fff; min-width: 260px;
+  margin-bottom: 18px; }
 .faq-search svg { flex: none; color: #8a8a90; }
 .faq-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none;
   font-size: 15px; color: #1f1f22; }

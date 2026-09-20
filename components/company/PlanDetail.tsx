@@ -179,18 +179,15 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         </p>
       </section>
 
-      {/* 인재 화면은 스탠다드부터 열린다. 라이트·스탠다드·프리미엄 셋 다 같은
-          화면을 파는 거라, 각 상품 페이지마다 같은 캡처 세 장을 반복해 두면
-          어느 걸 사도 똑같은 걸 세 번 읽는 셈이 된다. 실제 화면(제안하기→
-          공고선택→수락/거절→채팅→면접일정)은 사용가이드에 순서대로 한 벌만
-          두고, 여기서는 그리로 안내만 한다. */}
+      {/* 인재 화면은 스탠다드부터 열린다. 상세 절차는 FAQ(지원자·인재 갈래)에
+          한 벌만 두고, 여기서는 그리로 안내만 한다. */}
       {플랜[id].인재열람 && (
         <section className="pi-sec">
           <h3 className="pi-st">인재 검색 · 제안 · 채팅</h3>
           <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7 }}>
             인재풀에서 조건에 맞는 분을 찾아 제안을 보내고, 수락하시면 채팅으로 면접 약속까지 잡으실 수 있습니다.{" "}
-            <Link href="/support/guide?누구=기업#인재제안" style={{ color: "#582681", fontWeight: 600 }}>
-              실제 화면으로 보기 ›
+            <Link href="/support/faq?누구=기업" style={{ color: "#582681", fontWeight: 600 }}>
+              자세히 보기 ›
             </Link>
           </p>
         </section>
