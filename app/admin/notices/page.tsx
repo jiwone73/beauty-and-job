@@ -35,6 +35,8 @@ export default function AdminNoticesPage() {
   const [새공지열림, set새공지열림] = useState(false);
   const [form, setForm] = useState({ ...빈값 });
   const [갈래, set갈래] = useState("전체");
+  // 임시저장은 쓰다 만 글이라 목록에 섞이면 눈에 안 띈다 — 유형별로 따로 세어 찾을 수 있게 한다.
+  const [상태갈래, set상태갈래] = useState<"" | "draft">("");
   const [검색, set검색] = useState("");
 
   const inputStyle = { width: "100%", padding: "9px 11px", border: "1px solid #efeff1", borderRadius: 8, fontSize: 14.5, boxSizing: "border-box" as const, outline: "none" };
@@ -108,11 +110,12 @@ export default function AdminNoticesPage() {
 
   /* 옆줄 건수와 목록은 받아 둔 것에서 센다 — 서버에 걸러 받으면 옆줄 숫자가
      지금 걸린 필터 안에서만 세어져 실제와 달라진다. */
-  const 갈래수 = (v: string) => list.filter((n) =>
-    v === "전체" || TYPE_LABELS[n.type] === v).length;
+  const 갈래수 = (v: string, st: "" | "draft" = "") => list.filter((n) =>
+    (v === "전체" || TYPE_LABELS[n.type] === v) && (!st || n.status === st)).length;
   const 찾는말 = 검색.trim();
   const 보일것 = list.filter((n) =>
     (갈래 === "전체" || TYPE_LABELS[n.type] === 갈래) &&
+    (!상태갈래 || n.status === 상태갈래) &&
     (!찾는말 || (n.title || "").includes(찾는말) || (n.body || "").includes(찾는말)));
 
   return (
@@ -122,11 +125,18 @@ export default function AdminNoticesPage() {
         <nav className="adm-mail-side" aria-label="공지 갈래">
           <p className="adm-mail-side-h">공지사항<ChevronDown size={15} /></p>
           {["전체", "공지", "이벤트"].map((v) => (
-            <button key={v} type="button"
-              className={`adm-mail-side-i${갈래 === v ? " on" : ""}`}
-              onClick={() => { set갈래(v); set고른것(null); }}>
-              {v}<i>{갈래수(v)}</i>
-            </button>
+            <div key={v}>
+              <button type="button"
+                className={`adm-mail-side-i${갈래 === v && !상태갈래 ? " on" : ""}`}
+                onClick={() => { set갈래(v); set상태갈래(""); set고른것(null); }}>
+                {v}<i>{갈래수(v)}</i>
+              </button>
+              <button type="button"
+                className={`adm-mail-side-i sub${갈래 === v && 상태갈래 === "draft" ? " on" : ""}`}
+                onClick={() => { set갈래(v); set상태갈래("draft"); set고른것(null); }}>
+                임시저장<i>{갈래수(v, "draft")}</i>
+              </button>
+            </div>
           ))}
         </nav>
 
