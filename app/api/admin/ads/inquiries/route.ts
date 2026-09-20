@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { sendInquiryReplyEmail } from '@/lib/email'
+import { 답변첨부저장 } from '@/lib/inquiryFiles'
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
@@ -30,7 +31,8 @@ export async function GET(req: NextRequest) {
       client.query(
         `SELECT a.id, a.company_name, a.contact_name, a.phone, a.email, a.product, a.subject,
                 a.message, a.status, a.type, a.created_at, a.replied_at, a.opened_at, a.reply_body,
-                COALESCE(f.files, '[]'::json) AS files
+                COALESCE(f.files, '[]'::json) AS files,
+                COALESCE(rf.files, '[]'::json) AS reply_files
          FROM ad_inquiries a
          LEFT JOIN LATERAL (
            SELECT json_agg(json_build_object('id', x.id, 'name', x.file_name, 'size', x.file_size)
@@ -38,6 +40,12 @@ export async function GET(req: NextRequest) {
              FROM inquiry_files x
             WHERE x.kind = 'ad' AND x.inquiry_id = a.id::text
          ) f ON true
+         LEFT JOIN LATERAL (
+           SELECT json_agg(json_build_object('id', x.id, 'name', x.file_name, 'size', x.file_size)
+                           ORDER BY x.id) AS files
+             FROM inquiry_files x
+            WHERE x.kind = 'ad_reply' AND x.inquiry_id = a.id::text
+         ) rf ON true
          ${whereClause}
          ORDER BY created_at DESC
          LIMIT $${idx} OFFSET $${idx + 1}`,
@@ -72,6 +80,10 @@ export async function POST(req: NextRequest) {
   const client = await pool.connect()
   try {
     await client.query(`UPDATE ad_inquiries SET status = 'done', replied_at = now(), reply_body = $2 WHERE id = $1`, [id, body])
+    // 답장에 붙인 파일도 남긴다 — 메일로만 나가고 사라지지 않게.
+    if (Array.isArray(attachments) && attachments.length) {
+      await 답변첨부저장('ad_reply', id, attachments)
+    }
     return ok({ id, status: 'done' })
   } finally {
     client.release()

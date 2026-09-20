@@ -640,7 +640,7 @@ export async function sendInquiryReplyEmail(
     .filter((a) => a && a.filename && a.content)
     .map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "base64") }));
   return 보내기({
-    from: FROM,
+    from: SUPPORT_FROM,
     replyTo: "support@beautywork.co.kr",
     to,
     subject,

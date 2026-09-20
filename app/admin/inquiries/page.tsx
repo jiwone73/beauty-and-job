@@ -14,6 +14,7 @@ type Inquiry = {
   type: string;
   subject: string | null;
   files: { id: number; name: string; size: number }[];
+  reply_files: { id: number; name: string; size: number }[];
   message: string;
   status: string;
   user_id: string | null;
@@ -319,7 +320,10 @@ export default function AdminInquiriesPage() {
                               {head.subject || "(제목 없음)"}{head.files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
                               {/* 답변한 문의: 무슨 답을 보냈는지 첫 줄로 미리 보여준다. */}
                               {head.status === "done" && head.reply_body && (
-                                <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>↳ {답변첫줄(head.reply_body)}</div>
+                                <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>
+                                  ↳ {답변첫줄(head.reply_body)}
+                                  {head.reply_files?.length > 0 && <Paperclip size={12} className="adm-mail-clip" style={{ marginLeft: 4 }} />}
+                                </div>
                               )}
                             </td>
                             <td className="admin-td-date" onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>
@@ -327,8 +331,9 @@ export default function AdminInquiriesPage() {
                             </td>
                           </tr>,
                         ];
-                        // 같은 이메일로 온 지난 문의 — 안내줄 없이 ㄴ 로 바로 시작하고,
-                        // 첫 줄만 자르지 않고 보낸 글 전체를 폭에 맞춰 보여준다.
+                        // 같은 이메일로 온 지난 문의 — 안내줄 없이 ㄴ 로 시작하고, 체크박스
+                        // 다음 칸(문의 유형 자리)의 왼쪽 끝에 바로 붙인다. 첫 줄만 자르지 않고
+                        // 보낸 글 전체를 폭에 맞춰 보여준다.
                         for (const h of history) {
                           rows.push(
                             <tr key={h.id} style={{ background: "#fbfbfc" }}>
@@ -339,6 +344,7 @@ export default function AdminInquiriesPage() {
                               <td colSpan={3} onClick={() => openDetail(h)}
                                 style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "pre-wrap" }}>
                                 ㄴ {h.status === "done" && h.reply_body ? h.reply_body : (h.subject || "(제목 없음)")}
+                                {h.status === "done" && h.reply_files?.length > 0 && <Paperclip size={12} className="adm-mail-clip" style={{ marginLeft: 4 }} />}
                               </td>
                               <td className="admin-td-date" onClick={() => openDetail(h)} style={{ cursor: "pointer" }}>
                                 {fmtDate(h.replied_at || h.created_at)}
@@ -377,6 +383,19 @@ export default function AdminInquiriesPage() {
               {지금첨부.length > 0 && (
                 <div className="adm-mail-files">
                   {지금첨부.map((f: any) => (
+                    <button key={f.id} type="button" onClick={() => 첨부열기(f.id)}>
+                      <Paperclip size={13} />{f.name}
+                      <em>{Math.max(1, Math.round(f.size / 1024))}KB</em>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* 지난 답변에 붙인 파일 — 메일로만 나가고 사라지지 않도록 여기 남겨 둔다. */}
+              {selected.reply_files?.length > 0 && (
+                <div className="adm-mail-files">
+                  <span style={{ fontSize: 12.5, color: "#555" }}>지난 답변 첨부</span>
+                  {selected.reply_files.map((f: any) => (
                     <button key={f.id} type="button" onClick={() => 첨부열기(f.id)}>
                       <Paperclip size={13} />{f.name}
                       <em>{Math.max(1, Math.round(f.size / 1024))}KB</em>
