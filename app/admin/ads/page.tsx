@@ -58,7 +58,9 @@ async function filesToAttachments(files: File[]) {
 export default function AdminAdsPage() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("");
+  // 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 계속 쌓인다.
+  // 보낸문의함만 답장을 보낸 것으로 좁힌다. "all"·"inbox"는 그래서 목록 기준이 같다.
+  const [sideTab, setSideTab] = useState<"all" | "inbox" | "sent">("all");
   const [유형고름, set유형고름] = useState("전체");
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
@@ -182,7 +184,7 @@ export default function AdminAdsPage() {
   /* 옆줄은 함(받은·보낸)만 맡는다. 유형은 표의 한 열이고, 찾는 일은 검색이 한다. */
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
-    (statusFilter === "" || it.status === statusFilter) &&
+    (sideTab !== "sent" || it.status === "done") &&
     (유형고름 === "전체" || (it.type || "광고") === 유형고름) &&
     (!찾는말 || [it.subject, it.company_name, it.contact_name, it.email, it.message]
       .some((v) => (v || "").includes(찾는말))));
@@ -206,7 +208,8 @@ export default function AdminAdsPage() {
     <AdminLayout activeMenu="ads" 제목숨김>
       <div className="adm-mail">
         <nav className="adm-mail-side" aria-label="문의함">
-          {/* 받은문의는 아직 답하지 않은 것, 보낸문의는 답장을 보낸 것.
+          {/* 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 다 쌓아 두고,
+              숫자만 아직 답 안 한(신규) 건수를 보여준다. 보낸문의함은 답장을 보낸 것만.
               늘 펼쳐 둔다 — 넷뿐이라 접을 까닭이 없다. */}
           <p className="adm-mail-side-h">유형<ChevronDown size={15} /></p>
           {["전체", ...사업문의유형].map((v) => {
@@ -215,15 +218,15 @@ export default function AdminAdsPage() {
             return (
               <div key={v}>
                 <button type="button"
-                  className={`adm-mail-side-i${열림 && !statusFilter ? " on" : ""}`}
-                  onClick={() => { set유형고름(이유형); setStatusFilter(""); setChecked([]); 목록으로(); }}>
+                  className={`adm-mail-side-i${열림 && sideTab === "all" ? " on" : ""}`}
+                  onClick={() => { set유형고름(이유형); setSideTab("all"); setChecked([]); 목록으로(); }}>
                   {v}<i>{갈래수(v)}</i>
                 </button>
-                {[["new", "받은문의"], ["done", "보낸문의"]].map(([k, 이름]) => (
-                  <button key={k} type="button"
-                    className={`adm-mail-side-i sub${열림 && statusFilter === k ? " on" : ""}`}
-                    onClick={() => { set유형고름(이유형); setStatusFilter(k); setChecked([]); 목록으로(); }}>
-                    {이름}<i>{갈래수(v, k)}</i>
+                {([["inbox", "받은문의", "new"], ["sent", "보낸문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
+                  <button key={tabKey} type="button"
+                    className={`adm-mail-side-i sub${열림 && sideTab === tabKey ? " on" : ""}`}
+                    onClick={() => { set유형고름(이유형); setSideTab(tabKey); setChecked([]); 목록으로(); }}>
+                    {이름}<i>{갈래수(v, 배지상태)}</i>
                   </button>
                 ))}
               </div>
