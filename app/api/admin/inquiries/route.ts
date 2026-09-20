@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const [listResult, countResult] = await Promise.all([
       client.query(
         `SELECT i.id, i.name, i.email, i.phone, i.type, i.subject, i.message, i.status,
-                i.user_id, i.created_at, i.replied_at, i.opened_at,
+                i.user_id, i.created_at, i.replied_at, i.opened_at, i.reply_body,
                 COALESCE(f.files, '[]'::json) AS files
          FROM inquiries i
          LEFT JOIN LATERAL (
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
   }
   const client = await pool.connect()
   try {
-    await client.query(`UPDATE inquiries SET status = 'done', replied_at = now() WHERE id = $1`, [id])
+    await client.query(`UPDATE inquiries SET status = 'done', replied_at = now(), reply_body = $2 WHERE id = $1`, [id, body])
     return ok({ id, status: 'done' })
   } finally {
     client.release()

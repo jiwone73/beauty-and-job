@@ -574,12 +574,13 @@ function SectionStories() {
 function Footer() {
   const topNav = [
     { label: "회사 소개", href: "/about" },
-    { label: "제휴 문의", href: "/about/partnership" },
-    { label: "광고 문의", href: "/about/advertise" },
-    { label: "기타 문의", href: "/about/contact" },
-    /* 고객센터는 아래 저작권 줄에 잔글씨로 있었다. 회사 소개·제휴·광고·기타
-       문의와 같은 성격(물어보러 가는 곳)이라 같은 줄, 같은 크기로 세운다. */
-    { label: "고객센터", href: "/support" },
+    // 광고·제휴·기타로 나뉘어 있던 것을 사업문의 하나로 합쳤다.
+    { label: "사업문의", href: "/about/business" },
+    /* 고객센터는 아래 저작권 줄에 잔글씨로 있었다. 회사 소개·사업문의와 같은
+       성격(물어보러 가는 곳)이라 같은 줄, 같은 크기로 세운다. /support 로
+       들어가면 바로 1:1 문의 폼이 서므로 이름도 그에 맞춘다 — 「고객센터」와
+       한 줄에 같은 주소가 두 번 보이지 않게. */
+    { label: "1:1 문의", href: "/support" },
   ];
   const Sep = () => <span style={{ margin: "0 8px", color: "#e2e2e2" }}>|</span>;
   return (

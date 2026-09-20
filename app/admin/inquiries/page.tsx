@@ -20,6 +20,7 @@ type Inquiry = {
   created_at: string;
   replied_at: string | null;
   opened_at: string | null;
+  reply_body: string | null;
 };
 
 const STATUS_TABS = [
@@ -31,6 +32,13 @@ const STATUS_TABS = [
 function fmtDate(s: string) {
   const d = new Date(s);
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+// 답변한 문의 목록에 보일 첫 줄 — 인사말 다음 줄부터 실제 답이 시작되곤 해서,
+// 빈 줄은 건너뛰고 글자가 있는 첫 줄을 찾는다.
+function 답변첫줄(body: string | null) {
+  if (!body) return "";
+  return (body.split("\n").find((l) => l.trim()) || "").trim();
 }
 
 async function filesToAttachments(files: File[]) {
@@ -87,7 +95,9 @@ export default function AdminInquiriesPage() {
   const openDetail = (it: Inquiry) => {
     setSelected(it);
     setReplySubject(`Re: ${it.subject || "뷰티워크 1:1 문의 답변"}`);
-    setReplyBody(`안녕하세요, ${it.name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${it.message}`);
+    // 이미 답한 것을 다시 열면 그때 실제로 보낸 글을 보여준다 — 매번 같은 기본
+    // 문구로 덮으면 무슨 말을 했는지 여기서는 알 수 없다.
+    setReplyBody(it.reply_body || `안녕하세요, ${it.name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${it.message}`);
     setFiles([]);
     // 미답변 문의: 신규인데 아직 안 열어본 것만 "열어봄" 시각을 남긴다.
     if (it.status === "new" && !it.opened_at) {
@@ -133,8 +143,9 @@ export default function AdminInquiriesPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setSelected((p) => (p ? { ...p, status: "done" } : p));
-        setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done" } : it)));
+        const replied_at = new Date().toISOString();
+        setSelected((p) => (p ? { ...p, status: "done", replied_at, reply_body: replyBody } : p));
+        setItems((prev) => prev.map((it) => (it.id === selected.id ? { ...it, status: "done", replied_at, reply_body: replyBody } : it)));
         window.dispatchEvent(new Event("admin:inquiries-changed"));
         setFiles([]);
         alert("support@beautywork.co.kr에서 답변 메일을 발송했습니다.");
@@ -277,7 +288,7 @@ export default function AdminInquiriesPage() {
                         <th style={{ width: 130 }}>문의 유형</th>
                         <th style={{ width: 110 }}>이름</th>
                         <th>제목</th>
-                        <th style={{ width: 150 }}>접수일</th>
+                        <th style={{ width: 150 }}>{sideTab === "sent" ? "답변일" : "접수일"}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -289,8 +300,16 @@ export default function AdminInquiriesPage() {
                           </td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type}</td>
                           <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.name}</td>
-                          <td className="adm-mail-td-subj" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.subject || "(제목 없음)"}{item.files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}</td>
-                          <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{fmtDate(item.created_at)}</td>
+                          <td className="adm-mail-td-subj" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
+                            {item.subject || "(제목 없음)"}{item.files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
+                            {/* 답변한 문의: 무슨 답을 보냈는지 첫 줄로 미리 보여준다. */}
+                            {item.status === "done" && item.reply_body && (
+                              <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>↳ {답변첫줄(item.reply_body)}</div>
+                            )}
+                          </td>
+                          <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
+                            {fmtDate(sideTab === "sent" ? (item.replied_at || item.created_at) : item.created_at)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
