@@ -61,7 +61,10 @@ export default function AdminAdsPage() {
   // 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 계속 쌓인다.
   // 보낸문의함만 답장을 보낸 것으로 좁힌다. "all"·"inbox"는 그래서 목록 기준이 같다.
   const [sideTab, setSideTab] = useState<"all" | "inbox" | "sent">("all");
-  const [유형고름, set유형고름] = useState("전체");
+  // "전체" 갈래는 뺀다 — 유형이 셋뿐이라 늘 펼쳐 두면 그 자체로 전체나 다름없다.
+  const [유형고름, set유형고름] = useState(사업문의유형[0]);
+  // 유형별로 접고 펼 수 있게. 기본은 펼침(명시적으로 접은 것만 true).
+  const [접힌유형, set접힌유형] = useState<Record<string, boolean>>({});
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
   const [검색, set검색] = useState("");
@@ -210,22 +213,28 @@ export default function AdminAdsPage() {
         <nav className="adm-mail-side" aria-label="문의함">
           {/* 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 다 쌓아 두고,
               숫자만 아직 답 안 한(신규) 건수를 보여준다. 보낸문의함은 답장을 보낸 것만.
-              늘 펼쳐 둔다 — 넷뿐이라 접을 까닭이 없다. */}
+              유형별로 접고 펼 수 있다 — 기본은 펼침. */}
           <p className="adm-mail-side-h">유형<ChevronDown size={15} /></p>
-          {["전체", ...사업문의유형].map((v) => {
-            const 이유형 = v === "전체" ? "전체" : v;
-            const 열림 = 유형고름 === 이유형;
+          {사업문의유형.map((v) => {
+            const 열림 = 유형고름 === v;
+            const 펼침 = !접힌유형[v];
             return (
               <div key={v}>
                 <button type="button"
                   className={`adm-mail-side-i${열림 && sideTab === "all" ? " on" : ""}`}
-                  onClick={() => { set유형고름(이유형); setSideTab("all"); setChecked([]); 목록으로(); }}>
-                  {v}<i>{갈래수(v)}</i>
+                  onClick={() => { set유형고름(v); setSideTab("all"); setChecked([]); 목록으로(); }}>
+                  {v}
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <i>{갈래수(v)}</i>
+                    <ChevronDown size={14}
+                      onClick={(e) => { e.stopPropagation(); set접힌유형((s) => ({ ...s, [v]: 펼침 })); }}
+                      style={{ transform: 펼침 ? undefined : "rotate(-90deg)", color: "#8a8a90" }} />
+                  </span>
                 </button>
-                {([["inbox", "받은문의", "new"], ["sent", "보낸문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
+                {펼침 && ([["inbox", "받은문의", "new"], ["sent", "보낸문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
                   <button key={tabKey} type="button"
                     className={`adm-mail-side-i sub${열림 && sideTab === tabKey ? " on" : ""}`}
-                    onClick={() => { set유형고름(이유형); setSideTab(tabKey); setChecked([]); 목록으로(); }}>
+                    onClick={() => { set유형고름(v); setSideTab(tabKey); setChecked([]); 목록으로(); }}>
                     {이름}<i>{갈래수(v, 배지상태)}</i>
                   </button>
                 ))}

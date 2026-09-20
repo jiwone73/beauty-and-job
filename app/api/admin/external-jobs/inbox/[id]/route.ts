@@ -20,6 +20,23 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!r.rowCount) return err("INBOX_005", "받아 둔 공고를 찾을 수 없어요.", 404);
   const parsed = r.rows[0].parsed || {};
 
+  // 예전에 받아 둔 것은 급여가 원 단위(2,500,000)로 그대로 남아 있을 수 있다.
+  // 지금 파서는 만원 단위로 정리해서 주지만(구조화 파서 수정 전 받은함에 쌓인
+  // 것들은 고쳐지지 않는다), 폼은 이 값을 만원으로 믿고 10000을 곱해 저장한다 —
+  // 그러면 정수 범위를 넘어(25,000,000,000) 등록이 그대로 실패한다.
+  // "월급 220만원"을 넘어설 리 없는 값(10억=100000만원)보다 크면 원 단위로 보고 되돌린다.
+  // 같은 소스 URL로 「불러오기」를 다시 누르면 지금 파서가 다시 만원으로 주므로
+  // 그때는 이 보정이 필요 없다 — 여기 받은함 값만 옛 형식일 수 있다.
+  const 급여단위보정 = (salaryType: any) => {
+    const 원단위형태 = salaryType === "HOURLY" || salaryType === "DAILY";
+    if (원단위형태) return;
+    for (const 키 of ["salary_amount", "salary_amount_max"]) {
+      const v = Number((parsed as any)[키]);
+      if (v > 100000) (parsed as any)[키] = Math.round(v / 10000);
+    }
+  };
+  급여단위보정((parsed as any).salary_type);
+
   // 남의 그림은 우리 저장소로 옮겨 둔다.
   //
   // 헤어인잡은 다른 사이트에서 <img> 로 부르면 403 으로 막는다. 서버에서 받으면
