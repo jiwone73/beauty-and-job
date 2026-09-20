@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { formatPhone } from "@/lib/phone";
-import { ChevronDown, Paperclip, Search, Trash2 } from "lucide-react";
+import { ChevronDown, CornerDownRight, Paperclip, Search, Trash2 } from "lucide-react";
 import { 사업문의유형 } from "@/lib/inquiryTypes";
 
 const PRODUCT_LABELS: Record<string, string> = {
@@ -351,7 +351,7 @@ export default function AdminAdsPage() {
                             </td>
                             <td colSpan={2} onClick={열기}
                               style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 1 }}>
-                              ㄴ {글}
+                              <CornerDownRight size={13} style={{ verticalAlign: -2, marginRight: 4 }} />{글}
                             </td>
                             <td onClick={열기} style={{ cursor: "pointer" }}>
                               {첨부있음 && <Paperclip size={13} className="adm-mail-clip" />}
