@@ -4780,8 +4780,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   justify-content: space-between;
   width: 100%;
   padding: 18px 20px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: #555;
   background: none;
   border: none;
@@ -12656,7 +12656,7 @@ div:has(> table.admin-table),
   .newsletter-input-wrap input { font-size: 16px; }
   .info-section p { font-size: 16px; }
   .info-value-card h3 { font-size: 16px; }
-  .faq-question { font-size: 16px; }
+  .faq-question { font-size: 14px; }
   .contact-submit-btn { font-size: 16px; }
   .apply-modal-cancel { font-size: 16px; }
   .apply-modal-submit { font-size: 16px; }
