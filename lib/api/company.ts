@@ -117,6 +117,8 @@ export type TalentItem = {
   interestedAt?: string | null;   // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
   interestMessage?: string | null;    // 관심에 붙인 한마디("주 4일 가능할까요?")
   interestProposalId?: string | null; // 그 대화를 이어 갈 제안 스레드
+  /** 채워 넣기용 샘플 인재. 실존 인물이 아니라 이름·사진이 서로 안 맞을 수 있어 카드에서 흐리게 보여준다. */
+  isSample?: boolean;
 };
 
 export const companyTalentApi = {

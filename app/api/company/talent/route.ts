@@ -165,6 +165,7 @@ export async function GET(req: NextRequest) {
         u.phone,
         u.avatar_url,
         u.avatar_public,
+        u.is_sample,
         u.portfolio_images,
         (
           SELECT ul.url FROM user_links ul
@@ -290,7 +291,10 @@ export async function GET(req: NextRequest) {
     const data = rows.map((r) => ({
       id: r.id,
       // 무료 기업회원에게는 우리 공고에 지원한 사람만 실명 — 제안을 수락한 사람도 가린다.
-      name: (열람가능 || r.applied_here) ? r.name : 이름가리기(r.name),
+      // 채워 넣기용 샘플 인재는 유료·지원 여부와 상관없이 늘 가린다 — 실존 인물이 아닌데
+      // 실명이 그대로 뜨면 안 된다.
+      name: r.is_sample ? 이름가리기(r.name) : ((열람가능 || r.applied_here) ? r.name : 이름가리기(r.name)),
+      isSample: !!r.is_sample,
       // 연락처는 채용을 실제로 하고 있는 곳(공고 보유)에만 연다. 화면에서만
       // 가리면 응답에 남아 개발자 도구로 그대로 보이므로 여기서 지워 보낸다.
       // 제안을 수락한 사람과는 대화로 이어 가면 된다 — 연락처는 지원했거나 유료일 때만.

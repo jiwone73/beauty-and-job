@@ -104,7 +104,8 @@ export default function TalentCard({
   return (
     <div className="tal-card">
       <div className="tal-top">
-        <div className="tal-avatar" onClick={() => onOpenResume(t)} title="이력서 보기">
+        <div className="tal-avatar" onClick={() => onOpenResume(t)} title="이력서 보기"
+          style={t.isSample ? { opacity: 0.12 } : undefined}>
           {t.avatarUrl
             ? <img src={t.avatarUrl} alt={t.name} loading="lazy" />
             : <span>{t.name?.slice(0, 1) || "?"}</span>}
