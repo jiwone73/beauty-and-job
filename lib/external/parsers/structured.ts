@@ -1050,8 +1050,19 @@ function parseSelectme(html: string, url?: string): StructuredResult | null {
   if (!chunk) return null;
 
   const g = (re: RegExp) => (chunk.match(re) || [])[1] || "";
-  const shopName = g(/"shopName":"([^"]*)"/).trim();
-  const title = g(/"title":"((?:[^"\\]|\\.)*)"/)
+
+  /* 글자 값을 집는다. 맨 위에서 이스케이프를 다 풀어 버리므로(\" → ")
+     값 안에 따옴표가 있으면 「끝나는 따옴표」가 어느 것인지 알 수 없다.
+     제목이 「"범계점"에서 모십니다」인 공고가 통째로 깨졌다.
+
+     그래서 따옴표 하나로 끊지 않고, 그 뒤에 「, "다음필드":」나 「}」가
+     오는 자리를 끝으로 본다. 값 안의 따옴표 뒤에 그런 꼴이 이어질 일은
+     거의 없다. */
+  const 글자값 = (키: string) =>
+    (chunk.match(new RegExp(`"${키}":"([\\s\\S]*?)"(?=\\s*(?:,\\s*"[a-zA-Z_]|\\}))`)) || [])[1] || "";
+
+  const shopName = 글자값("shopName").trim();
+  const title = 글자값("title")
     .replace(/\\n/g, " ")
     // 제목도 본문과 같다 — \uXXXX 를 먼저 글자로 되돌려야 "u003e" 가 남지 않는다.
     .replace(/\\+u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
