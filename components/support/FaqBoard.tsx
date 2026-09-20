@@ -76,7 +76,13 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true, 묶고정 }
                     <span>{f.q}</span>
                     {열린것 === f.q ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                   </button>
-                  {열린것 === f.q && <div className="faq-answer">{f.a}</div>}
+                  {열린것 === f.q && (
+                    <div className="faq-answer">
+                      {Array.isArray(f.a)
+                        ? <ul className="faq-answer-list">{f.a.map((line, i) => <li key={i}>{line}</li>)}</ul>
+                        : f.a}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
