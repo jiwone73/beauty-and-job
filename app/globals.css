@@ -16644,7 +16644,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 15px; color: #1f1f22; }
 .faq-group { margin-top: 26px; }
 .faq-group:first-of-type { margin-top: 0; }
-.faq-group-t { font-size: 14px; font-weight: 700; color: var(--color-primary);
+.faq-group-t { font-size: 14px; font-weight: 700; color: #1f1f22;
   margin: 0 0 8px; }
 .faq-none { font-size: 15px; color: #555; padding: 30px 0; text-align: center; }
 .faq-none b { color: var(--color-primary); }
