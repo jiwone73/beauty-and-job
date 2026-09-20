@@ -206,6 +206,21 @@ export default function AdminInquiriesPage() {
     (!찾는말 || [it.name, it.email, it.subject, it.message]
       .some((v) => (v || "").includes(찾는말))));
 
+  /* 같은 이메일로 온 문의는 같은 건으로 본다 — 사업문의와 같은 규칙이다.
+     "전체"를 볼 때만 묶는다. */
+  const [접힌묶음, set접힌묶음] = useState<Record<number, boolean>>({});
+  const 묶어보기 = (list: Inquiry[]) => {
+    const 순서: string[] = [];
+    const 갈래: Record<string, Inquiry[]> = {};
+    for (const it of list) {
+      const key = it.email ? `e:${it.email.trim().toLowerCase()}` : `id:${it.id}`;
+      if (!갈래[key]) { 갈래[key] = []; 순서.push(key); }
+      갈래[key].push(it);
+    }
+    return 순서.map((key) => ({ head: 갈래[key][0], history: 갈래[key].slice(1) }));
+  };
+  const 묶음목록 = sideTab === "all" ? 묶어보기(보일것) : 보일것.map((it) => ({ head: it, history: [] as Inquiry[] }));
+
   /* 첨부는 비공개 버킷에 있어 주소를 바로 걸 수 없다. 누를 때 짧게 사는
      주소를 받아 연다. */
   const 첨부열기 = async (fid: number) => {
@@ -292,26 +307,62 @@ export default function AdminInquiriesPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {보일것.map((item) => (
-                        <tr key={item.id} className={item.status === "done" ? undefined : "adm-mail-new"}>
-                          <td onClick={(e) => e.stopPropagation()}>
-                            <input type="checkbox" checked={checked.includes(item.id)}
-                              onChange={() => toggleCheck(item.id)} style={{ cursor: "pointer" }} />
-                          </td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.type}</td>
-                          <td onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>{item.name}</td>
-                          <td className="adm-mail-td-subj" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
-                            {item.subject || "(제목 없음)"}{item.files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
-                            {/* 답변한 문의: 무슨 답을 보냈는지 첫 줄로 미리 보여준다. */}
-                            {item.status === "done" && item.reply_body && (
-                              <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>↳ {답변첫줄(item.reply_body)}</div>
-                            )}
-                          </td>
-                          <td className="admin-td-date" onClick={() => openDetail(item)} style={{ cursor: "pointer" }}>
-                            {fmtDate(sideTab === "sent" ? (item.replied_at || item.created_at) : item.created_at)}
-                          </td>
-                        </tr>
-                      ))}
+                      {묶음목록.flatMap(({ head, history }) => {
+                        const rows = [
+                          <tr key={head.id} className={head.status === "done" ? undefined : "adm-mail-new"}>
+                            <td onClick={(e) => e.stopPropagation()}>
+                              <input type="checkbox" checked={checked.includes(head.id)}
+                                onChange={() => toggleCheck(head.id)} style={{ cursor: "pointer" }} />
+                            </td>
+                            <td onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>{head.type}</td>
+                            <td onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>{head.name}</td>
+                            <td className="adm-mail-td-subj" onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>
+                              {head.subject || "(제목 없음)"}{head.files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
+                              {/* 답변한 문의: 무슨 답을 보냈는지 첫 줄로 미리 보여준다. */}
+                              {head.status === "done" && head.reply_body && (
+                                <div style={{ fontSize: 12.5, color: "#555", marginTop: 3 }}>↳ {답변첫줄(head.reply_body)}</div>
+                              )}
+                            </td>
+                            <td className="admin-td-date" onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>
+                              {fmtDate(sideTab === "sent" ? (head.replied_at || head.created_at) : head.created_at)}
+                            </td>
+                          </tr>,
+                        ];
+                        // 같은 이메일로 온 지난 문의 — 기본은 펼침, 화살표로 접고 편다.
+                        if (history.length > 0) {
+                          const 접힘 = !!접힌묶음[head.id];
+                          rows.push(
+                            <tr key={`${head.id}-t`} onClick={() => set접힌묶음((s) => ({ ...s, [head.id]: !접힘 }))} style={{ cursor: "pointer" }}>
+                              <td></td>
+                              <td colSpan={4} style={{ color: "#8a8a90", fontSize: 12.5 }}>
+                                <ChevronDown size={13} style={{ verticalAlign: -2, marginRight: 4, transform: 접힘 ? "rotate(-90deg)" : undefined, display: "inline-block" }} />
+                                답변한 문의 {history.length}건
+                              </td>
+                            </tr>
+                          );
+                          if (!접힘) {
+                            for (const h of history) {
+                              rows.push(
+                                <tr key={h.id} style={{ background: "#fbfbfc" }}>
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <input type="checkbox" checked={checked.includes(h.id)}
+                                      onChange={() => toggleCheck(h.id)} style={{ cursor: "pointer" }} />
+                                  </td>
+                                  <td onClick={() => openDetail(h)} style={{ cursor: "pointer", color: "#8a8a90" }}>{h.type}</td>
+                                  <td onClick={() => openDetail(h)} style={{ cursor: "pointer", color: "#8a8a90" }} />
+                                  <td className="adm-mail-td-subj" onClick={() => openDetail(h)} style={{ cursor: "pointer", paddingLeft: 24, color: "#8a8a90" }}>
+                                    ↳ {h.status === "done" && h.reply_body ? 답변첫줄(h.reply_body) : (h.subject || "(제목 없음)")}
+                                  </td>
+                                  <td className="admin-td-date" onClick={() => openDetail(h)} style={{ cursor: "pointer" }}>
+                                    {fmtDate(h.replied_at || h.created_at)}
+                                  </td>
+                                </tr>
+                              );
+                            }
+                          }
+                        }
+                        return rows;
+                      })}
                     </tbody>
                   </table>
                 </div>
