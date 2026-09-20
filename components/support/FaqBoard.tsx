@@ -2,15 +2,17 @@
 
 import { Fragment, useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import { FAQ_묶음, FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
-import InfoSeg from "@/components/InfoSeg";
+import { FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
 
 /**
- * 자주 묻는 질문 판 — 받는 쪽으로 나누고, 갈래로 묶고, 찾을 수 있게 한다.
+ * 자주 묻는 질문 판 — 갈래로 묶고, 찾을 수 있게 한다.
  *
- * 스무 개가 한 줄로 늘어서면 스크롤로 찾는 수밖에 없다. 개인·기업을 먼저
- * 가르고(둘이 궁금한 것이 겹치지 않는다), 그 안을 갈래로 묶고, 그래도 못 찾으면
- * 검색한다.
+ * 개인·기업은 여기서 다시 고르지 않는다 — 옆줄(FAQ > 개인회원/기업회원)이
+ * 이미 그 갈림을 맡고 있다. 같은 것을 고르는 자리가 옆줄과 본문 위 두 곳에
+ * 있으면 어느 쪽이 진짜인지, 서로 맞지 않을 때 뭘 믿어야 할지 헷갈린다.
+ *
+ * 스무 개가 한 줄로 늘어서면 스크롤로 찾는 수밖에 없다. 갈래로 묶고,
+ * 그래도 못 찾으면 검색한다.
  *
  * 갈래는 드롭다운이 아니라 위쪽에 나열한 탭(| 로 구분)이다 — 무엇으로
  * 묶여 있는지 눌러 보기 전에 이름이 다 보여야, 내 질문이 어느 갈래에
@@ -20,11 +22,12 @@ import InfoSeg from "@/components/InfoSeg";
  * 수 있는지부터 안 보인다.
  */
 export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
+  /** 옆줄에서 고른 값. 바뀌면 부르는 쪽이 key 를 바꿔 이 판을 통째로 새로 세운다. */
   처음?: 묶음;
   /** false 면 갈래 제목 없이 한 줄로 — 첫 화면에 몇 개만 얹을 때 */
   접기?: boolean;
 }) {
-  const [묶, set묶] = useState<묶음>(처음);
+  const 묶 = 처음;
   const [말, set말] = useState("");
   const [열린것, set열린것] = useState<string | null>(null);
   const [고른갈래, set고른갈래] = useState("전체");
@@ -36,11 +39,6 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
 
   return (
     <div className="faq-board">
-      {/* 개인·기업은 여기서 고른다. 궁금한 것 자체가 갈리는 갈래라
-          (공지·문의·다운로드는 누구에게나 같다) 이 판 안에 둔다. */}
-      <InfoSeg 값={묶} 고르기={(m) => { set묶(m); set열린것(null); set고른갈래("전체"); }}
-               목록={(Object.keys(FAQ_묶음) as 묶음[]).map((m) => [m, FAQ_묶음[m]] as const)} />
-
       {/* 갈래 탭 — 이름을 다 펼쳐 두어 훑어만 봐도 어디에 내 질문이
           있을지 짐작이 간다. */}
       <nav className="faq-tabs" aria-label="갈래">
