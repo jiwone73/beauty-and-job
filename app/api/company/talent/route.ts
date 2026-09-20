@@ -174,6 +174,7 @@ export async function GET(req: NextRequest) {
           LIMIT 1
         ) AS sns_url,
         u.created_at,
+        u.last_login_at,
         u.gender,
         CASE WHEN u.birth_date IS NOT NULL
           THEN EXTRACT(YEAR FROM AGE(u.birth_date))::int
@@ -279,8 +280,11 @@ export async function GET(req: NextRequest) {
     SELECT *, COUNT(*) OVER()::int AS total_count
     FROM talent
     WHERE 1=1 ${careerClause} ${ageClause}
-    -- 공개 설정을 최근에 손댄 사람이 먼저. 오래 방치된 이력서는 자연히 뒤로 밀린다
-    ORDER BY (job_search_status = 'SEEKING') DESC, job_search_status_at DESC NULLS LAST, created_at DESC
+    -- 공개(SEEKING)인 사람이 먼저, 그 안에서는 최근에 로그인한 사람이 먼저다.
+    -- 기업 쪽 채용공고 목록과 같은 규칙이다(app/api/jobs/route.ts 의 같은구간) —
+    -- 끌어올리려면 이 화면에 따로 단추를 만들 것 없이 그냥 들어오면 된다.
+    -- 로그인 기록이 없는 사람(옛 계정)은 가입일로 갈음해 무더기로 맨 뒤에 몰리지 않게 한다.
+    ORDER BY (job_search_status = 'SEEKING') DESC, COALESCE(last_login_at, created_at) DESC NULLS LAST, created_at DESC
     LIMIT $${idx++} OFFSET $${idx++}
   `;
   params.push(limit, offset);

@@ -9,8 +9,7 @@ import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import CoverLetterTools from "@/components/profile/CoverLetterTools";
 import { 이력서진행 } from "@/lib/resumeProgress";
 import { AlertCircle } from "lucide-react";
-import { Target, Briefcase, ChevronDown, CheckCircle2, Circle, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight, ArrowUpCircle } from "lucide-react";
-import { 끌어올리기_대기시간_MS } from "@/lib/jobSearchStatus";
+import { Target, Briefcase, ChevronDown, CheckCircle2, Circle, Download, Eye, FileText, IdCard, Pencil, Plus, Printer, Quote, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useProfileStore } from "@/lib/store/profileStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -66,10 +65,6 @@ function ResumePageContent() {
   // 희망 근무지역은 users.preferred_regions(배열)에 있다. 미리보기가 보던
   // user_profiles.region_prefer 는 비어 있어 그 줄이 통째로 빠졌다.
   const [희망지역, set희망지역] = useState("");
-  // 끌어올리기 — 다음에 다시 쓸 수 있는 시각. null 이면 한 번도 안 썼거나
-  // 이미 지나서 지금 바로 쓸 수 있다는 뜻이다.
-  const [다음끌어올림, set다음끌어올림] = useState<Date | null>(null);
-  const [끌어올리는중, set끌어올리는중] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -78,36 +73,9 @@ function ResumePageContent() {
       .then((res) => {
         const pf = res?.data?.profile;
         if (pf) setPay({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
-        if (pf?.job_search_status_at) {
-          const 다음 = new Date(new Date(pf.job_search_status_at).getTime() + 끌어올리기_대기시간_MS);
-          if (다음.getTime() > Date.now()) set다음끌어올림(다음);
-        }
       })
       .catch(() => {});
   }, []);
-
-  const 끌어올리기 = async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) return;
-    set끌어올리는중(true);
-    try {
-      const r = await fetch("/api/users/me/resume/bump", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const d = await r.json();
-      if (d.success) {
-        alert("이력서를 인재검색 맨 위로 끌어올렸습니다.");
-        set다음끌어올림(new Date(d.data.nextAvailableAt));
-      } else {
-        alert(d.error?.message || "끌어올리지 못했습니다.");
-      }
-    } catch {
-      alert("끌어올리는 중 오류가 발생했습니다.");
-    } finally {
-      set끌어올리는중(false);
-    }
-  };
   // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
   useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
   useEffect(() => { setCoverLocal((prev) => prev || coverLetter); }, [coverLetter]);
@@ -580,15 +548,6 @@ function ResumePageContent() {
               <p className="resume-top-desc">공고에 지원할 때 이 이력서를 불러와, 그 자리에 맞게 고쳐서 냅니다.</p>
             </div>
             <div className="resume-top-btns">
-              {/* 인재검색 정렬을 지금 시각으로 다시 찍어 맨 위로 올린다. 48시간에
-                  한 번만 되고, 아직이면 언제부터 되는지를 그대로 적어 준다 —
-                  눌러도 안 되는 단추만 있으면 고장 난 줄 안다. */}
-              <button className="resume-side-preview" onClick={끌어올리기}
-                disabled={끌어올리는중 || !!다음끌어올림}
-                title={다음끌어올림 ? `${다음끌어올림.toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })}부터 다시 쓰실 수 있어요` : "인재검색 맨 위로 끌어올립니다"}>
-                <ArrowUpCircle size={15} />
-                <span>{끌어올리는중 ? "끌어올리는 중..." : 다음끌어올림 ? "끌어올리기 완료" : "끌어올리기"}</span>
-              </button>
               <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
                 <Eye size={15} /><span>미리보기</span>
               </button>
