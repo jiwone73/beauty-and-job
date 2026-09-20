@@ -27,6 +27,11 @@ export const JS_LABEL: Record<string, { text: string; color: string; bg: string 
 // 검색 대상이 곧 공개한 사람이라, 걸러낼 것이 남지 않는다.
 export const JS_FILTERS = ["전체"];
 
+/** 이력서 끌어올리기 — 한 번 쓰면 이만큼 지나야 다시 쓸 수 있다.
+ *  너무 짧으면 계속 눌러 항상 맨 위에 서는 사람이 생기고, 그러면 순서가
+ *  실제 이력서 상태가 아니라 누가 더 자주 눌렀는지로 갈린다. */
+export const 끌어올리기_대기시간_MS = 48 * 60 * 60 * 1000;
+
 // 공개해 둔 지 오래되면 그만큼 덜 미덥다. 마지막으로 손댄 때를 함께 보여준다.
 export function statusAge(at: string | null): string | null {
   if (!at) return null;

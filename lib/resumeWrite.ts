@@ -40,7 +40,10 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
       skill_areas = EXCLUDED.skill_areas,
       work_type_prefer = EXCLUDED.work_type_prefer,
       job_search_status = EXCLUDED.job_search_status,
-      job_search_status_at = EXCLUDED.job_search_status_at,
+      -- 끌어올리기(신선도 시각)는 이 칸에 값을 실어 부른 쪽(공개 전환, 끌어올리기
+      -- 단추)만 바꾼다. 이력서를 그냥 저장할 때는 안 실으므로 그대로 남는다 —
+      -- 안 그러면 아무 칸이나 고쳐 저장할 때마다 공짜로 맨 위에 서게 된다.
+      job_search_status_at = COALESCE(EXCLUDED.job_search_status_at, user_profiles.job_search_status_at),
       region_prefer = EXCLUDED.region_prefer,
       office_job_areas = EXCLUDED.office_job_areas,
       is_entry_level = EXCLUDED.is_entry_level,
@@ -67,9 +70,11 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
       profile.office_job_areas || [],
       profile.is_entry_level || false,
       profile.entry_experience || "",
-      // 인재검색 공개 여부: 값이 없으면 공개. 바꾼 시점을 함께 남겨 신선도를 보여준다.
+      // 인재검색 공개 여부: 값이 없으면 공개.
       ["SEEKING", "OPEN", "CLOSED"].includes(profile.job_search_status) ? profile.job_search_status : "SEEKING",
-      profile.job_search_status_at || new Date(),
+      // 신선도 시각은 부르는 쪽이 실었을 때만 쓴다(위 COALESCE 참고). 첫 저장(행이
+      // 아직 없을 때)에는 null 로 들어가고, 정렬은 그 사람을 가입일 순으로 둔다.
+      profile.job_search_status_at || null,
       // 기본 자기소개서. 선택이라 안 쓴 사람은 빈 값이다.
       profile.cover_letter || "",
       // 급여는 실은 쪽만 바꾼다(위 COALESCE). 안 실으면 null 로 가고 그대로 남는다.
