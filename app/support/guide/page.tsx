@@ -23,6 +23,23 @@ import { 플랜, 스타트 } from "@/lib/companyPlans";
  */
 type 묶음 = "개인" | "기업";
 
+/** 인재 제안·채팅·면접 — 라이트 이상(인재열람 되는 상품)에서만 되는 길이라
+ *  기본 4단계와 따로 둔다. 실제 화면을 그대로 찍어 순서대로 늘어놓는다 —
+ *  말로 "제안하면 채팅이 열립니다"라고만 적으면 몇 번을 눌러야 하는지,
+ *  화면이 어떻게 바뀌는지가 안 그려진다. */
+const 인재제안흐름: { 그림: string; 말: string }[] = [
+  { 그림: "1-talent-search", 말: "인재풀에서 마음에 드는 분을 찾아 '제안하기'를 누릅니다." },
+  { 그림: "2-propose-modal", 말: "보낼 공고를 고르면 그 공고 조건에 맞춰 제안 메시지가 채워집니다. 그대로, 또는 고쳐서 보냅니다." },
+  { 그림: "3-proposal-list", 말: "'제안·스크랩'에서 보낸 제안이 대기·수락·채팅중·면접예정 중 어디까지 갔는지 한눈에 보입니다." },
+  { 그림: "4-received-proposal", 말: "받은 분에게는 '받은 제안'에 수락·거절 버튼으로 뜹니다." },
+  { 그림: "5-accepted", 말: "수락하면 그 자리에서 바로 채팅으로 넘어갈 수 있게 바뀝니다." },
+  { 그림: "6-chat-open", 말: "채팅방이 열립니다. 이제부터 편하게 이야기하시면 됩니다." },
+  { 그림: "7-appointment-form", 말: "채팅창의 달력 아이콘으로 면접 날짜·장소를 잡아 보냅니다(약속은 매장이 정합니다)." },
+  { 그림: "8-appointment-sent", 말: "보낸 약속은 채팅에 카드로 남고, 상대의 답을 기다립니다." },
+  { 그림: "9-appointment-received", 말: "받은 분은 '좋아요'나 '어려워요'로 답합니다." },
+  { 그림: "10-appointment-confirmed", 말: "좋아요를 누르면 그 자리에서 면접 약속이 확정됩니다." },
+];
+
 const 걸음: Record<묶음, { Icon: typeof UserPlus; 이름: string; 말: string }[]> = {
   개인: [
     { Icon: UserPlus, 이름: "회원가입",
@@ -73,6 +90,24 @@ function 판() {
           </div>
         ))}
       </div>
+
+      {묶 === "기업" && (
+        <div id="인재제안" className="guide-flow">
+          <h2 className="guide-flow-h">인재에게 제안하고 면접까지 — 실제 화면으로</h2>
+          <p className="guide-flow-sub">라이트 이상 상품(인재 열람)에서 되는 기능입니다. 순서대로 눌러 보시면 됩니다.</p>
+          <div className="guide-flow-list">
+            {인재제안흐름.map(({ 그림, 말 }, i) => (
+              <div key={그림} className="guide-flow-item">
+                <img src={`/images/guide/${그림}.jpg`} alt={말} loading="lazy" />
+                <div>
+                  <span className="guide-flow-no">STEP {String(i + 1).padStart(2, "0")}</span>
+                  <p>{말}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="sup-file-n">
         여기 없는 것이 궁금하시면{" "}

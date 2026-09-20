@@ -4448,6 +4448,20 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
    세운다. 가이드는 순서가 뜻이라, 셋씩 접히면 어디서 이어지는지 흐려진다. */
 .guide-steps { display: grid; gap: 12px; margin-top: 20px; }
 
+/* 인재 제안·채팅·면접 흐름 — 실제 화면 캡처를 순서대로 늘어놓는다. 그림이
+   증거라 카드로 크게 두고, 글은 그 밑에 한 줄만 — 화면이 스스로 설명한다. */
+.guide-flow { margin-top: 44px; }
+.guide-flow-h { font-size: 19px; color: #1f1f22; margin: 0 0 6px; }
+.guide-flow-sub { font-size: 14px; color: #8a8a90; margin: 0 0 20px; }
+.guide-flow-list { display: grid; gap: 28px; }
+.guide-flow-item img {
+  display: block; width: 100%; max-width: 480px; border-radius: 10px;
+  border: 1px solid var(--card-line);
+}
+.guide-flow-no { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  color: var(--color-primary); margin: 10px 0 4px; }
+.guide-flow-item p { margin: 0; font-size: 14.5px; color: #555; line-height: 1.6; word-break: keep-all; }
+
 /* 회원정책의 점 목록은 잔글씨가 아니라 본문이다. .pi-warn 은 상품 화면의
    유의사항용이라 옅은 회색인데, 여기서는 그게 읽을 것의 전부다. */
 /* 회원정책의 약속 목록 — 제목 한 줄, 설명 한 줄. 점만 찍힌 목록으로 두면
