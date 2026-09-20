@@ -19,6 +19,7 @@ type Inquiry = {
   user_id: string | null;
   created_at: string;
   replied_at: string | null;
+  opened_at: string | null;
 };
 
 const STATUS_TABS = [
@@ -51,7 +52,7 @@ export default function AdminInquiriesPage() {
   const [loading, setLoading] = useState(true);
   // 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 계속 쌓인다.
   // 보낸문의함만 답장을 보낸 것으로 좁힌다. "all"·"inbox"는 그래서 목록 기준이 같다.
-  const [sideTab, setSideTab] = useState<"all" | "inbox" | "sent">("all");
+  const [sideTab, setSideTab] = useState<"all" | "inbox" | "unanswered" | "sent">("all");
   const [유형고름, set유형고름] = useState("전체");
   const [selected, setSelected] = useState<Inquiry | null>(null);
   const [checked, setChecked] = useState<number[]>([]);
@@ -88,6 +89,16 @@ export default function AdminInquiriesPage() {
     setReplySubject(`Re: ${it.subject || "뷰티워크 1:1 문의 답변"}`);
     setReplyBody(`안녕하세요, ${it.name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${it.message}`);
     setFiles([]);
+    // 미답변 문의: 신규인데 아직 안 열어본 것만 "열어봄" 시각을 남긴다.
+    if (it.status === "new" && !it.opened_at) {
+      const opened_at = new Date().toISOString();
+      setItems((prev) => prev.map((x) => (x.id === it.id ? { ...x, opened_at } : x)));
+      fetch("/api/admin/inquiries", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ id: it.id, mark_opened: true }),
+      }).catch((e) => console.error("[mark opened]", e));
+    }
   };
 
   const markDone = async (id: number) => {
@@ -173,9 +184,13 @@ export default function AdminInquiriesPage() {
   /* 옆줄은 함(받은·보낸)만 맡는다. 회원구분은 표의 한 열이고, 찾는 일은 검색이 한다.
      사업문의와 같은 짜임이다. */
   const 갈래수 = (st: string) => items.filter((it) => !st || it.status === st).length;
+  // 미답변: 열어는 봤는데 아직 답을 안 한 것 — 신규문의 중 opened_at 이 있는 것.
+  const 미답변수 = () => items.filter((it) => it.status === "new" && it.opened_at).length;
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
-    (sideTab === "sent" ? it.status === "done" : sideTab === "inbox" ? it.status === "new" : true) &&
+    (sideTab === "sent" ? it.status === "done"
+      : sideTab === "unanswered" ? (it.status === "new" && it.opened_at)
+      : sideTab === "inbox" ? it.status === "new" : true) &&
     (유형고름 === "전체" || it.type === 유형고름) &&
     (!찾는말 || [it.name, it.email, it.subject, it.message]
       .some((v) => (v || "").includes(찾는말))));
@@ -204,11 +219,15 @@ export default function AdminInquiriesPage() {
             onClick={() => { setSideTab("all"); setChecked([]); 목록으로(); }}>
             전체<i>{갈래수("")}</i>
           </button>
-          {([["inbox", "신규문의", "new"], ["sent", "답변한 문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
+          {([
+            ["inbox", "신규문의", 갈래수("new")],
+            ["unanswered", "미답변 문의", 미답변수()],
+            ["sent", "답변한 문의", 갈래수("done")],
+          ] as const).map(([tabKey, 이름, 건수]) => (
             <button key={tabKey} type="button"
               className={`adm-mail-side-i sub${sideTab === tabKey ? " on" : ""}`}
               onClick={() => { setSideTab(tabKey); setChecked([]); 목록으로(); }}>
-              {이름}<i>{갈래수(배지상태)}</i>
+              {이름}<i>{건수}</i>
             </button>
           ))}
         </nav>

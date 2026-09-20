@@ -26,6 +26,7 @@ type Inquiry = {
   type: string;
   created_at: string;
   replied_at: string | null;
+  opened_at: string | null;
 };
 
 // 제목이 없던 시절의 문의는 상품명이 제목 노릇을 했다 — 그것으로 대신 채운다.
@@ -60,7 +61,7 @@ export default function AdminAdsPage() {
   const [loading, setLoading] = useState(true);
   // 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 계속 쌓인다.
   // 보낸문의함만 답장을 보낸 것으로 좁힌다. "all"·"inbox"는 그래서 목록 기준이 같다.
-  const [sideTab, setSideTab] = useState<"all" | "inbox" | "sent">("all");
+  const [sideTab, setSideTab] = useState<"all" | "inbox" | "unanswered" | "sent">("all");
   // "전체" 갈래는 뺀다 — 유형이 셋뿐이라 늘 펼쳐 두면 그 자체로 전체나 다름없다.
   const [유형고름, set유형고름] = useState(사업문의유형[0]);
   // 유형별로 접고 펼 수 있게. 기본은 펼침(명시적으로 접은 것만 true).
@@ -97,6 +98,16 @@ export default function AdminAdsPage() {
     setReplySubject(`[뷰티워크] ${item.type || "광고"} 문의 답변`);
     setReplyBody(`안녕하세요, ${item.contact_name || "고객"}님.\n뷰티워크입니다.\n\n문의 주신 내용에 대해 답변드립니다.\n\n\n\n──────────\n[문의 내용]\n${item.message}`);
     setFiles([]);
+    // 미답변 문의: 신규인데 아직 안 열어본 것만 "열어봄" 시각을 남긴다.
+    if (item.status === "new" && !item.opened_at) {
+      const opened_at = new Date().toISOString();
+      setItems((prev) => prev.map((it) => (it.id === item.id ? { ...it, opened_at } : it)));
+      fetch("/api/admin/ads/inquiries", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ id: item.id, mark_opened: true }),
+      }).catch((e) => console.error("[mark opened]", e));
+    }
   };
 
   const markDone = async (id: number) => {
@@ -183,11 +194,16 @@ export default function AdminAdsPage() {
   ];
   const 갈래수 = (ty: string, st = "") => items.filter((it) =>
     (ty === "전체" || (it.type || "광고") === ty) && (!st || it.status === st)).length;
+  // 미답변: 열어는 봤는데 아직 답을 안 한 것 — 신규문의 중 opened_at 이 있는 것.
+  const 미답변수 = (ty: string) => items.filter((it) =>
+    (ty === "전체" || (it.type || "광고") === ty) && it.status === "new" && it.opened_at).length;
 
   /* 옆줄은 함(받은·보낸)만 맡는다. 유형은 표의 한 열이고, 찾는 일은 검색이 한다. */
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
-    (sideTab === "sent" ? it.status === "done" : sideTab === "inbox" ? it.status === "new" : true) &&
+    (sideTab === "sent" ? it.status === "done"
+      : sideTab === "unanswered" ? (it.status === "new" && it.opened_at)
+      : sideTab === "inbox" ? it.status === "new" : true) &&
     (유형고름 === "전체" || (it.type || "광고") === 유형고름) &&
     (!찾는말 || [it.subject, it.company_name, it.contact_name, it.email, it.message]
       .some((v) => (v || "").includes(찾는말))));
@@ -230,11 +246,15 @@ export default function AdminAdsPage() {
                       style={{ transform: 펼침 ? undefined : "rotate(-90deg)", color: "#8a8a90" }} />
                   </span>
                 </button>
-                {펼침 && ([["inbox", "신규문의", "new"], ["sent", "답변한 문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
+                {펼침 && ([
+                  ["inbox", "신규문의", 갈래수(v, "new")],
+                  ["unanswered", "미답변 문의", 미답변수(v)],
+                  ["sent", "답변한 문의", 갈래수(v, "done")],
+                ] as const).map(([tabKey, 이름, 건수]) => (
                   <button key={tabKey} type="button"
                     className={`adm-mail-side-i sub${열림 && sideTab === tabKey ? " on" : ""}`}
                     onClick={() => { set유형고름(v); setSideTab(tabKey); setChecked([]); 목록으로(); }}>
-                    {이름}<i>{갈래수(v, 배지상태)}</i>
+                    {이름}<i>{건수}</i>
                   </button>
                 ))}
               </div>

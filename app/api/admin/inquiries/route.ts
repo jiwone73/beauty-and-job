@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const [listResult, countResult] = await Promise.all([
       client.query(
         `SELECT i.id, i.name, i.email, i.phone, i.type, i.subject, i.message, i.status,
-                i.user_id, i.created_at, i.replied_at,
+                i.user_id, i.created_at, i.replied_at, i.opened_at,
                 COALESCE(f.files, '[]'::json) AS files
          FROM inquiries i
          LEFT JOIN LATERAL (
@@ -73,11 +73,17 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, 'admin')
   if (authErr) return authErr
-  const { id, status } = await req.json()
-  if (!id || !status) return err('BAD_REQUEST', 'id, status 필요', 400)
-  if (!['new', 'contacted', 'done'].includes(status)) return err('BAD_REQUEST', '잘못된 status', 400)
+  const { id, status, mark_opened } = await req.json()
+  if (!id) return err('BAD_REQUEST', 'id 필요', 400)
   const client = await pool.connect()
   try {
+    // 미답변 문의: 열어 봤다는 시각만 남긴다. 이미 열어 봤으면 시각을 덮지 않는다.
+    if (mark_opened) {
+      await client.query(`UPDATE inquiries SET opened_at = COALESCE(opened_at, now()) WHERE id = $1`, [id])
+      return ok({ success: true })
+    }
+    if (!status) return err('BAD_REQUEST', 'id, status 필요', 400)
+    if (!['new', 'contacted', 'done'].includes(status)) return err('BAD_REQUEST', '잘못된 status', 400)
     await client.query(`UPDATE inquiries SET status = $1 WHERE id = $2`, [status, id])
     return ok({ id, status })
   } finally {
