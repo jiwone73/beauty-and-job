@@ -339,7 +339,10 @@ export default function ExternalCompaniesPanel() {
         <div style={{ margin: "8px 0", fontSize: 13, padding: "8px 12px", borderRadius: 8, background: msg.startsWith("✓") ? "#e8f5e9" : "#fdeaea", color: msg.startsWith("✓") ? "#1b7a3d" : "#c0392b" }}>{msg}</div>
       )}
 
-      <div className="admin-card">
+      {/* .admin-card 는 표에 맞춰 폭을 줄이는(width: fit-content) 게 기본값인데,
+          그러면 표가 줄바꿈 없이 원래 폭대로 넓어져도 카드가 그만큼 늘어나 버려
+          스크롤이 다시 생긴다. 이 표는 줄바꿈으로 화면 폭에 맞추는 게 목적이라 폭을 100%로 고정한다. */}
+      <div className="admin-card" style={{ width: "100%" }}>
         {/* 선택 기업 진행 단계 게이지 (1~6) — 표 카드 안이라 표 콘텐츠 폭에 정확히 맞음 */}
         {selectedItems.length > 0 && (
           <div style={{ padding: "22px 24px", borderBottom: "1px solid #f0f0f0" }}>
@@ -396,20 +399,20 @@ export default function ExternalCompaniesPanel() {
           </div>
         </div>
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 960, whiteSpace: "nowrap" }}>
+          <table className="admin-table" style={{ width: "100%", tableLayout: "fixed" }}>
             <thead>
               <tr>
-                <th style={{ width: 40 }}>
+                <th style={{ width: 36 }}>
                   <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor: "pointer" }} />
                 </th>
-                <th>외부공고명</th>
-                <th style={{ width: 78 }}>등록자</th>
-                <th>기업명</th>
-                <th>지역</th>
-                <th>연락처</th>
-                <th >입사지원</th>
-                <th>상태</th>
-                <th>등록일</th>
+                <th style={{ width: "20%" }}>외부공고명</th>
+                <th style={{ width: 60, whiteSpace: "nowrap" }}>등록자</th>
+                <th style={{ width: "14%" }}>기업명</th>
+                <th style={{ width: "10%" }}>지역</th>
+                <th style={{ width: 110, whiteSpace: "nowrap" }}>연락처</th>
+                <th style={{ width: 70, whiteSpace: "nowrap" }}>입사지원</th>
+                <th style={{ width: 90, whiteSpace: "nowrap" }}>상태</th>
+                <th style={{ width: 84, whiteSpace: "nowrap" }}>등록일</th>
               </tr>
             </thead>
             <tbody>
@@ -434,10 +437,11 @@ export default function ExternalCompaniesPanel() {
                       </td>
                       {/* 제목만 말줄임하고, 원문 링크와 배지는 오른쪽에 고정한다.
                           셀 전체에 말줄임을 걸면 제목이 길 때 뒤의 것들이 통째로 잘려 안 보인다. */}
-                      <td style={{ maxWidth: 320, color: "#555" }} title={jobTitle}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                          {/* 공고명은 우리가 올린 공고로 — 실제로 어떻게 나갔는지 바로 확인하는 게 먼저다. */}
-                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>
+                      <td style={{ color: "#555" }} title={jobTitle}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 6, minWidth: 0 }}>
+                          {/* 공고명은 우리가 올린 공고로 — 실제로 어떻게 나갔는지 바로 확인하는 게 먼저다.
+                              열 폭에 스크롤 없이 다 보이도록 줄바꿈한다(말줄임 대신). */}
+                          <span style={{ whiteSpace: "normal", wordBreak: "break-all", minWidth: 0 }}>
                             {j0?.id ? (
                               <a href={`/jobs/${j0.id}`} target="_blank" rel="noopener noreferrer" title={`뷰티워크 공고 보기 · ${jobTitle}`}
                                 style={{ color: "#582681", textDecoration: "none" }}>
@@ -467,14 +471,15 @@ export default function ExternalCompaniesPanel() {
                         ) : <span style={{ color: "#555" }}>-</span>}
                       </td>
                       <td className="admin-td-brand">
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        {/* 로고를 옆이 아니라 위에 둔다 — 열이 좁아 옆에 두면 이름 쓸 폭이 거의 안 남는다. */}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
                           {c.logo_url
-                            ? <img src={c.logo_url} alt="" style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", background: "#f2f2f2" }} />
-                            : <div style={{ width: 28, height: 28, borderRadius: 6, background: "#f2f2f2" }} />}
-                          <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#555", cursor: "pointer" }}>{c.company_name}</span>
+                            ? <img src={c.logo_url} alt="" style={{ width: 22, height: 22, borderRadius: 6, objectFit: "cover", background: "#f2f2f2", flexShrink: 0 }} />
+                            : <div style={{ width: 22, height: 22, borderRadius: 6, background: "#f2f2f2", flexShrink: 0 }} />}
+                          <span onClick={() => openEdit(c)} title="정보 수정" style={{ fontWeight: 600, color: "#555", cursor: "pointer", whiteSpace: "normal", wordBreak: "break-all" }}>{c.company_name}</span>
                         </div>
                       </td>
-                      <td className="admin-td-date">{fmtRegion(c)}</td>
+                      <td className="admin-td-date" style={{ whiteSpace: "normal", wordBreak: "keep-all" }}>{fmtRegion(c)}</td>
                       <td className="admin-td-date">{fmtPhone(contactPhone(c)) || contactEmail(c) || "-"}</td>
                       <td className="admin-td-date" >
                         {cApps.length > 0 ? (
