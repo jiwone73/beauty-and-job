@@ -33,7 +33,11 @@ export default function CompanyDashboardPlansPage() {
                 <span>{f.q}</span>
                 {열린질문 === i ? <Minus size={16} /> : <Plus size={16} />}
               </button>
-              {열린질문 === i && <p>{f.a}</p>}
+              {열린질문 === i && (
+                Array.isArray(f.a)
+                  ? <ul className="cs-faq-a-list">{f.a.map((line, j) => <li key={j}>{line}</li>)}</ul>
+                  : <p>{f.a}</p>
+              )}
             </li>
           ))}
         </ul>
