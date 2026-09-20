@@ -31,6 +31,12 @@ type Inquiry = {
   reply_body: string | null;
 };
 
+// 답변 미리보기: 줄바꿈을 빈칸으로 펴서 한 줄로 잇는다. 1행에 들어가는 만큼만
+// 보이고 나머지는 … 로 잘린다(넘치면 그 줄을 눌러 상세에서 전체를 본다).
+function 한줄로(s: string) {
+  return s.replace(/\s+/g, " ").trim();
+}
+
 // 제목이 없던 시절의 문의는 상품명이 제목 노릇을 했다 — 그것으로 대신 채운다.
 // 내용 앞부분을 잘라 제목인 척 세우지는 않는다.
 function 제목(it: Inquiry) {
@@ -320,7 +326,7 @@ export default function AdminAdsPage() {
                 </div>
               ) : (
                 <div className="adm-mail-list">
-                  <table className="admin-table">
+                  <table className="admin-table" style={{ width: "100%", tableLayout: "fixed" }}>
                     <thead>
                       <tr>
                         <th style={{ width: 38 }}></th>
@@ -360,8 +366,8 @@ export default function AdminAdsPage() {
                             <tr key={`${it.id}-r`} style={{ background: "#fbfbfc" }}>
                               <td></td>
                               <td colSpan={2} onClick={() => openDetail(it)}
-                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "pre-wrap" }}>
-                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{it.reply_body}
+                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{한줄로(it.reply_body)}
                               </td>
                               <td onClick={() => openDetail(it)} style={{ cursor: "pointer" }}>
                                 {it.reply_files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}

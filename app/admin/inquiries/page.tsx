@@ -35,6 +35,12 @@ function fmtDate(s: string) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+// 답변 미리보기: 줄바꿈을 빈칸으로 펴서 한 줄로 잇는다. 1행에 들어가는 만큼만
+// 보이고 나머지는 … 로 잘린다(넘치면 그 줄을 눌러 상세에서 전체를 본다).
+function 한줄로(s: string) {
+  return s.replace(/\s+/g, " ").trim();
+}
+
 
 async function filesToAttachments(files: File[]) {
   return Promise.all(
@@ -290,7 +296,7 @@ export default function AdminInquiriesPage() {
                 </div>
               ) : (
                 <div className="adm-mail-list">
-                  <table className="admin-table">
+                  <table className="admin-table" style={{ width: "100%", tableLayout: "fixed" }}>
                     <thead>
                       <tr>
                         <th style={{ width: 38 }}></th>
@@ -330,8 +336,8 @@ export default function AdminInquiriesPage() {
                             <tr key={`${it.id}-r`} style={{ background: "#fbfbfc" }}>
                               <td></td>
                               <td colSpan={3} onClick={() => openDetail(it)}
-                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "pre-wrap" }}>
-                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{it.reply_body}
+                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{한줄로(it.reply_body)}
                               </td>
                               <td onClick={() => openDetail(it)} style={{ cursor: "pointer" }}>
                                 {it.reply_files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
