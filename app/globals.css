@@ -4450,7 +4450,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 /* 인재 제안·채팅·면접 흐름 — 실제 화면 캡처를 순서대로 늘어놓는다. 그림이
    증거라 카드로 크게 두고, 글은 그 밑에 한 줄만 — 화면이 스스로 설명한다. */
-.guide-flow { margin-top: 44px; }
+.guide-flow, .guide-faq { margin-top: 44px; }
 .guide-flow-h { font-size: 19px; color: #1f1f22; margin: 0 0 6px; }
 .guide-flow-sub { font-size: 14px; color: #8a8a90; margin: 0 0 20px; }
 .guide-flow-list { display: grid; gap: 28px; }

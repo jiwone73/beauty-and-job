@@ -26,10 +26,6 @@ const 메뉴: { 머리: 줄; 아래: 줄[] }[] = [
       { href: "/support/guide", label: "개인회원", 주소: "/support/guide?누구=개인" },
       { href: "/support/guide", label: "기업회원", 주소: "/support/guide?누구=기업" },
     ] },
-  { 머리: { href: "/support/faq", label: "자주 묻는 질문" }, 아래: [
-      { href: "/support/faq", label: "개인회원", 주소: "/support/faq?누구=개인" },
-      { href: "/support/faq", label: "기업회원", 주소: "/support/faq?누구=기업" },
-    ] },
   { 머리: { href: "/support", label: "1:1 문의하기" }, 아래: [] },
   { 머리: { href: "/support/download", label: "다운로드" }, 아래: [] },
 ];

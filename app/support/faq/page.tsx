@@ -1,25 +1,17 @@
 "use client";
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import InfoShell, { 누구읽기 } from "@/components/InfoShell";
-import FaqBoard from "@/components/support/FaqBoard";
+import { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { 누구읽기 } from "@/components/InfoShell";
 
-/** 자주 묻는 질문 — 목록은 lib/faq.ts 한 곳에서 온다. */
+/** 자주 묻는 질문은 사용가이드 안으로 합쳤다. 옛 링크(북마크·공유된 주소)가
+ *  죽지 않게 갈래만 그대로 살려 사용가이드로 돌려보낸다. */
 function 판() {
+  const router = useRouter();
   const 누구 = 누구읽기(useSearchParams());
-  // key 를 주어 갈래가 바뀌면 판을 새로 세운다 — 펼쳐 둔 답이 남지 않게.
-  return <FaqBoard key={누구} 처음={누구} />;
-}
-
-function 껍데기() {
-  const 누구 = 누구읽기(useSearchParams());
-  return (
-    <InfoShell active="/support/faq" title="자주 묻는 질문" 누구={누구}>
-      <판 />
-    </InfoShell>
-  );
+  useEffect(() => { router.replace(`/support/guide?누구=${누구}#찾아보기`); }, [router, 누구]);
+  return null;
 }
 
 export default function FaqPage() {
-  return <Suspense fallback={null}><껍데기 /></Suspense>;
+  return <Suspense fallback={null}><판 /></Suspense>;
 }

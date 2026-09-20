@@ -15,12 +15,16 @@ import InfoSeg from "@/components/InfoSeg";
  * 처음에는 다 접어 둔다 — 펼쳐 두면 질문 목록이 아니라 글이 되어, 무엇을 물을
  * 수 있는지부터 안 보인다.
  */
-export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
+export default function FaqBoard({ 처음 = "개인", 접기 = true, 묶고정 }: {
   처음?: 묶음;
   /** false 면 갈래 제목 없이 한 줄로 — 첫 화면에 몇 개만 얹을 때 */
   접기?: boolean;
+  /** 주어지면 개인·기업 토글을 그리지 않고 이 값 하나로 고정한다. 사용가이드처럼
+   *  바깥 화면이 이미 위에서 갈래를 고르고 있을 때, 토글을 두 번 세우지 않으려고 쓴다. */
+  묶고정?: 묶음;
 }) {
-  const [묶, set묶] = useState<묶음>(처음);
+  const [묶내부, set묶] = useState<묶음>(처음);
+  const 묶 = 묶고정 ?? 묶내부;
   const [말, set말] = useState("");
   const [열린것, set열린것] = useState<string | null>(null);
   const [고른갈래, set고른갈래] = useState("전체");
@@ -36,8 +40,10 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
           내렸다 — 갈리는 것은 FAQ 뿐이고(공지·문의·다운로드는 누구에게나
           같다), 고객센터 전체에 걸린 탭으로 보이면 나머지 셋도 사람마다
           다른 줄 알게 된다. */}
-      <InfoSeg 값={묶} 고르기={(m) => { set묶(m); set열린것(null); set고른갈래("전체"); }}
-               목록={(Object.keys(FAQ_묶음) as 묶음[]).map((m) => [m, FAQ_묶음[m]] as const)} />
+      {!묶고정 && (
+        <InfoSeg 값={묶} 고르기={(m) => { set묶(m); set열린것(null); set고른갈래("전체"); }}
+                 목록={(Object.keys(FAQ_묶음) as 묶음[]).map((m) => [m, FAQ_묶음[m]] as const)} />
+      )}
       {/* 갈래 고르기 + 검색. 스무 개가 한 줄로 늘어서면 스크롤로 찾는 수밖에
           없다 — 공지·다운로드 게시판과 같은 짜임이다. */}
       <div className="faq-top">

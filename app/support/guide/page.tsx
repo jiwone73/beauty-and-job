@@ -6,17 +6,17 @@ import { UserPlus, FileText, Search, Send, MessageSquare,
          Building2, FilePlus2, Users, TrendingUp } from "lucide-react";
 import InfoShell, { 누구읽기 } from "@/components/InfoShell";
 import InfoSeg from "@/components/InfoSeg";
+import FaqBoard from "@/components/support/FaqBoard";
 import { 플랜, 스타트 } from "@/lib/companyPlans";
 
 /**
- * 사용가이드 — 처음부터 끝까지 한 번 따라가는 길.
+ * 사용가이드 — 처음부터 끝까지 한 번 따라가는 길 + 낱개로 찾아보는 곳.
  *
- * FAQ 와 하는 일이 다르다. FAQ 는 「이건 어떻게 하나요」에 낱개로 답하고,
- * 여기는 순서를 보여 준다 — 무엇부터 해야 하는지 모르는 사람은 물을 것도
- * 떠오르지 않는다.
- *
- * 받는 쪽으로 나누는 것은 FAQ 와 같다. 일자리를 찾으러 온 사람과 사람을
- * 뽑으러 온 사람이 밟는 순서는 겹치지 않는다.
+ * 위쪽은 순서(무엇부터 해야 하는지)를, 아래쪽은 FaqBoard(검색+갈래+아코디언)를
+ * 그대로 얹어 「이건 어떻게 하나요」를 찾아보게 한다. 예전엔 이 둘을
+ * 사용가이드·자주 묻는 질문으로 메뉴를 나눠 두었는데, 찾아보는 화면이 하나로
+ * 합쳐지는 편이 — 다른 사이트들도 대개 그렇게 한다 — 메뉴를 오가지 않아도 된다.
+ * /support/faq 는 이 주소로 돌려보낸다(옛 링크가 죽지 않게).
  *
  * 없는 것을 적지 않는다. 적힌 것은 지금 화면에서 실제로 되는 것이어야 한다 —
  * 숫자는 lib/companyPlans 에서 가져와 상품이 바뀌면 여기도 같이 바뀐다.
@@ -109,9 +109,15 @@ function 판() {
         </div>
       )}
 
+      <div id="찾아보기" className="guide-faq">
+        <h2 className="guide-flow-h">하나씩 찾아보기</h2>
+        <p className="guide-flow-sub">위 흐름 말고 궁금한 것이 있으면 여기서 찾아보세요.</p>
+        <FaqBoard key={묶} 처음={묶} 묶고정={묶} />
+      </div>
+
       <p className="sup-file-n">
-        여기 없는 것이 궁금하시면{" "}
-        <Link href="/support/faq">자주 묻는 질문 ›</Link>
+        그래도 못 찾으셨으면{" "}
+        <Link href="/support">1:1 문의하기 ›</Link>
       </p>
     </InfoShell>
   );
