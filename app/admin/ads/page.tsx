@@ -223,7 +223,6 @@ export default function AdminAdsPage() {
      매번 다르게 적을 수 있어 이메일이 제일 믿을 만하다. "전체"를 볼 때만
      묶는다 — 신규문의·미답변·답변한 문의는 그 갈래만 보는 게 목적이라
      묶으면 오히려 무엇을 보고 있는지 흐려진다. */
-  const [접힌묶음, set접힌묶음] = useState<Record<number, boolean>>({});
   const 묶어보기 = (list: Inquiry[]) => {
     const 순서: string[] = [];
     const 갈래: Record<string, Inquiry[]> = {};
@@ -331,7 +330,6 @@ export default function AdminAdsPage() {
                     <thead>
                       <tr>
                         <th style={{ width: 38 }}></th>
-                        <th style={{ width: 70 }}>유형</th>
                         <th style={{ width: 170 }}>회사명</th>
                         <th>제목</th>
                         <th style={{ width: 150 }}>{sideTab === "sent" ? "답변일" : "접수일"}</th>
@@ -345,7 +343,6 @@ export default function AdminAdsPage() {
                               <input type="checkbox" checked={checked.includes(head.id)}
                                 onChange={() => toggleCheck(head.id)} style={{ cursor: "pointer" }} />
                             </td>
-                            <td onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>{head.type || "광고"}</td>
                             <td onClick={() => openDetail(head)} style={{ cursor: "pointer" }}>
                               {head.company_name || head.contact_name || "-"}
                             </td>
@@ -361,38 +358,24 @@ export default function AdminAdsPage() {
                             </td>
                           </tr>,
                         ];
-                        // 같은 이메일로 온 지난 문의 — 기본은 펼침, 화살표로 접고 편다.
-                        if (history.length > 0) {
-                          const 접힘 = !!접힌묶음[head.id];
+                        // 같은 이메일로 온 지난 문의 — 안내줄 없이 ㄴ 로 바로 시작하고,
+                        // 첫 줄만 자르지 않고 보낸 글 전체를 폭에 맞춰 보여준다.
+                        for (const h of history) {
                           rows.push(
-                            <tr key={`${head.id}-t`} onClick={() => set접힌묶음((s) => ({ ...s, [head.id]: !접힘 }))} style={{ cursor: "pointer" }}>
-                              <td></td>
-                              <td colSpan={4} style={{ color: "#8a8a90", fontSize: 12.5 }}>
-                                <ChevronDown size={13} style={{ verticalAlign: -2, marginRight: 4, transform: 접힘 ? "rotate(-90deg)" : undefined, display: "inline-block" }} />
-                                답변한 문의 {history.length}건
+                            <tr key={h.id} style={{ background: "#fbfbfc" }}>
+                              <td onClick={(e) => e.stopPropagation()}>
+                                <input type="checkbox" checked={checked.includes(h.id)}
+                                  onChange={() => toggleCheck(h.id)} style={{ cursor: "pointer" }} />
+                              </td>
+                              <td colSpan={2} onClick={() => openDetail(h)}
+                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "pre-wrap" }}>
+                                ㄴ {h.status === "done" && h.reply_body ? h.reply_body : 제목(h)}
+                              </td>
+                              <td className="admin-td-date" onClick={() => openDetail(h)} style={{ cursor: "pointer" }}>
+                                {fmtDate(h.replied_at || h.created_at)}
                               </td>
                             </tr>
                           );
-                          if (!접힘) {
-                            for (const h of history) {
-                              rows.push(
-                                <tr key={h.id} style={{ background: "#fbfbfc" }}>
-                                  <td onClick={(e) => e.stopPropagation()}>
-                                    <input type="checkbox" checked={checked.includes(h.id)}
-                                      onChange={() => toggleCheck(h.id)} style={{ cursor: "pointer" }} />
-                                  </td>
-                                  <td onClick={() => openDetail(h)} style={{ cursor: "pointer", color: "#8a8a90" }}>{h.type || "광고"}</td>
-                                  <td onClick={() => openDetail(h)} style={{ cursor: "pointer", color: "#8a8a90" }} />
-                                  <td className="adm-mail-td-subj" onClick={() => openDetail(h)} style={{ cursor: "pointer", paddingLeft: 24, color: "#8a8a90" }}>
-                                    ↳ {h.status === "done" && h.reply_body ? 답변첫줄(h.reply_body) : 제목(h)}
-                                  </td>
-                                  <td className="admin-td-date" onClick={() => openDetail(h)} style={{ cursor: "pointer" }}>
-                                    {fmtDate(h.replied_at || h.created_at)}
-                                  </td>
-                                </tr>
-                              );
-                            }
-                          }
                         }
                         return rows;
                       })}
