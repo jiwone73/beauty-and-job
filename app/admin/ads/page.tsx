@@ -368,7 +368,7 @@ export default function AdminAdsPage() {
                               <td></td>
                               <td colSpan={2} onClick={() => openDetail(it)}
                                 style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 1 }}>
-                                <CornerDownRight size={13} style={{ verticalAlign: -2, marginRight: 4 }} />{답변첫줄(it.reply_body)}
+                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{답변첫줄(it.reply_body)}
                               </td>
                               <td onClick={() => openDetail(it)} style={{ cursor: "pointer" }}>
                                 {it.reply_files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
