@@ -35,12 +35,6 @@ function fmtDate(s: string) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-// 답변한 문의 목록에 보일 첫 줄 — 인사말 다음 줄부터 실제 답이 시작되곤 해서,
-// 빈 줄은 건너뛰고 글자가 있는 첫 줄을 찾는다.
-function 답변첫줄(body: string | null) {
-  if (!body) return "";
-  return (body.split("\n").find((l) => l.trim()) || "").trim();
-}
 
 async function filesToAttachments(files: File[]) {
   return Promise.all(
@@ -336,8 +330,8 @@ export default function AdminInquiriesPage() {
                             <tr key={`${it.id}-r`} style={{ background: "#fbfbfc" }}>
                               <td></td>
                               <td colSpan={3} onClick={() => openDetail(it)}
-                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 1 }}>
-                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{답변첫줄(it.reply_body)}
+                                style={{ cursor: "pointer", color: "#8a8a90", whiteSpace: "pre-wrap" }}>
+                                <CornerDownRight size={13} style={{ display: "inline-block", verticalAlign: -2, marginRight: 4 }} />{it.reply_body}
                               </td>
                               <td onClick={() => openDetail(it)} style={{ cursor: "pointer" }}>
                                 {it.reply_files?.length > 0 && <Paperclip size={13} className="adm-mail-clip" />}
