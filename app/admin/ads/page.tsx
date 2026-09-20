@@ -187,7 +187,7 @@ export default function AdminAdsPage() {
   /* 옆줄은 함(받은·보낸)만 맡는다. 유형은 표의 한 열이고, 찾는 일은 검색이 한다. */
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
-    (sideTab !== "sent" || it.status === "done") &&
+    (sideTab === "sent" ? it.status === "done" : sideTab === "inbox" ? it.status === "new" : true) &&
     (유형고름 === "전체" || (it.type || "광고") === 유형고름) &&
     (!찾는말 || [it.subject, it.company_name, it.contact_name, it.email, it.message]
       .some((v) => (v || "").includes(찾는말))));
@@ -211,8 +211,7 @@ export default function AdminAdsPage() {
     <AdminLayout activeMenu="ads" 제목숨김>
       <div className="adm-mail">
         <nav className="adm-mail-side" aria-label="문의함">
-          {/* 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 다 쌓아 두고,
-              숫자만 아직 답 안 한(신규) 건수를 보여준다. 보낸문의함은 답장을 보낸 것만.
+          {/* 신규문의는 아직 답 안 한 것, 답변한 문의는 답장을 보낸 것.
               유형별로 접고 펼 수 있다 — 기본은 펼침. */}
           <p className="adm-mail-side-h">유형<ChevronDown size={15} /></p>
           {사업문의유형.map((v) => {
@@ -231,7 +230,7 @@ export default function AdminAdsPage() {
                       style={{ transform: 펼침 ? undefined : "rotate(-90deg)", color: "#8a8a90" }} />
                   </span>
                 </button>
-                {펼침 && ([["inbox", "받은문의", "new"], ["sent", "보낸문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
+                {펼침 && ([["inbox", "신규문의", "new"], ["sent", "답변한 문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
                   <button key={tabKey} type="button"
                     className={`adm-mail-side-i sub${열림 && sideTab === tabKey ? " on" : ""}`}
                     onClick={() => { set유형고름(v); setSideTab(tabKey); setChecked([]); 목록으로(); }}>

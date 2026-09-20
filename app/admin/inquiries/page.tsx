@@ -175,7 +175,7 @@ export default function AdminInquiriesPage() {
   const 갈래수 = (st: string) => items.filter((it) => !st || it.status === st).length;
   const 찾는말 = 검색.trim();
   const 보일것 = items.filter((it) =>
-    (sideTab !== "sent" || it.status === "done") &&
+    (sideTab === "sent" ? it.status === "done" : sideTab === "inbox" ? it.status === "new" : true) &&
     (유형고름 === "전체" || it.type === 유형고름) &&
     (!찾는말 || [it.name, it.email, it.subject, it.message]
       .some((v) => (v || "").includes(찾는말))));
@@ -196,8 +196,7 @@ export default function AdminInquiriesPage() {
     <AdminLayout activeMenu="inquiries" 제목숨김>
       <div className="adm-mail">
         <nav className="adm-mail-side" aria-label="문의함">
-          {/* 받은문의함은 이메일 받은편지함처럼 답장 여부와 상관없이 다 쌓아 두고,
-              숫자만 아직 답 안 한(신규) 건수를 보여준다. 보낸문의함은 답장을 보낸 것만.
+          {/* 신규문의는 아직 답 안 한 것, 답변한 문의는 답장을 보낸 것.
               회원구분은 표의 한 열로 옮겼다 — 옆줄과 표가 같은 것을 두 번 말했다. */}
           <p className="adm-mail-side-h">문의함<ChevronDown size={15} /></p>
           <button type="button"
@@ -205,7 +204,7 @@ export default function AdminInquiriesPage() {
             onClick={() => { setSideTab("all"); setChecked([]); 목록으로(); }}>
             전체<i>{갈래수("")}</i>
           </button>
-          {([["inbox", "받은문의", "new"], ["sent", "보낸문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
+          {([["inbox", "신규문의", "new"], ["sent", "답변한 문의", "done"]] as const).map(([tabKey, 이름, 배지상태]) => (
             <button key={tabKey} type="button"
               className={`adm-mail-side-i sub${sideTab === tabKey ? " on" : ""}`}
               onClick={() => { setSideTab(tabKey); setChecked([]); 목록으로(); }}>
