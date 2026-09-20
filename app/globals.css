@@ -4774,6 +4774,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   border-radius: 10px;
   overflow: hidden;
 }
+.faq-item.on { border-color: var(--color-primary); }
 .faq-question {
   display: flex;
   align-items: center;

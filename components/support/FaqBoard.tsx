@@ -29,7 +29,15 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
 }) {
   const 묶 = 처음;
   const [말, set말] = useState("");
-  const [열린것, set열린것] = useState<string | null>(null);
+  // 하나를 열면 다른 열린 것을 닫던 예전 방식은, 위에 열려 있던 항목이 접히며
+  // 지금 누른 항목이 위아래로 튀어 올랐다("눌렀을 때 위아래 이동없이 고정").
+  // 여러 개를 동시에 열어 둘 수 있게 해 그 튐을 없앤다.
+  const [열린것들, set열린것들] = useState<Set<string>>(new Set());
+  const 토글 = (q: string) => set열린것들((prev) => {
+    const next = new Set(prev);
+    next.has(q) ? next.delete(q) : next.add(q);
+    return next;
+  });
   const [고른갈래, set고른갈래] = useState("전체");
 
   const 걸린것 = FAQ찾기(묶, 말);
@@ -47,7 +55,7 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
             {i > 0 && <span className="faq-tabs-sep">|</span>}
             <button type="button"
                     className={`faq-tab${고른갈래 === g ? " on" : ""}`}
-                    onClick={() => { set고른갈래(g); set열린것(null); }}>
+                    onClick={() => { set고른갈래(g); set열린것들(new Set()); }}>
               {g}
             </button>
           </Fragment>
@@ -69,23 +77,26 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
           <section key={갈래} className="faq-group">
             {접기 && <h3 className="faq-group-t">{갈래}</h3>}
             <div className="faq-list">
-              {걸린것.filter((f) => f.갈래 === 갈래).map((f) => (
-                <div key={f.q} className="faq-item">
-                  <button type="button" className="faq-question"
-                          onClick={() => set열린것(열린것 === f.q ? null : f.q)}
-                          aria-expanded={열린것 === f.q}>
-                    <span>{f.q}</span>
-                    {열린것 === f.q ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </button>
-                  {열린것 === f.q && (
-                    <div className="faq-answer">
-                      {Array.isArray(f.a)
-                        ? <ul className="faq-answer-list">{f.a.map((line, i) => <li key={i}>{line}</li>)}</ul>
-                        : f.a}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {걸린것.filter((f) => f.갈래 === 갈래).map((f) => {
+                const 열림 = 열린것들.has(f.q);
+                return (
+                  <div key={f.q} className={`faq-item${열림 ? " on" : ""}`}>
+                    <button type="button" className="faq-question"
+                            onClick={() => 토글(f.q)}
+                            aria-expanded={열림}>
+                      <span>{f.q}</span>
+                      {열림 ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+                    {열림 && (
+                      <div className="faq-answer">
+                        {Array.isArray(f.a)
+                          ? <ul className="faq-answer-list">{f.a.map((line, i) => <li key={i}>{line}</li>)}</ul>
+                          : f.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
         ))
