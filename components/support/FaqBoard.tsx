@@ -31,13 +31,19 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
   const [말, set말] = useState("");
   // 하나를 열면 다른 열린 것을 닫던 예전 방식은, 위에 열려 있던 항목이 접히며
   // 지금 누른 항목이 위아래로 튀어 올랐다("눌렀을 때 위아래 이동없이 고정").
-  // 여러 개를 동시에 열어 둘 수 있게 해 그 튐을 없앤다.
+  // 그래서 여러 개를 동시에 펼쳐 둘 수 있게 했다 — 열고 닫는 것은 그대로 두되,
+  // 보라 테두리(고른 표시)만은 마지막으로 누른 하나에만 준다("여러 개 선택
+  // 안되게") — 열려 있는 채로 남은 것들은 테두리 없이 조용히 펼쳐져만 있다.
   const [열린것들, set열린것들] = useState<Set<string>>(new Set());
-  const 토글 = (q: string) => set열린것들((prev) => {
-    const next = new Set(prev);
-    next.has(q) ? next.delete(q) : next.add(q);
-    return next;
-  });
+  const [고른것, set고른것] = useState<string | null>(null);
+  const 토글 = (q: string) => {
+    set열린것들((prev) => {
+      const next = new Set(prev);
+      next.has(q) ? next.delete(q) : next.add(q);
+      return next;
+    });
+    set고른것(q);
+  };
   const [고른갈래, set고른갈래] = useState("전체");
 
   const 걸린것 = FAQ찾기(묶, 말);
@@ -55,7 +61,7 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
             {i > 0 && <span className="faq-tabs-sep">|</span>}
             <button type="button"
                     className={`faq-tab${고른갈래 === g ? " on" : ""}`}
-                    onClick={() => { set고른갈래(g); set열린것들(new Set()); }}>
+                    onClick={() => { set고른갈래(g); set열린것들(new Set()); set고른것(null); }}>
               {g}
             </button>
           </Fragment>
@@ -80,7 +86,7 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
               {걸린것.filter((f) => f.갈래 === 갈래).map((f) => {
                 const 열림 = 열린것들.has(f.q);
                 return (
-                  <div key={f.q} className={`faq-item${열림 ? " on" : ""}`}>
+                  <div key={f.q} className={`faq-item${고른것 === f.q ? " on" : ""}`}>
                     <button type="button" className="faq-question"
                             onClick={() => 토글(f.q)}
                             aria-expanded={열림}>
