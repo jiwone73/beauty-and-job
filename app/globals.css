@@ -16856,3 +16856,166 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 720px) {
   .ev-h { font-size: 22px; }
 }
+
+/* components/company/CompanyLayout.tsx 의 화면 안 <style> 태그에서 옮겨 왔다.
+   React 가 그 안의 글자를 SSR 때 HTML 엔티티로 이스케이프해 보내는데(예:
+   " → &quot;), <style> 은 그 엔티티를 도로 풀지 않는 원문(raw text) 태그라
+   서버가 보낸 글자와 클라이언트가 그리려는 글자가 어긋나 hydration 오류가
+   났다(.co-set-item.sub::before 의 content: "·" 가 그 예). 여기 진짜
+   스타일시트로 옮기면 React 의 텍스트 비교를 아예 타지 않는다. */
+.co-m { min-height: 100vh; background: #fff; padding-bottom: 68px; }
+.co-m-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 14px; background: #fff; border-bottom: 1px solid #eee; }
+.co-m-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #555; min-width: 0; }
+.co-m-logo { width: 32px; height: 32px; border-radius: 8px; background: #f2f2f2; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #582681; flex-shrink: 0; }
+.co-m-logo img { width: 100%; height: 100%; object-fit: cover; }
+.co-m-nametype { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.co-m-name { font-size: 15px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.co-m-type { font-size: 11px; color: #555; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.co-m-logobtn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
+.co-m-logomenu { position: absolute; top: 54px; left: 14px; z-index: 61; background: #fff; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 8px 22px rgba(0,0,0,0.14); overflow: hidden; min-width: 132px; }
+.co-m-logomenu button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; background: none; border: none; font-size: 14px; color: #555; cursor: pointer; }
+.co-m-logomenu button:active { background: #f7f7f8; }
+.co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
+.co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
+.co-m-title { padding: 14px 16px 4px; font-size: 18px; font-weight: 400; color: #555; }
+.co-m-content { padding: 6px 14px 20px; }
+.co-m-content .company-content { padding: 0 !important; }
+.co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
+.co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #555; font-size: 11px; }
+.co-m-tab.on { color: #582681; }
+.co-m-notif { position: fixed; left: 0; right: 0; top: 55px; z-index: 61; background: #fff; border-bottom: 1px solid #eee; max-height: 62vh; overflow-y: auto; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
+.co-m-notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; font-size: 14px; font-weight: 400; }
+.co-m-notif-item { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 12px 16px; border: none; border-bottom: 1px solid #f5f5f5; background: none; cursor: pointer; }
+.co-m-notif-item.unread { background: #f7f7f8; }
+.co-m-notif-empty { padding: 28px; text-align: center; color: #555; font-size: 13px; }
+
+/* 메인 사이트 머리줄(.header/.header-inner)과 같은 판·높이·여백을 쓴다.
+   기업 화면만 다른 껍데기를 쓰면 같은 서비스로 안 읽힌다. */
+.co-top { min-height: 100vh; background: #fff; }
+/* 글자 크기·굵기·색은 메인 사이트 메뉴(.gnb)와 같은 값을 쓴다 */
+.co-top-nav { display: flex; gap: 28px; flex: 1; margin-left: 22px; }
+.co-top-nav a { font-size: 16px; font-weight: 500; color: var(--color-text); text-decoration: none;
+  white-space: nowrap; padding: 4px 0; transition: color .15s; }
+.co-top-nav a:hover { color: var(--color-primary); }
+.co-top-nav a.on { color: var(--color-primary); font-weight: 700;
+  border-bottom: 2px solid var(--color-primary); padding-bottom: 2px; }
+/* 메인 사이트가 PC에서 메뉴 글자를 한 단계 키우는 것까지 같이 따른다 */
+@media (min-width: 769px) { .co-top-nav a { font-size: 18px; } }
+.co-top-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+/* 평소엔 테두리만, 마우스를 올렸을 때 뷰티워크 보라로 채운다 — 머리줄에 늘 떠 있는
+   단추라 채워 두면 짙은 덩어리 하나가 화면에서 제일 먼저 읽힌다. */
+.co-top-post { display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 15px;
+  border-radius: 8px; background: #fff; border: 1px solid var(--color-border);
+  color: #555; font-size: 14px; text-decoration: none; white-space: nowrap;
+  transition: background .15s, color .15s; }
+.co-top-post:hover { background: #f7f7f8; }
+.co-top-me { display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
+.co-top-ava { width: 32px; height: 32px; border-radius: 7px; overflow: hidden; flex-shrink: 0;
+  background: #f2f2f4; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: var(--color-primary); }
+.co-top-ava img { width: 100%; height: 100%; object-fit: cover; }
+.co-top-mename { font-size: 14px; color: #555; max-width: 120px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+.co-top-mewrap { position: relative; }
+.co-top-me { background: none; border: none; padding: 0; cursor: pointer; }
+.co-top-memask { position: fixed; inset: 0; z-index: 60; }
+.co-top-memenu { position: absolute; top: 42px; right: 0; z-index: 61; min-width: 132px;
+  background: #fff; border: 1px solid #eee; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.14); }
+.co-top-memenu button { display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 11px 14px; background: none; border: none; font-size: 14px; color: #555;
+  cursor: pointer; white-space: nowrap; }
+.co-top-memenu button:hover { background: #f7f7f8; }
+/* 왼쪽 사이드가 빠지면서 판이 넓어졌다. 좁게 짜인 화면(공고 관리·인재풀·프로필)이
+   그대로 왼쪽에 붙어 오른쪽이 텅 비어 보여, 제목과 본문을 한 칸에 묶어 가운데에 놓는다.
+   칸 너비는 본문이 필요한 만큼이되 판을 넘지 않는다(fit-content) — 그래서 넓은 화면은
+   그대로 꽉 차고, 좁은 화면만 가운데로 모인다. 제목은 본문의 왼쪽 끝에 맞춰 선다. */
+.co-top-body { max-width: 1360px; margin: 0 auto; padding: 26px 32px 80px;
+  display: grid; grid-template-columns: fit-content(100%); justify-content: center; }
+/* 제목은 본문 한가운데. 사이드가 있는 화면(.co-set-title)과 같은 자리다 —
+   한쪽만 왼쪽에 붙어 있으면 머리줄에서 갈래를 옮길 때마다 제목이 튄다. */
+.co-top-title { font-size: var(--page-title); font-weight: 700; color: #555; margin: 0 0 18px; text-align: center; }
+/* 설정 계열 사이드 — 개인회원 프로필 사이드(.pf-side)와 같은 결로 맞춘다. */
+/* 폭을 못박는다(176 + 28 + 800). 판이 가운데 정렬이라, 화면마다 본문 폭이
+   다르면 사이드까지 따라 움직여 메뉴를 누를 때마다 화면이 흔들린다. 기준은
+   가장 내용이 많은 매장정보 관리(800px). 좁은 창에서는 같이 줄어든다. */
+.co-set-wrap { display: flex; align-items: flex-start; gap: 28px;
+  width: 1086px; max-width: 100%; }
+/* 판 폭은 묶음이 달라도 같게 둔다 — 머리줄에서 갈래를 옮길 때마다 본문 폭이
+   바뀌면 화면이 흔들린다 — 공고 관리와 공고 등록도 같은 폭이다. */
+/* 옆줄은 테두리로 둘러싼 상자다 — 고객센터 옆줄(.info-side)과 같은 모양.
+   사이트의 다른 화면이 모두 이 꼴이라 여기만 맨몸으로 서면 어디까지가
+   메뉴인지 흐리다. 상자 높이는 메뉴 글자만 감싼다. */
+/* 인재풀 옆줄은 지역·직군·조건이 저마다 상자다. 바깥을 한 번 더 두르면
+   테두리가 두 겹으로 겹친다 — 그 화면만 상자를 벗는다. */
+.co-set-side.co-tal-side { background: none; border: 0; border-radius: 0; padding: 0; }
+.co-set-side { width: 194px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px;
+  position: sticky; top: 92px; align-self: flex-start;
+  background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+  padding: 8px; box-sizing: border-box; }
+/* 본문도 테두리 판이다 — 고객센터(.info-body)와 같은 모양. 제목이 이 안에
+   들어오면서 옆줄 꼭대기와 판 꼭대기가 저절로 같은 줄에 선다. */
+.co-set-main { flex: 1; min-width: 0;
+  background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+  padding: 24px 24px 28px; }
+/* 제목은 머리줄(헤더) 한가운데에 선다 — 사이드가 없는 화면(.co-top-title)과 같은 자리.
+   본문 칸 안에서 가운데로 두면 사이드 폭(176) + 간격(28) + 구분선(1)의 절반만큼
+   오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.
+   옮긴 상자가 사이드 윗부분에 걸치므로 누름은 통과시킨다. */
+.co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center; }
+/* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
+   지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
+   선 대신 여백으로 아래 목록과 뗀다. */
+.co-set-item { display: block; padding: 10px 12px;
+  border-radius: 8px; font-size: 17px; color: #555; text-decoration: none;
+  white-space: nowrap; transition: background .15s, color .15s; }
+.co-set-item:hover { background: #f7f7f8; color: #555; }
+.co-set-item.on { background: #f7f7f8; color: var(--color-primary); font-weight: 600; }
+/* 머리 글자는 그 화면으로 가고, 화살표는 접는다 */
+.co-set-row { display: flex; align-items: center; }
+.co-set-row .co-set-item.head { flex: 1; min-width: 0; }
+.co-set-fold { flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; margin-right: 6px; padding: 0;
+  border: 0; border-radius: 8px; background: none; color: #8a8a90; cursor: pointer; }
+.co-set-fold:hover { background: #f7f7f8; color: #555; }
+.co-set-fold svg { transition: transform .15s; }
+/* 머리줄은 글자와 화살표뿐이다. 회색 판을 깔면 그 줄만 단추처럼 보여,
+   아래 딸린 것들과 한 묶음으로 안 읽힌다. */
+.co-set-item.head, .co-set-item.head.on, .co-set-item.head:hover { background: none; }
+/* 아랫단 — 위 줄에 딸린 낱개다. 들여쓰고 한 호수 줄여 둘의 높이를
+   눈으로 가른다. 같은 크기로 두면 무엇이 묶음이고 무엇이 그 안인지
+   이름만 읽어서는 알 수 없다. */
+/* 아랫단은 점을 하나 찍어 딸린 것임을 보인다 — 들여쓰기만으로는 두 단이
+   같은 무게로 읽힌다. */
+.co-set-item.sub { padding-left: 24px; font-size: 15.5px; position: relative; }
+.co-set-item.sub::before { content: "·"; position: absolute; left: 14px; color: #8a8a90; }
+/* 인재풀 — 탭이 제목 자리를 대신한다. 그래서 글자도 제목과 같은 크기·굵기·
+   색(.co-set-title)을 쓴다. 켜진 탭이 곧 지금 보고 있는 화면의 이름이다.
+   다른 화면 제목이 모두 가운데 서 있으므로 이 줄도 가운데 세운다. */
+.co-tal { display: block; }
+.co-tal-tabrow { display: flex; justify-content: center; gap: 32px;
+  border-bottom: 1px solid #eeeef0; margin: 0 0 20px; }
+.co-tal-tab { padding: 0 2px 12px; font-size: var(--page-title); color: #555;
+  text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.co-tal-tab:hover { color: var(--color-primary); }
+.co-tal-tab.on { color: var(--color-text-strong); font-weight: 700;
+  border-bottom-color: var(--color-primary); }
+/* 기둥은 필터가 있을 때만 선다. 없으면 목록이 판 폭을 다 쓴다 — 빈 기둥을
+   세워 두면 화면 한쪽이 이유 없이 비어 보인다. */
+.co-tal-body { display: flex; align-items: flex-start; gap: 28px; }
+.co-tal-side { position: sticky; top: 92px; }
+.co-set-seg { display: flex; align-items: center; padding: 2px 4px 12px; margin-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+.co-set-seg-item { display: flex; align-items: center; }
+.co-set-seg i { width: 1px; height: 12px; background: #dcdce0; margin: 0 12px; }
+.co-set-seg a { font-size: 15px; color: #555; text-decoration: none; white-space: nowrap; }
+.co-set-seg a:hover { color: var(--color-primary); }
+.co-set-seg a.on { color: var(--color-primary); font-weight: 700; }
+/* 아래 .co-top-body .co-set-main 규칙이 !important 로 안쪽 여백을 못 박으므로
+   같은 무게로 되돌린다 — 기둥이 없으면 세로 구분선도 그 여백도 쓸 데가 없다. */
+.co-top-body .co-tal-solo { border-left: none; margin-left: 0; padding-left: 0 !important; }
+/* 사이드가 없어져 본문이 제 폭을 갖는다 — 안쪽 여백은 이 판이 맡는다. */
+.co-top-body .company-content { padding: 0 !important; }
+/* 본문 판의 안쪽 여백은 .co-set-main 이 정한다 — 위 .company-content 규칙이
+   !important 라 같은 무게로 뒤에 한 번 더 적는다. */
+.co-top-body .co-set-main { padding: 24px 24px 28px !important; }
