@@ -173,6 +173,15 @@ export function 이름가리기(name?: string | null): string {
   return n[0] + "○".repeat(n.length - 1);
 }
 
+/** 받침 있으면 "으로", 없거나 ㄹ받침이면 "로" — "왁싱로"처럼 붙는 것을 막는다. */
+function 로으로(word: string): "로" | "으로" {
+  const last = word.trim().slice(-1);
+  const code = last.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return "으로";
+  const 받침 = (code - 0xac00) % 28;
+  return 받침 === 0 || 받침 === 8 ? "로" : "으로";
+}
+
 /**
  * 재직 매장 가리기 — 매장 이름은 지우고 직책만 남긴다.
  * 「반티바 · 매니저」 → 「매니저로 일하는 중」. 판단에 필요한 것은 직책이고,
@@ -180,5 +189,5 @@ export function 이름가리기(name?: string | null): string {
  */
 export function 재직가리기(직책?: string | null): string | null {
   const p = (직책 || "").trim();
-  return p ? `${p}로 일하는 중` : null;
+  return p ? `${p}${로으로(p)} 일하는 중` : null;
 }
