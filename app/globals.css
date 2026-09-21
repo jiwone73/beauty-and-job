@@ -13136,21 +13136,21 @@ button,
 .mt-hero-sub { font-size: 15px; color: #7a7878; margin-top: 11px; }
 .mt-eyebrow { font-size: 13px; letter-spacing: 2.2px; color: #582681; font-weight: 600; }
 
-/* 띠 배너(채용공고) — 테두리만 보라, 바탕은 흰색. */
+/* 띠 배너(채용공고) — 보라 배경, 테두리 없음. */
 .mt-hero.sm {
-  height: auto; aspect-ratio: 1320 / 40; border-radius: 10px;
+  height: auto; aspect-ratio: 1320 / 68; border-radius: 10px;
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  background: #fff; border: 1.5px solid #582681; padding: 0 20px;
+  background: #582681; padding: 0 20px;
 }
-.mt-hero.sm .mt-eyebrow { font-size: 12px; letter-spacing: 1.8px; flex-shrink: 0; }
+.mt-hero.sm .mt-eyebrow { font-size: 12px; letter-spacing: 1.8px; flex-shrink: 0; color: #fff; }
 .mt-hero.sm .mt-hero-sub {
-  font-size: 13px; color: #555; margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 13px; color: #e8dff6; margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 /* 반짝임 — 빛줄기가 대각선으로 한 번씩 훑고 지나간다. 눈에 띄되 계속 움직이면
    거슬리므로 쉬는 시간을 길게 둔다. */
 .mt-hero-shine {
   position: absolute; top: 0; left: -60%; width: 35%; height: 100%;
-  background: linear-gradient(115deg, transparent, rgba(88,38,129,.15), transparent);
+  background: linear-gradient(115deg, transparent, rgba(255,255,255,.25), transparent);
   animation: mt-hero-shine-move 3.6s ease-in-out infinite;
 }
 @keyframes mt-hero-shine-move {
@@ -13720,11 +13720,11 @@ button,
 /* 자리의 비율을 우리가 정한다(메인 사진 배너와 같은 1320:190). 광고주가 준
    그림의 비율이 틀려도 화면이 밀리지 않게 잘라서 채운다 — 그림 하나 때문에
    목록이 500px 밑으로 내려가면 그건 광고가 아니라 사고다.
-   채용공고 쪽(.ad-banner-jobs)만 띠광고(1320:40)다 — 그 화면 옆 사이드
-   매장·오피스 탭 높이에 맞춘다. 메인은 그대로 큰 배너로 둔다. */
+   채용공고 쪽(.ad-banner-jobs)만 띠광고(1320:68)다 — 그 화면 옆 사이드
+   매장·오피스 탭 높이 언저리에 맞춘다. 메인은 그대로 큰 배너로 둔다. */
 .ad-banner { position: relative; margin: 0 0 16px; border-radius: 12px; overflow: hidden;
   background: #f7f7f8; line-height: 0; aspect-ratio: 1320 / 190; }
-.ad-banner.ad-banner-jobs { aspect-ratio: 1320 / 40; border-radius: 10px; }
+.ad-banner.ad-banner-jobs { aspect-ratio: 1320 / 68; border-radius: 10px; }
 .ad-banner-a { display: block; height: 100%; }
 .ad-banner-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* 표시 의무 — 판 자리라는 것을 밝힌다. 사진 위라 흰 알약으로 띄운다. */
