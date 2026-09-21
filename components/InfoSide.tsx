@@ -20,10 +20,6 @@ import { ChevronDown } from "lucide-react";
 type 줄 = { href: string; label: string; 주소?: string };
 
 const 메뉴: { 머리: 줄; 아래: 줄[] }[] = [
-  { 머리: { href: "/support/start", label: "시작하기" }, 아래: [
-      { href: "/support/start", label: "개인회원", 주소: "/support/start?누구=개인" },
-      { href: "/support/start", label: "기업회원", 주소: "/support/start?누구=기업" },
-    ] },
   { 머리: { href: "/notice", label: "공지사항" }, 아래: [] },
   { 머리: { href: "/support/policy", label: "회원정책" }, 아래: [] },
   { 머리: { href: "/support/faq", label: "FAQ" }, 아래: [
