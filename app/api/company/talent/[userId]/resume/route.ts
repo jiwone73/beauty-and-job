@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 인재열람가능, 이름가리기, 회사에지원함 } from "@/lib/companyEntitlement";
+import { 인재열람가능, 이름가리기, 재직가리기, 회사에지원함 } from "@/lib/companyEntitlement";
 
 // 기업 인재검색: userId로 지원자 풀 이력서 조회 (ResumePreview용)
 export async function GET(
@@ -59,6 +59,15 @@ export async function GET(
     u.portfolio_images = [];
   }
 
+  // 재직 매장 이름은 인재 목록과 같은 규칙이다 — 연락할 수 있는 곳(유료·지원함)
+  // 에만 연다. 후보자가 이 재직처를 스스로 공개해 두었어도(company_public),
+  // 열람권한이 없는 기업에는 매장명을 열어 주지 않는다 — 화면(ResumePreview)의
+  // ○ 표시는 「후보자가 가린 것」만 가리므로, 여기서 미리 지워 보내지 않으면
+  // 열람권한만으로 매장명이 그대로 노출된다.
+  const careersOut = (!열람가능 && !지원함)
+    ? careers.rows.map((c) => ({ ...c, company: 재직가리기(c.position) || "일하는 중", position: null }))
+    : careers.rows;
+
   // 이력서를 페이지로 열면 그 자리에서 스크랩하고 제안까지 해야 한다 — 지금 어떤
   // 상태인지 알아야 버튼을 그릴 수 있다.
   const 상태 = await pool.query(
@@ -73,7 +82,7 @@ export async function GET(
     proposedAt: 상태.rows[0]?.proposed_at ?? null,
     user: u,
     profile: p,
-    careers: careers.rows,
+    careers: careersOut,
     educations: educations.rows,
     experiences: experiences.rows,
     languages: languages.rows,
