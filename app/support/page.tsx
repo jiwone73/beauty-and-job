@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import InfoShell from "@/components/InfoShell";
-import { 개인문의유형, 기업문의유형 } from "@/lib/inquiryTypes";
 import AttachFiles from "@/components/AttachFiles";
 
 /**
@@ -14,16 +13,12 @@ import AttachFiles from "@/components/AttachFiles";
  *
  * 공지·FAQ·다운로드는 옆줄이 맡으므로 여기서 또 세우지 않는다.
  *
- * 문의 유형은 로그인 종류를 본다 — 기업으로 들어온 사람에게 "이력서/프로필"이
- * 첫 줄로 뜨는 건 자기 얘기가 아니다.
+ * 문의 유형 선택은 없다 — 셀렉미도 1:1 문의는 게시판 하나로 받는다.
  */
 export default function SupportPage() {
-  const { userName, ownerType } = useAuthStore();
-  const 유형들 = ownerType === "company" ? 기업문의유형 : 개인문의유형;
+  const { userName } = useAuthStore();
   const [이름, set이름] = useState("");
   const [메일, set메일] = useState("");
-  const [전화, set전화] = useState("");
-  const [유형, set유형] = useState(유형들[0]);
   const [제목, set제목] = useState("");
   const [내용, set내용] = useState("");
   const [보내는중, set보내는중] = useState(false);
@@ -31,13 +26,10 @@ export default function SupportPage() {
   const [파일들, set파일들] = useState<File[]>([]);
 
   useEffect(() => { set이름((v) => v || userName || ""); }, [userName]);
-  // 로그인 정보가 나중에 채워지는 경우(새로고침 직후)까지 챙긴다 — 목록이
-  // 바뀌었는데 고른 값이 이전 목록의 첫 줄로 남아 있으면 안 된다.
-  useEffect(() => { set유형(유형들[0]); }, [ownerType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const 비우기 = () => { set파일들([]);
-    set이름(userName || ""); set메일(""); set전화("");
-    set유형(유형들[0]); set제목(""); set내용("");
+    set이름(userName || ""); set메일("");
+    set제목(""); set내용("");
   };
 
   const 보내기 = async () => {
@@ -50,8 +42,8 @@ export default function SupportPage() {
       const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
       // 파일을 붙였으면 폼으로, 아니면 여태처럼 JSON 으로 보낸다.
       const 값 = {
-        name: 이름.trim(), email: 메일.trim() || null, phone: 전화.trim() || null,
-        type: 유형, subject: 제목.trim() || null, message: 내용.trim(),
+        name: 이름.trim(), email: 메일.trim() || null,
+        subject: 제목.trim() || null, message: 내용.trim(),
       };
       let 몸통: BodyInit; const 머리: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
       if (파일들.length) {
@@ -87,15 +79,8 @@ export default function SupportPage() {
         </div>
       ) : (
         <div className="sup-form">
-          {/* 짧은 칸 넷은 두 줄로 접는다 — 한 칸씩 내려 쌓으면 정작 길게 쓰는
-              제목·내용이 화면 밖으로 밀린다. */}
+          {/* 짧은 칸 둘은 한 줄에 나란히 둔다. */}
           <div className="sup-form-2">
-            <div>
-              <label className="sup-f-l">문의 유형</label>
-              <select className="sup-f-i" value={유형} onChange={(e) => set유형(e.target.value)}>
-                {유형들.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
             <div>
               <label className="sup-f-l req">이름</label>
               <input className="sup-f-i" placeholder="이름을 입력해주세요"
@@ -105,11 +90,6 @@ export default function SupportPage() {
               <label className="sup-f-l req">이메일 (답변 받으실 주소)</label>
               <input className="sup-f-i" type="email" placeholder="답변 받으실 이메일을 입력해주세요"
                      value={메일} onChange={(e) => set메일(e.target.value)} />
-            </div>
-            <div>
-              <label className="sup-f-l">전화번호</label>
-              <input className="sup-f-i" type="tel" placeholder="연락 가능한 전화번호 (선택)"
-                     value={전화} onChange={(e) => set전화(e.target.value)} />
             </div>
           </div>
 
