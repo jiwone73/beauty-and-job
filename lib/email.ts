@@ -82,7 +82,7 @@ export async function sendEmailChangeCodeEmail(to: string, code: string) {
           <p style="font-size:14px;line-height:1.7;color:#555;margin:0 0 20px;">
             아래 인증코드를 입력하면 이메일 변경이 완료됩니다. 코드는 <strong>5분간</strong> 유효합니다.
           </p>
-          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
+          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#f7f7f8;border-radius:10px;padding:18px;text-align:center;">
             ${code}
           </div>
           <p style="font-size:12px;color:#999;line-height:1.7;margin:24px 0 0;">
@@ -112,7 +112,7 @@ export async function sendSignupEmailVerifyCode(to: string, code: string) {
           <p style="font-size:14px;line-height:1.7;color:#555;margin:0 0 20px;">
             아래 인증코드를 입력하면 이메일 인증이 완료됩니다. 코드는 <strong>5분간</strong> 유효합니다.
           </p>
-          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#faf5ff;border-radius:10px;padding:18px;text-align:center;">
+          <div style="font-size:30px;font-weight:800;letter-spacing:8px;color:#582681;background:#f7f7f8;border-radius:10px;padding:18px;text-align:center;">
             ${code}
           </div>
           <p style="font-size:12px;color:#999;line-height:1.7;margin:24px 0 0;">
@@ -138,35 +138,35 @@ export async function sendWelcomeEmail(to: string, name: string) {
           <tr><td align="center">
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:26px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:26px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="32" style="display:block;border:0;height:32px;" />
                 </td>
               </tr>
               <tr>
                 <td style="padding:32px 32px 8px;">
-                  <p style="font-size:21px;font-weight:700;color:#7c3aed;margin:0 0 6px;">환영합니다, ${name} 님</p>
+                  <p style="font-size:21px;font-weight:700;color:#582681;margin:0 0 6px;">환영합니다, ${name} 님</p>
                   <p style="font-size:15px;color:#5f5e5a;margin:0 0 18px;">뷰티 커리어의 시작을 함께할게요.</p>
                   <p style="font-size:15px;color:#444444;line-height:1.7;margin:0 0 24px;">
                     가입해 주셔서 감사해요. 뷰티워크는 메이크업·헤어·네일·피부부터 매장직·사무직까지, 뷰티 업계 채용만 모았어요. 지금 이력서를 완성하면 더 많은 매장·오피스에 내 프로필이 노출돼요.
                   </p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/profile/resume" style="display:inline-block;padding:13px 32px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">이력서 완성하기</a>
                     </td></tr>
                   </table>
                   <p style="text-align:center;margin:14px 0 28px;">
-                    <a href="${SITE_URL}/jobs" style="font-size:14px;color:#8b5cf6;text-decoration:none;">또는 공고 먼저 둘러보기 →</a>
+                    <a href="${SITE_URL}/jobs" style="font-size:14px;color:#582681;text-decoration:none;">또는 공고 먼저 둘러보기 →</a>
                   </p>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#faf7fe" style="padding:24px 32px;border-top:1px solid #f0e9fa;">
+                <td bgcolor="#f7f7f8" style="padding:24px 32px;border-top:1px solid #ececec;">
                   <p style="font-size:14px;font-weight:700;color:#2c2c2a;margin:0 0 16px;">이렇게 시작하세요</p>
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
                       <td width="40" valign="top">
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-                          <td align="center" valign="middle" width="28" height="28" bgcolor="#ede9fe" style="width:28px;height:28px;border-radius:14px;color:#7c3aed;font-size:14px;font-weight:700;">1</td>
+                          <td align="center" valign="middle" width="28" height="28" bgcolor="#f7f7f8" style="width:28px;height:28px;border-radius:14px;color:#582681;font-size:14px;font-weight:700;">1</td>
                         </tr></table>
                       </td>
                       <td valign="top" style="padding:0 0 14px 4px;">
@@ -177,7 +177,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
                     <tr>
                       <td width="40" valign="top">
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-                          <td align="center" valign="middle" width="28" height="28" bgcolor="#ede9fe" style="width:28px;height:28px;border-radius:14px;color:#7c3aed;font-size:14px;font-weight:700;">2</td>
+                          <td align="center" valign="middle" width="28" height="28" bgcolor="#f7f7f8" style="width:28px;height:28px;border-radius:14px;color:#582681;font-size:14px;font-weight:700;">2</td>
                         </tr></table>
                       </td>
                       <td valign="top" style="padding:0 0 14px 4px;">
@@ -188,7 +188,7 @@ export async function sendWelcomeEmail(to: string, name: string) {
                     <tr>
                       <td width="40" valign="top">
                         <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-                          <td align="center" valign="middle" width="28" height="28" bgcolor="#ede9fe" style="width:28px;height:28px;border-radius:14px;color:#7c3aed;font-size:14px;font-weight:700;">3</td>
+                          <td align="center" valign="middle" width="28" height="28" bgcolor="#f7f7f8" style="width:28px;height:28px;border-radius:14px;color:#582681;font-size:14px;font-weight:700;">3</td>
                         </tr></table>
                       </td>
                       <td valign="top" style="padding:0 0 0 4px;">
@@ -200,12 +200,12 @@ export async function sendWelcomeEmail(to: string, name: string) {
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:22px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:22px 32px;">
                   <p style="font-size:13px;color:#5f5e5a;margin:0 0 10px;line-height:1.6;">도움이 필요하면 언제든 문의해 주세요.</p>
                   <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a></p>
                   <p style="font-size:12px;color:#888780;margin:0 0 8px;">이 메일은 회원가입 안내를 위해 발송되었습니다.</p>
                   <p style="font-size:12px;color:#888780;margin:0;">
-                    <a href="${SITE_URL}/about/contact" style="color:#8b5cf6;text-decoration:none;">문의하기</a>
+                    <a href="${SITE_URL}/about/contact" style="color:#582681;text-decoration:none;">문의하기</a>
                     &nbsp;·&nbsp;
                     <a href="${SITE_URL}/about/contact" style="color:#888780;text-decoration:none;">수신거부</a>
                     &nbsp;·&nbsp;© 2026 뷰티워크
@@ -229,20 +229,20 @@ export async function sendCompanyWelcomeEmail(to: string, companyName: string) {
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:26px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:26px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="32" style="display:block;border:0;height:32px;" />
                 </td>
               </tr>
               <tr>
                 <td style="padding:32px 32px 8px;">
-                  <p style="font-size:21px;font-weight:700;color:#7c3aed;margin:0 0 6px;">가입 신청이 접수됐어요, ${companyName} 님</p>
+                  <p style="font-size:21px;font-weight:700;color:#582681;margin:0 0 6px;">가입 신청이 접수됐어요, ${companyName} 님</p>
                   <p style="font-size:15px;color:#5f5e5a;margin:0 0 18px;">뷰티 인재 채용을 함께할게요.</p>
                   <p style="font-size:15px;color:#444444;line-height:1.7;margin:0 0 20px;">
                     기업 회원가입 신청이 정상적으로 접수됐어요. 제출해 주신 사업자 정보를 담당자가 확인한 뒤 <strong>승인</strong>해 드려요. 승인이 완료되면 공고 등록·지원자 관리 등 모든 기능을 이용하실 수 있어요.
                   </p>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;margin:0 0 22px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f7f8;border:1px solid #ececec;border-radius:10px;margin:0 0 22px;">
                     <tr>
                       <td style="padding:14px 20px;font-size:14px;color:#555;line-height:1.7;">
                         승인 전에도 로그인해서 기업 정보·로고 등을 미리 준비해 두실 수 있어요.
@@ -250,14 +250,14 @@ export async function sendCompanyWelcomeEmail(to: string, companyName: string) {
                     </tr>
                   </table>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 28px;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/company/login" style="display:inline-block;padding:13px 32px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">기업 로그인</a>
                     </td></tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:22px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:22px 32px;">
                   <p style="font-size:13px;color:#5f5e5a;margin:0 0 10px;line-height:1.6;">문의가 있으면 언제든 연락 주세요.</p>
                   <p style="font-size:12px;color:#888780;margin:0 0 4px;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a></p>
                   <p style="font-size:12px;color:#888780;margin:0;">이 메일은 기업 회원가입 안내를 위해 발송되었습니다. &nbsp;·&nbsp; © 2026 뷰티워크</p>
@@ -282,9 +282,9 @@ export async function sendApplicationCompleteEmail(
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
@@ -292,14 +292,14 @@ export async function sendApplicationCompleteEmail(
                 <td style="padding:32px 32px 28px;">
                   <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">지원이 완료됐어요</p>
                   <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${name} 님, 아래 공고에 지원이 정상 접수됐어요.</p>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f7f8;border:1px solid #ececec;border-radius:10px;">
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">공고</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${jobTitle}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">공고</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;font-weight:700;">${jobTitle}</td>
                     </tr>
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">기업</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;">${companyName}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">기업</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;">${companyName}</td>
                     </tr>
                     <tr>
                       <td style="padding:14px 20px;font-size:14px;color:#888780;">지원일</td>
@@ -308,14 +308,14 @@ export async function sendApplicationCompleteEmail(
                   </table>
                   <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">기업이 이력서를 검토한 뒤 개별적으로 연락드려요. 지원 현황은 마이페이지에서 언제든 확인할 수 있어요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/profile/applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
                     </td></tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
                   <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
@@ -333,45 +333,45 @@ export async function sendNewApplicantEmail(
   return 보내기({
     from: FROM,
     to,
-    subject: "[뷰티워크] 새 지원자가 도착했어요",
+    subject: `[뷰티워크] ${applicantName}님이 지원했어요`,
     html: `
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
               <tr>
                 <td style="padding:32px 32px 28px;">
-                  <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">새 지원자가 도착했어요</p>
-                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${companyName} 님, 「${jobTitle}」 공고에 새 지원자가 지원했어요.</p>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                  <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">${applicantName}님이 지원했어요</p>
+                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${companyName} 님, 「${jobTitle}」 공고에 지원했어요.</p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f7f8;border:1px solid #ececec;border-radius:10px;">
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">지원자</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${applicantName}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">지원자</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;font-weight:700;">${applicantName}</td>
                     </tr>
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">직군</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;">${jobType}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">직군</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;">${jobType}</td>
                     </tr>
                     <tr>
                       <td style="padding:14px 20px;font-size:14px;color:#888780;">지원일</td>
                       <td align="right" style="padding:14px 20px;font-size:14px;color:#2c2c2a;">${appliedDate}</td>
                     </tr>
                   </table>
-                  <p style="font-size:13px;color:#7c3aed;background:#f3eefc;border-radius:8px;padding:12px 16px;line-height:1.6;margin:18px 0 24px;">빠른 연락이 채용 성공률을 높여요. 지금 이력서를 확인해보세요.</p>
+                  <p style="font-size:13px;color:#582681;background:#f7f7f8;border-radius:8px;padding:12px 16px;line-height:1.6;margin:18px 0 24px;">빠른 연락이 채용 성공률을 높여요. 지금 이력서를 확인해보세요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/company/dashboard/applicants" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원자 확인하기</a>
                     </td></tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
                   <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
@@ -394,9 +394,9 @@ export async function sendResumeViewedEmail(
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
@@ -404,30 +404,30 @@ export async function sendResumeViewedEmail(
                 <td style="padding:32px 32px 28px;">
                   <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">기업이 이력서를 확인했어요</p>
                   <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${name} 님, 지원하신 공고의 기업이 이력서를 열람했어요.</p>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f7f8;border:1px solid #ececec;border-radius:10px;">
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">공고</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${jobTitle}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">공고</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;font-weight:700;">${jobTitle}</td>
                     </tr>
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">기업</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;">${companyName}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">기업</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;">${companyName}</td>
                     </tr>
                     <tr>
                       <td style="padding:14px 20px;font-size:14px;color:#888780;">열람일시</td>
-                      <td align="right" style="padding:14px 20px;font-size:14px;color:#7c3aed;font-weight:700;">${viewedAt}</td>
+                      <td align="right" style="padding:14px 20px;font-size:14px;color:#582681;font-weight:700;">${viewedAt}</td>
                     </tr>
                   </table>
                   <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">지금 서류 검토가 진행되고 있어요. 결과는 기업이 개별적으로 연락드려요. 비슷한 다른 공고에도 함께 지원해보세요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/profile/applied" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">지원 현황 보기</a>
                     </td></tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
                   <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
@@ -452,9 +452,9 @@ export async function sendProposalEmail(
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
@@ -462,10 +462,10 @@ export async function sendProposalEmail(
                 <td style="padding:32px 32px 28px;">
                   <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">새로운 제안이 도착했어요</p>
                   <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${name} 님, ${esc(companyName)}에서 아래 공고로 함께하자는 제안을 보냈어요.</p>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f7f8;border:1px solid #ececec;border-radius:10px;">
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">공고</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${esc(jobTitle)}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">공고</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;font-weight:700;">${esc(jobTitle)}</td>
                     </tr>
                     <tr>
                       <td style="padding:14px 20px;font-size:14px;color:#888780;">기업</td>
@@ -473,19 +473,19 @@ export async function sendProposalEmail(
                     </tr>
                   </table>
                   ${message ? `
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;background:#fff;border:1px solid #ece7f6;border-radius:10px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;background:#fff;border:1px solid #ececec;border-radius:10px;">
                     <tr><td style="padding:16px 20px;font-size:14px;color:#555;line-height:1.7;">${messageHtml}</td></tr>
                   </table>` : ""}
                   <p style="font-size:14px;color:#5f5e5a;line-height:1.7;margin:22px 0 24px;">관심 있으면 공고를 확인하고 바로 지원해보세요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/jobs/${jobPostingId}" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">공고 보러가기</a>
                     </td></tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
                   <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
@@ -537,7 +537,7 @@ export async function sendJobRecommendationEmail(
                     <p style="font-size:12px;color:#8b8b8b;margin:0;">${meta}</p>
                   </td>
                   <td width="44" valign="middle" align="right" style="padding:14px 14px 14px 0;">
-                    <span style="font-size:13px;color:#7c3aed;white-space:nowrap;">보기 ›</span>
+                    <span style="font-size:13px;color:#582681;white-space:nowrap;">보기 ›</span>
                   </td>
                 </tr>
               </table>
@@ -552,12 +552,12 @@ export async function sendJobRecommendationEmail(
     to,
     subject: `[프로모션] ${name} 님, 오늘의 추천 포지션이 도착했어요`,
     html: `
-      <div style="background:#f7f6f9;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+      <div style="background:#f7f7f8;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr><td align="center">
             <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
@@ -575,11 +575,11 @@ export async function sendJobRecommendationEmail(
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:20px 28px;">
+                <td bgcolor="#f7f7f8" style="padding:20px 28px;">
                   <p style="font-size:12px;color:#888780;margin:0 0 6px;line-height:1.6;">뷰티워크는 회원님의 메일함을 존중합니다.<br/>이 메일은 광고성 정보 수신에 동의하신 분께 발송되었습니다.</p>
                   <p style="font-size:12px;color:#888780;margin:0;">
                     뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a><br/>
-                    <a href="${unsubscribeUrl}" style="color:#8b5cf6;text-decoration:none;">추천 메일 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티워크
+                    <a href="${unsubscribeUrl}" style="color:#582681;text-decoration:none;">추천 메일 수신거부</a> &nbsp;·&nbsp; © 2026 뷰티워크
                   </p>
                 </td>
               </tr>
@@ -670,29 +670,29 @@ export async function sendExternalApplicationEmail(
   return 보내기({
     from: FROM,
     to,
-    subject: `[뷰티워크] 「${d.jobTitle}」에 지원자가 있어요`,
+    subject: `[뷰티워크] ${d.applicantName}님이 지원했어요`,
     html: `
       <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
           <tr><td align="center">
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #efeaf6;">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
               <tr>
-                <td align="center" bgcolor="#f4eefc" style="padding:24px 32px;border-bottom:1px solid #e9ddf7;">
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
                   <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
                 </td>
               </tr>
               <tr>
                 <td style="padding:32px 32px 28px;">
-                  <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">지원자가 도착했어요</p>
-                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${d.companyName} 님, 「${d.jobTitle}」 공고에 뷰티워크를 통해 지원한 인재가 있어요.</p>
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8fe;border:1px solid #ece7f6;border-radius:10px;">
+                  <p style="font-size:20px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">${d.applicantName}님이 지원했어요</p>
+                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${d.companyName} 님, 「${d.jobTitle}」 공고에 뷰티워크를 통해 지원했어요.</p>
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f7f8;border:1px solid #ececec;border-radius:10px;">
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">지원자</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;font-weight:700;">${d.applicantName}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">지원자</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;font-weight:700;">${d.applicantName}</td>
                     </tr>
                     <tr>
-                      <td style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#888780;">연락처</td>
-                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #f0ecf8;font-size:14px;color:#2c2c2a;">${d.applicantPhone || "-"}</td>
+                      <td style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#888780;">연락처</td>
+                      <td align="right" style="padding:14px 20px;border-bottom:1px solid #ececec;font-size:14px;color:#2c2c2a;">${d.applicantPhone || "-"}</td>
                     </tr>
                     <tr>
                       <td style="padding:14px 20px;font-size:14px;color:#888780;">이메일</td>
@@ -700,16 +700,16 @@ export async function sendExternalApplicationEmail(
                     </tr>
                   </table>
                   ${cover ? `<div style="margin:18px 0 0;background:#fbfbfd;border:1px solid #eee;border-radius:10px;padding:14px 18px;"><p style="font-size:13px;color:#888;margin:0 0 6px;font-weight:700;">자기소개</p><p style="font-size:14px;color:#555;line-height:1.7;margin:0;white-space:pre-line;">${cover.replace(/</g, "&lt;")}</p></div>` : ""}
-                  <p style="font-size:13px;color:#7c3aed;background:#f3eefc;border-radius:8px;padding:12px 16px;line-height:1.6;margin:20px 0 22px;">뷰티워크에 무료로 가입하면 이 지원자의 전체 이력서를 확인하고, 앞으로의 지원자도 직접 관리할 수 있어요.</p>
+                  <p style="font-size:13px;color:#582681;background:#f7f7f8;border-radius:8px;padding:12px 16px;line-height:1.6;margin:20px 0 22px;">뷰티워크에 무료로 가입하면 이 지원자의 전체 이력서를 확인하고, 앞으로의 지원자도 직접 관리할 수 있어요.</p>
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
-                    <tr><td align="center" bgcolor="#7c3aed" style="border-radius:8px;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
                       <a href="${SITE_URL}/company/signup" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">무료로 가입하고 지원자 관리하기</a>
                     </td></tr>
                   </table>
                 </td>
               </tr>
               <tr>
-                <td bgcolor="#f6f3fb" style="padding:18px 32px;">
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
                   <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
                 </td>
               </tr>
