@@ -277,13 +277,31 @@ function Hero() {
               </div>
 
               <div className="mt-card mt-evt">
-                {/* 혜택은 위 배너가 이미 다 말했다 — 여기는 버튼만 둔다.
-                    딱지·그림 다 걷어냈다. */}
-                <div className="mt-evt-list">
-                  <ResumeCta className="mt-evt-go">이력서 등록하기 ›</ResumeCta>
+                {/* 왼쪽은 안내, 가운데·오른쪽은 각자 몫의 등록. 혜택 숫자는
+                    위 배너가 이미 말했으니 여기는 되풀이하지 않는다. */}
+                <div className="mt-guide-intro">
+                  <Link href="/support/start">
+                    <span className="mt-guide-kicker">BEAUTYWORK GUIDE</span>
+                    <h3 className="mt-guide-h">뷰티워크 시작하기</h3>
+                    <p className="mt-guide-p">회원가입부터 이력서 등록, 채용공고 이용까지 궁금한 내용을 확인해보세요.</p>
+                  </Link>
+                  <Link href="/support/faq" className="mt-guide-faq">자주 묻는 질문 →</Link>
+                </div>
+
+                <div className="mt-guide-col">
+                  <span className="mt-guide-tag">개인회원</span>
+                  <b className="mt-guide-q">좋은 일자리를 찾고 계신가요?</b>
+                  <p className="mt-guide-p2">이력서를 등록하고 새로운 기회를 만나보세요.</p>
+                  <ResumeCta className="mt-guide-btn">이력서 등록하기 →</ResumeCta>
+                </div>
+
+                <div className="mt-guide-col">
+                  <span className="mt-guide-tag">기업회원</span>
+                  <b className="mt-guide-q">좋은 인재를 찾고 계신가요?</b>
+                  <p className="mt-guide-p2">채용공고를 등록하고 필요한 인재를 만나보세요.</p>
                   <button
                     type="button"
-                    className="mt-evt-go"
+                    className="mt-guide-btn"
                     // 로그인한 사장님은 단추 글대로 등록 폼으로 바로 간다.
                     // 그 밖의 사람은 로그인 벽 대신 서비스 소개로 보낸다 —
                     // 선착순·기간·무료 공고등록이 무슨 말인지 모르는 채로 로그인
@@ -292,15 +310,8 @@ function Hero() {
                       isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company"
                     )}
                   >
-                    채용공고 등록하기 ›
+                    채용공고 등록하기 →
                   </button>
-                </div>
-                {/* 바로 등록할 마음이 안 서면 먼저 알아보고 싶어 한다 —
-                    처음이면 시작하기, 궁금하면 FAQ. 작게 두어 버튼과
-                    안 겹치게 한다. */}
-                <div className="mt-evt-sub">
-                  <Link href="/support/start">처음이세요? 시작하기 ›</Link>
-                  <Link href="/support/faq">자주 묻는 질문 ›</Link>
                 </div>
               </div>
             </div>

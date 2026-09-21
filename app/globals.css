@@ -13256,23 +13256,41 @@ button,
 .mt-notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit; }
 .mt-notice .nt { display: block; font-size: 15px; font-weight: 400; color: #555; line-height: 1.35; }
 
-/* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
-   먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
-/* 이달의 이벤트 — 배너가 다 말했으니 여기는 버튼 둘뿐이다. 딱지·그림·
-   색 배경은 다 걷었다("버튼만 살리기로"). 남는 높이(flex:1)만큼 가운데로
-   띄운다 — 빈 칸을 위에 붙여 두면 아래가 텅 빈 색 블록처럼 보인다. */
-.mt-evt { display: flex; flex-direction: column; }
-.mt-evt-list { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 12px; align-items: center; justify-items: center; }
-.mt-evt-go { display: inline-flex; align-items: center; height: 40px; padding: 0 20px;
-  border-radius: 8px; background: var(--color-primary); color: #fff; border: 0; cursor: pointer;
-  font-size: 13.5px; font-weight: 600; letter-spacing: -.2px; text-decoration: none;
-  font-family: inherit; white-space: nowrap; }
-.mt-evt-go:hover { background: var(--color-primary-hover); }
-/* 등록할 마음이 아직 안 선 사람 몫 — 버튼 아래 작게, 안 다투게. */
-.mt-evt-sub { display: flex; justify-content: center; gap: 18px; padding-top: 10px; }
-.mt-evt-sub a { font-size: 12.5px; color: #8a8a90; text-decoration: none; }
-.mt-evt-sub a:hover { color: var(--color-primary); }
+/* 시작하기 안내 + 개인·기업 등록, 세 칸 한 판.
+   왼쪽은 「이게 뭐 하는 곳인지」와 FAQ로 가는 안내, 나머지 둘은 각자 몫의
+   질문 하나와 등록 단추다 — 배너가 혜택을 말했으니 여기는 「그래서 뭘
+   하면 되나」에 셋 다 다른 각도로 답한다. */
+.mt-card.mt-evt { display: grid; grid-template-columns: 1.05fr 1fr 1fr;
+  padding: 0; overflow: hidden; }
+.mt-guide-intro { position: relative; overflow: hidden; display: flex; flex-direction: column;
+  padding: 22px 22px 18px; background: linear-gradient(155deg, #6a3596 0%, #582681 60%, #45206b 100%);
+  color: #fff; }
+/* 옅게 번진 동그라미 하나 — 색을 새로 안 쓰고 흰색 반투명만 얹는다. */
+.mt-guide-intro::before { content: ""; position: absolute; width: 160px; height: 160px;
+  border-radius: 50%; background: rgba(255,255,255,.08); left: -50px; bottom: -60px; }
+.mt-guide-kicker { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; color: #d9c9ec; }
+.mt-guide-h { margin: 10px 0 8px; font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
+.mt-guide-p { margin: 0; font-size: 13px; line-height: 1.6; color: #e3d8ef; word-break: keep-all; flex: 1; }
+.mt-guide-faq { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px;
+  font-size: 12.5px; font-weight: 600; color: #fff; text-decoration: none; position: relative; z-index: 1; }
+.mt-guide-faq:hover { color: #e3d8ef; }
+
+.mt-guide-col { display: flex; flex-direction: column; padding: 22px 20px 18px;
+  border-left: 1px solid var(--color-border); }
+.mt-guide-tag { font-size: 12px; font-weight: 700; color: var(--color-primary); }
+.mt-guide-q { display: block; margin: 8px 0 6px; font-size: 15.5px; font-weight: 700;
+  color: #1f1f22; line-height: 1.4; word-break: keep-all; }
+.mt-guide-p2 { margin: 0; font-size: 13px; color: #8a8a90; line-height: 1.6; word-break: keep-all; flex: 1; }
+.mt-guide-btn { display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px; height: 40px; padding: 0 16px; border: 0; border-radius: 8px;
+  background: var(--color-primary); color: #fff; font-size: 13px; font-weight: 600;
+  letter-spacing: -.2px; text-decoration: none; cursor: pointer; font-family: inherit; }
+.mt-guide-btn:hover { background: var(--color-primary-hover); }
+
+@media (max-width: 1024px) {
+  .mt-card.mt-evt { grid-template-columns: 1fr; }
+  .mt-guide-col { border-left: 0; border-top: 1px solid var(--color-border); }
+}
 
 
 /* 기간·조건은 바뀌는 정보다. 그림에 구워 넣으면 날짜가 바뀔 때마다 그림을
