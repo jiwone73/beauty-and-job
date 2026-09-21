@@ -1,0 +1,97 @@
+<!-- 오픈 이벤트 메인 배너(2000x727) 원본.
+     사진(photo.png)은 처음 받은 오픈이벤트-메인배너.webp 의 오른쪽만 오려낸 것 —
+     글자는 실제 <div> 라 크기·간격을 여기서 고치고 다시 구우면 된다.
+
+     굽는 법(크롬 헤드리스로 정확한 픽셀 크기로 찍는다):
+       CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+       "$CHROME" --headless --disable-gpu --hide-scrollbars \
+         --force-device-scale-factor=1 --screenshot=out.png \
+         --window-size=2000,727 "file://$(pwd)/banner.html"
+     그 다음 PNG를 public/images/event/오픈이벤트-메인배너.webp 로 webp 변환해 덮어쓴다. -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'Pretendard';
+    src: local('Apple SD Gothic Neo');
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 2000px; height: 727px; overflow: hidden; }
+  body { font-family: 'Apple SD Gothic Neo', 'Pretendard', sans-serif; }
+  .wrap { display: flex; width: 2000px; height: 727px; }
+  .left {
+    flex: 0 0 1380px;
+    height: 727px;
+    padding: 50px 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(90deg, #fdfdfd 0%, #f3f1ef 78%, #ece8e4 100%);
+  }
+  .right { flex: 0 0 620px; height: 727px; overflow: hidden; position: relative; }
+  .right img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .right::before { content: ""; position: absolute; inset: 0; width: 90px;
+    background: linear-gradient(90deg, #ece8e4 0%, rgba(236,232,228,0) 100%); }
+
+  .eyebrow { display: flex; align-items: center; gap: 16px; }
+  .eyebrow span { font-size: 16px; font-weight: 700; letter-spacing: 3px; color: #8a8580; }
+  .eyebrow i { display: block; width: 260px; height: 1px; background: #cfc9c3; }
+
+  .headline { font-size: 44px; font-weight: 800; line-height: 1.42; letter-spacing: -1px; color: #1f1f22; }
+
+  .desc { font-size: 19px; font-weight: 500; line-height: 1.7; color: #6b6864; }
+
+  .benefits { display: flex; align-items: flex-start; gap: 56px; }
+  .benefit { display: flex; align-items: center; gap: 18px; }
+  .benefit .ic { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 1.5px solid #d9d4cf;
+    display: flex; align-items: center; justify-content: center; }
+  .benefit b { display: block; font-size: 19px; font-weight: 700; color: #1f1f22; margin-bottom: 4px; }
+  .benefit p { margin: 0; font-size: 16.5px; line-height: 1.5; color: #6b6864; }
+  .sep { width: 1px; align-self: stretch; background: #ddd8d3; margin: 6px 0; }
+
+  .period { display: inline-flex; align-items: center; gap: 14px; padding: 14px 26px; border-radius: 100px;
+    border: 1.5px solid #d9d4cf; width: fit-content; }
+  .period .ic { flex: none; display: flex; align-items: center; justify-content: center; color: #1f1f22; }
+  .period b { font-size: 17px; font-weight: 700; color: #1f1f22; }
+  .period span.bar { width: 1px; height: 16px; background: #d9d4cf; }
+  .period span.d { font-size: 17px; font-weight: 600; color: #4a4844; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="left">
+      <div class="eyebrow"><span>BEAUTYWORK OPEN EVENT</span><i></i></div>
+
+      <div class="headline">10월 오픈 기념<br>커피쿠폰 5,000원 + 무제한 무료 공고등록</div>
+
+      <div class="desc">좋은 인재와 좋은 매장이 만나는 곳, 뷰티워크가 2026년 10월 12일 시작합니다.<br>지금, 두 가지 특별한 혜택을 만나보세요.</div>
+
+      <div class="benefits">
+        <div class="benefit">
+          <span class="ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f1f22" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          </span>
+          <div><b>개인회원</b><p>이력서 등록하고<br>메가커피 쿠폰 5,000원</p></div>
+        </div>
+        <div class="sep"></div>
+        <div class="benefit">
+          <span class="ic">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f1f22" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 8h1M14 8h1M9 12h1M14 12h1M9 16h1M14 16h1"/></svg>
+          </span>
+          <div><b>기업회원</b><p>기간 내내 무제한 공고등록 +<br>선착순 상단노출</p></div>
+        </div>
+      </div>
+
+      <div class="period">
+        <span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1f1f22" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>
+        <b>이벤트 기간</b>
+        <span class="bar"></span>
+        <span class="d">2026년 10월 12일 (월) ~ 11월 30일 (월)</span>
+      </div>
+    </div>
+    <div class="right"><img src="photo.png"></div>
+  </div>
+</body>
+</html>
