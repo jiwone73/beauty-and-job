@@ -13306,7 +13306,8 @@ button,
    넣으면 330px 칸에서 3분의 1로 눌려 안 읽힌다. 바탕은 떼어 온 그림의 가장자리
    색에 맞춰, 그림과 판 사이에 금이 보이지 않게 한다. */
 .mt-evt-p { position: relative; overflow: hidden; border-radius: 14px; padding: 13px 15px;
-  display: block; text-align: left; text-decoration: none; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  text-align: left; text-decoration: none; border: 0; cursor: pointer;
   font-family: inherit; min-height: 142px; }
 .mt-evt-p.ev-user { background: linear-gradient(100deg, #fdf2f8 0%, #fdf3fa 100%); }
 .mt-evt-p.ev-co { background: linear-gradient(100deg, #f4f0fc 0%, #f7f4fe 100%); }
@@ -13314,11 +13315,6 @@ button,
 .mt-evt-tag { display: inline-flex; align-items: center; gap: 5px; background: #fff;
   border-radius: 100px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--color-primary); }
 .mt-evt-tag svg { color: var(--color-primary); flex: none; }
-/* 두 줄짜리 카피다. 16px·1.4·-.4px 로는 굵은 줄에서 글자끼리 붙어 뭉개지고
-   두 줄 사이도 좁아 한 덩어리로 보였다. 한 급 줄이고 줄 사이를 벌린다. */
-.mt-evt-h { display: block; margin: 10px 0 12px; font-size: 15px; line-height: 1.62;
-  color: #1a1a1a; letter-spacing: -.2px; position: relative; z-index: 1; }
-.mt-evt-h b { color: var(--color-primary); font-weight: 700; }
 .mt-evt-go { display: inline-flex; align-items: center; height: 32px; padding: 0 14px;
   border-radius: 8px; background: var(--color-primary); color: #fff;
   font-size: 12.5px; font-weight: 600; letter-spacing: -.2px; position: relative; z-index: 1; }
@@ -13329,12 +13325,6 @@ button,
    아래에 붙이면 맨 위 카드가 글줄과 부딪친다. */
 .mt-evt-top { position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   width: 118px; height: 104px; z-index: 1; pointer-events: none; }
-/* 그림 옆 빈 자리. 원본 디자인에 있던 쿠폰 동그라미와 체크 목록을 글자로 되살린다. */
-.mt-evt-coin { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); z-index: 1;
-  width: 54px; height: 54px; border-radius: 50%; background: #fbe4ee; color: #b8446f;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; line-height: 1.2; text-align: center; }
-.mt-evt-coin i { font-style: normal; font-size: 9.5px; font-weight: 600; }
 
 
 /* 기간·조건은 바뀌는 정보다. 그림에 구워 넣으면 날짜가 바뀔 때마다 그림을

@@ -277,20 +277,14 @@ function Hero() {
                       제목 옆에 한 번만 둔다. */}
                   <span className="mt-evt-when"><Sparkles size={13} className="mt-evt-when-ic" />10월 오픈 기념</span>
                 </div>
-                {/* 글자는 직접 짠다 — 그림에 구워 넣으면 좁은 칸에서 3분의 1로
-                    눌려 안 읽히고, 문구를 고칠 때마다 그림을 다시 받아야 한다.
-                    커피·확성기만 원본에서 떼어 얹는다. 큰 카피는 디자인 그대로. */}
+                {/* 혜택 숫자·기간은 위 배너가 이미 다 말했다. 여기서 되풀이하면
+                    같은 얘기를 두 번 읽게 되므로, 여기는 등록 버튼까지만
+                    맡는다 — 그림(커피·확성기)만 남겨 심심하지 않게 한다. */}
                 <div className="mt-evt-list">
                   <ResumeCta className="mt-evt-p ev-user">
-                    <span className="mt-evt-tag"><UserRound size={12} />개인회원 EVENT</span>
-                    {/* 이력서 등록은 사진·인증·경력·자소서까지 30분짜리 일이다.
-                        처음 보는 사이트에서 그 일을 시키려면 커피 한 잔으로는 얇다.
-                        값보다 중요한 것은 수량이다 — 「무제한 2,000원」은 오늘
-                        해야 할 이유가 없고 「선착순 200명」은 있다. */}
-                    <span className="mt-evt-h">이력서 등록하고<br /><b>메가MGC 커피쿠폰</b></span>
-                    <span className="mt-evt-go">이력서 등록하기 ›</span>
+                    <span className="mt-evt-tag"><UserRound size={12} />개인회원</span>
                     <img className="mt-evt-art art-coffee" src="/images/event/art-coffee.png" alt="" />
-                    <span className="mt-evt-coin">5,000원<i>선착순 200명</i></span>
+                    <span className="mt-evt-go">이력서 등록하기 ›</span>
                   </ResumeCta>
 
                   <button
@@ -304,13 +298,7 @@ function Hero() {
                       isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company"
                     )}
                   >
-                    <span className="mt-evt-tag"><OfficeIcon size={12} />기업회원 EVENT</span>
-                    {/* 인재검색은 약속하지 않는다 — 이력서가 쌓이기 전에는 못 지킨다.
-                        지금 우리가 줄 수 있는 진짜 값은 기간과 노출이다.
-                        자리는 먼저 올린 순서대로 준다. 최상단은 원래 프리미엄
-                        자리라 나중에 팔 때 「그때는 공짜였는데」가 될 수 있지만,
-                        오픈 초기에 공고를 모으는 것이 먼저라고 정했다. */}
-                    <span className="mt-evt-h">선착순 채용공고 등록하고<br /><b>기간 내내 무료 + 최상단 노출</b></span>
+                    <span className="mt-evt-tag"><OfficeIcon size={12} />기업회원</span>
                     <span className="mt-evt-go">채용공고 등록하기 ›</span>
                     {/* 확성기를 걷고 「최상단」을 그림으로 말한다. 확성기는
                         「알린다」까지만 말하고 어디에 걸리는지는 말하지 않았다.
