@@ -2,7 +2,6 @@
 import { useState } from "react";
 import InfoShell from "@/components/InfoShell";
 import AboutSide from "@/components/AboutSide";
-import PrivacyConsent from "@/components/PrivacyConsent";
 import AttachFiles from "@/components/AttachFiles";
 import { 사업문의유형 } from "@/lib/inquiryTypes";
 
@@ -13,11 +12,9 @@ export default function BusinessInquiryPage() {
   const [type, setType] = useState<string>(사업문의유형[0]);
   const [form, setForm] = useState({ company: "", name: "", email: "", phone: "", subject: "", content: "" });
   const [done, setDone] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [파일들, set파일들] = useState<File[]>([]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreed) { alert("개인정보 수집 및 이용에 동의해주세요."); return; }
     try {
       const 값 = {
         company_name: form.company,
@@ -27,7 +24,6 @@ export default function BusinessInquiryPage() {
         subject: form.subject,
         message: form.content,
         type,
-        privacy_agreed: agreed,
       };
       let 몸통: BodyInit; const 머리: Record<string, string> = {};
       if (파일들.length) {
@@ -73,8 +69,7 @@ export default function BusinessInquiryPage() {
             <div className="contact-form-row"><label>문의 내용 *</label><textarea required placeholder="문의 내용을 자유롭게 입력해주세요" value={form.content} onChange={e=>setForm({...form,content:e.target.value})} /></div>
             <div className="contact-form-row"><label>파일 첨부</label>
               <AttachFiles 파일들={파일들} 바뀜={set파일들} /></div>
-            <PrivacyConsent agreed={agreed} onChange={setAgreed} items="회사명, 담당자명, 이메일, 전화번호, 제목, 문의 내용, 첨부파일" />
-            <button type="submit" className="contact-submit-btn" disabled={!agreed} style={!agreed ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>문의 보내기</button>
+            <button type="submit" className="contact-submit-btn">문의 보내기</button>
           </form>
         </div>
       )}
