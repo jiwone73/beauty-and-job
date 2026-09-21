@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `SELECT id, type, title, short_title, body, is_pinned, published_at, created_at
+      `SELECT id, type, title, short_title, body, is_pinned, published_at, created_at, banner_image_url
          FROM notices
         WHERE id = $1 AND status = 'published'`,
       [id]

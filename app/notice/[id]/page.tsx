@@ -13,6 +13,7 @@ import InfoShell from "@/components/InfoShell";
  */
 type 공지 = {
   id: string; type: "notice" | "event"; title: string; body: string;
+  banner_image_url: string | null;
   is_pinned: boolean; published_at: string | null; created_at: string;
 };
 
@@ -46,6 +47,9 @@ export default function NoticeDetailPage() {
         <p className="nb-board-msg">글을 찾을 수 없습니다.</p>
       ) : (
         <>
+          {글.banner_image_url && (
+            <img className="nb-view-banner" src={글.banner_image_url} alt={글.title} />
+          )}
           <span className={`nb-view-tag${글.type === "event" ? " evt" : ""}`}>
             {글.type === "event" ? "이벤트" : "공지"}
           </span>

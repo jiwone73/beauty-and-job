@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `SELECT id, type, target, title, short_title, body, is_pinned, status, published_at, created_at, updated_at
+      `SELECT id, type, target, title, short_title, body, banner_image_url, is_pinned, status, published_at, created_at, updated_at
          FROM notices
         ORDER BY is_pinned DESC, created_at DESC`
     );
@@ -26,12 +26,13 @@ export async function POST(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
   let type = "notice", title = "", body = "", status = "published", is_pinned = false, target = "all";
-  let short_title = "";
+  let short_title = "", banner_image_url = "";
   try {
     const json = await req.json();
     if (json.type === "notice" || json.type === "event") type = json.type;
     title = (json.title || "").trim();
     short_title = (json.short_title || "").trim();
+    banner_image_url = (json.banner_image_url || "").trim();
     body = (json.body || "").trim();
     if (json.status === "draft" || json.status === "published") status = json.status;
     is_pinned = !!json.is_pinned;
@@ -44,10 +45,10 @@ export async function POST(req: NextRequest) {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      `INSERT INTO notices (type, title, short_title, body, status, is_pinned, target, published_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, CASE WHEN $5 = 'published' THEN now() ELSE NULL END)
-       RETURNING id, type, target, title, short_title, body, status, is_pinned, published_at, created_at`,
-      [type, title, short_title || null, body, status, is_pinned, target]
+      `INSERT INTO notices (type, title, short_title, body, status, is_pinned, target, banner_image_url, published_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CASE WHEN $5 = 'published' THEN now() ELSE NULL END)
+       RETURNING id, type, target, title, short_title, body, banner_image_url, status, is_pinned, published_at, created_at`,
+      [type, title, short_title || null, body, status, is_pinned, target, banner_image_url || null]
     );
     return ok(result.rows[0]);
   } catch (e) {
@@ -60,7 +61,7 @@ export async function PATCH(req: NextRequest) {
   const { res: authErr } = requireAuth(req, "admin");
   if (authErr) return authErr;
   let id = "";
-  let short_title: string | undefined;
+  let short_title: string | undefined, banner_image_url: string | undefined;
   let type: string | undefined, title: string | undefined, body: string | undefined,
       status: string | undefined, is_pinned: boolean | undefined, target: string | undefined;
   try {
@@ -69,6 +70,7 @@ export async function PATCH(req: NextRequest) {
     if (json.type === "notice" || json.type === "event") type = json.type;
     if (typeof json.title === "string") title = json.title;
     if (typeof json.short_title === "string") short_title = json.short_title;
+    if (typeof json.banner_image_url === "string") banner_image_url = json.banner_image_url;
     if (typeof json.body === "string") body = json.body;
     if (json.status === "draft" || json.status === "published") status = json.status;
     if (typeof json.is_pinned === "boolean") is_pinned = json.is_pinned;
@@ -85,6 +87,7 @@ export async function PATCH(req: NextRequest) {
   if (title !== undefined) { sets.push(`title = $${idx++}`); params.push(title.trim()); }
   // 비우면 null 로 둔다 — 빈 글자와 「없음」이 섞이면 화면이 빈 줄을 건다.
   if (short_title !== undefined) { sets.push(`short_title = $${idx++}`); params.push(short_title.trim() || null); }
+  if (banner_image_url !== undefined) { sets.push(`banner_image_url = $${idx++}`); params.push(banner_image_url.trim() || null); }
   if (body !== undefined) { sets.push(`body = $${idx++}`); params.push(body.trim()); }
   if (is_pinned !== undefined) { sets.push(`is_pinned = $${idx++}`); params.push(is_pinned); }
   if (status !== undefined) {

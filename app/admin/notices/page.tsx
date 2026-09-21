@@ -11,7 +11,8 @@ import { ChevronDown, Plus, Search, Trash2 } from "lucide-react";
 
 type Notice = {
   id: string; type: "notice" | "event"; target: "all" | "user" | "company";
-  title: string; short_title: string | null; body: string; is_pinned: boolean; status: "draft" | "published";
+  title: string; short_title: string | null; body: string; banner_image_url: string | null;
+  is_pinned: boolean; status: "draft" | "published";
   published_at: string | null; created_at: string;
 };
 
@@ -23,7 +24,7 @@ function fmtDate(s: string | null) {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-const 빈값 = { type: "notice", target: "all", title: "", short_title: "", body: "", is_pinned: false, status: "published" };
+const 빈값 = { type: "notice", target: "all", title: "", short_title: "", body: "", banner_image_url: "", is_pinned: false, status: "published" };
 
 export default function AdminNoticesPage() {
   const token = () => (typeof window !== "undefined" ? localStorage.getItem("admin_token") : null);
@@ -58,7 +59,8 @@ export default function AdminNoticesPage() {
 
   const 고르기 = (n: Notice) => {
     set고른것(n.id);
-    setEdit({ type: n.type, target: n.target ?? "all", title: n.title, short_title: n.short_title ?? "", body: n.body, is_pinned: n.is_pinned, status: n.status });
+    setEdit({ type: n.type, target: n.target ?? "all", title: n.title, short_title: n.short_title ?? "",
+      banner_image_url: n.banner_image_url ?? "", body: n.body, is_pinned: n.is_pinned, status: n.status });
   };
 
   const create = async () => {
@@ -169,6 +171,9 @@ export default function AdminNoticesPage() {
                   placeholder="제목" style={{ ...inputStyle, marginBottom: 8, fontSize: 16 }} />
                 <input value={form.short_title} onChange={(e) => setForm({ ...form, short_title: e.target.value })}
                   placeholder="짧은 제목 (메인 배너용 · 비우면 위 제목을 씁니다)"
+                  style={{ ...inputStyle, marginBottom: 8 }} />
+                <input value={form.banner_image_url} onChange={(e) => setForm({ ...form, banner_image_url: e.target.value })}
+                  placeholder="배너 그림 경로 (예: /images/event/오픈이벤트-메인배너.webp · 비우면 그림 없이 글자만)"
                   style={{ ...inputStyle, marginBottom: 10 }} />
                 <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })}
                   spellCheck lang="ko" placeholder="내용"
@@ -264,6 +269,9 @@ export default function AdminNoticesPage() {
               {/* 메인 배너처럼 한 줄뿐인 자리에 건다. 비우면 위 제목을 그대로 쓴다. */}
               <input value={edit.short_title} onChange={(e) => setEdit({ ...edit, short_title: e.target.value })}
                 placeholder="짧은 제목 (메인 배너용 · 비우면 위 제목을 씁니다)"
+                style={{ ...inputStyle, marginBottom: 8 }} />
+              <input value={edit.banner_image_url} onChange={(e) => setEdit({ ...edit, banner_image_url: e.target.value })}
+                placeholder="배너 그림 경로 (예: /images/event/오픈이벤트-메인배너.webp · 비우면 그림 없이 글자만)"
                 style={{ ...inputStyle, marginBottom: 10 }} />
               <textarea value={edit.body} onChange={(e) => setEdit({ ...edit, body: e.target.value })}
                 spellCheck lang="ko" placeholder="내용"
