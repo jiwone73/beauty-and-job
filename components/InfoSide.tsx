@@ -21,7 +21,10 @@ type 줄 = { href: string; label: string; 주소?: string };
 
 const 메뉴: { 머리: 줄; 아래: 줄[] }[] = [
   { 머리: { href: "/notice", label: "공지사항" }, 아래: [] },
-  { 머리: { href: "/support/policy", label: "회원정책" }, 아래: [] },
+  { 머리: { href: "/support/policy", label: "회원정책" }, 아래: [
+      { href: "/support/policy", label: "회원관리정책", 주소: "/support/policy#duties" },
+      { href: "/support/policy", label: "상품 환불정책", 주소: "/support/policy#refund" },
+    ] },
   { 머리: { href: "/support/faq", label: "FAQ" }, 아래: [
       { href: "/support/faq", label: "개인회원", 주소: "/support/faq?누구=개인" },
       { href: "/support/faq", label: "기업회원", 주소: "/support/faq?누구=기업" },
