@@ -40,7 +40,7 @@ export default function AdBanner({ slot, group, className, 대신 = null }: {
 
   const 그림 = <img className="ad-banner-img" src={것.image} alt={것.alt || "광고"} loading="lazy" />;
   return (
-    <div className={`ad-banner${className ? ` ${className}` : ""}`}>
+    <div className={`ad-banner${slot === "jobs" ? " ad-banner-jobs" : ""}${className ? ` ${className}` : ""}`}>
       {것.href ? <Link href={것.href} className="ad-banner-a">{그림}</Link> : 그림}
       {/* 표시 의무 — 판 자리라는 것을 밝힌다. */}
       <span className="ad-banner-tag">광고</span>

@@ -36,8 +36,20 @@ export default function HeroBanner({ 문구, 작게 }: { 문구?: string; 작게
   const 아래 = 문구 || 받은문구
     || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`;
 
+  // 채용공고 쪽만 띠 배너다 — 옆 사이드 매장·오피스 탭 높이에 맞춘
+  // 얇은 자리라 메인의 큰 배너와는 다른 짜임을 쓴다.
+  if (작게) {
+    return (
+      <Link href="/company" className="mt-hero sm" aria-label="뷰티워크 오픈 이벤트">
+        <span className="mt-hero-shine" aria-hidden="true" />
+        <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
+        <span className="mt-hero-sub">{아래}</span>
+      </Link>
+    );
+  }
+
   return (
-    <Link href="/company" className={`mt-hero${작게 ? " sm" : ""}`}>
+    <Link href="/company" className="mt-hero">
       <span className="mt-hero-photo" />
       <span className="mt-hero-in">
         <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
