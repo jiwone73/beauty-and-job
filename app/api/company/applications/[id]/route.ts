@@ -220,7 +220,7 @@ export async function PATCH(
     WHERE a.id = $${idx++}
       AND a.job_posting_id = jp.id
       AND jp.company_id = $${idx++}
-    RETURNING a.id, a.status, a.note, a.updated_at
+    RETURNING a.id, a.status, a.note, a.updated_at, a.user_id, a.job_posting_id, jp.title AS job_title
   `;
 
   let result;
@@ -234,5 +234,43 @@ export async function PATCH(
   if (result.rowCount === 0) {
     return err("APP_002", "지원 내역을 찾을 수 없거나 권한이 없습니다.", 404);
   }
-  return ok(result.rows[0]);
+  const row = result.rows[0];
+
+  // 합격시키면 채팅이 열린다 — 먼저 지원한 사람은 이미 관심을 표한 것이니,
+  // 제안→수락과 같은 자리(interested_at)로 바로 채팅을 텄다. 같은 공고로 이미
+  // 제안(또는 지난 합격)이 있었으면 그 스레드를 그대로 쓰고, 없으면 새로 연다.
+  // 지원서에는 없던 채팅·면접약속 기능을 여기서부터 쓸 수 있게 하는 것이 핵심이다.
+  if (body.status === "PASSED") {
+    try {
+      const upserted = await pool.query(
+        `INSERT INTO proposals (company_id, user_id, job_posting_id, message, interested_at)
+         VALUES ($1, $2, $3, '', NOW())
+         ON CONFLICT (company_id, user_id, job_posting_id)
+         DO UPDATE SET interested_at = COALESCE(proposals.interested_at, EXCLUDED.interested_at)
+         RETURNING id`,
+        [auth!.sub, row.user_id, row.job_posting_id]
+      );
+      const proposalId = upserted.rows[0]?.id;
+      const co = await pool.query(`SELECT COALESCE(brand_name, company_name) AS name FROM companies WHERE id = $1`, [auth!.sub]);
+      const companyName = co.rows[0]?.name || "기업";
+      if (proposalId) {
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)
+           VALUES ($1, 'PASSED', $2, $3, $4, 'job_posting')`,
+          [
+            row.user_id,
+            `${companyName}에서 합격 처리했어요`,
+            `'${row.job_title}' 지원 건이 합격 처리됐어요. 이제 채팅으로 이야기하실 수 있어요.`,
+            row.job_posting_id,
+          ]
+        );
+      }
+    } catch (e) {
+      // 채팅을 트는 것은 부수 효과다 — 여기서 실패해도 합격 처리 자체는 이미
+      // 끝났으니 지원자 화면에는 성공으로 보여야 한다.
+      console.error("[PATCH application] 합격 채팅 열기 실패", e);
+    }
+  }
+
+  return ok({ id: row.id, status: row.status, note: row.note, updated_at: row.updated_at });
 }

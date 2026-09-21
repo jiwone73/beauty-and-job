@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Download, Printer } from "lucide-react";
+import Link from "next/link";
+import { X, Download, Printer, MessageCircle } from "lucide-react";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
@@ -28,6 +29,7 @@ export default function ApplicationModal({
   const [자료, set자료] = useState<any>(null);
   const [로딩, set로딩] = useState(true);
   const [내려받는중, set내려받는중] = useState(false);
+  const [처리중, set처리중] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const 불러오기 = useCallback(async () => {
@@ -38,18 +40,33 @@ export default function ApplicationModal({
     }).then((x) => x.json()).catch(() => null);
     if (r?.success && r.data) {
       set자료(r.data);
-      // 지원서를 열면 미열람 → 열람. 손으로 바꾸는 상태는 두지 않는다 — 매장은
-      // 마음에 들면 버튼을 누르는 게 아니라 바로 전화한다. 사람인도 「최종합격」
-      // 칸이 지원자 45명에 0 이다. 자동으로 쌓이지 않는 값은 만들지 않는다.
+      // 지원서를 열면 미열람 → 열람은 자동. 그 뒤 합격·불합격은 매장이 직접
+      // 눌러야 한다 — 여기서 합격을 누르면 채팅이 열린다(제안 수락과 같은 자리).
       if (r.data.status === "APPLIED") {
         companyApplicationsApi.updateStatus(applicationId, "VIEWED").catch(() => {});
         onStatus?.(applicationId, "VIEWED");
+        set자료((prev: any) => prev && { ...prev, status: "VIEWED" });
       }
     }
     set로딩(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicationId]);
   useEffect(() => { 불러오기(); }, [불러오기]);
+
+  const 상태바꾸기 = async (s: "PASSED" | "REJECTED") => {
+    if (처리중) return;
+    set처리중(true);
+    try {
+      // api-client 는 실패를 던진다 — 여기까지 왔으면 된 것이다.
+      await companyApplicationsApi.updateStatus(applicationId, s);
+      set자료((prev: any) => prev && { ...prev, status: s });
+      onStatus?.(applicationId, s);
+    } catch (e: any) {
+      alert(e?.message || "처리 중 오류가 발생했습니다.");
+    } finally {
+      set처리중(false);
+    }
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -117,6 +134,36 @@ export default function ApplicationModal({
             </button>
           </div>
         </div>
+        {자료 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderBottom: "1px solid #eee" }}>
+            <span style={{ fontSize: 13, color: "#555", marginRight: "auto" }}>
+              {자료.status === "PASSED" ? "합격 처리했습니다 — 채팅으로 이야기하실 수 있어요"
+                : 자료.status === "REJECTED" ? "불합격 처리했습니다"
+                : "마음을 정하셨으면 눌러 주세요. 지원자에게 알림이 갑니다"}
+            </span>
+            {자료.status === "PASSED" && (
+              <Link href="/company/dashboard/proposals"
+                style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 14, color: "#582681", fontWeight: 600, textDecoration: "none" }}>
+                <MessageCircle size={15} /> 채팅하기
+              </Link>
+            )}
+            <button type="button" onClick={() => 상태바꾸기("REJECTED")} disabled={처리중}
+              style={{
+                padding: "7px 14px", fontSize: 14, borderRadius: 8, cursor: 처리중 ? "default" : "pointer",
+                border: 자료.status === "REJECTED" ? "1px solid #999" : "1px solid #ddd",
+                background: "#fff", color: 자료.status === "REJECTED" ? "#555" : "#8a8a90", fontWeight: 자료.status === "REJECTED" ? 700 : 400,
+              }}>
+              불합격 처리
+            </button>
+            <button type="button" onClick={() => 상태바꾸기("PASSED")} disabled={처리중}
+              style={{
+                padding: "7px 14px", fontSize: 14, borderRadius: 8, cursor: 처리중 ? "default" : "pointer", border: "none", fontWeight: 700,
+                background: 자료.status === "PASSED" ? "#582681" : "#f2edf6", color: 자료.status === "PASSED" ? "#fff" : "#582681",
+              }}>
+              합격 처리
+            </button>
+          </div>
+        )}
         <div className="rp-modal-body">
           {로딩 ? (
             <div className="admin-empty">지원서 불러오는 중...</div>
