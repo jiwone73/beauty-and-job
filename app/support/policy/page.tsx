@@ -130,18 +130,12 @@ export default function PolicyPage() {
       <div className="info-section">
         <h2>개인회원 이력서</h2>
         <ul className="pi-warn">
-          <li>이력서의 이름은 「하○○」처럼 가려져요. 지금 일하시는 매장 이름도 보이지 않아요.</li>
+          <li>이력서의 이름은 「김○○」처럼 가려져요. 지금 일하시는 매장 이름도 보이지 않아요.</li>
           <li>이름과 연락처가 열리는 것은 이용권을 가진 기업이거나, 회원님이 직접 지원하신 매장뿐이에요.</li>
           <li>내 정보 → 설정에서 비공개로 바꾸실 수 있고, 특정 매장만 빼고 공개하는 것도 돼요.</li>
           <li>탈퇴하시면 이력서와 개인정보는 개인정보처리방침에 정한 기준에 따라 처리돼요.</li>
         </ul>
       </div>
-
-      <p className="pol-more">
-        정하는 것은 약관이에요. 이 쪽과 어긋나면 약관이 맞아요.{" "}
-        <Link href="/support/terms">이용약관 ›</Link>{" "}
-        <Link href="/support/privacy">개인정보처리방침 ›</Link>
-      </p>
     </InfoShell>
   );
 }
