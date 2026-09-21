@@ -22,7 +22,7 @@ import {
   Building2,
   Bookmark,
   Sparkles,
-  ChevronDown, Gift, UserRound } from "lucide-react";
+  ChevronDown, UserRound } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
@@ -274,16 +274,10 @@ function Hero() {
               </div>
 
               <div className="mt-card mt-evt">
-                <div className="mt-chead">
-                  <Link href="/event" className="t"><Gift size={17} className="mt-ic" />이달의 이벤트</Link>
-                  <span className="mt-evt-lead">지금, 뷰티워크에서 준비한 특별한 혜택을 만나보세요.</span>
-                  {/* 언제 왜 주는지는 두 혜택에 공통이다. 줄마다 되풀이하지 않고
-                      제목 옆에 한 번만 둔다. */}
-                  <span className="mt-evt-when"><Sparkles size={13} className="mt-evt-when-ic" />10월 오픈 기념</span>
-                </div>
-                {/* 혜택 숫자·기간은 위 배너가 이미 다 말했다. 여기서 되풀이하면
-                    같은 얘기를 두 번 읽게 되므로, 여기는 등록 버튼까지만
-                    맡는다 — 그림(커피·확성기)만 남겨 심심하지 않게 한다. */}
+                {/* 혜택 숫자·기간은 위 배너가 이미 다 말했다. 「이달의 이벤트」
+                    틀까지 여기 또 두면 같은 얘기를 세 번째 하는 셈이라 걷는다 —
+                    여기는 등록 버튼까지만 맡는다. 그림(커피·확성기)만 남겨
+                    심심하지 않게 한다. */}
                 <div className="mt-evt-list">
                   <ResumeCta className="mt-evt-p ev-user">
                     <span className="mt-evt-tag"><UserRound size={12} />개인회원</span>
@@ -337,9 +331,6 @@ function Hero() {
                     </svg>
                   </button>
                 </div>
-                <p className="mt-evt-note">
-                  * 이벤트 기간: 2026. 10. 12 (월) ~ 11. 30 (월) · 선착순 200명 · 쿠폰은 이력서 등록 완료 확인 후 지급됩니다.
-                </p>
               </div>
             </div>
           </div>
