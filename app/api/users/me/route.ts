@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import pool from "@/lib/db";
 import { verifyAccessToken } from "@/lib/jwt";
 import { supabaseAdmin } from "@/lib/supabase";
+import { validateBirth } from "@/lib/validateBirth";
 
 function ok(data: any) {
   return NextResponse.json({ success: true, data });
@@ -92,12 +93,14 @@ export async function PATCH(req: NextRequest) {
     params.push(clean);
   }
   if (birth !== undefined) {
-    const birthDate = typeof birth === "string" && /^\d{8}$/.test(birth) ? birth : null;
-    if (!birthDate) {
-      return err("USER_002", "생년월일은 YYYYMMDD 8자리로 입력해주세요.", 400);
+    // 화면(프로필 편집)에서만 걸러 왔다 — API를 직접 두드리면 나이 하한을
+    // 그냥 지나쳤다. 검사를 서버로 옮긴다(프론트와 같은 함수를 쓴다).
+    const 검사 = validateBirth(String(birth));
+    if (!검사.ok) {
+      return err("USER_002", 검사.message, 400);
     }
     sets.push("birth_date = TO_DATE($" + idx++ + ", 'YYYYMMDD')");
-    params.push(birthDate);
+    params.push(birth);
   }
   if (nationality !== undefined) {
     // 목록에 없는 나라도 있을 수 있어 값을 묶지 않는다. 빈 값이면 '안 밝힘'.

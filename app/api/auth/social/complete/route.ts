@@ -6,6 +6,7 @@ import { ok, err } from "@/lib/api";
 import { signAccessToken } from "@/lib/jwt";
 import { 가입표읽기 } from "@/lib/socialSignup";
 import { sendWelcomeEmail } from "@/lib/email";
+import { validateBirth } from "@/lib/validateBirth";
 import { getGroupNames, 경력단계, 경력묶음 } from "@/lib/data/jobGroups";
 
 // 간편가입의 마지막 걸음 — 약관에 동의한 뒤에야 회원이 된다.
@@ -16,10 +17,15 @@ import { getGroupNames, 경력단계, 경력묶음 } from "@/lib/data/jobGroups"
 // 들어왔든 동의 기록은 한 자리에 모여야 나중에 확인할 수 있다.
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({} as any));
-  const { signup, job_type, phone, preferred_regions,
+  const { signup, job_type, phone, birth, preferred_regions,
           main_job_group, career_stage, agreed_term_ids } = body || {};
 
   if (!signup) return err("SOCIAL_001", "가입 정보가 없어요. 처음부터 다시 해주세요.", 400);
+
+  // 카카오·네이버는 생년월일을 안 넘겨준다. 이메일 가입과 같은 나이 하한을
+  // 걸려면 여기서 따로 받아야 한다 — 화면에서만 막으면 API를 직접 두드려 지나칠 수 있다.
+  const 나이검사 = validateBirth(String(birth || ""));
+  if (!나이검사.ok) return err("SOCIAL_013", 나이검사.message, 400);
 
   let 표;
   try {
@@ -110,10 +116,10 @@ export async function POST(req: NextRequest) {
 
     const ins = await client.query(
       `INSERT INTO users (kakao_id, naver_id, name, email, phone, avatar_url, job_type,
-                          preferred_regions, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, 'ACTIVE')
+                          birth_date, preferred_regions, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, TO_DATE($8, 'YYYYMMDD'), $9::jsonb, 'ACTIVE')
        RETURNING id, email, name, phone, job_type, office_job_areas, status`,
-      [kakaoId, naverId, 표.name, 표.email, 번호, 표.avatarUrl, job_type, JSON.stringify(지역)]
+      [kakaoId, naverId, 표.name, 표.email, 번호, 표.avatarUrl, job_type, String(birth), JSON.stringify(지역)]
     );
     const user = ins.rows[0];
 

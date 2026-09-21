@@ -7,14 +7,22 @@ import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
 import { sendWelcomeEmail } from '@/lib/email'
 import { passwordError } from '@/lib/password'
+import { validateBirth } from '@/lib/validateBirth'
 import { getGroupNames, 경력단계, 경력묶음 } from '@/lib/data/jobGroups'
 export async function POST(req: NextRequest) {
   const { email, name, phone: rawPhone, password, birth, gender, job_type = 'OFFICE',
           main_job_group, career_stage, preferred_regions, agreed_term_ids } = await req.json()
   const phone = (rawPhone || '').replace(/\D/g, '')
 
-  if (!email || !password || !name || !phone) {
+  if (!email || !password || !name || !phone || !birth) {
     return err('USER_002', '필수 항목을 모두 입력해주세요.')
+  }
+
+  // 화면에서 막아도 API를 직접 두드리면 나이 하한을 그냥 지나친다 — 프로필
+  // 편집(app/api/users/me)과 같은 함수로 가입 시점에도 걸어 둔다.
+  const 나이검사 = validateBirth(String(birth))
+  if (!나이검사.ok) {
+    return err('USER_002', 나이검사.message)
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {

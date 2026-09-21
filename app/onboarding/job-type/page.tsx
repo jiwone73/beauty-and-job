@@ -8,6 +8,7 @@ import { 직군고르기, 경력고르기 } from "@/components/signup/JobCareerP
 import { 직군요약 } from "@/lib/data/jobGroups";
 import { shortRegion } from "@/lib/regionShort";
 import { useAuthStore } from "@/lib/store/authStore";
+import { validateBirth } from "@/lib/validateBirth";
 
 export default function OnboardingJobTypePage() {
   const router = useRouter();
@@ -58,6 +59,18 @@ export default function OnboardingJobTypePage() {
     set동의(Object.fromEntries(약관들.map((t) => [t.id, 켠다])));
   };
 
+  // 생년월일 — 새로 가입하는 사람에게만 받는다. 예전에 가입한 회원이 직군만
+  // 마저 채우러 온 경우까지 여기서 막으면 엉뚱한 데서 발이 묶인다.
+  const [birth, setBirth] = useState("");
+  const formatBirth = (v: string) => {
+    const d = v.replace(/\D/g, "").slice(0, 8);
+    if (d.length <= 4) return d;
+    if (d.length <= 6) return `${d.slice(0, 4)}.${d.slice(4)}`;
+    return `${d.slice(0, 4)}.${d.slice(4, 6)}.${d.slice(6)}`;
+  };
+  const birthDigits = birth.replace(/\D/g, "");
+  const birthCheck = birthDigits.length === 8 ? validateBirth(birthDigits) : null;
+
   // 카카오로 가입하면 번호가 없다. 기업이 지원자에게 연락하는 유일한 수단이라 여기서 받아 둔다.
   const needPhone = 가입표 ? !표번호있나 : !userPhone;
   const [phone, setPhone] = useState("");
@@ -105,6 +118,10 @@ export default function OnboardingJobTypePage() {
       setError("휴대폰 인증을 완료해 주세요.");
       return;
     }
+    if (가입표 && !birthCheck?.ok) {
+      setError(birthCheck?.message || "생년월일을 입력해 주세요.");
+      return;
+    }
     if (!대분류) { setError("직군을 골라 주세요."); return; }
     if (!단계)   { setError("경력을 골라 주세요."); return; }
     if (지역들.length === 0) {
@@ -137,6 +154,7 @@ export default function OnboardingJobTypePage() {
             signup: 가입표,
             job_type: selected,
             phone: needPhone ? 번호 : undefined,
+            birth: birthDigits,
             preferred_regions: 희망지역,
             main_job_group: 대분류,
             career_stage: 단계,
@@ -318,6 +336,28 @@ export default function OnboardingJobTypePage() {
           </div>
         )}
 
+        {/* 생년월일 — 새로 가입하는 사람에게만. 이메일 가입과 같은 나이 하한(만 14세)을 여기서도 건다. */}
+        {가입표 && (
+          <div className="mb-8">
+            <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
+              생년월일 <span className="text-red-500">*</span>
+            </p>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={birth}
+              onChange={(e) => setBirth(formatBirth(e.target.value))}
+              placeholder="YYYY.MM.DD"
+              className={`w-full h-[48px] px-4 border rounded-lg text-[14px] focus:outline-none ${
+                birthCheck && !birthCheck.ok ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#582681]"
+              }`}
+            />
+            {birthCheck && !birthCheck.ok && (
+              <p className="mt-1.5 text-[12px] text-[#e74c3c]">{birthCheck.message}</p>
+            )}
+          </div>
+        )}
+
         {/* 약관 동의 — 이메일 가입과 같은 약관, 같은 모양이다.
             카카오·네이버 화면에서 받은 동의는 그쪽이 우리에게 값을 넘기는 데
             대한 것이라, 우리 이용약관 동의는 여기서 따로 받아야 한다. */}
@@ -355,7 +395,7 @@ export default function OnboardingJobTypePage() {
 
         <button
           onClick={handleSubmit}
-          disabled={!selected || !대분류 || !단계 || loading || 읽는중 || !필수동의됨 || 지역들.length === 0 || (needPhone && !phoneVerified)}
+          disabled={!selected || !대분류 || !단계 || loading || 읽는중 || !필수동의됨 || 지역들.length === 0 || (needPhone && !phoneVerified) || (!!가입표 && !birthCheck?.ok)}
           className="w-full h-[52px] rounded-lg bg-[#582681] text-white font-semibold text-[15px] disabled:bg-[#e0e0e0] disabled:text-[#9a9a9a] hover:opacity-90 transition"
         >
           {loading ? "저장 중..." : "시작하기"}

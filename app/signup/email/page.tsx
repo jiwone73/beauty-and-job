@@ -12,6 +12,7 @@ import { 직군요약 } from "@/lib/data/jobGroups";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { shortRegion } from "@/lib/regionShort";
 import { passwordError, PASSWORD_HINT } from "@/lib/password";
+import { validateBirth } from "@/lib/validateBirth";
 
 interface Term {
   id: string;
@@ -35,6 +36,7 @@ function SignupEmailContent() {
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [phoneMsg, setPhoneMsg] = useState("");
+  const [birth, setBirth] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -72,6 +74,15 @@ function SignupEmailContent() {
     return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
   };
 
+  const formatBirth = (v: string) => {
+    const d = v.replace(/\D/g, "").slice(0, 8);
+    if (d.length <= 4) return d;
+    if (d.length <= 6) return `${d.slice(0, 4)}.${d.slice(4)}`;
+    return `${d.slice(0, 4)}.${d.slice(4, 6)}.${d.slice(6)}`;
+  };
+  const birthDigits = birth.replace(/\D/g, "");
+  const birthCheck = birthDigits.length === 8 ? validateBirth(birthDigits) : null;
+
   const isPasswordValid = (pw: string) => !passwordError(pw);
 
   const requiredTerms = terms.filter((t) => t.is_required);
@@ -101,6 +112,7 @@ function SignupEmailContent() {
     name.trim().length > 0 &&
     phone.replace(/\D/g, "").length >= 10 &&
     phoneVerified &&
+    !!birthCheck?.ok &&
     isPasswordValid(password) &&
     password === passwordConfirm &&
     allRequiredAgreed;
@@ -183,6 +195,7 @@ function SignupEmailContent() {
           email,
           name,
           phone,
+          birth: birthDigits,
           password,
           job_type: jobType,
           main_job_group: 대분류,
@@ -421,6 +434,24 @@ function SignupEmailContent() {
               <p className={`text-[12px] md:text-[14px] mt-1.5 ${phoneVerified ? "text-[#10b981]" : "text-[#9a9a9a]"}`}>
                 {phoneMsg}
               </p>
+            )}
+          </div>
+          {/* 생년월일 — 나이 하한(만 14세)을 가입 시점에 걸러 둔다. 프로필에서
+              나중에 걸리면 그때까지 만든 이력서·지원 내역을 되돌릴 방법이 없다. */}
+          <div className="mb-4">
+            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">생년월일 <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={birth}
+              onChange={(e) => setBirth(formatBirth(e.target.value))}
+              placeholder="YYYY.MM.DD"
+              className={`w-full h-[48px] px-4 border rounded-lg text-[14px] md:text-[16px] focus:outline-none ${
+                birthCheck && !birthCheck.ok ? "border-[#e74c3c] focus:border-[#e74c3c]" : "border-[#e0e0e0] focus:border-[#582681]"
+              }`}
+            />
+            {birthCheck && !birthCheck.ok && (
+              <p className="mt-1.5 text-[12px] md:text-[14px] text-[#e74c3c]">{birthCheck.message}</p>
             )}
           </div>
           {/* 비밀번호 — 나란히 두면 오른쪽 칸에 이름표가 필요하다. 넓은 화면에서
