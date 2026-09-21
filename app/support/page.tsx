@@ -83,7 +83,7 @@ export default function SupportPage() {
           <div className="sup-form-2">
             <div>
               <label className="sup-f-l req">이름</label>
-              <input className="sup-f-i" placeholder="이름을 입력해주세요"
+              <input className="sup-f-i" placeholder="이름 또는 회사명을 입력해주세요"
                      value={이름} onChange={(e) => set이름(e.target.value)} />
             </div>
             <div>
