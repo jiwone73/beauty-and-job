@@ -61,7 +61,7 @@ export default function HeroMobile() {
 
       <div className="hero-m-banner">
         <span className="hero-m-banner-ad"><Rocket size={16} /></span>
-        <p className="hero-m-banner-text">뷰티워크 오픈 준비 중 · 지금은 완전 무료</p>
+        <p className="hero-m-banner-text">10월 12일 오픈 기념 · 지금은 완전 무료</p>
       </div>
 
       <div className="hero-m-title-wrap">
@@ -111,7 +111,7 @@ export default function HeroMobile() {
       <div className="hero-m-ai-wrap">
         <div className="hero-m-ai-header">
           <span>🔥</span>
-          <span className="hero-m-ai-title">뷰티워크 런칭 이벤트 · 지금은 완전 무료 (~12/31)</span>
+          <span className="hero-m-ai-title">10월 오픈 기념</span>
         </div>
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
