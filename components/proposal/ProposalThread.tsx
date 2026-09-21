@@ -25,6 +25,16 @@ const 때 = (iso: string) =>
 const 약속때 = (iso: string) =>
   new Date(iso).toLocaleString("ko-KR", { month: "long", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" });
 
+// 잡힌 약속까지 며칠 남았나. 날짜만 비교한다 — 몇 시인지는 위에 이미 나온다.
+// 지난 약속(취소 안 하고 그냥 지나간 경우)은 배지를 붙이지 않는다.
+const 디데이 = (iso: string) => {
+  const 날 = new Date(iso); 날.setHours(0, 0, 0, 0);
+  const 오늘 = new Date(); 오늘.setHours(0, 0, 0, 0);
+  const 차 = Math.round((날.getTime() - 오늘.getTime()) / 86400000);
+  if (차 < 0) return null;
+  return 차 === 0 ? "D-DAY" : `D-${차}`;
+};
+
 // 번호를 주고받는 것은 막지 않는다 — 이 업계 채용은 결국 통화로 정해진다.
 // 다만 아무 데나 남기는 일은 없게 한 줄 알려 준다.
 // 지도는 공고 상세에서 이미 카카오를 쓰고 있다. 길찾기도 같은 곳으로 보낸다 —
@@ -172,6 +182,7 @@ export default function ProposalThread({
         {잡힌약속?.appointment_at && (
           <div className="pth-fixed">
             <span>면접 약속</span>
+            {디데이(잡힌약속.appointment_at) && <span className="pth-dday">{디데이(잡힌약속.appointment_at)}</span>}
             <b>{약속때(잡힌약속.appointment_at)}</b>
             {잡힌약속.appointment_place && (
               <a href={길찾기(잡힌약속.appointment_place)} target="_blank" rel="noopener noreferrer">
