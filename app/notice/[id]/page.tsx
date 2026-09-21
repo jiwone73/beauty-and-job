@@ -42,6 +42,9 @@ export default function NoticeDetailPage() {
 
   return (
     <InfoShell active="/notice" title="공지사항">
+      {/* 본문이 길면(이벤트 공지 등) 다 안 읽고도 바로 돌아갈 수 있어야 한다 —
+          목록으로 가는 길은 글 위쪽에 둔다. */}
+      <Link href="/notice" className="nb-view-back"><ChevronLeft size={15} />목록으로</Link>
       {부르는중 ? (
         <p className="nb-board-msg">불러오는 중...</p>
       ) : 없음 || !글 ? (
@@ -59,7 +62,6 @@ export default function NoticeDetailPage() {
           <NoticeBody body={글.body} />
         </>
       )}
-      <Link href="/notice" className="nb-view-back"><ChevronLeft size={15} />목록으로</Link>
     </InfoShell>
   );
 }
