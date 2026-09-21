@@ -1,19 +1,16 @@
 "use client";
 import Link from "next/link";
 import InfoShell from "@/components/InfoShell";
-import { 보관표기 } from "@/lib/companyPlans";
 
 /**
- * 회원정책 — 공식 문서로 격을 올린다(2026-09-22).
+ * 회원정책(회원관리정책) — 공식 문서로 격을 올린다(2026-09-22).
  *
  * 전에는 해요체 안내문이었는데, 사용자가 준 문서(합니다체, 조 단위 구성)를
  * 그대로 따르기로 했다 — 이제 이용약관·개인정보처리방침과 같은 격의
  * 공식 문서다. 문장은 그 문서에서 준 것을 그대로 옮긴다.
  *
- * 상품 환불정책은 그 문서가 "게시 전 필수 검토"라고 표시한 4가지
- * 미해결 사업·법무 사항(청약철회 적용범위·보관기간 구조·귀책사유 환불
- * 기준·플랜 전환 처리)이 있어 규칙 자체는 그대로 두고 말투만 맞춘다.
- * 페이지 분리·규칙 재설계는 그 사항들이 정리된 뒤의 별도 작업이다.
+ * 상품 환불정책은 별도 페이지(/support/policy/refund)로 분리했다 — 한
+ * 페이지에 성격이 다른 두 문서를 섞지 않는다.
  *
  * 개인회원 이력서·기업회원 인재정보 항목은 이 공식 문서가 아니라
  * FAQ 로 옮겼다(2026-09-22) — "어떻게 보이나요" 류의 질문은 FAQ 성격이고,
@@ -21,12 +18,11 @@ import { 보관표기 } from "@/lib/companyPlans";
  */
 export default function PolicyPage() {
   return (
-    <InfoShell active="/support/policy" title="회원정책">
+    <InfoShell active="/support/policy" title="회원관리정책">
       <div className="info-section">
-        <p className="pol-kicker">BEAUTYWORK MEMBERSHIP POLICY</p>
         <p>
           뷰티워크는 구인기업과 구직자가 신뢰할 수 있는 채용환경을 조성하고,
-          회원의 권익을 보호하기 위해 다음과 같이 회원정책을 운영합니다.
+          회원의 권익을 보호하기 위해 다음과 같이 회원관리정책을 운영합니다.
         </p>
       </div>
 
@@ -52,8 +48,7 @@ export default function PolicyPage() {
         </p>
       </div>
 
-      {/* ── 회원관리정책 ─────────────────────────────── */}
-      <div className="info-section" id="duties">
+      <div className="info-section">
         <h2>2. 회원의 의무 및 준수사항</h2>
         <dl className="pol-list">
           <div>
@@ -108,7 +103,7 @@ export default function PolicyPage() {
       <div className="info-section">
         <h2>3. 회원의 의무 위반에 따른 이용제한</h2>
         <p>
-          회사는 회원이 이용약관 또는 회원정책을 위반한 경우, 위반행위의
+          회사는 회원이 이용약관 또는 회원관리정책을 위반한 경우, 위반행위의
           유형과 중대성, 반복 여부 및 피해 발생 정도 등을 고려하여 다음과
           같은 조치를 취할 수 있습니다.
         </p>
@@ -151,50 +146,10 @@ export default function PolicyPage() {
         </p>
         <div className="pol-cs">
           <b>뷰티워크 고객센터</b>
-          <span>회원정책 위반 신고 및 이용제한 이의신청</span>
+          <span>회원관리정책 위반 신고 및 이용제한 이의신청</span>
           <Link href="/support" className="pol-cs-btn">1:1 문의하기</Link>
         </div>
         <p className="pol-src">관련 규정: 이용약관 제21조(회원의 의무), 제22조(회원탈퇴 및 이용제한)</p>
-      </div>
-
-      {/* ── 상품 환불정책 ────────────────────────────── */}
-      <div className="info-section" id="refund">
-        <h2>상품 환불정책</h2>
-        <dl className="pol-list">
-          <div>
-            <dt>이용 전 취소 시 전액 환불</dt>
-            <dd>이용권이 적용(입금 확인)되기 전에 취소하는 경우, 특별한 사유가 없는 한 결제 금액 전액을 환불합니다.</dd>
-          </div>
-          <div>
-            <dt>이용 개시 후 원칙적 환불 불가</dt>
-            <dd>이용권이 적용되면 서비스 제공이 개시된 것으로 봅니다. 신청 화면에서 이 점을 사전에 고지하고 동의를 받습니다.</dd>
-          </div>
-          <div>
-            <dt>환불 대신 잔여기간 보관 가능</dt>
-            <dd>
-              게시 중인 공고를 모두 마감하고 「남은 기간 보관하기」를 선택하면,
-              보관일로부터 {보관표기} 이내에 <b>동일 상품</b>을 재결제하는 경우
-              해당 기간을 합산합니다. 다른 상품에는 사용할 수 없으며, {보관표기}이 경과하면 소멸합니다.
-            </dd>
-          </div>
-          <div>
-            <dt>회사 귀책사유에 따른 환불</dt>
-            <dd>
-              운영자의 책임 있는 사유로 서비스를 제공하지 못한 경우,
-              이용기간을 연장하거나 환불합니다. 환불은 결제하신 방법과
-              동일한 방법으로 하며, 이것이 어려운 경우 다른 방법을 협의합니다.
-            </dd>
-          </div>
-          <div>
-            <dt>회원 귀책사유에 따른 이용제한 시 환불 불가</dt>
-            <dd>허위·불법 게시물 등 약관 위반으로 서비스 이용이 제한되는 경우, 이는 회원의 귀책사유이므로 환불 대상에서 제외됩니다.</dd>
-          </div>
-        </dl>
-        <ul className="pi-warn">
-          <li>추가로 납부하신 금액이 있는 경우 이를 반환하며, 미납한 요금이 있는 경우 관계 법령이 허용하는 범위에서 환불금과 상계합니다.</li>
-          <li>이용권 사용 중 다른 상품을 결제하는 경우, 새 상품은 결제 확인일부터 적용되며 기존 이용권의 잔여기간은 해당 상품으로 보관됩니다.</li>
-        </ul>
-        <p className="pol-src">이용약관 제13조(유료서비스의 청약철회 및 환불)</p>
       </div>
     </InfoShell>
   );

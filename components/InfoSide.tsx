@@ -17,13 +17,15 @@ import { ChevronDown } from "lucide-react";
  * 이용약관·개인정보처리방침은 여기 두지 않는다. 궁금해서 찾아오는 곳이
  * 아니라 확인하러 오는 곳이고, 그 길은 푸터가 맡는다.
  */
-type 줄 = { href: string; label: string; 주소?: string };
+/** 매칭: 페이지 자체가 갈리는 하위 항목(회원정책처럼)은 이 값을 active 와
+ *  그대로 견준다. 없으면 예전처럼(FAQ) 누구 값으로 견준다. */
+type 줄 = { href: string; label: string; 주소?: string; 매칭?: string };
 
 const 메뉴: { 머리: 줄; 아래: 줄[] }[] = [
   { 머리: { href: "/notice", label: "공지사항" }, 아래: [] },
-  { 머리: { href: "/support/policy", label: "회원정책" }, 아래: [
-      { href: "/support/policy", label: "회원관리정책", 주소: "/support/policy#duties" },
-      { href: "/support/policy", label: "상품 환불정책", 주소: "/support/policy#refund" },
+  { 머리: { href: "/support/policy", label: "운영정책" }, 아래: [
+      { href: "/support/policy", label: "회원관리정책", 매칭: "/support/policy" },
+      { href: "/support/policy/refund", label: "상품 환불정책", 매칭: "/support/policy/refund" },
     ] },
   { 머리: { href: "/support/faq", label: "FAQ" }, 아래: [
       { href: "/support/faq", label: "개인회원", 주소: "/support/faq?누구=개인" },
@@ -48,11 +50,14 @@ export default function InfoSide({ active, 누구 }: {
     <nav className="info-side" aria-label="고객센터 메뉴">
       {메뉴.map(({ 머리, 아래 }) => {
         const 접힘 = 접은것.includes(머리.href);
+        // 하위 페이지가 실제로 갈리는 경우(회원정책), 그중 하나에 서 있어도
+        // 부모 항목이 켜져 보여야 한다.
+        const 머리켜짐 = active === 머리.href || 아래.some((m) => m.매칭 === active);
         return (
           <div key={머리.href} className="info-side-branch">
             <div className={아래.length ? "info-side-row" : undefined}>
               <Link href={머리.주소 ?? 머리.href}
-                    className={`info-side-i${아래.length ? " head" : ""}${active === 머리.href ? " on" : ""}`}>
+                    className={`info-side-i${아래.length ? " head" : ""}${머리켜짐 ? " on" : ""}`}>
                 {머리.label}
               </Link>
               {아래.length > 0 && (
@@ -64,7 +69,7 @@ export default function InfoSide({ active, 누구 }: {
             </div>
             {!접힘 && 아래.map((m) => (
               <Link key={m.label} href={m.주소 ?? m.href}
-                    className={`info-side-i sub${active === 머리.href && 누구 === m.label.slice(0, 2) ? " on" : ""}`}>
+                    className={`info-side-i sub${(m.매칭 ? active === m.매칭 : (active === 머리.href && 누구 === m.label.slice(0, 2))) ? " on" : ""}`}>
                 {m.label}
               </Link>
             ))}

@@ -4626,8 +4626,6 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .pol-more { margin: 0; font-size: 14px; color: #555; line-height: 1.8; }
 .pol-more a { color: var(--color-primary); font-weight: 700; margin-left: 6px; }
 
-/* 공식 문서 맨 위 영문 눈줄 — 이용약관류와 같은 격을 알린다. */
-.pol-kicker { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 1.6px; color: #a39cae; }
 /* 신고·이의신청 상자 — 알려주는 정보다, 목록 항목이 아니라 상자로 띄운다. */
 .pol-cs { margin: 16px 0 0; padding: 16px 18px; background: #f7f7f8; border-radius: 10px;
   display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
