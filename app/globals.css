@@ -13264,10 +13264,8 @@ button,
    하면 되나」에 셋 다 다른 각도로 답한다. */
 .mt-card.mt-evt { display: grid; grid-template-columns: 1.05fr 1fr 1fr;
   padding: 0; overflow: hidden; }
-/* 배경은 위 메인 배너 왼쪽 판과 같은 계열(따뜻한 아이보리~베이지)로 맞춘다 —
-   배너 바로 아래 카드라 색이 갈리면 한 화면이 두 톤으로 나뉘어 보였다. */
 .mt-guide-intro { position: relative; overflow: hidden; display: flex; flex-direction: column;
-  padding: 24px 24px 20px; background: linear-gradient(160deg, #fdfdfd 0%, #f3f1ef 55%, #ece8e4 100%); }
+  padding: 24px 24px 20px; background: #fff; }
 /* 옅게 번진 동그라미 둘 — 오른쪽 아래에서 겹치며 은은하게, 같은 베이지 계열로. */
 .mt-guide-intro::before, .mt-guide-intro::after { content: ""; position: absolute; border-radius: 50%; }
 .mt-guide-intro::before { width: 150px; height: 150px; background: #e4dcd3; opacity: .6; right: -50px; bottom: -60px; }
@@ -13275,7 +13273,7 @@ button,
 .mt-guide-kicker { position: relative; z-index: 1; font-size: 12px; font-weight: 700; letter-spacing: 1.6px; color: #a39cae; }
 /* 왼쪽 안내 제목·가운데/오른쪽 물음도 검색 카드의 굵은 강조(.mt-jobs-h b)와
    같은 색·크기로 맞춘다 — 한 화면에서 강조 글자가 저마다 다르면 안 된다. */
-.mt-guide-h { position: relative; z-index: 1; margin: 10px 0 8px; font-size: 19px; font-weight: 700;
+.mt-guide-h { position: relative; z-index: 1; margin: 10px 0 8px; font-size: 18px; font-weight: 700;
   color: var(--color-primary); letter-spacing: -.3px; }
 .mt-guide-p { position: relative; z-index: 1; margin: 0; font-size: 14.5px; line-height: 1.6;
   color: #6b6874; word-break: keep-all; flex: 1; }
@@ -13288,7 +13286,7 @@ button,
 .mt-guide-col { display: flex; flex-direction: column; padding: 24px 20px 20px;
   border-left: 1px solid var(--color-border); }
 .mt-guide-tag { font-size: 12px; font-weight: 700; letter-spacing: 1.6px; color: #a39cae; }
-.mt-guide-q { display: block; margin: 8px 0 6px; font-size: 19px; font-weight: 700;
+.mt-guide-q { display: block; margin: 8px 0 6px; font-size: 18px; font-weight: 700;
   color: var(--color-primary); line-height: 1.4; word-break: keep-all; }
 .mt-guide-p2 { margin: 0; font-size: 14.5px; color: #8a8a90; line-height: 1.6; word-break: keep-all; flex: 1; }
 .mt-guide-btn { display: flex; align-items: center; justify-content: center; gap: 8px;
