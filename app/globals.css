@@ -16840,6 +16840,17 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   color: var(--color-primary); margin-bottom: 4px; }
 .ev-step b { display: block; font-size: 16px; color: #1f1f22; margin-bottom: 5px; }
 .ev-step p { margin: 0; font-size: 14px; color: #8a8a90; line-height: 1.6; word-break: keep-all; }
+/* 「지금 할 일」이 뚜렷한 단계에 심는 단추 — 설명 바로 아래, 그 일과 붙어
+   있어야 무엇 때문에 누르는지 안 헷갈린다. */
+.ev-step-go { display: inline-flex; align-items: center; height: 32px; padding: 0 14px;
+  margin-top: 12px; border: 0; border-radius: 8px; background: var(--color-primary); color: #fff;
+  font-size: 12.5px; font-weight: 600; letter-spacing: -.2px; text-decoration: none;
+  cursor: pointer; font-family: inherit; }
+.ev-step-go:hover { background: var(--color-primary-hover); }
+/* 더 자세한 설명은 FAQ 몫이다 — 단추 옆에 조용히, 단추보다 작게. */
+.ev-step-more { display: inline-block; margin-top: 10px; margin-left: 10px;
+  font-size: 12.5px; color: #8a8a90; text-decoration: none; }
+.ev-step-more:hover { color: var(--color-primary); }
 
 
 @media (max-width: 720px) {
