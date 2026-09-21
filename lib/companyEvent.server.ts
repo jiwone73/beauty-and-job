@@ -12,7 +12,7 @@ export type 기업이벤트 = {
   title: string;
   /** 좁은 자리에 거는 짧은 제목. 없으면 title */
   short_title: string | null;
-  /** 「10월 12일 ~ 10월 31일」. 본문 맺는말에서 뽑는다 */
+  /** 「10월 12일 ~ 11월 30일」. 본문 맺는말에서 뽑는다 */
   기간: string | null;
 };
 
