@@ -15,7 +15,7 @@ type 메시지 = {
   body: string | null;
   appointment_at: string | null;
   appointment_place: string | null;
-  appointment_status: "PROPOSED" | "ACCEPTED" | "DECLINED" | null;
+  appointment_status: "PROPOSED" | "ACCEPTED" | "DECLINED" | "CANCELED" | null;
   created_at: string;
 };
 
@@ -110,6 +110,20 @@ export default function ProposalThread({
     await 불러오기();
   };
 
+  // 확정된 약속 취소. 누가 잡았든 상관없이 두 쪽 다 누를 수 있다 — 못
+  // 나가게 된 쪽이 알리는 것도 취소라서다. 취소하면 채팅은 그대로 남고,
+  // 달력 아이콘으로 새 약속을 다시 보내면 된다(따로 "변경" 화면을 두지 않는다).
+  const 약속취소 = async (msgId: string) => {
+    if (!confirm("이 약속을 취소할까요? 상대에게 취소됐다고 알립니다.")) return;
+    const r = await fetch(`/api/proposals/${proposalId}/messages/${msgId}`, {
+      method: "PATCH",
+      headers: { ...헤더, "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "CANCELED" }),
+    }).then((x) => x.json()).catch(() => null);
+    if (r && !r.success) alert(r.error?.message || "취소하지 못했어요.");
+    await 불러오기();
+  };
+
   const 신고 = async () => {
     set메뉴(false);
     const 사유 = prompt("어떤 점을 신고할까요? (예: 욕설·비하, 허위 공고, 개인정보 요구)");
@@ -164,6 +178,9 @@ export default function ProposalThread({
                 <MapPin size={13} />{잡힌약속.appointment_place}
               </a>
             )}
+            <button type="button" className="pth-fixed-cancel" onClick={() => 약속취소(잡힌약속.id)}>
+              약속 취소
+            </button>
           </div>
         )}
 
@@ -187,7 +204,12 @@ export default function ProposalThread({
                     </a>
                   )}
                   {m.appointment_status === "ACCEPTED" ? (
-                    <span className="pth-appt-done">약속됐어요</span>
+                    <span className="pth-appt-done">
+                      약속됐어요
+                      <button type="button" className="pth-appt-cancel" onClick={() => 약속취소(m.id)}>취소</button>
+                    </span>
+                  ) : m.appointment_status === "CANCELED" ? (
+                    <span className="pth-appt-no">취소된 약속이에요</span>
                   ) : m.appointment_status === "DECLINED" ? (
                     <span className="pth-appt-no">이때는 어렵대요</span>
                   ) : 내것 ? (
