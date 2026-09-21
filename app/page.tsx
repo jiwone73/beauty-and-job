@@ -22,7 +22,7 @@ import {
   Building2,
   Bookmark,
   Sparkles,
-  ChevronDown, UserRound } from "lucide-react";
+  ChevronDown } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
@@ -277,20 +277,13 @@ function Hero() {
               </div>
 
               <div className="mt-card mt-evt">
-                {/* 혜택 숫자·기간은 위 배너가 이미 다 말했다. 「이달의 이벤트」
-                    틀까지 여기 또 두면 같은 얘기를 세 번째 하는 셈이라 걷는다 —
-                    여기는 등록 버튼까지만 맡는다. 그림(커피·확성기)만 남겨
-                    심심하지 않게 한다. */}
+                {/* 혜택은 위 배너가 이미 다 말했다 — 여기는 버튼만 둔다.
+                    딱지·그림 다 걷어냈다. */}
                 <div className="mt-evt-list">
-                  <ResumeCta className="mt-evt-p ev-user">
-                    <span className="mt-evt-tag"><UserRound size={12} />개인회원</span>
-                    <img className="mt-evt-art art-coffee" src="/images/event/art-coffee.png" alt="" />
-                    <span className="mt-evt-go">이력서 등록하기 ›</span>
-                  </ResumeCta>
-
+                  <ResumeCta className="mt-evt-go">이력서 등록하기 ›</ResumeCta>
                   <button
                     type="button"
-                    className="mt-evt-p ev-co"
+                    className="mt-evt-go"
                     // 로그인한 사장님은 단추 글대로 등록 폼으로 바로 간다.
                     // 그 밖의 사람은 로그인 벽 대신 서비스 소개로 보낸다 —
                     // 선착순·기간·무료 공고등록이 무슨 말인지 모르는 채로 로그인
@@ -299,40 +292,15 @@ function Hero() {
                       isLoggedIn && ownerType === "company" ? "/company/dashboard/jobs/new" : "/company"
                     )}
                   >
-                    <span className="mt-evt-tag"><OfficeIcon size={12} />기업회원</span>
-                    <span className="mt-evt-go">채용공고 등록하기 ›</span>
-                    {/* 확성기를 걷고 「최상단」을 그림으로 말한다. 확성기는
-                        「알린다」까지만 말하고 어디에 걸리는지는 말하지 않았다.
-                        옅은 줄 셋 위로 보라 카드 하나가 떠올라 있는 그림이면
-                        목록 맨 위라는 말이 그림만으로 읽힌다.
-                        옆에 붙어 있던 알약 셋(공고 등록 무제한·기간 내내 게재·
-                        선착순 최상단)은 걷었다 — 맨 아래는 제목과 같은 말이고,
-                        나머지 둘은 /company 가 자세히 맡는다. */}
-                    <svg className="mt-evt-top" viewBox="0 0 118 104" fill="none" aria-hidden>
-                      <g opacity=".5">
-                        <rect x="20" y="52" width="92" height="15" rx="5" fill="#fff" />
-                        <rect x="28" y="57" width="34" height="5" rx="2.5" fill="#cfc4de" />
-                        <rect x="20" y="73" width="92" height="15" rx="5" fill="#fff" />
-                        <rect x="28" y="78" width="46" height="5" rx="2.5" fill="#cfc4de" />
-                        <rect x="20" y="94" width="92" height="10" rx="5" fill="#fff" />
-                      </g>
-                      <g filter="url(#evt-top-shadow)">
-                        <rect x="10" y="18" width="102" height="26" rx="8" fill="#582681" />
-                      </g>
-                      <rect x="20" y="26" width="42" height="5" rx="2.5" fill="#fff" opacity=".95" />
-                      <rect x="20" y="35" width="28" height="4" rx="2" fill="#fff" opacity=".55" />
-                      <circle cx="96" cy="31" r="9" fill="#fff" />
-                      <path d="M96 27.2v7.6M92.6 30.4 96 27l3.4 3.4" stroke="#582681"
-                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M61 10.5 63 6l2 4.5 4.5 2-4.5 2-2 4.5-2-4.5-4.5-2 4.5-2Z" fill="#a97fd6" />
-                      <defs>
-                        <filter id="evt-top-shadow" x="0" y="12" width="122" height="46"
-                                filterUnits="userSpaceOnUse">
-                          <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#582681" floodOpacity=".28" />
-                        </filter>
-                      </defs>
-                    </svg>
+                    채용공고 등록하기 ›
                   </button>
+                </div>
+                {/* 바로 등록할 마음이 안 서면 먼저 알아보고 싶어 한다 —
+                    처음이면 시작하기, 궁금하면 FAQ. 작게 두어 버튼과
+                    안 겹치게 한다. */}
+                <div className="mt-evt-sub">
+                  <Link href="/support/start">처음이세요? 시작하기 ›</Link>
+                  <Link href="/support/faq">자주 묻는 질문 ›</Link>
                 </div>
               </div>
             </div>

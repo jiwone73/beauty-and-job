@@ -13258,35 +13258,21 @@ button,
 
 /* 이달의 이벤트 — 개인회원·기업회원 몫을 나란히 둔다. 누가 받는 혜택인지가
    먼저 보여야 자기 것만 읽고 넘어갈 수 있다. */
-/* 이달의 이벤트 — 개인·기업 두 쪽을 나란히 건다.
-   바탕 색은 로고의 보라(#582681)와 옅은 분홍을 아주 묽게 푼 값이다. 칠한
-   덩어리가 아니라 종이 두 장을 얹은 정도로만 보이게 둔다. */
+/* 이달의 이벤트 — 배너가 다 말했으니 여기는 버튼 둘뿐이다. 딱지·그림·
+   색 배경은 다 걷었다("버튼만 살리기로"). 남는 높이(flex:1)만큼 가운데로
+   띄운다 — 빈 칸을 위에 붙여 두면 아래가 텅 빈 색 블록처럼 보인다. */
 .mt-evt { display: flex; flex-direction: column; }
-.mt-evt-lead { font-size: 14.5px; color: var(--card-meta-c); margin-left: 10px; flex: 1; }
-.mt-evt-list { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-/* 판 하나. 글자는 직접 짜고 그림만 원본에서 떼어 얹는다 — 그림에 글자를 구워
-   넣으면 330px 칸에서 3분의 1로 눌려 안 읽힌다. 바탕은 떼어 온 그림의 가장자리
-   색에 맞춰, 그림과 판 사이에 금이 보이지 않게 한다. */
-.mt-evt-p { position: relative; overflow: hidden; border-radius: 14px; padding: 13px 15px;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
-  text-align: left; text-decoration: none; border: 0; cursor: pointer;
-  font-family: inherit; min-height: 142px; }
-.mt-evt-p.ev-user { background: linear-gradient(100deg, #fdf2f8 0%, #fdf3fa 100%); }
-.mt-evt-p.ev-co { background: linear-gradient(100deg, #f4f0fc 0%, #f7f4fe 100%); }
-.mt-evt-p:hover .mt-evt-go { background: var(--color-primary-hover); }
-.mt-evt-tag { display: inline-flex; align-items: center; gap: 5px; background: #fff;
-  border-radius: 100px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: var(--color-primary); }
-.mt-evt-tag svg { color: var(--color-primary); flex: none; }
-.mt-evt-go { display: inline-flex; align-items: center; height: 32px; padding: 0 14px;
-  border-radius: 8px; background: var(--color-primary); color: #fff;
-  font-size: 12.5px; font-weight: 600; letter-spacing: -.2px; position: relative; z-index: 1; }
-/* 그림은 판 오른쪽 아래에 붙인다. 글자 뒤로 깔리되 글자를 가리지 않는 폭까지만. */
-.mt-evt-art { position: absolute; bottom: 0; right: 0; z-index: 0; pointer-events: none; }
-.mt-evt-art.art-coffee { height: 128px; width: auto; right: 62px; bottom: -4px; }
-/* 기업 쪽 그림은 판 오른쪽 한가운데에 세운다 — 목록이 위아래로 선 그림이라
-   아래에 붙이면 맨 위 카드가 글줄과 부딪친다. */
-.mt-evt-top { position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  width: 118px; height: 104px; z-index: 1; pointer-events: none; }
+.mt-evt-list { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px; align-items: center; justify-items: center; }
+.mt-evt-go { display: inline-flex; align-items: center; height: 40px; padding: 0 20px;
+  border-radius: 8px; background: var(--color-primary); color: #fff; border: 0; cursor: pointer;
+  font-size: 13.5px; font-weight: 600; letter-spacing: -.2px; text-decoration: none;
+  font-family: inherit; white-space: nowrap; }
+.mt-evt-go:hover { background: var(--color-primary-hover); }
+/* 등록할 마음이 아직 안 선 사람 몫 — 버튼 아래 작게, 안 다투게. */
+.mt-evt-sub { display: flex; justify-content: center; gap: 18px; padding-top: 10px; }
+.mt-evt-sub a { font-size: 12.5px; color: #8a8a90; text-decoration: none; }
+.mt-evt-sub a:hover { color: var(--color-primary); }
 
 
 /* 기간·조건은 바뀌는 정보다. 그림에 구워 넣으면 날짜가 바뀔 때마다 그림을
