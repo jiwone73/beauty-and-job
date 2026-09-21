@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import InfoShell from "@/components/InfoShell";
+import NoticeBody from "@/components/support/NoticeBody";
 
 /**
  * 공지·이벤트 글 하나.
@@ -55,7 +56,7 @@ export default function NoticeDetailPage() {
           </span>
           <h2 className="nb-view-h">{글.title}</h2>
           <p className="nb-view-d">{날짜(글.published_at || 글.created_at)}</p>
-          <div className="nb-view-body">{글.body}</div>
+          <NoticeBody body={글.body} />
         </>
       )}
       <Link href="/notice" className="nb-view-back"><ChevronLeft size={15} />목록으로</Link>

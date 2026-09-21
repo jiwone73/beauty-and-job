@@ -282,7 +282,7 @@ function Hero() {
                 <div className="mt-guide-intro">
                   <Link href="/support/start">
                     <span className="mt-guide-kicker">BEAUTYWORK GUIDE</span>
-                    <h3 className="mt-guide-h">뷰티워크 시작하기</h3>
+                    <h3 className="mt-guide-h">처음 오셨나요?</h3>
                     <p className="mt-guide-p">회원가입부터 이력서 등록, 채용공고 이용까지 궁금한 내용을 확인해보세요.</p>
                   </Link>
                   <Link href="/support/faq" className="mt-guide-faq">자주 묻는 질문 →</Link>
