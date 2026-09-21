@@ -13820,6 +13820,11 @@ button,
 .cs-order-input { width: 100%; height: 46px; padding: 0 14px; border: 1px solid #e3e3e6;
   border-radius: 9px; font-family: inherit; font-size: 14.5px; color: #555; outline: none; background: #fff; }
 .cs-order-input:focus { border-color: var(--cs); }
+.cs-order-agree { display: flex; align-items: flex-start; gap: 8px; margin: 20px 0 0;
+  padding: 14px 16px; background: #f7f7f8; border-radius: 9px;
+  font-size: 12.5px; color: #8a8a90; line-height: 1.6; }
+.cs-order-agree input { margin-top: 2px; flex-shrink: 0; accent-color: var(--cs); }
+.cs-order-agree a { color: var(--cs); text-decoration: underline; text-underline-offset: 2px; }
 .cs-order-go { width: 100%; margin-top: 20px; }
 .cs-order-go:disabled { opacity: .45; cursor: default; }
 .cs-order-done-l { font-size: 14.5px; color: #555; margin: 0 0 16px; }

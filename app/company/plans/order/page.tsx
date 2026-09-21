@@ -29,6 +29,9 @@ function 주문화면() {
   const [plan, setPlan] = useState<PlanId>(첫플랜);
   const [days, setDays] = useState<기간>(첫기간);
   const [입금자, set입금자] = useState("");
+  // 입금 확인 즉시 서비스가 시작돼 청약철회권이 제한된다 — 결제 전에 이걸
+  // 안내하고 동의를 받아야 「환불불가」가 실제로 효력이 있다(약관 제13조 ④).
+  const [환불동의, set환불동의] = useState(false);
   const [바쁨, set바쁨] = useState(false);
   const [끝남, set끝남] = useState(false);
   const [계좌, set계좌] = useState("");
@@ -43,13 +46,13 @@ function 주문화면() {
 
   const 신청 = async () => {
     if (!isLoggedIn || ownerType !== "company") { router.push("/company/login"); return; }
-    if (!입금자.trim()) return;
+    if (!입금자.trim() || !환불동의) return;
     set바쁨(true);
     const token = localStorage.getItem("access_token");
     const r = await fetch("/api/company/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ plan, days, depositor: 입금자.trim() }),
+      body: JSON.stringify({ plan, days, depositor: 입금자.trim(), agreeNoRefund: 환불동의 }),
     }).then((x) => x.json()).catch(() => null);
     set바쁨(false);
     if (!r?.success) { alert(r?.error?.message || "신청하지 못했습니다."); return; }
@@ -117,11 +120,20 @@ function 주문화면() {
             onKeyDown={(e) => { if (e.key === "Enter") 신청(); }}
             placeholder="입금하실 분 이름" />
 
+          <label className="cs-order-agree">
+            <input type="checkbox" checked={환불동의} onChange={(e) => set환불동의(e.target.checked)} />
+            <span>
+              입금 확인 즉시 서비스 이용이 시작되며, 이 경우 청약철회권이 제한되어
+              이용권 적용 후에는 원칙적으로 환불되지 않는다는 점에 동의합니다.
+              (<Link href="/support/faq?누구=기업" target="_blank">환불 정책 자세히 보기</Link>)
+            </span>
+          </label>
+
           <button type="button" className="cs-btn-fill lg cs-order-go"
-            onClick={신청} disabled={바쁨 || !입금자.trim()}>
+            onClick={신청} disabled={바쁨 || !입금자.trim() || !환불동의}>
             신청하기 <ArrowRight size={15} />
           </button>
-          <p className="cs-vat" style={{ margin: "14px 0 0" }}>부가세 포함 · 결제 전 언제든 취소할 수 있습니다</p>
+          <p className="cs-vat" style={{ margin: "14px 0 0" }}>부가세 포함 · 입금 전(이용권 적용 전)에는 언제든 취소할 수 있습니다</p>
         </div>
       )}
     </section>

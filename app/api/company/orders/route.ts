@@ -40,9 +40,13 @@ export async function POST(req: NextRequest) {
   const plan = body?.plan;
   const days = Number(body?.days);
   const depositor = String(body?.depositor || "").trim();
+  const 환불동의 = body?.agreeNoRefund === true;
   if (!플랜인가(plan)) return err("REQ_001", "플랜을 골라 주세요.", 400);
   if (!기간인가(days)) return err("REQ_002", "기간을 골라 주세요.", 400);
   if (!depositor) return err("REQ_003", "입금자명을 적어 주세요.", 400);
+  // 화면에서만 막으면 API 를 직접 두드려 지나칠 수 있다 — 동의 없이 만든
+  // 주문은 나중에 "환불불가 고지를 못 받았다"는 분쟁에서 지킬 수 없다.
+  if (!환불동의) return err("REQ_004", "환불 정책에 동의해 주세요.", 400);
 
   // 판매가 닫혀 있으면 주문을 받지 않는다. 화면에서 막는 것만으로는 이 API 를
   // 직접 부르면 그대로 넘어간다.
@@ -78,8 +82,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const { rows } = await pool.query(
-      `INSERT INTO company_orders (company_id, plan, days, amount, depositor)
-       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+      `INSERT INTO company_orders (company_id, plan, days, amount, depositor, refund_waiver_agreed_at)
+       VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id`,
       [auth!.sub, plan, days, 값(plan, days), depositor]
     );
     return ok({ id: rows[0].id, amount: 값(plan, days) }, 201);
