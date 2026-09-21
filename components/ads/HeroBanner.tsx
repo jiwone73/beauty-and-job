@@ -47,21 +47,26 @@ export default function HeroBanner({ 문구, 작게, 이미지, href }: {
   const 아래 = 문구 || 받은문구
     || `${오픈일글()} 오픈 · 채용공고와 이력서 등록을 무료로 이용하세요.`;
 
+  const 그림 = 이미지 !== undefined ? 이미지 : 받은이미지;
+  const 갈곳 = href || (받은id ? `/notice/${받은id}` : "/company");
+
   // 채용공고 쪽만 띠 배너다 — 옆 사이드 매장·오피스 탭 높이에 맞춘
   // 얇은 자리라 메인의 큰 배너와는 다른 짜임을 쓴다. 배너 그림은 가로가 길어
-  // 이 얇은 자리에는 못 쓰므로 여기는 그대로 문구만 얹는다.
+  // 이 얇은 자리에는 못 쓰므로 여기는 그대로 문구만 얹는다. 「혜택 보기」를
+  // 누르면 메인 배너와 같은 곳(그 공지 글)으로 보낸다.
   if (작게) {
     return (
-      <Link href="/company" className="mt-hero sm" aria-label="뷰티워크 오픈 이벤트">
-        <span className="mt-hero-shine" aria-hidden="true" />
-        <span className="mt-eyebrow">BEAUTYWORK OPEN</span>
-        <span className="mt-hero-sub">{아래}</span>
+      <Link href={갈곳} className="mt-hero sm" aria-label="뷰티워크 오픈 이벤트">
+        <span className="mt-sm-glow" aria-hidden="true" />
+        <span className="mt-sm-eyebrow">BEAUTYWORK <b>OPEN</b></span>
+        <span className="mt-sm-bar" aria-hidden="true" />
+        <span className="mt-sm-msg">{아래}</span>
+        <span className="mt-sm-cta">혜택 보기 →</span>
+        <span className="mt-sm-dash" aria-hidden="true" />
+        <span className="mt-sm-tag">BEAUTY의 오늘이<br />더 나은 내일이 됩니다.</span>
       </Link>
     );
   }
-
-  const 그림 = 이미지 !== undefined ? 이미지 : 받은이미지;
-  const 갈곳 = href || (받은id ? `/notice/${받은id}` : "/company");
 
   if (그림) {
     return (

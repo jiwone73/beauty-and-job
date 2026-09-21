@@ -13141,30 +13141,32 @@ button,
 .mt-hero-sub { font-size: 15px; color: #7a7878; margin-top: 11px; }
 .mt-eyebrow { font-size: 13px; letter-spacing: 2.2px; color: #582681; font-weight: 600; }
 
-/* 띠 배너(채용공고) — 보라 배경, 테두리 없음. */
+/* 띠 배너(채용공고) — 시안대로 짙은 보라 그라데이션에 눈줄·문구·단추·
+   태그라인을 한 줄로 건다. */
 .mt-hero.sm {
-  height: auto; aspect-ratio: 1320 / 68; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  background: #582681; padding: 0 20px;
+  height: auto; aspect-ratio: 1320 / 68; border-radius: 100px;
+  display: flex; align-items: center; gap: 16px; overflow: hidden;
+  background: linear-gradient(90deg, #4a3170 0%, #3a2560 20%, #38235c 100%);
+  padding: 0 26px;
 }
-.mt-hero.sm .mt-eyebrow { font-size: 15px; letter-spacing: 1.8px; flex-shrink: 0; color: #fff; }
-.mt-hero.sm .mt-hero-sub {
-  font-size: 16px; color: #e8dff6; margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-/* 반짝임 — 빛줄기가 대각선으로 한 번씩 훑고 지나간다. 눈에 띄되 계속 움직이면
-   거슬리므로 쉬는 시간을 길게 둔다. */
-.mt-hero-shine {
-  position: absolute; top: 0; left: -60%; width: 35%; height: 100%;
-  background: linear-gradient(115deg, transparent, rgba(255,255,255,.25), transparent);
-  animation: mt-hero-shine-move 3.6s ease-in-out infinite;
-}
-@keyframes mt-hero-shine-move {
-  0%, 55% { left: -60%; }
-  85%, 100% { left: 130%; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .mt-hero-shine { display: none; }
-}
+/* 왼쪽 둥근 끝에 은은한 빛 — 색을 새로 안 쓰고 흰색 반투명만 얹는다. */
+.mt-sm-glow { position: absolute; left: -30px; top: 50%; transform: translateY(-50%);
+  width: 130px; height: 130px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.16), transparent 70%); pointer-events: none; }
+.mt-sm-eyebrow { position: relative; z-index: 1; flex-shrink: 0; font-size: 13px;
+  letter-spacing: 1.4px; color: #fff; font-weight: 500; }
+.mt-sm-eyebrow b { font-weight: 800; }
+.mt-sm-bar { position: relative; z-index: 1; flex-shrink: 0; width: 1px; height: 16px;
+  background: rgba(255,255,255,.35); }
+.mt-sm-msg { position: relative; z-index: 1; flex: 1; min-width: 0; font-size: 14px;
+  color: #f1ecf7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt-sm-cta { position: relative; z-index: 1; flex-shrink: 0; display: inline-flex;
+  align-items: center; gap: 4px; background: #fff; color: #3a2560; font-weight: 700;
+  font-size: 13px; padding: 8px 16px; border-radius: 100px; white-space: nowrap; }
+.mt-sm-dash { position: relative; z-index: 1; flex-shrink: 0; width: 18px; height: 1px;
+  background: rgba(255,255,255,.4); }
+.mt-sm-tag { position: relative; z-index: 1; flex-shrink: 0; font-size: 10.5px; line-height: 1.35;
+  color: #d8cfe8; text-align: left; white-space: nowrap; }
 
 /* 바탕.
    · 페이지 바탕(#f7f7f8)과 아주 살짝만 다르게 둔다. 세게 칠하면 박스가
@@ -13351,9 +13353,11 @@ button,
       .mt-evt-more { display: none; }
   .mt-hero-in { padding: 22px 20px; }
   .mt-hero-h { font-size: 24px; }
-  .mt-hero.sm { padding: 0 14px; gap: 6px; }
-  .mt-hero.sm .mt-eyebrow { font-size: 12.5px; }
-  .mt-hero.sm .mt-hero-sub { font-size: 13px; }
+  .mt-hero.sm { padding: 0 16px; gap: 8px; }
+  .mt-sm-eyebrow { font-size: 11.5px; }
+  .mt-sm-msg { font-size: 12.5px; }
+  .mt-sm-cta { font-size: 12px; padding: 6px 12px; }
+  .mt-sm-dash, .mt-sm-tag { display: none; }
   .mt-jobs { padding: 18px 16px 20px; border-radius: 14px; }
   .mt-jobs-h h2 { font-size: 18px; }
   .mt-ticker { padding-left: 14px; gap: 12px; }
