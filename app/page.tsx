@@ -120,6 +120,10 @@ function Hero() {
   // 배너·공지·속보는 모두 서버에서 받아온다. 코드에 문구를 박아 두면
   // 바꿀 때마다 배포해야 하고, PC·모바일이 따로 놀기 시작한다.
   const [이벤트, set이벤트] = useState<any>(null);
+  // 이벤트가 없어서 null 인 것과 아직 안 받아서 null 인 것을 갈라야 한다 —
+  // 안 갈랐더니 받기 전 잠깐 예전 사진 배너가 섰다가 진짜 배너로 바뀌었다
+  // ("기존 배너가 잠깐 보이다가 사라져"). 받기 전에는 배너 자리를 비워 둔다.
+  const [이벤트받음, set이벤트받음] = useState(false);
   const [공지, set공지] = useState<any>(null);
   const [속보, set속보] = useState<any[]>([]);
   // 한 번에 한 건만 보여주고 차례로 넘긴다. 가로로 흘리면 눈이 따라가야 하고,
@@ -137,7 +141,8 @@ function Hero() {
                  || 이벤트들[0] || null);
         set공지(list.find((n: any) => n.type !== "event") || null);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => set이벤트받음(true));
     fetch("/api/jobs?limit=8&nosample=1")
       .then((r) => r.json())
       .then((res) => { if (Array.isArray(res?.data)) set속보(res.data); })
@@ -174,9 +179,14 @@ function Hero() {
             더 보여주는 것이 맞다. 그림이 없을 때만 예전처럼 회사 소개로
             보내는 문구형 배너를 쓴다. */}
         <AdBanner slot="main" 대신={
-          <HeroBanner 문구={이벤트?.short_title || 이벤트?.title || undefined}
-            이미지={이벤트?.banner_image_url || undefined}
-            href={이벤트 ? `/notice/${이벤트.id}` : undefined} />
+          이벤트받음
+            ? <HeroBanner 문구={이벤트?.short_title || 이벤트?.title || undefined}
+                이미지={이벤트?.banner_image_url || undefined}
+                href={이벤트 ? `/notice/${이벤트.id}` : undefined} />
+            /* 받기 전에는 자리만 잡아 둔다 — 아무것도 없으면 받은 순간 아래
+               내용이 훌쩍 밀린다("배너가 잠깐 보이다가 사라져"의 원인이던
+               예전 배너 대신, 빈 자리로 그 틈을 없앤다). */
+            : <div className="mt-hero skeleton" aria-hidden="true" />
         } />
 
         {/* 2. 일자리 찾기 블록 */}
