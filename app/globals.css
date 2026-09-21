@@ -4620,7 +4620,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .pol-list dd { margin: 5px 0 0; font-size: 15px; color: #555; line-height: 1.75; word-break: keep-all; }
 /* 어느 조문에서 온 말인지 — 뒷받침이지 읽을 것이 아니라 한 단 작게. */
 .pol-list dd em { font-style: normal; font-size: 13px; color: #8a8a90; white-space: nowrap; }
-.pol-src { margin: 14px 0 0; font-size: 13px; color: #8a8a90; }
+/* .info-section p 가 15px 로 더 구체적이라(선택자 상세도 0,1,1 > 0,1,0)
+   .pol-src 하나만으로는 안 이겨서 p 를 같이 적어 이긴다. */
+.info-section p.pol-src { margin: 14px 0 0; font-size: 13px; color: #8a8a90; }
 .pol-more { margin: 0; font-size: 14px; color: #555; line-height: 1.8; }
 .pol-more a { color: var(--color-primary); font-weight: 700; margin-left: 6px; }
 
