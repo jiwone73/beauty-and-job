@@ -247,17 +247,20 @@ function Hero() {
                   자리를 반씩 나눠 쓴다. 왼쪽 칸에 두었더니 검색 카드가 이벤트
                   카드보다 길어져 아래 끝이 어긋났다. */}
               <div className="mt-nrow">
-                {/* 진짜 공지가 없으면 안 그린다 — 지운 글의 제목을 가짜로
-                    박아 두면 눌러도 그 글이 없다. */}
-                {공지 && (
-                  <div className="mt-card mt-nc">
-                    <Link href="/notice" className="mt-nc-tag">공지</Link>
-                    <span className="mt-nc-bar" aria-hidden="true">|</span>
-                    <Link href={`/notice?open=${공지.id}`} className="mt-notice">
-                      <span className="nt">{공지.title}</span>
-                    </Link>
-                  </div>
-                )}
+                {/* 일반 공지가 없으면 이벤트로 대신한다 — 지금 진짜 알릴
+                    소식이 그것뿐이면 그게 「공지」다. 둘 다 없으면 안 그린다. */}
+                {(() => {
+                  const 알릴것 = 공지 || 이벤트;
+                  return 알릴것 && (
+                    <div className="mt-card mt-nc">
+                      <Link href="/notice" className="mt-nc-tag">공지</Link>
+                      <span className="mt-nc-bar" aria-hidden="true">|</span>
+                      <Link href={`/notice?open=${알릴것.id}`} className="mt-notice">
+                        <span className="nt">{알릴것.title}</span>
+                      </Link>
+                    </div>
+                  );
+                })()}
 
                 {속보.length > 0 && (() => {
                   const 이번 = 속보[속보차례 % 속보.length];
