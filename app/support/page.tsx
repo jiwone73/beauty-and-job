@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import InfoShell from "@/components/InfoShell";
-import { 문의유형 } from "@/lib/inquiryTypes";
+import { 개인문의유형, 기업문의유형 } from "@/lib/inquiryTypes";
 import AttachFiles from "@/components/AttachFiles";
 
 /**
@@ -13,11 +13,13 @@ import AttachFiles from "@/components/AttachFiles";
  * 잘못 눌러 닫히면 쓰던 것이 날아간다.
  *
  * 공지·FAQ·다운로드는 옆줄이 맡으므로 여기서 또 세우지 않는다.
+ *
+ * 문의 유형은 로그인 종류를 본다 — 기업으로 들어온 사람에게 "이력서/프로필"이
+ * 첫 줄로 뜨는 건 자기 얘기가 아니다.
  */
-const 유형들 = [...문의유형];
-
 export default function SupportPage() {
-  const { userName } = useAuthStore();
+  const { userName, ownerType } = useAuthStore();
+  const 유형들 = ownerType === "company" ? 기업문의유형 : 개인문의유형;
   const [이름, set이름] = useState("");
   const [메일, set메일] = useState("");
   const [전화, set전화] = useState("");
@@ -29,6 +31,9 @@ export default function SupportPage() {
   const [파일들, set파일들] = useState<File[]>([]);
 
   useEffect(() => { set이름((v) => v || userName || ""); }, [userName]);
+  // 로그인 정보가 나중에 채워지는 경우(새로고침 직후)까지 챙긴다 — 목록이
+  // 바뀌었는데 고른 값이 이전 목록의 첫 줄로 남아 있으면 안 된다.
+  useEffect(() => { set유형(유형들[0]); }, [ownerType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const 비우기 = () => { set파일들([]);
     set이름(userName || ""); set메일(""); set전화("");
