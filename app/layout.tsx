@@ -4,12 +4,14 @@ import BottomTabBar from "@/components/BottomTabBar";
 import AuthInterceptor from "@/components/AuthInterceptor";
 import RoleGuard from "@/components/RoleGuard";
 import VisitBeacon from "@/components/VisitBeacon";
+import { 검색공개 } from "@/lib/robotsGate";
 
 export const metadata: Metadata = {
   // 상대경로로 준 OG 이미지 등을 절대주소로 바꾸는 기준. 오픈 전에도 미리
   // 박아 둔다 — 이 값이 없으면 페이지마다 OG 이미지가 다 깨진 채로 뜬다.
   metadataBase: new URL("https://beautywork.co.kr"),
-  robots: { index: false, follow: false },
+  // lib/robotsGate.js 하나로 이 값과 robots.ts·next.config.js 를 같이 묶는다.
+  robots: 검색공개 ? { index: true, follow: true } : { index: false, follow: false },
   title: "뷰티워크 | 뷰티 커리어의 시작과 성장",
   description:
     "전문가 채용부터 업계 트렌드까지, 뷰티 산업 종사자를 위한 채용 플랫폼 뷰티워크",

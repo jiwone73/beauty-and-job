@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { 검색공개 } from "@/lib/robotsGate";
 
 /**
  * 아직 오픈 전이다. 어디에도 걸리지 않게 막는다.
@@ -7,9 +8,9 @@ import type { MetadataRoute } from "next";
  * 멈추는 수집기가 있다. 특히 AI 학습용 수집기는 일반 규칙을 검색 색인용으로만
  * 읽고 지나가는 것들이 있어, 아래처럼 하나씩 적어 둔다.
  *
- * 오픈(2026-10-12)하면 이 파일과 next.config.js 의 X-Robots-Tag,
- * app/layout.tsx 의 robots 메타를 **셋 다** 같이 푼다. 한 곳만 풀면
- * 나머지 둘이 계속 막는다.
+ * 검색공개 스위치는 lib/robotsGate.js 하나에 있다. next.config.js 의
+ * X-Robots-Tag, app/layout.tsx 의 robots 메타도 같은 값을 본다 — 오픈일
+ * (2026-10-12)에 그 파일 하나만 true 로 바꾸면 셋이 한 번에 풀린다.
  */
 const 수집기 = [
   // 검색
@@ -28,11 +29,26 @@ const 수집기 = [
   "HTTrack", "wget", "curl", "Scrapy",
 ];
 
+// 오픈 후에도 계속 막아 둘 자리 — 로그인 전용 관리 화면과 내부 API.
+// prefix 매칭이라 "/api" 하나로 "/api/아무거나"까지 다 걸린다.
+const 비공개경로 = [
+  "/api", "/admin", "/company/dashboard", "/company/login",
+  "/profile", "/login", "/signup", "/onboarding", "/search",
+];
+
 export default function robots(): MetadataRoute.Robots {
+  if (!검색공개) {
+    return {
+      rules: [
+        { userAgent: "*", disallow: "/" },
+        ...수집기.map((userAgent) => ({ userAgent, disallow: "/" })),
+      ],
+    };
+  }
   return {
     rules: [
-      { userAgent: "*", disallow: "/" },
-      ...수집기.map((userAgent) => ({ userAgent, disallow: "/" })),
+      { userAgent: "*", allow: "/", disallow: 비공개경로 },
     ],
+    sitemap: "https://beautywork.co.kr/sitemap.xml",
   };
 }
