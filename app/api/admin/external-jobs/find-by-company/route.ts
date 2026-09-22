@@ -8,11 +8,17 @@
 
 import { NextRequest } from "next/server";
 import { findJobsForCompany } from "@/lib/external/findByCompany";
+import { requireAuth } from "@/lib/api";
 
 export const runtime = "nodejs"; // TextDecoder('euc-kr') 등 때문에 nodejs 고정
 export const dynamic = "force-dynamic";
 
+// 관리자 전용 — 인증 확인이 빠져 있어 누구나 외부 사이트 대량 조회를 이
+// 서버 이름으로 돌릴 수 있었다(속도 제한 없는 크롤링 창구가 됨).
 export async function GET(req: NextRequest) {
+  const { res: authErr } = requireAuth(req, "admin");
+  if (authErr) return authErr;
+
   const sp = req.nextUrl.searchParams;
   const company = (sp.get("company") || "").trim();
   if (!company) {
