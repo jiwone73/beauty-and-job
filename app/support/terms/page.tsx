@@ -23,7 +23,7 @@ const SECTIONS: any[] = [
         "p": "· 사이트 : beautywork.co.kr"
       },
       {
-        "p": "· 고객센터 : [전화번호 입력]"
+        "p": "· 고객센터 : 02-2039-1310"
       },
       {
         "p": "· 전자우편: support@beautywork.co.kr"

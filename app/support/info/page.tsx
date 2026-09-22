@@ -12,6 +12,10 @@ export default function SupportInfoPage() {
             <dd>평일 10:00~18:00 (주말·공휴일 휴무)</dd>
           </div>
           <div>
+            <dt>전화</dt>
+            <dd>02-2039-1310</dd>
+          </div>
+          <div>
             <dt>이메일</dt>
             <dd>support@beautywork.co.kr</dd>
           </div>
