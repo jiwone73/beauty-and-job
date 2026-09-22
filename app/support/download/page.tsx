@@ -56,7 +56,7 @@ export default function DownloadPage() {
       </form>
 
       <div className="nb-th dl-th">
-        <span>구분</span><span>제목</span><span>등록일자</span><span>다운로드</span>
+        <span>구분</span><span>자료명</span><span>등록일자</span><span>다운로드</span>
       </div>
 
       {보일것.length === 0 ? (
