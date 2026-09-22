@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Clock, Phone, Mail, MessageCircle } from "lucide-react";
+import { Clock, Mail, MessageCircle } from "lucide-react";
 import InfoShell from "@/components/InfoShell";
 
 export default function SupportInfoPage() {
@@ -11,11 +11,6 @@ export default function SupportInfoPage() {
           <span className="cs-card-icon"><Clock size={26} /></span>
           <h3>운영시간</h3>
           <p>평일 10:00~18:00<br />(주말·공휴일 휴무)</p>
-        </div>
-        <div className="info-value-card">
-          <span className="cs-card-icon"><Phone size={26} /></span>
-          <h3>전화</h3>
-          <p>02-2039-1310</p>
         </div>
         <div className="info-value-card">
           <span className="cs-card-icon"><Mail size={26} /></span>

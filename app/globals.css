@@ -4747,7 +4747,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-value-card h3 { font-size: 15px; font-weight: 700; color: #555; margin: 0 0 8px; }
 .info-value-card p { font-size: 13px; color: #555; line-height: 1.6; margin: 0; }
 /* 고객센터 안내 카드 — 위 카드와 판은 같이 쓰되 아이콘은 이모지가 아니라 lucide다. */
-.cs-info-cards { margin-bottom: 0; }
+.cs-info-cards { margin-bottom: 0; grid-template-columns: repeat(3, 1fr); }
 .cs-card-icon { display: flex; justify-content: center; margin-bottom: 12px; color: var(--color-primary); }
 .cs-card-links { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .cs-card-links a { color: var(--color-primary); font-weight: 700; text-decoration: none; }
