@@ -57,7 +57,7 @@ const 자리표: Record<string, { 그림: string; 이름: string; 상자들: 상
 };
 
 function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
-  const [일수, set일수] = useState<기간>(30);
+  const [일수, set일수] = useState<기간>(것.추천);
   const 자리 = 자리표[것.id as keyof typeof 자리표];
   const 값 = 것.가격[일수];
 
@@ -82,7 +82,7 @@ function 상품칸({ 것, 안쪽 }: { 것: 광고상품; 안쪽: boolean }) {
                 <input type="radio" name={`ad-days-${것.id}`} checked={d === 일수}
                        onChange={() => set일수(d)} />
                 <i className="pi-tick"><Check size={12} strokeWidth={3.5} /></i>
-                <span className="pi-opt-d">{d}일{d === 30 && <em>추천</em>}</span>
+                <span className="pi-opt-d">{d}일{d === 것.추천 && <em>추천</em>}</span>
                 <b className="pi-opt-a">{것.가격[d] === null ? "협의" : 원(것.가격[d]!)}</b>
               </label>
             ))}
