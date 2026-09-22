@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import InfoShell from "@/components/InfoShell";
-import AboutSide from "@/components/AboutSide";
 import AttachFiles from "@/components/AttachFiles";
 import { 사업문의유형 } from "@/lib/inquiryTypes";
 
@@ -40,8 +39,7 @@ export default function BusinessInquiryPage() {
     setDone(true);
   };
   return (
-    <InfoShell active="/about/business" title="사업문의" 머리이름="회사 소개"
-               옆줄={<AboutSide active="/about/business" />}>
+    <InfoShell active="/about/business" title="사업문의">
       <div className="info-hero">
         <p className="info-hero-desc">광고·제휴 등 사업 관련 문의를 남겨주시면 담당자가 확인 후 연락드릴게요.</p>
       </div>

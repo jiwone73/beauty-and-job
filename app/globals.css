@@ -4394,8 +4394,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .info-side-i.sub::before { content: "·"; position: absolute; left: 15px; color: #8a8a90; }
 /* 옆줄은 화면 이름을 읽는 자리다 — 본문 글자(15px)보다 작으면 메뉴가 곁다리로
    보인다. 셀렉미 옆줄도 16px 다. */
-.info-side-i { display: block; padding: 11px 12px; border-radius: 8px; text-decoration: none;
+.info-side-i { display: flex; align-items: center; gap: 8px; padding: 11px 12px; border-radius: 8px; text-decoration: none;
   font-size: 16px; color: #555; transition: background .15s, color .15s; }
+.info-side-icon { flex: none; }
 .info-side-i:hover { background: #f7f7f9; }
 .info-side-i.on { background: var(--color-bg-soft); color: var(--color-primary); font-weight: 700; }
 .info-side-sub { margin: 2px 0 6px; padding-left: 12px; }
