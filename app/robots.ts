@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { 검색공개 } from "@/lib/robotsGate";
+import { 스토리공개 } from "@/lib/storiesGate";
 
 /**
  * 아직 오픈 전이다. 어디에도 걸리지 않게 막는다.
@@ -34,6 +35,9 @@ const 수집기 = [
 const 비공개경로 = [
   "/api", "/admin", "/company/dashboard", "/company/login",
   "/profile", "/login", "/signup", "/onboarding", "/search",
+  // 현장이야기는 검색공개와 별개로 스토리공개(lib/storiesGate.js)가
+  // true 일 때만 뺀다 — 오픈일에 검색은 풀려도 이야기는 그대로 막혀야 한다.
+  ...(스토리공개 ? [] : ["/stories"]),
 ];
 
 export default function robots(): MetadataRoute.Robots {

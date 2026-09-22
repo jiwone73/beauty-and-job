@@ -2,9 +2,13 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
+import { 스토리공개 } from "@/lib/storiesGate";
 
 // 이야기 글 목록 (게시된 글만, 최신순, 카테고리 필터 옵션)
+// 이번 오픈에서는 비공개(lib/storiesGate.js) — 화면뿐 아니라 API 도
+// 막아야 주소를 아는 사람이 fetch 로 직접 읽어가지 못한다.
 export async function GET(req: NextRequest) {
+  if (!스토리공개) return ok([]);
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category");
   const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);

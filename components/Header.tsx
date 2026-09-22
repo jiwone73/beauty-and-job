@@ -10,6 +10,7 @@ import { useProfileStore } from "@/lib/store/profileStore";
 import { useSignupStore } from "@/lib/store/signupStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import NotificationBell from "@/components/NotificationBell";
+import { 스토리공개 } from "@/lib/storiesGate";
 
 /**
  * 머리줄 오른쪽 — 로그인 전이면 「회원가입/로그인」과 「기업 서비스」, 뒤면
@@ -148,9 +149,12 @@ export default function Header() {
                 이력서
               </Link>
             )}
-            <Link href="/stories" className="gnb-with-tag">
-              현장이야기
-            </Link>
+            {/* 현장이야기는 이번 오픈에서 비공개(lib/storiesGate.js). */}
+            {스토리공개 && (
+              <Link href="/stories" className="gnb-with-tag">
+                현장이야기
+              </Link>
+            )}
           </nav>
           <div className="header-right">
             <AuthButtons onLoginClick={() => router.push("/login")} />

@@ -27,6 +27,7 @@ import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
 import { 오픈일글 } from "@/lib/launchPlan";
+import { 스토리공개 } from "@/lib/storiesGate";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 import { mapJob } from "@/lib/jobCard";
@@ -59,7 +60,9 @@ export default function HomePage() {
       <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={프리미엄Ids} onLoaded={set스탠다드Ids} />
       <SectionPick excludeIds={채용관Ids} />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
-      <SectionStories />
+      {/* 현장이야기는 이번 오픈에서 비공개(lib/storiesGate.js) — 공개로
+          정해지면 그 스위치만 켜면 이 줄도 같이 살아난다. */}
+      {스토리공개 && <SectionStories />}
       {/* <SectionBeautyServices /> 숨김 */}
       <Footer />
     </main>

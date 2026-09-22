@@ -2,9 +2,12 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
+import { 스토리공개 } from "@/lib/storiesGate";
 
 // 글 상세 + 댓글 목록
+// 이번 오픈에서는 비공개(lib/storiesGate.js) — 목록 API와 같은 이유로 여기도 막는다.
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!스토리공개) return err("POST_404", "글을 찾을 수 없습니다.", 404);
   const { id } = params;
   const client = await pool.connect();
   try {

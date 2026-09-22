@@ -3,9 +3,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Briefcase, BookOpen, User } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
+import { 스토리공개 } from "@/lib/storiesGate";
 const TABS = [
   { href: "/",         label: "홈",    icon: Home,      auth: false },
   { href: "/jobs",     label: "채용",  icon: Briefcase, auth: false },
+  // 현장이야기는 이번 오픈에서 비공개(lib/storiesGate.js) — 공개로 정해지면
+  // 이 탭도 같이 켜야 하니 배열에는 남겨 두고 렌더링에서만 뺀다.
   { href: "/stories",  label: "이야기", icon: BookOpen, auth: false },
   { href: "/profile",  label: "마이",  icon: User,      auth: true  },
 ];
@@ -13,6 +16,7 @@ export default function BottomTabBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { isLoggedIn, ownerType } = useAuthStore();
+  const 탭들 = 스토리공개 ? TABS : TABS.filter((t) => t.href !== "/stories");
   const hideOn = ["/signup", "/login", "/company/signup"];
   if (hideOn.some((p) => pathname.startsWith(p))) return null;
   // 기업 영역에서는 개인 하단탭 숨김 (기업 전용 하단탭 사용)
@@ -31,7 +35,7 @@ export default function BottomTabBar() {
   };
   return (
     <nav className="bottom-tab-bar">
-      {TABS.map((tab) => (
+      {탭들.map((tab) => (
         <Link
           key={tab.href}
           href={tab.href}
