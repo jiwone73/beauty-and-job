@@ -138,10 +138,21 @@ export async function DELETE(
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
 
-  const result = await pool.query(
-    `DELETE FROM job_postings WHERE id = $1 AND company_id = $2 RETURNING id`,
-    [params.id, auth!.sub]
-  );
+  let result;
+  try {
+    result = await pool.query(
+      `DELETE FROM job_postings WHERE id = $1 AND company_id = $2 RETURNING id`,
+      [params.id, auth!.sub]
+    );
+  } catch (e: any) {
+    // 지원 이력이 남은 공고는 통째로 지우면 그 지원자 기록까지 같이 사라진다
+    // (외래키가 막아 준다) — 마감으로 돌리라고 안내한다. 원인을 못 알리면
+    // 빈 응답으로 500만 떨어져 화면엔 "삭제 중 오류가 발생했습니다"만 뜬다.
+    if (e?.code === "23503") {
+      return err("JOB_002", "지원자가 있는 공고는 삭제할 수 없습니다. 마감으로 내려 주세요.", 409);
+    }
+    throw e;
+  }
 
   if (result.rowCount === 0) {
     return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);

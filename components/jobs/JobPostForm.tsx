@@ -182,6 +182,21 @@ let 폼이열린적있음 = false;
 /** 만원 단위로 말이 되는 최대값(10억). 그 위는 원 단위로 잘못 적은 것으로 본다. */
 const 급여상한 = 100000;
 
+/** 임시저장(localStorage) 키를 나눌 계정 식별자. access_token 을 서버에 묻지 않고
+ *  페이로드(sub)만 그 자리에서 읽는다 — /api/company/me 를 기다리면 첫 렌더에는
+ *  아직 없어, 그 사이에 자동복원 효과가 먼저 돌면서 앞 계정의 임시저장을 집어온다. */
+function 계정열쇠(mode: "company" | "admin"): string {
+  if (typeof window === "undefined") return "anon";
+  try {
+    const token = localStorage.getItem(mode === "admin" ? "admin_token" : "access_token");
+    if (!token) return "anon";
+    const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+    return payload?.sub || "anon";
+  } catch {
+    return "anon";
+  }
+}
+
 export default function JobPostForm({
   mode, editId = null, listHref, companyType = null, companies = [],
   uploadImage, onSubmit, loadEditData, listDrafts, deleteDraft, initialFindQuery = "", initialImportMode, initialParsed,
@@ -729,7 +744,13 @@ export default function JobPostForm({
   //
   // 새로 쓰는 공고에서만 한다. 기존 공고를 고칠 때는 서버 값이 맞는 값이라,
   // 남아 있던 옛 입력이 그 위에 덮이면 안 된다.
-  const AUTOSAVE_KEY = `jobpost:autosave:${mode}:new`;
+  //
+  // 계정마다 키를 나눈다 — 예전엔 mode(company/admin)로만 나눠서, 한 브라우저를
+  // 여러 기업이 돌려 쓰면(같은 매장 여러 계정, 사무실 공용 PC) 앞선 회사가 쓰다 만
+  // 회사명·주소·연락처가 다음 회사의 "새 공고" 화면에 그대로 되살아났다. access_token
+  // 안에 회사 id(sub)가 있어 그걸로 가른다 — /api/company/me 응답을 기다리면 첫
+  // 렌더에서 늦어 되살리기 효과가 먼저 돌아버린다.
+  const AUTOSAVE_KEY = `jobpost:autosave:${mode}:${계정열쇠(mode)}:new`;
   /** 이 임시저장이 어느 공고 것인가. 주소의 ?inbox= (목록에서 고른 공고) 또는 ?url= 로 본다.
    *  빈 화면에서 새로 쓰는 중이면 "" 다. */
   const 쓰던공고 = () => {
@@ -776,7 +797,7 @@ export default function JobPostForm({
   // 빈 화면에서 다시 시작한다. 새로고침만으로는 브라우저에 남은 내용이 그대로 되살아난다.
   // 값을 하나하나 비우면 빠뜨린 칸이 생기므로, 남은 내용을 지우고 화면을 새로 연다.
   const 초기화 = () => {
-    try { localStorage.removeItem(`jobpost:autosave:${mode}:new`); } catch { /* noop */ }
+    try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ }
     // 주소에 값을 실어 나르는 칸(?inbox=·?url=·?q=·?id=)이 남아 있으면, 임시저장을 지워도
     // 화면을 새로 여는 순간 그 값이 도로 태워진다. 헤어인잡·셀렉미 목록에서 넘어온 공고에서
     // 단추가 안 먹는 것처럼 보이던 게 이것이다 — 지워지긴 했는데 곧바로 다시 채워졌다.
