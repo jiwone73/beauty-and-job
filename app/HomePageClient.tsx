@@ -22,6 +22,7 @@ import {
   Building2,
   Bookmark,
   Sparkles,
+  Instagram,
   ChevronDown } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
@@ -585,7 +586,10 @@ function Footer() {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+            <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ color: "#555", display: "flex" }}>
+              <Instagram size={18} />
+            </a>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
             <Link href="/support/privacy" style={{ fontSize: 13, color: "#582681", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
           </div>

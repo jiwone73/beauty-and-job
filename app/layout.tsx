@@ -12,10 +12,25 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://beautywork.co.kr"),
   // lib/robotsGate.js 하나로 이 값과 robots.ts·next.config.js 를 같이 묶는다.
   robots: 검색공개 ? { index: true, follow: true } : { index: false, follow: false },
-  title: "뷰티워크 | 뷰티 커리어의 시작과 성장",
+  title: "뷰티워크 | 뷰티업계 구인구직·채용정보",
   description:
-    "전문가 채용부터 업계 트렌드까지, 뷰티 산업 종사자를 위한 채용 플랫폼 뷰티워크",
+    "살롱·샵 현장부터 브랜드 오피스까지, 뷰티업계 일자리를 한곳에서. 헤어·네일·피부·메이크업·화장품 브랜드 채용정보를 확인하세요.",
   keywords: ["뷰티 채용", "화장품 채용", "뷰티 커리어", "BeautyWork"],
+  // 네이버·구글이 제목·설명과 함께 종합해서 보는 값. 카카오톡 등에 링크를
+  // 공유했을 때 뜨는 미리보기도 이 값을 쓴다.
+  openGraph: {
+    type: "website",
+    title: "뷰티워크 | 뷰티업계 구인구직·채용정보",
+    description: "살롱·샵 현장부터 브랜드 오피스까지, 뷰티업계 일자리를 한곳에서.",
+    url: "/",
+    images: ["/icons/icon-512.png"],
+  },
+  twitter: {
+    card: "summary",
+    title: "뷰티워크 | 뷰티업계 구인구직·채용정보",
+    description: "살롱·샵 현장부터 브랜드 오피스까지, 뷰티업계 일자리를 한곳에서.",
+    images: ["/icons/icon-512.png"],
+  },
   // 구글 서치콘솔·네이버 서치어드바이저 소유확인(HTML 태그 방식).
   // 정용희 계정으로 등록(2026-09-22).
   verification: {
@@ -66,6 +81,23 @@ export default function RootLayout({
             매니페스트를 건너뛰고 홈 화면 아이콘을 브라우저 모드로 만드는
             일이 있다. 우리 매니페스트는 감출 것이 없으니 그냥 연다. */}
         <link rel="manifest" href="/manifest.json" />
+        {/* 네이버·구글이 사이트와 SNS 채널의 관계를 읽는 자리(sameAs).
+            연락처 등 없는 값은 안 적는다 — 회사 정보 자체가 아니라 이
+            서비스(뷰티워크)를 알리는 조직 정보라 companyIdentity 같은
+            사업자 값과는 따로 둔다. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "뷰티워크",
+              url: "https://beautywork.co.kr",
+              logo: "https://beautywork.co.kr/icons/icon-512.png",
+              sameAs: ["https://www.instagram.com/beautywork.kr/"],
+            }),
+          }}
+        />
         {/* '로그인 유지'를 끈 사람 정리 — lib/auth/session.ts 참고.
             세션 쿠키가 사라졌다면 브라우저가 닫혔던 것이므로 토큰을 버린다.
             화면을 그리기 전에 끝내야 로그인된 헤더가 번쩍이지 않는다. */}

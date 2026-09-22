@@ -1,7 +1,14 @@
 export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
 import CompanyServiceView from "@/components/company/CompanyServiceView";
 import { 기업이벤트읽기 } from "@/lib/companyEvent.server";
+
+export const metadata: Metadata = {
+  title: "뷰티업계 채용공고 등록 | 뷰티워크",
+  description: "헤어·네일·피부·메이크업 매장부터 화장품 브랜드 본사까지, 뷰티워크에서 채용공고를 등록하세요.",
+  alternates: { canonical: "/company" },
+};
 
 /**
  * 기업 서비스 소개.
