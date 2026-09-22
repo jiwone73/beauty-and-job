@@ -1,29 +1,34 @@
 "use client";
 import Link from "next/link";
+import { Clock, Phone, Mail, MessageCircle } from "lucide-react";
 import InfoShell from "@/components/InfoShell";
 
 export default function SupportInfoPage() {
   return (
     <InfoShell active="/support/info" title="고객센터 안내">
-      <div className="info-section">
-        <dl className="pol-list">
-          <div>
-            <dt>운영시간</dt>
-            <dd>평일 10:00~18:00 (주말·공휴일 휴무)</dd>
-          </div>
-          <div>
-            <dt>전화</dt>
-            <dd>02-2039-1310</dd>
-          </div>
-          <div>
-            <dt>이메일</dt>
-            <dd>support@beautywork.co.kr</dd>
-          </div>
-        </dl>
-        <div className="pol-cs">
-          <b>1:1 문의</b>
-          <span>궁금한 점을 1:1 게시판에 남겨 주세요.</span>
-          <Link href="/support" className="pol-cs-btn">1:1 문의하기</Link>
+      <div className="info-values cs-info-cards">
+        <div className="info-value-card">
+          <span className="cs-card-icon"><Clock size={26} /></span>
+          <h3>운영시간</h3>
+          <p>평일 10:00~18:00<br />(주말·공휴일 휴무)</p>
+        </div>
+        <div className="info-value-card">
+          <span className="cs-card-icon"><Phone size={26} /></span>
+          <h3>전화</h3>
+          <p>02-2039-1310</p>
+        </div>
+        <div className="info-value-card">
+          <span className="cs-card-icon"><Mail size={26} /></span>
+          <h3>이메일</h3>
+          <p>support@beautywork.co.kr</p>
+        </div>
+        <div className="info-value-card">
+          <span className="cs-card-icon"><MessageCircle size={26} /></span>
+          <h3>온라인 문의</h3>
+          <p className="cs-card-links">
+            <Link href="/about/business">사업문의</Link>
+            <Link href="/support">1:1 문의</Link>
+          </p>
         </div>
       </div>
     </InfoShell>

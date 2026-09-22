@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, Bell, FileText, HelpCircle, Info, MessageCircle, Download } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 /**
  * 고객센터 옆줄.
@@ -18,30 +17,25 @@ import type { LucideIcon } from "lucide-react";
  * 이용약관·개인정보처리방침은 여기 두지 않는다. 궁금해서 찾아오는 곳이
  * 아니라 확인하러 오는 곳이고, 그 길은 푸터가 맡는다.
  *
- * 사업문의는 원래 "회사 소개" 옆줄(AboutSide) 소속이었는데, 문의 채널이라는
- * 성격상 고객센터 쪽이 더 맞아 온라인 문의 밑으로 옮겼다(2026-09-22) —
- * 회사 소개 쪽에서는 뺐다.
+ * 온라인 문의(사업문의·1:1 문의)는 따로 메뉴 항목으로 두지 않는다 —
+ * 고객센터 안내 페이지 안의 카드로 들어가 있다(2026-09-22).
  */
 /** 매칭: 페이지 자체가 갈리는 하위 항목(운영정책처럼)은 이 값을 active 와
  *  그대로 견준다. 없으면 예전처럼(FAQ) 누구 값으로 견준다. */
 type 줄 = { href: string; label: string; 주소?: string; 매칭?: string };
 
-const 메뉴: { 머리: 줄 & { icon: LucideIcon }; 아래: 줄[] }[] = [
-  { 머리: { href: "/notice", label: "공지사항", icon: Bell }, 아래: [] },
-  { 머리: { href: "/support/policy", label: "운영정책", icon: FileText }, 아래: [
+const 메뉴: { 머리: 줄; 아래: 줄[] }[] = [
+  { 머리: { href: "/notice", label: "공지사항" }, 아래: [] },
+  { 머리: { href: "/support/policy", label: "운영정책" }, 아래: [
       { href: "/support/policy", label: "회원관리정책", 매칭: "/support/policy" },
       { href: "/support/policy/refund", label: "상품 환불정책", 매칭: "/support/policy/refund" },
     ] },
-  { 머리: { href: "/support/faq", label: "FAQ", icon: HelpCircle }, 아래: [
+  { 머리: { href: "/support/faq", label: "FAQ" }, 아래: [
       { href: "/support/faq", label: "개인회원", 주소: "/support/faq?누구=개인" },
       { href: "/support/faq", label: "기업회원", 주소: "/support/faq?누구=기업" },
     ] },
-  { 머리: { href: "/support/info", label: "고객센터 안내", icon: Info }, 아래: [] },
-  { 머리: { href: "/support", label: "온라인 문의", icon: MessageCircle }, 아래: [
-      { href: "/about/business", label: "사업문의", 매칭: "/about/business" },
-      { href: "/support", label: "1:1 문의", 매칭: "/support" },
-    ] },
-  { 머리: { href: "/support/download", label: "다운로드", icon: Download }, 아래: [] },
+  { 머리: { href: "/support/info", label: "고객센터 안내" }, 아래: [] },
+  { 머리: { href: "/support/download", label: "다운로드" }, 아래: [] },
 ];
 
 export default function InfoSide({ active, 누구 }: {
@@ -59,16 +53,14 @@ export default function InfoSide({ active, 누구 }: {
     <nav className="info-side" aria-label="고객센터 메뉴">
       {메뉴.map(({ 머리, 아래 }) => {
         const 접힘 = 접은것.includes(머리.href);
-        // 하위 페이지가 실제로 갈리는 경우(운영정책·온라인 문의), 그중 하나에
-        // 서 있어도 부모 항목이 켜져 보여야 한다.
+        // 하위 페이지가 실제로 갈리는 경우(운영정책), 그중 하나에 서 있어도
+        // 부모 항목이 켜져 보여야 한다.
         const 머리켜짐 = active === 머리.href || 아래.some((m) => m.매칭 === active);
-        const 아이콘 = 머리.icon;
         return (
           <div key={머리.href} className="info-side-branch">
             <div className={아래.length ? "info-side-row" : undefined}>
               <Link href={머리.주소 ?? 머리.href}
                     className={`info-side-i${아래.length ? " head" : ""}${머리켜짐 ? " on" : ""}`}>
-                <아이콘 size={15} className="info-side-icon" />
                 {머리.label}
               </Link>
               {아래.length > 0 && (
