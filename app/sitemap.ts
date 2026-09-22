@@ -1,6 +1,12 @@
 import type { MetadataRoute } from "next";
 import pool from "@/lib/db";
 
+// DB를 직접 읽는데도 이 지시가 없으면 Next가 빌드 시점에 한 번 굳혀
+// 배포할 때까지 그대로 캐시해 버린다 — 그 사이 새로 올린 공고나 새로
+// 마감된 공고가 사이트맵에 반영되려면 재배포를 기다려야 하는 셈이다.
+// 이 리포의 다른 모든 DB 조회 라우트가 이미 이 지시를 쓰고 있다.
+export const dynamic = "force-dynamic";
+
 const 사이트 = "https://beautywork.co.kr";
 
 // 정적 페이지 + 동적 콘텐츠(진행 중인 채용공고·승인된 회사·게시된 공지·
