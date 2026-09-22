@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Megaphone, Search } from "lucide-react";
 import { 면상품, 면이름, 면설명, 면요약, 광고기간, type 광고면 } from "@/lib/adProducts";
-import { 원 } from "@/lib/companyPlans";
+import { 원, 준비중 } from "@/lib/companyPlans";
 
 /**
  * 배너광고 두 장 — 요금제 카드와 같은 짜임이다.
@@ -27,7 +27,11 @@ export default function AdPlanCards({ 안쪽 = false }: { 안쪽?: boolean }) {
             광고기간.map((d) => x.가격[d]).filter((v): v is number => v !== null));
           const 시작값 = 값들.length ? Math.min(...값들) : null;
           return (
-            <div key={면} className="cs-plan">
+            // 아직 실제로 걸 수 있는 배너·결제 흐름이 없다 — 값은 안내용이고
+            // 「광고 문의하기」로만 받는다. 요금제 카드와 같은 「오픈 준비중」
+            // 딱지로 지금은 문의만 받는 상품임을 밝힌다.
+            <div key={면} className="cs-plan soon">
+              <span className="cs-plan-soon">{준비중}</span>
               <p className="cs-plan-nm"><Icon size={17} strokeWidth={2.2} />{면이름[면]}</p>
               <p className="cs-plan-ln">{면설명[면]}</p>
               <p className="cs-plan-pr">

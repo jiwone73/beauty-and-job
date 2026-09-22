@@ -16609,6 +16609,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-plans.ad2 .cs-plan-btn { height: 48px; font-size: 15.5px; }
 .cs-plans.ad2 .cs-plan-feat { margin-top: 20px; }
 .cs-plans.ad2 .cs-plan-feat li { font-size: 15px; line-height: 1.7; }
+/* 카드가 720px로 좁아졌는데 위 이벤트 띠와 아래 부가세 문구는 옛 폭(1160px)
+   그대로라 카드보다 양옆으로 삐져나와 보였다. 카드와 같은 폭·가운데 정렬로 맞춘다. */
+.cs-wrap:has(.cs-plans.ad2) .co-evtband,
+.co-plans:has(.cs-plans.ad2) .co-evtband { max-width: 720px; margin-left: auto; margin-right: auto; }
+.cs-plans.ad2 + .cs-vat.right { max-width: 720px; margin-left: auto; margin-right: auto; }
 
 /* 머리줄의 오픈이벤트 — 기간 한정이라 한 번은 눈에 걸려야 한다. */
 .cs-nav-evt { color: var(--color-primary) !important; font-weight: 700; }
