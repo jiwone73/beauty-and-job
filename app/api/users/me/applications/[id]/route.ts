@@ -11,6 +11,8 @@ export async function GET(
   const { auth, res: authErr } = requireAuth(req, "user");
   if (authErr) return authErr;
 
+  // 공고가 삭제돼도 지원서를 열 수 있도록 LEFT JOIN + 스냅샷 폴백 — 목록
+  // (app/api/users/me/applications/route.ts)과 같은 방식이다.
   const result = await pool.query(
     `SELECT a.id, a.status, a.applied_at, a.viewed_at, a.cover_letter, a.resume_snapshot,
             a.position_title, a.work_location,
@@ -18,11 +20,12 @@ export async function GET(
             u.job_type AS user_job_type, u.gender, u.birth_date,
             u.address_road, u.address_detail, u.region_sido, u.region_sigungu,
             u.portfolio_images, u.preferred_regions, u.office_job_areas, u.avatar_url AS user_avatar_url,
-            jp.title AS job_title, c.company_name
+            COALESCE(jp.title, a.job_snapshot->>'title') AS job_title,
+            COALESCE(c.company_name, a.job_snapshot->'company'->>'company_name') AS company_name
      FROM applications a
      JOIN users u ON u.id = a.user_id
-     JOIN job_postings jp ON jp.id = a.job_posting_id
-     JOIN companies c ON c.id = jp.company_id
+     LEFT JOIN job_postings jp ON jp.id = a.job_posting_id
+     LEFT JOIN companies c ON c.id = jp.company_id
      WHERE a.id = $1 AND a.user_id = $2`,
     [params.id, auth!.sub]
   );
