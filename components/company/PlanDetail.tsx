@@ -184,12 +184,25 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
       {플랜[id].인재열람 && (
         <section className="pi-sec">
           <h3 className="pi-st">인재 검색 · 제안 · 채팅</h3>
-          <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7 }}>
+          <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7, margin: "0 0 4px" }}>
             인재풀에서 조건에 맞는 분을 찾아 제안을 보내고, 수락하시면 채팅으로 면접 약속까지 잡으실 수 있습니다.{" "}
             <Link href="/support/faq?누구=기업" style={{ color: "#582681", fontWeight: 600 }}>
               자세히 보기 ›
             </Link>
           </p>
+          <div className="pi-flow">
+            {[
+              { src: "flow-1-propose-btn", alt: "인재 카드의 제안하기 버튼", 말: "인재 카드에서 「제안하기」를 누릅니다" },
+              { src: "flow-2-propose-modal", alt: "보낼 공고를 고르고 제안 보내는 화면", 말: "보낼 공고를 고르고 제안을 보냅니다" },
+              { src: "flow-3-chat-accepted", alt: "제안을 수락한 뒤 이어지는 채팅 화면", 말: "수락하시면 채팅으로 이어집니다" },
+              { src: "flow-4-interview-set", alt: "면접 약속이 잡힌 화면", 말: "채팅에서 면접 약속을 잡습니다" },
+            ].map((컷) => (
+              <div key={컷.src} className="pi-flow-item">
+                <img src={`/images/plans/${컷.src}.png`} alt={컷.alt} />
+                <p className="pi-flow-cap">{컷.말}</p>
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
