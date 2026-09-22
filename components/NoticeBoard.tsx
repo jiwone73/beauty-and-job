@@ -117,7 +117,6 @@ export default function NoticeBoard({ emptyText, 갈래고정 }: {
                 {!갈래고정 && (
                   <span className="nb-board-k">[{n.type === "event" ? "이벤트" : "공지사항"}]</span>
                 )}
-                {n.is_pinned && <span className="nb-board-pin">고정</span>}
                 <span className="nb-board-t">{n.title}</span>
                 <span className="nb-board-d">{날짜(n.published_at || n.created_at)}</span>
               </Link>
