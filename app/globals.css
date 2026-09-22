@@ -16660,6 +16660,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 1:1 문의 폼 — 창이 아니라 화면 안에 선다. 칸 하나에 한 줄, 아래에 취소와
    보내기. 폼 폭은 글을 쓰는 칸이라 판 전체를 쓰지 않고 읽기 좋은 데까지만. */
 /* 다운로드 게시판 — 공지 목록(.nb-*)을 그대로 쓰되 오른쪽에 받기 칸이 하나 더 있다. */
+/* 공지 목록(.nb-*)은 구분 배지가 제목 앞에 딸린 채였는데, 다운로드는
+   갈래(이력서 등)를 진짜 열로 세운다 — 구분 · 제목 · 등록일자 · 다운로드
+   네 칸. 머리줄엔 gap 이 없어 줄 내용(gap:8px)과 어긋나 보였다. */
+.dl-th { gap: 8px; }
+.dl-th > span:nth-child(1) { flex: none; width: 64px; text-align: left; }
+.dl-th > span:nth-child(2) { flex: 1; text-align: left; }
+.dl-th > span:nth-child(3) { flex: none; width: 110px; text-align: left; }
+.dl-board .nb-board-k { flex: none; width: 64px; text-align: left; }
+.dl-board .nb-board-d { text-align: left; }
 .dl-th > span:last-child { flex: none; width: 92px; }
 .dl-get { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   width: 92px; font-size: 13.5px; font-weight: 700; color: #555; }

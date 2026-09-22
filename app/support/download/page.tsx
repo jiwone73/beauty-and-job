@@ -56,7 +56,7 @@ export default function DownloadPage() {
       </form>
 
       <div className="nb-th dl-th">
-        <span>제목</span><span>등록일자</span><span>받기</span>
+        <span>구분</span><span>제목</span><span>등록일자</span><span>다운로드</span>
       </div>
 
       {보일것.length === 0 ? (
@@ -71,7 +71,7 @@ export default function DownloadPage() {
                 <span className="nb-board-k">{d.갈래}</span>
                 <span className="nb-board-t">{d.이름}</span>
                 <span className="nb-board-d">{d.날짜}</span>
-                <span className="dl-get"><Download size={16} />받기</span>
+                <span className="dl-get"><Download size={16} /></span>
               </a>
             </li>
           ))}
