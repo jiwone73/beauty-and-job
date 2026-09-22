@@ -198,7 +198,9 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
               { src: "flow-4-interview-set", alt: "면접 약속이 잡힌 화면", 말: "채팅에서 면접 약속을 잡습니다" },
             ].map((컷) => (
               <div key={컷.src} className="pi-flow-item">
-                <img src={`/images/plans/${컷.src}.png`} alt={컷.alt} />
+                <div className="pi-flow-pic">
+                  <img src={`/images/plans/${컷.src}.png`} alt={컷.alt} />
+                </div>
                 <p className="pi-flow-cap">{컷.말}</p>
               </div>
             ))}

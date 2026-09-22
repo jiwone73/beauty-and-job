@@ -16513,12 +16513,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-cap b { color: var(--color-primary); font-weight: 600; }
 
 /* 인재 검색 · 제안 · 채팅 — 실제 화면 네 컷. 절차를 말로 풀지 않고
-   차례대로 찍어 보여 준다. */
-.pi-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 12px; }
-.pi-flow-item img { display: block; width: 100%; border: 1px solid var(--card-line);
-  border-radius: 8px; }
-.pi-flow-cap { font-size: 13px; color: #8a8a90; line-height: 1.5; margin: 8px 0 0; }
-@media (max-width: 768px) { .pi-flow { grid-template-columns: repeat(2, 1fr); } }
+   차례대로 찍어 보여 준다. 2행 2열 — 한 줄에 넷을 다 넣으면 칸이 좁아져
+   글자가 안 읽힌다. */
+.pi-flow { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 12px; }
+.pi-flow-item { display: flex; flex-direction: column; }
+.pi-flow-pic { display: flex; align-items: center; justify-content: center; min-height: 220px;
+  border: 1px solid var(--card-line); border-radius: 8px; background: #fafafa; overflow: hidden; }
+.pi-flow-pic img { display: block; width: 100%; }
+.pi-flow-cap { font-size: 13.5px; color: #8a8a90; line-height: 1.5; margin: 8px 0 0; }
+@media (max-width: 640px) { .pi-flow { grid-template-columns: 1fr; } }
 
 /* 목록 캡처 위에 구간만 그린다. 글자는 안 읽혀도 된다 — 어느 칸에 서는지가
    전부라서, 오히려 매장 이름이 또렷하면 그 매장이 그 등급을 산 것처럼 읽힌다. */
