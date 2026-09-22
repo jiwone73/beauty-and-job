@@ -12,9 +12,11 @@ export async function GET(
   const { id } = params
   const auth = getAuth(req)
 
+  // 마감(CLOSED)은 공고읽기()가 그대로 내어 준다 — 여기서 404 나는 것은
+  // 실제로 없거나(삭제) 아직 등록 중(DRAFT)인 경우뿐이다.
   const response = await 공고읽기(id)
   if (!response) {
-    return err('JOB_001', '공고를 찾을 수 없거나 마감되었습니다.', 404)
+    return err('JOB_001', '공고를 찾을 수 없습니다.', 404)
   }
 
   // 조회수 +1 (비동기로 처리, 응답 지연 안 시킴)

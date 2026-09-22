@@ -38,7 +38,7 @@ export const 공고읽기 = cache(async function 공고읽기(id: string) {
        c.is_member
      FROM job_postings jp
      LEFT JOIN companies c ON c.id = jp.company_id
-     WHERE jp.id = $1 AND jp.status = 'ACTIVE'`,
+     WHERE jp.id = $1 AND jp.status IN ('ACTIVE', 'CLOSED')`,
     [id]
   )
   if (jobRes.rowCount === 0) return null
@@ -49,6 +49,9 @@ export const 공고읽기 = cache(async function 공고읽기(id: string) {
 
   return {
     id: job.id,
+    // 마감(CLOSED)은 실제 삭제·미등록(DRAFT)과 다르다 — 존재는 하니 진짜
+    // 404를 내지 않고, 검색 노출에서만 뺀다(app/jobs/[id]/page.tsx).
+    status: job.status as 'ACTIVE' | 'CLOSED',
     title: job.title,
     job_type: job.job_type,
     // 업체 종류. 화면(공고모양)이 이 값을 먼저 보고 매장/오피스 이름을 짓는데,

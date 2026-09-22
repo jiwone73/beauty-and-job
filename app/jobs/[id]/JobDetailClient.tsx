@@ -220,6 +220,14 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
         </div>
       </header>
 
+      {job.isClosed && (
+        <div style={{
+          background: "#fef2f2", color: "#b91c1c", textAlign: "center",
+          padding: "10px 16px", fontSize: "13.5px", fontWeight: 600,
+        }}>
+          마감된 공고예요 — 더 이상 지원을 받지 않아요.
+        </div>
+      )}
       <JobDetailView
         job={job}
         related={related}
@@ -284,6 +292,15 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
             }}>
               기업회원 계정에서는 지원·스크랩을 이용할 수 없어요.
             </div>
+          ) : job.isClosed ? (
+            // 실제 삭제와 달리 마감(CLOSED)은 화면을 그대로 보여 준다(스크랩·
+            // 공유는 계속 됨) — 다만 이미 끝난 자리라 지원만 잠근다.
+            <div style={{
+              background: "#f6f6f8", color: "#555", borderRadius: "10px",
+              padding: "12px 14px", fontSize: "13px", lineHeight: 1.5, textAlign: "center"
+            }}>
+              마감된 공고예요. 더 이상 지원하실 수 없어요.
+            </div>
           ) : (
             <>
               {!isRedirect && !alreadyApplied && (
@@ -342,6 +359,10 @@ export default function JobDetailClient({ 미리 }: { 미리?: any }) {
         ) : isCompany ? (
           <button className="job-detail-mobile-apply" disabled style={{ opacity: 0.7 }}>
             기업회원은 지원 불가
+          </button>
+        ) : job.isClosed ? (
+          <button className="job-detail-mobile-apply" disabled style={{ opacity: 0.7 }}>
+            마감된 공고예요
           </button>
         ) : (
           <>

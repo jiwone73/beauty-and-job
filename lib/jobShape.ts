@@ -8,6 +8,8 @@ import { composeCompanyAddress } from "@/lib/address";
 export function 공고모양(j: any) {
   return {
         id: j.id,
+        // 마감(CLOSED)인지 — 화면이 지원 버튼을 잠그고 배너를 낸다.
+        isClosed: j.status === 'CLOSED',
         isExternal: j.is_external || false,
         applyMethod: j.apply_method || 'NATIVE',
         externalApplyUrl: j.external_apply_url || '',

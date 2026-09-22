@@ -10,10 +10,11 @@ import JobDetailClient from "./JobDetailClient";
 // 공고명을 누르면 늘 새 탭이다) 몇 초씩 '불러오는 중'만 떠 있었다.
 export const dynamic = "force-dynamic";
 
-// 조회 자체가 실패(DB 일시 오류)한 것과 정말 없는 공고(마감·삭제·미등록)를
+// 조회 자체가 실패(DB 일시 오류)한 것과 정말 없는 공고(삭제·미등록)를
 // 가른다 — 앞의 것까지 404로 박으면 한 번 흔들렸다고 검색엔진이 그 URL을
-// 지워 버린다. 뒤의 것만 진짜 404를 낸다(그래야 네이버·구글이 마감 공고를
-// 검색 결과에서 걷어간다 — 200으로 "찾을 수 없어요"만 보여주면 안 지워진다).
+// 지워 버린다. 마감(CLOSED)은 공고읽기()가 그대로 내어 준다 — 실제
+// 삭제와 달리 다시 열릴 수 있고, 지원한 사람·회사가 계속 봐야 해서
+// 404로 막지 않는다(대신 검색 노출만 뺀다 — 아래 generateMetadata).
 async function 안전하게읽기(id: string) {
   try {
     return { 공고: await 공고읽기(id), 오류: false };
@@ -59,6 +60,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       description: 설명,
       images: 이미지 ? [이미지] : undefined,
     },
+    // 마감된 공고는 더 이상 뽑는 자리가 아니라 검색에 새로 태울 이유가
+    // 없다 — 페이지 자체는 살려 두되(지원자·회사가 봐야 함) 색인만 뺀다.
+    ...(공고.status === "CLOSED" ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -114,12 +118,17 @@ export default async function JobDetailPage({ params }: { params: { id: string }
   const { 공고: 미리, 오류 } = await 안전하게읽기(params.id);
   if (!미리 && !오류) notFound();
 
+  // 마감된 공고는 이제 채용 중이 아니므로 JobPosting 구조화 데이터를 빼야
+  // 한다 — 실제로 안 뽑는 자리를 채용 중이라고 검색엔진에 계속 알리는
+  // 셈이 된다(구글 채용정보 가이드라인 위반 소지).
+  const 채용중 = 미리 && 미리.status !== "CLOSED";
+
   return (
     <>
-      {미리 && (
+      {채용중 && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(구조화데이터(미리, params.id)) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(구조화데이터(미리!, params.id)) }}
         />
       )}
       <JobDetailClient 미리={미리} />
