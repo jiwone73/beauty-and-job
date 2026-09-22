@@ -18,11 +18,9 @@ import { 플랜 } from "@/lib/companyPlans";
  */
 type 공지 = { id: string; title: string; short_title?: string | null; target?: string | null };
 
-export default function EventBand({ 받는쪽 = "company", 안쪽 = false, 요금안내 = false }: {
+export default function EventBand({ 받는쪽 = "company", 요금안내 = false }: {
   /** 이 화면을 보는 사람. 받는 쪽이 다른 이벤트는 걸러 낸다. */
   받는쪽?: "company" | "user";
-  /** 대시보드 안이면 안쪽 경로로 보낸다 */
-  안쪽?: boolean;
   /**
    * 값이 같이 보이는 화면에서 한 줄 더 적는다.
    *
@@ -46,12 +44,11 @@ export default function EventBand({ 받는쪽 = "company", 안쪽 = false, 요�
 
   if (!것) return null;
 
-  // 기업 이벤트는 오픈이벤트 안내로, 개인 이벤트는 이벤트 목록으로 보낸다.
-  // 공개 쪽은 기업 서비스 첫 화면이 곧 이벤트 화면이다. 대시보드 안에는 그런
-  // 화면이 없어 따로 둔 이벤트 안내로 간다.
-  const 갈곳 = 받는쪽 === "company"
-    ? (안쪽 ? "/company/dashboard/plans/event" : "/company")
-    : `/event?open=${것.id}`;
+  // 「자세히 보기」는 이 줄이 읽어 온 그 공지 글로 그대로 보낸다 — 기업이든
+  // 개인이든 같은 이벤트를 같은 글로 본다. 기업 서비스 첫 화면(/company)으로
+  // 보내던 예전 길은 그 화면이 이벤트 안내가 아니라 서비스 소개라 눌러도
+  // "자세히"가 없었다.
+  const 갈곳 = 받는쪽 === "company" ? `/notice/${것.id}` : `/event?open=${것.id}`;
 
   return (
     <>

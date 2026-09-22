@@ -9,7 +9,7 @@ export default function CompanyDashboardAdsPage() {
   return (
     <CompanyLayout activePage="plans-ads">
       <div className="co-plans">
-        <EventBand 안쪽 />
+        <EventBand />
         <AdPlanCards 안쪽 />
       </div>
     </CompanyLayout>
