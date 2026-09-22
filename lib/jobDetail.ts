@@ -1,8 +1,11 @@
+import { cache } from 'react'
 import pool from '@/lib/db'
 
 // 공고 상세 한 건을 읽어 화면이 쓰는 모양으로 정리한다.
 // /api/jobs/[id] 와 서버에서 미리 그리는 /jobs/[id] 가 같은 값을 봐야 해서
 // 한 곳에 둔다 — 두 벌로 두면 한쪽만 고쳐져 화면이 갈라진다.
+// generateMetadata 와 페이지 본문이 같은 요청 안에서 각각 한 번씩 불러도
+// cache() 가 묶어 실제 쿼리는 한 번만 나간다.
 // DATE 칸은 시각이 없다. 시간대를 태우지 않고 연-월-일만 적는다.
 function 날짜꼴(d: any): string | null {
   if (!d) return null
@@ -11,7 +14,7 @@ function 날짜꼴(d: any): string | null {
   return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`
 }
 
-export async function 공고읽기(id: string) {
+export const 공고읽기 = cache(async function 공고읽기(id: string) {
   const jobRes = await pool.query(
     `SELECT
        jp.*,
@@ -132,4 +135,4 @@ export async function 공고읽기(id: string) {
     is_bookmarked: false,
     has_applied: false,
   }
-}
+})

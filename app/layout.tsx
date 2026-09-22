@@ -6,6 +6,9 @@ import RoleGuard from "@/components/RoleGuard";
 import VisitBeacon from "@/components/VisitBeacon";
 
 export const metadata: Metadata = {
+  // 상대경로로 준 OG 이미지 등을 절대주소로 바꾸는 기준. 오픈 전에도 미리
+  // 박아 둔다 — 이 값이 없으면 페이지마다 OG 이미지가 다 깨진 채로 뜬다.
+  metadataBase: new URL("https://beautywork.co.kr"),
   robots: { index: false, follow: false },
   title: "뷰티워크 | 뷰티 커리어의 시작과 성장",
   description:
