@@ -13,14 +13,15 @@ export async function GET(
   if (!id) return err('COMPANY_002', '회사 ID가 없습니다.', 400)
 
   try {
-    // 회사 기본 정보 (공개 필드만)
+    // 회사 기본 정보 (공개 필드만) — 승인된(ACTIVE) 회사만 공개 프로필로 연다.
+    // 상태 조건이 없으면 승인 대기·정지·반려된 회사까지 그대로 열려 버린다.
     const companyRes = await pool.query(
       `SELECT id, company_name, brand_name, logo_url, description,
               website_url, address, company_type, industry,
               representative_name, founded_year, company_size, company_phone,
               region_sido, region_sigungu, created_at
        FROM companies
-       WHERE id = $1`,
+       WHERE id = $1 AND status = 'ACTIVE'`,
       [id]
     )
     if (companyRes.rowCount === 0) {

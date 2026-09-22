@@ -1,67 +1,49 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import InfoShell from "@/components/InfoShell";
-import NoticeBody from "@/components/support/NoticeBody";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import pool from "@/lib/db";
+import NoticeDetailClient from "./NoticeDetailClient";
 
-/**
- * 공지·이벤트 글 하나.
- *
- * 목록과 같은 판(머리줄 · 탭 · 옆줄)을 쓴다. 글을 읽는 동안에도 고객센터
- * 안에 서 있다는 것이 보여야 하고, 다 읽고 옆 항목으로 바로 건너갈 수 있다.
- */
-type 공지 = {
-  id: string; type: "notice" | "event"; title: string; body: string;
-  banner_image_url: string | null;
-  is_pinned: boolean; published_at: string | null; created_at: string;
-};
-
-function 날짜(s: string | null) {
-  if (!s) return "";
-  const d = new Date(s);
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+async function 글읽기(id: string) {
+  try {
+    const { rows } = await pool.query(
+      `SELECT type, title, body, banner_image_url FROM notices
+        WHERE id = $1 AND status = 'published'`,
+      [id]
+    );
+    return rows[0] || null;
+  } catch {
+    return null;
+  }
 }
 
-export default function NoticeDetailPage() {
-  const id = useParams()?.id as string;
-  const [글, set글] = useState<공지 | null>(null);
-  const [부르는중, set부르는중] = useState(true);
-  const [없음, set없음] = useState(false);
+// 글 자체 표(HTML)는 NoticeBody 가 그리므로 여기서는 태그를 걷어낸
+// 텍스트만 뽑아 설명(description)에 쓴다.
+function 글요약(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 100);
+}
 
-  useEffect(() => {
-    if (!id) return;
-    set부르는중(true);
-    fetch(`/api/notices/${id}`)
-      .then((r) => r.json())
-      .then((res) => { if (res.success) set글(res.data); else set없음(true); })
-      .catch(() => set없음(true))
-      .finally(() => set부르는중(false));
-  }, [id]);
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const 글 = await 글읽기(params.id);
+  if (!글) return {};
+  const 갈래 = 글.type === "event" ? "이벤트" : "공지사항";
+  const 제목 = `${글.title} | ${갈래} - 뷰티워크`;
+  const 설명 = 글요약(글.body || "") || `뷰티워크 ${갈래}: ${글.title}`;
+  return {
+    title: 제목,
+    description: 설명,
+    alternates: { canonical: `/notice/${params.id}` },
+    openGraph: {
+      title: 제목,
+      description: 설명,
+      url: `/notice/${params.id}`,
+      images: 글.banner_image_url ? [{ url: 글.banner_image_url }] : undefined,
+      type: "article",
+    },
+  };
+}
 
-  return (
-    <InfoShell active="/notice" title="공지사항">
-      {/* 본문이 길면(이벤트 공지 등) 다 안 읽고도 바로 돌아갈 수 있어야 한다 —
-          목록으로 가는 길은 글 위쪽에 둔다. */}
-      <Link href="/notice" className="nb-view-back"><ChevronLeft size={15} />목록으로</Link>
-      {부르는중 ? (
-        <p className="nb-board-msg">불러오는 중...</p>
-      ) : 없음 || !글 ? (
-        <p className="nb-board-msg">글을 찾을 수 없습니다.</p>
-      ) : (
-        <>
-          {글.banner_image_url && (
-            <img className="nb-view-banner" src={글.banner_image_url} alt={글.title} />
-          )}
-          <span className={`nb-view-tag${글.type === "event" ? " evt" : ""}`}>
-            {글.type === "event" ? "이벤트" : "공지"}
-          </span>
-          <h2 className="nb-view-h">{글.title}</h2>
-          <p className="nb-view-d">{날짜(글.published_at || 글.created_at)}</p>
-          <NoticeBody body={글.body} />
-        </>
-      )}
-    </InfoShell>
-  );
+export default async function NoticeDetailPage({ params }: { params: { id: string } }) {
+  const 글 = await 글읽기(params.id);
+  if (!글) notFound();
+  return <NoticeDetailClient />;
 }
