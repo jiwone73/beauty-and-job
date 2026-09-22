@@ -2,6 +2,8 @@
 import { forwardRef } from "react";
 
 // 증명서 공용 서식: 테두리 프레임 + 문서번호 + 제목 + 본문(children) + 발급처/직인
+// 직인은 바를정(뷰티워크 운영사) 사용인감 이미지다 — 흰 배경이라
+// mix-blend-mode: multiply 로 겹쳐 종이에 찍힌 것처럼 보이게 한다.
 const CertificateSheet = forwardRef<HTMLDivElement, {
   docNo: string;
   todayStr: string;
@@ -22,7 +24,9 @@ const CertificateSheet = forwardRef<HTMLDivElement, {
           <p style={{ fontSize: c ? 13 : 15, color: "#555", letterSpacing: 3, margin: c ? "0 0 12px" : "0 0 16px" }}>{todayStr}</p>
           <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
             <span style={{ fontSize: c ? 17 : 21, fontWeight: 800, letterSpacing: c ? 4 : 6, color: "#555" }}>뷰티워크</span>
-            <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: c ? 42 : 54, height: c ? 42 : 54, borderRadius: "50%", border: "2px solid #c0392b", color: "#c0392b", fontSize: c ? 11 : 12, fontWeight: 800, letterSpacing: 1, transform: "rotate(-6deg)", marginLeft: 6 }}>직인</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/seal-barujeong.png" alt="바를정 직인"
+                 style={{ width: c ? 44 : 58, height: c ? 44 : 58, marginLeft: 6, transform: "rotate(-6deg)", mixBlendMode: "multiply" }} />
           </div>
           <p style={{ fontSize: c ? 10 : 12, color: "#555", marginTop: 10 }}>뷰티 채용 플랫폼 뷰티워크 · beautywork.co.kr</p>
         </div>
