@@ -7,16 +7,11 @@ import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { ApplicationStatus } from "@/lib/types/company";
 import { ArrowLeft, Download, Printer } from "lucide-react";
+import { calcAge as 나이 } from "@/lib/memberFormat";
 
 // 지원서. 모달이 아니라 페이지다 — 이력서와 같은 이유로, 한 사람을 앉아서 읽는
 // 자리는 제 주소를 가져야 한다(뒤로가기가 목록으로 가고, 링크로 건넬 수 있고,
 // 두 사람을 새 탭으로 나란히 볼 수 있다).
-
-const 나이 = (birth: string | null) => {
-  if (!birth) return null;
-  const y = new Date(birth).getFullYear();
-  return y ? new Date().getFullYear() - y : null;
-};
 const 성별 = (g: string | null) =>
   g === "FEMALE" || g === "여성" ? "여" : g === "MALE" || g === "남성" ? "남" : "";
 

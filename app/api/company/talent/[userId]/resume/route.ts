@@ -64,9 +64,12 @@ export async function GET(
   // 열람권한이 없는 기업에는 매장명을 열어 주지 않는다 — 화면(ResumePreview)의
   // ○ 표시는 「후보자가 가린 것」만 가리므로, 여기서 미리 지워 보내지 않으면
   // 열람권한만으로 매장명이 그대로 노출된다.
-  const careersOut = (!열람가능 && !지원함)
-    ? careers.rows.map((c) => ({ ...c, company: 재직가리기(c.position) || "일하는 중", position: null }))
-    : careers.rows;
+  // 거꾸로, 연락할 수 있는 곳이라도 후보자가 그 재직처를 비공개(company_public
+  // = false)로 해 뒀으면 그 뜻이 우선한다 — 열람권한으로 덮어쓰지 않는다.
+  const careersOut = careers.rows.map((c) =>
+    ((열람가능 || 지원함) && c.company_public !== false)
+      ? c
+      : { ...c, company: 재직가리기(c.position) || "일하는 중", position: null });
 
   // 이력서를 페이지로 열면 그 자리에서 스크랩하고 제안까지 해야 한다 — 지금 어떤
   // 상태인지 알아야 버튼을 그릴 수 있다.

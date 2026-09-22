@@ -217,7 +217,7 @@ export async function GET(req: NextRequest) {
         (
           SELECT json_build_object(
             'company', company, 'department', department, 'position', position,
-            'start_date', start_date, 'end_date', end_date
+            'start_date', start_date, 'end_date', end_date, 'company_public', company_public
           )
           FROM user_careers WHERE user_id = u.id ORDER BY start_date DESC LIMIT 1
         ) AS career_detail,
@@ -333,11 +333,12 @@ export async function GET(req: NextRequest) {
       careerCount: r.career_count,
       educationDetail: r.education_detail,
       // 재직 매장 이름은 연락할 수 있게 된 다음에 알면 된다. 그전에는 직책만.
-      careerDetail: (열람가능 || r.applied_here)
-        ? r.career_detail
-        : (r.career_detail
-            ? { ...r.career_detail, company: 재직가리기(r.career_detail.position) || "일하는 중", position: null }
-            : null),
+      // 연락할 수 있는 사이라도, 후보자가 이 재직처를 스스로 비공개(company_public
+      // = false)로 해 뒀으면 그 뜻이 우선한다 — 열람권한으로 덮어쓰지 않는다.
+      careerDetail: !r.career_detail ? null
+        : ((열람가능 || r.applied_here) && r.career_detail.company_public !== false)
+          ? { ...r.career_detail, company_public: undefined }
+          : { ...r.career_detail, company: 재직가리기(r.career_detail.position) || "일하는 중", position: null, company_public: undefined },
       jobSearchStatus: r.job_search_status || "SEEKING",
       jobSearchStatusAt: r.job_search_status_at || null,
       scrapped: r.scrapped,

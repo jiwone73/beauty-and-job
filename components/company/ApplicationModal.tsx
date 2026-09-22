@@ -6,15 +6,10 @@ import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { ApplicationStatus } from "@/lib/types/company";
+import { calcAge as 나이 } from "@/lib/memberFormat";
 
 // 지원서. 공고 카드 안에서 지원자를 누르면 이 창이 뜬다 — 화면을 옮기면 어느
 // 공고를 보고 있었는지 잃고, 판 폭에 맞춰 이력서가 필요 이상으로 벌어진다.
-
-const 나이 = (birth: string | null) => {
-  if (!birth) return null;
-  const y = new Date(birth).getFullYear();
-  return y ? new Date().getFullYear() - y : null;
-};
 const 성별 = (g: string | null) =>
   g === "FEMALE" || g === "여성" ? "여" : g === "MALE" || g === "남성" ? "남" : "";
 
