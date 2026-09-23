@@ -5289,6 +5289,13 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 7px !important;
   }
+  /* 카드 글자도 한 단계씩 낮춘다(기존값 -1px) — 좁은 2열 칸에서 제목·매장이름이
+     덜 접히게. .jobcard-* 전체가 아니라 이 채용관 카드에만 건다 — 다른 카드
+     묶음(프리미엄 채용관 등)까지 같이 줄면 그쪽은 요청하지 않은 변경이 된다. */
+  .card-grid-5 .jobcard-title { font-size: 13px; }
+  .card-grid-5 .jobcard-company,
+  .card-grid-5 .jobcard-meta,
+  .card-grid-5 .jobcard-deadline { font-size: 12px; }
 }
 
 /* ============================================
@@ -12401,10 +12408,10 @@ div:has(> table.admin-table),
   .jobs-grid .jobcard { aspect-ratio: auto; }
   .jobs-grid .jobcard .jobcard-cover { height: auto; flex: none; aspect-ratio: 16 / 10; }
   .jobs-grid .jobcard .jobcard-body { height: auto; flex: none; padding: 5px 10px 6px; }
-  .jobs-grid .jobcard .jobcard-title { font-size: 13px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .jobs-grid .jobcard .jobcard-company { font-size: 12px; margin-bottom: 2px; }
-  .jobs-grid .jobcard .jobcard-meta { font-size: 12px; margin-bottom: 4px; }
-  .jobs-grid .jobcard .jobcard-deadline { font-size: 12px; margin-top: 0; }
+  .jobs-grid .jobcard .jobcard-title { font-size: 12px; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .jobs-grid .jobcard .jobcard-company { font-size: 11px; margin-bottom: 2px; }
+  .jobs-grid .jobcard .jobcard-meta { font-size: 11px; margin-bottom: 4px; }
+  .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; margin-top: 0; }
 }
 
 /* 프로필 헤더 채용공고 위치 — 이력서와 통일 (x=166) */
@@ -12961,13 +12968,13 @@ button,
 }
 
 /* 모바일 카드: 두 장이 붙어 보이도록 사이 간격을 줄이고, 아래 여백도 조인다.
-   내용 글자는 한 단계 낮춰(12px) 카드가 세로로 길어 보이지 않게 한다. */
+   내용 글자는 한 단계 더 낮춰(11px) 카드가 세로로 길어 보이지 않게 한다. */
 @media (max-width: 768px) {
   .jobs-grid { gap: 7px; }
   .jobs-grid .jobcard .jobcard-body { padding: 5px 10px 3px; }
   .jobs-grid .jobcard .jobcard-company,
   .jobs-grid .jobcard .jobcard-meta,
-  .jobs-grid .jobcard .jobcard-deadline { font-size: 12px; }
+  .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; }
 }
 
 /* 채용공고 목록: 제목이 두 줄까지 차서 회사명과 붙어 보인다 — 한 칸만 띄운다. */
