@@ -9791,13 +9791,14 @@ div:has(> table.admin-table),
   background: #f7f7f8; border-radius: 8px;
   text-decoration: none; color: inherit;
 }
+/* 공지·채용속보 두 줄은 붙어 보이게 사이 간격만 최소로 줄인다. */
+.hero-m-ticker.tight { margin-top: 4px; }
+.hero-m-ticker-icon { flex-shrink: 0; color: #582681; }
 .hero-m-ticker-tag {
-  display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;
-  font-size: 11.5px; font-weight: 700; padding: 3px 7px; border-radius: 20px;
+  flex-shrink: 0;
+  font-size: 11.5px; font-weight: 700; color: #582681;
 }
-.hero-m-ticker-tag.notice { background: #ecebfb; color: #582681; }
-.hero-m-ticker-tag.flash { background: #fdeceb; color: #e02020; }
-.hero-m-ticker-tag.info { background: #eee; color: #555; }
+.hero-m-ticker-tag.info { color: #555; }
 .hero-m-ticker-text {
   flex: 1; min-width: 0; font-size: 13px; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;

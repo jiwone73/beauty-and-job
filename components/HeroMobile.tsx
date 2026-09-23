@@ -125,14 +125,16 @@ export default function HeroMobile() {
           여기서는 걷는다 — 같은 문이 두 자리에 있을 필요가 없다. */}
       {notice && (
         <Link href={notice.href} className="hero-m-ticker">
-          <span className="hero-m-ticker-tag notice"><Megaphone size={12} /> 공지</span>
+          <Megaphone size={14} className="hero-m-ticker-icon" />
+          <span className="hero-m-ticker-tag">공지</span>
           <span className="hero-m-ticker-text">{notice.title}</span>
           <span className="hero-m-ticker-go">›</span>
         </Link>
       )}
       {flash && (
-        <Link href={flash.href} className="hero-m-ticker">
-          <span className="hero-m-ticker-tag flash"><Zap size={12} /> 채용속보</span>
+        <Link href={flash.href} className="hero-m-ticker tight">
+          <Zap size={14} className="hero-m-ticker-icon" />
+          <span className="hero-m-ticker-tag">채용속보</span>
           <span className="hero-m-ticker-text">{flash.title}</span>
           <span className="hero-m-ticker-go">›</span>
         </Link>
