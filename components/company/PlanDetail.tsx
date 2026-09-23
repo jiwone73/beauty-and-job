@@ -220,6 +220,21 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         </section>
       )}
 
+      {/* 인재 추천은 프리미엄 전용이다 — 스탠다드는 검색으로 직접 찾고,
+          프리미엄은 대시보드가 먼저 찾아 세워 준다. */}
+      {것.인재추천 && (
+        <section className="pi-sec">
+          <h3 className="pi-st">우리 공고에 맞는 인재 추천</h3>
+          <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7, margin: "0 0 4px" }}>
+            공고를 올려 두면 조건에 맞는 분을 대시보드가 찾아 세워 드립니다. 직군·지역·경력이
+            맞는 만큼 「내 직군」·「희망 지역」 같은 이유도 같이 보여, 왜 이 분인지 바로 알 수 있습니다.
+          </p>
+          <div className="pi-flow-frame" style={{ maxWidth: 620 }}>
+            <img src="/images/plans/flow-talent-recommend.png" alt="대시보드에 뜨는 공고 맞춤 인재 추천" />
+          </div>
+        </section>
+      )}
+
       <section className="pi-sec">
         <h3 className="pi-st">유의사항</h3>
         <ul className="pi-warn">

@@ -26,11 +26,16 @@ const 카드순서: PlanId[] = ["LIGHT", "STANDARD", "PREMIUM"];
  *  스탠다드·프리미엄은 메인 채용관 제목에 쓰는 것과 같은 아이콘이다. */
 const 아이콘 = { LIGHT: Zap, STANDARD: Star, PREMIUM: Crown } as const;
 
+/** 「**글자**」만 굵게 — 숫자 하나를 놓치지 않게, 색은 새로 쓰지 않고 굵기로. */
+function 굵게(글: string) {
+  return 글.split(/\*\*(.+?)\*\*/g).map((s, i) => (i % 2 === 1 ? <b key={i}>{s}</b> : s));
+}
+
 export function 혜택목록({ 칸 }: { 칸: 0 | 1 | 2 | 3 }) {
   return (
     <ul className="cs-plan-feat">
       {혜택(칸).map((r) => (
-        <li key={r.글} className={r.새것 ? "new" : undefined}>{r.글}</li>
+        <li key={r.글} className={r.새것 ? "new" : undefined}>{굵게(r.글)}</li>
       ))}
     </ul>
   );
