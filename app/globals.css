@@ -9368,7 +9368,7 @@ div:has(> table.admin-table),
   line-height: 1.3;
 }
 .hero-m-banner-desc div {
-  font-size: 14.5px;
+  font-size: 15.5px;
   font-weight: 800;
   color: #1f1f22;
   white-space: nowrap;
@@ -9437,7 +9437,7 @@ div:has(> table.admin-table),
 .hero-m-search-label {
   font-size: 15px;
   color: #555;
-  margin: 0 16px 3px;
+  margin: 16px 16px 3px;
 }
 .hero-m-searchbar {
   display: flex;
