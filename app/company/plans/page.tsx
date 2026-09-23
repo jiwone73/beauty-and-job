@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import ServiceHeader from "@/components/company/ServiceHeader";
 import PlanCards from "@/components/company/PlanCards";
 import EventBand from "@/components/company/EventBand";
@@ -32,13 +31,12 @@ export default function CompanyPlansPage() {
           <Link href="/support/faq?누구=기업" style={{ color: "#582681", fontWeight: 600 }}>
             기업회원 FAQ
           </Link>
-          에서 확인하실 수 있습니다.
-        </p>
-        <div className="cs-center" style={{ marginTop: 30 }}>
-          <Link href="/support" className="cs-btn-line lg">
-            1:1 문의하기 <ArrowRight size={15} />
+          에서 확인하실 수 있습니다. 그래도 궁금한 점이 해결되지 않으면{" "}
+          <Link href="/support" style={{ color: "#582681", fontWeight: 600 }}>
+            1:1 문의하기
           </Link>
-        </div>
+          로 문의해 주세요.
+        </p>
       </section>
     </div>
   );
