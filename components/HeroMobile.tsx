@@ -3,7 +3,7 @@ import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, MapPin, ChevronDown, Megaphone, Zap } from "lucide-react";
+import { Search, ChevronDown, Megaphone, Zap } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeCta from "@/components/ResumeCta";
@@ -106,7 +106,6 @@ export default function HeroMobile() {
           <button type="button"
             className={`hero-m-region-btn ${selected.length ? "active" : ""}`}
             onClick={() => setModalOpen(true)}>
-            <MapPin size={14} />
             <span>{regionLabel}</span>
             <ChevronDown size={13} />
           </button>
