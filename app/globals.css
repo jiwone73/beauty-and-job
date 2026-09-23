@@ -16488,6 +16488,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    광고 문장을 쓰지 않는다.
    =========================================== */
 .pi { max-width: 780px; margin: 0 auto; color: #555; font-size: 15px; }
+/* 780px 이하 화면에서는 이 여백이 사라져 글자가 화면 양끝에 그대로 붙었다
+   (넓은 화면에서는 780px 밖 남는 자리가 여백을 대신해 안 보이던 문제). */
+@media (max-width: 768px) {
+  .pi { padding: 0 20px; }
+}
 .pi-hd { border-bottom: 2px solid #1f1f22; padding: 22px 0 16px; }
 .pi-nm { font-size: 27px; font-weight: 700; color: #555; margin: 0 0 7px; letter-spacing: -.5px; }
 .pi-ln { font-size: 15.5px; color: #555; margin: 0; line-height: 1.55; word-break: keep-all; }
