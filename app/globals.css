@@ -4905,7 +4905,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 
 /* ── 공통 ── */
 @media (max-width: 768px) {
-  .container { padding: 0 16px; }
+  .container { padding: 0 8px; }
   .section { padding: 12px 0; }
   .section-head { flex-direction: row; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
   .section-head > div { flex: 1; min-width: 0; }
