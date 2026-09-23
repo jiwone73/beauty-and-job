@@ -5267,6 +5267,25 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     flex-shrink: 0 !important;
   }
 
+  /* 프리미엄 채용관만은 PC와 같은 4열×2줄 구조를 그대로 옆으로 민다 —
+     세로로 2장씩 쌓은 "열"을 만들고, 그 열이 네 개가 될 때까지 오른쪽으로
+     민다(8칸). 홈 화면의 다른 card-grid-4 자리는 그대로 두려고
+     showcase-sec 안에서만 건다. */
+  .showcase-sec .card-grid-4 {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-template-rows: repeat(2, auto) !important;
+    /* 프리미엄은 항상 8칸(4열×2줄)이라 열 네 개를 못박아 둔다 —
+       grid-auto-columns 로는 첫 칸 너비가 2px로 잘못 잡히는 크롬 버그가
+       있었다(암시적 트랙 계산 문제로 보임). */
+    grid-template-columns: repeat(4, 75vw) !important;
+  }
+  .showcase-sec .card-grid-4 > * {
+    min-width: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
   /* 인사이트 카드도 동일 */
   .insight-card {
     min-width: 75vw !important;
@@ -5283,11 +5302,16 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     white-space: nowrap;
   }
 
-  /* 스탠다드 채용관도 프리미엄처럼 옆으로 밀어서 본다 — 한 화면에 2장씩
-     (프리미엄의 1.3장보다 크게) 보이도록 카드 폭을 칸의 절반으로 잡는다. */
+  /* 스탠다드 채용관은 PC와 같은 5열×5줄 구조를 그대로 옆으로 민다 — 세로로
+     5장씩 쌓은 "열"을 만들고, 그 열이 다섯 개가 될 때까지 오른쪽으로
+     민다(25칸). */
   .card-grid-5 {
-    display: flex !important;
-    flex-direction: row !important;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-template-rows: repeat(5, auto) !important;
+    /* 스탠다드는 항상 25칸(5열×5줄)이라 열 다섯 개를 못박아 둔다 —
+       grid-auto-columns 는 첫 칸 너비가 잘못 잡히는 크롬 버그가 있었다. */
+    grid-template-columns: repeat(5, 46vw) !important;
     overflow-x: auto !important;
     gap: 7px !important;
     padding-bottom: 12px !important;
@@ -5299,10 +5323,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .card-grid-5::-webkit-scrollbar-thumb { background: #e3e3e6; border-radius: 3px; }
   .card-grid-5::-webkit-scrollbar-track { background: transparent; }
   .card-grid-5 > * {
-    min-width: calc(50% - 3.5px) !important;
-    max-width: calc(50% - 3.5px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
     scroll-snap-align: start;
-    flex-shrink: 0 !important;
   }
   /* 카드 글자도 한 단계씩 낮춘다(기존값 -1px) — 좁은 2열 칸에서 제목·매장이름이
      덜 접히게. .jobcard-* 전체가 아니라 이 채용관 카드에만 건다 — 다른 카드
@@ -5312,7 +5336,12 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .card-grid-5 .jobcard-meta,
   .card-grid-5 .jobcard-deadline { font-size: 12px; }
   /* 프리미엄·스탠다드 채용관 제목도 3px 줄인다(22px→19px) — PC는 그대로. */
-  .showcase-title { font-size: 19px; }
+  .showcase-title { font-size: 17px; }
+  /* 위 모듈 박스와 채용관 사이 여백도 확 줄인다(PC는 그대로 22/34px).
+     맨 위 채용관(.top, 지금은 프리미엄)은 .showcase-sec 보다 우선하는
+     규칙이 따로 있어 그것도 같이 낮춘다. */
+  .showcase-sec { padding-top: 10px; }
+  .showcase-sec.top { padding-top: 10px; }
 }
 
 /* ============================================
@@ -9327,7 +9356,7 @@ div:has(> table.admin-table),
    ════════════════════════════════ */
 .hero-m {
   background: #f7f7f8;
-  padding-bottom: 24px;
+  padding-bottom: 8px;
 }
 
 /* 배너 — 데스크탑 오픈이벤트 배너와 같은 흐름(밝은 바탕 + 컵·노트북 사진)을
@@ -9425,14 +9454,16 @@ div:has(> table.admin-table),
   border-radius: 12px;
   overflow: hidden;
 }
+/* 검색 박스와 아래(공지 이하) 박스는 다른 묶음이라 살짝 뗀다. */
+.hero-m-module-gap { margin-top: 8px; }
 .hero-m-toprow {
   display: flex;
   align-items: stretch;
 }
 .hero-m-toggle-btn {
   flex: 1;
-  height: 38px;
-  padding: 0 14px;
+  height: 32px;
+  padding: 0 8px;
   border: none;
   background: none;
   color: #555;
@@ -9457,8 +9488,8 @@ div:has(> table.admin-table),
 .hero-m-searchbar {
   display: flex;
   align-items: center;
-  height: 40px;
-  padding: 0 4px 0 12px;
+  height: 34px;
+  padding: 0 4px 0 6px;
 }
 .hero-m-region-btn {
   flex-shrink: 0;
@@ -9806,7 +9837,7 @@ div:has(> table.admin-table),
 .hero-m-ticker-card {
   min-width: 0;
   display: flex; align-items: center; gap: 6px;
-  height: 38px; box-sizing: border-box; padding: 0 12px;
+  height: 32px; box-sizing: border-box; padding: 0 6px;
   text-decoration: none; color: inherit;
 }
 .hero-m-ticker-card .hero-m-ticker-tag { font-size: 13px; }
@@ -9821,9 +9852,9 @@ div:has(> table.admin-table),
 .hero-m-ai-card {
   flex: 1;
   min-width: 0;
-  height: 38px;
+  height: 32px;
   box-sizing: border-box;
-  padding: 0 12px;
+  padding: 0 6px;
   display: flex;
   align-items: center;
   gap: 6px;

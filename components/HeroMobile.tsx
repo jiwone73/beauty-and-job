@@ -94,9 +94,8 @@ export default function HeroMobile() {
 
       <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
 
-      {/* 매장/오피스·검색창·공지·채용속보·등록 카드까지, 한 화면에서 하는
-          한 가지 일이라 테두리 하나 안에 다 넣는다. 행 사이는 가는 선으로만
-          나눈다 — 지역전체는 검색창 자리로 다시 내린다(원래 자리). */}
+      {/* 매장/오피스·검색창은 한 가지 일(검색)이라 박스 하나. 공지 이하는
+          별개 묶음이라 살짝 뗀 아래 박스에 — 행 사이는 가는 선으로만 나눈다. */}
       <div className="hero-m-module">
         <div className="hero-m-toprow">
           {(["매장", "오피스"] as const).map((t) => (
@@ -124,27 +123,29 @@ export default function HeroMobile() {
             <Search size={18} />
           </button>
         </form>
+      </div>
+
+      <div className="hero-m-module hero-m-module-gap">
         {notice && (
           <>
-            <div className="hero-m-hdivider" />
             <Link href={notice.href} className="hero-m-ticker-card">
               <span className="hero-m-ticker-tag">공지</span>
               <span className="hero-m-ticker-sep">|</span>
               <span className="hero-m-ticker-text">{notice.title}</span>
             </Link>
+            <div className="hero-m-hdivider" />
           </>
         )}
         {flash && (
           <>
-            <div className="hero-m-hdivider" />
             <Link href={flash.href} className="hero-m-ticker-card">
               <span className="hero-m-ticker-tag">채용속보</span>
               <span className="hero-m-ticker-sep">|</span>
               <span className="hero-m-ticker-text">{flash.title}</span>
             </Link>
+            <div className="hero-m-hdivider" />
           </>
         )}
-        <div className="hero-m-hdivider" />
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">개인회원</span>
@@ -152,7 +153,7 @@ export default function HeroMobile() {
           </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">기업회원</span>
-            <span className="hero-m-ai-card-action">공고등록 &gt;</span>
+            <span className="hero-m-ai-card-action">공고 등록 &gt;</span>
           </Link>
         </div>
       </div>
