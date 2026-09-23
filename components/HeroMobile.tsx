@@ -94,9 +94,10 @@ export default function HeroMobile() {
 
       <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
 
-      {/* 매장/오피스·지역전체·검색창은 한 가지를 하는 한 모듈이라 테두리 하나
-          안에 다 넣는다 — 위 줄(토글+지역)과 검색창 사이만 가는 선으로 나눈다. */}
-      <form className="hero-m-search-module" onSubmit={handleSearch}>
+      {/* 매장/오피스·검색창·공지·채용속보·등록 카드까지, 한 화면에서 하는
+          한 가지 일이라 테두리 하나 안에 다 넣는다. 행 사이는 가는 선으로만
+          나눈다 — 지역전체는 검색창 자리로 다시 내린다(원래 자리). */}
+      <div className="hero-m-module">
         <div className="hero-m-toprow">
           {(["매장", "오피스"] as const).map((t) => (
             <button key={t} type="button"
@@ -105,51 +106,45 @@ export default function HeroMobile() {
               {t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span>}
             </button>
           ))}
-          <span className="hero-m-vdivider" />
+        </div>
+        <div className="hero-m-hdivider" />
+        <form className="hero-m-searchbar" onSubmit={handleSearch}>
           <button type="button"
-            className={`hero-m-region-btn-row ${selected.length ? "active" : ""}`}
+            className={`hero-m-region-btn ${selected.length ? "active" : ""}`}
             onClick={() => setModalOpen(true)}>
             <span>{regionLabel}</span>
             <ChevronDown size={13} />
           </button>
-        </div>
-        <div className="hero-m-hdivider" />
-        <div className="hero-m-searchbar">
+          <span className="hero-m-vdivider" />
           <input className="hero-m-input" type="text"
-            placeholder={jobType === "매장" ? "헤어·바버, 메이크업, 네일, 속눈썹, 피부·바디, 두피·탈모…" : jobType === "오피스" ? "기획·MD, 마케팅·콘텐츠, 영업·유통, 연구·생산, 디자인…" : "지역, 직무, 회사명…"}
+            placeholder={jobType === "매장" ? "헤어·바버, 메이크업, 네일, 속눈썹…" : jobType === "오피스" ? "기획·MD, 마케팅·콘텐츠, 영업·유통…" : "지역, 직무, 회사명…"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} />
           <button type="submit" className="hero-m-search-btn">
             <Search size={18} />
           </button>
-        </div>
-      </form>
-
-      {/* 내 주변 공고 보기는 하단 탭(「내 주변」)이 같은 길을 이미 맡고 있어
-          여기서는 걷는다 — 같은 문이 두 자리에 있을 필요가 없다.
-          공지·채용속보는 검색창과 같은 테두리를 두른 박스 하나 안에 2행으로 —
-          아이콘 없이 라벨과 세로선(|)만으로 구분하고, 두 줄 사이는 가는
-          선으로 나눈다. */}
-      {(notice || flash) && (
-        <div className="hero-m-ticker-row">
-          {notice && (
+        </form>
+        {notice && (
+          <>
+            <div className="hero-m-hdivider" />
             <Link href={notice.href} className="hero-m-ticker-card">
               <span className="hero-m-ticker-tag">공지</span>
               <span className="hero-m-ticker-sep">|</span>
               <span className="hero-m-ticker-text">{notice.title}</span>
             </Link>
-          )}
-          {flash && (
+          </>
+        )}
+        {flash && (
+          <>
+            <div className="hero-m-hdivider" />
             <Link href={flash.href} className="hero-m-ticker-card">
               <span className="hero-m-ticker-tag">채용속보</span>
               <span className="hero-m-ticker-sep">|</span>
               <span className="hero-m-ticker-text">{flash.title}</span>
             </Link>
-          )}
-        </div>
-      )}
-
-      <div className="hero-m-ai-wrap">
+          </>
+        )}
+        <div className="hero-m-hdivider" />
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">개인회원</span>
