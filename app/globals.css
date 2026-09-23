@@ -16544,6 +16544,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    위아래로 쌓아 두었더니 표 여덟 줄을 지나야 값이 나왔다. */
 .pi-body { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
 .pi-side { border: 1px solid var(--card-line); }
+@media (max-width: 768px) {
+  /* 320px 고정 칸이 뷰포트 폭을 넘어서 페이지 전체가 가로로 밀렸다 —
+     사양표 위, 값 칸 아래로 쌓는다. */
+  .pi-body { grid-template-columns: 1fr; }
+}
 
 /* 노출 자리는 말로 적으면 「상단」과 「최상단」이 얼마나 다른지 알 수 없다.
    화면을 통째로 찍어 두고 그 위에 자리만 그린다. 줄여 놓으면 글자는 안 읽히지만
