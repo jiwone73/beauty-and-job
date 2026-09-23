@@ -9801,20 +9801,22 @@ div:has(> table.admin-table),
 }
 .hero-m-ticker-go { flex-shrink: 0; color: #8a8a90; font-size: 15px; }
 
-/* 공지·채용속보 — 검색창과 같은 테두리를 두른 카드 둘을 2행 1열로 쌓는다.
+/* 공지·채용속보 — 검색창과 같은 테두리를 두른 박스 하나 안에 2행으로 쌓는다.
    아이콘 없이 라벨과 세로선(|)만으로 구분한다. 글자 크기는 검색창의
    "지역 전체"와 같은 13px로 맞춘다. */
 .hero-m-ticker-row {
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column;
   margin: 8px 8px 0;
+  background: #fff; border: 1.5px solid #efeff1; border-radius: 12px;
+  overflow: hidden;
 }
 .hero-m-ticker-card {
   min-width: 0;
   display: flex; align-items: center; gap: 6px;
   height: 40px; box-sizing: border-box; padding: 0 10px;
-  background: #fff; border: 1.5px solid #efeff1; border-radius: 12px;
   text-decoration: none; color: inherit;
 }
+.hero-m-ticker-card + .hero-m-ticker-card { border-top: 1px solid #efeff1; }
 .hero-m-ticker-card .hero-m-ticker-tag { font-size: 13px; }
 .hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 13px; }
 .hero-m-ticker-card .hero-m-ticker-text { font-size: 13px; }
