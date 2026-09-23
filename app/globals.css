@@ -9366,7 +9366,7 @@ div:has(> table.admin-table),
 }
 
 /* 타이틀 */
-.hero-m-title-wrap { padding: 24px 20px 16px; }
+.hero-m-title-wrap { padding: 12px 8px 8px; }
 .hero-m-title {
   font-size: 21px;
   font-weight: 800;
@@ -9380,7 +9380,7 @@ div:has(> table.admin-table),
 .hero-m-toggle {
   display: flex;
   gap: 8px;
-  padding: 0 20px 14px;
+  padding: 0 8px 7px;
 }
 .hero-m-toggle-btn {
   flex: 1;
@@ -9403,12 +9403,12 @@ div:has(> table.admin-table),
 
 /* 검색바 */
 .hero-m-search-wrap {
-  margin: 0 20px;
+  margin: 0 8px;
 }
 .hero-m-search-label {
   font-size: 13px;
   color: #555;
-  margin: 0 20px 6px;
+  margin: 0 8px 3px;
 }
 .hero-m-searchbar {
   display: flex;
@@ -9750,7 +9750,7 @@ div:has(> table.admin-table),
 .region-apply-btn:hover { background: var(--color-primary-hover); }
 
 /* AI 추천 카드 */
-.hero-m-ai-wrap { padding: 20px 20px 0; }
+.hero-m-ai-wrap { padding: 8px 8px 0; }
 .hero-m-ai-header {
   display: flex;
   align-items: center;
