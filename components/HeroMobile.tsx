@@ -77,7 +77,7 @@ export default function HeroMobile() {
         <img src="/images/event/오픈이벤트-모바일배너-사진.png" alt="" className="hero-m-banner-photo" />
         <div className="hero-m-banner-fade" />
         <div className="hero-m-banner-body">
-          <strong className="hero-m-banner-title">10월 오픈 기념 이벤트</strong>
+          <strong className="hero-m-banner-title">뷰티워크 10월 오픈 기념 이벤트</strong>
           <div className="hero-m-banner-desc">
             <div>무료 5,000원 커피쿠폰</div>
             <div>무료 선착순 상단노출</div>
@@ -85,6 +85,7 @@ export default function HeroMobile() {
           <div className="hero-m-banner-period">
             <span>이벤트 기간</span>
             <span>2026.10.12(월) ~ 11.30(월)</span>
+            <span className="hero-m-banner-note">소진 시 조기 종료될 수 있습니다</span>
           </div>
         </div>
       </Link>

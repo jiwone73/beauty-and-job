@@ -9361,7 +9361,7 @@ div:has(> table.admin-table),
   max-width: 172px;
 }
 .hero-m-banner-title {
-  font-size: 14.5px;
+  font-size: 13.5px;
   font-weight: 800;
   color: #582681;
   white-space: nowrap;
@@ -9381,15 +9381,21 @@ div:has(> table.admin-table),
   flex-direction: column;
   margin-top: 6px;
 }
-.hero-m-banner-period span:first-child {
+.hero-m-banner-period span:nth-child(1) {
   font-size: 12px;
   font-weight: 700;
   color: #555;
 }
-.hero-m-banner-period span:last-child {
+.hero-m-banner-period span:nth-child(2) {
   font-size: 12px;
   font-weight: 700;
   color: #1f1f22;
+}
+.hero-m-banner-note {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #9a9aa0;
+  margin-top: 3px;
 }
 /* 타이틀 */
 /* 다른 자리(검색창·카드)는 바깥 여백 8px 에 상자 자신의 안쪽 여백이 더해져
