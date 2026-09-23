@@ -75,6 +75,7 @@ export default function HeroMobile() {
 
       <Link href="/event" className="hero-m-banner">
         <img src="/images/event/오픈이벤트-모바일배너-사진.png" alt="" className="hero-m-banner-photo" />
+        <div className="hero-m-banner-fade" />
         <div className="hero-m-banner-body">
           <strong className="hero-m-banner-title">10월 오픈 기념 이벤트</strong>
           <div className="hero-m-banner-desc">
