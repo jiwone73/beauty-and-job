@@ -158,6 +158,7 @@ export default function Header() {
           </nav>
           <div className="header-right">
             <AuthButtons onLoginClick={() => router.push("/login")} />
+            {!isLoggedIn && <span className="mob-auth-sep">I</span>}
             <Link href="/company" className="btn-outline-biz mob-hamburger">
               기업 서비스
             </Link>

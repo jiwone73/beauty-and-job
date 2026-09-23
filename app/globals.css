@@ -10100,10 +10100,27 @@ div:has(> table.admin-table),
 }
 .btn-outline-biz:hover { border-color: #582681; color: #582681; }
 
+/* 기본은 숨김(PC) — 아래 모바일 규칙이 소스 순서상 나중이라도 같은 클래스
+   한 겹끼리는 나중 것이 이기므로, 숨기는 규칙을 먼저 적어 둔다(아까 겪은
+   .mob-hamburger 버그와 같은 함정). */
+.mob-auth-sep { display: none; }
+
 @media (max-width: 768px) {
-  .btn-outline-auth {
+  /* 모바일 머리줄 — 버튼 박스가 자리를 너무 차지해서 글자만 남기고,
+     둘 사이는 세로선(I)으로만 구분한다. */
+  .btn-outline-auth,
+  .btn-outline-biz.mob-hamburger {
+    border: none !important;
+    background: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
     font-size: 12px !important;
-    padding: 6px 10px !important;
+  }
+  .mob-auth-sep {
+    display: inline-block;
+    color: #d0d0d0;
+    font-size: 12px;
+    font-weight: 500;
   }
 }
 
