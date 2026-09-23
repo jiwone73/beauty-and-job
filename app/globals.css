@@ -5279,6 +5279,14 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+
+  /* 스탠다드 채용관(5칸)은 옆으로 스크롤하지 않고 2열로 — 카드 다섯 개를
+     한 줄에 다 욱여넣으면(기본 grid-template-columns: repeat(5,1fr))
+     글자 한 자씩 줄바꿈될 만큼 좁아진다. */
+  .card-grid-5 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
 }
 
 /* ============================================
@@ -15531,9 +15539,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-count.sel { background: #f7f7f8; }
 .co-count.sel .co-count-label { color: var(--color-primary); }
 @media (max-width: 767px) {
-  .co-counts { grid-template-columns: repeat(3, 1fr); row-gap: 20px; padding: 18px 0; }
+  /* 자리·글자·틈을 줄여 카드 하나가 화면 반을 먹지 않게 한다. 「미열람
+     지원서」처럼 긴 라벨이 있어 4열까지는 못 줄인다(nowrap 이 깨진다). */
+  .co-counts { grid-template-columns: repeat(3, 1fr); row-gap: 10px; padding: 12px 0; }
   .co-count:nth-child(3n+1) { border-left: none; }
-  .co-count-value { font-size: 22px; }
+  .co-count { gap: 4px; padding: 2px 3px; }
+  .co-count-label { font-size: 13px; }
+  .co-count-value { font-size: 19px; }
 }
 
 /* 지원자 사이드의 공고 목록. 공고가 지원자의 축이라 고정 메뉴가 아니라 목록이 선다.
