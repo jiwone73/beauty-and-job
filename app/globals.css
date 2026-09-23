@@ -5011,7 +5011,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .info-nav-inner { gap: 0; }
   .info-nav-item { padding: 14px 12px; font-size: 13px; }
   /* 모바일: 본문 좌우 여백 16px 통일 + 상단 여백 압축 */
-  .info-main { padding: 20px 16px 48px; }
+  .info-main { padding: 10px 8px 24px; }
   .info-hero { margin-bottom: 24px; }
   .info-hero-title { font-size: 20px; text-align: center; }
   .info-hero-desc { font-size: 14px; }
@@ -9319,7 +9319,7 @@ div:has(> table.admin-table),
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 5px 8px;
   overflow: hidden;
 }
 .hero-m-banner-ad {
@@ -14103,12 +14103,12 @@ button,
   .cs-ads { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .cs-hero-in { padding: 44px 20px 40px; }
+  .cs-hero-in { padding: 22px 10px 20px; }
   .cs-hero-t { font-size: 28px; }
   .cs-hero-pts { margin-top: 28px; gap: 12px 0; }
   .cs-hero-pts li { width: 50%; padding: 0 12px 0 0; }
   .cs-hero-pts li + li { border-left: none; }
-  .cs-wrap { padding: 44px 20px; }
+  .cs-wrap { padding: 22px 10px; }
   .cs-h2 { font-size: 22px; }
   .cs-jobs { grid-template-columns: repeat(2, 1fr); }
   .cs-job:nth-child(n) { border-left: none; border-top: 1px solid #f7f7f8; }
@@ -16500,7 +16500,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 780px 이하 화면에서는 이 여백이 사라져 글자가 화면 양끝에 그대로 붙었다
    (넓은 화면에서는 780px 밖 남는 자리가 여백을 대신해 안 보이던 문제). */
 @media (max-width: 768px) {
-  .pi { padding: 0 20px; }
+  .pi { padding: 0 10px; }
 }
 .pi-hd { border-bottom: 2px solid #1f1f22; padding: 22px 0 16px; }
 .pi-nm { font-size: 27px; font-weight: 700; color: #555; margin: 0 0 7px; letter-spacing: -.5px; }
@@ -17016,8 +17016,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
 .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
-.co-m-title { padding: 14px 16px 4px; font-size: 18px; font-weight: 400; color: #555; }
-.co-m-content { padding: 6px 14px 20px; }
+.co-m-title { padding: 7px 8px 2px; font-size: 18px; font-weight: 400; color: #555; }
+.co-m-content { padding: 3px 7px 10px; }
 .co-m-content .company-content { padding: 0 !important; }
 .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
 .co-m-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 2px; text-decoration: none; color: #555; font-size: 11px; }
