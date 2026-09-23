@@ -125,7 +125,7 @@ export default function HeroMobile() {
 
       {/* 내 주변 공고 보기는 하단 탭(「내 주변」)이 같은 길을 이미 맡고 있어
           여기서는 걷는다 — 같은 문이 두 자리에 있을 필요가 없다.
-          공지·채용속보는 검색창과 같은 테두리를 두른 카드 둘을 한 줄에 —
+          공지·채용속보는 검색창과 같은 테두리를 두른 카드 둘을 2행 1열로 —
           아이콘 없이 라벨과 세로선(|)만으로 구분한다. */}
       {(notice || flash) && (
         <div className="hero-m-ticker-row">
@@ -145,17 +145,8 @@ export default function HeroMobile() {
           )}
         </div>
       )}
-      <Link href="/support/faq" className="hero-m-ticker">
-        <span className="hero-m-ticker-tag info">처음오셨나요?</span>
-        <span className="hero-m-ticker-text">자주묻는 질문</span>
-        <span className="hero-m-ticker-go">›</span>
-      </Link>
 
       <div className="hero-m-ai-wrap">
-        <div className="hero-m-ai-header">
-          <span>🔥</span>
-          <span className="hero-m-ai-title">10월 오픈 기념</span>
-        </div>
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">개인회원</span>
