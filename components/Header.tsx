@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Building2, FilePlus, LayoutDashboard, ChevronDown, MapPin } from "lucide-react";
+import { Building2, FilePlus, LayoutDashboard, MapPin } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -105,7 +105,7 @@ export function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
     <>
       <button className="btn btn-outline-auth" onClick={onLoginClick}>회원가입/로그인</button>
       <Link href="/company" className="btn btn-outline-biz gnb-biz-btn">
-        기업 서비스 <ChevronDown size={14} />
+        기업 서비스
       </Link>
     </>
   );
