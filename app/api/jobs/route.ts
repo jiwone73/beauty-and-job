@@ -40,6 +40,8 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = (page - 1) * limit
+  // 메인 "채용속보"처럼 등급 상관없이 방금 올라온 공고 그대로 보여줄 때만 쓴다.
+  const sortNew = searchParams.get('sort') === 'new'
 
   const where: string[] = []
   const params: any[] = []
@@ -187,7 +189,7 @@ export async function GET(req: NextRequest) {
            company_plan
     FROM v_active_jobs
     ${whereClause}
-    ORDER BY is_sample NULLS FIRST, ${노출등급()}, ${같은구간()}
+    ORDER BY ${sortNew ? "is_sample NULLS FIRST, created_at DESC" : `is_sample NULLS FIRST, ${노출등급()}, ${같은구간()}`}
     LIMIT $${idx++} OFFSET $${idx++}
   `
 

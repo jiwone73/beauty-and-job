@@ -3,7 +3,7 @@ import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, MapPin, ChevronDown, Rocket } from "lucide-react";
+import { Search, MapPin, ChevronDown, Rocket, Megaphone, Zap } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeCta from "@/components/ResumeCta";
@@ -20,6 +20,20 @@ export default function HeroMobile() {
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const { isLoggedIn, ownerType } = useAuthStore();
+  // 검색창 바로 아래 한 줄씩 — 공지 최신 1건, 채용속보(가장 방금 올라온 공고) 1건.
+  const [notice, setNotice] = useState<{ href: string; title: string } | null>(null);
+  const [flash, setFlash] = useState<{ href: string; title: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/notices?type=notice").then((r) => r.json()).then((r) => {
+      const n = r?.data?.[0];
+      if (n) setNotice({ href: `/notice/${n.id}`, title: n.short_title || n.title });
+    }).catch(() => {});
+    fetch("/api/jobs?limit=1&nosample=1&sort=new").then((r) => r.json()).then((r) => {
+      const j = r?.data?.[0];
+      if (j) setFlash({ href: `/jobs/${j.id}`, title: j.title });
+    }).catch(() => {});
+  }, []);
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
   useEffect(() => {
@@ -103,10 +117,27 @@ export default function HeroMobile() {
         </div>
       </form>
 
-      <a href="/jobs/nearby"
-        style={{ display: "inline-flex", alignItems: "center", gap: 4, margin: "12px 16px 0", fontSize: 13, fontWeight: 700, color: "#582681", textDecoration: "none" }}>
-        <MapPin size={14} /> 내 주변 공고 보기 ›
-      </a>
+      {/* 내 주변 공고 보기는 하단 탭(「내 주변」)이 같은 길을 이미 맡고 있어
+          여기서는 걷는다 — 같은 문이 두 자리에 있을 필요가 없다. */}
+      {notice && (
+        <Link href={notice.href} className="hero-m-ticker">
+          <span className="hero-m-ticker-tag notice"><Megaphone size={12} /> 공지</span>
+          <span className="hero-m-ticker-text">{notice.title}</span>
+          <span className="hero-m-ticker-go">›</span>
+        </Link>
+      )}
+      {flash && (
+        <Link href={flash.href} className="hero-m-ticker">
+          <span className="hero-m-ticker-tag flash"><Zap size={12} /> 채용속보</span>
+          <span className="hero-m-ticker-text">{flash.title}</span>
+          <span className="hero-m-ticker-go">›</span>
+        </Link>
+      )}
+      <Link href="/support/faq" className="hero-m-ticker">
+        <span className="hero-m-ticker-tag info">처음오셨나요?</span>
+        <span className="hero-m-ticker-text">자주묻는 질문</span>
+        <span className="hero-m-ticker-go">›</span>
+      </Link>
 
       <div className="hero-m-ai-wrap">
         <div className="hero-m-ai-header">
@@ -115,20 +146,16 @@ export default function HeroMobile() {
         </div>
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
-            <div className="hero-m-ai-card-head">
-              <div className="hero-m-ai-card-icon">📄</div>
-              <strong>이력서 등록하고<br />커피쿠폰 5,000원</strong>
-            </div>
-            <p>이력서 등록을 완료하신 선착순 200명께 메가커피 쿠폰을 드려요</p>
-            <span className="hero-m-ai-card-btn">무료 이력서 등록하기 ›</span>
+            <span className="hero-m-ai-card-label">개인회원</span>
+            <strong>좋은 일자리를 찾고 계신가요?</strong>
+            <p>이력서를 등록하고 새로운 기회를 만나보세요.</p>
+            <span className="hero-m-ai-card-btn">이력서 등록하기 →</span>
           </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
-            <div className="hero-m-ai-card-head">
-              <div className="hero-m-ai-card-icon">📊</div>
-              <strong>채용공고 등록하고<br />기간 내내 무료 노출</strong>
-            </div>
-            <p>등록 순서대로 메인·검색 상단에 노출해 드려요, 등록 건수 제한도 없어요</p>
-            <span className="hero-m-ai-card-btn">무료 채용공고 등록하기 ›</span>
+            <span className="hero-m-ai-card-label">기업회원</span>
+            <strong>좋은 인재를 찾고 계신가요?</strong>
+            <p>채용공고를 등록하고 필요한 인재를 만나보세요.</p>
+            <span className="hero-m-ai-card-btn">채용공고 등록하기 →</span>
           </Link>
         </div>
       </div>

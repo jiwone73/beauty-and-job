@@ -9751,6 +9751,27 @@ div:has(> table.admin-table),
 }
 .region-apply-btn:hover { background: var(--color-primary-hover); }
 
+/* 검색창 바로 아래 한 줄 — 공지·채용속보. 제목이 길어도 한 줄로 자르고
+   말줄임(…)한다. 줄이 둘이면 위아래로 쌓는다. */
+.hero-m-ticker {
+  display: flex; align-items: center; gap: 6px;
+  margin: 8px 8px 0; padding: 8px 10px;
+  background: #f7f7f8; border-radius: 8px;
+  text-decoration: none; color: inherit;
+}
+.hero-m-ticker-tag {
+  display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0;
+  font-size: 11.5px; font-weight: 700; padding: 3px 7px; border-radius: 20px;
+}
+.hero-m-ticker-tag.notice { background: #ecebfb; color: #582681; }
+.hero-m-ticker-tag.flash { background: #fdeceb; color: #e02020; }
+.hero-m-ticker-tag.info { background: #eee; color: #555; }
+.hero-m-ticker-text {
+  flex: 1; min-width: 0; font-size: 13px; color: #555;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hero-m-ticker-go { flex-shrink: 0; color: #8a8a90; font-size: 15px; }
+
 /* AI 추천 카드 */
 .hero-m-ai-wrap { padding: 8px 8px 0; }
 .hero-m-ai-header {
@@ -9760,41 +9781,36 @@ div:has(> table.admin-table),
   margin-bottom: 12px;
 }
 .hero-m-ai-title { font-size: 14px; font-weight: 700; color: #555; }
+/* 옆으로 밀지 않아도 둘 다 보이게 꽉 찬 2열로. */
 .hero-m-ai-cards {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
-.hero-m-ai-cards::-webkit-scrollbar { display: none; }
 .hero-m-ai-card {
-  min-width: 75vw;
-  max-width: 75vw;
-  flex-shrink: 0;
-  scroll-snap-align: start;
   background: #fff;
   border: 1px solid #f7f7f8;
   border-radius: 16px;
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   text-decoration: none;
   color: inherit;
+  min-width: 0;
 }
-.hero-m-ai-card-head { display: flex; align-items: center; gap: 8px; }
-.hero-m-ai-card-icon { font-size: 24px; flex-shrink: 0; }
-.hero-m-ai-card strong { font-size: 15px; font-weight: 700; color: #555; }
-.hero-m-ai-card p { font-size: 13px; color: #555; line-height: 1.5; }
+.hero-m-ai-card-label { font-size: 12px; color: #8a8a90; }
+.hero-m-ai-card strong { font-size: 14.5px; font-weight: 700; color: #1f1f22; line-height: 1.3; }
+.hero-m-ai-card p { font-size: 12px; color: #555; line-height: 1.5; margin: 0; }
 .hero-m-ai-card-btn {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+  padding: 8px 6px;
   background: #582681;
   color: #fff;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   border-radius: 8px;
   text-align: center;
