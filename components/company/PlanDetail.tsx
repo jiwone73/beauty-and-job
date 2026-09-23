@@ -192,14 +192,24 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
           </p>
           <div className="pi-flow">
             {[
-              { src: "flow-1-propose-btn", alt: "인재 카드의 제안하기 버튼", 말: "인재 카드에서 「제안하기」를 누릅니다" },
-              { src: "flow-2-propose-modal", alt: "보낼 공고를 고르고 제안 보내는 화면", 말: "보낼 공고를 고르고 제안을 보냅니다" },
-              { src: "flow-3-chat-accepted", alt: "제안을 수락한 뒤 이어지는 채팅 화면", 말: "수락하시면 채팅으로 이어집니다" },
-              { src: "flow-4-interview-set", alt: "면접 약속이 잡힌 화면", 말: "채팅에서 면접 약속을 잡습니다" },
+              {
+                key: "propose",
+                srcs: ["flow-1-propose-btn", "flow-2-propose-modal"],
+                alts: ["인재 카드의 제안하기 버튼", "보낼 공고를 고르고 제안 보내는 화면"],
+                말: "인재 카드에서 「제안하기」를 눌러 공고를 고르고 제안을 보냅니다",
+              },
+              {
+                key: "chat",
+                srcs: ["flow-accept-reject", "flow-3-chat-accepted"],
+                alts: ["제안을 수락하거나 거절하는 화면", "수락한 뒤 이어지는 채팅 화면"],
+                말: "제안을 수락하면 채팅이 열리고, 그 안에서 면접 약속까지 잡으실 수 있습니다",
+              },
             ].map((컷) => (
-              <div key={컷.src} className="pi-flow-item">
-                <div className="pi-flow-pic">
-                  <img src={`/images/plans/${컷.src}.png`} alt={컷.alt} />
+              <div key={컷.key} className="pi-flow-item">
+                <div className="pi-flow-frame">
+                  {컷.srcs.map((src, i) => (
+                    <img key={src} src={`/images/plans/${src}.png`} alt={컷.alts[i]} />
+                  ))}
                 </div>
                 <p className="pi-flow-cap">{컷.말}</p>
               </div>

@@ -16466,7 +16466,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    =========================================== */
 .pi { max-width: 780px; margin: 0 auto; color: #555; font-size: 15px; }
 .pi-hd { border-bottom: 2px solid #1f1f22; padding: 22px 0 16px; }
-.pi-nm { font-size: 27px; font-weight: 700; color: #1f1f22; margin: 0 0 7px; letter-spacing: -.5px; }
+.pi-nm { font-size: 27px; font-weight: 700; color: #555; margin: 0 0 7px; letter-spacing: -.5px; }
 .pi-ln { font-size: 15.5px; color: #555; margin: 0; line-height: 1.55; word-break: keep-all; }
 .pi-lbl { font-size: 13.5px; color: #8a8a90; margin: 0 0 4px; }
 .pi-amt { font-size: 27px; font-weight: 700; color: #1f1f22; letter-spacing: -.8px; margin: 0; line-height: 1.1; }
@@ -16512,14 +16512,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .pi-cap { font-size: 13px; color: #8a8a90; margin: 6px 0 18px; line-height: 1.5; }
 .pi-cap b { color: var(--color-primary); font-weight: 600; }
 
-/* 인재 검색 · 제안 · 채팅 — 실제 화면 네 컷. 절차를 말로 풀지 않고
-   차례대로 찍어 보여 준다. 2행 2열 — 한 줄에 넷을 다 넣으면 칸이 좁아져
-   글자가 안 읽힌다. */
+/* 인재 검색 · 제안 · 채팅 — 실제 화면을 1행 2열로 보여 준다. 절차 두
+   단계씩(제안 걸기 / 수락과 채팅) 한 틀에 이어 붙여, 칸마다 따로 테두리를
+   두를 때 생기던 빈 공간을 없앤다. */
 .pi-flow { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 12px; }
 .pi-flow-item { display: flex; flex-direction: column; }
-.pi-flow-pic { display: flex; align-items: center; justify-content: center; min-height: 220px;
-  border: 1px solid var(--card-line); border-radius: 8px; background: #fafafa; overflow: hidden; }
-.pi-flow-pic img { display: block; width: 100%; }
+.pi-flow-frame { border: 1px solid var(--card-line); border-radius: 8px; overflow: hidden; background: #fff; }
+.pi-flow-frame img { display: block; width: 100%; }
+.pi-flow-frame img + img { border-top: 1px solid var(--card-line); }
 .pi-flow-cap { font-size: 13.5px; color: #8a8a90; line-height: 1.5; margin: 8px 0 0; }
 @media (max-width: 640px) { .pi-flow { grid-template-columns: 1fr; } }
 

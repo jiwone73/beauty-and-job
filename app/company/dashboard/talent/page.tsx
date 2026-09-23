@@ -1043,7 +1043,7 @@ export default function TalentPage() {
             {/* 헛수고를 줄인다. 막지는 않는다 — 옮길 생각이 있는 사람도 있다. */}
             {지역어긋남 && (
               <div style={{ display: "flex", gap: 7, alignItems: "flex-start", marginBottom: 14, padding: "10px 12px",
-                background: "#fdf6ec", border: "1px solid #f5e3c8", borderRadius: 8, fontSize: 12.5, color: "#8a6d3b", lineHeight: 1.55 }}>
+                background: "#fff", border: "1px solid #f0d0d0", borderRadius: 8, fontSize: 12.5, color: "#c0392b", lineHeight: 1.55 }}>
                 <MapPin size={13} style={{ marginTop: 2, flexShrink: 0 }} />
                 <span>이 분의 희망 지역은 <b>{proposeTarget.regionPrefer}</b>인데, 공고 근무지는 <b>{고른공고?.location}</b>이에요.</span>
               </div>

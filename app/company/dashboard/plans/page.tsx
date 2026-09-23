@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { Plus, Minus, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import PlanCards from "@/components/company/PlanCards";
 import EventBand from "@/components/company/EventBand";
-import { 상품FAQ } from "@/lib/faq";
 
 /**
  * 채용상품 — 로그인한 기업이 머리줄에서 들어오는 첫 화면.
@@ -16,8 +14,6 @@ import { 상품FAQ } from "@/lib/faq";
  * 간다 — 둘 중 어느 길로 눌러도 같은 화면이어야 한다.
  */
 export default function CompanyDashboardPlansPage() {
-  const [열린질문, set열린질문] = useState<number | null>(null);
-
   return (
     <CompanyLayout activePage="plans">
       <div className="co-plans">
@@ -25,22 +21,13 @@ export default function CompanyDashboardPlansPage() {
         <PlanCards 안쪽 />
 
         <h2 className="cs-h2" style={{ marginTop: 56 }}>자주 묻는 질문</h2>
-        <ul className="cs-faq">
-          {상품FAQ.map((f, i) => (
-            <li key={f.q} className={열린질문 === i ? "on" : undefined}>
-              <button type="button" onClick={() => set열린질문(열린질문 === i ? null : i)} aria-expanded={열린질문 === i}>
-                <i>Q.</i>
-                <span>{f.q}</span>
-                {열린질문 === i ? <Minus size={16} /> : <Plus size={16} />}
-              </button>
-              {열린질문 === i && (
-                Array.isArray(f.a)
-                  ? <ul className="cs-faq-a-list">{f.a.map((line, j) => <li key={j}>{line}</li>)}</ul>
-                  : <p>{f.a}</p>
-              )}
-            </li>
-          ))}
-        </ul>
+        <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7 }}>
+          요금제 자주 묻는 질문은{" "}
+          <Link href="/support/faq?누구=기업" style={{ color: "#582681", fontWeight: 600 }}>
+            기업회원 FAQ
+          </Link>
+          에서 확인하실 수 있습니다.
+        </p>
         <div className="cs-center" style={{ marginTop: 30 }}>
           <Link href="/support" className="cs-btn-line lg">
             고객센터 문의하기 <ArrowRight size={15} />
