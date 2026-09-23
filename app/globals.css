@@ -9411,75 +9411,76 @@ div:has(> table.admin-table),
 }
 .hero-m-title-point { color: #582681; }
 
-/* 토글 */
-.hero-m-toggle {
+/* 매장/오피스·지역전체·검색창을 한 모듈로 — 테두리 하나 안에 다 넣고,
+   위 줄과 검색창 사이만 가는 선으로 나눈다(공지·채용속보 박스와 같은 짜임). */
+.hero-m-search-label {
+  font-size: 15px;
+  color: #555;
+  margin: 8px 16px 8px;
+}
+.hero-m-search-module {
+  margin: 0 8px;
+  background: #fff;
+  border: 1.5px solid #efeff1;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.hero-m-toprow {
   display: flex;
-  gap: 8px;
-  padding: 0 8px 7px;
+  align-items: stretch;
 }
 .hero-m-toggle-btn {
-  flex: 1;
-  height: 40px;
-  border-radius: 10px;
-  border: 1.5px solid #efeff1;
-  background: #fff;
+  flex: none;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  background: none;
   color: #555;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.15s;
 }
 .hero-m-toggle-btn.active {
   background: #582681;
   color: #fff;
-  border-color: #582681;
 }
+.hero-m-vdivider {
+  flex-shrink: 0;
+  width: 1px;
+  margin: 10px 0;
+  background: #efeff1;
+}
+.hero-m-region-btn-row {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  color: #582681;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.hero-m-region-btn-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hero-m-hdivider { height: 1px; background: #efeff1; }
 
 /* 검색바 */
-.hero-m-search-wrap {
-  margin: 0 8px;
-}
-.hero-m-search-label {
-  font-size: 15px;
-  color: #555;
-  margin: 8px 16px 14px;
-}
 .hero-m-searchbar {
   display: flex;
   align-items: center;
   height: 48px;
-  background: #fff;
-  border: 1.5px solid #efeff1;
-  border-radius: 12px;
-  padding: 0 4px 0 10px;
-}
-.hero-m-region-btn {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  background: none;
-  border: none;
-  font-size: 13px;
-  color: #582681;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  padding: 0;
-  max-width: 96px;
-}
-.hero-m-region-btn span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.hero-m-divider {
-  flex-shrink: 0;
-  width: 1px;
-  height: 20px;
-  background: #efeff1;
-  margin: 0 8px;
+  padding: 0 4px 0 14px;
 }
 .hero-m-input {
   flex: 1;

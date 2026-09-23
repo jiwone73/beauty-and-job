@@ -94,27 +94,29 @@ export default function HeroMobile() {
 
       <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
 
-      <div className="hero-m-toggle">
-        {(["매장", "오피스"] as const).map((t) => (
-          <button key={t} type="button"
-            className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
-            onClick={() => setJobType(t)}>
-            {t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span>}
-          </button>
-        ))}
-      </div>
-
-      <form className="hero-m-search-wrap" onSubmit={handleSearch}>
-        <div className="hero-m-searchbar">
+      {/* 매장/오피스·지역전체·검색창은 한 가지를 하는 한 모듈이라 테두리 하나
+          안에 다 넣는다 — 위 줄(토글+지역)과 검색창 사이만 가는 선으로 나눈다. */}
+      <form className="hero-m-search-module" onSubmit={handleSearch}>
+        <div className="hero-m-toprow">
+          {(["매장", "오피스"] as const).map((t) => (
+            <button key={t} type="button"
+              className={`hero-m-toggle-btn ${jobType === t ? "active" : ""}`}
+              onClick={() => setJobType(t)}>
+              {t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span>}
+            </button>
+          ))}
+          <span className="hero-m-vdivider" />
           <button type="button"
-            className={`hero-m-region-btn ${selected.length ? "active" : ""}`}
+            className={`hero-m-region-btn-row ${selected.length ? "active" : ""}`}
             onClick={() => setModalOpen(true)}>
             <span>{regionLabel}</span>
             <ChevronDown size={13} />
           </button>
-          <span className="hero-m-divider" />
+        </div>
+        <div className="hero-m-hdivider" />
+        <div className="hero-m-searchbar">
           <input className="hero-m-input" type="text"
-            placeholder={jobType === "매장" ? "헤어, 네일, 실장…" : jobType === "오피스" ? "마케터, MD, 영업…" : "지역, 직무, 회사명…"}
+            placeholder={jobType === "매장" ? "헤어·바버, 메이크업, 네일, 속눈썹, 피부·바디, 두피·탈모…" : jobType === "오피스" ? "기획·MD, 마케팅·콘텐츠, 영업·유통, 연구·생산, 디자인…" : "지역, 직무, 회사명…"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} />
           <button type="submit" className="hero-m-search-btn">
@@ -151,11 +153,11 @@ export default function HeroMobile() {
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">개인회원</span>
-            <span className="hero-m-ai-card-action">이력서 등록 →</span>
+            <span className="hero-m-ai-card-action">이력서 등록 &gt;</span>
           </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">기업회원</span>
-            <span className="hero-m-ai-card-action">채용공고 등록 →</span>
+            <span className="hero-m-ai-card-action">공고등록 &gt;</span>
           </Link>
         </div>
       </div>
