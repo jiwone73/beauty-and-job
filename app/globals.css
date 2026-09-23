@@ -13669,6 +13669,14 @@ button,
    자리를 카드가 쓴다. */
 .cs-plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
   align-items: stretch; }
+/* 좁은 화면에서 넉 장을 한 줄에 욱여넣으면 이름 「스타트」까지 한 글자씩
+   접혀 읽을 수 없었다 — 한 줄에 한 장씩 세운다.
+   .ad2(배너광고, 두 장) 쪽 재정의는 그 규칙 바로 뒤에 따로 둔다 — 여기 두면
+   뒤에 나오는 .cs-plans.ad2 의 폭 지정(720px)이 나중 규칙이라 이겨 버린다. */
+@media (max-width: 768px) {
+  .cs-plans { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+  .cs-plan-ln { min-height: 0; }
+}
 /* 카드는 흰 판이다. 테두리·그림자는 사이트의 카드 토큰을 그대로 쓴다
    (채용공고 화면의 지역 판과 같은 값). */
 .cs-plan { background: #fff; border: 1px solid var(--card-line); border-radius: 14px;
@@ -16640,6 +16648,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-plans.ad2 .cs-plan-btn { height: 48px; font-size: 15.5px; }
 .cs-plans.ad2 .cs-plan-feat { margin-top: 20px; }
 .cs-plans.ad2 .cs-plan-feat li { font-size: 15px; line-height: 1.7; }
+/* 배너광고 두 장도 좁은 화면에서는 위와 같이 한 줄에 한 장씩. */
+@media (max-width: 768px) {
+  .cs-plans.ad2 { grid-template-columns: 1fr; max-width: 420px; }
+  .cs-plans.ad2 .cs-plan-ln { min-height: 0; }
+}
 /* 카드가 720px로 좁아졌는데 위 이벤트 띠와 아래 부가세 문구는 옛 폭(1160px)
    그대로라 카드보다 양옆으로 삐져나와 보였다. 카드와 같은 폭·가운데 정렬로 맞춘다. */
 .cs-wrap:has(.cs-plans.ad2) .co-evtband,
