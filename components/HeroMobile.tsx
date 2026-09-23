@@ -151,13 +151,11 @@ export default function HeroMobile() {
         <div className="hero-m-ai-cards">
           <ResumeCta className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">개인회원</span>
-            <p>이력서를 등록하고 새로운 기회를 만나보세요.</p>
-            <span className="hero-m-ai-card-btn">이력서 등록하기 →</span>
+            <span className="hero-m-ai-card-action">이력서 등록 →</span>
           </ResumeCta>
           <Link href="/company" className="hero-m-ai-card">
             <span className="hero-m-ai-card-label">기업회원</span>
-            <p>채용공고를 등록하고 필요한 인재를 만나보세요.</p>
-            <span className="hero-m-ai-card-btn">채용공고 등록하기 →</span>
+            <span className="hero-m-ai-card-action">채용공고 등록 →</span>
           </Link>
         </div>
       </div>
