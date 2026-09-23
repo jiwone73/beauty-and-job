@@ -3,7 +3,7 @@ import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, MapPin, ChevronDown, Rocket, Megaphone, Zap } from "lucide-react";
+import { Search, MapPin, ChevronDown, Megaphone, Zap } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeCta from "@/components/ResumeCta";
@@ -73,10 +73,20 @@ export default function HeroMobile() {
   return (
     <section className="hero-m">
 
-      <div className="hero-m-banner">
-        <span className="hero-m-banner-ad"><Rocket size={16} /></span>
-        <p className="hero-m-banner-text">이력서 등록 커피쿠폰 5,000원 + 무료 공고등록</p>
-      </div>
+      <Link href="/event" className="hero-m-banner">
+        <img src="/images/event/오픈이벤트-모바일배너-사진.png" alt="" className="hero-m-banner-photo" />
+        <div className="hero-m-banner-body">
+          <strong className="hero-m-banner-title">10월 오픈 기념 이벤트</strong>
+          <div className="hero-m-banner-desc">
+            <div>무료 5,000원 커피쿠폰</div>
+            <div>무료 선착순 상단노출</div>
+          </div>
+          <div className="hero-m-banner-period">
+            <span>이벤트 기간</span>
+            <span>2026.10.12(월) ~ 11.30(월)</span>
+          </div>
+        </div>
+      </Link>
 
       <div className="hero-m-title-wrap">
         <h1 className="hero-m-title">
