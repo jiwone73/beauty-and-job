@@ -9863,11 +9863,12 @@ div:has(> table.admin-table),
 .hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 13px; }
 .hero-m-ticker-card .hero-m-ticker-text { font-size: 13px; }
 
-/* 채용속보 3초 롤링 — key 가 바뀔 때마다 새로 마운트되며 살짝 위로 올라오는 느낌. */
+/* 채용속보 3초 롤링 — 위치가 움직이면 흔들려 보인다는 지적이 있어 자리 이동 없이
+   페이드만 준다. */
 .hero-m-ticker-roll { animation: heroTickerRoll 0.35s ease; }
 @keyframes heroTickerRoll {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* 등록 카드 — "라벨 + 동작" 한 줄짜리 둘을 같은 모듈의 마지막 행에,
