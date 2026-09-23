@@ -9330,69 +9330,38 @@ div:has(> table.admin-table),
   padding-bottom: 24px;
 }
 
-/* 배너 — 데스크탑 메인 배너(오픈이벤트-메인배너)와 같은 밝은 배경·사진·문구
-   흐름을 모바일 폭에 맞춰 옮긴다. 사진은 그 배너에서 컵+노트북+로고가 있는
-   자리만 그대로 잘라 썼다(구도는 그대로). 사진을 절반 크기로 줄이면서
-   글자 쪽이 전체 폭을 쓰게 됐고, 그만큼 볼드 제목을 키울 자리가 생겼다. */
+/* 배너 */
 .hero-m-banner {
-  position: relative;
-  display: block;
+  background: #582681;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
   overflow: hidden;
-  height: 190px;
-  box-sizing: border-box;
-  padding: 16px;
-  background: #f5f4f1;
-  text-decoration: none;
 }
-.hero-m-banner-photo {
-  position: absolute; right: 16px; bottom: 16px;
-  width: 88px; height: 75px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,.08);
-}
-.hero-m-banner-fade { display: none; }
-.hero-m-banner-body {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.hero-m-banner-eyebrow {
+.hero-m-banner-ad {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: #9a9aa0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
-.hero-m-banner-title {
-  font-size: 19px;
-  font-weight: 800;
-  color: #1f1f22;
+.hero-m-banner-text {
+  color: #fff;
+  font-size: 12px;
+  flex: 1;
   white-space: nowrap;
-  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.hero-m-banner-desc {
-  font-size: 11.5px;
+.hero-m-banner-link {
+  color: rgba(255,255,255,0.85);
+  font-size: 12px;
   font-weight: 700;
-  color: #1f1f22;
-  line-height: 1.5;
-}
-.hero-m-banner-desc div { white-space: nowrap; }
-.hero-m-banner-desc div + div { margin-top: 4px; }
-.hero-m-banner-period {
-  display: flex;
-  flex-direction: column;
-  margin-top: 3px;
-}
-.hero-m-banner-period span:first-child {
-  font-size: 10px;
-  font-weight: 700;
-  color: #555;
-}
-.hero-m-banner-period span:last-child {
-  font-size: 10px;
-  font-weight: 700;
-  color: #1f1f22;
+  flex-shrink: 0;
+  text-decoration: none;
 }
 /* 타이틀 */
 /* 다른 자리(검색창·카드)는 바깥 여백 8px 에 상자 자신의 안쪽 여백이 더해져
@@ -12484,8 +12453,14 @@ div:has(> table.admin-table),
 .profile-header-inner { padding-left: 16px; padding-right: 16px; }
 .profile-header-nav { margin-left: 24px; }
 
-/* 상단 배너(.hero-m-banner)는 이제 사진 배경이 있는 독자 디자인이라
-   여기서 얹던 sheen 반짝임·연보라 아이콘 배지 규칙은 더 안 맞는다 — 걷는다. */
+/* === 모바일 상단 배너 — 연보라 D + 로켓 + sheen (데스크탑과 통일) === */
+.hero-m-banner{ position:relative; overflow:hidden; background:#f7f7f8!important; border:1px solid rgba(124,58,237,.10); }
+.hero-m-banner::before{ content:""; position:absolute; top:0; left:0; width:28%; height:100%; background:linear-gradient(90deg,transparent,rgba(196,160,247,.55),transparent); animation:heroSheen 3.4s ease-in-out infinite; pointer-events:none; z-index:0; }
+.hero-m-banner>*{ position:relative; z-index:1; }
+.hero-m-banner-ad{ width:28px!important; height:28px!important; padding:0!important; border-radius:50%!important; background:#582681!important; color:#fff!important; display:inline-flex!important; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(124,58,237,.3); flex-shrink:0; }
+.hero-m-banner-text{ color: #555!important; text-shadow:none!important; }
+.hero-m-banner-link{ color:#582681!important; text-shadow:none!important; }
+
 
 /* 프로필 4탭 균등 배치 (모바일) */
 @media (max-width: 768px) {
