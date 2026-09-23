@@ -9775,7 +9775,7 @@ div:has(> table.admin-table),
   background: #fff;
   border: 1px solid #f7f7f8;
   border-radius: 16px;
-  padding: 16px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -13014,7 +13014,7 @@ button,
    이미지는 크게, 글자는 붙여서 — 한 화면에 더 많이 보이게. */
 @media (max-width: 768px) {
   .card-grid-4, .card-grid-3 { gap: 7px !important; padding-bottom: 8px !important; }
-  .card-grid .jobcard-body { padding: 8px 14px 8px !important; }
+  .card-grid .jobcard-body { padding: 4px 7px 4px !important; }
   .card-grid .jobcard-title { margin-bottom: 2px; }
   .card-grid .jobcard-company { margin-bottom: 2px; }
   .card-grid .jobcard-metarow { margin-top: 0; }
@@ -13703,6 +13703,8 @@ button,
 @media (max-width: 768px) {
   .cs-plans { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
   .cs-plan-ln { min-height: 0; }
+  /* 카드 테두리~내용 안쪽 여백도 절반으로. */
+  .cs-plan { padding: 9px 8px 8px; }
 }
 /* 카드는 흰 판이다. 테두리·그림자는 사이트의 카드 토큰을 그대로 쓴다
    (채용공고 화면의 지역 판과 같은 값). */
@@ -16684,6 +16686,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .cs-plans.ad2 { grid-template-columns: 1fr; max-width: 420px; }
   .cs-plans.ad2 .cs-plan-ln { min-height: 0; }
+  .cs-plans.ad2 .cs-plan { padding: 13px 12px 12px; }
 }
 /* 카드가 720px로 좁아졌는데 위 이벤트 띠와 아래 부가세 문구는 옛 폭(1160px)
    그대로라 카드보다 양옆으로 삐져나와 보였다. 카드와 같은 폭·가운데 정렬로 맞춘다. */
