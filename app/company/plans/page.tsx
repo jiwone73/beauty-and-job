@@ -27,7 +27,6 @@ export default function CompanyPlansPage() {
       </section>
 
       <section className="cs-wrap">
-        <h2 className="cs-h2">자주 묻는 질문</h2>
         <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7 }}>
           요금제 자주 묻는 질문은{" "}
           <Link href="/support/faq?누구=기업" style={{ color: "#582681", fontWeight: 600 }}>
@@ -37,7 +36,7 @@ export default function CompanyPlansPage() {
         </p>
         <div className="cs-center" style={{ marginTop: 30 }}>
           <Link href="/support" className="cs-btn-line lg">
-            고객센터 문의하기 <ArrowRight size={15} />
+            1:1 문의하기 <ArrowRight size={15} />
           </Link>
         </div>
       </section>
