@@ -13571,7 +13571,7 @@ button,
 
 /* 머리 */
 .cs-header { border-bottom: 1px solid #efeff1; background: #fff; position: sticky; top: 0; z-index: 30; }
-.cs-header-in { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; gap: 28px; }
+.cs-header-in { max-width: 1160px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; gap: 28px; }
 .cs-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .cs-nav { display: flex; gap: 32px; margin: 0 auto; }
 .cs-nav a { font-size: 16.5px; font-weight: 500; color: #4a4a4a; text-decoration: none; white-space: nowrap; }

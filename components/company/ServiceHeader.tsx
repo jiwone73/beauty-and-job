@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/lib/store/authStore";
 
 /**
  * 기업 서비스 화면의 머리. 소개 화면과 상품 화면이 같은 것을 쓴다.
@@ -21,6 +22,7 @@ import { usePathname } from "next/navigation";
  */
 export default function ServiceHeader() {
   const pathname = usePathname() || "";
+  const { isLoggedIn, ownerType } = useAuthStore();
   // 지금 보고 있는 화면에 맞는 것 하나만 켠다 — 「오픈이벤트」만 늘 보라색이면
   // 상품 화면을 보고 있어도 이벤트를 보고 있는 것처럼 읽힌다.
   const 배너활성 = pathname.startsWith("/company/plans/ads");
@@ -40,8 +42,18 @@ export default function ServiceHeader() {
           <Link href="/company/plans/ads" className={배너활성 ? "cs-nav-on" : undefined}>배너광고 상품</Link>
         </nav>
         <div className="cs-header-btns">
-          <Link href="/company/login" className="cs-btn-ghost">로그인</Link>
-          <Link href="/company/signup" className="cs-btn-fill">회원가입</Link>
+          {/* 이미 로그인한 기업회원이 상품 화면을 보러 다시 들를 수 있다(위
+              주석) — 그때 로그인/회원가입을 또 보여주면 로그인이 안 된 것처럼
+              읽힌다. 개인회원으로 로그인한 경우는 여기서 할 일이 없어 아무
+              것도 보여주지 않는다. */}
+          {isLoggedIn && ownerType === "company" ? (
+            <Link href="/company/dashboard" className="cs-btn-fill">대시보드</Link>
+          ) : !isLoggedIn ? (
+            <>
+              <Link href="/company/login" className="cs-btn-ghost">로그인</Link>
+              <Link href="/company/signup" className="cs-btn-fill">회원가입</Link>
+            </>
+          ) : null}
         </div>
       </div>
     </header>
