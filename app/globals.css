@@ -4947,7 +4947,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   /* 채용공고 */
   .jobs-header-inner { padding: 0 16px; }
   .jobs-gnb { display: none; }
-  .jobs-container { padding: 0 16px; }
+  .jobs-container { padding: 0 8px; }
   .jobs-filter-bar { flex-direction: column; gap: 8px; align-items: flex-start; }
   /* 모바일 필터: 텍스트형 한 줄 (직군·지역·내 주변·필터) */
   .jobs-filter-left { display: flex; justify-content: space-between; align-items: center; gap: 4px; width: 100%; }
