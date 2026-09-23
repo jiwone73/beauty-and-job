@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Building2, FilePlus, LayoutDashboard, MapPin } from "lucide-react";
+import { Building2, MapPin } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -158,10 +158,9 @@ export default function Header() {
           </nav>
           <div className="header-right">
             <AuthButtons onLoginClick={() => router.push("/login")} />
-            <button className="icon-btn mob-hamburger" aria-label={isCompany ? "기업 대시보드" : "이력서 등록"}
-              onClick={() => router.push(isCompany ? "/company/dashboard" : isLoggedIn ? "/profile/resume" : "/login")}>
-              {isCompany ? <LayoutDashboard size={22} /> : <FilePlus size={22} />}
-            </button>
+            <Link href="/company" className="btn-outline-biz mob-hamburger">
+              기업 서비스
+            </Link>
           </div>
         </div>
       </header>

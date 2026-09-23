@@ -9418,7 +9418,7 @@ div:has(> table.admin-table),
 .hero-m-banner-period span:nth-child(2) {
   font-size: 12px;
   font-weight: 700;
-  color: #1f1f22;
+  color: #555;
 }
 .hero-m-banner-note {
   font-size: 10.5px;
@@ -9844,6 +9844,13 @@ div:has(> table.admin-table),
 .hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 13px; }
 .hero-m-ticker-card .hero-m-ticker-text { font-size: 13px; }
 
+/* 채용속보 3초 롤링 — key 가 바뀔 때마다 새로 마운트되며 살짝 위로 올라오는 느낌. */
+.hero-m-ticker-roll { animation: heroTickerRoll 0.35s ease; }
+@keyframes heroTickerRoll {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* 등록 카드 — "라벨 + 동작" 한 줄짜리 둘을 같은 모듈의 마지막 행에,
    가운데만 세로선으로 나눈다. */
 .hero-m-ai-cards {
@@ -9887,10 +9894,13 @@ div:has(> table.admin-table),
 }
 
 /* ── 모바일 햄버거 메뉴 ── */
-.mob-hamburger { display: none; }
+/* .btn-outline-biz 의 display:inline-flex(아래 정의, 조건 없음)가 소스 순서상
+   이 규칙보다 나중이라 같은 클래스 한 겹끼리는 그게 이긴다 — !important 로
+   확실히 눌러 둔다. */
+.mob-hamburger { display: none !important; }
 
 @media (max-width: 768px) {
-  .mob-hamburger { display: flex; }
+  .mob-hamburger { display: flex !important; }
 }
 
 .mob-menu-overlay {

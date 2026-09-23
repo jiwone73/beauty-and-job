@@ -20,9 +20,11 @@ export default function HeroMobile() {
   const [selected, setSelected] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const { isLoggedIn, ownerType } = useAuthStore();
-  // 검색창 바로 아래 한 줄씩 — 공지 최신 1건, 채용속보(가장 방금 올라온 공고) 1건.
+  // 검색창 바로 아래 한 줄씩 — 공지 최신 1건, 채용속보(최근 올라온 공고 여러 건, 3초마다 롤링).
   const [notice, setNotice] = useState<{ href: string; title: string } | null>(null);
-  const [flash, setFlash] = useState<{ href: string; title: string } | null>(null);
+  const [flashList, setFlashList] = useState<{ href: string; title: string }[]>([]);
+  const [flashIdx, setFlashIdx] = useState(0);
+  const flash = flashList[flashIdx] || null;
 
   useEffect(() => {
     // type 을 notice 로만 좁히면 "공지" 글이 없는 동안(지금처럼) 늘 빈다 —
@@ -31,11 +33,19 @@ export default function HeroMobile() {
       const n = r?.data?.[0];
       if (n) setNotice({ href: `/notice/${n.id}`, title: n.short_title || n.title });
     }).catch(() => {});
-    fetch("/api/jobs?limit=1&nosample=1&sort=new").then((r) => r.json()).then((r) => {
-      const j = r?.data?.[0];
-      if (j) setFlash({ href: `/jobs/${j.id}`, title: j.title });
+    fetch("/api/jobs?limit=5&nosample=1&sort=new").then((r) => r.json()).then((r) => {
+      const list = (r?.data || []).map((j: any) => ({ href: `/jobs/${j.id}`, title: j.title }));
+      setFlashList(list);
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (flashList.length < 2) return;
+    const t = setInterval(() => {
+      setFlashIdx((i) => (i + 1) % flashList.length);
+    }, 3000);
+    return () => clearInterval(t);
+  }, [flashList.length]);
 
   // 로그인(개인회원) 시 프로필의 직군·희망지역을 검색바 기본값으로 자동 채움
   useEffect(() => {
@@ -138,7 +148,7 @@ export default function HeroMobile() {
         )}
         {flash && (
           <>
-            <Link href={flash.href} className="hero-m-ticker-card">
+            <Link href={flash.href} key={flash.href} className="hero-m-ticker-card hero-m-ticker-roll">
               <span className="hero-m-ticker-tag">채용속보</span>
               <span className="hero-m-ticker-sep">|</span>
               <span className="hero-m-ticker-text">{flash.title}</span>
