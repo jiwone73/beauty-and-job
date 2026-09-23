@@ -17040,7 +17040,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
 .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
-.co-m-title { padding: 7px 8px 2px; font-size: 18px; font-weight: 400; color: #555; }
+/* 아래 카드들은 바깥 여백(8px)에 카드 자신의 머리 여백(13px)이 더해져
+   글자가 21px 에서 시작한다. 이 제목은 상자가 없어 바깥 여백만 받으면
+   카드 글자보다 앞으로 튀어나와 보인다 — 같은 21px 로 맞춘다. */
+.co-m-title { padding: 7px 21px 2px; font-size: 18px; font-weight: 400; color: #555; }
 .co-m-content { padding: 3px 7px 10px; }
 .co-m-content .company-content { padding: 0 !important; }
 .co-m-tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; background: #fff; border-top: 1px solid #eee; padding-bottom: env(safe-area-inset-bottom); }
