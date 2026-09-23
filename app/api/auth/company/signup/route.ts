@@ -8,6 +8,7 @@ import { signAccessToken } from '@/lib/jwt'
 import { sendCompanyWelcomeEmail } from '@/lib/email'
 import { verifyBusinessNumber } from '@/lib/business/verify'
 import { passwordError } from '@/lib/password'
+import { 가입채널조회 } from '@/lib/channel'
 
 // ── 기업 가입 승인 게이트 (드롭인) ───────────────────────────
 // 4단계에서 이 함수 안에 본인인증 + 진위확인을 넣어 통과 시 'ACTIVE' 반환하면 자동승인 전환.
@@ -138,20 +139,22 @@ export async function POST(req: NextRequest) {
       )
     } else {
       // 신규 기업 INSERT
+      const { channel: signupChannel, campaign: signupCampaign } = await 가입채널조회(req.cookies.get('bw_vid')?.value)
       const result = await client.query(
         `INSERT INTO companies (
           company_name, brand_name, business_number, company_type,
           email, phone, password_hash, address, website_url, description,
-          business_license_path, status, manager_name
+          business_license_path, status, manager_name, signup_channel, signup_campaign
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::company_status, $13
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::company_status, $13, $14, $15
         ) RETURNING id, company_name, brand_name, business_number, company_type,
                    email, phone, address, website_url, description, status, created_at`,
         [
           company_name, brand_name || null, business_number, company_type,
           email, phone, passwordHash,
           address || null, website_url || null, description || null,
-          business_license_path || null, companyStatus, (manager_name || '').trim()
+          business_license_path || null, companyStatus, (manager_name || '').trim(),
+          signupChannel, signupCampaign
         ]
       )
       company = result.rows[0]

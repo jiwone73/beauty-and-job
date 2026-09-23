@@ -9,6 +9,7 @@ import { sendWelcomeEmail } from '@/lib/email'
 import { passwordError } from '@/lib/password'
 import { validateBirth } from '@/lib/validateBirth'
 import { getGroupNames, 경력단계, 경력묶음 } from '@/lib/data/jobGroups'
+import { 가입채널조회 } from '@/lib/channel'
 export async function POST(req: NextRequest) {
   const { email, name, phone: rawPhone, password, birth, gender, job_type = 'OFFICE',
           main_job_group, career_stage, preferred_regions, agreed_term_ids } = await req.json()
@@ -79,13 +80,14 @@ export async function POST(req: NextRequest) {
       return err('USER_001', '이미 가입된 이메일입니다.', 409)
     }
     const passwordHash = await bcrypt.hash(password, 10)
+    const { channel: signupChannel, campaign: signupCampaign } = await 가입채널조회(req.cookies.get('bw_vid')?.value)
 
     const userRes = await client.query(
       `INSERT INTO users (email, password_hash, name, phone, job_type, birth_date, gender,
-                          preferred_regions, status)
-       VALUES ($1, $2, $3, $4, $5, TO_DATE($6, 'YYYYMMDD'), $7, $8::jsonb, 'ACTIVE')
+                          preferred_regions, status, signup_channel, signup_campaign)
+       VALUES ($1, $2, $3, $4, $5, TO_DATE($6, 'YYYYMMDD'), $7, $8::jsonb, 'ACTIVE', $9, $10)
        RETURNING id, email, name, phone, job_type, status, created_at`,
-      [email, passwordHash, name, phone, job_type, birthDate, genderVal, JSON.stringify(지역)]
+      [email, passwordHash, name, phone, job_type, birthDate, genderVal, JSON.stringify(지역), signupChannel, signupCampaign]
     )
     const user = userRes.rows[0]
 

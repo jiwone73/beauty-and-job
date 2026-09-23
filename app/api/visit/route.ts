@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
 import { verifyAccessToken } from '@/lib/jwt'
+import { 채널구하기 } from '@/lib/channel'
 
 // 방문 로깅 비콘 수신 (실패해도 조용히 무시 — 페이지 영향 없음)
 export async function POST(req: NextRequest) {
@@ -19,12 +20,24 @@ export async function POST(req: NextRequest) {
       } catch {}
     }
 
+    // 채널은 그날의 첫 핑(아래 INSERT)에만 쓰인다 — ON CONFLICT 쪽엔 없어서
+    // 같은 날 재방문이 값을 덮어쓰지 않는다.
+    let body: any = {}
+    try { body = await req.json() } catch {}
+    const { channel, campaign } = 채널구하기({
+      referrer: body?.referrer,
+      utmSource: body?.utm_source,
+      utmMedium: body?.utm_medium,
+      utmCampaign: body?.utm_campaign,
+      selfHost: req.headers.get('host'),
+    })
+
     await pool.query(
-      `INSERT INTO site_visits (visitor_key, visit_date, user_id)
-       VALUES ($1, (now() AT TIME ZONE 'Asia/Seoul')::date, $2::uuid)
+      `INSERT INTO site_visits (visitor_key, visit_date, user_id, channel, utm_source, utm_medium, utm_campaign)
+       VALUES ($1, (now() AT TIME ZONE 'Asia/Seoul')::date, $2::uuid, $3, $4, $5, $6)
        ON CONFLICT (visitor_key, visit_date)
        DO UPDATE SET user_id = COALESCE(EXCLUDED.user_id, site_visits.user_id), last_visit_at = now()`,
-      [vid, userId]
+      [vid, userId, channel, body?.utm_source || null, body?.utm_medium || null, campaign]
     )
 
     const res = NextResponse.json({ success: true })
