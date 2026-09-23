@@ -12936,6 +12936,10 @@ div:has(> table.admin-table),
   .footer-topnav { gap: 12px !important; }
   .footer-topnav-link { font-size: 13px !important; }
 }
+/* 푸터 좌우 여백도 다른 화면과 같은 기준으로 절반으로. */
+@media (max-width: 768px) {
+  .footer-inner { padding: 0 12px !important; }
+}
 
 /* === 사이트 전체 버튼 텍스트 평체(400) 통일 === */
 button,

@@ -566,7 +566,7 @@ function Footer() {
   const Sep = () => <span style={{ margin: "0 8px", color: "#e2e2e2" }}>|</span>;
   return (
     <footer style={{ background: "#f7f7f8", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
-      <div style={{ maxWidth: 1360, margin: "0 auto", padding: "0 24px" }}>
+      <div className="footer-inner" style={{ maxWidth: 1360, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
           {/* 운영 회사 로고. 서비스 이름(뷰티워크)은 헤더가 맡고, 여기는
               누가 운영하는지를 적는 자리라 회사 로고가 온다. */}
