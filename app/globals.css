@@ -9366,7 +9366,10 @@ div:has(> table.admin-table),
 }
 
 /* 타이틀 */
-.hero-m-title-wrap { padding: 12px 8px 8px; }
+/* 다른 자리(검색창·카드)는 바깥 여백 8px 에 상자 자신의 안쪽 여백이 더해져
+   글자가 그만큼 더 들어가 있다. 이 제목은 상자가 없는 맨 글자라 바깥
+   여백만 받으면 남들보다 앞으로 튀어나와 보인다 — 8px 를 더 준다. */
+.hero-m-title-wrap { padding: 12px 16px 8px; }
 .hero-m-title {
   font-size: 21px;
   font-weight: 800;
@@ -9408,7 +9411,7 @@ div:has(> table.admin-table),
 .hero-m-search-label {
   font-size: 13px;
   color: #555;
-  margin: 0 8px 3px;
+  margin: 0 16px 3px;
 }
 .hero-m-searchbar {
   display: flex;
