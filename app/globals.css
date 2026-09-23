@@ -12769,7 +12769,7 @@ div:has(> table.admin-table),
   /* 고객센터 머리줄도 같은 단계로 — 여기만 32px 이라 로고가 작았다. */
   .info-brand img { height: 36px !important; }
   /* 기업 서비스 머리줄(ServiceHeader)도 같은 단계로 — 여기도 빠져 있어 로고만 작았다. */
-  .cs-header .cs-logo img { height: 36px !important; }
+  .cs-header .cs-logo img { height: 36px !important; width: auto !important; }
   .cs-nav a { font-size: 18px; }
 }
 
