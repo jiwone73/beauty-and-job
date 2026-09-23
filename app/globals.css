@@ -9859,9 +9859,11 @@ div:has(> table.admin-table),
   height: 32px; box-sizing: border-box; padding: 0 6px;
   text-decoration: none; color: inherit;
 }
-.hero-m-ticker-card .hero-m-ticker-tag { font-size: 13px; }
-.hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 13px; }
-.hero-m-ticker-card .hero-m-ticker-text { font-size: 13px; }
+/* 라벨·구분선·글자가 서로 다른 상자(하나는 그냥 span, 하나는 위치를 잡아
+   둔 창)라 줄맞춤이 살짝 어긋났었다 — 셋 다 같은 line-height 로 맞춘다. */
+.hero-m-ticker-card .hero-m-ticker-tag { font-size: 13px; line-height: 16px; }
+.hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 13px; line-height: 16px; }
+.hero-m-ticker-card .hero-m-ticker-text { font-size: 13px; line-height: 16px; }
 
 /* 채용속보 3초 롤링 — 줄 전체가 움직이면 흔들려 보이니, 글자만 위에서 내려오게
    가둬 둔 창(overflow:hidden) 안에서만 움직인다. 바깥 줄 높이는 그대로다. */
