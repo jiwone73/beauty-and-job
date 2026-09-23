@@ -16,7 +16,7 @@ const NAV_ITEMS = [
     children: [
       { id: "dashboard-users", label: "개인회원", href: "/admin/dashboard/users" },
       { id: "dashboard-companies", label: "기업회원", href: "/admin/dashboard/companies" },
-      { id: "dashboard-channels", label: "유입 채널", href: "/admin/dashboard/channels" },
+      { id: "dashboard-channels", label: "회원 유입채널", href: "/admin/dashboard/channels" },
     ]
   },
   
@@ -63,7 +63,7 @@ const PAGE_SUBTITLES: Record<string, string> = {
   "dashboard": "대시보드",
   "dashboard-users": "개인회원 현황",
   "dashboard-companies": "기업회원 현황",
-  "dashboard-channels": "유입 채널",
+  "dashboard-channels": "회원 유입채널",
   "members": "개인회원",
   "members-companies": "기업회원",
   "members-alba": "알바 근무현황",

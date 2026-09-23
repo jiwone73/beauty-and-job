@@ -7,7 +7,7 @@ import {
 import { unitLabelStyle, CHART_MARGIN, fmtNum } from "@/components/admin/DashboardParts";
 
 /**
- * 유입 채널별 성과 — 방문자·가입·이력서·전환율.
+ * 회원 유입채널별 성과 — 방문자·가입·이력서·전환율.
  *
  * referrer로 자동 가른 채널(네이버 검색·인스타그램 등)과, 광고·이벤트·제휴·
  * 문자처럼 UTM을 단 링크의 캠페인이 한 표에 같이 선다. 이 기능을 켜기 전에
@@ -30,7 +30,7 @@ export default function AdminDashboardChannels() {
     <AdminLayout activeMenu="dashboard-channels">
       <div className="admin-card">
         <div className="admin-card-head">
-          <h2 className="admin-card-title">유입 채널별 방문자</h2>
+          <h2 className="admin-card-title">회원 유입채널별 방문자</h2>
         </div>
         <div style={{ padding: "16px 8px", position: "relative" }}>
           <span style={unitLabelStyle}>명</span>
@@ -53,7 +53,7 @@ export default function AdminDashboardChannels() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>유입 채널</th>
+                <th>회원 유입채널</th>
                 <th>방문자</th>
                 <th>가입</th>
                 <th>이력서</th>
@@ -80,7 +80,7 @@ export default function AdminDashboardChannels() {
           </table>
         </div>
         <p style={{ fontSize: 12.5, color: "#555", padding: "10px 14px 14px" }}>
-          이 기능을 켜기 전에 가입한 회원은 유입 채널이 남아 있지 않아 「미확인」으로 묶입니다.
+          이 기능을 켜기 전에 가입한 회원은 유입채널이 남아 있지 않아 「미확인」으로 묶입니다.
         </p>
       </div>
     </AdminLayout>

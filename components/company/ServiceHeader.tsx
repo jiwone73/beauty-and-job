@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 /**
  * 기업 서비스 화면의 머리. 소개 화면과 상품 화면이 같은 것을 쓴다.
@@ -19,6 +20,12 @@ import Image from "next/image";
  * 보게 된다. 별도 화면으로 세우고 푸터가 그 길을 맡는다.
  */
 export default function ServiceHeader() {
+  const pathname = usePathname() || "";
+  // 지금 보고 있는 화면에 맞는 것 하나만 켠다 — 「오픈이벤트」만 늘 보라색이면
+  // 상품 화면을 보고 있어도 이벤트를 보고 있는 것처럼 읽힌다.
+  const 배너활성 = pathname.startsWith("/company/plans/ads");
+  const 채용활성 = pathname.startsWith("/company/plans") && !배너활성;
+  const 이벤트활성 = pathname === "/company";
   return (
     <header className="cs-header">
       <div className="cs-header-in">
@@ -28,9 +35,9 @@ export default function ServiceHeader() {
         <nav className="cs-nav">
           {/* 기업 서비스 첫 화면이 곧 이벤트 화면이다 — 같은 내용을 두 주소로
               두면 어느 쪽이 진짜인지 갈린다. 끝나면 이 줄만 빼면 된다. */}
-          <Link href="/company" className="cs-nav-evt">오픈이벤트</Link>
-          <Link href="/company/plans">채용공고 상품</Link>
-          <Link href="/company/plans/ads">배너광고 상품</Link>
+          <Link href="/company" className={이벤트활성 ? "cs-nav-on" : undefined}>오픈이벤트</Link>
+          <Link href="/company/plans" className={채용활성 ? "cs-nav-on" : undefined}>채용공고 상품</Link>
+          <Link href="/company/plans/ads" className={배너활성 ? "cs-nav-on" : undefined}>배너광고 상품</Link>
         </nav>
         <div className="cs-header-btns">
           <Link href="/company/login" className="cs-btn-ghost">로그인</Link>

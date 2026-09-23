@@ -12768,6 +12768,9 @@ div:has(> table.admin-table),
   .resume-header-nav { font-size: 18px; }
   /* 고객센터 머리줄도 같은 단계로 — 여기만 32px 이라 로고가 작았다. */
   .info-brand img { height: 36px !important; }
+  /* 기업 서비스 머리줄(ServiceHeader)도 같은 단계로 — 여기도 빠져 있어 로고만 작았다. */
+  .cs-header .cs-logo img { height: 36px !important; }
+  .cs-nav a { font-size: 18px; }
 }
 
 /* === PC(≥769px) 프로필 탭(프로필·이력서·지원현황·관심공고) 본문 텍스트 한 단계 상향 (모바일 유지) === */
@@ -16627,7 +16630,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .cs-plans.ad2 + .cs-vat.right { max-width: 720px; margin-left: auto; margin-right: auto; }
 
 /* 머리줄의 오픈이벤트 — 기간 한정이라 한 번은 눈에 걸려야 한다. */
-.cs-nav-evt { color: var(--color-primary) !important; font-weight: 700; }
+.cs-nav-on { color: var(--color-primary) !important; font-weight: 700; }
 
 .pi-none-msg { max-width: 780px; margin: 40px auto; text-align: center;
   font-size: 14px; color: #8a8a90; }
