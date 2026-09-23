@@ -9783,17 +9783,13 @@ div:has(> table.admin-table),
 }
 .region-apply-btn:hover { background: var(--color-primary-hover); }
 
-/* 검색창 바로 아래 한 줄 — 공지·채용속보. 제목이 길어도 한 줄로 자르고
-   말줄임(…)한다. 줄이 둘이면 위아래로 쌓는다. */
+/* 검색창 바로 아래 — FAQ 안내 한 줄. 제목이 길어도 한 줄로 자르고 말줄임(…)한다. */
 .hero-m-ticker {
   display: flex; align-items: center; gap: 6px;
   margin: 8px 8px 0; padding: 8px 10px;
   background: #f7f7f8; border-radius: 8px;
   text-decoration: none; color: inherit;
 }
-/* 공지·채용속보 두 줄은 붙어 보이게 사이 간격만 최소로 줄인다. */
-.hero-m-ticker.tight { margin-top: 4px; }
-.hero-m-ticker-icon { flex-shrink: 0; color: #582681; }
 .hero-m-ticker-tag {
   flex-shrink: 0;
   font-size: 11.5px; font-weight: 700; color: #582681;
@@ -9804,6 +9800,23 @@ div:has(> table.admin-table),
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .hero-m-ticker-go { flex-shrink: 0; color: #8a8a90; font-size: 15px; }
+
+/* 공지·채용속보 — 검색창과 같은 테두리를 두른 카드 둘을 한 줄에. 아이콘 없이
+   라벨과 세로선(|)만으로 구분해 좁은 폭에서도 내용이 최대한 보이게 한다. */
+.hero-m-ticker-row {
+  display: flex; gap: 8px;
+  margin: 8px 8px 0;
+}
+.hero-m-ticker-card {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 5px;
+  height: 40px; box-sizing: border-box; padding: 0 10px;
+  background: #fff; border: 1.5px solid #efeff1; border-radius: 12px;
+  text-decoration: none; color: inherit;
+}
+.hero-m-ticker-card .hero-m-ticker-tag { font-size: 11px; }
+.hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 11px; }
+.hero-m-ticker-card .hero-m-ticker-text { font-size: 11.5px; }
 
 /* AI 추천 카드 */
 .hero-m-ai-wrap { padding: 8px 8px 0; }

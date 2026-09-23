@@ -3,7 +3,7 @@ import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, ChevronDown, Megaphone, Zap } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import { useAuthStore } from "@/lib/store/authStore";
 import ResumeCta from "@/components/ResumeCta";
@@ -25,7 +25,9 @@ export default function HeroMobile() {
   const [flash, setFlash] = useState<{ href: string; title: string } | null>(null);
 
   useEffect(() => {
-    fetch("/api/notices?type=notice").then((r) => r.json()).then((r) => {
+    // type 을 notice 로만 좁히면 "공지" 글이 없는 동안(지금처럼) 늘 빈다 —
+    // 발행된 공지·이벤트 글 중 맨 위(고정 우선 · 최신순) 하나를 그대로 쓴다.
+    fetch("/api/notices").then((r) => r.json()).then((r) => {
       const n = r?.data?.[0];
       if (n) setNotice({ href: `/notice/${n.id}`, title: n.short_title || n.title });
     }).catch(() => {});
@@ -122,22 +124,26 @@ export default function HeroMobile() {
       </form>
 
       {/* 내 주변 공고 보기는 하단 탭(「내 주변」)이 같은 길을 이미 맡고 있어
-          여기서는 걷는다 — 같은 문이 두 자리에 있을 필요가 없다. */}
-      {notice && (
-        <Link href={notice.href} className="hero-m-ticker">
-          <Megaphone size={14} className="hero-m-ticker-icon" />
-          <span className="hero-m-ticker-tag">공지</span>
-          <span className="hero-m-ticker-text">{notice.title}</span>
-          <span className="hero-m-ticker-go">›</span>
-        </Link>
-      )}
-      {flash && (
-        <Link href={flash.href} className="hero-m-ticker tight">
-          <Zap size={14} className="hero-m-ticker-icon" />
-          <span className="hero-m-ticker-tag">채용속보</span>
-          <span className="hero-m-ticker-text">{flash.title}</span>
-          <span className="hero-m-ticker-go">›</span>
-        </Link>
+          여기서는 걷는다 — 같은 문이 두 자리에 있을 필요가 없다.
+          공지·채용속보는 검색창과 같은 테두리를 두른 카드 둘을 한 줄에 —
+          아이콘 없이 라벨과 세로선(|)만으로 구분한다. */}
+      {(notice || flash) && (
+        <div className="hero-m-ticker-row">
+          {notice && (
+            <Link href={notice.href} className="hero-m-ticker-card">
+              <span className="hero-m-ticker-tag">공지</span>
+              <span className="hero-m-ticker-sep">|</span>
+              <span className="hero-m-ticker-text">{notice.title}</span>
+            </Link>
+          )}
+          {flash && (
+            <Link href={flash.href} className="hero-m-ticker-card">
+              <span className="hero-m-ticker-tag">채용속보</span>
+              <span className="hero-m-ticker-sep">|</span>
+              <span className="hero-m-ticker-text">{flash.title}</span>
+            </Link>
+          )}
+        </div>
       )}
       <Link href="/support/faq" className="hero-m-ticker">
         <span className="hero-m-ticker-tag info">처음오셨나요?</span>
