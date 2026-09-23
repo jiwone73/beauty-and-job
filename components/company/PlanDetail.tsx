@@ -185,10 +185,12 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
         <section className="pi-sec">
           <h3 className="pi-st">인재 검색 · 제안 · 채팅</h3>
           <p style={{ fontSize: 14.5, color: "#555", lineHeight: 1.7, margin: "0 0 4px" }}>
-            인재풀에서 조건에 맞는 분을 찾아 제안을 보내고, 수락하시면 채팅으로 면접 약속까지 잡으실 수 있습니다.{" "}
+            인재풀에서 조건에 맞는 분을 찾아 제안을 보내고, 수락하시면 채팅으로 면접 약속까지 잡으실 수 있습니다.
+            자세한 절차는{" "}
             <Link href="/support/faq?누구=기업" style={{ color: "#582681", fontWeight: 600 }}>
-              자세히 보기 ›
+              기업회원 FAQ
             </Link>
+            에서 확인하실 수 있습니다.
           </p>
           <div className="pi-flow">
             {[
