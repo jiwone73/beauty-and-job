@@ -148,10 +148,12 @@ export default function HeroMobile() {
         )}
         {flash && (
           <>
-            <Link href={flash.href} key={flash.href} className="hero-m-ticker-card hero-m-ticker-roll">
+            <Link href={flash.href} className="hero-m-ticker-card">
               <span className="hero-m-ticker-tag">채용속보</span>
               <span className="hero-m-ticker-sep">|</span>
-              <span className="hero-m-ticker-text">{flash.title}</span>
+              <span className="hero-m-ticker-textwrap">
+                <span key={flash.href} className="hero-m-ticker-text hero-m-ticker-roll">{flash.title}</span>
+              </span>
             </Link>
             <div className="hero-m-hdivider" />
           </>

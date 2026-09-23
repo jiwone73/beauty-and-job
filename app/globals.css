@@ -9863,12 +9863,22 @@ div:has(> table.admin-table),
 .hero-m-ticker-card .hero-m-ticker-sep { flex-shrink: 0; color: #efeff1; font-size: 13px; }
 .hero-m-ticker-card .hero-m-ticker-text { font-size: 13px; }
 
-/* 채용속보 3초 롤링 — 위치가 움직이면 흔들려 보인다는 지적이 있어 자리 이동 없이
-   페이드만 준다. */
+/* 채용속보 3초 롤링 — 줄 전체가 움직이면 흔들려 보이니, 글자만 위에서 내려오게
+   가둬 둔 창(overflow:hidden) 안에서만 움직인다. 바깥 줄 높이는 그대로다. */
+.hero-m-ticker-textwrap {
+  position: relative;
+  flex: 1; min-width: 0;
+  height: 16px;
+  overflow: hidden;
+}
+.hero-m-ticker-textwrap .hero-m-ticker-text {
+  position: absolute;
+  left: 0; top: 0; width: 100%;
+}
 .hero-m-ticker-roll { animation: heroTickerRoll 0.35s ease; }
 @keyframes heroTickerRoll {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* 등록 카드 — "라벨 + 동작" 한 줄짜리 둘을 같은 모듈의 마지막 행에,
