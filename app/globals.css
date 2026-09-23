@@ -481,6 +481,8 @@
 .showcase-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .showcase-title { display: flex; align-items: center; gap: 9px; font-size: 22px; font-weight: 700;
   color: var(--color-text-strong); margin: 0; letter-spacing: -.3px; }
+/* 옆으로 스크롤하는 위치 막대 — PC 는 그리드가 스크롤되지 않으니 숨긴다. */
+.showcase-scroll-progress { display: none; }
 
 
 /* ===========================================
@@ -5337,6 +5339,23 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .card-grid-5 .jobcard-deadline { font-size: 12px; }
   /* 프리미엄·스탠다드 채용관 제목도 3px 줄인다(22px→19px) — PC는 그대로. */
   .showcase-title { font-size: 17px; }
+  /* 채용관 옆 스크롤 위치 막대 — 지금 옆으로 민 만큼 채워진다. */
+  .showcase-scroll-progress {
+    display: inline-block;
+    width: 32px;
+    height: 3px;
+    border-radius: 2px;
+    background: #efeff1;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .showcase-scroll-progress-fill {
+    display: block;
+    height: 100%;
+    background: #582681;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
   /* 위 모듈 박스와 채용관 사이 여백도 확 줄인다(PC는 그대로 22/34px).
      맨 위 채용관(.top, 지금은 프리미엄)은 .showcase-sec 보다 우선하는
      규칙이 따로 있어 그것도 같이 낮춘다. */

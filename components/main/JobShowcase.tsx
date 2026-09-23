@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import { Crown, Star, Gift } from "lucide-react";
 import JobCard from "@/components/JobCard";
@@ -34,6 +34,16 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
   const 모은것 = useRef<string[]>([]);
   /** 서버가 내준 표. 노출 수는 이 표에 적힌 것만 센다. */
   const 표 = useRef<string | null>(null);
+  // 모바일 전용 — 옆으로 스크롤하는 카드 묶음이 지금 어디쯤인지 보여 주는 막대.
+  // PC 는 그리드가 스크롤되지 않으니 이 값을 그냥 안 쓴다(CSS 에서 숨김).
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [scrollPct, setScrollPct] = useState(0);
+  const onGridScroll = useCallback(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setScrollPct(max > 0 ? el.scrollLeft / max : 0);
+  }, []);
 
   useEffect(() => {
     if (excludeIds === null) return;  // 겹치는지 알기 전에 먼저 쏘면 걸러줄 게 없다
@@ -103,12 +113,15 @@ export default function JobShowcase({ tier, title, excludeIds, onLoaded }: Props
                 ? <Crown size={22} className="title-icon" />
                 : <Star size={22} className="title-icon" />}
             {제목 || title}
+            <span className="showcase-scroll-progress">
+              <span className="showcase-scroll-progress-fill" style={{ width: `${Math.round(scrollPct * 100)}%` }} />
+            </span>
           </h2>
           <Link href={tier === "EVENT" ? "/event" : "/company/plans"} className="see-all">
             {tier === "EVENT" ? "이벤트 보기 ›" : "상품안내 ›"}
           </Link>
         </div>
-        <div className={`card-grid card-grid-${cols}`}>
+        <div ref={gridRef} onScroll={onGridScroll} className={`card-grid card-grid-${cols}`}>
           {보이는것.map((j) => <JobCard key={j.id} data={mapJob(j)} variant="grid" />)}
         </div>
       </div>
