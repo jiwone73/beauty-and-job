@@ -90,13 +90,6 @@ export default function HeroMobile() {
         </div>
       </Link>
 
-      <div className="hero-m-title-wrap">
-        <h1 className="hero-m-title">
-          뷰티 커리어의 시작,<br />
-          <span className="hero-m-title-point">뷰티워크</span>
-        </h1>
-      </div>
-
       <p className="hero-m-search-label">어떤 일자리를 찾으세요?</p>
 
       <div className="hero-m-toggle">
