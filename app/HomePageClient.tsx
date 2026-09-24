@@ -598,6 +598,10 @@ function Footer() {
             <Sep breaks />
             <span className="footer-info-item">직업정보제공사업 신고번호 : </span>
           </div>
+          <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
+            <Link href="/support/terms" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
+            <Link href="/support/privacy" style={{ fontSize: 13, color: "#582681", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
+          </div>
         </div>
         <div className="footer-bottomrow" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
@@ -605,8 +609,6 @@ function Footer() {
             <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ color: "#555", display: "flex" }}>
               <Instagram size={18} />
             </a>
-            <Link href="/support/terms" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
-            <Link href="/support/privacy" style={{ fontSize: 13, color: "#582681", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
           </div>
         </div>
       </div>
