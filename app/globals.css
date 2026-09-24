@@ -4844,6 +4844,14 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .faq-answer-list li { margin-bottom: 6px; }
 .faq-answer-list li:last-child { margin-bottom: 0; }
 
+@media (max-width: 768px) {
+  /* 질문·답 안쪽 여백을 상하좌우 절반으로 — 모바일 여백은 앞으로도
+     이 기준(PC 값의 50%)으로 통일한다. */
+  .faq-list { gap: 4px; }
+  .faq-question { padding: 9px 10px; }
+  .faq-answer { padding: 0 10px 9px; padding-top: 7px; }
+}
+
 /* 문의 폼 */
 .contact-form {
   background: #fff;
@@ -17023,6 +17031,16 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   margin: 0 0 8px; }
 .faq-none { font-size: 15px; color: #555; padding: 30px 0; text-align: center; }
 .faq-none b { color: var(--color-primary); }
+
+@media (max-width: 768px) {
+  /* 갈래 탭·검색창·판 여백도 같은 기준(PC 값의 50%)으로 줄인다. */
+  .faq-board { margin-top: 7px; }
+  .faq-tabs { gap: 5px; margin: 7px 0 8px; }
+  .faq-search { padding: 0 7px; margin-bottom: 9px; min-width: 0; }
+  .faq-group { margin-top: 13px; }
+  .faq-group-t { margin: 0 0 4px; }
+  .faq-none { padding: 15px 0; }
+}
 
 /* 이력서 양식 내려받기 — 한 줄이면 된다. 크게 걸면 등록하러 온 사람이
    파일만 받아 가고 나간다. */
