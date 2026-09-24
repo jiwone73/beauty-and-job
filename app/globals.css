@@ -10066,6 +10066,10 @@ div:has(> table.admin-table),
   /* 고객센터 머리줄 로고도 메인과 같은 크기로 — 여기만 32px 고정이라
      메인(100px 너비, 세로는 그만큼 줄어듦)보다 커 보였다. */
   .info-brand img { width: 100px !important; height: auto !important; }
+  /* 채용공고 상세 머리줄도 같은 문제 — 로고 30px 고정, 높이도 60px 고정이라
+     메인(56px)보다 살짝 컸다. */
+  .job-detail-header-inner { height: 56px; }
+  .job-detail-logo img { width: 100px !important; height: auto !important; }
 
   /* 검색·햄버거 아이콘 크기 축소 */
   .icon-btn { width: 28px; height: 28px; }
