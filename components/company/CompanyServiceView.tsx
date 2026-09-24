@@ -93,6 +93,11 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
                     <span>{이벤트.기간}</span>
                   </div>
                 )}
+                {/* "무료 공고 등록하기"가 배너 밖 별도 단추로 떨어져 있던 것을
+                    안으로 들인다 — 배너 하나로 안내와 행동이 끝난다. */}
+                <Link href={갈곳} className="hero-m-banner-cta" onClick={(e) => e.stopPropagation()}>
+                  무료 공고 등록하기 <ChevronRight size={13} />
+                </Link>
               </div>
             </div>
           )}

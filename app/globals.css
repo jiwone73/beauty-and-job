@@ -14377,14 +14377,23 @@ button,
 /* 기업 서비스 이벤트 배너 — 모바일 전용 압축판(메인 홈과 같은 크기).
    PC 에서는 숨긴다. */
 .cs-hero-mobile-banner { display: none; }
+/* 배너 안에 들어간 "무료 공고 등록하기" — 배너 밖 큰 단추(.cs-hero-btns)를
+   대신한다. 배너 폭이 좁아(글 칸 190px 안팎) 작은 알약 버튼으로. */
+.hero-m-banner-cta {
+  display: inline-flex; align-items: center; gap: 2px;
+  margin-top: 6px; padding: 5px 9px;
+  background: #582681; color: #fff; font-size: 11.5px; font-weight: 700;
+  border-radius: 6px; text-decoration: none; white-space: nowrap;
+}
 @media (max-width: 640px) {
-  .cs-hero-mobile-banner { display: block; margin-bottom: 16px; }
-  /* 압축판이 같은 내용을 대신하므로 원래 제목·설명·기간과, 뒤에 흐리게
-     깔리던 큰 사진은 모바일에서 가린다. 버튼(.cs-hero-btns)은 그대로 둔다. */
+  .cs-hero-mobile-banner { display: block; margin-bottom: 10px; }
+  /* 압축판이 제목·설명·기간·버튼을 모두 대신하므로 원래 것들과, 뒤에
+     흐리게 깔리던 큰 사진은 모바일에서 가린다. */
   .cs-hero.evt .cs-hero-eyebrow,
   .cs-hero.evt .cs-hero-t,
   .cs-hero.evt .cs-hero-d,
   .cs-hero.evt .cs-hero-when,
+  .cs-hero.evt .cs-hero-btns,
   .cs-hero-photo.evt { display: none; }
 }
 
@@ -14414,15 +14423,9 @@ button,
   .cs-hero-pts li + li { border-left: none; }
   .cs-wrap { padding: 22px 10px; }
   .cs-h2 { font-size: 22px; }
-  /* 카드 그리드(아이콘+이름+설명, 4줄)는 좁은 화면에서 너무 길다 —
-     설명은 지우고 아이콘+이름만 한 줄로 흘려 "I"로 구분한다. 전체가
-     2줄을 넘지 않게 여백도 최소로. */
-  .cs-jobs { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 0; }
-  .cs-job { flex-direction: row; align-items: center; gap: 3px; padding: 1px 4px; border: none !important; }
-  .cs-job svg { width: 12px; height: 12px; }
-  .cs-job b { font-size: 11px; white-space: nowrap; font-weight: 600; }
-  .cs-job span { display: none; }
-  .cs-job:not(:last-child)::after { content: "I"; margin-left: 4px; color: #d8d3dc; font-weight: 400; }
+  /* 직군 목록은 모바일에서 아예 뺀다("직군목록은 빼자") — 배너·혜택·
+     참여방법만으로도 이미 좁은 화면에 벅차다. */
+  .cs-jobs { display: none; }
   .cs-steps, .cs-why-grid, .cs-ads { grid-template-columns: 1fr 1fr; }
   .cs-step-ar { display: none; }
   .cs-shot { grid-template-columns: 1fr; }
@@ -17313,6 +17316,21 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 @media (max-width: 720px) {
   .ev-h { font-size: 22px; }
+}
+@media (max-width: 640px) {
+  /* 데스크탑 카드 짜임(큰 원 아이콘 + 넉넉한 여백)이 좁은 화면에 무리다 —
+     아이콘은 빼고, 세로 간격도 PC 값의 절반 이하로 줄여 스크롤 압박을
+     던다. "혜택"·"참여방법" 두 섹션만 대상(노출 위치·유의사항은 그대로). */
+  .ev { --ev-문단: 24px; --ev-제목: 14px; --ev-꼬리: 6px; }
+  .ev-card-ic, .ev-step-ic { display: none; }
+  .ev-cards { grid-template-columns: 1fr; gap: 10px; }
+  .ev-card { padding: 0; }
+  .ev-card b { margin: 0 0 4px; font-size: 15.5px; }
+  .ev-card p { font-size: 13.5px; line-height: 1.55; }
+  .ev-steps { grid-template-columns: 1fr; gap: 8px; }
+  .ev-step { padding: 12px 14px; gap: 0; }
+  .ev-step b { font-size: 14.5px; }
+  .ev-step p { font-size: 13px; }
 }
 
 /* components/company/CompanyLayout.tsx 의 화면 안 <style> 태그에서 옮겨 왔다.
