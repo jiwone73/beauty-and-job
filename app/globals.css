@@ -2735,7 +2735,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 }
 @media (max-width: 640px) {
   .job-detail-layout { padding: 8px 0 100px; }
-  .job-detail-header-inner { padding: 0 16px; }
+  /* 헤더 "‹ 채용공고" 도 본문과 같은 왼쪽 열(8px)에 맞춘다. */
+  .job-detail-header-inner { padding: 0 8px; }
   /* 좌우 19px(등록폼 정렬용)보다 메인 화면 기준(8px)을 우선한다 —
      "메인처럼 옆으로 더 공간 확보해줘"라는 요청. */
   .job-detail-info-box { padding: 12px 8px; }
@@ -2743,6 +2744,16 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .job-detail-meta-grid { grid-template-columns: 1fr; }
   /* 모집부문·복리후생·근무지 등 섹션 사이 여백(안팎 16px씩, 32px)도 절반으로. */
   .jd-subblock { padding-top: 8px; margin-top: 8px; }
+  /* 상세요강·기업정보 등 별도 섹션(.job-detail-section)도 왼쪽 열을
+     8px로 통일하고 안쪽 위아래 여백도 절반으로. */
+  .job-detail-section { padding: 12px 8px; }
+  .jd-detail-img-title { padding: 12px 8px 0 !important; }
+  .jd-detail-img-desc { padding: 9px 8px 0 !important; }
+  /* 지원방법·마감일 등 행간 상하 여백이 넓다는 지적 — 줄 자체 패딩과
+     2열 사이 간격을 확 줄인다. */
+  .jd-guide-row { padding: 2px 0; }
+  .jd-2col { gap: 4px 14px; }
+  .job-detail-desc { line-height: 1.55; }
 }
 
 /* ===========================================
