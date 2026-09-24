@@ -469,7 +469,12 @@
   display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
 .jobs-pager button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .jobs-pager button:disabled { color: #ccc; cursor: default; }
-.jobs-pager .jobs-pager-num.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; font-weight: 700; }
+/* 쪽 번호는 버튼 상자 없이 글자만 — 화살표(이전/다음)만 버튼으로 남긴다. */
+.jobs-pager .jobs-pager-num {
+  border: none; background: none; border-radius: 0; min-width: auto; height: auto; padding: 4px 6px;
+}
+.jobs-pager .jobs-pager-num:hover:not(:disabled) { border-color: transparent; }
+.jobs-pager .jobs-pager-num.on { background: none; border-color: transparent; color: var(--color-primary); font-weight: 700; }
 .jobs-pager-gap { color: #bbb; font-size: 14px; padding: 0 2px; }
 
 /* 메인 채용관 머리. 파는 자리라 「광고」를 붙인다(표시 의무). */
