@@ -23,6 +23,7 @@ import {
   Bookmark,
   Sparkles,
   Instagram,
+  Rss,
   ChevronDown } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
@@ -609,6 +610,11 @@ function Footer() {
             <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ color: "#555", display: "flex" }}>
               <Instagram size={18} />
             </a>
+            {/* 네이버 블로그 — 계정 URL이 아직 없어 아이콘만 먼저 둔다.
+                주소가 정해지면 a 태그(href·target·aria-label)로 바꾼다. */}
+            <span aria-hidden style={{ color: "#555", display: "flex" }}>
+              <Rss size={18} />
+            </span>
           </div>
         </div>
       </div>
