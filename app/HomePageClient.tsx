@@ -570,7 +570,7 @@ function Footer() {
   return (
     <footer className="site-footer" style={{ background: "#f7f7f8", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div className="footer-inner" style={{ maxWidth: 1360, margin: "0 auto", padding: "0 24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
+        <div className="footer-toprow" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
           {/* 운영 회사 로고. 서비스 이름(뷰티워크)은 헤더가 맡고, 여기는
               누가 운영하는지를 적는 자리라 회사 로고가 온다. */}
           <Image src="/images/logo-barujeong-footer.png" alt="바를정" width={42} height={48} />
@@ -585,7 +585,7 @@ function Footer() {
           <div>
             <span className="footer-info-item">주소 : 서울특별시 마포구 성미산로 109, 102호</span>
             <Sep breaks />
-            <span className="footer-info-item">전화번호 : </span>
+            <span className="footer-info-item">전화번호 : 02-2039-1310</span>
           </div>
           {/* 통신판매업·유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
               번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
@@ -599,7 +599,7 @@ function Footer() {
             <span className="footer-info-item">직업정보제공사업 신고번호 : </span>
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
+        <div className="footer-bottomrow" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
           <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
             <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ color: "#555", display: "flex" }}>
