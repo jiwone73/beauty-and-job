@@ -5038,6 +5038,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .info-nav-item { padding: 14px 12px; font-size: 13px; }
   /* 모바일: 본문 좌우 여백 16px 통일 + 상단 여백 압축 */
   .info-main { padding: 10px 8px 24px; }
+  /* 흰 판 안쪽 여백도 PC 값(24 24 28)의 절반으로 — 375px 화면에서 너무 넓다. */
+  .info-body { padding: 12px 12px 14px; }
   .info-hero { margin-bottom: 24px; }
   .info-hero-title { font-size: 20px; text-align: center; }
   .info-hero-desc { font-size: 14px; }
