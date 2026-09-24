@@ -16997,6 +16997,24 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 머리줄의 오픈이벤트 — 기간 한정이라 한 번은 눈에 걸려야 한다. */
 .cs-nav-on { color: var(--color-primary) !important; font-weight: 700; }
 
+/* 모바일 전용 머리줄 밑 탭 — .cs-nav 가 숨는 폭(1024 이하)에서만 보인다. */
+.cs-mobile-nav { display: none; }
+@media (max-width: 1024px) {
+  .cs-mobile-nav {
+    display: flex; border-top: 1px solid #efeff1;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .cs-mobile-nav a {
+    flex: 1; text-align: center; white-space: nowrap;
+    padding: 10px 8px; font-size: 13px; color: #555; text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+  .cs-mobile-nav a.cs-nav-on {
+    color: var(--color-primary) !important; font-weight: 700;
+    border-bottom-color: var(--color-primary);
+  }
+}
+
 .pi-none-msg { max-width: 780px; margin: 40px auto; text-align: center;
   font-size: 14px; color: #8a8a90; }
 

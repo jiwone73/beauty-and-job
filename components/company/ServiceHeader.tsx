@@ -56,6 +56,14 @@ export default function ServiceHeader() {
           ) : null}
         </div>
       </div>
+      {/* 모바일 전용 탭줄 — 옆줄(.cs-nav)이 좁은 화면에서 숨으면서 오픈이벤트·
+          채용공고 상품·배너광고 상품으로 갈 길이 아예 없어졌다. 머리줄 밑에
+          가로 탭으로 다시 세운다. */}
+      <nav className="cs-mobile-nav">
+        <Link href="/company" className={이벤트활성 ? "cs-nav-on" : undefined}>오픈이벤트</Link>
+        <Link href="/company/plans" className={채용활성 ? "cs-nav-on" : undefined}>채용공고 상품</Link>
+        <Link href="/company/plans/ads" className={배너활성 ? "cs-nav-on" : undefined}>배너광고 상품</Link>
+      </nav>
     </header>
   );
 }
