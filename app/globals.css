@@ -14375,17 +14375,40 @@ button,
   .cs-ads { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
+  /* 머리줄 로고·높이·로그인 버튼이 메인 헤더와 달라 보였다 — 메인과
+     같은 크기(로고 100px, 높이 56px)로, 로그인/회원가입도 박스 버튼
+     대신 메인처럼 텍스트+구분선으로 바꾼다. */
+  .cs-header-in { height: 56px; }
+  .cs-logo img { width: 100px !important; height: auto !important; }
+  .cs-header-btns { gap: 0; }
+  .cs-header-btns .cs-btn-ghost,
+  .cs-header-btns .cs-btn-fill {
+    background: none !important; border: none !important; color: #555 !important;
+    padding: 0 8px !important; height: auto !important; font-size: 12px !important;
+  }
+  .cs-header-btns .cs-btn-ghost { border-right: 1px solid #d0d0d0 !important; border-radius: 0 !important; }
   .cs-hero-in { padding: 22px 10px 20px; }
-  .cs-hero-t { font-size: 28px; }
+  /* 글자 크기가 다른 화면(모바일 본문 15px·소제목 20px 안팎)보다 훨씬 커
+     균형이 안 맞았다 — 이 페이지의 다른 소제목(.cs-h2 22px)에 맞춘다. */
+  .cs-hero-t { font-size: 22px; margin-bottom: 10px; }
+  .cs-hero-eyebrow { font-size: 13px; margin-bottom: 8px; }
+  .cs-hero-d { font-size: 14.5px; line-height: 1.6; margin-bottom: 12px; }
+  .cs-hero-d b { font-size: 17px; }
+  .cs-hero-when { font-size: 13.5px; margin-bottom: 14px; }
   .cs-hero-pts { margin-top: 28px; gap: 12px 0; }
   .cs-hero-pts li { width: 50%; padding: 0 12px 0 0; }
   .cs-hero-pts li + li { border-left: none; }
   .cs-wrap { padding: 22px 10px; }
   .cs-h2 { font-size: 22px; }
-  .cs-jobs { grid-template-columns: repeat(2, 1fr); }
-  .cs-job:nth-child(n) { border-left: none; border-top: 1px solid #f7f7f8; }
-  .cs-job:nth-child(-n+2) { border-top: none; }
-  .cs-job:nth-child(even) { border-left: 1px solid #f7f7f8; }
+  /* 카드 그리드(아이콘+이름+설명, 4줄)는 좁은 화면에서 너무 길다 —
+     설명은 지우고 아이콘+이름만 한 줄로 흘려 "I"로 구분한다. 전체가
+     2줄을 넘지 않게 여백도 최소로. */
+  .cs-jobs { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 0; }
+  .cs-job { flex-direction: row; align-items: center; gap: 3px; padding: 1px 4px; border: none !important; }
+  .cs-job svg { width: 12px; height: 12px; }
+  .cs-job b { font-size: 11px; white-space: nowrap; font-weight: 600; }
+  .cs-job span { display: none; }
+  .cs-job:not(:last-child)::after { content: "I"; margin-left: 4px; color: #d8d3dc; font-weight: 400; }
   .cs-steps, .cs-why-grid, .cs-ads { grid-template-columns: 1fr 1fr; }
   .cs-step-ar { display: none; }
   .cs-shot { grid-template-columns: 1fr; }
