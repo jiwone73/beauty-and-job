@@ -14374,6 +14374,20 @@ button,
   .cs-why-grid { grid-template-columns: repeat(3, 1fr); }
   .cs-ads { grid-template-columns: repeat(2, 1fr); }
 }
+/* 기업 서비스 이벤트 배너 — 모바일 전용 압축판(메인 홈과 같은 크기).
+   PC 에서는 숨긴다. */
+.cs-hero-mobile-banner { display: none; }
+@media (max-width: 640px) {
+  .cs-hero-mobile-banner { display: block; margin-bottom: 16px; }
+  /* 압축판이 같은 내용을 대신하므로 원래 제목·설명·기간과, 뒤에 흐리게
+     깔리던 큰 사진은 모바일에서 가린다. 버튼(.cs-hero-btns)은 그대로 둔다. */
+  .cs-hero.evt .cs-hero-eyebrow,
+  .cs-hero.evt .cs-hero-t,
+  .cs-hero.evt .cs-hero-d,
+  .cs-hero.evt .cs-hero-when,
+  .cs-hero-photo.evt { display: none; }
+}
+
 @media (max-width: 640px) {
   /* 머리줄 로고·높이·로그인 버튼이 메인 헤더와 달라 보였다 — 메인과
      같은 크기(로고 100px, 높이 56px)로, 로그인/회원가입도 박스 버튼

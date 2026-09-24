@@ -72,6 +72,30 @@ export default function CompanyServiceView({ 이벤트 }: { 이벤트: 기업이
             사진으로 돌아가기 전에 갈아야 한다. */}
         <div className={`cs-hero-photo${이벤트 ? " evt" : ""}`} aria-hidden />
         <div className="cs-hero-in">
+          {/* 모바일 전용 — 메인 홈 배너와 같은 크기·모양. 오른쪽 사진만
+              선물상자로 바꾼다("메인페이지 배너와 동일한 사이즈로"). 아래
+              제목·설명·기간(.cs-hero-t 등)은 데스크탑에서만 보이게 CSS로
+              가린다 — 내용은 같고 자리만 다르다. */}
+          {이벤트 && (
+            <div className="hero-m-banner cs-hero-mobile-banner">
+              <img src="/images/event/오픈이벤트-선물상자-사진.png" alt="" className="hero-m-banner-photo" />
+              <div className="hero-m-banner-fade" />
+              <div className="hero-m-banner-body">
+                <strong className="hero-m-banner-title">뷰티워크 10월 오픈 기념 이벤트</strong>
+                <div className="hero-m-banner-desc">
+                  {(이벤트.short_title || 이벤트.title || "").split(/\s*\+\s*/).map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                </div>
+                {이벤트.기간 && (
+                  <div className="hero-m-banner-period">
+                    <span>이벤트 기간</span>
+                    <span>{이벤트.기간}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           {이벤트 && (
             <p className="cs-hero-eyebrow">
               <Sparkles size={18} strokeWidth={2.2} aria-hidden />
