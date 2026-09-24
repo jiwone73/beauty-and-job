@@ -2736,10 +2736,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 @media (max-width: 640px) {
   .job-detail-layout { padding: 8px 0 100px; }
   .job-detail-header-inner { padding: 0 16px; }
-  /* 좌우 19px는 그대로 둔다 — 등록 폼의 글 시작 위치와 같은 값이라
-     여기만 줄이면 폼·미리보기·구직자 화면 사이 정렬이 깨진다. 위아래는
-     기준(PC 24px의 절반)대로 줄인다. */
-  .job-detail-info-box { padding: 12px 19px; }
+  /* 좌우 19px(등록폼 정렬용)보다 메인 화면 기준(8px)을 우선한다 —
+     "메인처럼 옆으로 더 공간 확보해줘"라는 요청. */
+  .job-detail-info-box { padding: 12px 8px; }
   .job-detail-title { font-size: 17px; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere; }
   .job-detail-meta-grid { grid-template-columns: 1fr; }
   /* 모집부문·복리후생·근무지 등 섹션 사이 여백(안팎 16px씩, 32px)도 절반으로. */
