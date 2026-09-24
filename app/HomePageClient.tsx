@@ -600,7 +600,7 @@ function Footer() {
           </div>
           <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
             <Link href="/support/terms" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>이용약관</Link>
-            <Link href="/support/privacy" style={{ fontSize: 13, color: "#582681", textDecoration: "none", fontWeight: 600, whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
+            <Link href="/support/privacy" style={{ fontSize: 13, color: "#555", textDecoration: "none", whiteSpace: "nowrap" }}>개인정보 처리방침</Link>
           </div>
         </div>
         <div className="footer-bottomrow" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
