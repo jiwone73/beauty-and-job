@@ -4776,6 +4776,19 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .cs-card-links a { color: var(--color-primary); font-weight: 700; text-decoration: none; }
 .cs-card-links a:hover { text-decoration: underline; }
 
+@media (max-width: 768px) {
+  /* 운영정책·고객센터 안내 — 여백을 PC 값의 절반으로 통일. */
+  .info-section { margin-bottom: 24px; }
+  .info-section h2 { margin: 0 0 8px; padding-bottom: 5px; }
+  .info-values { gap: 8px; margin-bottom: 24px; }
+  .info-value-card { padding: 12px 10px; }
+  .pol-list { margin-top: 9px; }
+  .pol-list > div + div { margin-top: 9px; }
+  .pol-cs { margin-top: 8px; padding: 8px 9px; }
+  .info-section p.pol-src { margin-top: 7px; }
+  .pi-warn li { padding: 2px 0 2px 8px; }
+}
+
 /* 고객지원 카드 */
 .support-cards {
   display: grid;
