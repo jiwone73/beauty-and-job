@@ -563,9 +563,12 @@ function Footer() {
     { label: "고객센터", href: "/notice" },
     { label: "1:1 문의", href: "/support" },
   ];
-  const Sep = () => <span style={{ margin: "0 8px", color: "#e2e2e2" }}>|</span>;
+  // 항목이 모바일에서 줄바꿈되는 자리(주소·전화번호 등)의 구분선만 숨긴다 —
+  // "바를정 | 대표" 줄은 안 끊기니 구분선을 그대로 둔다.
+  const Sep = ({ breaks = false }: { breaks?: boolean }) =>
+    <span className={breaks ? "footer-info-sep" : undefined} style={{ margin: "0 8px", color: "#e2e2e2" }}>|</span>;
   return (
-    <footer style={{ background: "#f7f7f8", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
+    <footer className="site-footer" style={{ background: "#f7f7f8", borderTop: "1px solid #eee", padding: "40px 0 48px", marginTop: 60 }}>
       <div className="footer-inner" style={{ maxWidth: 1360, margin: "0 auto", padding: "0 24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
           {/* 운영 회사 로고. 서비스 이름(뷰티워크)은 헤더가 맡고, 여기는
@@ -577,12 +580,24 @@ function Footer() {
             ))}
           </nav>
         </div>
-        <div style={{ fontSize: 13, color: "#555", lineHeight: 2 }}>
+        <div className="footer-info" style={{ fontSize: 13, color: "#555", lineHeight: 2 }}>
           <div><span style={{ fontWeight: 400, color: "#555" }}>바를정</span><Sep />대표 : 정서우</div>
-          <div>주소 : 서울특별시 마포구 성미산로 109, 102호<Sep />전화번호 : </div>
+          <div>
+            <span className="footer-info-item">주소 : 서울특별시 마포구 성미산로 109, 102호</span>
+            <Sep breaks />
+            <span className="footer-info-item">전화번호 : </span>
+          </div>
           {/* 통신판매업·유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
               번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
-          <div>사업자등록번호 : 734-25-01099<Sep />통신판매업신고번호 : <Sep />유료직업소개사업 등록번호 : <Sep />직업정보제공사업 신고번호 : </div>
+          <div>
+            <span className="footer-info-item">사업자등록번호 : 734-25-01099</span>
+            <Sep breaks />
+            <span className="footer-info-item">통신판매업신고번호 : </span>
+            <Sep breaks />
+            <span className="footer-info-item">유료직업소개사업 등록번호 : </span>
+            <Sep breaks />
+            <span className="footer-info-item">직업정보제공사업 신고번호 : </span>
+          </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
