@@ -13679,6 +13679,45 @@ button,
 .nb-view-back:hover { color: var(--color-primary); }
 .nb-board-msg { color: #555; text-align: center; padding: 60px 0; }
 
+@media (max-width: 768px) {
+  /* 제목 검색창이 오른쪽으로 밀려 나가던 것 — flex 아이템 기본 최소폭이
+     내용만큼 잡혀서 넘쳤다. 0 으로 풀어 줄어들 수 있게 한다. */
+  .nb-search { min-width: 0; padding: 0 4px 0 10px; }
+  .nb-pick { padding: 0 22px 0 10px; font-size: 13px; }
+  .nb-top { gap: 6px; margin-bottom: 10px; }
+
+  /* 목록 제목·등록일자 — 안쪽 여백과 날짜 칸 폭을 줄여 제목 글자가
+     몇 자 안 들어가던 것을 완화한다(PC 값의 절반 안팎). */
+  .nb-th { padding: 8px 6px; }
+  .nb-th > span:last-child { width: 78px; }
+  .nb-board > li > a { padding: 10px 6px; }
+  .nb-board-d { width: 78px; }
+
+  /* 위아래 여백을 전체적으로 PC 값의 절반 정도로 — 스크롤이 길게
+     늘어지던 것을 줄인다. */
+  .nb-page { padding-bottom: 20px; }
+  .nb-view-banner { margin-bottom: 10px; }
+  .nb-view-h { margin: 8px 0 6px; }
+  .nb-view-d { margin: 0 0 12px; padding-bottom: 10px; }
+  .nb-view-body > * + * { margin-top: 12px; }
+  .nb-b-evth.sep { padding-top: 12px; }
+  .nb-b-steps { gap: 6px; }
+  .nb-b-dl { padding: 4px 10px; }
+  .nb-b-dl > div { padding: 6px 0; }
+
+  /* 이벤트 기간 — 카드(옅은 배경 상자)를 없애고 평문처럼 한 줄로만
+     보여준다. 상자 안쪽 여백(16px)이 없어지는 만큼 글자가 줄바꿈 없이
+     들어갈 자리가 넉넉해진다. */
+  .nb-b-period {
+    background: none; padding: 0; border-radius: 0;
+    font-size: 13.5px; white-space: nowrap; overflow-x: auto;
+  }
+
+  /* "꼭 확인해 주세요" 등 유의사항 — 불릿 앞 왼쪽 여백(34px)이 좁은
+     화면에서 불필요하게 넓었다. */
+  .nb-b-warn { padding: 10px 10px 10px 18px; }
+}
+
 /* 이벤트 페이지 — 고객센터 계열이 아니라 일반 헤더를 단다. */
 .ev-page { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
 .ev-title { font-size: 26px; font-weight: 700; color: #555; margin: 0 0 6px; }
