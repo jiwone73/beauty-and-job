@@ -178,14 +178,18 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           가늘어(OS 기본값) 안 보이면 표가 그냥 잘려 끝난 것처럼 보였다 — 스크롤바를
           늘 보이는 굵기로 그려 "더 있다"는 걸 알린다. */}
       <div className="jd-pos-scroll" style={{ overflowX: "auto", border: "1px solid #efeff1", borderRadius: 10 }}>
-        <table style={{ width: "100%", minWidth: posColMinWidth, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13.5 }}>
+        {/* 모바일에서는 CSS(.jd-pos-table)가 이 폭·레이아웃 지정을 눌러 이기고
+            table-layout:auto 로 바꾼다 — 칸마다 실제 내용 폭만큼만 차지해,
+            짧은 값(모집분야·인원)이 남는 자리를 긴 값(고용형태)에 나눠 주는
+            대신 그 자리로 다음 칸(급여)이 더 보인다("내용을 딱 채우는 정도로"). */}
+        <table className="jd-pos-table" style={{ width: "100%", minWidth: posColMinWidth, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13.5 }}>
           <colgroup>
-            {posCols.map((c, i) => <col key={c.key} style={{ width: `${(posColBlended[i] / posColWeightTotal) * 100}%` }} />)}
+            {posCols.map((c, i) => <col key={c.key} className="jd-pos-col" style={{ width: `${(posColBlended[i] / posColWeightTotal) * 100}%` }} />)}
           </colgroup>
           <thead>
             <tr style={{ background: "#f7f7f8" }}>
               {posCols.map((c) => {
-                const wrapCol = c.key === "category" || c.key === "salary";
+                const wrapCol = c.key === "category" || c.key === "salary" || c.key === "employment";
                 return (
                   <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal" } : undefined}>{c.label}</th>
                 );
@@ -242,11 +246,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                     : c.key === "salary"
                       ? salaryTxt
                       : (c.get(p) || "-");
-                  // 모집분야·급여는 길어지면 여러 줄로 접힐 수 있어 줄바꿈을 열어
-                  // 둔다(칸 폭은 colgroup+minWidth 가 이미 못박아 두었다). 나머지
-                  // 칸은 한 줄(nowrap)로 — 표가 넓어지는 대신 칸이 들쭉날쭉해지지
-                  // 않는다.
-                  const wrapCol = c.key === "category" || c.key === "salary";
+                  // 모집분야·급여·고용형태(정규직, 프리랜서처럼 여러 개면)는 길어지면
+                  // 여러 줄로 접힐 수 있어 줄바꿈을 열어 둔다(칸 폭은 colgroup+minWidth
+                  // 가 이미 못박아 두었다). 나머지 칸은 한 줄(nowrap)로 — 표가 넓어지는
+                  // 대신 칸이 들쭉날쭉해지지 않는다.
+                  const wrapCol = c.key === "category" || c.key === "salary" || c.key === "employment";
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#555" : "#555" }}>
                       {wrapCol
