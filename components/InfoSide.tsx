@@ -49,36 +49,72 @@ export default function InfoSide({ active, 누구 }: {
   const 접기 = (href: string) =>
     set접은것((앞) => (앞.includes(href) ? 앞.filter((x) => x !== href) : [...앞, href]));
 
+  // 모바일 — 옆줄을 통째로 위 탭으로 올린다. 다운로드는 거의 안 쓰여
+  // 자리만 차지한다는 지적이 있어 탭에는 넣지 않는다(데스크탑 옆줄에는
+  // 그대로 남아 있다).
+  const 모바일메뉴 = 메뉴.filter((m) => m.머리.href !== "/support/download");
+  const 모바일짧은이름: Record<string, string> = {
+    "공지사항": "공지",
+    "고객센터 안내": "고객센터",
+  };
+  const 활성브랜치 = 모바일메뉴.find(({ 머리, 아래 }) =>
+    active === 머리.href || 아래.some((m) => m.매칭 === active));
+
   return (
-    <nav className="info-side" aria-label="고객센터 메뉴">
-      {메뉴.map(({ 머리, 아래 }) => {
-        const 접힘 = 접은것.includes(머리.href);
-        // 하위 페이지가 실제로 갈리는 경우(운영정책), 그중 하나에 서 있어도
-        // 부모 항목이 켜져 보여야 한다.
-        const 머리켜짐 = active === 머리.href || 아래.some((m) => m.매칭 === active);
-        return (
-          <div key={머리.href} className="info-side-branch">
-            <div className={아래.length ? "info-side-row" : undefined}>
-              <Link href={머리.주소 ?? 머리.href}
-                    className={`info-side-i${아래.length ? " head" : ""}${머리켜짐 ? " on" : ""}`}>
-                {머리.label}
-              </Link>
-              {아래.length > 0 && (
-                <button type="button" className="info-side-fold" onClick={() => 접기(머리.href)}
-                        aria-expanded={!접힘} aria-label={`${머리.label} ${접힘 ? "펴기" : "접기"}`}>
-                  <ChevronDown size={15} style={{ transform: 접힘 ? "rotate(-90deg)" : "none" }} />
-                </button>
-              )}
+    <>
+      <nav className="info-side info-side-desktop" aria-label="고객센터 메뉴">
+        {메뉴.map(({ 머리, 아래 }) => {
+          const 접힘 = 접은것.includes(머리.href);
+          // 하위 페이지가 실제로 갈리는 경우(운영정책), 그중 하나에 서 있어도
+          // 부모 항목이 켜져 보여야 한다.
+          const 머리켜짐 = active === 머리.href || 아래.some((m) => m.매칭 === active);
+          return (
+            <div key={머리.href} className="info-side-branch">
+              <div className={아래.length ? "info-side-row" : undefined}>
+                <Link href={머리.주소 ?? 머리.href}
+                      className={`info-side-i${아래.length ? " head" : ""}${머리켜짐 ? " on" : ""}`}>
+                  {머리.label}
+                </Link>
+                {아래.length > 0 && (
+                  <button type="button" className="info-side-fold" onClick={() => 접기(머리.href)}
+                          aria-expanded={!접힘} aria-label={`${머리.label} ${접힘 ? "펴기" : "접기"}`}>
+                    <ChevronDown size={15} style={{ transform: 접힘 ? "rotate(-90deg)" : "none" }} />
+                  </button>
+                )}
+              </div>
+              {!접힘 && 아래.map((m) => (
+                <Link key={m.label} href={m.주소 ?? m.href}
+                      className={`info-side-i sub${(m.매칭 ? active === m.매칭 : (active === 머리.href && 누구 === m.label.slice(0, 2))) ? " on" : ""}`}>
+                  {m.label}
+                </Link>
+              ))}
             </div>
-            {!접힘 && 아래.map((m) => (
+          );
+        })}
+      </nav>
+      <nav className="info-tabs" aria-label="고객센터 메뉴">
+        <div className="info-tabs-row">
+          {모바일메뉴.map(({ 머리, 아래 }) => {
+            const 켜짐 = active === 머리.href || 아래.some((m) => m.매칭 === active);
+            return (
+              <Link key={머리.href} href={머리.주소 ?? 머리.href}
+                    className={`info-tab${켜짐 ? " on" : ""}`}>
+                {모바일짧은이름[머리.label] ?? 머리.label}
+              </Link>
+            );
+          })}
+        </div>
+        {활성브랜치 && 활성브랜치.아래.length > 0 && (
+          <div className="info-subtabs-row">
+            {활성브랜치.아래.map((m) => (
               <Link key={m.label} href={m.주소 ?? m.href}
-                    className={`info-side-i sub${(m.매칭 ? active === m.매칭 : (active === 머리.href && 누구 === m.label.slice(0, 2))) ? " on" : ""}`}>
+                    className={`info-subtab${(m.매칭 ? active === m.매칭 : (active === 활성브랜치.머리.href && 누구 === m.label.slice(0, 2))) ? " on" : ""}`}>
                 {m.label}
               </Link>
             ))}
           </div>
-        );
-      })}
-    </nav>
+        )}
+      </nav>
+    </>
   );
 }

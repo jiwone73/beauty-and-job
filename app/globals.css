@@ -4405,12 +4405,33 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   font-size: 13.5px; color: #8a8a90; transition: background .15s, color .15s; }
 .info-side-s:hover { background: #f7f7f9; color: #555; }
 .info-side-s.on { color: var(--color-primary); font-weight: 600; }
+/* 모바일 전용 위 탭줄 — PC 옆줄(.info-side-desktop)과 같은 메뉴를 위로
+   올린 것. PC 에서는 숨긴다. */
+.info-tabs { display: none; }
 @media (max-width: 860px) {
-  /* 좁은 화면에서는 옆줄이 설 자리가 없다. 위로 올려 가로로 흘린다. */
-  .info-layout { grid-template-columns: 1fr; gap: 20px; }
-  .info-side { position: static; }
-  .info-side > ul { display: flex; flex-wrap: wrap; gap: 6px; }
-  .info-side-sub { display: flex; gap: 4px; padding-left: 0; margin: 0 0 0 4px; }
+  /* 좁은 화면에서는 옆줄이 설 자리가 없다. 위 탭줄로 통째로 바꾼다. */
+  .info-layout { grid-template-columns: 1fr; gap: 16px; }
+  .info-side-desktop { display: none; }
+  .info-tabs { display: block; }
+  .info-tabs-row {
+    display: flex; border-bottom: 1px solid var(--color-border);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .info-tab {
+    flex: 1; min-width: 0; text-align: center; white-space: nowrap;
+    padding: 12px 6px; font-size: 15px; color: #555; text-decoration: none;
+    border-bottom: 2px solid transparent;
+  }
+  .info-tab.on { color: var(--color-primary); font-weight: 700; border-bottom-color: var(--color-primary); }
+  .info-subtabs-row {
+    display: flex; gap: 8px; padding: 10px 2px 0;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .info-subtab {
+    flex: none; font-size: 13.5px; color: #8a8a90; text-decoration: none;
+    padding: 6px 12px; border-radius: 20px; background: #f7f7f9; white-space: nowrap;
+  }
+  .info-subtab.on { color: var(--color-primary); font-weight: 700; background: var(--color-bg-soft); }
 }
 
 .info-header {
@@ -5009,6 +5030,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .info-header-inner, .info-nav-inner { padding: 0 16px; }
   /* 모바일: 헤더 높이·로고 여백 정리 */
   .info-header { height: 56px; }
+  /* "고객센터" 제목이 두 줄로 접히면서 오른쪽 회원가입 버튼과 겹치던 것 —
+     줄바꿈을 막는다. */
+  .info-brand-t { white-space: nowrap; font-size: 17px; }
   /* 모바일: 네비 탭 폰트·패딩 축소 (5개 탭이 균형 있게, 넘치면 가로 스크롤) */
   .info-nav-inner { gap: 0; }
   .info-nav-item { padding: 14px 12px; font-size: 13px; }
