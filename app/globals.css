@@ -14574,9 +14574,9 @@ button,
   /* 매장/오피스 토글 + 지역 — 배너와 직군 탭 사이. */
   .jobs-mbar { display: flex; align-items: center; gap: 8px; padding: 8px 2px 0; }
   .jobs-mbar-type { flex: none; }
-  .jobs-mbar-type .seg-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-size: 12.5px; }
+  .jobs-mbar-type .seg-btn { display: inline-flex; align-items: center; gap: 3px; padding: 5px 8px; font-size: 12.5px; }
   .jobs-mbar-region { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 4px;
-    height: 32px; padding: 0 10px; background: #fff; border: 1px solid #efeff1; border-radius: 9px;
+    height: 32px; padding: 0 8px; background: #fff; border: 1px solid #efeff1; border-radius: 9px;
     font-family: inherit; font-size: 12.5px; color: #555; cursor: pointer; }
   .jobs-mbar-region span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .jobs-mbar-region.on { color: var(--color-primary); border-color: var(--color-primary); }

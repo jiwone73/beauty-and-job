@@ -13,9 +13,10 @@ export const EMPLOYMENT_OPTS = [
   { label: "전체", value: "고용형태 전체" },
   { label: "정규직", value: "정규직" },
   { label: "계약직", value: "계약직" },
-  { label: "인턴", value: "인턴" },
-  { label: "아르바이트", value: "아르바이트" },
+  { label: "스페어", value: "스페어" },
   { label: "프리랜서", value: "프리랜서" },
+  { label: "아르바이트", value: "아르바이트" },
+  { label: "위촉직", value: "위촉직" },
 ];
 
 export const BENEFIT_FILTER = [

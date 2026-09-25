@@ -554,6 +554,14 @@ function JobsPageInner() {
           </button>
           <RegionSelectModal open={showRegionModal} initial={selectedRegions}
             onClose={() => setShowRegionModal(false)} onApply={setSelectedRegions} />
+          {/* 고용형태 — 직군 탭 팝오버와 같은 자리(열린탭)를 쓴다. 한 번에 하나만 뜬다. */}
+          <button type="button" data-pop-ignore
+            className={`jobs-mbar-region${selectedEmployment !== "고용형태 전체" ? " on" : ""}`}
+            aria-expanded={열린탭?.그룹 === "고용형태"}
+            onClick={(e) => (열린탭?.그룹 === "고용형태" ? set열린탭(null) : 탭열기(e, "고용형태"))}>
+            <span>{selectedEmployment === "고용형태 전체" ? "고용형태" : selectedEmployment}</span>
+            <ChevronDown size={13} />
+          </button>
         </div>
         {/* 폰 전용 직군 탭(글자만, 두 줄 안) — PC 는 왼쪽 사이드바가 맡아 CSS 로 숨긴다. */}
         <nav className="jobs-tabs" aria-label="직군" ref={탭줄}>
@@ -571,7 +579,15 @@ function JobsPageInner() {
             );
           })}
         </nav>
-        {열린탭 && (() => {
+        {열린탭?.그룹 === "고용형태" && (
+          <Pop onClose={() => set열린탭(null)} title="고용형태" 좌={열린탭.좌} 상={열린탭.상}>
+            {EMPLOYMENT_OPTS.filter((o) => o.value !== "고용형태 전체").map((o) => (
+              <PopItem key={o.value} on={selectedEmployment === o.value}
+                onClick={() => { setSelectedEmployment(selectedEmployment === o.value ? "고용형태 전체" : o.value); set열린탭(null); }}>{o.label}</PopItem>
+            ))}
+          </Pop>
+        )}
+        {열린탭 && 열린탭.그룹 !== "고용형태" && (() => {
           const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", 열린탭.그룹);
           return (
             <Pop onClose={() => set열린탭(null)} title={열린탭.그룹} 좌={열린탭.좌} 상={열린탭.상}>
