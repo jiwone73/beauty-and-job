@@ -17745,3 +17745,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 640px) {
   .nb-head h1 { font-size: 17px; }
 }
+
+/* 프로필(폰) — 항목 이름은 #333, 내용은 #555 로 갈라 둘이 구분되게. 안 채운 칸의 옅은 회색은 그대로. */
+@media (max-width: 768px) {
+  .profile-info-card.pf-grid .profile-info-label { color: #333; }
+  .profile-info-card.pf-grid .profile-info-value:not(.is-empty),
+  .profile-info-card.pf-grid .if-slot.on,
+  .profile-info-card.pf-grid .pf-pay-sel,
+  .profile-info-card.pf-grid .pf-pay-in,
+  .profile-info-card.pf-grid .pf-pay-unit,
+  .profile-info-card.pf-grid .pf-pay-nego { color: #555; }
+}
