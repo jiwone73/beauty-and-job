@@ -159,9 +159,9 @@ export default function Header() {
           <div className="header-right">
             <AuthButtons onLoginClick={() => router.push("/login")} />
             {!isLoggedIn && <span className="mob-auth-sep">I</span>}
-            {/* 폰에서 「기업 서비스」로 가는 유일한 링크. 개인회원으로 로그인했으면 기업
-                서비스로 건너갈 일이 없어 뺀다 — PC(AuthButtons)와 같은 규칙이다. */}
-            {(!isLoggedIn || isCompany) && (
+            {/* 폰에서 「기업 서비스」로 가는 유일한 링크. 로그인했으면 뺀다 — 개인회원은
+                건너갈 일이 없고, 기업회원은 아바타(대시보드)가 그 길을 맡는다. */}
+            {!isLoggedIn && (
               <Link href="/company" className="btn-outline-biz mob-hamburger">
                 기업 서비스
               </Link>
