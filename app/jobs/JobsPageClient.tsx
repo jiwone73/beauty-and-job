@@ -543,7 +543,7 @@ function JobsPageInner() {
           </div>
           <button type="button" className={`jobs-mbar-region${selectedRegions.length ? " on" : ""}`}
             onClick={() => { set열린탭(null); setShowRegionModal(true); }}>
-            <span>{selectedRegions.length === 0 ? "지역 전체"
+            <span>{selectedRegions.length === 0 ? "지역"
               : (() => {
                   const r = selectedRegions[0];
                   const 첫 = r.includes(" ") ? `${shortSido(r.split(" ")[0])} ${r.split(" ").slice(1).join(" ")}` : `${shortSido(r)} 전체`;
@@ -555,7 +555,7 @@ function JobsPageInner() {
             onClose={() => setShowRegionModal(false)} onApply={setSelectedRegions} />
           {/* 고용형태 — 직군 탭 팝오버와 같은 자리(열린탭)를 쓴다. 한 번에 하나만 뜬다. */}
           <button type="button" data-pop-ignore
-            className={`jobs-mbar-region${selectedEmployment !== "고용형태 전체" ? " on" : ""}`}
+            className={`jobs-mbar-region jobs-mbar-emp${selectedEmployment !== "고용형태 전체" ? " on" : ""}`}
             aria-expanded={열린탭?.그룹 === "고용형태"}
             onClick={(e) => (열린탭?.그룹 === "고용형태" ? set열린탭(null) : 탭열기(e, "고용형태"))}>
             <span>{selectedEmployment === "고용형태 전체" ? "고용형태" : selectedEmployment}</span>

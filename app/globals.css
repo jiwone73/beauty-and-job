@@ -14607,6 +14607,9 @@ button,
     font-family: inherit; font-size: 12.5px; color: #555; cursor: pointer; }
   .jobs-mbar-region span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .jobs-mbar-region.on { color: var(--color-primary); border-color: var(--color-primary); }
+  /* 고용형태는 글자 폭만큼 — 폰 글꼴이 넓어도 「…」로 잘리지 않게. 남는 폭은 지역이 쓴다. */
+  .jobs-mbar-emp { flex: none; }
+  .jobs-mbar-emp span { overflow: visible; text-overflow: clip; }
   /* 머리줄 밑 띠배너를 여백 없이 붙인다(원래 위 20px). */
   .jobs-main { margin-top: 0; }
   .jobs-tabs { display: flex; flex-wrap: wrap; gap: 0; padding: 6px 2px 0; }
