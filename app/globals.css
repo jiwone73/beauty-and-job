@@ -469,13 +469,30 @@
   display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
 .jobs-pager button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .jobs-pager button:disabled { color: #ccc; cursor: default; }
-/* 쪽 번호는 버튼 상자 없이 글자만 — 화살표(이전/다음)만 버튼으로 남긴다. */
+/* 쪽 번호는 굵은 글자만, 지금 쪽만 가는 테두리 상자. 이전/다음은 글자 + 세로 구분선. */
+.jobs-pager { gap: 0; }
 .jobs-pager .jobs-pager-num {
-  border: none; background: none; border-radius: 0; min-width: auto; height: auto; padding: 4px 6px;
+  border: 1px solid transparent; background: none; border-radius: 2px; min-width: 28px; height: 28px; padding: 0 4px;
+  margin: 0 2px; font-size: 14px; font-weight: 700; color: #333;
 }
-.jobs-pager .jobs-pager-num:hover:not(:disabled) { border-color: transparent; }
-.jobs-pager .jobs-pager-num.on { background: none; border-color: transparent; color: var(--color-primary); font-weight: 700; }
+.jobs-pager .jobs-pager-num:hover:not(:disabled) { border-color: transparent; color: var(--color-primary); }
+.jobs-pager .jobs-pager-num.on { background: none; border-color: var(--color-primary); color: var(--color-primary); }
+.jobs-pager .jobs-pager-arrow {
+  border: none; background: none; border-radius: 0; min-width: auto; height: 18px; padding: 0; gap: 2px;
+  font-size: 13px; color: #666;
+}
+.jobs-pager .jobs-pager-arrow:hover:not(:disabled) { border-color: transparent; color: var(--color-primary); }
+.jobs-pager .jobs-pager-arrow:disabled { visibility: hidden; }
+.jobs-pager .jobs-pager-arrow[aria-label="이전 쪽"] { border-right: 1px solid #e5e5e5; padding-right: 10px; margin-right: 8px; }
+.jobs-pager .jobs-pager-arrow[aria-label="다음 쪽"] { border-left: 1px solid #e5e5e5; padding-left: 10px; margin-left: 8px; }
 .jobs-pager-gap { color: #bbb; font-size: 14px; padding: 0 2px; }
+/* 폰: 열 쪽 + 이전/다음이 한 줄에 들도록 촘촘하게. */
+@media (max-width: 640px) {
+  .jobs-pager .jobs-pager-num { min-width: 22px; padding: 0; margin: 0; }
+  .jobs-pager .jobs-pager-arrow[aria-label="이전 쪽"] { padding-right: 8px; margin-right: 6px; }
+  .jobs-pager .jobs-pager-arrow[aria-label="다음 쪽"] { padding-left: 8px; margin-left: 6px; }
+  .jobs-pager .jobs-pager-arrow:disabled { display: none; }
+}
 
 /* 메인 채용관 머리. 파는 자리라 「광고」를 붙인다(표시 의무). */
 /* 채용관 제목 위 여백은 둘이 같아야 한다. 프리미엄은 히어로 판 바로 아래라

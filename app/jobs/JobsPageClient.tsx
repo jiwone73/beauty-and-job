@@ -676,7 +676,7 @@ function JobsPageInner() {
           <nav className="jobs-pager" aria-label="페이지">
             <button type="button" className="jobs-pager-arrow" disabled={쪽 <= 1}
                     onClick={() => 쪽이동(쪽 - 1)} aria-label="이전 쪽">
-              <ChevronRight size={16} style={{ transform: "rotate(180deg)" }} />
+              <ChevronRight size={14} style={{ transform: "rotate(180deg)" }} />이전
             </button>
             {쪽목록(쪽, 총쪽).map((n, i) =>
               n === 0 ? (
@@ -689,7 +689,7 @@ function JobsPageInner() {
               ))}
             <button type="button" className="jobs-pager-arrow" disabled={쪽 >= 총쪽}
                     onClick={() => 쪽이동(쪽 + 1)} aria-label="다음 쪽">
-              <ChevronRight size={16} />
+              다음<ChevronRight size={14} />
             </button>
           </nav>
         )}
@@ -699,22 +699,12 @@ function JobsPageInner() {
   );
 }
 
-/**
- * 쪽 번호를 어떻게 늘어놓을까. 0 은 「…」 자리다.
- *
- * 지금 쪽 둘레만 보여 주고 첫 쪽과 끝 쪽은 늘 남긴다 — 여덟 쪽이든 쉰 쪽이든
- * 줄 길이가 같아야 한 줄에 들어간다.
- */
+/** 쪽 번호를 어떻게 늘어놓을까. 지금 쪽이 든 열 쪽 묶음. */
 const 쪽목록 = (현재: number, 총: number): number[] => {
-  if (총 <= 7) return Array.from({ length: 총 }, (_, i) => i + 1);
-  const 둘레 = [현재 - 1, 현재, 현재 + 1].filter((n) => n > 1 && n < 총);
-  const 낱장 = [...new Set([1, ...둘레, 총])].sort((a, b) => a - b);
-  const 줄: number[] = [];
-  낱장.forEach((n, i) => {
-    if (i > 0 && n - 낱장[i - 1] > 1) 줄.push(0);
-    줄.push(n);
-  });
-  return 줄;
+  // 열 쪽씩 묶어 그 묶음을 다 보여 준다(1~10, 11~20…). 「이전/다음」은 한 쪽씩 넘긴다.
+  const 시작 = Math.floor((현재 - 1) / 10) * 10 + 1;
+  const 끝 = Math.min(시작 + 9, 총);
+  return Array.from({ length: 끝 - 시작 + 1 }, (_, i) => 시작 + i);
 };
 
 export default function JobsPageClient() {
