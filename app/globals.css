@@ -17756,3 +17756,17 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .profile-info-card.pf-grid .pf-pay-unit,
   .profile-info-card.pf-grid .pf-pay-nego { color: #555; }
 }
+
+/* 프로필(폰) — 항목 이름 15px, 내용 14px(가입 화면과 같은 단계). 안 채운 칸의 안내글·희망급여도 내용이다. */
+@media (max-width: 768px) {
+  .profile-info-card.pf-grid .profile-info-value,
+  .profile-info-card.pf-grid .profile-info-value.is-empty,
+  .profile-info-card.pf-grid .profile-info-note,
+  .profile-info-card.pf-grid .if-slot,
+  .profile-info-card.pf-grid .if-input,
+  .profile-info-card.pf-grid .pf-pay-sel,
+  .profile-info-card.pf-grid .pf-pay-in,
+  .profile-info-card.pf-grid .pf-pay-unit,
+  .profile-info-card.pf-grid .pf-pay-nego { font-size: 14px; }
+  .profile-info-card.pf-grid .pf-pay-in::placeholder { font-size: 12.5px; }
+}
