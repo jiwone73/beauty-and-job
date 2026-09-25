@@ -12591,6 +12591,8 @@ div:has(> table.admin-table),
 /* 간편가입 직군·경력 버튼 — 폰에서 안쪽 여백을 절반으로(8px 14px → 4px 7px). */
 @media (max-width: 640px) {
   .onb-job .filter-chip { padding: 4px 7px; }
+  .onb-job .filter-chip { font-size: 15px; font-weight: 600; }
+  .onb-job .filter-chip:not(.on) { color: #333; }
   /* 카드 제목에 「직군」을 붙이고 직군 이름 나열은 뺀다(아래 직군 버튼이 대신한다). */
   .onb-job .jt-desc { display: none; }
   .onb-job .onb-m-only { display: inline; }
@@ -17709,4 +17711,18 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   /* 거주지 주소 줄 — 아이콘 자리였던 왼쪽 18px 들여쓰기(인라인 값)를 걷는다. */
   .profile-info-card.pf-grid > .pf-wide > .if-row { padding-left: 0 !important; }
   .profile-info-card.pf-grid .pf-pay-nego { margin-left: 2px; gap: 4px; }
+}
+
+/* 가입 화면(폰) — 직군·경력·희망 근무지역·휴대폰 번호: 글자를 2px 키우고(13→15, 14→16) 더 진하게.
+   개인 가입(이메일·간편)과 기업 가입(담당자 휴대폰)이 같이 쓴다. 태그를 붙여 Tailwind 단일 클래스보다 앞서게 한다. */
+@media (max-width: 640px) {
+  p.onb-f-lab, label.onb-f-lab { font-size: 15px; color: #333; font-weight: 500; }
+  input.onb-f-in { font-size: 16px; }
+  button.onb-f-bt { font-size: 15px; }
+  button.onb-f-btn, div.onb-f-btn, p.onb-f-btn { font-size: 16px; }
+}
+
+/* 가입 화면(폰) 매장·오피스 직군 카드 — 위아래 안쪽 여백을 절반으로(10px → 5px). */
+@media (max-width: 640px) {
+  .jt-card { padding-top: 5px; padding-bottom: 5px; }
 }

@@ -236,18 +236,18 @@ export default function OnboardingJobTypePage() {
         <div className="mb-8 text-center">
           <p className="text-[13px] text-[#582681] font-semibold mb-2">거의 다 왔어요!</p>
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] mb-2">어떤 일을 찾고 계세요?</h1>
-          <p className="text-[13px] md:text-[14px] text-[#6b6b6b]">관심 분야 공고를 먼저 보여드릴게요</p>
+          <p className="hidden md:block text-[13px] md:text-[14px] text-[#6b6b6b]">관심 분야 공고를 먼저 보여드릴게요</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mb-8 items-stretch">
           <button
             onClick={() => setSelected("STORE")}
-            className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
+            className={"w-full rounded-xl border-2 px-5 py-1 md:p-5 text-left transition-all " +
               (selected === "STORE"
                 ? "border-[#582681] bg-[#f7f7f8]"
                 : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
-            <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
+            <p className="text-[16px] font-normal md:font-bold text-[#111] mb-0 md:mb-1 flex items-center gap-1.5">
               <StoreIcon size={20} style={{ color: "#582681" }} /> 매장<span className="md:hidden"> 직군</span>
             </p>
             <p className="hidden md:block text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
@@ -257,12 +257,12 @@ export default function OnboardingJobTypePage() {
 
           <button
             onClick={() => setSelected("OFFICE")}
-            className={"w-full rounded-xl border-2 p-5 text-left transition-all " +
+            className={"w-full rounded-xl border-2 px-5 py-1 md:p-5 text-left transition-all " +
               (selected === "OFFICE"
                 ? "border-[#582681] bg-[#f7f7f8]"
                 : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
-            <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
+            <p className="text-[16px] font-normal md:font-bold text-[#111] mb-0 md:mb-1 flex items-center gap-1.5">
               <OfficeIcon size={20} style={{ color: "#582681" }} /> 오피스<span className="md:hidden"> 직군</span>
             </p>
             <p className="hidden md:block text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
@@ -278,11 +278,11 @@ export default function OnboardingJobTypePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 mb-8">
           <경력고르기 jobType={selected} group={대분류} stage={단계} onStage={set단계} />
           <div className="mt-8 md:mt-0">
-            <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
+            <p className="onb-f-lab text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
               희망 근무지역 <span className="text-red-500">*</span>
             </p>
             <button type="button" onClick={() => set지역창(true)}
-              className="w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
+              className="onb-f-btn w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
               {지역들.length === 0
                 ? <span className="text-[#9a9a9a]">지역을 선택해 주세요</span>
                 : <span className="text-[#3a3a3a]">{지역들.map((r) => shortRegion(r)).join(" · ")}</span>}
@@ -300,7 +300,7 @@ export default function OnboardingJobTypePage() {
 
         {needPhone && (
           <div className="mb-8">
-            <p className="text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
+            <p className="onb-f-lab text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">
               휴대폰 번호 <span className="text-red-500">*</span>
             </p>
             <div className="flex gap-2">
@@ -311,11 +311,11 @@ export default function OnboardingJobTypePage() {
                 onChange={(e) => { setPhone(e.target.value.replace(/[^0-9-]/g, "")); setPhoneVerified(false); setCodeSent(false); }}
                 disabled={phoneVerified}
                 placeholder="(예시) 010-1234-5678"
-                className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]"
+                className="flex-1 min-w-0 onb-f-in h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]"
               />
               <button type="button" onClick={sendCode}
                 disabled={phoneBusy || phoneVerified || phone.replace(/\D/g, "").length < 10}
-                className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition">
+                className="onb-f-bt px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition">
                 {phoneVerified ? "인증완료" : codeSent ? "재전송" : phoneBusy ? "전송중" : "인증번호 받기"}
               </button>
             </div>
@@ -324,10 +324,10 @@ export default function OnboardingJobTypePage() {
                 <input type="text" inputMode="numeric" value={phoneCode}
                   onChange={(e) => setPhoneCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="인증번호 6자리"
-                  className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#582681]" />
+                  className="flex-1 onb-f-in h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] focus:outline-none focus:border-[#582681]" />
                 <button type="button" onClick={verifyCode}
                   disabled={phoneBusy || phoneCode.length < 6}
-                  className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] bg-[#582681] text-white disabled:opacity-40 hover:opacity-90 transition">
+                  className="onb-f-bt px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] bg-[#582681] text-white disabled:opacity-40 hover:opacity-90 transition">
                   확인
                 </button>
               </div>
