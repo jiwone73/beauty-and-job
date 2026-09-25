@@ -254,7 +254,7 @@ function SignupEmailContent() {
         </button>
       </div>
 
-      <div className="flex-1 flex justify-center px-5 py-8">
+      <div className="onb-job flex-1 flex justify-center px-2 md:px-5 py-8">
         <div className="w-full max-w-[640px]">
           <h1 className="text-[22px] md:text-[26px] font-normal text-[#555] text-center mb-2">
             개인회원 가입
@@ -282,7 +282,7 @@ function SignupEmailContent() {
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                 <StoreIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
-                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장</span>
+                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">매장<span className="onb-m-only"> 직군</span></span>
                   <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">
                     {직군요약("STORE")}
                   </span>
@@ -307,7 +307,7 @@ function SignupEmailContent() {
                 {/* 아이콘은 왼쪽, 글자는 오른쪽 */}
                 <OfficeIcon size={28} className="jt-icon" style={{ color: "#582681", flexShrink: 0 }} />
                 <span className="jt-text flex flex-col min-w-0">
-                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">오피스</span>
+                  <span className="jt-title text-[14px] md:text-[16px] font-normal text-[#555]">오피스<span className="onb-m-only"> 직군</span></span>
                   <span className="jt-desc text-[13px] md:text-[14px] mt-1 leading-relaxed">
                     {직군요약("OFFICE")}
                   </span>
