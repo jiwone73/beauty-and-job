@@ -17772,12 +17772,3 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .profile-info-card.pf-grid .pf-pay-nego { font-size: 14px; }
   .profile-info-card.pf-grid .pf-pay-in::placeholder { font-size: 12.5px; }
 }
-
-/* 프로필(폰) — 항목 이름 오른쪽에 세로 구분선을 둬서 이름과 내용을 가른다. 이름이 위·내용이 아래인 줄(이름·주소)과
-   편집 중인 줄(세로로 쌓인 줄)에는 두지 않는다. 선은 줄 높이만큼(위아래 여백 10px 안쪽), 값은 선에서 12px 띄운다. */
-@media (max-width: 768px) {
-  .profile-info-card.pf-grid > .profile-info-row:not(.pf-wide):not([style*="column"]) > .profile-info-label {
-    align-self: stretch; display: flex; align-items: center;
-    border-right: 1px solid #dcdce0; margin-right: 12px;
-  }
-}
