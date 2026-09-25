@@ -623,6 +623,7 @@ export default function ProfilePage() {
                   </span>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", position: "relative" }}>
                     <div
+                      className="pf-avatar"
                       onClick={(e) => { e.stopPropagation(); setAvatarMenu((v) => !v); }}
                       title="사진 변경/삭제"
                       style={{ width: "80px", height: "80px", borderRadius: "50%", background: avatarLoaded ? "#f7f7f8" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", position: "relative", border: avatarLoaded ? "1px solid #f2f2f2" : "1px solid transparent", cursor: "pointer" }}>
@@ -1030,22 +1031,7 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            {/* 폰에는 사이드 메뉴가 없어 로그아웃이 갈 곳이 여기뿐이다.
-                PC 는 사이드에 있으므로 이 칸을 접는다. */}
-            <div className="profile-account pf-mob">
-              {/* 계정 설정은 위 톱니가 맡는다. 여기 또 두면 같은 곳으로 가는
-                  길이 한 화면에 둘이 된다. */}
-              <button type="button" className="profile-account-row logout" onClick={() => {
-                useSignupStore.getState().reset();
-                useProfileStore.getState().reset();
-                useBookmarkStore.getState().reset();
-                useApplicationStore.getState().reset();
-                logout();
-                router.push("/");
-              }}>
-                로그아웃
-              </button>
-            </div>
+            {/* 폰의 로그아웃은 머리줄 오른쪽 끝 아이콘으로 옮겼다(Header). PC 는 사이드에 있다. */}
       </div>
 
       <NotificationModal isOpen={openModal === "notification"} onClose={() => setOpenModal(null)} />

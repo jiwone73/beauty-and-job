@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Building2, MapPin } from "lucide-react";
+import { Building2, MapPin, LogOut } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
@@ -61,7 +61,22 @@ export function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
     // 프로필·기업 대시보드 안에서는 사이드가 이미 누구인지 말하고 있다.
     //   같은 사진과 같은 링크를 머리줄에 또 두면 한 화면에 두 번 나온다.
     //   그 밖의 화면에서는 아바타가 프로필로 들어가는 유일한 길이라 꼭 있어야 한다.
-    if (프로필안) return 종;
+    // 폰의 로그아웃은 프로필 화면 머리줄 오른쪽 끝 아이콘이다(예전엔 이력서 만들기 버튼 밑).
+    // PC 는 사이드에 있어 CSS 로 접는다.
+    const 로그아웃 = pathname?.startsWith("/profile") && ownerType !== "company" ? (
+      <button type="button" className="hdr-bell hdr-logout" aria-label="로그아웃" title="로그아웃"
+        onClick={() => {
+          useSignupStore.getState().reset();
+          useProfileStore.getState().reset();
+          useBookmarkStore.getState().reset();
+          useApplicationStore.getState().reset();
+          useAuthStore.getState().logout();
+          router.push("/");
+        }}>
+        <LogOut size={20} />
+      </button>
+    ) : null;
+    if (프로필안) return <>{종}{로그아웃}</>;
     return (
       <>
         {종}
