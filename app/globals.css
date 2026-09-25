@@ -2767,7 +2767,11 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 @media (max-width: 640px) {
   .job-detail-layout { padding: 8px 0 100px; }
   /* 헤더 "‹ 채용공고" 도 본문과 같은 왼쪽 열(8px)에 맞춘다. */
-  .job-detail-header-inner { padding: 0 8px; }
+  /* "‹ 채용공고"는 왼쪽 끝까지 붙이고(‹ 아이콘 자체 여백이 있어 padding 0 이면 글자가
+     본문 왼쪽 8px 과 맞는다), 로고는 좌우 폭 차이와 상관없이 화면 가운데에 둔다. */
+  .job-detail-header-inner { padding: 0 8px 0 0; position: relative; }
+  .job-detail-back { padding: 0; }
+  .job-detail-logo { position: absolute; left: 50%; transform: translateX(-50%); }
   /* 좌우 19px(등록폼 정렬용)보다 메인 화면 기준(8px)을 우선한다 —
      "메인처럼 옆으로 더 공간 확보해줘"라는 요청. */
   .job-detail-info-box { padding: 12px 8px; }
