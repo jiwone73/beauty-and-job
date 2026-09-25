@@ -6,6 +6,7 @@ export const CAREER_OPTS = [
   { label: "전체", value: "경력 전체" },
   { label: "신입", value: "NEW" },
   { label: "경력직", value: "EXPERIENCED" },
+  { label: "인턴", value: "INTERN" },
   { label: "경력무관", value: "ANY" },
 ];
 

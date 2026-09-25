@@ -96,6 +96,12 @@ export async function GET(req: NextRequest) {
     where.push(`${prefix}categories && $${idx++}::text[]`)
     params.push(categories)
   }
+  if (career === 'INTERN') {
+    // 인턴은 공고 전체의 경력 등급(experience_level)이 아니라 모집부문 줄마다 적는 단계다
+    // (인턴·신입·경력·실장). 어느 줄이든 인턴이면 걸린다.
+    // 목록 뷰(v_active_jobs)에는 모집부문 열이 없어 원본 표에서 찾는다.
+    where.push(`${prefix}id IN (SELECT jp_.id FROM job_postings jp_, jsonb_array_elements(COALESCE(jp_.positions, '[]'::jsonb)) AS pos WHERE pos->>'career' = '인턴')`)
+  }
   if (career === 'NEW' || career === 'EXPERIENCED') {
     // 「경력무관」은 신입에게도 경력자에게도 열려 있으니 양쪽에 걸린다.
     where.push(`(${prefix}experience_level = $${idx} OR ${prefix}experience_level = 'ANY')`)
