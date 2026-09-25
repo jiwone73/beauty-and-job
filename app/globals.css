@@ -2620,6 +2620,12 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
      더 보여줄 수 있는데 못 하고 있다"는 지적. */
   .jd-pos-table { table-layout: auto !important; width: auto !important; min-width: 0 !important; }
   .jd-pos-col { width: auto !important; }
+  /* 열 제목은 무조건 한 줄(가로 스크롤 허용) — 인라인 white-space:normal 을 눌러야 해서 !important. */
+  .jd-pos-th { white-space: nowrap !important; }
+  /* 고용형태는 값 하나가 한 줄 — "정규직," / "프리랜서" 로 폭이 값 하나만큼만. */
+  .jd-emp-item { display: block; }
+  /* 급여가 "월급 / 230만 / 이상"처럼 3줄로 부서지지 않게 바닥 폭. */
+  .jd-pos-sal { min-width: 6.5em; }
 }
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.

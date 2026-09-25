@@ -245,7 +245,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                         : "-")
                     : c.key === "salary"
                       ? salaryTxt
-                      : (c.get(p) || "-");
+                      : c.key === "employment" && String(c.get(p) || "").includes(",")
+                        // 값이 둘 이상이면("정규직, 프리랜서") 값마다 span 으로 끊어 둔다 —
+                        // PC 에서는 그대로 한 줄(inline), 모바일 CSS 가 한 줄에 하나씩 내린다.
+                        ? String(c.get(p)).split(/\s*,\s*/).filter(Boolean).map((v: string, k: number, arr: string[]) => (
+                            <span key={k} className="jd-emp-item">{v}{k < arr.length - 1 ? ", " : ""}</span>
+                          ))
+                        : (c.get(p) || "-");
                   // 모집분야·급여·고용형태(정규직, 프리랜서처럼 여러 개면)는 길어지면
                   // 여러 줄로 접힐 수 있어 줄바꿈을 열어 둔다(칸 폭은 colgroup+minWidth
                   // 가 이미 못박아 두었다). 나머지 칸은 한 줄(nowrap)로 — 표가 넓어지는
@@ -254,7 +260,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#555" : "#555" }}>
                       {wrapCol
-                        ? <span style={{ display: "block", whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
+                        ? <span className={c.key === "salary" ? "jd-pos-sal" : undefined} style={{ display: "block", whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
                         : content}
                     </td>
                   );
