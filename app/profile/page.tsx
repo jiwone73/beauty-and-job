@@ -981,7 +981,7 @@ export default function ProfilePage() {
                       onChange={(e) => { setSalaryType(e.target.value); 급여저장(e.target.value, salaryMan, 협의); }}>
                       {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                     </select>
-                    <input className="pf-pay-in" inputMode="numeric" value={salaryMan}
+                    <input className="pf-pay-in" inputMode="numeric" value={salaryMan} style={{ ["--pay-len" as string]: Math.max(salaryMan.length, 1) }}
                       placeholder="숫자만 입력" disabled={협의}
                       onChange={(e) => setSalaryMan(e.target.value.replace(/[^0-9]/g, ""))}
                       onBlur={() => 급여저장(salaryType, salaryMan, false)} />
