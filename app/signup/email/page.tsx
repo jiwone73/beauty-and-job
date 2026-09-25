@@ -266,7 +266,7 @@ function SignupEmailContent() {
           {/* 직군 선택 — 고른 카드는 뷰티워크 보라 테두리에 회색 바탕이다.
               연보라로 칠하지 않는다(기업회원 가입의 매장·오피스 카드와 같은 값). */}
           <div className="mb-6">
-            <label className="block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
+            <label className="onb-f-lab block text-[13px] md:text-[16px] font-normal text-gray-700 mb-3">
               어떤 채용을 찾고 계신가요? <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-2 items-stretch">
@@ -334,7 +334,7 @@ function SignupEmailContent() {
                 희망 근무지역 <span className="text-red-500">*</span>
               </p>
               <button type="button" onClick={() => set지역창(true)}
-                className="onb-f-btn w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
+                className="onb-f-in onb-f-btn w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] rounded-lg text-left text-[14px] hover:border-[#582681] transition">
                 {지역들.length === 0
                   ? <span className="text-[#9a9a9a]">지역을 선택해 주세요</span>
                   : <span className="text-[#3a3a3a]">{지역들.map((r) => shortRegion(r)).join(" · ")}</span>}
@@ -350,7 +350,7 @@ function SignupEmailContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             {/* 이메일 — 중복 확인만. 인증은 비밀번호 재설정·이메일 변경 시점에 한다. */}
             <div className="mb-4">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-red-500">*</span></label>
               <input
                 type="email"
                 value={email}
@@ -377,13 +377,13 @@ function SignupEmailContent() {
             </div>
             {/* 이름 */}
             <div className="mb-4">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이름 <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="이름을 입력해주세요"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
+                className="onb-f-in w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
               />
             </div>
           </div>
@@ -439,7 +439,7 @@ function SignupEmailContent() {
           {/* 생년월일 — 나이 하한(만 14세)을 가입 시점에 걸러 둔다. 프로필에서
               나중에 걸리면 그때까지 만든 이력서·지원 내역을 되돌릴 방법이 없다. */}
           <div className="mb-4">
-            <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">생년월일 <span className="text-red-500">*</span></label>
+            <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">생년월일 <span className="text-red-500">*</span></label>
             <input
               type="text"
               inputMode="numeric"
@@ -459,14 +459,14 @@ function SignupEmailContent() {
           <div className="mb-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
               <div>
-                <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
+                <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-red-500">*</span></label>
                 <div className="relative mb-2 md:mb-0">
                   <input
                     type={showPw ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="비밀번호를 입력해주세요"
-                    className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
+                    className="onb-f-in w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
                   />
                   <button
                     type="button"
@@ -478,13 +478,13 @@ function SignupEmailContent() {
                 </div>
               </div>
               <div>
-                <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 확인 <span className="text-red-500">*</span></label>
+                <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 확인 <span className="text-red-500">*</span></label>
                 <input
                   type={showPw ? "text" : "password"}
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
                   placeholder="비밀번호를 다시 한번 입력해주세요"
-                  className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
+                  className="onb-f-in w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]"
                 />
               </div>
             </div>
