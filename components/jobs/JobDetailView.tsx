@@ -260,7 +260,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   return (
                     <td key={c.key} className="jd-pos-td" style={{ color: j === 0 ? "#555" : "#555" }}>
                       {wrapCol
-                        ? <span className={c.key === "salary" ? "jd-pos-sal" : undefined} style={{ display: "block", whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
+                        ? <span className={c.key === "salary" ? "jd-pos-sal" : c.key === "category" ? "jd-pos-cat" : undefined} style={{ display: "block", whiteSpace: "normal", wordBreak: "keep-all" }}>{content}</span>
                         : content}
                     </td>
                   );

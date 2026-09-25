@@ -2626,6 +2626,13 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .jd-emp-item { display: block; }
   /* 급여가 "월급 / 230만 / 이상"처럼 3줄로 부서지지 않게 바닥 폭. */
   .jd-pos-sal { min-width: 6.5em; }
+  /* 모집분야는 "헤어 디자이너"처럼 띄어써도 한 덩어리 이름이라 한 줄로 —
+     넘치면 옆으로 스크롤. */
+  .jd-pos-cat { white-space: nowrap !important; }
+  /* 표 안 글자 크기는 열 제목과 같은 13.5px 로 못박는다. 표가 화면보다 넓으면
+     iOS 가 본문 칸 글자만 키워 보여(글자 자동 확대) 제목과 어긋났다. */
+  .jd-pos-scroll { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  .jd-pos-th, .jd-pos-td { font-size: 13.5px; }
 }
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
