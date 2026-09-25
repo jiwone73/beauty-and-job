@@ -159,9 +159,13 @@ export default function Header() {
           <div className="header-right">
             <AuthButtons onLoginClick={() => router.push("/login")} />
             {!isLoggedIn && <span className="mob-auth-sep">I</span>}
-            <Link href="/company" className="btn-outline-biz mob-hamburger">
-              기업 서비스
-            </Link>
+            {/* 폰에서 「기업 서비스」로 가는 유일한 링크. 개인회원으로 로그인했으면 기업
+                서비스로 건너갈 일이 없어 뺀다 — PC(AuthButtons)와 같은 규칙이다. */}
+            {(!isLoggedIn || isCompany) && (
+              <Link href="/company" className="btn-outline-biz mob-hamburger">
+                기업 서비스
+              </Link>
+            )}
           </div>
         </div>
       </header>
