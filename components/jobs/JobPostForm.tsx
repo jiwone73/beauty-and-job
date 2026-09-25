@@ -20,6 +20,9 @@ import { getGroupOfItem, getJobGroups, 직군의경력단계 } from "@/lib/data/
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
+
+/** 예전에 저장된 「아르바이트」·「파트타임」을 지금 이름(알바)으로. */
+const 알바로 = (v: string) => v.replace(/아르바이트|파트타임/g, "알바");
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
 import { 전화꼴 } from "@/lib/phoneFormat";
 
@@ -1202,7 +1205,7 @@ export default function JobPostForm({
       set고치는공고상태(typeof j.status === "string" ? j.status : null);
       const career = j.experience_level === "NEW" ? "신입"
         : j.experience_level === "EXPERIENCED" ? "2년 이상" : "경력무관";
-      const rawType = j.employment_type
+      const rawType = 알바로(j.employment_type || "")
         || (j.work_type === "PART_TIME" ? "파트타임"
           : j.work_type === "CONTRACT" ? "계약직" : "정규직");
       // 저장된 "계약직 · 정규직 전환 가능" → 기본 고용형태 + 전환 체크 복원
@@ -1234,7 +1237,7 @@ export default function JobPostForm({
           keys.push(key);
           // 예전엔 salaryNego 가 boolean(true=협의+금액제시) 이었다 — true 를 "open" 으로 옮긴다.
           const savedSalaryNego: "" | "open" | "hidden" = p.salaryNego === true ? "open" : (p.salaryNego === "open" || p.salaryNego === "hidden" ? p.salaryNego : "");
-          meta[key] = { career: p.career || "", education: p.education || "", employment: p.employment || "", salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", location: p.location || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
+          meta[key] = { career: p.career || "", education: p.education || "", employment: 알바로(p.employment || ""), salary: p.salary || "", workDays: p.workDays || "", workTime: p.workTime || "", shiftText: p.shiftText || "", headcount: p.headcount || "", gender: p.gender || "", location: p.location || "", shiftNego: !!p.shiftNego, salaryNego: savedSalaryNego, extraShifts: Array.isArray(p.extraShifts) ? p.extraShifts.filter((s: any) => s?.days || s?.time) : [] };
         }
         setCategories(keys);
         setPosMeta(meta);
@@ -1788,8 +1791,8 @@ export default function JobPostForm({
         responsibilities: "",
         career: (CAREER_OPTIONS.includes(d.career) ? d.career : ""),
         education: (EDUCATION_OPTIONS.includes(d.education) ? d.education : ""),
-        // 고용형태: 폼 옵션(EMPLOYMENT_TYPES) 전체 허용 + 예전 '파트타임'은 '아르바이트'로 별칭 매핑
-        type: (() => { const e = d.employment_type === "파트타임" ? "아르바이트" : d.employment_type; return EMPLOYMENT_TYPES.includes(e) ? e : ""; })(),
+        // 고용형태: 폼 옵션(EMPLOYMENT_TYPES) 전체 허용 + 예전 '파트타임'·'아르바이트'는 '알바'로 별칭 매핑
+        type: (() => { const e = 알바로(String(d.employment_type || "")); return EMPLOYMENT_TYPES.includes(e) ? e : ""; })(),
         headcount: (d.headcount != null && Number(d.headcount) > 0) ? String(Number(d.headcount)) : "",
       }));
       // 급여: 구조화된 값이 있으면 급여 필드에 반영, 협의/비율제면 '협의' 처리
@@ -1812,7 +1815,7 @@ export default function JobPostForm({
       setParsedPrimary({
         career: typeof d.career === "string" ? d.career : "",
         education: typeof d.education === "string" ? d.education : "",
-        employment: (() => { const e = d.employment_type === "파트타임" ? "아르바이트" : d.employment_type; return typeof e === "string" ? e : ""; })(),
+        employment: (() => { return typeof d.employment_type === "string" ? 알바로(d.employment_type) : ""; })(),
         salary: salaryStr,
         workDays: typeof d.work_days === "string" ? d.work_days : "",
         workTime: typeof d.work_time === "string" ? d.work_time : "",
@@ -2653,7 +2656,7 @@ export default function JobPostForm({
     const anyExp = careers.some((c) => !isNew(c) && isExp(c));
     const expLevel = anyFree || (anyNew && anyExp) ? "ANY" : anyNew ? "NEW" : anyExp ? "EXPERIENCED" : "ANY";
     const 대표고용 = String(p0.employment || "").split(",")[0].trim();
-    const workType = (대표고용 === "아르바이트" || 대표고용 === "스페어") ? "PART_TIME"
+    const workType = (대표고용 === "알바" || 대표고용 === "스페어") ? "PART_TIME"
       : 대표고용 === "계약직" ? "CONTRACT" : "FULL_TIME";
     let salaryMin: number | null = null;
     let salaryMaxVal: number | null = null;

@@ -27,7 +27,7 @@ function shortenRegion(region: string): string {
 }
 
 const 고용형태: Record<string, string> = {
-  FULL_TIME: "정규직", PART_TIME: "아르바이트", CONTRACT: "계약직",
+  FULL_TIME: "정규직", PART_TIME: "알바", CONTRACT: "계약직",
   FREELANCE: "프리랜서", INTERN: "인턴", TEMPORARY: "일용직",
 };
 

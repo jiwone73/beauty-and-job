@@ -954,7 +954,7 @@ export async function POST(req: NextRequest) {
     const src = [bodyText, pageText, out.description, out.benefits, out.extra_notes]
       .map((v: any) => (Array.isArray(v) ? v.join(" ") : String(v || ""))).join(" ");
     if (typeof out.employment_type !== "string" || !EMPLOYMENT_TYPES.includes(out.employment_type as any)) {
-      out.employment_type = out.employment_type === "파트타임" ? "아르바이트" : "";
+      out.employment_type = out.employment_type === "파트타임" ? "알바" : "";
     }
     const structuredHasType = out.parsed_by === "structured" && !!out.employment_type;
     if (!structuredHasType && /3\.3\s*%|3\.3\s*프리|사업\s*소득|프리랜서/.test(src)) out.employment_type = "프리랜서";

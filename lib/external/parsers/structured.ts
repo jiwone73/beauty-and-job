@@ -420,9 +420,9 @@ function mapCareer(exp: string): string {
   return "";
 }
 function mapEmployment(t: string): string {
-  return ({ FULL_TIME: "정규직", PART_TIME: "아르바이트", CONTRACTOR: "계약직", TEMPORARY: "계약직", INTERN: "인턴" } as Record<string, string>)[t] || "";
+  return ({ FULL_TIME: "정규직", PART_TIME: "알바", CONTRACTOR: "계약직", TEMPORARY: "계약직", INTERN: "인턴" } as Record<string, string>)[t] || "";
 }
-// 한국어 고용형태 텍스트 → 폼 옵션(정규직/계약직/위촉직/프리랜서/인턴/아르바이트/협의)
+// 한국어 고용형태 텍스트 → 폼 옵션(정규직/계약직/위촉직/프리랜서/알바/스페어)
 function mapEmploymentKo(s: string): string {
   const t = String(s || "");
   if (/정규/.test(t)) return "정규직";
@@ -431,7 +431,7 @@ function mapEmploymentKo(s: string): string {
   if (/프리랜|자유직업|자유직/.test(t)) return "프리랜서";
   if (/인턴/.test(t)) return "인턴";
   if (/스페어|스페아/.test(t)) return "스페어";
-  if (/파트|아르바이트|알바|단기/.test(t)) return "아르바이트";
+  if (/파트|아르바이트|알바|단기/.test(t)) return "알바";
   if (/협의|추후|면접\s*후|내규/.test(t)) return "협의";
   return "";
 }
@@ -594,7 +594,7 @@ function parseAlbamon(html: string): StructuredResult | null {
     // 고용형태: 여러 개면 폼 옵션에 맞는 첫 값(정규직 우선)
     const EMP = ["정규직", "계약직", "위촉직", "프리랜서", "인턴", "아르바이트"];
     const empList = Array.isArray(vd.employmentType) ? vd.employmentType.map((e: any) => String(e?.description || "")) : [];
-    const employment_type = EMP.find((x) => empList.includes(x)) || "";
+    const employment_type = (EMP.find((x) => empList.includes(x)) || "").replace("아르바이트", "알바");
     // 근무기간
     const wpDesc = String(vd.workPeriod?.description || "");
     let work_period = "";

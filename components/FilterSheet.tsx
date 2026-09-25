@@ -16,7 +16,7 @@ export const EMPLOYMENT_OPTS = [
   { label: "계약직", value: "계약직" },
   { label: "스페어", value: "스페어" },
   { label: "프리랜서", value: "프리랜서" },
-  { label: "아르바이트", value: "아르바이트" },
+  { label: "알바", value: "알바" },
   { label: "위촉직", value: "위촉직" },
 ];
 

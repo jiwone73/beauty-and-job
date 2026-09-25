@@ -9,7 +9,7 @@ export const EMPLOYMENT_TYPES = [
   "계약직",
   "스페어",
   "프리랜서",
-  "아르바이트",
+  "알바",
   "위촉직",
 ];
 

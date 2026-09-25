@@ -110,8 +110,8 @@ export async function GET(req: NextRequest) {
   if (employment) {
     // 공고 하나에 고용형태를 여럿 고를 수 있어 「정규직, 스페어」처럼 붙어 저장된다 —
     // 같은 값만 찾으면 「정규직」을 눌러도 그런 공고가 빠진다. 들어 있으면 걸리게 하고,
-    // 옛 표기(알바·파트타임)도 아르바이트로 함께 찾는다.
-    const 별칭: Record<string, string[]> = { '아르바이트': ['아르바이트', '알바', '파트타임'] }
+    // 옛 표기(아르바이트·파트타임)도 알바로 함께 찾는다.
+    const 별칭: Record<string, string[]> = { '알바': ['알바', '아르바이트', '파트타임'] }
     const 찾을말 = (별칭[employment] ?? [employment]).map((w) => `%${w}%`)
     where.push(`${prefix}employment_type ILIKE ANY($${idx++}::text[])`)
     params.push(찾을말)
