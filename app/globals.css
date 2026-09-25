@@ -13266,13 +13266,15 @@ button,
 }
 
 /* 모바일 카드: 두 장이 붙어 보이도록 사이 간격을 줄이고, 아래 여백도 조인다.
-   내용 글자는 한 단계 더 낮춰(11px) 카드가 세로로 길어 보이지 않게 한다. */
+   내용 글자는 메인 스탠다드 채용관과 같은 크기(아래). */
 @media (max-width: 768px) {
   .jobs-grid { gap: 7px; }
   .jobs-grid .jobcard .jobcard-body { padding: 2.5px 5px 1.5px; }
+  /* 글자 크기는 메인 스탠다드 채용관 카드와 같게(제목 13px, 나머지 12px). */
+  .jobs-grid .jobcard .jobcard-title { font-size: 13px; }
   .jobs-grid .jobcard .jobcard-company,
   .jobs-grid .jobcard .jobcard-meta,
-  .jobs-grid .jobcard .jobcard-deadline { font-size: 11px; }
+  .jobs-grid .jobcard .jobcard-deadline { font-size: 12px; }
 }
 
 /* 채용공고 목록: 제목이 두 줄까지 차서 회사명과 붙어 보인다 — 한 칸만 띄운다. */
