@@ -14724,6 +14724,11 @@ button,
   transition: background .15s; }
 .jobs-picked-chip:hover { background: #f7f7f8; }
 .jobs-picked-chip svg { color: #9b9ba0; }
+/* 모바일: 고른 소분류 글자를 위 직군 탭(12px)과 같게. */
+@media (max-width: 640px) {
+  .jobs-picked-chip { font-size: 12px; }
+  .jobs-picked-chip svg { width: 12px; height: 12px; }
+}
 
 /* 사이드바 항목 안의 개수 뱃지 */
 .jobs-side-list button > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
