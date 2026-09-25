@@ -30,7 +30,6 @@ import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
 import { 오픈일글 } from "@/lib/launchPlan";
 import { 스토리공개 } from "@/lib/storiesGate";
-import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
 import { mapJob } from "@/lib/jobCard";
 /* ============================================
@@ -207,10 +206,10 @@ function Hero() {
                 <div className="mt-search-set">
                   <div className="hero-type-toggle">
                       <button type="button" className={`hero-type-btn ${jobType === "매장" ? "active" : ""}`} onClick={() => setJobType("매장")}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span>
+                      매장 직군
                     </button>
                     <button type="button" className={`hero-type-btn ${jobType === "오피스" ? "active" : ""}`} onClick={() => setJobType("오피스")}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span>
+                      오피스 직군
                     </button>
                   </div>
                   {/* 매장의 반대쪽은 긍정형으로 정의된 범주가 아니라 '매장이
@@ -393,7 +392,7 @@ function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
                 className={`hero-type-btn ${tab === t ? "active" : ""}`}
                 onClick={() => setTab(t)}
               >
-                {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={14} style={{ flexShrink: 0 }} />매장</span> : t === "오피스" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={14} style={{ flexShrink: 0 }} />오피스</span> : t}
+                {t === "매장" || t === "오피스" ? `${t} 직군` : t}
               </button>
             ))}
           </div>
@@ -484,7 +483,7 @@ function SectionJobGroups() {
           {(["매장", "오피스"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className={`seg-btn ${tab === t ? "active" : ""}`}>
-              {t === "매장" ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><StoreIcon size={15} style={{ flexShrink: 0 }} />매장</span> : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><OfficeIcon size={15} style={{ flexShrink: 0 }} />오피스</span>}
+              {t} 직군
             </button>
           ))}
         </div>

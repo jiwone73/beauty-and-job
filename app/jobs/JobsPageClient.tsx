@@ -17,7 +17,6 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { getJobSubGroups, getGroupOfItem } from "@/lib/data/jobGroups";
 import JobCard from "@/components/JobCard";
-import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { formatDeadline } from "@/lib/jobFormat";
 
 
@@ -411,7 +410,7 @@ function JobsPageInner() {
               <button key={t} type="button"
                 className={`seg-btn ${jobTypeFilter === t ? "active" : ""}`}
                 onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); set열린팝오버(null); }}>
-                {t === "매장" ? <StoreIcon size={14} /> : <OfficeIcon size={14} />}{t}
+                {t} 직군
               </button>
             ))}
           </div>
