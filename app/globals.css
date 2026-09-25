@@ -12591,7 +12591,9 @@ div:has(> table.admin-table),
 /* 간편가입 직군·경력 버튼 — 폰에서 안쪽 여백을 절반으로(8px 14px → 4px 7px). */
 @media (max-width: 640px) {
   .onb-job .filter-chip { padding: 4px 7px; }
-  .onb-job .filter-chip { font-size: 14px; font-weight: 600; }
+  .onb-job .filter-chip { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  /* 버튼 사이 8px → 4px, 버튼 안 글자는 줄이 바뀌지 않게(nowrap). */
+  .onb-job .onb-chips { gap: 4px; }
   .onb-job .filter-chip:not(.on) { color: #555; }
   /* 카드 제목에 「직군」을 붙이고 직군 이름 나열은 뺀다(아래 직군 버튼이 대신한다). */
   .onb-job .jt-desc { display: none; }

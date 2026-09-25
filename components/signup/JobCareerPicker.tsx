@@ -37,7 +37,7 @@ const 아직 = "onb-f-btn w-full min-h-[48px] px-4 py-3 border border-[#e0e0e0] 
 
 function 칩들({ 것들, 고른것, 고르기 }: { 것들: readonly string[]; 고른것: string; 고르기: (v: string) => void }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="onb-chips flex flex-wrap gap-2">
       {것들.map((x) => (
         <button key={x} type="button"
           className={`filter-chip${x === 고른것 ? " on" : ""}`}
