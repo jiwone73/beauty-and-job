@@ -17657,3 +17657,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 본문 판의 안쪽 여백은 .co-set-main 이 정한다 — 위 .company-content 규칙이
    !important 라 같은 무게로 뒤에 한 번 더 적는다. */
 .co-top-body .co-set-main { padding: 24px 24px 28px !important; }
+
+/* 프로필 화면(폰) — 글자는 전부 15px 하나로, 칸 이름 앞 아이콘은 없앤다.
+   예전에는 이름·값 16px, 휴대전화 안내글 15px, 그 자리에서 고르는 칸 13.5px 로 섞여 있었다. */
+@media (max-width: 768px) {
+  .profile-info-card.pf-grid .profile-info-label,
+  .profile-info-card.pf-grid .profile-info-value,
+  .profile-info-card.pf-grid .profile-info-note,
+  .profile-info-card.pf-grid .if-slot,
+  .profile-info-card.pf-grid .if-input { font-size: 15px; }
+  .profile-info-card.pf-grid .profile-info-icon { display: none; }
+}
