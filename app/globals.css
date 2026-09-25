@@ -2629,21 +2629,18 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .jd-pos-sub { display: none; }
 /* 표가 화면보다 넓으면 iOS 가 본문 칸 글자만 키워 보여(글자 자동 확대) 제목과 어긋났다. */
 .jd-pos-scroll { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-@media (max-width: 640px) {
-  /* 모바일은 표를 화면 폭에 늘리지 않고 내용 폭 그대로(넘치면 가로 스크롤). */
-  .jd-pos-table { width: auto !important; }
-}
 /* PC — 남는 폭을 칸마다 똑같이 나눠 준다("열 넓이를 균등분할"). 표(table)의 자동
    레이아웃은 남는 폭을 내용 폭에 비례해 나눠 긴 칸만 더 늘어나므로, 격자(grid)로 바꾼다:
    auto 트랙은 각자 내용 폭을 먼저 받고 남는 폭을 똑같이 나눠 갖는다. 행(tr) 등은
    display:contents 로 없애 th/td 가 바로 격자 칸이 된다(머리 배경도 칸에 준다). */
-@media (min-width: 641px) {
-  .jd-pos-table { display: grid !important; grid-template-columns: repeat(var(--jd-cols, 1), auto); }
-  .jd-pos-table colgroup { display: none; }
-  .jd-pos-table thead, .jd-pos-table tbody, .jd-pos-table tr { display: contents; }
-  .jd-pos-th { background: #f7f7f8; }
-  .jd-pos-th, .jd-pos-td { display: flex; flex-direction: column; justify-content: center; }
-}
+/* 모바일에서도 같은 격자 — 표가 화면보다 좁으면 남는 폭이 칸마다 똑같이 나뉘고, 넓으면
+   칸이 내용 폭 밑으로 줄지 않은 채 옆으로 스크롤된다. 칸(td)의 overflow:hidden 은 격자에서
+   칸의 최소 폭을 0 으로 만들어 값이 잘리므로 visible 로 둔다. */
+.jd-pos-table { display: grid !important; grid-template-columns: repeat(var(--jd-cols, 1), auto); }
+.jd-pos-table colgroup { display: none; }
+.jd-pos-table thead, .jd-pos-table tbody, .jd-pos-table tr { display: contents; }
+.jd-pos-th { background: #f7f7f8; }
+.jd-pos-th, .jd-pos-td { display: flex; flex-direction: column; justify-content: center; overflow: visible; }
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
    늘 보이는 굵기의 스크롤바로 "옆으로 더 있다"는 걸 알린다. */
