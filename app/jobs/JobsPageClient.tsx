@@ -514,6 +514,30 @@ function JobsPageInner() {
             안 가리는 배너가 뜬다. 아무것도 안 걸렸으면 메인과 같은 뷰티워크
             배너가 선다 — 자리는 늘 있고, 팔리면 광고가 그 자리를 쓴다. */}
         <AdBanner slot="jobs" group={고른대분류 || undefined} 대신={<HeroBanner 작게 />} />
+        {/* 폰 전용 — 매장/오피스 토글과 지역. PC 는 왼쪽 사이드바가 맡아 CSS 로 숨긴다. */}
+        <div className="jobs-mbar">
+          <div className="seg jobs-mbar-type">
+            {(["매장", "오피스"] as const).map((t) => (
+              <button key={t} type="button"
+                className={`seg-btn ${jobTypeFilter === t ? "active" : ""}`}
+                onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); set열린팝오버(null); set열린탭(null); }}>
+                {t === "매장" ? <StoreIcon size={13} /> : <OfficeIcon size={13} />}{t}
+              </button>
+            ))}
+          </div>
+          <button type="button" className={`jobs-mbar-region${selectedRegions.length ? " on" : ""}`}
+            onClick={() => { set열린탭(null); setShowRegionModal(true); }}>
+            <span>{selectedRegions.length === 0 ? "지역 전체"
+              : (() => {
+                  const r = selectedRegions[0];
+                  const 첫 = r.includes(" ") ? `${shortSido(r.split(" ")[0])} ${r.split(" ").slice(1).join(" ")}` : `${shortSido(r)} 전체`;
+                  return selectedRegions.length === 1 ? 첫 : `${첫} 외 ${selectedRegions.length - 1}`;
+                })()}</span>
+            <ChevronDown size={13} />
+          </button>
+          <RegionSelectModal open={showRegionModal} initial={selectedRegions}
+            onClose={() => setShowRegionModal(false)} onApply={setSelectedRegions} />
+        </div>
         {/* 폰 전용 직군 탭(글자만, 두 줄 안) — PC 는 왼쪽 사이드바가 맡아 CSS 로 숨긴다. */}
         <nav className="jobs-tabs" aria-label="직군">
           {대분류목록.map((g) => {
