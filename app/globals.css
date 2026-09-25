@@ -17716,7 +17716,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 가입 화면(폰) — 직군·경력·희망 근무지역·휴대폰 번호: 글자를 2px 키우고(13→15, 14→16) 더 진하게.
    개인 가입(이메일·간편)과 기업 가입(담당자 휴대폰)이 같이 쓴다. 태그를 붙여 Tailwind 단일 클래스보다 앞서게 한다. */
 @media (max-width: 640px) {
-  p.onb-f-lab, label.onb-f-lab { font-size: 15px; color: #333; font-weight: 500; }
+  /* 왼쪽 9px — 직군 버튼 안 글자(테두리 1.5 + 안쪽 여백 7)와 제목의 첫 글자 선을 맞춘다. */
+  p.onb-f-lab, label.onb-f-lab { font-size: 15px; color: #333; font-weight: 500; padding-left: 9px; }
   input.onb-f-in { font-size: 16px; }
   button.onb-f-bt { font-size: 15px; }
   button.onb-f-btn, div.onb-f-btn, p.onb-f-btn { font-size: 16px; }
