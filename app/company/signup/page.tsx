@@ -342,7 +342,7 @@ export default function CompanySignupPage() {
 
           {/* 채용 유형 (최상단) */}
           <div className="mb-6">
-            <p className="text-[13px] md:text-[15px] text-[#9a9a9a] mb-3">채용 형태에 맞는 유형을 선택해주세요</p>
+            <p className="onb-f-lab text-[13px] md:text-[15px] text-[#9a9a9a] mb-3">채용 형태에 맞는 유형을 선택해주세요</p>
             <div className="grid grid-cols-2 gap-2">
               {COMPANY_TYPES.map((t) => (
                 <button
@@ -378,23 +378,23 @@ export default function CompanySignupPage() {
               짧은 칸은 둘씩 나란히 둔다 — 기업 대시보드 설정 화면과 같은 결이다. */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">회사명 <span className="text-[#e74c3c]">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">회사명 <span className="text-[#e74c3c]">*</span></label>
               <input type="text" value={form.company_name}
                 onChange={(e) => update("company_name", e.target.value)}
                 placeholder="예) 올리브영"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+                className="onb-f-in w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
             </div>
 
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명</label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">브랜드명</label>
               <input type="text" value={form.brand_name}
                 onChange={(e) => update("brand_name", e.target.value)}
                 placeholder="대표 브랜드명"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+                className="onb-f-in w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
             </div>
 
             <div className="mb-4">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록번호 <span className="text-[#e74c3c]">*</span></label>
               <div className="relative">
                 <input type="text" value={form.business_number}
                   onChange={(e) => {
@@ -422,8 +422,8 @@ export default function CompanySignupPage() {
             </div>
 
             <div className="mb-4">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
-              <label className="flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#f7f7f8] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">사업자등록증 <span className="text-[#e74c3c]">*</span></label>
+              <label className="onb-f-btn flex items-center justify-center gap-2 w-full min-h-[48px] px-4 py-2 border border-dashed border-[#e3e3e6] rounded-lg text-[13px] md:text-[15px] text-[#582681] bg-[#f7f7f8] cursor-pointer hover:bg-[#f7f7f8] transition text-center">
                 <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={handleLicenseUpload} className="hidden" />
                 {licenseUploading ? "업로드 중…" : licenseName ? `첨부됨: ${licenseName}` : "파일 첨부 · JPG·PNG·PDF · 5MB"}
               </label>
@@ -441,11 +441,11 @@ export default function CompanySignupPage() {
                 여태 이 칸이 없어 가입 직후 manager_name 이 빈 채로 남았다
                 (매장정보에서는 필수라 저장할 때야 막혔다). */}
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">담당자 <span className="text-[#e74c3c]">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">담당자 <span className="text-[#e74c3c]">*</span></label>
               <input type="text" value={form.manager_name}
                 onChange={(e) => update("manager_name", e.target.value)}
                 placeholder="예) 홍길동"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+                className="onb-f-in w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
             </div>
 
             <div className="mb-3">
@@ -481,14 +481,14 @@ export default function CompanySignupPage() {
             </div>
 
             <div className="mb-3">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">이메일 <span className="text-[#e74c3c]">*</span></label>
               <div className="flex gap-2">
                 <input type="email" value={form.email}
                   onChange={(e) => { update("email", e.target.value); setEmailStatus("idle"); setEmailVerified(false); setEmailCodeSent(false); setEmailVerifyMsg(""); }}
                   onBlur={checkEmailDup}
                   placeholder="hr@company.com"
                   disabled={emailVerified}
-                  className="flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]" />
+                  className="onb-f-in flex-1 min-w-0 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681] disabled:bg-[#f5f5f5]" />
                 <button type="button" onClick={handleSendEmailCode}
                   disabled={emailSending || emailVerified || emailStatus === "taken" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)}
                   className="px-4 h-[48px] shrink-0 whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal border border-[#582681] text-[#582681] disabled:border-[#ddd] disabled:text-[#aaa] hover:bg-[#f7f7f8] transition">
@@ -503,7 +503,7 @@ export default function CompanySignupPage() {
                   <input type="text" inputMode="numeric" value={emailCode}
                     onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="인증코드 6자리"
-                    className="flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+                    className="onb-f-in flex-1 h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
                   <button type="button" onClick={handleVerifyEmailCode}
                     disabled={emailVerifying || emailCode.length < 6}
                     className="px-4 h-[48px] whitespace-nowrap rounded-lg text-[13px] md:text-[15px] font-normal bg-[#582681] text-white disabled:opacity-40 hover:opacity-90 transition">
@@ -515,12 +515,12 @@ export default function CompanySignupPage() {
             </div>
 
             <div className="mb-2">
-              <label className="block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-[#e74c3c]">*</span></label>
+              <label className="onb-f-lab block text-[13px] md:text-[16px] text-[#6b6b6b] mb-1.5">비밀번호 <span className="text-[#e74c3c]">*</span></label>
               <div className="relative mb-2">
                 <input type={showPw ? "text" : "password"} value={form.password}
                   onChange={(e) => update("password", e.target.value)}
                   placeholder="비밀번호 입력"
-                  className="w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+                  className="onb-f-in w-full h-[48px] px-4 pr-10 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
                 <button type="button" onClick={() => setShowPw(!showPw)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a9a9a]">
                   {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -529,7 +529,7 @@ export default function CompanySignupPage() {
               <input type={showPw ? "text" : "password"} value={form.passwordConfirm}
                 onChange={(e) => update("passwordConfirm", e.target.value)}
                 placeholder="비밀번호 다시 입력"
-                className="w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
+                className="onb-f-in w-full h-[48px] px-4 border border-[#e0e0e0] rounded-lg text-[14px] md:text-[16px] focus:outline-none focus:border-[#582681]" />
               <p className={`text-[12px] md:text-[14px] mt-1.5 ${form.password && !isPasswordValid(form.password) ? "text-[#e74c3c]" : "text-[#9a9a9a]"}`}>
                 {PASSWORD_HINT}
               </p>

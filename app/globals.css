@@ -17723,7 +17723,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   /* 제목 15px, 내용(버튼·입력칸·안내글) 14px. */
   input.onb-f-in { font-size: 14px; }
   button.onb-f-bt { font-size: 14px; }
-  button.onb-f-btn, div.onb-f-btn, p.onb-f-btn { font-size: 14px; }
+  button.onb-f-btn, div.onb-f-btn, p.onb-f-btn, label.onb-f-btn { font-size: 14px; }
 }
 
 /* 가입 화면(폰) 매장·오피스 직군 카드 — 위아래 안쪽 여백을 절반으로(10px → 5px). */
