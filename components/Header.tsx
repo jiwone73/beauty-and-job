@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Building2, MapPin, LogOut } from "lucide-react";
+import { Building2, MapPin } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { useApplicationStore } from "@/lib/store/applicationStore";
 import { useProfileStore } from "@/lib/store/profileStore";
@@ -32,6 +32,19 @@ export function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
   // 로고 주소가 죽어 있으면 브라우저가 깨진 그림(?)을 그린다. 기본 그림으로 물러선다.
   const [그림깨짐, set그림깨짐] = useState(false);
   useEffect(() => { set그림깨짐(false); }, [avatarUrl]);
+  // 폰의 프로필·이력서 화면에서는 아바타를 누르면 로그아웃 메뉴가 그 아래로 열린다.
+  const [메뉴열림, set메뉴열림] = useState(false);
+  const 아바타칸 = useRef<HTMLDivElement>(null);
+  useEffect(() => { set메뉴열림(false); }, [pathname]);
+  useEffect(() => {
+    if (!메뉴열림) return;
+    const 밖 = (e: MouseEvent | TouchEvent) => { if (아바타칸.current && !아바타칸.current.contains(e.target as Node)) set메뉴열림(false); };
+    const 키 = (e: KeyboardEvent) => { if (e.key === "Escape") set메뉴열림(false); };
+    document.addEventListener("mousedown", 밖);
+    document.addEventListener("touchstart", 밖);
+    document.addEventListener("keydown", 키);
+    return () => { document.removeEventListener("mousedown", 밖); document.removeEventListener("touchstart", 밖); document.removeEventListener("keydown", 키); };
+  }, [메뉴열림]);
 
   // 헤더에서도 자기 얼굴을 본다. 개인은 프로필 사진, 기업은 대표 사진
   // (매장=공고 배너 첫 장, 오피스=로고). 로그인 후 한 번만 읽어 스토어에 담아 둔다.
@@ -61,41 +74,52 @@ export function AuthButtons({ onLoginClick }: { onLoginClick: () => void }) {
     // 프로필·기업 대시보드 안에서는 사이드가 이미 누구인지 말하고 있다.
     //   같은 사진과 같은 링크를 머리줄에 또 두면 한 화면에 두 번 나온다.
     //   그 밖의 화면에서는 아바타가 프로필로 들어가는 유일한 길이라 꼭 있어야 한다.
-    // 폰의 로그아웃은 프로필 화면 머리줄 오른쪽 끝 아이콘이다(예전엔 이력서 만들기 버튼 밑).
-    // PC 는 사이드에 있어 CSS 로 접는다.
-    const 로그아웃 = pathname?.startsWith("/profile") && ownerType !== "company" ? (
-      <button type="button" className="hdr-bell hdr-logout" aria-label="로그아웃" title="로그아웃"
-        onClick={() => {
-          useSignupStore.getState().reset();
-          useProfileStore.getState().reset();
-          useBookmarkStore.getState().reset();
-          useApplicationStore.getState().reset();
-          useAuthStore.getState().logout();
-          router.push("/");
-        }}>
-        <LogOut size={20} />
-      </button>
-    ) : null;
-    if (프로필안) return <>{종}{로그아웃}</>;
+    // 폰의 프로필·이력서 화면: 아바타가 프로필로 가는 길 대신 로그아웃 메뉴를 연다(개인회원만).
+    //   PC 는 사이드에 로그아웃이 있고 아바타는 늘 프로필로 간다 — 눌렀을 때 폰인지 재서 가른다.
+    const 개인프로필 = !!pathname?.startsWith("/profile") && ownerType !== "company";
+    const 로그아웃하기 = () => {
+      useSignupStore.getState().reset();
+      useProfileStore.getState().reset();
+      useBookmarkStore.getState().reset();
+      useApplicationStore.getState().reset();
+      useAuthStore.getState().logout();
+      set메뉴열림(false);
+      router.push("/");
+    };
+    const 아바타 = (
+      <div className="auth-user-wrap" ref={아바타칸}>
+        <button className={`auth-user-btn${ownerType === "company" ? "" : " auth-user-btn-round"}`} aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
+          aria-expanded={개인프로필 ? 메뉴열림 : undefined}
+          onClick={() => {
+            if (개인프로필 && window.matchMedia("(max-width: 768px)").matches) { set메뉴열림((v) => !v); return; }
+            router.push(ownerType === "company" ? "/company/dashboard" : "/profile");
+          }}>
+          {avatarUrl && !그림깨짐 ? (
+            <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
+              onError={() => set그림깨짐(true)}
+              style={{ width: 32, height: 32, flexShrink: 0, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block" }} />
+          ) : (
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>
+              <circle cx="16" cy="13" r="5" fill="#582681"/>
+              <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#582681"/>
+            </svg>
+          )}
+        </button>
+        {메뉴열림 && (
+          <div className="hdr-acct-menu" role="menu">
+            <button type="button" role="menuitem" onClick={로그아웃하기}>로그아웃</button>
+          </div>
+        )}
+      </div>
+    );
+    // 프로필·기업 대시보드 안에서는 사이드가 이미 누구인지 말하고 있다 — PC 에서는 아바타를 감춘다.
+    //   폰에는 사이드가 없어 개인회원의 프로필 화면에서도 아바타(=로그아웃 메뉴)를 둔다.
+    if (프로필안) return 개인프로필 ? <>{종}<div className="hdr-pf-avatar">{아바타}</div></> : 종;
     return (
       <>
         {종}
-        <div className="auth-user-wrap">
-          <button className={`auth-user-btn${ownerType === "company" ? "" : " auth-user-btn-round"}`} aria-label={ownerType === "company" ? "기업 대시보드" : "내 프로필"}
-            onClick={() => router.push(ownerType === "company" ? "/company/dashboard" : "/profile")}>
-            {avatarUrl && !그림깨짐 ? (
-              <img src={avatarUrl} alt={userName ? `${userName} 프로필` : "프로필"}
-                onError={() => set그림깨짐(true)}
-                style={{ width: 32, height: 32, flexShrink: 0, borderRadius: ownerType === "company" ? 7 : "50%", objectFit: "cover", display: "block" }} />
-            ) : (
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="16" fill="#f7f7f8"/>
-                <circle cx="16" cy="13" r="5" fill="#582681"/>
-                <path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9" fill="#582681"/>
-              </svg>
-            )}
-          </button>
-        </div>
+        {아바타}
         {/* 로그인했으면 「기업 서비스」 단추는 두지 않는다. 개인회원은 기업 서비스로
             건너갈 일이 없고, 기업회원은 바로 옆 아바타가 대시보드로 가는 길이다.
             상품 안내는 로그인 뒤 사이드메뉴의 「채용공고 상품」이 맡는다. */}

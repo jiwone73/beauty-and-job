@@ -17689,9 +17689,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 
 /* 프로필(폰) 2차 — 별표는 제목에만, 사진은 한 단계 작게, 희망급여 한 줄, 로그아웃은 머리줄 아이콘. */
-.hdr-logout { display: none; }
+/* 폰의 프로필 화면 머리줄 아바타(누르면 로그아웃 메뉴). PC 는 사이드가 있어 감춘다. */
+.hdr-pf-avatar { display: none; }
+.hdr-acct-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 300; min-width: 120px;
+  background: #fff; border: 1px solid #efeff1; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,.12); padding: 6px; }
+.hdr-acct-menu button { display: block; width: 100%; text-align: left; padding: 10px 12px; border: none; background: none;
+  border-radius: 8px; font-family: inherit; font-size: 15px; color: #555; cursor: pointer; white-space: nowrap; }
+.hdr-acct-menu button:hover { background: #f7f7f8; }
 @media (max-width: 768px) {
-  .hdr-logout { display: flex; }
+  .hdr-pf-avatar { display: block; }
   /* 제목 옆 * 가 있는데 고르는 칸 안에도 * 가 또 붙어(생년월일·성별·주소 검색) 둘씩 보였다. */
   .profile-info-card.pf-grid .if-req { display: none; }
   .profile-info-card.pf-grid .pf-avatar { width: 60px !important; height: 60px !important; }
