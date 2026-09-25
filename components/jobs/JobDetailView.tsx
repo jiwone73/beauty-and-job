@@ -5,7 +5,7 @@ import Link from "next/link";
 import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
-import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag } from "lucide-react";
+import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
 // 매장이 적은 적 없는 문구라, 두 화면을 나란히 놓으면 없던 말이 늘어나 보였다.
@@ -483,7 +483,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             if (!detailUrls.length) return null;
             return (
               <section className="job-detail-section" style={{ padding: 0, overflow: "hidden" }}>
-                <h2 className="job-detail-section-title jd-detail-img-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}>상세요강</h2>
+                <h2 className="job-detail-section-title jd-detail-img-title jd-detail-title" style={{ padding: "24px 24px 0", marginBottom: 16 }}><FileText size={16} className="jd-detail-title-ic" />상세요강</h2>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   {detailUrls.map((u, i) => (
                     <img key={i} src={u} alt={`상세 이미지 ${i + 1}`} style={{ display: "block", width: "100%", height: "auto" }} />
@@ -499,7 +499,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {/* 상세요강 — 매장 공고는 원문을 통째로 담아서 "소개"가 아니라 요강 전체다. */}
           {job.description?.trim() && (
             <section className="job-detail-section">
-              <h2 className="job-detail-section-title">상세요강</h2>
+              <h2 className="job-detail-section-title jd-detail-title"><FileText size={16} className="jd-detail-title-ic" />상세요강</h2>
               <p className="job-detail-desc">{job.description.trim()}</p>
             </section>
           )}

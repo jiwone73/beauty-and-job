@@ -2515,6 +2515,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 
 /* 섹션 */
 .job-detail-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 12px; }
+.jd-detail-title-ic { display: none; }
 .job-detail-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.3px; }
 
 /* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
@@ -2784,6 +2785,10 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .job-detail-section { padding: 12px 8px; }
   .jd-detail-img-title { padding: 12px 8px 0 !important; }
   .jd-detail-img-desc { padding: 9px 8px 0 !important; }
+  /* 상세요강 제목을 「지원 안내」·「근무지」와 같게 — 아이콘 16px, 16px, #555, 600. */
+  .job-detail-layout .jd-detail-title { display: flex; align-items: center; gap: 6px;
+    font-size: 16px; color: #555; font-weight: 600 !important; margin-bottom: 12px; }
+  .jd-detail-title-ic { display: block; color: #555; flex-shrink: 0; }
   /* 지원방법·마감일 등 행간 상하 여백이 넓다는 지적 — 줄 자체 패딩과
      2열 사이 간격을 확 줄인다. */
   .jd-guide-row { padding: 2px 0; }
