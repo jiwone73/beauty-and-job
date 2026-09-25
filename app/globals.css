@@ -2775,7 +2775,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .job-detail-logo { position: absolute; left: 50%; transform: translateX(-50%); }
   /* 좌우 19px(등록폼 정렬용)보다 메인 화면 기준(8px)을 우선한다 —
      "메인처럼 옆으로 더 공간 확보해줘"라는 요청. */
-  .job-detail-info-box { padding: 12px 8px; }
+  /* 아래 상세요강 카드와 사이(안쪽 아래 12 + 카드 틈 12 + 위 12 = 36px)가 다른 소제목 사이(17px)의
+     두 배라, 아래 안쪽 여백을 빼고 카드 틈을 절반으로. */
+  .job-detail-info-box { padding: 12px 8px 0; margin-bottom: 6px; }
   .job-detail-title { font-size: 17px; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere; }
   .job-detail-meta-grid { grid-template-columns: 1fr; }
   /* 모집부문·복리후생·근무지 등 섹션 사이 여백(안팎 16px씩, 32px)도 절반으로. */
