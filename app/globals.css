@@ -14576,12 +14576,12 @@ button,
   /* 머리줄 밑 띠배너를 여백 없이 붙인다(원래 위 20px). */
   .jobs-main { margin-top: 0; }
   .jobs-tabs { display: flex; flex-wrap: wrap; gap: 0; padding: 6px 2px 0; }
-  .jobs-tab { background: none; border: none; font-family: inherit; font-size: 12px; color: #555;
+  .jobs-tab { background: none; border: none; font-family: inherit; font-size: 12px; color: #333;
     padding: 3px 0; cursor: pointer; white-space: nowrap; }
   /* 탭 사이 "I" — 탭 안(::after)에 넣어 줄바꿈에서 혼자 떨어져 나가지 않는다. 사이 간격은
      예전 gap 12px 를 "I" 양옆 여백으로 나눠 가져, 전체 줄 수(2줄)는 그대로다. */
-  .jobs-tab:not(:last-child)::after { content: "I"; display: inline-block; margin: 0 5px 0 5px;
-    color: #d8d3dc; font-weight: 400; text-decoration: none; }
+  .jobs-tab:not(:last-child)::after { content: "I"; display: inline-block; margin: 0 3px 0 3px;
+    color: #b5aeba; font-weight: 400; text-decoration: none; }
   /* 줄 끝에 남는 "I"는 자리는 두고 안 보이게(자리를 없애면 다음 탭이 윗줄로 올라와 줄이
      다시 바뀐다). 줄 끝인지는 JobsPageClient 가 재서 data-end 를 붙인다. */
   .jobs-tab[data-end]::after { visibility: hidden; }
