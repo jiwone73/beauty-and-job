@@ -191,7 +191,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               {posCols.map((c) => {
                 const wrapCol = c.key === "category" || c.key === "salary" || c.key === "employment";
                 return (
-                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal" } : undefined}>{c.label}</th>
+                  <th key={c.key} className="jd-pos-th" style={wrapCol ? { whiteSpace: "normal" } : undefined}>{c.key === "career" ? <>경력<span className="jd-pos-sub">/직책</span></> : c.label}</th>
                 );
               })}
             </tr>

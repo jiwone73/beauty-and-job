@@ -2612,7 +2612,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 tr:last-child > .jd-pos-td { border-bottom: none; }
 .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
 @media (max-width: 640px) {
-  .jd-pos-th, .jd-pos-td { padding-right: 2px; padding-left: 2px; }
+  .jd-pos-th, .jd-pos-td { padding-right: 5px; padding-left: 5px; }
   .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
   /* 글자 수 비율로 나눈 고정 칸 폭(colgroup, table-layout:fixed) 대신,
      칸마다 실제 내용만큼만 차지하는 자동 폭으로 — 인라인 스타일(width:100%,
@@ -2632,7 +2632,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   /* 표 안 글자 크기는 열 제목과 같은 13.5px 로 못박는다. 표가 화면보다 넓으면
      iOS 가 본문 칸 글자만 키워 보여(글자 자동 확대) 제목과 어긋났다. */
   .jd-pos-scroll { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  .jd-pos-th, .jd-pos-td { font-size: 13.5px; }
+  .jd-pos-th, .jd-pos-td { font-size: 13px; }
+  /* 열 제목 "경력/직책" 은 모바일에서 "경력"만. */
+  .jd-pos-sub { display: none; }
 }
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
