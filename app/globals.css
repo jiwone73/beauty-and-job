@@ -12585,6 +12585,10 @@ div:has(> table.admin-table),
 .filter-chip { padding: 8px 14px; border: 1.5px solid var(--color-border); border-radius: var(--chip-radius); background: white; font-size: 13px; font-weight: 500; color: var(--color-text); cursor: pointer; transition: all 0.15s; font-family: inherit; }
 .filter-chip:hover { border-color: var(--color-primary); }
 .filter-chip.on { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+/* 간편가입 직군·경력 버튼 — 폰에서 안쪽 여백을 절반으로(8px 14px → 4px 7px). */
+@media (max-width: 640px) {
+  .onb-job .filter-chip { padding: 4px 7px; }
+}
 .filter-sheet-foot { display: flex; gap: 10px; }
 .filter-reset-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 18px; border: 1.5px solid var(--color-border); border-radius: 10px; background: white; font-size: 14px; font-weight: 600; color: #666; cursor: pointer; font-family: inherit; white-space: nowrap; }
 .filter-reset-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }

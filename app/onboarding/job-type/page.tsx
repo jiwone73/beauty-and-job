@@ -227,7 +227,7 @@ export default function OnboardingJobTypePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6">
+    <div className="onb-job min-h-screen flex flex-col items-center justify-center bg-white px-2 md:px-6">
       {/* 이메일 가입 폼과 같은 640px. 여기만 512px(max-w-lg)이라, 카카오·네이버로
           들어온 사람은 같은 것을 묻는 화면을 더 좁게 봤다. */}
       <div className="w-full max-w-[640px]">
@@ -248,9 +248,9 @@ export default function OnboardingJobTypePage() {
                 : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
-              <StoreIcon size={20} style={{ color: "#582681" }} /> 매장
+              <StoreIcon size={20} style={{ color: "#582681" }} /> 매장<span className="md:hidden"> 직군</span>
             </p>
-            <p className="text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
+            <p className="hidden md:block text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
               {직군요약("STORE")}
             </p>
           </button>
@@ -263,9 +263,9 @@ export default function OnboardingJobTypePage() {
                 : "border-[#e5e5e5] bg-white hover:border-[#a8a8ad]")}
           >
             <p className="text-[16px] font-bold text-[#111] mb-1 flex items-center gap-1.5">
-              <OfficeIcon size={20} style={{ color: "#582681" }} /> 오피스
+              <OfficeIcon size={20} style={{ color: "#582681" }} /> 오피스<span className="md:hidden"> 직군</span>
             </p>
-            <p className="text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
+            <p className="hidden md:block text-[14px] text-[#9a9a9a] leading-relaxed break-keep">
               {직군요약("OFFICE")}
             </p>
           </button>
