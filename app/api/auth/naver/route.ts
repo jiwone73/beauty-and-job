@@ -21,6 +21,10 @@ export async function GET(req: NextRequest) {
     response_type: "code",
     state,
   });
+  // ?reprompt=1 — 네이버가 로그인돼 있는 계정으로 곧장 넘기지 않고 아이디·비밀번호를 다시 묻게 한다.
+  // 폰에 다른 네이버 계정이 로그인돼 있거나, 개발 중 상태에서 등록되지 않은 아이디로 막혔을 때
+  // 계정을 바꿔 다시 시도하는 길이다. 평소 로그인은 그대로 둔다(매번 다시 묻는 것은 불편하다).
+  if (new URL(req.url).searchParams.get("reprompt") === "1") params.set("auth_type", "reprompt");
   const res = NextResponse.redirect(
     `https://nid.naver.com/oauth2.0/authorize?${params.toString()}`
   );
