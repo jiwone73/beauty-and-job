@@ -182,7 +182,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             table-layout:auto 로 바꾼다 — 칸마다 실제 내용 폭만큼만 차지해,
             짧은 값(모집분야·인원)이 남는 자리를 긴 값(고용형태)에 나눠 주는
             대신 그 자리로 다음 칸(급여)이 더 보인다("내용을 딱 채우는 정도로"). */}
-        <table className="jd-pos-table" style={{ width: "100%", minWidth: posColMinWidth, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13.5 }}>
+        <table className="jd-pos-table" style={{ width: "100%", minWidth: posColMinWidth, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 13.5, "--jd-cols": posCols.length } as React.CSSProperties}>
           <colgroup>
             {posCols.map((c, i) => <col key={c.key} className="jd-pos-col" style={{ width: `${(posColBlended[i] / posColWeightTotal) * 100}%` }} />)}
           </colgroup>

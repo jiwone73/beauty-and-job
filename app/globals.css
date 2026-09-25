@@ -2633,6 +2633,17 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   /* 모바일은 표를 화면 폭에 늘리지 않고 내용 폭 그대로(넘치면 가로 스크롤). */
   .jd-pos-table { width: auto !important; }
 }
+/* PC — 남는 폭을 칸마다 똑같이 나눠 준다("열 넓이를 균등분할"). 표(table)의 자동
+   레이아웃은 남는 폭을 내용 폭에 비례해 나눠 긴 칸만 더 늘어나므로, 격자(grid)로 바꾼다:
+   auto 트랙은 각자 내용 폭을 먼저 받고 남는 폭을 똑같이 나눠 갖는다. 행(tr) 등은
+   display:contents 로 없애 th/td 가 바로 격자 칸이 된다(머리 배경도 칸에 준다). */
+@media (min-width: 641px) {
+  .jd-pos-table { display: grid !important; grid-template-columns: repeat(var(--jd-cols, 1), auto); }
+  .jd-pos-table colgroup { display: none; }
+  .jd-pos-table thead, .jd-pos-table tbody, .jd-pos-table tr { display: contents; }
+  .jd-pos-th { background: #f7f7f8; }
+  .jd-pos-th, .jd-pos-td { display: flex; flex-direction: column; justify-content: center; }
+}
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
    늘 보이는 굵기의 스크롤바로 "옆으로 더 있다"는 걸 알린다. */
