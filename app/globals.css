@@ -10175,9 +10175,9 @@ div:has(> table.admin-table),
      사진(같은 32px)이 flex 로 눌려 타원이 됐다("아바타 배경이 4각형"
      다음으로 실측에서 드러난 문제). 같은 !important 무게로 되돌린다. */
   .auth-user-btn-round { padding: 0 !important; }
-  /* 머리줄 원형 아바타를 32px에서 26px로(폰). 사진은 인라인 크기라 !important 로 눌러 준다. */
-  .auth-user-btn-round { width: 26px; height: 26px; }
-  .auth-user-btn-round img, .auth-user-btn-round svg { width: 26px !important; height: 26px !important; }
+  /* 머리줄 아바타(개인 원형·기업 로고)를 32px에서 26px로(폰). 사진은 인라인 크기라 !important 로 눌러 준다. */
+  .auth-user-btn { width: 26px; height: 26px; padding: 0 !important; }
+  .auth-user-btn img, .auth-user-btn svg { width: 26px !important; height: 26px !important; }
   /* 드롭다운 오른쪽 정렬 */
   .auth-dropdown-right {
     left: auto !important;
