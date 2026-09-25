@@ -3012,7 +3012,7 @@ export default function JobPostForm({
           {/* 아래 「외부 공고 불러오기」와 같은 글꼴·색. 화면마다 새로 정하지 않는다. */}
           <span style={{ fontWeight: 400, fontSize: 16, color: "#582681" }}>채용유형</span>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            {([["매장", "매장"], ["기업", "오피스"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
+            {([["매장", "매장 직군"], ["기업", "오피스 직군"]] as ["" | "기업" | "매장", string][]).map(([val, label]) => {
               const on = jobGroupType === val;
               return (
                 <label key={val} style={{ display: "inline-flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 16, fontWeight: 400, color: on ? "#555" : "#666" }}>

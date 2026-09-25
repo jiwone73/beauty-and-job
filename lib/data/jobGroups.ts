@@ -399,9 +399,10 @@ function isChosungQuery(q: string): boolean {
  * 그 뜻이 없는데(corporate headquarters 가 본사다) 우리만 붙여 쓴 셈이다.
  * DB 도 이미 OFFICE 라, 코드와 화면이 같은 말을 하게 된다.
  */
-export const 유형이름: Record<JobType, string> = { STORE: "매장", OFFICE: "오피스" };
+export const 유형이름: Record<JobType, string> = { STORE: "매장 직군", OFFICE: "오피스 직군" };
 
-const TRACK_LABEL = 유형이름;
+// 검색 결과 경로(「매장 · 헤어·바버」)는 짧은 이름을 그대로 쓴다 — 「직군」이 또 붙으면 겹친다.
+const TRACK_LABEL: Record<JobType, string> = { STORE: "매장", OFFICE: "오피스" };
 
 /**
  * 글자 입력 시 실시간 추천 검색.

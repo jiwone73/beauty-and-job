@@ -384,7 +384,7 @@ export default function JobGroupSelectModal({
                         onChange={() => { setActiveType(t); onTrackChange?.(t); }}
                         style={{ accentColor: "#582681", width: 15, height: 15, margin: 0, cursor: "pointer" }}
                       />
-                      {t === "STORE" ? "매장" : "오피스"}
+                      {t === "STORE" ? "매장 직군" : "오피스 직군"}
                     </label>
                   ))}
                 </div>

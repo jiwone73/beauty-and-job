@@ -17730,3 +17730,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 640px) {
   .jt-card { padding-top: 5px; padding-bottom: 5px; }
 }
+
+/* 내 주변 공고 — 페이지 제목을 채용공고 화면 제목(17px)과 같게(폰). */
+@media (max-width: 640px) {
+  .nb-head h1 { font-size: 17px; }
+}

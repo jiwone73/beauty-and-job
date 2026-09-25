@@ -14,8 +14,8 @@ const KEY = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
 const SEOUL = { lat: 37.5665, lng: 126.978 };
 const RADII = [1, 2, 5];
 const TYPES: { key: string; label: string }[] = [
-  { key: "STORE", label: "매장" },
-  { key: "OFFICE", label: "오피스" },
+  { key: "STORE", label: "매장 직군" },
+  { key: "OFFICE", label: "오피스 직군" },
   { key: "", label: "전체" },
 ];
 

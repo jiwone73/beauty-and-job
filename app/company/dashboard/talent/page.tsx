@@ -629,7 +629,7 @@ export default function TalentPage() {
               <input type="radio" name="talentTrackM" checked={activeTab === tab}
                 onChange={() => handleTabSwitch(tab)}
                 style={{ accentColor: "#582681", width: 16, height: 16, margin: 0, cursor: "pointer" }} />
-              {tab === "STORE" ? "매장" : "오피스"}
+              {tab === "STORE" ? "매장 직군" : "오피스 직군"}
             </label>
           ))}
         </div>
@@ -665,7 +665,7 @@ export default function TalentPage() {
                   boxShadow: activeTab === tab ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
                   transition: "all .15s",
                 }}>
-                {tab === "STORE" ? "매장" : "오피스"}
+                {tab === "STORE" ? "매장 직군" : "오피스 직군"}
               </button>
             ))}
           </div>
