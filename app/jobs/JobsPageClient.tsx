@@ -128,6 +128,23 @@ function JobsPageInner() {
     const 폭 = 244;
     set열린탭({ 그룹, 좌: Math.max(8, Math.min(줄.left, window.innerWidth - 폭 - 8)), 상: 줄.bottom + 6 });
   };
+  // 직군 탭 줄 끝 표시 — 다음 탭이 아래 줄이면 이 탭이 줄 끝이다(끝의 "I"를 감춘다).
+  // 줄이 어디서 바뀌는지는 CSS 로 알 수 없어 재서 표시한다. "I"는 자리를 그대로 두고
+  // 안 보이게만 하므로 이 표시가 줄 배치를 바꾸지 않는다.
+  const 탭줄 = useRef<HTMLElement>(null);
+  const 줄끝표시 = () => {
+    const 탭들 = Array.from(탭줄.current?.querySelectorAll<HTMLElement>(".jobs-tab") ?? []);
+    탭들.forEach((t, i) => {
+      const 끝 = i === 탭들.length - 1 || 탭들[i + 1].offsetTop > t.offsetTop + 2;
+      if (끝) t.setAttribute("data-end", ""); else t.removeAttribute("data-end");
+    });
+  };
+  useEffect(() => {
+    줄끝표시();
+    const 눈 = typeof ResizeObserver !== "undefined" && 탭줄.current ? new ResizeObserver(줄끝표시) : null;
+    if (눈 && 탭줄.current) 눈.observe(탭줄.current);
+    return () => 눈?.disconnect();
+  });
   useEffect(() => {
     if (!열린탭) return;
     const 닫기 = () => set열린탭(null);
@@ -539,7 +556,7 @@ function JobsPageInner() {
             onClose={() => setShowRegionModal(false)} onApply={setSelectedRegions} />
         </div>
         {/* 폰 전용 직군 탭(글자만, 두 줄 안) — PC 는 왼쪽 사이드바가 맡아 CSS 로 숨긴다. */}
-        <nav className="jobs-tabs" aria-label="직군">
+        <nav className="jobs-tabs" aria-label="직군" ref={탭줄}>
           {대분류목록.map((g) => {
             const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", g.group);
             const 고른수 = 소.filter((x) => selectedJobs.includes(x)).length;

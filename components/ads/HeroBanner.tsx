@@ -58,7 +58,10 @@ export default function HeroBanner({ 문구, 작게, 이미지, href }: {
     return (
       <Link href={갈곳} className="mt-hero sm" aria-label="뷰티워크 오픈 이벤트">
         <span className="mt-sm-glow" aria-hidden="true" />
-        <span className="mt-sm-eyebrow">BEAUTYWORK <b>OPEN</b></span>
+        <span className="mt-sm-eyebrow">
+          <span className="mt-sm-en">BEAUTYWORK <b>OPEN</b></span>
+          <span className="mt-sm-ko">뷰티워크 <b>오픈</b></span>
+        </span>
         <span className="mt-sm-bar" aria-hidden="true" />
         {/* 안쪽 span 은 모바일에서만 오른쪽→왼쪽으로 흐른다(CSS). 글이 길어 말줄임되던 것을 끝까지 보여 준다. */}
         <span className="mt-sm-msg"><span className="mt-sm-msg-in" style={{ ["--mt-dur" as string]: `${Math.max(8, Math.round(아래.length * 0.3))}s` }}>{아래}</span></span>
