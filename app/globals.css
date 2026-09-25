@@ -2637,6 +2637,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .jd-pos-sub { display: none; }
   /* 제목·내용 모두 왼쪽 정렬(PC는 가운데 그대로). */
   .jd-pos-th, .jd-pos-td { text-align: left; }
+  /* 열 제목을 내용보다 진하게. 위쪽 .job-detail-layout * { font-weight:400 !important }
+     가 모든 글자를 평체로 눌러 두어, 같은 !important 에 선택자를 더 세게 걸어야 먹는다. */
+  .job-detail-layout .jd-pos-th { font-weight: 600 !important; color: #555; }
   /* 세로 구분선 지움(시험) — 마음에 안 들면 이 한 줄만 없애면 원복. */
   .jd-pos-th, .jd-pos-td { border-right: none; }
 }
