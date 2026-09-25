@@ -34,6 +34,8 @@ function Pop({ title, onClose, 좌, 상, children }: { title: string; onClose: (
   const 상자 = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const 바깥 = (e: MouseEvent) => {
+      // data-pop-ignore 가 붙은 것(모바일 직군 탭)을 누르는 건 바깥 클릭이 아니다 — 그 탭이 스스로 열고 닫는다.
+      if ((e.target as HTMLElement).closest?.("[data-pop-ignore]")) return;
       if (상자.current && !상자.current.contains(e.target as Node)) onClose();
     };
     const 키 = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -117,6 +119,21 @@ function JobsPageInner() {
   const [열린팝오버, set열린팝오버] =
     useState<{ 종류: "지역" | "직군" | "고용형태" | "경력" | "복리후생"; 키?: string; 좌: number; 상: number } | null>(null);
   const 사이드바 = useRef<HTMLElement>(null);
+  // 폰 전용 직군 탭 — 탭을 누르면 그 대분류의 소분류가 그 밑에 팝오버로 뜬다.
+  // 사이드바 팝오버(열린팝오버)와 상태를 따로 둔다: 같은 상태를 쓰면 화면에 안 보이는
+  // 쪽 팝오버도 함께 떠서, 안 보이는 쪽의 "바깥 클릭" 감지가 보이는 팝오버를 닫아 버린다.
+  const [열린탭, set열린탭] = useState<{ 그룹: string; 좌: number; 상: number } | null>(null);
+  const 탭열기 = (e: React.MouseEvent, 그룹: string) => {
+    const 줄 = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const 폭 = 244;
+    set열린탭({ 그룹, 좌: Math.max(8, Math.min(줄.left, window.innerWidth - 폭 - 8)), 상: 줄.bottom + 6 });
+  };
+  useEffect(() => {
+    if (!열린탭) return;
+    const 닫기 = () => set열린탭(null);
+    window.addEventListener("scroll", 닫기, { passive: true });
+    return () => window.removeEventListener("scroll", 닫기);
+  }, [열린탭]);
   // 팝오버는 사이드바 오른쪽 바깥에 띄운다. 안쪽 칸에 붙이면 옆 항목을 덮어
   // 무엇을 누른 것인지 가려진다. 위치는 열 때 한 번 잰다.
   const 팝열기 = (e: React.MouseEvent, 종류: any, 키?: string) => {
@@ -497,6 +514,39 @@ function JobsPageInner() {
             안 가리는 배너가 뜬다. 아무것도 안 걸렸으면 메인과 같은 뷰티워크
             배너가 선다 — 자리는 늘 있고, 팔리면 광고가 그 자리를 쓴다. */}
         <AdBanner slot="jobs" group={고른대분류 || undefined} 대신={<HeroBanner 작게 />} />
+        {/* 폰 전용 직군 탭(글자만, 두 줄 안) — PC 는 왼쪽 사이드바가 맡아 CSS 로 숨긴다. */}
+        <nav className="jobs-tabs" aria-label="직군">
+          {대분류목록.map((g) => {
+            const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", g.group);
+            const 고른수 = 소.filter((x) => selectedJobs.includes(x)).length;
+            const 열림 = 열린탭?.그룹 === g.group;
+            return (
+              <button key={g.group} type="button" data-pop-ignore
+                className={`jobs-tab${고른수 ? " on" : ""}${열림 ? " open" : ""}`}
+                aria-expanded={열림}
+                onClick={(e) => (열림 ? set열린탭(null) : 탭열기(e, g.group))}>
+                {g.group}{고른수 > 0 && <em>{고른수}</em>}
+              </button>
+            );
+          })}
+        </nav>
+        {열린탭 && (() => {
+          const 소 = getJobSubGroups(jobTypeFilter === "매장" ? "STORE" : "OFFICE", 열린탭.그룹);
+          return (
+            <Pop onClose={() => set열린탭(null)} title={열린탭.그룹} 좌={열린탭.좌} 상={열린탭.상}>
+              <PopItem on={소.length > 0 && 소.every((x) => selectedJobs.includes(x))}
+                onClick={() => {
+                  const 전부 = 소.every((x) => selectedJobs.includes(x));
+                  setSelectedJobs(전부 ? selectedJobs.filter((x) => !소.includes(x))
+                                      : Array.from(new Set([...selectedJobs, ...소])));
+                }}>전체</PopItem>
+              {소.map((x) => (
+                <PopItem key={x} on={selectedJobs.includes(x)}
+                  onClick={() => setSelectedJobs(selectedJobs.includes(x) ? selectedJobs.filter((y) => y !== x) : [...selectedJobs, x])}>{x}</PopItem>
+              ))}
+            </Pop>
+          );
+        })()}
         <div className="jobs-head">
           <b>{jobTypeFilter} 채용공고</b>
         </div>
