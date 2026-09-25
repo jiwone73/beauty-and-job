@@ -538,7 +538,7 @@ function JobsPageInner() {
               <button key={t} type="button"
                 className={`seg-btn ${jobTypeFilter === t ? "active" : ""}`}
                 onClick={() => { setJobTypeFilter(t); setSelectedJobs([]); set열린팝오버(null); set열린탭(null); }}>
-                {t === "매장" ? <StoreIcon size={13} /> : <OfficeIcon size={13} />}{t}
+                {t} 직군
               </button>
             ))}
           </div>
