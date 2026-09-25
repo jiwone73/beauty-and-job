@@ -17734,6 +17734,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   input.onb-f-in { font-size: 14px; }
   button.onb-f-bt { font-size: 14px; }
   button.onb-f-btn, div.onb-f-btn, p.onb-f-btn, label.onb-f-btn { font-size: 14px; }
+  /* 내용 색은 #555 하나 — 적어 넣은 글자·고른 지역. 안내글(자리글)의 옅은 회색은 그대로. */
+  input.onb-f-in { color: #555; }
+  button.onb-f-btn .text-\[\#3a3a3a\] { color: #555; }
 }
 
 /* 가입 화면(폰) 매장·오피스 직군 카드 — 위아래 안쪽 여백을 절반으로(10px → 5px). */
