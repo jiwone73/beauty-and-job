@@ -17709,7 +17709,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
      잘리지 않게 칸을 넓힌다. */
   .profile-info-card.pf-grid .pf-pay { padding-left: 0; gap: 2px; }
   .profile-info-card.pf-grid .pf-pay-sel { padding-left: 0; }
-  .profile-info-card.pf-grid .pf-pay-in { width: 68px; }
+  .profile-info-card.pf-grid .pf-pay-in { width: 74px; }
+  /* 희망급여 한 줄 — 칸 이름 폭을 줄여 「월급」을 이름 쪽으로 당기고(108→76px), 「만원」·「협의」가
+     폰 글꼴에서 두 줄로 꺾이지 않게 한다. */
+  .profile-info-card.pf-grid .pf-pay-row .profile-info-label { width: 76px; }
+  .profile-info-card.pf-grid .pf-pay { flex: 1; min-width: 0; flex-wrap: nowrap; white-space: nowrap; }
+  .profile-info-card.pf-grid .pf-pay-unit, .profile-info-card.pf-grid .pf-pay-nego { white-space: nowrap; flex-shrink: 0; }
+  /* 구직유형은 「매장 직군」만 — 무엇을 뜻하는지 덧붙인 설명은 뺀다. */
+  .profile-info-card.pf-grid .profile-info-note { display: none; }
   /* 거주지 주소 줄 — 아이콘 자리였던 왼쪽 18px 들여쓰기(인라인 값)를 걷는다. */
   .profile-info-card.pf-grid > .pf-wide > .if-row { padding-left: 0 !important; }
   .profile-info-card.pf-grid .pf-pay-nego { margin-left: 2px; gap: 4px; }

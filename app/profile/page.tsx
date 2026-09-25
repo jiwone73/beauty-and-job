@@ -976,7 +976,7 @@ export default function ProfilePage() {
                   required
                 />
                 {/* 원티드식 인라인 — 그 자리에서 고르고 적는다. 비우면 「급여 협의」다. */}
-                <div className="profile-info-row is-last" style={{ cursor: "default" }}>
+                <div className="profile-info-row is-last pf-pay-row" style={{ cursor: "default" }}>
                   <span className="profile-info-label">{칸그림("희망급여")}희망급여</span>
                   <span className="pf-pay">
                     <select className="pf-pay-sel" value={salaryType}
