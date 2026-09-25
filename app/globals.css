@@ -2603,45 +2603,35 @@ input[type="range"].career-slider::-moz-range-thumb {
    겹치니 세로선을 뺀다. */
 /* 세로 구분선 좌우 여백을 더 확 줄인다("세로 열 구분선 좌우로 여백을 확
    줄여") — 2px 까지 좁혀 그만큼 표 전체 폭도 줄어든다. */
-.jd-pos-th { text-align: center; padding: 8px 2px 6px 2px; color: #6f6f75; font-weight: 600; border-bottom: 1px solid #efeff1; border-right: 1px solid #f2f2f2; white-space: nowrap; }
-/* 칸 폭은 값 길이만큼 절대 픽셀로 확보돼(JobDetailView의 posColMinWidth)
-   말줄임이 나올 일이 없다("말줄임은 절대 나오면 안됨") — 그래도 예상 못한
-   값이 들어올 극단적인 경우를 대비한 마지막 안전장치로만 남겨 둔다. */
-.jd-pos-td { padding: 7px 2px; border-bottom: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.5; text-align: center; overflow: hidden; text-overflow: ellipsis; }
-.jd-pos-th:last-child, .jd-pos-td:last-child { border-right: none; }
+/* 모집부문 표 — 모바일에서 다듬은 것을 PC 에도 그대로 적용한다("데스크탑에도
+   반영해보자"). 열 제목·내용 왼쪽 정렬 · 13px · 칸 좌우 5px · 세로 구분선 없음 ·
+   제목은 진하게(600). 위쪽 .job-detail-layout * { font-weight:400 !important } 가
+   모든 글자를 평체로 눌러 두어, 제목 굵기는 선택자를 더 세게 걸어야 먹는다. */
+.jd-pos-th { text-align: left; padding: 8px 5px 6px 5px; color: #555; border-bottom: 1px solid #efeff1; white-space: nowrap !important; }
+.job-detail-layout .jd-pos-th { font-weight: 600 !important; }
+/* 칸 폭은 table-layout:auto 로 칸마다 실제 내용 폭만큼만(아래 .jd-pos-table).
+   말줄임은 예상 못한 값이 들어올 때를 위한 마지막 안전장치로만 남긴다. */
+.jd-pos-td { padding: 7px 5px; border-bottom: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.5; text-align: left; overflow: hidden; text-overflow: ellipsis; }
 tr:last-child > .jd-pos-td { border-bottom: none; }
 .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
+.jd-pos-th, .jd-pos-td { font-size: 13px; }
+/* 인라인 스타일(fixed·colgroup %·minWidth)을 이겨야 해서 !important. 칸마다 실제 내용만큼만
+   차지해, 짧은 값(모집분야·인원)의 남는 자리로 다음 칸이 더 보인다. */
+.jd-pos-table { table-layout: auto !important; min-width: 0 !important; }
+.jd-pos-col { width: auto !important; }
+/* 고용형태는 값 하나가 한 줄 — "정규직," / "프리랜서". */
+.jd-emp-item { display: block; }
+/* 급여가 "월급 / 230만 / 이상"처럼 3줄로 부서지지 않게 바닥 폭. */
+.jd-pos-sal { min-width: 6.5em; }
+/* 모집분야는 "헤어 디자이너"처럼 띄어써도 한 덩어리 이름이라 한 줄로. */
+.jd-pos-cat { white-space: nowrap !important; }
+/* 열 제목 "경력/직책" 은 "경력"만. */
+.jd-pos-sub { display: none; }
+/* 표가 화면보다 넓으면 iOS 가 본문 칸 글자만 키워 보여(글자 자동 확대) 제목과 어긋났다. */
+.jd-pos-scroll { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (max-width: 640px) {
-  .jd-pos-th, .jd-pos-td { padding-right: 5px; padding-left: 5px; }
-  .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
-  /* 글자 수 비율로 나눈 고정 칸 폭(colgroup, table-layout:fixed) 대신,
-     칸마다 실제 내용만큼만 차지하는 자동 폭으로 — 인라인 스타일(width:100%,
-     minWidth, fixed)을 이겨야 하니 !important. "내용을 딱 채울 정도로,
-     더 보여줄 수 있는데 못 하고 있다"는 지적. */
-  .jd-pos-table { table-layout: auto !important; width: auto !important; min-width: 0 !important; }
-  .jd-pos-col { width: auto !important; }
-  /* 열 제목은 무조건 한 줄(가로 스크롤 허용) — 인라인 white-space:normal 을 눌러야 해서 !important. */
-  .jd-pos-th { white-space: nowrap !important; }
-  /* 고용형태는 값 하나가 한 줄 — "정규직," / "프리랜서" 로 폭이 값 하나만큼만. */
-  .jd-emp-item { display: block; }
-  /* 급여가 "월급 / 230만 / 이상"처럼 3줄로 부서지지 않게 바닥 폭. */
-  .jd-pos-sal { min-width: 6.5em; }
-  /* 모집분야는 "헤어 디자이너"처럼 띄어써도 한 덩어리 이름이라 한 줄로 —
-     넘치면 옆으로 스크롤. */
-  .jd-pos-cat { white-space: nowrap !important; }
-  /* 표 안 글자 크기는 열 제목과 같은 13.5px 로 못박는다. 표가 화면보다 넓으면
-     iOS 가 본문 칸 글자만 키워 보여(글자 자동 확대) 제목과 어긋났다. */
-  .jd-pos-scroll { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  .jd-pos-th, .jd-pos-td { font-size: 13px; }
-  /* 열 제목 "경력/직책" 은 모바일에서 "경력"만. */
-  .jd-pos-sub { display: none; }
-  /* 제목·내용 모두 왼쪽 정렬(PC는 가운데 그대로). */
-  .jd-pos-th, .jd-pos-td { text-align: left; }
-  /* 열 제목을 내용보다 진하게. 위쪽 .job-detail-layout * { font-weight:400 !important }
-     가 모든 글자를 평체로 눌러 두어, 같은 !important 에 선택자를 더 세게 걸어야 먹는다. */
-  .job-detail-layout .jd-pos-th { font-weight: 600 !important; color: #555; }
-  /* 세로 구분선 지움(시험) — 마음에 안 들면 이 한 줄만 없애면 원복. */
-  .jd-pos-th, .jd-pos-td { border-right: none; }
+  /* 모바일은 표를 화면 폭에 늘리지 않고 내용 폭 그대로(넘치면 가로 스크롤). */
+  .jd-pos-table { width: auto !important; }
 }
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
