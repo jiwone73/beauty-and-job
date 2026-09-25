@@ -13656,7 +13656,8 @@ button,
       .mt-evt-more { display: none; }
   .mt-hero-in { padding: 22px 20px; }
   .mt-hero-h { font-size: 24px; }
-  .mt-hero.sm { padding: 0 16px; gap: 8px; }
+  /* 띠 높이가 18px 안팎으로 눌려 내용이 잘렸다 — 2배(1320:136)로. */
+  .mt-hero.sm { padding: 0 16px; gap: 8px; aspect-ratio: 1320 / 136; }
   .mt-sm-eyebrow { font-size: 11.5px; }
   .mt-sm-msg { font-size: 12.5px; }
   .mt-sm-cta { font-size: 12px; padding: 6px 12px; }
