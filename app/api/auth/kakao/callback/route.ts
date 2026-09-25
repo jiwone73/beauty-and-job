@@ -120,6 +120,11 @@ export async function GET(req: NextRequest) {
     //     전에 개인정보를 저장하게 되기 때문이다. 받아 온 값은 가입표에 담아
     //     넘기고, 동의를 받은 뒤 /api/auth/social/complete 가 회원을 만든다.
     if (!user) {
+      // 이미 가입한 사람이 가입 화면으로 넘어가는 일을 잡으려는 기록 — 회원번호 앞 3자리, 이메일 유무·도메인만 남긴다.
+      console.log("[kakao 신규로 판단]", {
+        idHead: String(kakaoId).slice(0, 3), idLen: String(kakaoId).length,
+        hasEmail: !!email, emailDomain: email ? String(email).split("@")[1] : null,
+      });
       const 표 = 가입표만들기({
         provider: "kakao",
         providerId: kakaoId,
