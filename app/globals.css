@@ -2635,6 +2635,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .jd-pos-th, .jd-pos-td { font-size: 13px; }
   /* 열 제목 "경력/직책" 은 모바일에서 "경력"만. */
   .jd-pos-sub { display: none; }
+  /* 제목·내용 모두 왼쪽 정렬(PC는 가운데 그대로). */
+  .jd-pos-th, .jd-pos-td { text-align: left; }
 }
 /* 가는 OS 기본 스크롤바는 화면 캡처·터치 환경에서 거의 안 보여, 표가 카드보다
    넓어지면(값이 길어 가로 스크롤이 필요할 때) 그냥 잘려 끝난 것처럼 보였다.
