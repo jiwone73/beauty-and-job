@@ -3523,7 +3523,7 @@ export default function JobPostForm({
                 })}
               </div>
               <div className="job-detail-meta-item" style={{ margin: "0 0 12px", display: "none" }}>
-                <span style={{ fontSize: 15, color: "#555", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
+                <span style={{ fontSize: 15, color: "#333", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                 {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                     고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                 <span className="jp-add-wrap catpick-pop" style={{ position: "relative" }}>
@@ -4067,7 +4067,7 @@ export default function JobPostForm({
                     </div>
                     {/* 마감일 (우) — 언제까지 받는지는 어떻게 받는지 옆에 선다. */}
                     <div id="jp-deadline" ref={deadlineRef} style={{ position: "relative", padding: "4px 0" }}>
-                      <div style={{ fontSize: 15, color: "#555", marginBottom: 3 }}>마감일</div>
+                      <div style={{ fontSize: 15, color: "#333", marginBottom: 3 }}>마감일</div>
                       <button type="button"
                         onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#b4b4b9", cursor: "pointer" }}>
@@ -4112,7 +4112,7 @@ export default function JobPostForm({
                   { k: "kakao", 이름: "카카오톡 ID", v: nmKakaoId, set: (v: string) => setNmKakaoId(v), ph: "아이디", im: undefined },
                 ] as { k: string; 이름: string; v: string; set: (v: string) => void; ph: string; im?: "numeric" | "email" }[]).map((f) => (
                   <div key={f.k} style={{ padding: "4px 0", minWidth: 0 }}>
-                    <div style={{ fontSize: 15, color: "#555", marginBottom: 3 }}>
+                    <div style={{ fontSize: 15, color: "#333", marginBottom: 3 }}>
                       {f.이름}
                       {/* 넷 중 하나만 선택이다. 별표를 셋에 붙이는 것보다
                           하나에 「선택」을 다는 쪽이 눈에 덜 걸린다. */}
