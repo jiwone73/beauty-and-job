@@ -18162,8 +18162,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-step-num button { width: 24px; }
   .jp-step-num b { min-width: 20px; }
   .jp-job-unit { margin-right: 0; }
-  .jp-sal-unit { padding: 0 20px 0 8px; background-position: right 7px center; }
-  .jp-sal-basis { padding: 0 20px 0 8px; background-position: right 7px center; }
+  .jp-sal select.jp-sal-unit { padding: 0 20px 0 8px; background-position: right 7px center; }
+  .jp-sal select.jp-sal-basis { padding: 0 20px 0 8px; background-position: right 7px center; }
   .jp-sal-amt { padding: 0 8px; }
   .jp-sal-amt input { width: 52px; }
   .jp-job-cond { flex-wrap: nowrap; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
