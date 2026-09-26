@@ -6683,7 +6683,7 @@ div:has(> table.admin-table),
 /* 항목명은 뷰티워크 보라. 값(#555)과 결이 갈려 어디까지가 칸 이름이고 어디부터가
    내가 적은 값인지 한눈에 나뉜다. (관리자 콘솔은 같은 class 를 쓰지만
    .settings-compact 가 없어 여태 쓰던 회색 그대로다.) */
-.settings-compact .admin-form-label { color: #555; font-weight: 400; }
+.settings-compact .admin-form-label { color: #333; font-weight: 400; }
 /* 빈 칸은 56px 회색 블록으로 덮고 placeholder 를 투명하게 두고 있었다. 무엇을 적는
    자리인지 알 길이 없어, 공고 등록 폼처럼 자리글을 그대로 보여준다. */
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:placeholder-shown,
@@ -18088,3 +18088,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .settings-compact .acc-val { font-size: 14px; }
 }
+
+/* 이름표 #333 · 채운 값 #555 — 개인 프로필과 기업 설정 갈래(매장정보·계정정보·비밀번호·알림) 모두, PC·폰 똑같이. */
+.profile-info-card.pf-grid .profile-info-label { color: #333; }
+.settings-compact .admin-form-label { color: #333; }
+.pf-main .profile-info-label { color: #333; }
