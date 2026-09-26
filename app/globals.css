@@ -17953,3 +17953,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-section > :last-child { margin-bottom: 0; }
   .resume-section > .if-row:last-child, .resume-section > .portfolio-grid:last-child { padding-bottom: 0; }
 }
+
+/* 이력서(PC) — 폰과 같은 기준으로 여백을 스킬 섹션 값에 맞춘다: 위 18px, 제목~내용 8px, 아래 18px.
+   경력·학력·자격증·어학은 첫 줄 안쪽 여백 12px 과 마지막 줄 안쪽 여백 12px 이 더해져 글자까지 20~30px 이었고,
+   내 정보는 아래가 14px, 활동/수상·포트폴리오·자기소개서는 마지막 요소의 바깥 여백 등으로 22~26px 이었다. */
+@media (min-width: 769px) {
+  .resume-section > .resume-section-head + .if-row { padding-top: 0; }
+  .resume-section > :last-child { margin-bottom: 0; }
+  .resume-section > .if-row:last-child, .resume-section > .portfolio-grid:last-child { padding-bottom: 0; }
+  .resume-section > textarea { display: block; }
+  #section-basic { padding-bottom: 18px; }
+}
