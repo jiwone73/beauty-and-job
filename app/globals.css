@@ -17969,3 +17969,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   #section-basic { padding-bottom: 16px; }
 }
+
+/* 자기소개서 입력칸(textarea)은 글자 줄 안에 놓여 아래에 글자 내려앉는 틈(약 7px)이 생긴다 — 폰·PC 모두 블록으로. */
+.resume-section > textarea { display: block; }
