@@ -357,10 +357,11 @@ export default function JobGroupSelectModal({
         @media (max-width: 768px) {
           .jgm-backdrop { align-items: flex-end; }
           .jgm-sheet {
-            width: 100%; max-width: 100%; max-height: 88vh;
+            width: 100%; max-width: 100%; max-height: 88vh; max-height: 88dvh;
             border-radius: 16px 16px 0 0; animation: jgmUp 0.24s ease;
           }
-          .jgm-body { max-height: 56vh; }
+          .jgm-body { flex: 1 1 auto; min-height: 0; max-height: none; }
+          .jgm-footer { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
           .jgm-left { width: 42%; }
         }
       `}</style>
@@ -402,13 +403,13 @@ export default function JobGroupSelectModal({
                 className={activeType === "STORE" ? "on" : ""}
                 onClick={() => setActiveType("STORE")}
               >
-                매장
+                매장 직군
               </button>
               <button
                 className={activeType === "OFFICE" ? "on" : ""}
                 onClick={() => setActiveType("OFFICE")}
               >
-                오피스
+                오피스 직군
               </button>
             </div>
           )}
