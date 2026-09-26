@@ -17883,3 +17883,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .rp-modal .rp-header { gap: 16px !important; }
 }
+
+/* 미리보기(폰) 경력·학력 — 작성 화면과 같은 차례·줄 배치: 이름 → 기간 → 나머지 항목이 각각 한 줄
+   (학력은 졸업 여부가 전공보다 앞). PC·인쇄는 그대로 한 줄. */
+@media (max-width: 768px) {
+  .rp-modal .rp-item-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .rp-modal .rp-item-sub { display: flex; flex-direction: column; gap: 2px; }
+  .rp-modal .rp-sub-sep { display: none; }
+  .rp-modal .rp-sub-status { order: -1; }
+}

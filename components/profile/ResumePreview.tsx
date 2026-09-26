@@ -204,12 +204,14 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                   ? (c.company ? "○".repeat(Math.min(c.company.length, 6)) : "비공개")
                   : (c.company || [c.department, c.position].filter(Boolean).join(" · "))}</strong>
                 <span className="rp-period">
-                  {c.startDate} - {c.endDate}
+                  {c.startDate} - {c.endDate || "재직 중"}
                 </span>
               </div>
               {c.company && c.department && (
                 <p className="rp-item-sub">
-                  {c.department} · {c.position}
+                  {/* 폰에서는 작성 화면처럼 항목마다 줄을 바꾼다(CSS). PC·인쇄는 「 · 」로 한 줄. */}
+                  <span className="rp-sub-part">{c.department}</span>
+                  {c.position && <><span className="rp-sub-sep"> · </span><span className="rp-sub-part">{c.position}</span></>}
                 </p>
               )}
               {c.description && (
@@ -234,7 +236,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               </div>
               {(edu.major || edu.status) && (
                 <p className="rp-item-sub">
-                  {[edu.major, edu.status].filter(Boolean).join(" · ")}
+                  {edu.major && <span className="rp-sub-part rp-sub-major">{edu.major}</span>}
+                  {edu.major && edu.status && <span className="rp-sub-sep"> · </span>}
+                  {edu.status && <span className="rp-sub-part rp-sub-status">{edu.status}</span>}
                 </p>
               )}
             </div>
