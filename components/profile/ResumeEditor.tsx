@@ -385,7 +385,7 @@ export default function ResumeEditor({
                       잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: 맡은일직책합치기(맡은일직책(c.position)[0], v) })} />
                   </>
                 ) : (
-                  <InlinePick value={c.position} placeholder="직급" options={살롱직급}
+                  <InlinePick value={c.position} placeholder="직급" required options={살롱직급}
                     잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
                 )}
               </div>
@@ -425,14 +425,14 @@ export default function ResumeEditor({
                 <span className="if-bar">│</span>
                 <InlineText value={e.school} placeholder="학교명" required wide
                   잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
+                <span className="if-bar">│</span>
+                <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
+                  잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
               </div>
               <div className="if-line">
                 <InlineYM value={e.startDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
                 <span className="if-sep">–</span>
                 <InlineYM value={e.endDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
-                <span className="if-bar">│</span>
-                <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
-                  잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
                 <span className="if-bar">│</span>
                 <InlineText value={e.major} placeholder={본사냐 ? "전공 · 학위" : "전공"} required={본사냐}
                   잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
