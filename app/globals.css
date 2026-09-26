@@ -17916,3 +17916,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   #section-cover textarea { padding: 5px 6px !important; }
 }
+
+/* 이력서 어학(폰) — 안 적은 칸(시험명·점수/등급·취득 년월)은 흐린 회색, 적으면 #555. */
+@media (max-width: 768px) {
+  #section-language .if-slot:not(.on) { color: #b4b4b9; }
+  #section-language .if-slot.on { color: #555; }
+}
