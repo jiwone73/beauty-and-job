@@ -996,28 +996,30 @@ export default function ProfilePage() {
                     {/* 왼쪽 18px 은 라벨 글자 선(아이콘 16 + 사이 6 = 22)에서 슬롯 제 여백 4 를 뺀 값. */}
                     <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: "0 0 0 18px" }}>
                       <div className="if-row-body">
-                        {/* 1행은 번지까지, 건물 이름 같은 괄호 뒤는 2행. */}
+                        {/* 1행은 번지까지, 건물 이름 같은 괄호 뒤는 2행. 동·호수는 마지막 주소 줄 뒤에 같은 줄로 잇는다. */}
                         {(() => {
                           const i = addressRoad.indexOf("(");
                           const 앞 = (i > 0 ? addressRoad.slice(0, i) : addressRoad).trim();
                           const 뒤 = i > 0 ? addressRoad.slice(i).trim() : "";
+                          const 동호수 = (
+                            <InlineText value={addressDetail} placeholder="동·호수"
+                              onSave={(v) => { setAddressDetail(v); patchUser({ address_detail: v }); }} />
+                          );
                           return (
                             <>
                               <div className="if-line">
                                 <button type="button" className="if-slot on" onClick={openPostcode}>{앞}</button>
+                                {!뒤 && 동호수}
                               </div>
                               {뒤 && (
                                 <div className="if-line">
                                   <button type="button" className="if-slot on" style={{ whiteSpace: "normal", textAlign: "left" }} onClick={openPostcode}>{뒤}</button>
+                                  {동호수}
                                 </div>
                               )}
                             </>
                           );
                         })()}
-                        <div className="if-line">
-                          <InlineText value={addressDetail} placeholder="동·호수"
-                            onSave={(v) => { setAddressDetail(v); patchUser({ address_detail: v }); }} />
-                        </div>
                       </div>
                       <button className="if-row-del" aria-label="주소 초기화" title="주소 초기화" onClick={handleClearAddress}>
                         <Trash2 size={15} />
