@@ -17972,3 +17972,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 자기소개서 입력칸(textarea)은 글자 줄 안에 놓여 아래에 글자 내려앉는 틈(약 7px)이 생긴다 — 폰·PC 모두 블록으로. */
 .resume-section > textarea { display: block; }
+
+/* 이력서 희망 근무 조건·내 정보(PC) — 다른 항목처럼 제목 글자에 내용 들여쓰기를 맞추고(아이콘 자리 22px),
+   제목 아래에서 첫 글자까지를 20px 로 맞춘다(경력·학력·자격증·어학·스킬은 20px, 이 둘은 10px 였고 내용이 아이콘 왼쪽에서 시작했다). */
+@media (min-width: 769px) {
+  .resume-section > .rp-cond { margin-left: 22px; padding-top: 10px; }
+  #section-basic .resume-basic-info { padding-top: 10px; }
+}
