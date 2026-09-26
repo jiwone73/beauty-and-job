@@ -18019,3 +18019,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-editor .resume-section-head label { font-size: 14px !important; color: #555; }
   .resume-editor .resume-section > textarea, .resume-editor .resume-section > input { font-size: 15px !important; color: #555; }
 }
+
+/* 이력서 내 정보의 이름은 볼드(작성 화면과 미리보기 모두, 폰·PC 공통). */
+.resume-editor .resume-name, .rp-modal .rp-name { font-weight: 700 !important; }
