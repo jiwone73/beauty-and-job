@@ -17911,3 +17911,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-section .career-open { color: #b4b4b9 !important; }
   .resume-section .career-open input[type="checkbox"] { opacity: .45; }
 }
+
+/* 이력서 자기소개서 입력칸(폰) — 한줄소개와 같게 안쪽 여백을 절반으로(10px 12px → 5px 6px). 크기가 요소에 직접 적혀 있어 !important. */
+@media (max-width: 768px) {
+  #section-cover textarea { padding: 5px 6px !important; }
+}
