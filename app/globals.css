@@ -17873,7 +17873,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    나머지 막대는 그대로 항목 사이 구분으로 보인다. */
 @media (max-width: 768px) {
   #section-career .if-row-plain .if-line,
-  #section-education .if-row-plain .if-line { flex-wrap: wrap; row-gap: 2px; }
+  #section-education .if-row-plain .if-line, #section-training .if-row-plain .if-line { flex-wrap: wrap; row-gap: 2px; }
   /* 경력은 기간 · 근무 형태를 한 줄(2행)에, 맡은 일 │ 직책을 다음 줄(3행)에 — 둘째 막대(6번째 칸)가 줄바꿈 자리다. */
   #section-career .if-line > span.if-bar:nth-child(6) { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
   #section-education .if-bar ~ .if-bar { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
@@ -18030,10 +18030,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    「비공개」 체크와 「(지원 시에만 공개)」 안내도 같은 흐린 회색. (예전에는 폰에서만 걸려 있었고 학력은 빠져 있었다.) */
 .resume-editor #section-language .if-slot:not(.on), .resume-editor #section-experience .if-slot:not(.on),
 .resume-editor #section-career .if-slot:not(.on), .resume-editor #section-certificate .if-slot:not(.on),
-.resume-editor #section-education .if-slot:not(.on) { color: #b4b4b9; }
+.resume-editor #section-education .if-slot:not(.on), .resume-editor #section-training .if-slot:not(.on) { color: #b4b4b9; }
 .resume-editor #section-language .if-slot.on, .resume-editor #section-experience .if-slot.on,
 .resume-editor #section-career .if-slot.on, .resume-editor #section-certificate .if-slot.on,
-.resume-editor #section-education .if-slot.on { color: #555; }
+.resume-editor #section-education .if-slot.on, .resume-editor #section-training .if-slot.on { color: #555; }
 .resume-editor .resume-section .career-open { color: #b4b4b9 !important; }
 .resume-editor .resume-section .career-open input[type="checkbox"] { opacity: .45; }
 .resume-editor .resume-section .career-open-note { color: #b4b4b9 !important; }

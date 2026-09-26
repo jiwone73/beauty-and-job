@@ -5,7 +5,7 @@
  * 헤매야 하고, 칸이 아홉이면 어디였는지 잊는다. 그래서 결과를 그 칸 위에
  * 붙일 수 있게 자리와 함께 돌려준다.
  */
-import type { CareerEntry, EducationEntry, LanguageEntry } from "@/lib/store/profileStore";
+import type { CareerEntry, EducationEntry, ExperienceEntry, LanguageEntry } from "@/lib/store/profileStore";
 
 export type 흠 = { 어디: string; 누구?: string; 말: string };
 
@@ -16,9 +16,10 @@ export function 이력서흠찾기(입력: {
   careers: CareerEntry[];
   educations: EducationEntry[];
   languages: LanguageEntry[];
+  experiences?: ExperienceEntry[];
   skills: string[];
 }): 흠[] {
-  const { 본사냐, intro, isEntryLevel, careers, educations, languages, skills } = 입력;
+  const { 본사냐, intro, isEntryLevel, careers, educations, languages, skills, experiences = [] } = 입력;
   const 흠들: 흠[] = [];
   const 빔 = (v?: string) => !String(v ?? "").trim();
 
@@ -47,6 +48,12 @@ export function 이력서흠찾기(입력: {
     // 매장은 학력 구분·학교명·졸업 상태가 필수다. 기간·전공은 선택이고, 전공은 본사에서만 필수다.
     if (빔(e.status)) 흠들.push({ 어디: "education", 누구: e.id, 말: "졸업 상태를 골라 주세요." });
     if (본사냐 && 빔(e.major)) 흠들.push({ 어디: "education", 누구: e.id, 말: "전공 · 학위가 비었어요." });
+  });
+
+  // ── 교육·수료 ── 칸을 만들었으면 교육명과 기간(시작)은 적어야 한다. 칸 자체는 선택이다.
+  experiences.filter((x) => x.category === "교육").forEach((x) => {
+    if (빔(x.title)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육명을 적어 주세요." });
+    if (빔(x.startDate)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육 기간을 골라 주세요." });
   });
 
   // ── 스킬·어학 ── 살롱만 필수. 어떤 시술을 하고 손님 응대가 되느냐가 채용 조건이다.

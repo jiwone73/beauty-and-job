@@ -14,7 +14,7 @@ export type 진행입력 = {
   careers: { company?: string | null; startDate?: string | null }[];
   educations: { school?: string | null }[];
   certificates: { name?: string | null }[];
-  experiences: { title?: string | null }[];
+  experiences: { title?: string | null; category?: string | null }[];
   languages: { language?: string | null; level?: string | null }[];
   skills: string[];
   portfolioImages: unknown[];
@@ -28,7 +28,8 @@ export function 이력서진행(입력: 진행입력): { 칸: 진행칸[]; 비�
   const 채운경력 = 입력.careers.some((c) => 있음(c.company) || 있음(c.startDate)) || 입력.isEntryLevel;
   const 채운학력 = 입력.educations.some((e) => 있음(e.school));
   const 채운자격 = 입력.certificates.some((c) => 있음(c.name));
-  const 채운활동 = 입력.experiences.some((x) => 있음(x.title));
+  // 「교육」은 교육·수료 칸의 것이라 활동/수상을 채운 것으로 치지 않는다.
+  const 채운활동 = 입력.experiences.some((x) => x.category !== "교육" && 있음(x.title));
   const 채운어학 = 입력.languages.some((l) => 있음(l.language) && 있음(l.level));
   // 포트폴리오는 링크와 파일을 한 칸으로 본다. 인스타만 걸어 둔 사람도, PDF 만
   // 가진 사람도 "작업물을 보여줬다"는 점에서는 같다.

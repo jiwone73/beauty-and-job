@@ -36,6 +36,7 @@ export function mapResume(data: any) {
     })),
     experiences: (data?.experiences || []).map((x: any) => ({
       id: String(x.id), category: x.category || "", title: x.title || "", description: x.description || "",
+      startDate: x.start_date || "", endDate: x.end_date || "", status: x.status || "",
     })),
     languages: (data?.languages || []).map((l: any) => ({
       id: String(l.id), language: l.language || "", level: l.level || "", test: l.test || "",

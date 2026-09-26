@@ -265,7 +265,7 @@ function ResumePageContent() {
     // 임시저장은 빠진 곳을 따지지 않고 지금까지 쓴 것을 그대로 저장한다.
     const 흠들 = 임시 ? [] : 이력서흠찾기({
       본사냐: resumeType === "office",
-      intro: introLocal, isEntryLevel, careers, educations, languages, skills,
+      intro: introLocal, isEntryLevel, careers, educations, languages, skills, experiences,
     });
     set흠(흠들);
     if (흠들.length > 0) {

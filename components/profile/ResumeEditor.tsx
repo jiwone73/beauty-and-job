@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { AlertCircle, Award, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Image as ImageIcon, Pencil, Plus, Sparkles, Trash2, Trophy, Upload, X } from "lucide-react";
+import { AlertCircle, Award, BookOpen, Building2, Link as LinkIcon, Check, ChevronDown, FileText, Globe, GraduationCap, Image as ImageIcon, Pencil, Plus, Sparkles, Trash2, Trophy, Upload, X } from "lucide-react";
 import { useProfileStore, genId } from "@/lib/store/profileStore";
 import { InlineText, InlinePick, InlineYM, InlineSuggest } from "@/components/profile/inline/InlineField";
 import { SNS찾기 } from "@/lib/snsPresets";
@@ -59,7 +59,10 @@ const 재직형태 = ["정규직", "계약직", "인턴", "프리랜서", "파�
 // 한국어 수준이 곧 채용 조건이다. 정작 목록에 없어 적을 자리가 없었다.
 const 언어들 = ["한국어", "영어", "중국어", "일본어", "베트남어", "태국어", "러시아어", "몽골어", "우즈베크어", "스페인어", "프랑스어"];
 const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표현"];
-const 활동종류 = ["수상", "교육", "봉사", "동아리", "기타"];
+// 「교육」은 활동이 아니라 아래 「교육·수료」 칸이 맡는다.
+const 활동종류 = ["수상", "봉사", "동아리", "기타"];
+const 교육상태 = ["수료", "수강 중", "중도 포기"];
+const 교육이냐 = (x: { category: string }) => x.category === "교육";
 
 // 본사 경력의 「맡은 일 · 직책」은 한 칸(position)에 「맡은 일 I 직책」으로 담아 둘을 구분한다.
 // 예전에 한 덩이로 적은 값(「I」가 없는 것)은 맡은 일로 읽는다.
@@ -440,6 +443,42 @@ export default function ResumeEditor({
         ))}
       </section>
 
+      {/* 교육·수료 — 학원·부트캠프·직업훈련. 학력이 아니고 경력도 아니라 갈 곳이 없던 것.
+          활동/수상의 「교육」 종류를 이 칸으로 옮겼다(같은 자료를 쓴다). */}
+      <section id="section-training" className="resume-section">
+        <div className="resume-section-head">
+          <h2 className="resume-section-title"><BookOpen size={16} className="resume-section-icon" />교육·수료</h2>
+          {!빼기전용 && (<button className="resume-icon-btn" aria-label="교육 추가" onClick={() => addExperience({ id: genId(), category: "교육", title: "", description: "", startDate: "", endDate: "", status: "" })}>
+            <Plus size={18} />
+          </button>)}
+        </div>
+        {experiences.filter(교육이냐).map((x) => (
+          <div key={x.id} className={"if-row if-row-plain" + (뺐나("experience:" + x.id) ? " is-out" : "")}>
+            <div className="if-row-body">
+              <흠줄 말들={항목흠("training", x.id)} />
+              <div className="if-line if-line-head">
+                <InlineText value={x.title} placeholder="교육명" required wide
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
+              </div>
+              <div className="if-line">
+                <InlineYM value={x.startDate || ""} required
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, startDate: v })} />
+                <span className="if-sep">–</span>
+                <InlineYM value={x.endDate || ""} placeholder="수강 중"
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, endDate: v })} />
+                <span className="if-bar">│</span>
+                <InlineText value={x.description} placeholder="과정명"
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
+                <span className="if-bar">│</span>
+                <InlinePick value={x.status || ""} placeholder="수료 여부" options={교육상태}
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, status: v })} />
+              </div>
+            </div>
+            {줄단추("experience:" + x.id, "이 교육을 삭제할까요?", () => removeExperience(x.id))}
+          </div>
+        ))}
+      </section>
+
       {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
@@ -514,7 +553,7 @@ export default function ResumeEditor({
             <Plus size={18} />
           </button>)}
         </div>
-        {experiences.map((x) => (
+        {experiences.filter((x) => !교육이냐(x)).map((x) => (
           <div key={x.id} className={"if-row if-row-plain" + (뺐나("experience:" + x.id) ? " is-out" : "")}>
             <div className="if-row-body">
               <div className="if-line if-line-head">

@@ -144,9 +144,9 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
   );
   await bulkInsert(
     "user_experiences",
-    ["category", "title", "description"],
+    ["category", "title", "description", "start_date", "end_date", "status"],
     experiences,
-    (x) => [x.category || "", x.title || "", x.description || ""]
+    (x) => [x.category || "", x.title || "", x.description || "", x.start_date || x.startDate || "", x.end_date || x.endDate || "", x.status || ""]
   );
   await bulkInsert(
     "user_languages",

@@ -2,7 +2,7 @@
 import { 시험한줄 } from "@/lib/languageTest";
 
 import { forwardRef, useState } from "react";
-import { IdCard, Target, Star, Building2, GraduationCap, Sparkles, Award, Trophy, Globe, Image as ImageIcon, Quote } from "lucide-react";
+import { IdCard, Target, Star, BookOpen, Building2, GraduationCap, Sparkles, Award, Trophy, Globe, Image as ImageIcon, Quote } from "lucide-react";
 import PhotoLightbox from "@/components/profile/PhotoLightbox";
 import { formatPhone } from "@/lib/memberFormat";
 import type {
@@ -254,6 +254,29 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           ))}
         </div>
       )}
+      {experiences.some((x) => x.category === "교육") && (
+        <div className="rp-section">
+          <h2 className="rp-section-title"><BookOpen size={16} className="resume-section-icon" />교육·수료</h2>
+          {experiences.filter((x) => x.category === "교육").map((x) => (
+            <div key={x.id} className="rp-item rp-item-training">
+              <div className="rp-item-head">
+                <strong>{x.title}</strong>
+              </div>
+              {(x.startDate || x.endDate || x.description || x.status) && (
+                <p className="rp-item-sub">
+                  {(x.startDate || x.endDate) && (
+                    <span className="rp-sub-part rp-sub-period">{x.startDate} – {x.endDate || "수강 중"}</span>
+                  )}
+                  {(x.startDate || x.endDate) && (x.description || x.status) && <span style={{ color: "#c8c8cc" }}> │ </span>}
+                  {x.description && <span className="rp-sub-part rp-sub-course">{x.description}</span>}
+                  {x.description && x.status && <span style={{ color: "#c8c8cc" }}> │ </span>}
+                  {x.status && <span className="rp-sub-part rp-sub-status">{x.status}</span>}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       {skills.length > 0 && (
         <div className="rp-section">
           <h2 className="rp-section-title"><Sparkles size={16} className="resume-section-icon" />스킬</h2>
@@ -282,10 +305,10 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           ))}
         </div>
       )}
-      {experiences.length > 0 && (
+      {experiences.some((x) => x.category !== "교육") && (
         <div className="rp-section">
           <h2 className="rp-section-title"><Trophy size={16} className="resume-section-icon" />활동/수상</h2>
-          {experiences.map((x) => (
+          {experiences.filter((x) => x.category !== "교육").map((x) => (
             <div key={x.id} className="rp-item">
               <div className="rp-item-head">
                 <strong>

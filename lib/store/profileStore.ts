@@ -28,9 +28,12 @@ export interface EducationEntry {
 }
 export interface ExperienceEntry {
   id: string;
-  category: string;
-  title: string;
-  description: string;
+  category: string;    // 수상·봉사·동아리·기타, 그리고 「교육」(교육·수료 칸)
+  title: string;       // 활동명·수상명 / 교육명(학원·기관)
+  description: string; // 내용·성과 / 과정명
+  startDate?: string;  // 교육 기간(교육만 쓴다)
+  endDate?: string;
+  status?: string;     // 수료 여부(교육만 쓴다)
 }
 export interface LanguageEntry {
   id: string;
@@ -362,6 +365,9 @@ export const useProfileStore = create<ProfileState>()(
                   category: x.category || "",
                   title: x.title || "",
                   description: x.description || "",
+                  startDate: x.start_date || "",
+                  endDate: x.end_date || "",
+                  status: x.status || "",
                 })),
                 languages: (languages || []).map((l: any) => ({
                   id: l.id,
