@@ -52,18 +52,18 @@ export default function CompanyPasswordPage() {
       <div style={{ maxWidth: 420, margin: "0 auto" }}>
         <div className="company-card">
           <div style={{ padding: "20px" }}>
-            <input className="admin-form-input" type={showPw ? "text" : "password"}
+            <input className="admin-form-input set-val" type={showPw ? "text" : "password"}
               placeholder="현재 비밀번호" autoComplete="current-password"
               value={form.current_password} onChange={고치기("current_password")} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"}
+            <input className="admin-form-input set-val" type={showPw ? "text" : "password"}
               placeholder={`새 비밀번호 (${PASSWORD_HINT})`} autoComplete="new-password" style={칸}
               value={form.new_password} onChange={고치기("new_password")} />
-            <input className="admin-form-input" type={showPw ? "text" : "password"}
+            <input className="admin-form-input set-val" type={showPw ? "text" : "password"}
               placeholder="새 비밀번호 확인" autoComplete="new-password" style={칸}
               value={form.confirm_password} onChange={고치기("confirm_password")}
               onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }} />
-            <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10,
-              fontSize: 15, color: "#333", cursor: "pointer" }}>
+            <label className="set-name" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10,
+              color: "#333", cursor: "pointer" }}>
               <input type="checkbox" checked={showPw} onChange={(e) => setShowPw(e.target.checked)} />
               비밀번호 표시
             </label>

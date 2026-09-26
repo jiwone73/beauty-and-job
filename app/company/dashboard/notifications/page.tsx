@@ -71,7 +71,7 @@ export default function CompanyNotificationsPage() {
   const 칸 = (key: string, title: string, 켜짐: boolean, 누름: () => void) => (
     <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "15px 16px",
       display: "flex", alignItems: "center", gap: 12 }}>
-      <div style={{ flex: 1, minWidth: 0, fontSize: 16, color: "#333" }}>{title}</div>
+      <div className="set-name" style={{ flex: 1, minWidth: 0, color: "#333" }}>{title}</div>
       <button type="button" role="switch" aria-checked={켜짐} aria-label={title} onClick={누름}
         style={{ width: 42, height: 24, borderRadius: 12, border: "none", flexShrink: 0,
           cursor: "pointer", padding: 2, display: "flex",
@@ -83,8 +83,8 @@ export default function CompanyNotificationsPage() {
     </div>
   );
 
-  const 묶음제목 = { fontSize: 16, color: "#333", margin: "0 0 4px" } as const;
-  const 묶음설명 = { fontSize: 15, color: "#555", margin: "0 0 12px", lineHeight: 1.6 } as const;
+  const 묶음제목 = { color: "#333", margin: "0 0 4px" } as const;
+  const 묶음설명 = { color: "#555", margin: "0 0 12px", lineHeight: 1.6 } as const;
   const 두칸 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } as const;
 
   return (
@@ -95,8 +95,8 @@ export default function CompanyNotificationsPage() {
         ) : (
           <>
             <section style={{ marginBottom: 34 }}>
-              <h2 style={묶음제목}>새 지원자 알림</h2>
-              <p style={묶음설명}>우리 공고에 지원이 들어오면 알려드려요.</p>
+              <h2 className="set-name" style={묶음제목}>새 지원자 알림</h2>
+              <p className="set-val" style={묶음설명}>우리 공고에 지원이 들어오면 알려드려요.</p>
               <div style={두칸}>
                 {알림칸.map((c) => 칸(c.key, c.title, !!on[c.key], () => 알림바꾸기(c.key)))}
               </div>
@@ -108,7 +108,7 @@ export default function CompanyNotificationsPage() {
             </section>
 
             <section>
-              <h2 style={묶음제목}>뷰티워크 소식 받기</h2>
+              <h2 className="set-name" style={묶음제목}>뷰티워크 소식 받기</h2>
               <div style={두칸}>
                 {동의칸.map((c) => 칸(c.key, c.title, !!동의[c.key], () => 동의바꾸기(c.key)))}
               </div>

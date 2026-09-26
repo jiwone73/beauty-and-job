@@ -18093,3 +18093,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .profile-info-card.pf-grid .profile-info-label { color: #333; }
 .settings-compact .admin-form-label { color: #333; }
 .pf-main .profile-info-label { color: #333; }
+
+/* 기업 설정의 이름표·값 글자 — 개인 프로필과 같은 크기: PC 이름표 16px·값 15px, 폰 이름표 15px·값 14px. (알림·비밀번호 변경) */
+.set-name { font-size: 16px; }
+.set-val { font-size: 15px; }
+@media (max-width: 768px) {
+  .set-name { font-size: 15px; }
+  .set-val { font-size: 14px; }
+  .admin-form-input.set-val { font-size: 14px !important; }
+}
