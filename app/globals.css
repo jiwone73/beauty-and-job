@@ -6690,9 +6690,9 @@ div:has(> table.admin-table),
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-select[data-empty="true"] {
   background: transparent !important;
   width: auto;
-  color: #cfcfcf;
+  color: #b4b4b9;
 }
-.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input::placeholder { color: #cfcfcf; }
+.settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input::placeholder { color: #b4b4b9; }
 .settings-compact .admin-form-row:has(> .admin-form-label) .admin-form-input:focus {
   background: transparent !important; width: 100%; color: #555;
 }
@@ -15365,7 +15365,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    자리글이다. 두 토막에 구분 막대까지 있어 한 토막짜리 자리글(예: "숫자만
    입력해주세요")보다 먹이 많아 보인다 — 그래서 한 단계 더 흐리게 둬야
    같은 무게로 읽힌다. 값이 들어오면(.on) 원래 색으로 돌아온다. */
-.settings-compact .if-slot:not(.on) { color: #c6c6cb; }
+.settings-compact .if-slot:not(.on) { color: #b4b4b9; }
 .settings-compact .if-line:not(:has(.if-slot.on)) .if-sep { color: #d4d4d9; }
 /* 칸 제목 옆에 덧붙이는 흐린 한마디 */
 .resume-title-note { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: #555; }
@@ -15607,15 +15607,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-set-settings .co-set-main .if-input,
 .co-set-settings .co-set-main .if-line-head .if-slot,
 .co-set-settings .co-set-main .if-sep { font-size: 15px; }
-/* 아직 안 채운 칸의 자리글은 한 단 낮춘다 — 적어 넣은 값과 같은 크기면 이미 채운
-   것처럼 보인다. 값이 들어오는 순간 15px 로 커진다. */
-.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-input:placeholder-shown,
-.co-set-settings .co-set-main .settings-compact .admin-form-row .admin-form-select[data-empty="true"],
-.co-set-settings .co-set-main .admin-form-input:placeholder-shown,
-.co-set-settings .co-set-main .admin-form-textarea:placeholder-shown,
-.co-set-settings .co-set-main .admin-form-select[data-empty="true"],
-.co-set-settings .co-set-main .if-slot:not(.on),
-.co-set-settings .co-set-main .if-input:placeholder-shown { font-size: 14px; }
+/* 안 채운 칸의 자리글도 값과 같은 크기(15px)다 — 개인 프로필과 같게. 채웠는지 아닌지는 색(#b4b4b9 ↔ #555)으로만 가른다. */
 
 /* 전형절차 — 고른 것만 차례로 늘어놓고 사이를 화살표로 잇는다.
    몇 단계인지, 어느 차례인지가 한눈에 보인다. */
@@ -18081,3 +18073,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .ug-primary { border: none; background: var(--color-primary); color: #fff; }
 .ug-secondary { border: 1px solid #ddd; background: #fff; color: #555; }
 .ug-ghost { border: none; background: none; color: #999; font-weight: 400 !important; }
+
+/* 기업 설정(폰) — 개인 프로필(폰)과 같은 글자: 이름표 15px #333, 값·자리글 14px. 값은 #555, 안 쓴 칸은 #b4b4b9(위 규칙). */
+@media (max-width: 768px) {
+  .settings-compact .admin-form-label { font-size: 15px; color: #333; }
+  .settings-compact .if-slot, .settings-compact .if-input, .settings-compact .if-sep,
+  .settings-compact .admin-form-input, .settings-compact .admin-form-select, .settings-compact .admin-form-textarea { font-size: 14px; }
+}
