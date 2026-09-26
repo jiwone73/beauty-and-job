@@ -285,7 +285,7 @@ export function InlineYMD({
         {value || placeholder}{!value && 별표(required)}
       </button>
       {열림 && (
-        <span className={`if-pop if-pop-ym${연 !== null ? " if-pop-fit" : ""}`} ref={판}>
+        <span className="if-pop if-pop-ym" ref={판}>
           {연 === null ? (
             <span className="if-ym-grid">
               {연들.map((y) => (

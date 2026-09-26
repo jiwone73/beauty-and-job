@@ -15308,10 +15308,9 @@ button,
 .if-ym-cell { background: none; border: none; padding: 8px 4px; border-radius: 6px;
   font-family: inherit; font-size: 13px; color: #3d3d3d; cursor: pointer; }
 .if-ym-cell:hover { background: #efeff1; color: var(--color-primary); }
-/* 월·일 판은 스크롤 없이 한 번에 — 일은 5열로 두어 31일도 7줄에 끝난다. 연도 목록만 스크롤한다. */
-.if-pop-fit { max-height: none; overflow-y: visible; }
-.if-ym-day { grid-template-columns: repeat(5, 1fr); }
-.if-ym-day .if-ym-cell { padding: 7px 4px; }
+/* 일 판은 5열로 두고 칸 간격만 줄여, 창 크기(폭 216·높이 264)는 그대로 31일이 스크롤 없이 들어간다. */
+.if-ym-day { grid-template-columns: repeat(5, 1fr); gap: 2px; }
+.if-ym-day .if-ym-cell { padding: 5px 4px; }
 
 /* 항목 하나 더 붙이기 */
 .if-add { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
