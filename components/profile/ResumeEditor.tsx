@@ -497,9 +497,8 @@ export default function ResumeEditor({
             </button>
           </div>
         <흠줄 말들={칸흠("skill")} />
-          {/* 폼을 열면 그 안에도 담은 스킬이 (지우기와 함께) 서 있다. 둘 다
-              두면 같은 것이 한 화면에 두 번 나온다. */}
-          {skills.length > 0 && !skillModalOpen && (
+          {/* 스킬은 팝업(모달)에서 고른다. 담은 스킬은 팝업 뒤 항목에도 그대로 보인다. */}
+          {skills.length > 0 && (
             <div className="resume-skill-chips">
               {skills.map((sk) => (
                 빼기전용 ? (
@@ -520,7 +519,7 @@ export default function ResumeEditor({
             </div>
           )}
           {skillModalOpen && (
-            <SkillModal inline isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
+            <SkillModal isOpen={skillModalOpen} onClose={() => setSkillModalOpen(false)} />
           )}
         </section>
       )}
