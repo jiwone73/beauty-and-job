@@ -457,17 +457,17 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <흠줄 말들={항목흠("training", x.id)} />
               <div className="if-line if-line-head">
-                <InlineText value={x.title} placeholder="교육명" required wide
+                <InlineText value={x.title} placeholder="교육기관명" required wide
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
               </div>
               <div className="if-line">
-                <InlineYM value={x.startDate || ""} required
+                <InlineYM value={x.startDate || ""}
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, startDate: v })} />
                 <span className="if-sep">–</span>
                 <InlineYM value={x.endDate || ""} placeholder="수강 중"
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, endDate: v })} />
                 <span className="if-bar">│</span>
-                <InlineText value={x.description} placeholder="과정명"
+                <InlineText value={x.description} placeholder="과정명" required
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
                 <span className="if-bar">│</span>
                 <InlinePick value={x.status || ""} placeholder="수료 여부" options={교육상태}

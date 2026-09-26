@@ -50,10 +50,10 @@ export function 이력서흠찾기(입력: {
     if (본사냐 && 빔(e.major)) 흠들.push({ 어디: "education", 누구: e.id, 말: "전공 · 학위가 비었어요." });
   });
 
-  // ── 교육·수료 ── 칸을 만들었으면 교육명과 기간(시작)은 적어야 한다. 칸 자체는 선택이다.
+  // ── 교육·수료 ── 칸 자체는 선택이다. 하나를 넣었으면 교육기관명과 과정명은 적어야 한다(기간·수료 여부는 선택).
   experiences.filter((x) => x.category === "교육").forEach((x) => {
-    if (빔(x.title)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육명을 적어 주세요." });
-    if (빔(x.startDate)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육 기간을 골라 주세요." });
+    if (빔(x.title)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육기관명을 적어 주세요." });
+    if (빔(x.description)) 흠들.push({ 어디: "training", 누구: x.id, 말: "과정명을 적어 주세요." });
   });
 
   // ── 스킬·어학 ── 둘 다 선택이다(스킬은 매장에서도 선택으로 바꿨다).
