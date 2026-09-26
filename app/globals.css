@@ -18039,3 +18039,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .resume-editor .if-slot:not(.on) { color: #b4b4b9; }
 .resume-editor .if-slot.on { color: #555; }
 .resume-editor input::placeholder, .resume-editor textarea::placeholder { color: #b4b4b9; opacity: 1; }
+
+/* 이력서 희망 근무 조건(PC) — 항목(희망 근무지·희망직군·희망 급여)도 값과 같은 15px. */
+@media (min-width: 769px) {
+  .resume-editor .rp-cond-k { font-size: 15px; }
+}
