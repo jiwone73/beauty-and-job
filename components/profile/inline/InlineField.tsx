@@ -285,7 +285,7 @@ export function InlineYMD({
         {value || placeholder}{!value && 별표(required)}
       </button>
       {열림 && (
-        <span className="if-pop if-pop-ym" ref={판}>
+        <span className={`if-pop if-pop-ym${연 !== null ? " if-pop-fit" : ""}`} ref={판}>
           {연 === null ? (
             <span className="if-ym-grid">
               {연들.map((y) => (
@@ -310,7 +310,7 @@ export function InlineYMD({
               <span className="if-ym-head">
                 <button type="button" onClick={() => set월(null)}>{연}년 {String(월).padStart(2, "0")}월</button>
               </span>
-              <span className="if-ym-grid if-ym-month">
+              <span className="if-ym-grid if-ym-month if-ym-day">
                 {Array.from({ length: 그달일수(연, 월) }, (_, i) => i + 1).map((d) => (
                   <button key={d} type="button" className="if-ym-cell"
                     onClick={() => {
