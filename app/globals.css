@@ -17905,3 +17905,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   #section-headline input { padding: 5px 6px !important; }
 }
+
+/* 이력서 경력의 「비공개」 체크박스(폰) — 눈에 덜 띄게 흐린 회색으로(자리글·입력칸 안내글과 같은 #b4b4b9). */
+@media (max-width: 768px) {
+  .resume-section .career-open { color: #b4b4b9 !important; }
+  .resume-section .career-open input[type="checkbox"] { opacity: .45; }
+}
