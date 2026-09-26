@@ -428,7 +428,7 @@ export default function ResumeEditor({
                 <span className="if-sep">–</span>
                 <InlineYM value={e.endDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
                 <span className="if-bar">│</span>
-                <InlinePick value={e.status} placeholder="졸업 상태" required={본사냐} options={졸업상태}
+                <InlinePick value={e.status} placeholder="졸업 상태" required options={졸업상태}
                   잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
                 <span className="if-bar">│</span>
                 <InlineText value={e.major} placeholder={본사냐 ? "전공 · 학위" : "전공"} required={본사냐}
