@@ -17810,3 +17810,13 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .resume-toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 84px; z-index: 300;
   background: #fff; color: #555; border: 1px solid #efeff1; border-radius: 999px; padding: 10px 18px;
   font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.12); white-space: nowrap; }
+
+/* 이력서 하단 저장 줄 — 폰에서만: 위 줄에 미리보기·다운로드·임시저장 세 단추, 아래 줄에 작성 완료. */
+.resume-bottom-extra { display: none; }
+@media (max-width: 768px) {
+  .resume-bottom-save { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+  .resume-bottom-extra { display: block; flex: 1 1 calc(33.333% - 4px); height: 44px; padding: 0 4px; background: #fff; color: #555;
+    border: 1px solid #d5d5d9; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .resume-bottom-extra:disabled { opacity: .6; cursor: default; }
+  .resume-bottom-save .resume-save-btn-full { flex: 1 1 100%; width: 100%; }
+}

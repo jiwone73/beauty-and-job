@@ -257,9 +257,10 @@ function ResumePageContent() {
   //
   // 결과는 알림창이 아니라 그 칸 위에 붙인다. 창은 무엇이 비었는지 말하고
   // 사라지는데, 칸이 아홉이면 닫는 순간 어디였는지 잊는다.
-  const handleSave = async () => {
+  const handleSave = async (임시 = false) => {
     const 폰 = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
-    const 흠들 = 이력서흠찾기({
+    // 임시저장은 빠진 곳을 따지지 않고 지금까지 쓴 것을 그대로 저장한다.
+    const 흠들 = 임시 ? [] : 이력서흠찾기({
       본사냐: resumeType === "office",
       intro: introLocal, isEntryLevel, careers, educations, languages, skills,
     });
@@ -278,9 +279,8 @@ function ResumePageContent() {
     try {
       await useProfileStore.getState().syncToDb();
       if (폰) {
-        set저장됨(true);
-        setTimeout(() => set저장됨(false), 2500);
-        알림표시("저장되었어요");
+        if (!임시) { set저장됨(true); setTimeout(() => set저장됨(false), 2500); }
+        알림표시(임시 ? "임시저장되었어요" : "저장되었어요");
       } else {
         alert("이력서 작성을 마쳤습니다.");
       }
@@ -668,7 +668,11 @@ function ResumePageContent() {
           </section>
 
           <div className="resume-bottom-save">
-            <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={handleSave} disabled={저장중}>
+            {/* 폰에는 위쪽 미리보기·다운로드 줄이 없어 아래 저장 줄에 미리보기·다운로드·임시저장을 둔다(PC 는 CSS 로 감춘다). */}
+            <button type="button" className="resume-bottom-extra resume-bottom-preview" onClick={() => setShowPreview(true)}>미리보기</button>
+            <button type="button" className="resume-bottom-extra resume-bottom-download" onClick={handleDownload} disabled={isDownloading}>{isDownloading ? "저장 중…" : "다운로드"}</button>
+            <button type="button" className="resume-bottom-extra resume-bottom-draft" onClick={() => handleSave(true)} disabled={저장중}>임시저장</button>
+            <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={() => handleSave()} disabled={저장중}>
               {저장중 ? "저장 중…" : 저장됨 ? "저장됨 ✓" : "작성 완료"}
             </button>
             {알림 && <div className="resume-toast" role="status" aria-live="polite">{알림}</div>}
