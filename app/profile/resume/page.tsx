@@ -87,6 +87,41 @@ function ResumePageContent() {
   // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
   useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
   useEffect(() => { setCoverLocal((prev) => prev || coverLetter); }, [coverLetter]);
+
+  // 한줄소개·핵심역량·자기소개서는 이 화면 안에서 따로 들고 있다가 「작성 완료」를 눌러야 스토어(자동 저장)로
+  // 넘어갔다 — 안 누르고 나가면 사라졌다. 내가 직접 고친 뒤에는 손을 멈추면 스토어로 넘겨 자동 저장에 태운다.
+  // 「내가 고쳤을 때만」 넘긴다: 뒤늦게 서버에서 온 값을 낡은 화면 값으로 덮지 않으려는 것이다.
+  const 손댐 = useRef(false);
+  const 최신 = useRef({ introLocal, coreLocal, coverLocal });
+  최신.current = { introLocal, coreLocal, coverLocal };
+  const 스토어로넘기기 = () => {
+    if (!손댐.current) return;
+    const s = useProfileStore.getState();
+    const 값 = 최신.current;
+    if (s.intro !== 값.introLocal) s.setIntro(값.introLocal);
+    if (s.coreCompetencies !== 값.coreLocal) s.setCoreCompetencies(값.coreLocal);
+    if (s.coverLetter !== 값.coverLocal) s.setCoverLetter(값.coverLocal);
+  };
+  const 소개쓰기 = (v: string) => { 손댐.current = true; setIntroLocal(v); };
+  const 자소서쓰기 = (v: string) => { 손댐.current = true; setCoverLocal(v); };
+  useEffect(() => {
+    if (!손댐.current) return;
+    const t = setTimeout(스토어로넘기기, 600);
+    return () => clearTimeout(t);
+  }, [introLocal, coreLocal, coverLocal]);
+  useEffect(() => {
+    // 탭을 숨기거나 닫을 때, 그리고 다른 화면으로 넘어갈 때는 기다리지 않고 지금 넘긴다.
+    const 지금 = () => { 스토어로넘기기(); };
+    const 숨김 = () => { if (document.hidden) 지금(); };
+    document.addEventListener("visibilitychange", 숨김);
+    window.addEventListener("pagehide", 지금);
+    return () => {
+      document.removeEventListener("visibilitychange", 숨김);
+      window.removeEventListener("pagehide", 지금);
+      지금();
+      useProfileStore.getState().syncToDb().catch(() => {});
+    };
+  }, []);
   const [emailLocal, setEmailLocal] = useState(email);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [showPreview, setShowPreview] = useState(false);
@@ -260,10 +295,8 @@ function ResumePageContent() {
   //
   // 결과는 알림창이 아니라 그 칸 위에 붙인다. 창은 무엇이 비었는지 말하고
   // 사라지는데, 칸이 아홉이면 닫는 순간 어디였는지 잊는다.
-  const handleSave = async (임시 = false) => {
-    const 폰 = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
-    // 임시저장은 빠진 곳을 따지지 않고 지금까지 쓴 것을 그대로 저장한다.
-    const 흠들 = 임시 ? [] : 이력서흠찾기({
+  const handleSave = async () => {
+    const 흠들 = 이력서흠찾기({
       본사냐: resumeType === "office",
       intro: introLocal, isEntryLevel, careers, educations, languages, skills, experiences,
     });
@@ -281,13 +314,10 @@ function ResumePageContent() {
     set저장중(true);
     try {
       await useProfileStore.getState().syncToDb();
-      // 눌렀는지 알 수 있게 — PC 도 알림창(alert) 대신 같은 알림을 띄우고, 작성 완료면 화면을
-      // 맨 위(완성도)로 올린다. 임시저장은 쓰던 자리를 지켜야 해서 올리지 않는다.
-      if (!임시) {
-        set저장됨(true); setTimeout(() => set저장됨(false), 2500);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-      알림표시(임시 ? "✓ 임시저장되었어요" : "✓ 이력서 작성을 마쳤어요");
+      // 눌렀는지 알 수 있게 — PC 도 알림창(alert) 대신 같은 알림을 띄우고, 화면을 맨 위(완성도)로 올린다.
+      set저장됨(true); setTimeout(() => set저장됨(false), 2500);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      알림표시("✓ 이력서 작성을 마쳤어요");
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
@@ -546,14 +576,13 @@ function ResumePageContent() {
         </aside>
 
         <main className="resume-editor">
-          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 임시저장·미리보기(작은 단추; 다운로드는 미리보기 창에 있다).
+          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 미리보기(작은 단추; 다운로드는 미리보기 창에 있다).
               PC 는 사이드와 본문 오른쪽 위 단추가 맡아 CSS 로 감춘다. */}
           <div className="resume-m-top">
             <h1 className="resume-m-title">기본 이력서</h1>
             <div className="resume-m-bar">
               <span className="resume-m-rate">완성도 <strong>{progressRate}%</strong></span>
               <span className="resume-m-btns">
-                <button type="button" onClick={() => handleSave(true)} disabled={저장중}>임시저장</button>
                 <button type="button" onClick={() => setShowPreview(true)}>미리보기</button>
               </span>
             </div>
@@ -581,10 +610,7 @@ function ResumePageContent() {
               <p className="resume-top-desc">공고에 지원할 때 이 이력서를 불러와, 그 자리에 맞게 고쳐서 냅니다.</p>
             </div>
             <div className="resume-top-btns">
-              {/* 임시저장 → 미리보기 순. 다운로드는 미리보기 창 안에서 받는다. */}
-              <button className="resume-side-draft" onClick={() => handleSave(true)} disabled={저장중}>
-                <span>임시저장</span>
-              </button>
+              {/* 저장은 손을 멈추면 알아서 된다(임시저장 단추는 뺐다). 다운로드는 미리보기 창 안에서 받는다. */}
               <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
                 <span>미리보기</span>
               </button>
@@ -598,7 +624,7 @@ function ResumePageContent() {
                 채용 담당자가 가장 먼저 읽는 줄이라 예시는 매장·오피스로 가른다. */}
             <input
               value={introLocal}
-              onChange={(e) => setIntroLocal(e.target.value)}
+              onChange={(e) => 소개쓰기(e.target.value)}
               placeholder={resumeType === "office"
                 ? "몇 년차에 무엇을 잘하는지 (예: 7년차 뷰티 MD · 신제품 기획)"
                 : "몇 년차에 어떤 시술을 하는지 (예: 5년차 네일 아티스트 · 젤·아트)"}
@@ -673,10 +699,10 @@ function ResumePageContent() {
             <h2 className="resume-section-title"><Quote size={16} className="resume-section-icon" />자기소개서</h2>
             {/* 공고 없이 쓰는 밑글이라 공고 정보는 넘기지 않는다 — 지원할 때
                 그 공고에 맞춰 다시 쓸 수 있다. */}
-            <CoverLetterTools value={coverLocal} onChange={setCoverLocal} />
+            <CoverLetterTools value={coverLocal} onChange={자소서쓰기} />
             <textarea
               value={coverLocal}
-              onChange={(e) => setCoverLocal(e.target.value)}
+              onChange={(e) => 자소서쓰기(e.target.value)}
               rows={7}
               placeholder="자기소개서"
               style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px",
