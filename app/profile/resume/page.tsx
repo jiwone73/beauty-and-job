@@ -6,6 +6,7 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import { shortenRegion } from "@/lib/memberFormat";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
+import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import CoverLetterTools from "@/components/profile/CoverLetterTools";
 import { 이력서진행 } from "@/lib/resumeProgress";
 import { AlertCircle } from "lucide-react";
@@ -62,9 +63,12 @@ function ResumePageContent() {
   const [알림, set알림] = useState("");
   const 알림표시 = (글: string) => { set알림(글); setTimeout(() => set알림(""), 2800); };
   const 칸흠 = (어디: string) => 흠.filter((h) => h.어디 === 어디 && !h.누구).map((h) => h.말);
-  const [introLocal, setIntroLocal] = useState(intro);
-  const [coreLocal, setCoreLocal] = useState(coreCompetencies);
-  const [coverLocal, setCoverLocal] = useState(coverLetter);
+  // 한줄소개·핵심역량·자기소개서는 스토어에 바로 쓴다(자동 저장이 없어 서버로는 「저장하기」·「임시저장」 때만 간다).
+  const introLocal = intro;
+  const setIntroLocal = setIntro;
+  const coreLocal = coreCompetencies;
+  const coverLocal = coverLetter;
+  const setCoverLocal = setCoverLetter;
   // 희망급여는 프로필에서 정하는 값이라 여기서는 보여만 준다.
   const [pay, setPay] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
   // 출근 가능일도 프로필에서 정하는 값이라 여기서는 보여만 준다.
@@ -84,44 +88,7 @@ function ResumePageContent() {
       })
       .catch(() => {});
   }, []);
-  // 서버/스토어에서 한줄소개가 뒤늦게 로드되면 입력값이 비어있을 때만 채움(작성 중이면 덮지 않음)
-  useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
-  useEffect(() => { setCoverLocal((prev) => prev || coverLetter); }, [coverLetter]);
 
-  // 한줄소개·핵심역량·자기소개서는 이 화면 안에서 따로 들고 있다가 「저장하기」를 눌러야 스토어(자동 저장)로
-  // 넘어갔다 — 안 누르고 나가면 사라졌다. 내가 직접 고친 뒤에는 손을 멈추면 스토어로 넘겨 자동 저장에 태운다.
-  // 「내가 고쳤을 때만」 넘긴다: 뒤늦게 서버에서 온 값을 낡은 화면 값으로 덮지 않으려는 것이다.
-  const 손댐 = useRef(false);
-  const 최신 = useRef({ introLocal, coreLocal, coverLocal });
-  최신.current = { introLocal, coreLocal, coverLocal };
-  const 스토어로넘기기 = () => {
-    if (!손댐.current) return;
-    const s = useProfileStore.getState();
-    const 값 = 최신.current;
-    if (s.intro !== 값.introLocal) s.setIntro(값.introLocal);
-    if (s.coreCompetencies !== 값.coreLocal) s.setCoreCompetencies(값.coreLocal);
-    if (s.coverLetter !== 값.coverLocal) s.setCoverLetter(값.coverLocal);
-  };
-  const 소개쓰기 = (v: string) => { 손댐.current = true; setIntroLocal(v); };
-  const 자소서쓰기 = (v: string) => { 손댐.current = true; setCoverLocal(v); };
-  useEffect(() => {
-    if (!손댐.current) return;
-    const t = setTimeout(스토어로넘기기, 600);
-    return () => clearTimeout(t);
-  }, [introLocal, coreLocal, coverLocal]);
-  useEffect(() => {
-    // 탭을 숨기거나 닫을 때, 그리고 다른 화면으로 넘어갈 때는 기다리지 않고 지금 넘긴다.
-    const 지금 = () => { 스토어로넘기기(); };
-    const 숨김 = () => { if (document.hidden) 지금(); };
-    document.addEventListener("visibilitychange", 숨김);
-    window.addEventListener("pagehide", 지금);
-    return () => {
-      document.removeEventListener("visibilitychange", 숨김);
-      window.removeEventListener("pagehide", 지금);
-      지금();
-      useProfileStore.getState().syncToDb().catch(() => {});
-    };
-  }, []);
   const [emailLocal, setEmailLocal] = useState(email);
   const [phoneLocal, setPhoneLocal] = useState("");
   const [showPreview, setShowPreview] = useState(false);
@@ -282,53 +249,62 @@ function ResumePageContent() {
 
   // 프로필 페이지를 거치지 않고 이 주소로 바로 들어오면(새 기기·캐시 지운 뒤,
   // 북마크·알림 링크) 스토어가 비어 이력서가 통째로 빈 것처럼 보였다.
-  // 한 번도 받아온 적이 없을 때만 받아온다 — 이미 있는 것을 다시 받으면
-  // 저장하지 않은 편집분을 덮는다.
+  // 이제 자동 저장이 없어 스토어에 남은 것은 저장하지 않은 편집분일 수 있다. 화면에 들어올 때마다
+  // 서버에 저장된 것을 받아 그것을 「저장된 상태」로 삼는다(저장 안 하고 나간 입력은 버려진다).
   useEffect(() => {
-    if (!useProfileStore.getState().loaded) {
-      useProfileStore.getState().loadFromServer();
-    }
+    useProfileStore.getState().loadFromServer();
   }, []);
 
-  // 손을 멈추면 1.5초 뒤 알아서 저장된다(profileStore 의 autoSync). 이 단추가
-  // 하는 일은 저장이 아니라 필수 칸을 다 채웠는지 확인하는 것이다.
+  // 저장은 두 가지다.
+  //   · 저장하기 — 필수 칸을 다 채웠는지 먼저 확인한다. 비었으면 저장하지 않고 그 칸 위에 알린다.
+  //     통과하면 완성본으로 저장한다(지원은 완성본만 된다).
+  //   · 임시저장 — 필수 칸을 따지지 않고 지금까지 쓴 것을 그대로 저장한다(지원은 안 된다).
+  // 자동 저장은 없다. 저장하지 않고 나가려 하면 물음창이 뜬다.
   //
   // 결과는 알림창이 아니라 그 칸 위에 붙인다. 창은 무엇이 비었는지 말하고
   // 사라지는데, 칸이 아홉이면 닫는 순간 어디였는지 잊는다.
-  const handleSave = async () => {
-    const 흠들 = 이력서흠찾기({
-      본사냐: resumeType === "office",
-      intro: introLocal, isEntryLevel, careers, educations, languages, skills, experiences,
-    });
+  const 흠구하기 = () => 이력서흠찾기({
+    본사냐: resumeType === "office",
+    intro: introLocal, isEntryLevel, careers, educations, languages, skills, experiences,
+  });
+  const 저장 = async (임시: boolean): Promise<boolean> => {
+    const 흠들 = 임시 ? [] : 흠구하기();
     set흠(흠들);
     if (흠들.length > 0) {
       const 첫 = document.getElementById(`section-${흠들[0].어디}`);
       첫?.scrollIntoView({ behavior: "smooth", block: "center" });
       알림표시(`빠진 곳이 ${흠들.length}군데 있어요`);
-      return;
+      return false;
     }
-    setIntro(introLocal);
-    setCoreCompetencies(coreLocal);
-    setCoverLetter(coverLocal);
     setEmail(emailLocal);
     set저장중(true);
     try {
-      await useProfileStore.getState().syncToDb();
-      // 눌렀는지 알 수 있게 — PC 도 알림창(alert) 대신 같은 알림을 띄우고, 화면을 맨 위(완성도)로 올린다.
-      set저장됨(true); setTimeout(() => set저장됨(false), 2500);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      알림표시("✓ 저장되었어요");
+      const 됨 = await useProfileStore.getState().syncToDb({ complete: !임시 });
+      if (!됨) { 알림표시("저장에 실패했어요. 다시 시도해 주세요."); return false; }
+      if (!임시) {
+        // 눌렀는지 알 수 있게 — 화면을 맨 위(완성도)로 올리고 버튼도 잠깐 「저장됨」으로 바꾼다.
+        set저장됨(true); setTimeout(() => set저장됨(false), 2500);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      알림표시(임시 ? "✓ 임시저장되었어요" : "✓ 저장되었어요");
+      return true;
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
-      const 글 = e?.message?.includes("불러오지")
+      알림표시(e?.message?.includes("불러오지")
         ? "이력서를 아직 불러오지 못했어요. 새로고침한 뒤 다시 저장해 주세요."
-        : "저장에 실패했습니다. 다시 시도해주세요.";
-      알림표시(글);
+        : "저장에 실패했습니다. 다시 시도해주세요.");
+      return false;
     } finally {
       set저장중(false);
     }
   };
+  const handleSave = () => { void 저장(false); };
+  const handle임시저장 = () => { void 저장(true); };
+
+  // 저장하지 않은 내용이 있는 채로 떠나려 하면 물어본다.
+  const 저장안함 = useProfileStore((s) => s.저장안한것있나());
+  const guard = useUnsavedGuard(저장안함);
 
   // 사진 여러 장을 한 번에 올린다. 보내기 전에 브라우저에서 줄인다 —
   // 폰 사진은 장당 3~5MB라 그대로 보내면 올리다 지치고 저장소도 금세 찬다.
@@ -576,13 +552,14 @@ function ResumePageContent() {
         </aside>
 
         <main className="resume-editor">
-          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 미리보기(작은 단추; 다운로드는 미리보기 창에 있다).
+          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 임시저장·미리보기(작은 단추; 다운로드는 미리보기 창에 있다).
               PC 는 사이드와 본문 오른쪽 위 단추가 맡아 CSS 로 감춘다. */}
           <div className="resume-m-top">
             <h1 className="resume-m-title">기본 이력서</h1>
             <div className="resume-m-bar">
               <span className="resume-m-rate">완성도 <strong>{progressRate}%</strong></span>
               <span className="resume-m-btns">
+                <button type="button" onClick={handle임시저장} disabled={저장중}>임시저장</button>
                 <button type="button" onClick={() => setShowPreview(true)}>미리보기</button>
               </span>
             </div>
@@ -610,7 +587,10 @@ function ResumePageContent() {
               <p className="resume-top-desc">공고에 지원할 때 이 이력서를 불러와, 그 자리에 맞게 고쳐서 냅니다.</p>
             </div>
             <div className="resume-top-btns">
-              {/* 저장은 손을 멈추면 알아서 된다(임시저장 단추는 뺐다). 다운로드는 미리보기 창 안에서 받는다. */}
+              {/* 임시저장 → 미리보기 순. 다운로드는 미리보기 창 안에서 받는다. */}
+              <button className="resume-side-draft" onClick={handle임시저장} disabled={저장중}>
+                <span>임시저장</span>
+              </button>
               <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
                 <span>미리보기</span>
               </button>
@@ -624,7 +604,7 @@ function ResumePageContent() {
                 채용 담당자가 가장 먼저 읽는 줄이라 예시는 매장·오피스로 가른다. */}
             <input
               value={introLocal}
-              onChange={(e) => 소개쓰기(e.target.value)}
+              onChange={(e) => setIntroLocal(e.target.value)}
               placeholder={resumeType === "office"
                 ? "몇 년차에 무엇을 잘하는지 (예: 7년차 뷰티 MD · 신제품 기획)"
                 : "몇 년차에 어떤 시술을 하는지 (예: 5년차 네일 아티스트 · 젤·아트)"}
@@ -699,10 +679,10 @@ function ResumePageContent() {
             <h2 className="resume-section-title"><Quote size={16} className="resume-section-icon" />자기소개서</h2>
             {/* 공고 없이 쓰는 밑글이라 공고 정보는 넘기지 않는다 — 지원할 때
                 그 공고에 맞춰 다시 쓸 수 있다. */}
-            <CoverLetterTools value={coverLocal} onChange={자소서쓰기} />
+            <CoverLetterTools value={coverLocal} onChange={setCoverLocal} />
             <textarea
               value={coverLocal}
-              onChange={(e) => 자소서쓰기(e.target.value)}
+              onChange={(e) => setCoverLocal(e.target.value)}
               rows={7}
               placeholder="자기소개서"
               style={{ width: "100%", border: "1px solid #e0e0e0", borderRadius: "8px", padding: "10px 12px",
@@ -712,7 +692,7 @@ function ResumePageContent() {
           </section>
 
           <div className="resume-bottom-save">
-            <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={() => handleSave()} disabled={저장중}>
+            <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={handleSave} disabled={저장중}>
               {저장중 ? "저장 중…" : 저장됨 ? "저장됨 ✓" : "저장하기"}
             </button>
             {알림 && <div className="resume-toast" role="status" aria-live="polite">{알림}</div>}
@@ -721,6 +701,14 @@ function ResumePageContent() {
       </div>
       </>
       )}
+
+      <UnsavedDialog
+        guard={guard}
+        저장할수있나={!guard.물음 || 흠구하기().length === 0}
+        저장={() => 저장(false)}
+        임시저장={() => 저장(true)}
+        입력취소={async () => { await useProfileStore.getState().loadFromServer(); set흠([]); }}
+      />
 
       {showPreview && (
         <div className="rp-modal-overlay">

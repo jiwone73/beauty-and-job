@@ -17,7 +17,11 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
     languages = [],
     links = [],
     certificates = [],
+    complete,
   } = body || {};
+  // 필수 칸을 다 채워 「저장하기」로 낸 것만 PUBLISHED(완성본)다. 「임시저장」은 DRAFT 로 남고,
+  // DRAFT 이력서로는 지원할 수 없다. 스냅샷처럼 값이 안 오면 완성본으로 본다.
+  const 상태 = complete === false ? "DRAFT" : "PUBLISHED";
 
   // 아래 DELETE 는 여러 문장을 한 번에 보내느라 값을 끼워 넣는다(pg 는
   // 다중 문장에 자리표를 못 쓴다). 토큰에서 온 값이지만 모양을 확인한다.
@@ -87,16 +91,16 @@ export async function 이력서쓰기(client: PoolClient, userId: string, body: 
   await client.query(
     `INSERT INTO resumes (user_id, title, job_type, introduction, desired_location, is_public, status)
      VALUES ($1, (SELECT COALESCE(name,'이력서') || '의 이력서' FROM users WHERE id = $1),
-             COALESCE((SELECT job_type FROM users WHERE id = $1), $2), $3, $4, true, 'PUBLISHED')
+             COALESCE((SELECT job_type FROM users WHERE id = $1), $2), $3, $4, true, $5::resume_status)
      ON CONFLICT (user_id) DO UPDATE SET
        title = EXCLUDED.title,
        job_type = EXCLUDED.job_type,
        introduction = EXCLUDED.introduction,
        desired_location = EXCLUDED.desired_location,
        is_public = true,
-       status = 'PUBLISHED',
+       status = EXCLUDED.status,
        updated_at = NOW()`,
-    [userId, uJobType, profile.intro || "", profile.region_prefer || ""]
+    [userId, uJobType, profile.intro || "", profile.region_prefer || "", 상태]
   );
   // 하위 항목들: DELETE 6개를 한 번에 (왕복 최소화) 후 멀티 INSERT
   await client.query(

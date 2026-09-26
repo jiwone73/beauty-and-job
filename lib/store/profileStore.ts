@@ -105,7 +105,12 @@ export interface ProfileState {
 
   // 새 액션: DB 동기화
   loadFromServer: () => Promise<void>;
-  syncToDb: () => Promise<void>;
+  /** 서버에 저장한다. complete=true 는 「저장하기」(완성본), false 는 「임시저장」(DRAFT). 성공하면 true. */
+  syncToDb: (옵션?: { complete?: boolean }) => Promise<boolean>;
+  /** 서버에 저장된 것과 지금 화면 값이 다른가(저장하지 않은 내용이 있나). */
+  저장안한것있나: () => boolean;
+  /** 화면을 저장 후 바뀜 표시로 다시 그리게 하는 숫자. 직접 쓰지 않는다. */
+  revision: number;
 
   /** 저장을 잠근다. 지원서 사본을 고치는 동안 기본 이력서가 덮이지 않게. */
   자동저장잠금: (잠글까: boolean) => void;
@@ -129,37 +134,53 @@ export function genId(): string {
 export const useProfileStore = create<ProfileState>()(
   persist(
     (set, get) => {
-      let autoSyncTimer: any = null;
-      // 마지막으로 서버에 보낸 본문. 같으면 다시 보내지 않는다.
+      // 마지막으로 서버에 저장된(또는 방금 받아온) 데이터 본문. 지금 화면 값과 같으면 바뀐 것이 없다.
       let 마지막보낸것 = "";
-      // 보내는 중이면 겹쳐 보내지 않고, 그 사이 또 바뀌었으면 끝난 뒤 한 번 더.
+      // 보내는 중이면 겹쳐 보내지 않는다.
       let 보내는중 = false;
-      let 또보낼것 = false;
 
-      // 액션 뒤 자동 저장. 타자를 치는 동안에는 미뤘다가 손을 멈추면 한 번에
-      // 묶어 보낸다. 칸마다 즉시 보내면 이력서 하나에 마흔 번 넘게 나간다.
-      // 지원서 창이 열려 있는 동안은 잠근다. 그때 고치는 것은 이 공고에
-      // 낼 사본이지 기본 이력서가 아니다 — 타자마다 서버로 나가면 사본이라는
-      // 말이 무색해진다.
+      // 자동 저장은 없다. 이력서는 「저장하기」(완성본)·「임시저장」으로만 서버에 간다.
+      // 고치기만 하고 저장하지 않은 채 화면을 떠나려 하면 화면이 저장할지 물어본다.
+      // 예전에는 손을 멈추면 1.5초 뒤 알아서 저장돼, 필수 칸이 빈 채로도 지원이 됐다.
+      // 지원서 창이 열려 있는 동안의 잠금(저장잠김)은 그대로 둔다.
       let 저장잠김 = false;
-      const autoSync = () => {
-        if (저장잠김) return;
-        if (autoSyncTimer) clearTimeout(autoSyncTimer);
-        autoSyncTimer = setTimeout(() => { autoSyncTimer = null; get().syncToDb(); }, 1500);
-      };
+      const autoSync = () => {};
 
-      // 대기 중인 저장을 지금 흘려보낸다. 화면을 덮거나 떠날 때 부른다 —
-      // 1.5초를 기다리다가 그냥 나가면 마지막 손질이 사라진다.
-      const 지금보내기 = () => {
-        if (저장잠김) return;
-        if (!autoSyncTimer) return;
-        clearTimeout(autoSyncTimer); autoSyncTimer = null;
-        get().syncToDb();
+      // 서버에 마지막으로 저장된(또는 방금 받아온) 데이터 본문과 그 상태.
+      // 지금 화면 값과 다르면 「저장하지 않은 내용」이다.
+      let 마지막완료: boolean | null = null;
+
+      // 서버로 보내는 데이터 본문. 더하기만 누르고 아무것도 안 적은 항목은 보내지 않는다 —
+      // 화면에는 남겨 둔다(채우려고 만든 것일 수 있다). 빈 줄이 서버에 쌓이면 남의 화면
+      // (지원서·미리보기)에도 빈 줄로 나온다.
+      const 데이터본문 = () => {
+        const s = get();
+        const signupData = useSignupStore.getState();
+        const 알맹이 = (v: unknown) => String(v ?? "").trim().length > 0;
+        return JSON.stringify({
+          profile: {
+            intro: s.intro,
+            core_competencies: s.coreCompetencies,
+            cover_letter: s.coverLetter,
+            entry_experience: s.entryExperience,
+            is_career_verified: s.isCareerVerified,
+            verified_date: s.verifiedDate,
+            is_entry_level: s.isEntryLevel,
+            skills: s.skills,
+            // signupStore 데이터 통합
+            skill_areas: signupData.skillAreas || [],
+            work_type_prefer: signupData.workTypePrefer || "",
+            region_prefer: signupData.regionPrefer || "",
+            office_job_areas: signupData.officeJobAreas || [],
+          },
+          careers: s.careers.filter((c) => 알맹이(c.company)),
+          educations: s.educations.filter((e) => 알맹이(e.school)),
+          experiences: s.experiences.filter((x) => 알맹이(x.title)),
+          languages: s.languages.filter((l) => 알맹이(l.language)),
+          links: s.links.filter((l) => 알맹이(l.url)),
+          certificates: s.certificates.filter((c) => 알맹이(c.name)),
+        });
       };
-      if (typeof window !== "undefined") {
-        document.addEventListener("visibilitychange", () => { if (document.hidden) 지금보내기(); });
-        window.addEventListener("pagehide", 지금보내기);
-      }
 
       return {
         isCareerVerified: false,
@@ -181,8 +202,9 @@ export const useProfileStore = create<ProfileState>()(
 
         자동저장잠금: (잠글까) => {
           저장잠김 = 잠글까;
-          if (잠글까 && autoSyncTimer) { clearTimeout(autoSyncTimer); autoSyncTimer = null; }
         },
+        revision: 0,
+        저장안한것있나: () => 마지막보낸것 !== "" && 데이터본문() !== 마지막보낸것,
         이력서뽑기: () => {
           const s = get();
           return JSON.parse(JSON.stringify({
@@ -396,6 +418,10 @@ export const useProfileStore = create<ProfileState>()(
                 regionPrefer: profile?.region_prefer || "",
                 officeJobAreas: profile?.office_job_areas || [],
               });
+              // 방금 받아온 것이 「저장된 상태」다. 이것과 달라지면 저장하지 않은 내용이 된다.
+              마지막보낸것 = 데이터본문();
+              마지막완료 = null;
+              set((st) => ({ revision: st.revision + 1 }));
             } else {
               // 못 받아왔는데 '불러왔다'고 표시하면, 빈 화면이 사실인 양 굳는다.
               // 그대로 두면 다음에 들어올 때 다시 받아온다.
@@ -406,64 +432,26 @@ export const useProfileStore = create<ProfileState>()(
           }
         },
 
-        syncToDb: async () => {
+        syncToDb: async (옵션) => {
           // 잠긴 동안에는 어느 길로 불려도 나가지 않는다.
-          if (저장잠김) return;
+          if (저장잠김) return false;
           const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-          if (!token) return;
+          if (!token) return false;
           // 이 PUT 은 이력서를 통째로 갈아 끼운다. 서버에서 한 번도 받아오지
           // 않은 상태(새 기기·캐시 지운 뒤)라면 지금 손에 든 것은 빈 껍데기라,
           // 그대로 보내면 경력·학력·어학이 한꺼번에 지워진다.
           if (!get().loaded) {
             throw new Error("이력서를 아직 불러오지 못했습니다.");
           }
-          const s = get();
-          // signupStore에서 추가 데이터 가져오기
-          const signupData = useSignupStore.getState();
-          // 더하기만 누르고 아무것도 안 적은 항목은 보내지 않는다. 화면에는
-          // 남겨 둔다 — 채우려고 만든 것일 수 있으니 지우는 것은 사람 몫이고,
-          // 저장될 때만 걸러 낸다. 빈 줄이 서버에 쌓이면 남의 화면(지원서·
-          // 미리보기)에도 빈 줄로 나온다.
-          const 알맹이 = (v: unknown) => String(v ?? "").trim().length > 0;
-          const 보낼경력 = s.careers.filter((c) => 알맹이(c.company));
-          const 보낼학력 = s.educations.filter((e) => 알맹이(e.school));
-          const 보낼활동 = s.experiences.filter((x) => 알맹이(x.title));
-          const 보낼어학 = s.languages.filter((l) => 알맹이(l.language));
-          const 보낼링크 = s.links.filter((l) => 알맹이(l.url));
-          const 보낼자격 = s.certificates.filter((c) => 알맹이(c.name));
-          const 본문 = JSON.stringify({
-                profile: {
-                  intro: s.intro,
-                  core_competencies: s.coreCompetencies,
-                  cover_letter: s.coverLetter,
-                  entry_experience: s.entryExperience,
-                  is_career_verified: s.isCareerVerified,
-                  verified_date: s.verifiedDate,
-                  is_entry_level: s.isEntryLevel,
-                  skills: s.skills,
-                  // signupStore 데이터 통합
-                  skill_areas: signupData.skillAreas || [],
-                  work_type_prefer: signupData.workTypePrefer || "",
-                  region_prefer: signupData.regionPrefer || "",
-                  office_job_areas: signupData.officeJobAreas || [],
-                },
-                careers: 보낼경력,
-                educations: 보낼학력,
-                experiences: 보낼활동,
-                languages: 보낼어학,
-                links: 보낼링크,
-                certificates: 보낼자격,
-          });
-
-          // 바뀐 것이 없으면 보내지 않는다. 예전에는 어느 칸을 건드리든 이력서
-          // 전체를 매번 밀어 넣었다.
-          if (본문 === 마지막보낸것) return;
-          // 보내는 중이면 줄을 세운다. 두 번이 겹치면 나중 것이 앞 것을 덮어
-          // 어느 쪽이 남을지 알 수 없다.
-          if (보내는중) { 또보낼것 = true; return; }
-
+          const 데이터 = 데이터본문();
+          const 완료 = 옵션?.complete;
+          // 바뀐 것도 없고 저장 상태(완성본/임시)도 그대로면 보내지 않는다.
+          if (데이터 === 마지막보낸것 && (완료 === undefined || 완료 === 마지막완료)) return true;
+          // 이미 보내는 중이면 끝나기를 기다린다. 두 번이 겹치면 나중 것이 앞 것을 덮어 어느 쪽이 남을지 알 수 없다.
+          while (보내는중) await new Promise((r) => setTimeout(r, 50));
           보내는중 = true;
           try {
+            const 본문 = JSON.stringify({ ...JSON.parse(데이터), ...(완료 === undefined ? {} : { complete: 완료 }) });
             const res = await fetch("/api/users/me/profile", {
               method: "PUT",
               headers: {
@@ -472,12 +460,16 @@ export const useProfileStore = create<ProfileState>()(
               },
               body: 본문,
             });
-            if (res.ok) 마지막보낸것 = 본문;
+            if (!res.ok) return false;
+            마지막보낸것 = 데이터;
+            if (완료 !== undefined) 마지막완료 = 완료;
+            set((st) => ({ revision: st.revision + 1 }));
+            return true;
           } catch (e) {
             console.error("[profile sync]", e);
+            return false;
           } finally {
             보내는중 = false;
-            if (또보낼것) { 또보낼것 = false; get().syncToDb(); }
           }
         },
       };

@@ -18069,3 +18069,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 프로필 카드 — 맨 아래 가까운 칸(출근 가능일)의 선택 목록이 카드 경계에서 잘려 「1개월 이내」·「협의」가 안 보였다.
    목록이 카드 밖으로 나올 수 있게 잘라내지 않는다. */
 .profile-info-card.pf-grid { overflow: visible; }
+
+/* 저장하지 않은 내용 물음창(components/UnsavedGuard) — 다른 확인창(신입 전환 등)과 같은 결. */
+.ug-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 1200; padding: 20px; }
+.ug-box { width: 100%; max-width: 340px; background: #fff; border-radius: 20px; padding: 26px 22px 18px; box-shadow: 0 12px 40px rgba(0,0,0,.18); text-align: center; }
+.ug-title { font-size: 17px; font-weight: 700; color: #555; margin: 0 0 6px; }
+.ug-sub { font-size: 13.5px; color: #b4b4b9; margin: 0 0 4px; }
+.ug-btns { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.ug-btns button { width: 100%; padding: 13px 0; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.ug-btns button:disabled { opacity: .6; cursor: default; }
+.ug-primary { border: none; background: var(--color-primary); color: #fff; }
+.ug-secondary { border: 1px solid #ddd; background: #fff; color: #555; }
+.ug-ghost { border: none; background: none; color: #999; font-weight: 400 !important; }

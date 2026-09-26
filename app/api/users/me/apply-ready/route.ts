@@ -20,7 +20,8 @@ export async function GET(req: NextRequest) {
         WHERE u.id = $1`,
       [auth!.sub]
     ),
-    pool.query(`SELECT 1 FROM resumes WHERE user_id = $1 LIMIT 1`, [auth!.sub]),
+    // 임시저장(DRAFT)만 있는 이력서로는 지원할 수 없다 — 필수 칸을 채워 「저장하기」한 것(PUBLISHED)만 센다.
+    pool.query(`SELECT 1 FROM resumes WHERE user_id = $1 AND status = 'PUBLISHED' LIMIT 1`, [auth!.sub]),
   ]);
   if (me.rowCount === 0) return err("USER_404", "사용자를 찾을 수 없습니다.", 404);
 

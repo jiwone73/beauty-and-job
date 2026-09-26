@@ -74,18 +74,18 @@ export async function POST(
   // 이력서 필수: 이력서가 없으면 지원 불가
   const resumeRes = await pool.query(
     `SELECT id FROM resumes
-     WHERE user_id = $1
-     ORDER BY (status = 'PUBLISHED') DESC, is_primary DESC, updated_at DESC
+     WHERE user_id = $1 AND status = 'PUBLISHED'
+     ORDER BY is_primary DESC, updated_at DESC
      LIMIT 1`,
     [auth!.sub]
   )
   if (resumeRes.rowCount === 0) {
-    return err('APP_003', '지원하려면 이력서를 먼저 작성해주세요.', 422)
+    return err('APP_003', '지원하려면 이력서의 필수 항목을 채우고 「저장하기」를 눌러 주세요.', 422)
   }
   let finalResumeId = resumeRes.rows[0].id
   if (resume_id) {
     const own = await pool.query(
-      `SELECT id FROM resumes WHERE id = $1 AND user_id = $2`,
+      `SELECT id FROM resumes WHERE id = $1 AND user_id = $2 AND status = 'PUBLISHED'`,
       [resume_id, auth!.sub]
     )
     if (own.rowCount && own.rowCount > 0) finalResumeId = resume_id
