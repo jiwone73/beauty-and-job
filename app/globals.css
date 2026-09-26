@@ -18013,3 +18013,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-editor .resume-section-title span[style*="font-size"] { font-size: 14px !important; color: #555; }
   .resume-editor .cl-tool { font-size: 13px; color: #555; }
 }
+
+/* 이력서(PC) 글자 마무리 — 「신입」 체크는 한 겹 안쪽에 있고, 입력칸 글자 크기는 요소에 직접 적혀 있어 앞 규칙이 안 닿았다. */
+@media (min-width: 769px) {
+  .resume-editor .resume-section-head label { font-size: 14px !important; color: #555; }
+  .resume-editor .resume-section > textarea, .resume-editor .resume-section > input { font-size: 15px !important; color: #555; }
+}
