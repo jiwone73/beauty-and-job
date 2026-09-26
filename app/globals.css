@@ -17772,3 +17772,41 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .profile-info-card.pf-grid .pf-pay-nego { font-size: 14px; }
   .profile-info-card.pf-grid .pf-pay-in::placeholder { font-size: 12.5px; }
 }
+
+/* ── 이력서 화면(폰) ───────────────────────────────────────────────
+   PC 판을 그대로 가져와 좌우가 넓고, 항목마다 아이콘 자리(22px)만큼 들여 쓰고 있었다.
+   · 완성도만 보이게 — 「섹션 구성」 펼침과 항목 목록, 「n/8 항목 완료」 줄은 뺀다.
+   · 항목 이름 앞 아이콘을 없애고 그 들여쓰기도 걷는다.
+   · 좌우 끝은 메인과 같은 8px.
+   · 글자는 제목 15px #333, 내용 14px #555.
+   · 「작성 완료」를 누르면 저장 중/저장됨과 알림이 보인다. */
+@media (max-width: 768px) {
+  .resume-sidebar { padding: 8px; }
+  .resume-sidebar-toggle, .resume-sidebar-item, .resume-completion-text { display: none !important; }
+  .resume-completion { margin-bottom: 0; }
+  .resume-completion-head span { font-size: 15px; color: #333; font-weight: 600; }
+  .resume-completion-head strong { font-size: 15px; }
+  .resume-section { padding-left: 8px; padding-right: 8px; }
+  .resume-bottom-save { padding-left: 8px; padding-right: 8px; }
+
+  .resume-section-icon { display: none !important; }
+  .resume-section-title { font-size: 15px; color: #333; }
+  .resume-section .resume-career-head { padding-left: 0; }
+  #section-portfolio > .portfolio-grid { margin-left: 0; }
+  #section-basic .resume-basic-info { margin-left: 0; }
+  .resume-career-period, .resume-career-dept, .resume-edu-info, .resume-lang-level, .resume-edu-period { padding-left: 0; }
+  .resume-section .resume-skill-chips { margin-left: 0; }
+
+  .resume-name, .resume-job-line, .resume-contact { font-size: 14px; color: #555; }
+  .rp-cond-k { font-size: 15px; color: #333; }
+  .rp-cond-v { font-size: 14px; color: #555; }
+  .resume-section .if-slot, .resume-section .if-input, .resume-section .career-open, .resume-section .cl-tool,
+  .resume-section-head > span, .resume-section-head > label { font-size: 14px; }
+}
+
+/* 작성 완료 — 저장 중/저장됨 표시와 알림(폰). */
+.resume-save-btn-full:disabled { opacity: .7; cursor: default; }
+.resume-save-btn-full.done { background: #1f7a4d; }
+.resume-toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 84px; z-index: 300;
+  background: #fff; color: #555; border: 1px solid #efeff1; border-radius: 999px; padding: 10px 18px;
+  font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.12); white-space: nowrap; }

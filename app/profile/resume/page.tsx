@@ -56,6 +56,11 @@ function ResumePageContent() {
   const [프로필확인, set프로필확인] = useState(false);
   // 작성 완료를 누른 뒤 아직 못 채운 곳. 각 칸 위에 붙는다.
   const [흠, set흠] = useState<흠[]>([]);
+  // 폰에서 「작성 완료」를 눌렀을 때 됐는지 안 됐는지 화면에서 바로 보이게 한다 — 저장 중/저장됨 표시와 잠깐 뜨는 알림.
+  const [저장중, set저장중] = useState(false);
+  const [저장됨, set저장됨] = useState(false);
+  const [알림, set알림] = useState("");
+  const 알림표시 = (글: string) => { set알림(글); setTimeout(() => set알림(""), 2800); };
   const 칸흠 = (어디: string) => 흠.filter((h) => h.어디 === 어디 && !h.누구).map((h) => h.말);
   const [introLocal, setIntroLocal] = useState(intro);
   const [coreLocal, setCoreLocal] = useState(coreCompetencies);
@@ -253,6 +258,7 @@ function ResumePageContent() {
   // 결과는 알림창이 아니라 그 칸 위에 붙인다. 창은 무엇이 비었는지 말하고
   // 사라지는데, 칸이 아홉이면 닫는 순간 어디였는지 잊는다.
   const handleSave = async () => {
+    const 폰 = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
     const 흠들 = 이력서흠찾기({
       본사냐: resumeType === "office",
       intro: introLocal, isEntryLevel, careers, educations, languages, skills,
@@ -261,21 +267,32 @@ function ResumePageContent() {
     if (흠들.length > 0) {
       const 첫 = document.getElementById(`section-${흠들[0].어디}`);
       첫?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (폰) 알림표시(`빠진 곳이 ${흠들.length}군데 있어요`);
       return;
     }
     setIntro(introLocal);
     setCoreCompetencies(coreLocal);
     setCoverLetter(coverLocal);
     setEmail(emailLocal);
+    set저장중(true);
     try {
       await useProfileStore.getState().syncToDb();
-      alert("이력서 작성을 마쳤습니다.");
+      if (폰) {
+        set저장됨(true);
+        setTimeout(() => set저장됨(false), 2500);
+        알림표시("저장되었어요");
+      } else {
+        alert("이력서 작성을 마쳤습니다.");
+      }
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
-      alert(e?.message?.includes("불러오지")
+      const 글 = e?.message?.includes("불러오지")
         ? "이력서를 아직 불러오지 못했어요. 새로고침한 뒤 다시 저장해 주세요."
-        : "저장에 실패했습니다. 다시 시도해주세요.");
+        : "저장에 실패했습니다. 다시 시도해주세요.";
+      if (폰) 알림표시(글); else alert(글);
+    } finally {
+      set저장중(false);
     }
   };
 
@@ -651,7 +668,10 @@ function ResumePageContent() {
           </section>
 
           <div className="resume-bottom-save">
-            <button className="resume-save-btn-full" onClick={handleSave}>작성 완료</button>
+            <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={handleSave} disabled={저장중}>
+              {저장중 ? "저장 중…" : 저장됨 ? "저장됨 ✓" : "작성 완료"}
+            </button>
+            {알림 && <div className="resume-toast" role="status" aria-live="polite">{알림}</div>}
           </div>
         </main>
       </div>
