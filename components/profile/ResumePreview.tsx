@@ -239,15 +239,15 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                   {edu.level && <><span className="rp-edu-level">{edu.level}</span><span style={{ color: "#c8c8cc" }}> │ </span></>}
                   {edu.school}
                 </strong>
+                {/* 졸업 상태는 학교명 옆 — 작성 화면(학력 구분 │ 학교명 │ 졸업 상태)과 같은 자리. */}
+                {edu.status && <span className="rp-sub-part rp-sub-status">{edu.status}</span>}
                 <span className="rp-period">
                   {edu.startDate} - {edu.endDate}
                 </span>
               </div>
-              {(edu.major || edu.status) && (
+              {edu.major && (
                 <p className="rp-item-sub">
-                  {edu.major && <span className="rp-sub-part rp-sub-major">{edu.major}</span>}
-                  {edu.major && edu.status && <span className="rp-sub-sep"> · </span>}
-                  {edu.status && <span className="rp-sub-part rp-sub-status">{edu.status}</span>}
+                  <span className="rp-sub-part rp-sub-major">{edu.major}</span>
                 </p>
               )}
             </div>

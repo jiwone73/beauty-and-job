@@ -3838,6 +3838,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   justify-content: space-between;
   gap: 8px;
 }
+/* 학력: 학교명 옆에 졸업 상태, 기간은 오른쪽 끝(PC). 폰에서는 아래 미디어 쿼리가 줄 배치를 따로 정한다. */
+.rp-item-edu .rp-item-head { justify-content: flex-start; gap: 10px; }
+.rp-item-edu .rp-item-head .rp-period { margin-left: auto; }
 .rp-item-head strong {
   font-size: 14px;
   font-weight: 400;
