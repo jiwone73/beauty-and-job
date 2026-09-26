@@ -17802,6 +17802,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .rp-cond-v { font-size: 14px; color: #555; }
   .resume-section .if-slot, .resume-section .if-input, .resume-section .career-open, .resume-section .cl-tool,
   .resume-section-head > span, .resume-section-head > label { font-size: 14px; }
+  /* 아래는 글자 크기가 요소에 직접 적혀 있어(인라인) !important 로 눌러야 한다. */
+  .resume-name { font-size: 14px !important; font-weight: 400 !important; }
+  .resume-section-title span[style*="font-size"], .resume-section-head label[style*="font-size"] { font-size: 14px !important; }
 }
 
 /* 작성 완료 — 저장 중/저장됨 표시와 알림(폰). */
