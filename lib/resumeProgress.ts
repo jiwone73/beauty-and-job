@@ -36,12 +36,12 @@ export function 이력서진행(입력: 진행입력): { 칸: 진행칸[]; 비�
   const 포트폴리오채움 = 입력.portfolioImages.length > 0 || 입력.links.some((l) => 있음(l.url));
   // 매장 이력서에서 활동수상·어학은 뒤로 접어 두는 칸이다. 살롱은 이 둘을
   // 거의 보지 않는데, 비었다고 완성도를 깎으면 아무리 채워도 100%가 안 된다.
-  // 자격증과 학력은 뺄 수 없다 — 면허와 학교는 이 업계에서도 본다.
+  // 학력도 매장은 선택이라 비었으면 세지 않는다(오피스는 필수). 자격증은 뺄 수 없다 — 면허는 이 업계에서도 본다.
   const 접는칸 = 입력.살롱;
   const 칸: 진행칸[] = [
     { id: "basic", label: "내 정보", done: true },
     { id: "career", label: "경력", done: 채운경력 },
-    { id: "education", label: "학력", done: 채운학력 },
+    ...(접는칸 && !채운학력 ? [] : [{ id: "education", label: "학력", done: 채운학력 }]),
     { id: "skill", label: "스킬", done: 입력.skills.length > 0 },
     { id: "certificate", label: "자격증", done: 채운자격 },
     ...(접는칸 && !채운활동 ? [] : [{ id: "experience", label: "활동·수상", done: 채운활동 }]),
