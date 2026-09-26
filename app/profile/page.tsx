@@ -984,18 +984,36 @@ export default function ProfilePage() {
                     동·호수를 보여 준다. 비어 있을 때 빈 칸 두 줄이 자리를 차지하지 않게 한다. */}
                 <div className="profile-info-row is-last" style={{ cursor: "default" }}>
                   <span className="profile-info-label">{칸그림("거주지 주소")}거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
-                  <span>
-                    <button type="button" className="if-slot" onClick={openPostcode}>주소 검색</button>
-                  </span>
+                  {/* 주소가 채워지면 검색 자리는 비운다 — 아래 주소를 눌러 다시 검색한다. */}
+                  {!addressRoad && (
+                    <span>
+                      <button type="button" className="if-slot" onClick={openPostcode}>주소 검색</button>
+                    </span>
+                  )}
                 </div>
                 {addressRoad && (
                   <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", padding: "0 0 13px" }}>
                     {/* 왼쪽 18px 은 라벨 글자 선(아이콘 16 + 사이 6 = 22)에서 슬롯 제 여백 4 를 뺀 값. */}
                     <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: "0 0 0 18px" }}>
                       <div className="if-row-body">
-                        <div className="if-line">
-                          <button type="button" className="if-slot on" onClick={openPostcode}>{addressRoad}</button>
-                        </div>
+                        {/* 1행은 번지까지, 건물 이름 같은 괄호 뒤는 2행. */}
+                        {(() => {
+                          const i = addressRoad.indexOf("(");
+                          const 앞 = (i > 0 ? addressRoad.slice(0, i) : addressRoad).trim();
+                          const 뒤 = i > 0 ? addressRoad.slice(i).trim() : "";
+                          return (
+                            <>
+                              <div className="if-line">
+                                <button type="button" className="if-slot on" onClick={openPostcode}>{앞}</button>
+                              </div>
+                              {뒤 && (
+                                <div className="if-line">
+                                  <button type="button" className="if-slot on" style={{ whiteSpace: "normal", textAlign: "left" }} onClick={openPostcode}>{뒤}</button>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
                         <div className="if-line">
                           <InlineText value={addressDetail} placeholder="동·호수"
                             onSave={(v) => { setAddressDetail(v); patchUser({ address_detail: v }); }} />
