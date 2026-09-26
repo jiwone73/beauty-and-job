@@ -3523,7 +3523,7 @@ export default function JobPostForm({
                 })}
               </div>
               <div className="job-detail-meta-item" style={{ margin: "0 0 12px", display: "none" }}>
-                <span style={{ fontSize: 15, color: "#333", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
+                <span style={{ fontSize: 16, color: "#333", flexShrink: 0 }}>모집분야<span style={{ color: "#e74c3c", marginLeft: 2 }}>*</span></span>
                 {/* 분야를 골라 모집부문 표에 행을 붙인다(같은 분야를 또 골라 신입·경력 분리 모집 가능).
                     고른 분야는 표에만 행으로 보이고 여기엔 값을 표시하지 않는다. */}
                 <span className="jp-add-wrap catpick-pop" style={{ position: "relative" }}>
@@ -4018,14 +4018,14 @@ export default function JobPostForm({
                 // 담당자가 제 칸으로 나가면서 오른쪽은 마감일이 쓴다. URL 은 늘 왼쪽 아래.
                 const urlOnLeft = canUrl;
                 const isNmAdminJob = mode === "admin" && nonMember;
-                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#333", fontSize: 15, paddingTop: 4 };
+                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#333", fontSize: 16, paddingTop: 4 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
                 // 빈 값은 폼의 다른 항목과 같은 규격(56px 연보라 블록), 채우면 남은 폭을 쓴다.
-                // 값은 라벨(제목)보다 커지지 않게 한다 — 라벨이 15 이므로 값은 14.
+                // 값은 라벨(제목)보다 커지지 않게 한다 — 라벨이 16 이므로 값은 15.
                 // 값이 더 크면 라벨이 부제처럼 보여 어느 쪽이 항목 이름인지 헷갈린다.
                 const fld = (filled: boolean): CSSProperties => filled
-                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#555", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
-                  : { flexShrink: 0, width: 56, height: 20, border: "none", background: PH_BG, borderRadius: 5, fontSize: 14, fontWeight: 400, color: "#555", outline: "none", padding: 0, boxSizing: "border-box" };
+                  ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 15, fontWeight: 400, color: "#555", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
+                  : { flexShrink: 0, width: 56, height: 22, border: "none", background: PH_BG, borderRadius: 5, fontSize: 15, fontWeight: 400, color: "#555", outline: "none", padding: 0, boxSizing: "border-box" };
                 return (
                   /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
                   <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
@@ -4067,7 +4067,7 @@ export default function JobPostForm({
                     </div>
                     {/* 마감일 (우) — 언제까지 받는지는 어떻게 받는지 옆에 선다. */}
                     <div id="jp-deadline" ref={deadlineRef} style={{ position: "relative", padding: "4px 0" }}>
-                      <div style={{ fontSize: 15, color: "#333", marginBottom: 3 }}>마감일</div>
+                      <div style={{ fontSize: 16, color: "#333", marginBottom: 3 }}>마감일</div>
                       <button type="button"
                         onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
                         style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#b4b4b9", cursor: "pointer" }}>
@@ -4112,7 +4112,7 @@ export default function JobPostForm({
                   { k: "kakao", 이름: "카카오톡 ID", v: nmKakaoId, set: (v: string) => setNmKakaoId(v), ph: "아이디", im: undefined },
                 ] as { k: string; 이름: string; v: string; set: (v: string) => void; ph: string; im?: "numeric" | "email" }[]).map((f) => (
                   <div key={f.k} style={{ padding: "4px 0", minWidth: 0 }}>
-                    <div style={{ fontSize: 15, color: "#333", marginBottom: 3 }}>
+                    <div style={{ fontSize: 16, color: "#333", marginBottom: 3 }}>
                       {f.이름}
                       {/* 넷 중 하나만 선택이다. 별표를 셋에 붙이는 것보다
                           하나에 「선택」을 다는 쪽이 눈에 덜 걸린다. */}
@@ -4124,11 +4124,11 @@ export default function JobPostForm({
                       <input value={f.v} inputMode={f.im} aria-label={`담당자 ${f.이름}`}
                         autoComplete={`bw-${f.k}`} name={`bw-${f.k}`} data-lpignore="true" data-1p-ignore
                         onChange={(e) => f.set(e.target.value)}
-                        style={{ flex: 1, minWidth: 0, height: 24, border: "none", borderRadius: 5, fontSize: 14, color: "#555", outline: "none",
+                        style={{ flex: 1, minWidth: 0, height: 24, border: "none", borderRadius: 5, fontSize: 15, color: "#555", outline: "none",
                           background: f.v ? "transparent" : PH_BG, padding: f.v ? "0 2px" : "0 8px", boxSizing: "border-box" }} />
                       {!f.v && (
                         <span aria-hidden style={{ position: "absolute", left: 8, top: 0, bottom: 0, display: "flex", alignItems: "center",
-                          fontSize: 14, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
+                          fontSize: 15, color: "#b4b4b9", pointerEvents: "none" }}>{f.ph}</span>
                       )}
                       {/* 사람인과 같은 자리 — 칸 오른쪽에서 그 칸만 가린다.
                           켜면 미리보기에서도 공고에서도 그 값이 나가지 않는다. 가릴지 말지를
@@ -4172,7 +4172,7 @@ export default function JobPostForm({
                       value={content}
                       placeholder="담당업무 · 자격요건 · 우대사항 등 공고 내용을 그대로 붙여넣으세요"
                       onChange={(e) => setForm({ ...form, [k]: e.target.value })}
-                      style={{ width: "100%", fontSize: 16, color: "#555", lineHeight: 1.5, fontFamily: "inherit" }} />
+                      style={{ width: "100%", fontSize: 15, color: "#555", lineHeight: 1.5, fontFamily: "inherit" }} />
                   </div>
                 );
               })}
@@ -4272,7 +4272,7 @@ export default function JobPostForm({
             <div className="admin-form-body">
               {(() => {
                 const row: CSSProperties = { display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" };
-                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#333", fontSize: 15, paddingTop: 1 };
+                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#333", fontSize: 16, paddingTop: 1 };
                 const val: CSSProperties = { fontSize: 15, color: "#555", lineHeight: 1.5 };
                 const location = composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address);
                 const rows: [string, string][] = isOffice
@@ -4297,7 +4297,7 @@ export default function JobPostForm({
             <div className="admin-form-body">
               {(() => {
                 const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "7px 0" };
-                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#333", fontSize: 15 };
+                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#333", fontSize: 16 };
                 const req: CSSProperties = { color: "var(--color-primary)" };
                 // 모집요강과 동일: 빈 값이면 텍스트 없는 연보라 하이라이트 블록, 입력하면 확장(플레이스홀더 없음)
                 const inpHl = (filled: boolean): CSSProperties => filled

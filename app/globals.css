@@ -6593,7 +6593,7 @@ div:has(> table.admin-table),
 .jobpost-section-title { color: #333; font-size: 16px; font-weight: 600; margin: 4px 0 0 4px; }
 .jobpost-form .admin-form-label { color: #333; font-size: 14px; }
 /* 공고 헤더(회사명·제목) — 화면 폭에 따라 크기를 줄인다(인라인 style 대신 여기서 관리) */
-.jobpost-brand-input { font-size: 14px; }
+.jobpost-brand-input { font-size: 15px; }
 /* 제목은 미리보기(.job-detail-title)와 글자 크기뿐 아니라 자간·줄바꿈 규칙까지
    같아야 한다. 자간이 다르면 같은 제목이 한쪽에서만 줄이 바뀐다(실측: -0.5px
    차이로 280px 폭에서 폼만 두 줄이 됐다). */
@@ -6648,7 +6648,7 @@ div:has(> table.admin-table),
   .jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,
   .jobpost-form .admin-form-label { font-size: 15px !important; }
   .jobpost-form .jobpost-title-input { font-size: 17px; }
-  .jobpost-form .jobpost-brand-input { font-size: 13.5px; }
+  .jobpost-form .jobpost-brand-input { font-size: 14px; }
   .jobpost-section-title { font-size: 15px; }
   .jobpost-form .company-card-title { font-size: 14.5px; }
   .jobpost-form .job-detail-desc, .jobpost-form textarea { font-size: 13.5px; }
@@ -18117,4 +18117,13 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-pick-g, .jp-pick-i, .jp-step, .jp-job-name, .jp-job-unit, .jp-step-num b,
   .jp-sal select, .jp-sal input, .jp-sal-amt em, .jp-cond-sel,
   .jp-job-lab, .jp-cond-f > span { font-size: 13px; }
+}
+
+/* 공고 등록 폼 나머지 칸 — 개인 프로필 규칙: PC 이름표 16px·값 15px, 폰 이름표 15px·값 14px.
+   폼에 직접 적힌 글자 크기(이름표 16·값 15)를 폰에서 한 단계씩 줄인다. */
+.jp-proc-ph { font-size: 15px; }
+@media (max-width: 768px) {
+  .jobpost-form [style*="font-size: 16px"] { font-size: 15px !important; }
+  .jobpost-form [style*="font-size: 15px"] { font-size: 14px !important; }
+  .jp-proc-ph { font-size: 14px; }
 }
