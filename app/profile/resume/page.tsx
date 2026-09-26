@@ -282,7 +282,7 @@ function ResumePageContent() {
         if (!임시) { set저장됨(true); setTimeout(() => set저장됨(false), 2500); }
         알림표시(임시 ? "임시저장되었어요" : "저장되었어요");
       } else {
-        alert("이력서 작성을 마쳤습니다.");
+        alert(임시 ? "임시저장되었습니다." : "이력서 작성을 마쳤습니다.");
       }
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
@@ -577,12 +577,12 @@ function ResumePageContent() {
               <p className="resume-top-desc">공고에 지원할 때 이 이력서를 불러와, 그 자리에 맞게 고쳐서 냅니다.</p>
             </div>
             <div className="resume-top-btns">
-              <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
-                <Eye size={15} /><span>미리보기</span>
+              {/* 임시저장 → 미리보기 순. 다운로드는 미리보기 창 안에서 받는다. */}
+              <button className="resume-side-draft" onClick={() => handleSave(true)} disabled={저장중}>
+                <span>임시저장</span>
               </button>
-              <button className="resume-side-download" onClick={handleDownload} disabled={isDownloading}>
-                <Download size={15} />
-                <span>{isDownloading ? "저장 중..." : "다운로드"}</span>
+              <button className="resume-side-preview" onClick={() => setShowPreview(true)}>
+                <span>미리보기</span>
               </button>
             </div>
           </div>

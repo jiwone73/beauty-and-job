@@ -18044,3 +18044,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (min-width: 769px) {
   .resume-editor .rp-cond-k { font-size: 15px; }
 }
+
+/* 이력서 위쪽 단추(PC) — 임시저장(테두리) → 미리보기(보라). 다운로드는 미리보기 창에 있다. */
+.resume-side-draft { background: #fff; color: #3d3d3d; border: 1px solid #d5d5d9; }
+.resume-side-draft:hover { background: #f7f7f8; }
+.resume-side-draft:disabled { color: #a8a8ad; cursor: default; }
