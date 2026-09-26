@@ -17917,8 +17917,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   #section-cover textarea { padding: 5px 6px !important; }
 }
 
-/* 이력서 어학·활동수상(폰) — 안 적은 칸(시험명·점수/등급·취득 년월, 종류·내용·성과)은 흐린 회색, 적으면 #555. */
+/* 이력서 어학·활동수상·경력·자격증(폰) — 안 적은 칸(시험명·점수/등급·취득 년월, 종류·내용·성과, 주요성과 등)은 흐린 회색, 적으면 #555. */
 @media (max-width: 768px) {
-  #section-language .if-slot:not(.on), #section-experience .if-slot:not(.on) { color: #b4b4b9; }
-  #section-language .if-slot.on, #section-experience .if-slot.on { color: #555; }
+  #section-language .if-slot:not(.on), #section-experience .if-slot:not(.on),
+  #section-career .if-slot:not(.on), #section-certificate .if-slot:not(.on) { color: #b4b4b9; }
+  #section-language .if-slot.on, #section-experience .if-slot.on,
+  #section-career .if-slot.on, #section-certificate .if-slot.on { color: #555; }
 }
