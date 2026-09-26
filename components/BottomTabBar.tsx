@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Briefcase, MapPin, BookOpen, User } from "lucide-react";
+import { Home, Briefcase, MapPin, BookOpen, FileText, User } from "lucide-react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { 스토리공개 } from "@/lib/storiesGate";
 const TABS = [
@@ -11,6 +11,7 @@ const TABS = [
   // 현장이야기는 이번 오픈에서 비공개(lib/storiesGate.js) — 공개로 정해지면
   // 이 탭도 같이 켜야 하니 배열에는 남겨 두고 렌더링에서만 뺀다.
   { href: "/stories",    label: "이야기", icon: BookOpen,  auth: false },
+  { href: "/profile/resume", label: "이력서", icon: FileText, auth: true },
   { href: "/profile",    label: "마이",   icon: User,      auth: true  },
 ];
 export default function BottomTabBar() {
@@ -28,6 +29,8 @@ export default function BottomTabBar() {
     if (href === "/") return pathname === "/";
     // 「내 주변」도 /jobs 로 시작해 「채용」과 겹친다 — 더 자세한 자리를 먼저 본다.
     if (href === "/jobs") return pathname === "/jobs" || (pathname.startsWith("/jobs/") && !pathname.startsWith("/jobs/nearby"));
+    // 「이력서」도 /profile 로 시작해 「마이」와 겹친다 — 마이는 이력서 화면을 뺀 나머지 프로필 화면이다.
+    if (href === "/profile") return pathname.startsWith("/profile") && !pathname.startsWith("/profile/resume");
     return pathname.startsWith(href);
   };
   const handleClick = (e: React.MouseEvent, tab: typeof TABS[0]) => {
