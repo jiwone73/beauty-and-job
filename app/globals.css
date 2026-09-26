@@ -18134,3 +18134,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 /* 폼 분야 카드의 「경력」 이름표도 이름표 색(#333). */
 .jp-job-lab { color: #333; }
+
+/* 공고 폼 분야 카드 · 폰 — 이름은 윗줄, 직급 칩은 아랫줄에서 한 줄로 두고 넘치면 옆으로 민다.
+   한 줄에 다 놓으면 칩이 폭을 차지해 이름 칸이 글자 한 자 폭으로 눌린다. */
+@media (max-width: 768px) {
+  .jp-job-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 8px 12px; }
+  .jp-job-steps { grid-column: 1 / -1; grid-row: 2; flex-wrap: nowrap; justify-content: flex-start; align-items: center;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .jp-job-steps::-webkit-scrollbar { display: none; }
+  .jp-job-steps .jp-step, .jp-job-steps .jp-req { flex-shrink: 0; }
+  .jp-job-x { grid-column: 2; grid-row: 1; }
+}
