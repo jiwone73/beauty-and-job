@@ -8,6 +8,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { downscaleImage } from "@/lib/imageResize";
 import ImageCropModal from "@/components/ImageCropModal";
 import { SNS찾기 } from "@/lib/snsPresets";
+import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
 import { Plus, Trash2, Store, Tag, Link as LinkIcon, Globe, Users, Calendar,
   UserRound, Phone, Home, FileText, Image as ImageIcon, BadgeCheck,
@@ -383,23 +384,24 @@ export default function CompanySettingsPage() {
     </div>
   );
 
-  const handleSave = async () => {
+  // 저장이 되면 true. 필수 칸이 비었거나 서버가 거절하면 false(저장하지 않은 내용 물음창이 그대로 남는다).
+  const handleSave = async (): Promise<boolean> => {
     if (!form.company_name.trim()) {
       alert(`${L.name}은 필수입니다.`);
-      return;
+      return false;
     }
     if (!form.industry) {
       alert("업종은 필수입니다.");
-      return;
+      return false;
     }
     if (!form.address.trim()) {
       alert("주소는 필수입니다. 주소 검색으로 입력해주세요.");
-      return;
+      return false;
     }
     // 썸네일은 공고 카드의 표지다 — 없으면 목록에서 우리 매장만 빈 칸으로 남는다.
     if (isStore && !signboardUrl) {
       alert(`${L.thumb}은 필수입니다. 로고나 간판 사진을 올려주세요.`);
-      return;
+      return false;
     }
     setSaving(true);
     try {
@@ -408,15 +410,28 @@ export default function CompanySettingsPage() {
         .map((l) => ({ category: l.category.trim(), url: l.url.trim() }));
       const res = await companyMeApi.update({ ...form, links: 낼링크, website_url: 낼링크[0]?.url || "" } as any);
       setInfo(res.data);
+      set기준(스냅샷());
       setSavedMessage("저장되었습니다 ✓");
       setTimeout(() => setSavedMessage(""), 2500);
+      return true;
     } catch (e: any) {
       alert(e.message || "저장 중 오류가 발생했습니다.");
       console.error("[save]", e);
+      return false;
     } finally {
       setSaving(false);
     }
   };
+
+  // 저장하지 않은 내용이 있는 채로 떠나려 하면 물어본다(자동 저장은 없다).
+  // 「저장된 상태」는 불러온 직후와 저장에 성공한 직후의 입력값이다.
+  const 스냅샷 = () => JSON.stringify({
+    form,
+    links: links.filter((l) => l.url.trim() || l.category.trim()).map((l) => ({ category: l.category, url: l.url })),
+  });
+  const [기준, set기준] = useState<string | null>(null);
+  useEffect(() => { if (!loading && 기준 === null) set기준(스냅샷()); }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
+  const guard = useUnsavedGuard(기준 !== null && 스냅샷() !== 기준);
 
   if (loading) {
     return (
@@ -430,6 +445,17 @@ export default function CompanySettingsPage() {
 
   return (
     <CompanyLayout activePage="settings">
+      <UnsavedDialog
+        guard={guard}
+        저장할수있나={true}
+        저장={handleSave}
+        입력취소={() => {
+          if (기준 === null) return;
+          const b = JSON.parse(기준);
+          setForm(b.form);
+          setLinks(b.links.map((l: { category: string; url: string }) => ({ id: 새id(), ...l })));
+        }}
+      />
       {(
         <div className="admin-form-grid" style={{ gridTemplateColumns: "1fr", maxWidth: "800px" }}>
           <div className="company-card">
