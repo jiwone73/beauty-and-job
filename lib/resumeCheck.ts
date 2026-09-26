@@ -7,6 +7,8 @@
  */
 import type { CareerEntry, EducationEntry, ExperienceEntry, LanguageEntry } from "@/lib/store/profileStore";
 
+const 거꾸로 = (시작?: string, 끝?: string) => !!시작 && !!끝 && 끝 < 시작;
+
 export type 흠 = { 어디: string; 누구?: string; 말: string };
 
 export function 이력서흠찾기(입력: {
@@ -33,6 +35,7 @@ export function 이력서흠찾기(입력: {
       // 이름을 적고 「비공개」를 켠다 — 미리보기·인재검색에는 ○○○ 으로 나간다.
       if (빔(c.company)) 흠들.push({ 어디: "career", 누구: c.id, 말: 본사냐 ? "회사명을 적어 주세요." : "매장명을 적어 주세요." });
       if (빔(c.startDate)) 흠들.push({ 어디: "career", 누구: c.id, 말: "근무 기간을 골라 주세요." });
+      if (거꾸로(c.startDate, c.endDate)) 흠들.push({ 어디: "career", 누구: c.id, 말: "근무 기간의 시작이 끝보다 늦어요." });
       if (본사냐 && 빔(c.department)) 흠들.push({ 어디: "career", 누구: c.id, 말: "근무 형태를 골라 주세요." });
       // 본사는 「맡은 일 I 직책」으로 담는다 — 앞쪽 맡은 일이 비면 무엇을 했는지 알 수 없다.
       if (본사냐 && 빔(String(c.position ?? "").split(" I ")[0])) 흠들.push({ 어디: "career", 누구: c.id, 말: "맡은 일을 적어 주세요." });
@@ -47,6 +50,7 @@ export function 이력서흠찾기(입력: {
   if (본사냐 && educations.length === 0) 흠들.push({ 어디: "education", 말: "학력을 넣어 주세요." });
   educations.forEach((e) => {
     if (빔(e.level)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학력 구분을 골라 주세요." });
+    if (거꾸로(e.startDate, e.endDate)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학력 기간의 시작이 끝보다 늦어요." });
     if (빔(e.school)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학교명이 비었어요." });
     // 매장은 학력 구분·학교명·졸업 상태가 필수다. 기간·전공은 선택이고, 전공은 본사에서만 필수다.
     if (빔(e.status)) 흠들.push({ 어디: "education", 누구: e.id, 말: "졸업 상태를 골라 주세요." });
@@ -57,6 +61,7 @@ export function 이력서흠찾기(입력: {
   experiences.filter((x) => x.category === "교육").forEach((x) => {
     if (빔(x.title)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육기관명을 적어 주세요." });
     if (빔(x.description)) 흠들.push({ 어디: "training", 누구: x.id, 말: "과정명을 적어 주세요." });
+    if (거꾸로(x.startDate, x.endDate)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육 기간의 시작이 끝보다 늦어요." });
   });
 
   // ── 스킬·어학 ── 둘 다 선택이다(스킬은 매장에서도 선택으로 바꿨다).

@@ -63,6 +63,10 @@ const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표
 const 활동종류 = ["수상", "봉사", "동아리", "기타"];
 const 교육상태 = ["수료", "수강 중", "중도 포기"];
 const 교육이냐 = (x: { category: string }) => x.category === "교육";
+// 시작이 끝보다 늦으면 잘못 고른 기간이다. 「YYYY.MM」 꼴이라 글자 순서가 곧 날짜 순서다.
+// 통과시키면 「2025 - 2017」이 그대로 저장돼 기업에 그대로 나간다.
+const 기간뒤집힘 = (시작?: string, 끝?: string) => !!시작 && !!끝 && 끝 < 시작;
+const 기간알림 = () => alert("시작 날짜가 끝 날짜보다 늦어요. 다시 골라 주세요.");
 
 // 본사 경력의 「맡은 일 · 직책」은 한 칸(position)에 「맡은 일 I 직책」으로 담아 둘을 구분한다.
 // 예전에 한 덩이로 적은 값(「I」가 없는 것)은 맡은 일로 읽는다.
@@ -366,10 +370,10 @@ export default function ResumeEditor({
               </div>
               <div className="if-line">
                 <InlineYM value={c.startDate} required
-                  잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, startDate: v })} />
+                  잠금={빼기전용} onSave={(v) => { if (기간뒤집힘(v, c.endDate)) { 기간알림(); return; } updateCareer(c.id, { ...c, startDate: v }); }} />
                 <span className="if-sep">–</span>
                 <InlineYM value={c.endDate} placeholder="재직 중"
-                  잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, endDate: v })} />
+                  잠금={빼기전용} onSave={(v) => { if (기간뒤집힘(c.startDate, v)) { 기간알림(); return; } updateCareer(c.id, { ...c, endDate: v }); }} />
                 <span className="if-bar">│</span>
                 {/* 살롱 직급은 정해져 있어 고르게 하고, 본사 직책은 회사마다
                     달라 적게 둔다. */}
@@ -430,9 +434,9 @@ export default function ResumeEditor({
                   잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, status: v })} />
               </div>
               <div className="if-line">
-                <InlineYM value={e.startDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, startDate: v })} />
+                <InlineYM value={e.startDate} 잠금={빼기전용} onSave={(v) => { if (기간뒤집힘(v, e.endDate)) { 기간알림(); return; } updateEducation(e.id, { ...e, startDate: v }); }} />
                 <span className="if-sep">–</span>
-                <InlineYM value={e.endDate} 잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, endDate: v })} />
+                <InlineYM value={e.endDate} 잠금={빼기전용} onSave={(v) => { if (기간뒤집힘(e.startDate, v)) { 기간알림(); return; } updateEducation(e.id, { ...e, endDate: v }); }} />
                 <span className="if-bar">│</span>
                 <InlineText value={e.major} placeholder={본사냐 ? "전공 · 학위" : "전공"} required={본사냐}
                   잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, major: v })} />
@@ -469,10 +473,10 @@ export default function ResumeEditor({
               </div>
               <div className="if-line">
                 <InlineYM value={x.startDate || ""}
-                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, startDate: v })} />
+                  잠금={빼기전용} onSave={(v) => { if (기간뒤집힘(v, x.endDate)) { 기간알림(); return; } updateExperience(x.id, { ...x, startDate: v }); }} />
                 <span className="if-sep">–</span>
                 <InlineYM value={x.endDate || ""} placeholder="수강 중"
-                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, endDate: v })} />
+                  잠금={빼기전용} onSave={(v) => { if (기간뒤집힘(x.startDate, v)) { 기간알림(); return; } updateExperience(x.id, { ...x, endDate: v }); }} />
               </div>
             </div>
             {줄단추("experience:" + x.id, "이 교육을 삭제할까요?", () => removeExperience(x.id))}
