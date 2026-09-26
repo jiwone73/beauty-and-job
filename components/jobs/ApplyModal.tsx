@@ -289,6 +289,7 @@ export default function ApplyModal({
       await useProfileStore.getState().loadFromServer();
       if (내가쓴한줄 !== 원래한줄) useProfileStore.getState().setIntro(내가쓴한줄);
       뜬이력서.current = useProfileStore.getState().이력서뽑기();
+      손댐.current = false; // 방금 받아온 상태가 새 기준이다(고친 것은 여기서 사라진다)
     } catch (e) {
       console.error("[지원서] 이력서 당겨오기 실패", e);
     } finally {
@@ -858,7 +859,7 @@ export default function ApplyModal({
                     style={{ fontSize: 13, color: "var(--color-primary)", textDecoration: "none", whiteSpace: "nowrap" }}>
                     이력서에서 고치기 ↗
                   </a>
-                  <button type="button" onClick={이력서당겨오기} disabled={당기는중}
+                  <button type="button" onClick={() => guard.물어보고이동(이력서당겨오기)} disabled={당기는중}
                     style={{ marginLeft: "auto", border: "1px solid #e5e5ea", background: "#fff",
                       borderRadius: 7, padding: "5px 11px", fontSize: 13, color: "#555",
                       fontFamily: "inherit", cursor: 당기는중 ? "default" : "pointer", whiteSpace: "nowrap" }}>
@@ -905,9 +906,8 @@ export default function ApplyModal({
               </div>
 
               {/* 예전 '저장하기' 자리다. 다만 저장되는 곳이 다르다 — 기본
-                  이력서가 아니라 이 공고에 낼 사본이고, 이 브라우저에 둔다.
-                  손을 멈추면 알아서 붙들어 두므로 이 단추는 그것을 눈으로
-                  확인하는 자리다. */}
+                  이력서가 아니라 이 공고에 낼 사본이고, 서버에 둔다. 자동으로 붙들어 두지 않으므로
+                  이 단추를 눌러야 남고, 안 누르고 닫으면 물음창이 뜬다. */}
               <div style={{ display: "flex", gap: 8, marginTop: 16, paddingBottom: 16 }}>
                 <button
                   onClick={손으로임시저장}
