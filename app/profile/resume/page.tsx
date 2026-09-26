@@ -271,7 +271,7 @@ function ResumePageContent() {
     if (흠들.length > 0) {
       const 첫 = document.getElementById(`section-${흠들[0].어디}`);
       첫?.scrollIntoView({ behavior: "smooth", block: "center" });
-      if (폰) 알림표시(`빠진 곳이 ${흠들.length}군데 있어요`);
+      알림표시(`빠진 곳이 ${흠들.length}군데 있어요`);
       return;
     }
     setIntro(introLocal);
@@ -281,19 +281,20 @@ function ResumePageContent() {
     set저장중(true);
     try {
       await useProfileStore.getState().syncToDb();
-      if (폰) {
-        if (!임시) { set저장됨(true); setTimeout(() => set저장됨(false), 2500); }
-        알림표시(임시 ? "임시저장되었어요" : "저장되었어요");
-      } else {
-        alert(임시 ? "임시저장되었습니다." : "이력서 작성을 마쳤습니다.");
+      // 눌렀는지 알 수 있게 — PC 도 알림창(alert) 대신 같은 알림을 띄우고, 작성 완료면 화면을
+      // 맨 위(완성도)로 올린다. 임시저장은 쓰던 자리를 지켜야 해서 올리지 않는다.
+      if (!임시) {
+        set저장됨(true); setTimeout(() => set저장됨(false), 2500);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
+      알림표시(임시 ? "임시저장되었어요" : (폰 ? "저장되었어요" : "이력서 작성을 마쳤어요"));
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
       const 글 = e?.message?.includes("불러오지")
         ? "이력서를 아직 불러오지 못했어요. 새로고침한 뒤 다시 저장해 주세요."
         : "저장에 실패했습니다. 다시 시도해주세요.";
-      if (폰) 알림표시(글); else alert(글);
+      알림표시(글);
     } finally {
       set저장중(false);
     }
