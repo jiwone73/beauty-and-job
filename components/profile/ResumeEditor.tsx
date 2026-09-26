@@ -59,6 +59,14 @@ const 언어들 = ["한국어", "영어", "중국어", "일본어", "베트남�
 const 수준들 = ["능숙하게 소통", "일상 회화 가능", "간단한 표현"];
 const 활동종류 = ["수상", "교육", "봉사", "동아리", "기타"];
 
+// 본사 경력의 「맡은 일 · 직책」은 한 칸(position)에 「맡은 일 I 직책」으로 담아 둘을 구분한다.
+// 예전에 한 덩이로 적은 값(「I」가 없는 것)은 맡은 일로 읽는다.
+const 맡은일직책 = (v: string): [string, string] => {
+  const i = (v || "").indexOf(" I ");
+  return i < 0 ? [v || "", ""] : [v.slice(0, i), v.slice(i + 3)];
+};
+const 맡은일직책합치기 = (일: string, 직책: string) => (직책.trim() ? `${일.trim()} I ${직책.trim()}` : 일.trim());
+
 // 못 채운 곳을 그 자리에 적는다. 알림창처럼 사라지지 않아 고치는 동안 계속 보인다.
 function 흠줄({ 말들 }: { 말들: string[] }) {
   if (!말들.length) return null;
@@ -365,8 +373,11 @@ export default function ResumeEditor({
                     <InlinePick value={c.department} placeholder="근무 형태" required options={재직형태}
                       잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, department: v })} />
                     <span className="if-bar">│</span>
-                    <InlineText value={c.position} placeholder="맡은 일 · 직책"
-                      잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: v })} />
+                    <InlineText value={맡은일직책(c.position)[0]} placeholder="맡은 일"
+                      잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: 맡은일직책합치기(v, 맡은일직책(c.position)[1]) })} />
+                    <span className="if-bar">│</span>
+                    <InlineText value={맡은일직책(c.position)[1]} placeholder="직책"
+                      잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: 맡은일직책합치기(맡은일직책(c.position)[0], v) })} />
                   </>
                 ) : (
                   <InlinePick value={c.position} placeholder="직급" options={살롱직급}

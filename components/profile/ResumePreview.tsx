@@ -211,7 +211,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                 <p className="rp-item-sub">
                   {/* 폰에서는 작성 화면처럼 항목마다 줄을 바꾼다(CSS). PC·인쇄는 「 · 」로 한 줄. */}
                   <span className="rp-sub-part">{c.department}</span>
-                  {c.position && <><span className="rp-sub-sep"> · </span><span className="rp-sub-part">{c.position}</span></>}
+                  {c.position && <><span className="rp-sub-sep"> · </span><span className="rp-sub-part">{c.position.replace(/^\s*I\s+/, "")}</span></>}
                 </p>
               )}
               {c.description && (
