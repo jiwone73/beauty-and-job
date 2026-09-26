@@ -3,6 +3,7 @@ import { industryGroupsFor } from "@/lib/data/industries";
 import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeEvent, type ClipboardEvent, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
+import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
@@ -779,20 +780,13 @@ export default function JobPostForm({
     applyMethod, externalApplyUrl,
   });
 
-  // 값이 바뀔 때마다 저장. 타자마다 쓰지 않도록 잠깐 모았다가 한 번 쓴다.
+  // 브라우저 자동 저장은 없앴다. 저장은 「임시저장」·「공고 등록」으로만 하고, 저장하지 않은 채
+  // 화면을 떠나려 하면 물음창이 뜬다(아래 useUnsavedGuard). 예전에 남아 있던 자동 저장분은 아래
+  // 되살리기 효과가 읽기 전에 지운다 — 이 효과가 먼저 돈다.
   useEffect(() => {
-    if (editId) return;
-    if (!autosaveReady.current) { autosaveReady.current = true; return; } // 복원 직후 한 번은 건너뛴다
-    const t = setTimeout(() => {
-      try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(snapshot())); } catch { /* 용량 초과 등은 무시 */ }
-    }, 600);
-    return () => clearTimeout(t);
+    try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, categories, posMeta, regionList, alwaysOpen, jobGroupType, extraLocations, detailImages, bannerImages,
-      hiringProcess, benefitTags, salaryNego, salaryType, salaryMax, salaryByCat, pasteText, pasteTitle, ocrSourceUrl,
-      parseUrl, importMode, findQuery, importImages, nonMember, newCompanyName, newBrandName, nmDescription, nmAddress,
-      nmAddressDetail, nmIndustry, nmSize, nmFounded, nmRepresentative, nmPhone, nmHomepage,
-      nmManagerName, nmManagerPhone, nmContactEmail, nmKakaoId, contactMethods, applyMethod, externalApplyUrl, editId, mode]);
+  }, []);
 
   const [restored, setRestored] = useState<string | null>(null);
   const clearAutosave = () => { try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* noop */ } setRestored(null); };
@@ -2157,32 +2151,34 @@ export default function JobPostForm({
     return 본다(form.salary, "급여") || 본다(salaryMax, "급여 상한");
   };
 
-  const handleSubmit = async (status: "draft" | "publish") => {
+  // 저장이 되면 true. 검증에 걸리거나 서버가 거절하면 false. 나가는중은 「저장하지 않은 내용」 물음창에서 저장한 뒤
+  // 이동하는 길이라, 이 함수가 따로 화면을 옮기지 않는다(이동은 물음창이 한다).
+  const handleSubmit = async (status: "draft" | "publish", 나가는중 = false): Promise<boolean> => {
     // 비회원(관리자 대행) 공고는 관리자가 자유롭게 대행 등록 → 필수 검증 없이 등록 허용.
     const isNmAdmin = mode === "admin" && nonMember;
     /* 임시저장도 본다. 안 막으면 서버가 막고 「is out of range for type integer」가
        그대로 뜬다 — 막는 것은 같고 어느 쪽 말이 나가느냐만 다르다. */
     const 급여말 = 급여단위확인();
-    if (급여말) { alert(급여말); return; }
-    if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return; }
+    if (급여말) { alert(급여말); return false; }
+    if (mode === "admin" && !nonMember && !companyId) { alert("기업을 선택해주세요."); return false; }
     if (isNmAdmin) {
-      if (!jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
-      if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
+      if (!jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return false; }
+      if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return false; }
     }
     // 추가 근무지의 지역도 함께 담아야 그 지역으로 찾는 사람에게도 보인다.
     const extraRegions = extraLocations.flatMap((l) => deriveRegion([l.address, l.detail].filter(Boolean).join(" ")));
     const effRegions = [...new Set([...(regionList.length ? regionList : deriveRegion(nmFullAddress)), ...extraRegions])];
     if (!isNmAdmin) {
-      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return; }
-      if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return; }
-      if (categories.length === 0) { alert("모집분야를 선택해주세요."); return; }
+      if (showTypeToggle && !jobGroupType) { alert("채용유형(매장/오피스)을 선택해주세요."); return false; }
+      if (!form.title.trim()) { alert("공고 제목을 입력해주세요."); return false; }
+      if (categories.length === 0) { alert("모집분야를 선택해주세요."); return false; }
       // 주소를 붙여넣거나 임시저장에서 복원하면 입력 onChange가 안 타 regionList가 비어 있을 수 있다.
       //   저장 시점에 주소에서 한 번 더 뽑아 쓴다.
       if (effRegions.length === 0) {
         alert(nmFullAddress
           ? "근무지역 주소에 시·군·구가 들어가게 입력해주세요. (예: 서울 금천구 벚꽃로 40)"
           : "근무지역(주소)을 입력해주세요.");
-        return;
+        return false;
       }
       // 근무조건 필수(발행 시). 경력·고용형태·급여·근무요일/시간·인원은 모집부문 표에서 분야별(협의·미정 허용)이라 하드 필수 아님.
       if (status === "publish") {
@@ -2190,23 +2186,23 @@ export default function JobPostForm({
             && !["description", "responsibilities", "requirements", "preferred"]
                  .some((k) => String((form as any)[k] || "").trim())) {
           alert("상세요강에 사진이나 글 중 하나는 넣어주세요.");
-          return;
+          return false;
         }
-        if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return; }
+        if (benefitTags.length === 0 && !fiBenefits.trim()) { alert("복리후생을 1개 이상 선택해주세요."); return false; }
         // 아래 둘도 제목에 별표를 달았다 — 화면과 같은 기준으로 막는다.
-        if (bannerImages.length === 0) { alert("공고배너 이미지를 1장 이상 넣어주세요."); return; }
-        if (contactMethods.length === 0) { alert("지원방법을 1개 이상 선택해주세요."); return; }
+        if (bannerImages.length === 0) { alert("공고배너 이미지를 1장 이상 넣어주세요."); return false; }
+        if (contactMethods.length === 0) { alert("지원방법을 1개 이상 선택해주세요."); return false; }
         // 담당자 정보는 필수다. 가려 두더라도 우리는 알아야 한다 — 지원이
         // 들어왔는데 매장에 닿을 길이 없으면 그 지원은 사라진 것과 같다.
-        if (!nmManagerName.trim()) { alert("담당자 이름을 입력해주세요."); return; }
+        if (!nmManagerName.trim()) { alert("담당자 이름을 입력해주세요."); return false; }
         if (!nmManagerPhone.trim() && !nmContactEmail.trim()) {
-          alert("담당자 전화번호나 이메일 중 하나는 입력해주세요."); return;
+          alert("담당자 전화번호나 이메일 중 하나는 입력해주세요."); return false;
         }
       }
       // 마감일: 날짜 선택 또는 상시채용 필수
       if (status === "publish" && !alwaysOpen && !form.deadline) {
         alert("마감일을 선택하거나 상시채용을 체크해주세요.");
-        return;
+        return false;
       }
     }
 
@@ -2222,14 +2218,14 @@ export default function JobPostForm({
     // 경력·급여·근무요일도 마찬가지라, 비면 화면에서 "협의"·"상세요강 참조"로 보인다.
     if (status === "publish" && categories.length === 0) {
       alert("모집분야를 1개 이상 선택해주세요.");
-      return;
+      return false;
     }
     // 직급은 필수 — 화면에서 별표를 달고 아래 칸을 잠가 두었으니 발행도 같은 기준으로 막는다.
     if (status === "publish") {
       const 빈직급 = positions.find((p) => !p.career);
       if (빈직급) {
         alert(`${빈직급.category}의 직급을 선택해주세요.`);
-        return;
+        return false;
       }
     }
     // 저장될 값은 한 곳에서만 만든다 — 미리보기도 같은 함수를 본다.
@@ -2241,25 +2237,40 @@ export default function JobPostForm({
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
       alert(result.error || (editId ? "공고 수정에 실패했습니다." : "공고 등록에 실패했습니다."));
-      return;
+      return false;
     }
     // 관리자 직접등록 임시저장: 목록으로 나가지 않고 이 페이지에 머문다.
     //  · 신규 → 저장된 draft 편집 모드(?id=)로 전환해 이 페이지 유지 + 재저장 시 중복 방지(PATCH)
     //  · 기존 draft → 그대로 머물며 상단 임시저장 목록만 갱신
+    set기준(스냅샷문자열());
     if (mode === "admin" && status === "draft") {
       setDraftSaved(true);
       setTimeout(() => setDraftSaved(false), 1800);
+      if (나가는중) return true;
       if (!editId && result.id) {
         setTimeout(() => router.push(`${pathname}?id=${result.id}`), 600);
       } else {
         reloadDrafts();
       }
-      return;
+      return true;
     }
     setSaved(true);
     clearAutosave(); // 등록됐으니 브라우저에 남겨 둔 내용은 지운다
-    setTimeout(() => router.push(listHref), 1000);
+    if (!나가는중) setTimeout(() => router.push(listHref), 1000);
+    return true;
   };
+
+  // 저장하지 않은 내용이 있는 채로 떠나려 하면 물어본다. 「저장된 상태」는 화면이 자리 잡은 뒤(새 공고는
+  // 열린 직후, 고치는 공고는 불러온 직후)와 저장에 성공한 직후의 입력값이다.
+  const 스냅샷문자열 = () => JSON.stringify({ ...snapshot(), at: 0 });
+  const [기준, set기준] = useState<string | null>(null);
+  useEffect(() => {
+    if (editId && 고치는공고상태 === null) return; // 고칠 공고를 아직 불러오는 중
+    const t = setTimeout(() => set기준((b) => b ?? 스냅샷문자열()), 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editId, 고치는공고상태]);
+  const guard = useUnsavedGuard(기준 !== null && 스냅샷문자열() !== 기준);
 
   // ── 복리후생: DB 마스터 태그 + 검색/자동완성 + 새 태그 소프트 등록 ─────────────
   const benefitJobType = jobGroupType === "기업" ? "OFFICE" : jobGroupType === "매장" ? "STORE" : "";
@@ -2873,6 +2884,15 @@ export default function JobPostForm({
 
   return (
     <>
+      {/* 저장하지 않은 내용 물음창. 임시저장이 있는 공고는 「임시저장」, 진행 중인 공고를 고치는 중이면
+          임시저장이 없어 「공고 수정」이 저장이다. 등록은 여기서 하지 않는다(실수로 올라가지 않게). */}
+      <UnsavedDialog
+        guard={guard}
+        저장할수있나={true}
+        저장글={진행중수정 ? "공고 수정" : "임시저장"}
+        저장={() => handleSubmit(진행중수정 ? "publish" : "draft", true)}
+        입력취소={() => { /* 화면을 떠나면 입력은 사라진다 — 되돌릴 저장본은 서버의 공고뿐이다 */ }}
+      />
       {/* 헤더 폭·정렬을 본문과 일치 → 상단 버튼 오른쪽 끝이 본문 오른쪽 끝과 맞음.
           기업폼은 본문이 jp-shell 그리드(사이드 150px+간격 26px)만큼 오른쪽으로 밀려
           있어, 헤더도 같은 만큼 밀어야 오른쪽 끝이 맞는다(jp-header-offset, CSS). */}
@@ -2881,7 +2901,7 @@ export default function JobPostForm({
         {/* 모바일은 사이드 메뉴가 없어 되돌아갈 길이 이 버튼뿐이다. 데스크톱은
             사이드의 '채용공고 관리'가 그 역할을 하니, 같은 자리에 제목을 둔다. */}
         {기업폼 && isMobile && (
-          <button className="admin-back-btn" onClick={() => router.push(listHref)}>
+          <button className="admin-back-btn" onClick={() => guard.물어보고이동(() => router.push(listHref))}>
             <ChevronLeft size={18} /> 목록으로
           </button>
         )}
@@ -2948,7 +2968,7 @@ export default function JobPostForm({
                         <div key={d.id}
                           style={{ display: "flex", alignItems: "center", borderRadius: 8, border: on ? "1.5px solid #582681" : "1px solid #eee", background: on ? "#f7f7f8" : "#fff" }}>
                           <button type="button"
-                            onClick={() => { setDraftMenuOpen(false); if (!on) router.push(`${pathname}?id=${d.id}`); }}
+                            onClick={() => { setDraftMenuOpen(false); if (!on) guard.물어보고이동(() => router.push(`${pathname}?id=${d.id}`)); }}
                             style={{ display: "flex", alignItems: "center", gap: 8, textAlign: "left", flex: 1, minWidth: 0, padding: "8px 4px 8px 10px", border: "none", background: "none", cursor: on ? "default" : "pointer", font: "inherit" }}>
                             <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 14, color: "#2b2533" }}>
                               {d.title || "(제목 없음)"}
