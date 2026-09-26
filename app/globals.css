@@ -17941,3 +17941,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .resume-section .career-open-note { color: #b4b4b9 !important; }
 }
+
+/* 이력서(폰) — 항목 제목 ↔ 내용, 위·아래 여백을 스킬 섹션 값으로 모두 같게: 위 16px, 제목~내용 8px, 아래 16px.
+   (한줄소개·내 정보·희망 근무 조건·자기소개서는 제목 아래가 10px, 경력·학력·자격증·어학은 첫 줄 안쪽 여백 12px 이 더해져
+    20px 이었다. 마지막 내용 아래도 14~24px 로 제각각이었다.) */
+@media (max-width: 768px) {
+  .resume-section { padding-top: 16px; padding-bottom: 16px; }
+  .resume-section > .resume-section-title,
+  .resume-section > .resume-section-head { margin-bottom: 8px; }
+  .resume-section > .resume-section-head + .if-row { padding-top: 0; }
+  .resume-section > :last-child { margin-bottom: 0; }
+  .resume-section > .if-row:last-child, .resume-section > .portfolio-grid:last-child { padding-bottom: 0; }
+}
