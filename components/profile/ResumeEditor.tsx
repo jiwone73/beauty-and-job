@@ -487,7 +487,7 @@ export default function ResumeEditor({
       {true && (
         <section id="section-skill" className="resume-section">
           <div className="resume-section-head">
-            <h2 className="resume-section-title"><Sparkles size={16} className="resume-section-icon" />스킬</h2>
+            <h2 className="resume-section-title"><Sparkles size={16} className="resume-section-icon" />스킬<span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span></h2>
             {/* 스킬은 공고마다 어필할 것이 달라 그때그때 고른다. 여기서 고른
                 것은 이 지원서에만 실리고 기본 이력서는 그대로다. 그래서 더하는
                 ＋가 아니라 고치는 연필이다. */}
