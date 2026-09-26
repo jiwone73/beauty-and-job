@@ -457,11 +457,15 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <흠줄 말들={항목흠("training", x.id)} />
               <div className="if-line if-line-head">
-                <InlineText value={x.title} placeholder="교육기관명" required
+                <InlineText value={x.title} placeholder="교육기관명" required wide
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, title: v })} />
-                <span className="if-bar">│</span>
-                <InlineText value={x.description} placeholder="과정명" required wide
+              </div>
+              <div className="if-line">
+                <InlineText value={x.description} placeholder="과정명" required
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
+                <span className="if-bar">│</span>
+                <InlinePick value={x.status || ""} placeholder="수료 여부" options={교육상태}
+                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, status: v })} />
               </div>
               <div className="if-line">
                 <InlineYM value={x.startDate || ""}
@@ -469,9 +473,6 @@ export default function ResumeEditor({
                 <span className="if-sep">–</span>
                 <InlineYM value={x.endDate || ""} placeholder="수강 중"
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, endDate: v })} />
-                <span className="if-bar">│</span>
-                <InlinePick value={x.status || ""} placeholder="수료 여부" options={교육상태}
-                  잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, status: v })} />
               </div>
             </div>
             {줄단추("experience:" + x.id, "이 교육을 삭제할까요?", () => removeExperience(x.id))}

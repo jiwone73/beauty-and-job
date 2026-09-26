@@ -3838,7 +3838,6 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   justify-content: space-between;
   gap: 8px;
 }
-.rp-item-training .rp-item-head { justify-content: flex-start; gap: 8px; }
 .rp-item-head strong {
   font-size: 14px;
   font-weight: 400;
@@ -17904,10 +17903,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .rp-modal .rp-item-edu .rp-period { order: 3; flex: 0 0 100%; }
   .rp-modal .rp-item-edu .rp-sub-major { order: 4; flex: 0 0 100%; }
   .rp-modal .rp-item-edu .rp-sub-sep { display: none; }
-  /* 교육·수료: 교육기관명 │ 과정명 / 기간 │ 수료 여부 — 작성 화면과 같은 줄 배치. */
-  .rp-modal .rp-item-training .rp-item-head { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; column-gap: 10px; row-gap: 2px; }
-  .rp-modal .rp-item-training .rp-item-sub { display: flex; flex-wrap: wrap; column-gap: 10px; }
-  .rp-modal .rp-item-training .rp-sub-sep { display: none; }
 }
 
 /* 이력서 한줄소개 입력칸(폰) — 안쪽 여백을 절반으로(10px 12px → 5px 6px). 크기가 요소에 직접 적혀 있어 !important. */

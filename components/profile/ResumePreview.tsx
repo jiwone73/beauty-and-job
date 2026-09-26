@@ -261,16 +261,17 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             <div key={x.id} className="rp-item rp-item-training">
               <div className="rp-item-head">
                 <strong>{x.title}</strong>
-                {x.description && <span className="rp-sub-sep" style={{ color: "#c8c8cc" }}>│</span>}
-                {x.description && <span className="rp-sub-part rp-sub-course">{x.description}</span>}
               </div>
-              {(x.startDate || x.endDate || x.status) && (
+              {(x.description || x.status) && (
                 <p className="rp-item-sub">
-                  {(x.startDate || x.endDate) && (
-                    <span className="rp-sub-part rp-sub-period">{x.startDate} - {x.endDate || "수강 중"}</span>
-                  )}
-                  {(x.startDate || x.endDate) && x.status && <span className="rp-sub-sep" style={{ color: "#c8c8cc" }}> │ </span>}
+                  {x.description && <span className="rp-sub-part rp-sub-course">{x.description}</span>}
+                  {x.description && x.status && <span style={{ color: "#c8c8cc" }}> │ </span>}
                   {x.status && <span className="rp-sub-part rp-sub-status">{x.status}</span>}
+                </p>
+              )}
+              {(x.startDate || x.endDate) && (
+                <p className="rp-item-sub">
+                  <span className="rp-sub-part rp-sub-period">{x.startDate} - {x.endDate || "수강 중"}</span>
                 </p>
               )}
             </div>
