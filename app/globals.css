@@ -17864,15 +17864,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 
 /* 이력서 경력·학력(폰) — 줄 배치.
-   경력: 1행 회사명·비공개 / 2행 기간·재직 중 / 3행 고용형태·직책 / 4행 주요성과.
+   경력: 1행 회사명·비공개 / 2행 기간·재직 중│근무 형태 / 3행 맡은 일│직책 / 4행 주요성과.
    학력: 1행 학교명 / 2행 기간·졸업 여부 / 3행 전공.
    항목 사이 세로 막대(│)가 줄바꿈 자리가 된다 — 경력은 첫 막대(기간 뒤), 학력은 둘째 막대(졸업 여부 뒤)에서 줄을 바꾸고
    나머지 막대는 그대로 항목 사이 구분으로 보인다. */
 @media (max-width: 768px) {
   #section-career .if-row-plain .if-line,
   #section-education .if-row-plain .if-line { flex-wrap: wrap; row-gap: 2px; }
-  #section-career .if-bar { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
-  #section-career .if-bar ~ .if-bar { flex: 0 0 auto; height: auto; margin: 0; font-size: 13px; line-height: inherit; overflow: visible; }
+  /* 경력은 기간 · 근무 형태를 한 줄(2행)에, 맡은 일 │ 직책을 다음 줄(3행)에 — 둘째 막대(6번째 칸)가 줄바꿈 자리다. */
+  #section-career .if-line > span.if-bar:nth-child(6) { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
   #section-education .if-bar ~ .if-bar { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
 }
 
@@ -17923,4 +17923,21 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   #section-career .if-slot:not(.on), #section-certificate .if-slot:not(.on) { color: #b4b4b9; }
   #section-language .if-slot.on, #section-experience .if-slot.on,
   #section-career .if-slot.on, #section-certificate .if-slot.on { color: #555; }
+}
+
+/* 미리보기(폰) 경력 — 작성 화면과 같게: 회사명 / 기간·근무 형태 / 맡은 일 I 직책 / 주요성과. */
+@media (max-width: 768px) {
+  .rp-modal .rp-item-career { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; }
+  .rp-modal .rp-item-career .rp-item-head, .rp-modal .rp-item-career .rp-item-sub { display: contents; }
+  .rp-modal .rp-item-career strong { order: 1; flex: 0 0 100%; }
+  .rp-modal .rp-item-career .rp-period { order: 2; }
+  .rp-modal .rp-item-career .rp-sub-dept { order: 3; }
+  .rp-modal .rp-item-career .rp-sub-pos { order: 4; flex: 0 0 100%; }
+  .rp-modal .rp-item-career .rp-sub-sep { display: none; }
+  .rp-modal .rp-item-career .rp-item-desc { order: 5; flex: 0 0 100%; }
+}
+
+/* 이력서 경력의 「(지원 시에만 공개)」 안내도 흐린 회색(폰). */
+@media (max-width: 768px) {
+  .resume-section .career-open-note { color: #b4b4b9 !important; }
 }

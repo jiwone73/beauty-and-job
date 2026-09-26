@@ -194,7 +194,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div className="rp-section">
           <h2 className="rp-section-title"><Building2 size={16} className="resume-section-icon" />경력</h2>
           {careers.map((c) => (
-            <div key={c.id} className="rp-item">
+            <div key={c.id} className="rp-item rp-item-career">
               {/* 매장명은 안 적어도 된다. 기술직은 어디서 했느냐보다 무엇을
                   맡았느냐가 경력이라, 이름이 비면 맡은 일이 그 자리에 선다. */}
               <div className="rp-item-head">
@@ -210,8 +210,8 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
               {c.company && c.department && (
                 <p className="rp-item-sub">
                   {/* 폰에서는 작성 화면처럼 항목마다 줄을 바꾼다(CSS). PC·인쇄는 「 · 」로 한 줄. */}
-                  <span className="rp-sub-part">{c.department}</span>
-                  {c.position && <><span className="rp-sub-sep"> · </span><span className="rp-sub-part">{c.position.replace(/^\s*I\s+/, "")}</span></>}
+                  <span className="rp-sub-part rp-sub-dept">{c.department}</span>
+                  {c.position && <><span className="rp-sub-sep"> · </span><span className="rp-sub-part rp-sub-pos">{c.position.replace(/^\s*I\s+/, "")}</span></>}
                 </p>
               )}
               {c.description && (
