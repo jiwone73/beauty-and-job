@@ -267,9 +267,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                   {(x.startDate || x.endDate) && (
                     <span className="rp-sub-part rp-sub-period">{x.startDate} – {x.endDate || "수강 중"}</span>
                   )}
-                  {(x.startDate || x.endDate) && (x.description || x.status) && <span style={{ color: "#c8c8cc" }}> │ </span>}
+                  {(x.startDate || x.endDate) && (x.description || x.status) && <span className="rp-sub-sep" style={{ color: "#c8c8cc" }}> │ </span>}
                   {x.description && <span className="rp-sub-part rp-sub-course">{x.description}</span>}
-                  {x.description && x.status && <span style={{ color: "#c8c8cc" }}> │ </span>}
+                  {x.description && x.status && <span className="rp-sub-sep" style={{ color: "#c8c8cc" }}> │ </span>}
                   {x.status && <span className="rp-sub-part rp-sub-status">{x.status}</span>}
                 </p>
               )}
