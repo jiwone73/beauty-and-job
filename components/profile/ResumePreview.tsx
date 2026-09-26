@@ -307,7 +307,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       )}
       {experiences.some((x) => x.category !== "교육") && (
         <div className="rp-section">
-          <h2 className="rp-section-title"><Trophy size={16} className="resume-section-icon" />활동/수상</h2>
+          <h2 className="rp-section-title"><Trophy size={16} className="resume-section-icon" />활동·수상</h2>
           {experiences.filter((x) => x.category !== "교육").map((x) => (
             <div key={x.id} className="rp-item">
               <div className="rp-item-head">

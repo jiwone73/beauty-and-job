@@ -28,7 +28,7 @@ export function 이력서진행(입력: 진행입력): { 칸: 진행칸[]; 비�
   const 채운경력 = 입력.careers.some((c) => 있음(c.company) || 있음(c.startDate)) || 입력.isEntryLevel;
   const 채운학력 = 입력.educations.some((e) => 있음(e.school));
   const 채운자격 = 입력.certificates.some((c) => 있음(c.name));
-  // 「교육」은 교육·수료 칸의 것이라 활동/수상을 채운 것으로 치지 않는다.
+  // 「교육」은 교육·수료 칸의 것이라 활동·수상을 채운 것으로 치지 않는다.
   const 채운활동 = 입력.experiences.some((x) => x.category !== "교육" && 있음(x.title));
   const 채운어학 = 입력.languages.some((l) => 있음(l.language) && 있음(l.level));
   // 포트폴리오는 링크와 파일을 한 칸으로 본다. 인스타만 걸어 둔 사람도, PDF 만
@@ -44,7 +44,7 @@ export function 이력서진행(입력: 진행입력): { 칸: 진행칸[]; 비�
     { id: "education", label: "학력", done: 채운학력 },
     { id: "skill", label: "스킬", done: 입력.skills.length > 0 },
     { id: "certificate", label: "자격증", done: 채운자격 },
-    ...(접는칸 && !채운활동 ? [] : [{ id: "experience", label: "활동/수상", done: 채운활동 }]),
+    ...(접는칸 && !채운활동 ? [] : [{ id: "experience", label: "활동·수상", done: 채운활동 }]),
     ...(접는칸 && !채운어학 ? [] : [{ id: "language", label: "어학", done: 채운어학 }]),
     { id: "portfolio", label: "포트폴리오", done: 포트폴리오채움 },
   ];

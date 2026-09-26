@@ -444,7 +444,7 @@ export default function ResumeEditor({
       </section>
 
       {/* 교육·수료 — 학원·부트캠프·직업훈련. 학력이 아니고 경력도 아니라 갈 곳이 없던 것.
-          활동/수상의 「교육」 종류를 이 칸으로 옮겼다(같은 자료를 쓴다). */}
+          활동·수상의 「교육」 종류를 이 칸으로 옮겼다(같은 자료를 쓴다). */}
       <section id="section-training" className="resume-section">
         <div className="resume-section-head">
           <h2 className="resume-section-title"><BookOpen size={16} className="resume-section-icon" />교육·수료</h2>
@@ -545,10 +545,10 @@ export default function ResumeEditor({
         ))}
       </section>
 
-      {/* 활동/수상 */}
+      {/* 활동·수상 */}
       <section id="section-experience" className="resume-section">
         <div className="resume-section-head">
-          <h2 className="resume-section-title"><Trophy size={16} className="resume-section-icon" />활동/수상</h2>
+          <h2 className="resume-section-title"><Trophy size={16} className="resume-section-icon" />활동·수상</h2>
           {!빼기전용 && (<button className="resume-icon-btn" aria-label="활동 추가" onClick={() => addExperience({ id: genId(), category: "", title: "", description: "" })}>
             <Plus size={18} />
           </button>)}
