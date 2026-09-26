@@ -30,7 +30,7 @@ export function mapResume(data: any) {
       companyPublic: c.company_public !== false,
     })),
     educations: (data?.educations || []).map((e: any) => ({
-      id: String(e.id), school: e.school || "", major: e.major || "",
+      id: String(e.id), level: e.level || "", school: e.school || "", major: e.major || "",
       status: e.status || "", startDate: e.start_date || "", endDate: e.end_date || "",
       description: e.description || "",
     })),

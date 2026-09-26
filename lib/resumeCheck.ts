@@ -42,6 +42,7 @@ export function 이력서흠찾기(입력: {
   // ── 학력 ── 매장도 필수다. 전공만 본사에서 묻는다(고졸에게는 적을 것이 없다).
   if (educations.length === 0) 흠들.push({ 어디: "education", 말: "학력을 넣어 주세요." });
   educations.forEach((e) => {
+    if (빔(e.level)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학력 구분을 골라 주세요." });
     if (빔(e.school)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학교명이 비었어요." });
     if (빔(e.status)) 흠들.push({ 어디: "education", 누구: e.id, 말: "졸업 상태를 골라 주세요." });
     if (본사냐 && 빔(e.major)) 흠들.push({ 어디: "education", 누구: e.id, 말: "전공 · 학위가 비었어요." });

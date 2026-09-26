@@ -235,7 +235,10 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           {educations.map((edu) => (
             <div key={edu.id} className="rp-item rp-item-edu">
               <div className="rp-item-head">
-                <strong>{edu.school}</strong>
+                <strong>
+                  {edu.level && <><span className="rp-edu-level">{edu.level}</span><span style={{ color: "#c8c8cc" }}> │ </span></>}
+                  {edu.school}
+                </strong>
                 <span className="rp-period">
                   {edu.startDate} - {edu.endDate}
                 </span>

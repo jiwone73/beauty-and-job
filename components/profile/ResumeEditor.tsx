@@ -51,6 +51,8 @@ type Props = {
 // 고를 것이 정해진 칸들. 적게 하는 대신 고르게 하면 빠르고 표기가 통일된다.
 const 살롱직급 = ["인턴", "스탭", "디자이너", "아티스트", "실장", "원장"];
 const 졸업상태 = ["졸업", "재학", "휴학", "중퇴", "수료"];
+// 학교 종류. 일반 이력서는 고졸부터지만 매장 쪽에는 중졸도 적지 않아 맨 앞에 둔다.
+const 학력구분들 = ["중학교 졸업", "고등학교 졸업", "대학(2·3년)", "대학교(4년)", "석사", "박사"];
 // 원티드 본사 경력은 재직 형태를 필수로 묻는다. 살롱은 직급이 그 자리다.
 const 재직형태 = ["정규직", "계약직", "인턴", "프리랜서", "파견직", "아르바이트"];
 // 한국어를 맨 앞에 둔다. 살롱에는 외국 국적 종사자가 적지 않고, 그들에게는
@@ -415,6 +417,9 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <흠줄 말들={항목흠("education", e.id)} />
               <div className="if-line if-line-head">
+                <InlinePick value={e.level || ""} placeholder="학력 구분" required options={학력구분들}
+                  잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, level: v })} />
+                <span className="if-bar">│</span>
                 <InlineText value={e.school} placeholder="학교명" required wide
                   잠금={빼기전용} onSave={(v) => updateEducation(e.id, { ...e, school: v })} />
               </div>
