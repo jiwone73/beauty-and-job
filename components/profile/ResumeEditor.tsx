@@ -373,7 +373,7 @@ export default function ResumeEditor({
                     <InlinePick value={c.department} placeholder="근무 형태" required options={재직형태}
                       잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, department: v })} />
                     <span className="if-bar">│</span>
-                    <InlineText value={맡은일직책(c.position)[0]} placeholder="맡은 일"
+                    <InlineText value={맡은일직책(c.position)[0]} placeholder="맡은 일" required
                       잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, position: 맡은일직책합치기(v, 맡은일직책(c.position)[1]) })} />
                     <span className="if-bar">│</span>
                     <InlineText value={맡은일직책(c.position)[1]} placeholder="직책"
