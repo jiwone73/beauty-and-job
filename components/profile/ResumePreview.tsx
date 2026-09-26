@@ -227,7 +227,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
         <div className="rp-section">
           <h2 className="rp-section-title"><GraduationCap size={16} className="resume-section-icon" />학력</h2>
           {educations.map((edu) => (
-            <div key={edu.id} className="rp-item">
+            <div key={edu.id} className="rp-item rp-item-edu">
               <div className="rp-item-head">
                 <strong>{edu.school}</strong>
                 <span className="rp-period">
