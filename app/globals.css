@@ -17804,6 +17804,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-section-head > span, .resume-section-head > label { font-size: 14px; }
   /* 아래는 글자 크기가 요소에 직접 적혀 있어(인라인) !important 로 눌러야 한다. */
   .resume-name { font-size: 14px !important; font-weight: 400 !important; }
+  /* 경력·학력·자격증·어학 줄 — 아이콘 자리였던 왼쪽 18px 들여쓰기와 고르개 안쪽 여백 4px 을 걷어, 글자가
+     제목(8px)과 같은 선에서 시작하게 한다. */
+  .resume-section .if-row-body { padding-left: 0; }
+  .resume-section .if-slot { padding-left: 0; }
   .resume-section-title span[style*="font-size"], .resume-section-head label[style*="font-size"] { font-size: 14px !important; }
 }
 
