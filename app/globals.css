@@ -17825,7 +17825,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .resume-sidebar { display: none; }
   .resume-m-top { display: block; padding: 12px 8px 6px 16px; background: #fff; border-bottom: 1px solid var(--color-border); margin-bottom: 8px; }
-  .resume-m-title { font-size: 17px; font-weight: 700; color: #555; margin: 0 0 8px; letter-spacing: -.3px; text-align: center; }
+  .resume-m-title { font-size: 17px; font-weight: 700; color: #555; margin: 0 0 8px -8px; letter-spacing: -.3px; text-align: center; }
   .resume-m-bar { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
   .resume-m-rate { font-size: 15px; color: #333; font-weight: 600; white-space: nowrap; }
   .resume-m-rate strong { color: var(--color-primary); font-weight: 700; margin-left: 4px; }
@@ -17856,4 +17856,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .rp-modal .rp-name, .rp-modal .rp-meta, .rp-modal .rp-contact, .rp-modal .rp-text, .rp-modal .rp-text span,
   .rp-modal .rp-item-head strong, .rp-modal .rp-period, .rp-modal .rp-item-sub,
   .rp-modal .rp-cond-v, .rp-modal .rp-cond-unit, .rp-modal .rp-chip { font-size: 14px; color: #555; }
+}
+
+/* 미리보기 — 글자 크기가 요소에 직접 적혀 있는 줄(한줄소개 15px, 어학 13px)도 내용 14px 로. */
+@media (max-width: 768px) {
+  .rp-modal .rp-text { font-size: 14px !important; }
 }
