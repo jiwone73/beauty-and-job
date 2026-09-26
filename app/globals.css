@@ -18034,3 +18034,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .resume-editor .resume-section .career-open { color: #b4b4b9 !important; }
 .resume-editor .resume-section .career-open input[type="checkbox"] { opacity: .45; }
 .resume-editor .resume-section .career-open-note { color: #b4b4b9 !important; }
+
+/* 이력서 — 안 적은 칸은 어느 항목이든 흐린 회색(위 항목별 규칙을 이력서 전체로 넓힌다). */
+.resume-editor .if-slot:not(.on) { color: #b4b4b9; }
+.resume-editor .if-slot.on { color: #555; }
+.resume-editor input::placeholder, .resume-editor textarea::placeholder { color: #b4b4b9; opacity: 1; }
