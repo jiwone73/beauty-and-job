@@ -17878,3 +17878,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .rp-modal .rp-modal-body { padding-left: 0; padding-right: 0; }
   .rp-modal .app-doc { padding-left: 16px; padding-right: 8px; border-radius: 0; }
 }
+
+/* 미리보기(폰) 내 정보 — 이름·연락처 칸과 사진 사이를 작성 화면과 같은 16px 로(20px 였다). 그 4px 로 주소가 더 좁아져 줄바꿈이 달랐다. */
+@media (max-width: 768px) {
+  .rp-modal .rp-header { gap: 16px !important; }
+}
