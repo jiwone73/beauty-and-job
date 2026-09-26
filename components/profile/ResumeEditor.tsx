@@ -408,7 +408,7 @@ export default function ResumeEditor({
           <h2 className="resume-section-title">
             <GraduationCap size={16} className="resume-section-icon" />
             학력
-            <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>
+            {본사냐 && <span style={{ color: "#e74c3c", marginLeft: "3px" }}>*</span>}
           </h2>
           {!빼기전용 && (<button className="resume-icon-btn" aria-label="학교 추가" onClick={() => addEducation({ id: genId(), level: "", school: "", status: "", startDate: "", endDate: "", major: "", description: "" })}>
             <Plus size={18} />
