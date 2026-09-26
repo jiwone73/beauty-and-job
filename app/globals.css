@@ -17823,7 +17823,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 작성 완료 — 저장 중/저장됨 표시와 알림(폰). */
 .resume-save-btn-full:disabled { opacity: .7; cursor: default; }
 .resume-save-btn-full.done { background: #1f7a4d; }
-.resume-toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 84px; z-index: 300;
+.resume-toast { position: fixed; left: 50%; transform: translateX(-50%); top: 76px; z-index: 300;
   background: #fff; color: #555; border: 1px solid #efeff1; border-radius: 999px; padding: 10px 18px;
   font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.12); white-space: nowrap; }
 

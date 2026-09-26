@@ -287,7 +287,7 @@ function ResumePageContent() {
         set저장됨(true); setTimeout(() => set저장됨(false), 2500);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-      알림표시(임시 ? "임시저장되었어요" : (폰 ? "저장되었어요" : "이력서 작성을 마쳤어요"));
+      알림표시(임시 ? "✓ 임시저장되었어요" : "✓ 이력서 작성을 마쳤어요");
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
