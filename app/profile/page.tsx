@@ -920,9 +920,53 @@ export default function ProfilePage() {
                 ) : (
                   <InfoRow label="이메일" value={emailInput || "예) hong@gmail.com"} isEmpty={!emailInput} onClick={() => { setNewEmailInput(""); setEmailPw(""); setEmailMsg(""); setShowEmailModal(true); }} required />
                 )}
+                <InfoRow
+                  label="희망직군"
+                  value={jobAreaSummary([...skillAreas, ...officeJobAreas])}
+                  isEmpty={dbJobType === "STORE" ? skillAreas.length === 0 : officeJobAreas.length === 0}
+                  onClick={() => setJobAreaModal(dbJobType === "STORE" ? "STORE" : "OFFICE")}
+                  required
+                />
+                {/* 프로필 공개는 계정 설정으로 옮겼다 — 한 값을 두 곳에서 고치면
+                    어느 쪽이 맞는지 헷갈린다. Header 의 '계정 설정'에 있다. */}
+                <InfoRow
+                  label="희망 근무지역"
+                  value={regionSummary}
+                  isEmpty={preferredRegions.length === 0}
+                  onClick={() => setPrefModalOpen(true)}
+                  required
+                />
+                {/* 원티드식 인라인 — 그 자리에서 고르고 적는다. 비우면 「급여 협의」다. */}
+                <div className="profile-info-row pf-pay-row" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">{칸그림("희망급여")}희망급여</span>
+                  <span className="pf-pay">
+                    <select className="pf-pay-sel" value={salaryType}
+                      onChange={(e) => { setSalaryType(e.target.value); 급여저장(e.target.value, salaryMan, 협의); }}>
+                      {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <input className="pf-pay-in" inputMode="numeric" value={salaryMan} style={{ ["--pay-len" as string]: Math.max(salaryMan.length, 1) }}
+                      placeholder="숫자만" disabled={협의}
+                      onChange={(e) => setSalaryMan(e.target.value.replace(/[^0-9]/g, ""))}
+                      onBlur={() => 급여저장(salaryType, salaryMan, false)} />
+                    <span className="pf-pay-unit">{salaryType === "HOURLY" || salaryType === "DAILY" ? "원" : "만원"}</span>
+                    {/* 「협의」는 금액을 안 적은 것과 결과가 같다(이력서에 '협의'로
+                        나간다). 그래도 칸을 비워 두는 것과 협의로 정한 것은 마음이
+                        다르다 — 비워 두면 아직 안 정한 것처럼 읽힌다. */}
+                    <label className="pf-pay-nego">
+                      <input type="checkbox" checked={협의}
+                        onChange={(e) => {
+                          const 켬 = e.target.checked;
+                          set협의(켬);
+                          setSalaryMan("");
+                          급여저장(salaryType, "", 켬);
+                        }} />
+                      협의
+                    </label>
+                  </span>
+                </div>
                 {/* 거주지 — 기업정보와 같은 결로 라벨 옆 한 줄. 카드를 따로 두지 않는다:
                     셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
-                <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 6, padding: "13px 0", borderBottom: "1px solid #f2f2f2" }}>
+                <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 6, padding: "13px 0" }}>
                   <label className="profile-info-label">{칸그림("거주지 주소")}거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   {/* 왼쪽 18px 은 라벨 글자 선(아이콘 16 + 사이 6 = 22)에서 슬롯 제 여백 4 를 뺀 값. */}
                   <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: "0 0 0 18px" }}>
@@ -957,50 +1001,6 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 )}
-                <InfoRow
-                  label="희망직군"
-                  value={jobAreaSummary([...skillAreas, ...officeJobAreas])}
-                  isEmpty={dbJobType === "STORE" ? skillAreas.length === 0 : officeJobAreas.length === 0}
-                  onClick={() => setJobAreaModal(dbJobType === "STORE" ? "STORE" : "OFFICE")}
-                  required
-                />
-                {/* 프로필 공개는 계정 설정으로 옮겼다 — 한 값을 두 곳에서 고치면
-                    어느 쪽이 맞는지 헷갈린다. Header 의 '계정 설정'에 있다. */}
-                <InfoRow
-                  label="희망 근무지역"
-                  value={regionSummary}
-                  isEmpty={preferredRegions.length === 0}
-                  onClick={() => setPrefModalOpen(true)}
-                  required
-                />
-                {/* 원티드식 인라인 — 그 자리에서 고르고 적는다. 비우면 「급여 협의」다. */}
-                <div className="profile-info-row is-last pf-pay-row" style={{ cursor: "default" }}>
-                  <span className="profile-info-label">{칸그림("희망급여")}희망급여</span>
-                  <span className="pf-pay">
-                    <select className="pf-pay-sel" value={salaryType}
-                      onChange={(e) => { setSalaryType(e.target.value); 급여저장(e.target.value, salaryMan, 협의); }}>
-                      {Object.entries(SALARY_TYPE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                    </select>
-                    <input className="pf-pay-in" inputMode="numeric" value={salaryMan} style={{ ["--pay-len" as string]: Math.max(salaryMan.length, 1) }}
-                      placeholder="숫자만" disabled={협의}
-                      onChange={(e) => setSalaryMan(e.target.value.replace(/[^0-9]/g, ""))}
-                      onBlur={() => 급여저장(salaryType, salaryMan, false)} />
-                    <span className="pf-pay-unit">{salaryType === "HOURLY" || salaryType === "DAILY" ? "원" : "만원"}</span>
-                    {/* 「협의」는 금액을 안 적은 것과 결과가 같다(이력서에 '협의'로
-                        나간다). 그래도 칸을 비워 두는 것과 협의로 정한 것은 마음이
-                        다르다 — 비워 두면 아직 안 정한 것처럼 읽힌다. */}
-                    <label className="pf-pay-nego">
-                      <input type="checkbox" checked={협의}
-                        onChange={(e) => {
-                          const 켬 = e.target.checked;
-                          set협의(켬);
-                          setSalaryMan("");
-                          급여저장(salaryType, "", 켬);
-                        }} />
-                      협의
-                    </label>
-                  </span>
-                </div>
               </div>
             </section>
 
