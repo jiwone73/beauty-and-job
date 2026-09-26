@@ -1610,7 +1610,7 @@ export default function JobPostForm({
     } catch { alert("인쇄 준비 중 오류가 발생했습니다."); }
   };
 
-  const lbl: React.CSSProperties = { fontSize: 14, fontWeight: 500, color: "#555", marginBottom: 6 };
+  const lbl: React.CSSProperties = { fontSize: 14, fontWeight: 500, color: "#333", marginBottom: 6 };
   const inp: React.CSSProperties = { width: "100%", height: 44, border: "1px solid #e0e0e0", borderRadius: 8, padding: "0 12px", fontSize: 14, boxSizing: "border-box", background: "#fff" };
   // 셀렉트: 네이티브 회색 배경 제거 → 인풋과 동일한 흰 배경 + 커스텀 화살표
   const sel: React.CSSProperties = { ...inp, appearance: "none", WebkitAppearance: "none", MozAppearance: "none", paddingRight: 34, backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" };
@@ -3788,7 +3788,7 @@ export default function JobPostForm({
                         팝오버가 열려, 뭘 눌러서 열렸는지 알 수 없었다. */}
                     {!fiBenefits.trim() && (
                     <button type="button" disabled={typeLocked} onClick={() => { if (!typeLocked) setWelfareOpen((v) => !v); }}
-                      style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#cfcfcf" : (benefitTags.length ? "#555" : "#cfcfcf") }}>
+                      style={{ flex: "0 0 auto", maxWidth: "100%", alignSelf: "flex-start", textAlign: "left", border: "none", background: "none", padding: 0, fontSize: 15, cursor: typeLocked ? "default" : "pointer", lineHeight: 1.6, color: typeLocked ? "#b4b4b9" : (benefitTags.length ? "#555" : "#b4b4b9") }}>
                       {typeLocked ? "채용유형을 먼저 선택하세요" : (benefitTags.length ? benefitTags.join(", ") : "목록에서 선택하기")}
                     </button>
                     )}
@@ -4018,7 +4018,7 @@ export default function JobPostForm({
                 // 담당자가 제 칸으로 나가면서 오른쪽은 마감일이 쓴다. URL 은 늘 왼쪽 아래.
                 const urlOnLeft = canUrl;
                 const isNmAdminJob = mode === "admin" && nonMember;
-                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#555", fontSize: 15, paddingTop: 4 };
+                const lblS: CSSProperties = { width: 68, flexShrink: 0, whiteSpace: "nowrap", color: "#333", fontSize: 15, paddingTop: 4 };
                 // 값이 없으면 연보라 블록, 채우면 글자만 — 폼의 다른 칸과 같은 규칙
                 // 빈 값은 폼의 다른 항목과 같은 규격(56px 연보라 블록), 채우면 남은 폭을 쓴다.
                 // 값은 라벨(제목)보다 커지지 않게 한다 — 라벨이 15 이므로 값은 14.
@@ -4039,7 +4039,7 @@ export default function JobPostForm({
                         <button type="button"
                           onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
                           style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5,
-                            ...(contactMethods.length ? null : { width: "auto", height: "auto", minHeight: 24, background: "none", padding: 0, color: "#cfcfcf" }) }}>
+                            ...(contactMethods.length ? null : { width: "auto", height: "auto", minHeight: 24, background: "none", padding: 0, color: "#b4b4b9" }) }}>
                           {/* 복리후생의 '검색하기'와 짝. 왼쪽 라벨이 이미 무슨 칸인지 말한다. */}
                           {contactMethods.length ? contactMethods.join(", ") : "선택하기"}
                         </button>
@@ -4070,7 +4070,7 @@ export default function JobPostForm({
                       <div style={{ fontSize: 15, color: "#555", marginBottom: 3 }}>마감일</div>
                       <button type="button"
                         onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#cfcfcf", cursor: "pointer" }}>
+                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#b4b4b9", cursor: "pointer" }}>
                         {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
                       </button>
                       {deadlineModalOpen && popAt && (
@@ -4272,7 +4272,7 @@ export default function JobPostForm({
             <div className="admin-form-body">
               {(() => {
                 const row: CSSProperties = { display: "flex", alignItems: "flex-start", gap: 12, padding: "7px 0" };
-                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#555", fontSize: 15, paddingTop: 1 };
+                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#333", fontSize: 15, paddingTop: 1 };
                 const val: CSSProperties = { fontSize: 15, color: "#555", lineHeight: 1.5 };
                 const location = composeCompanyAddress(cp.region_sido, cp.region_sigungu, cp.address);
                 const rows: [string, string][] = isOffice
@@ -4297,7 +4297,7 @@ export default function JobPostForm({
             <div className="admin-form-body">
               {(() => {
                 const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "7px 0" };
-                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#555", fontSize: 15 };
+                const lbl2: CSSProperties = { width: 76, flexShrink: 0, color: "#333", fontSize: 15 };
                 const req: CSSProperties = { color: "var(--color-primary)" };
                 // 모집요강과 동일: 빈 값이면 텍스트 없는 연보라 하이라이트 블록, 입력하면 확장(플레이스홀더 없음)
                 const inpHl = (filled: boolean): CSSProperties => filled

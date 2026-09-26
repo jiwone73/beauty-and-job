@@ -6590,8 +6590,8 @@ div:has(> table.admin-table),
 .admin-form-header { width: 100%; max-width: 1216px; margin-left: auto; margin-right: auto; }
 .jobpost-form .company-card-title { color: var(--color-primary); font-weight: 400; font-size: 16px; }
 /* 섹션 타이틀을 카드 밖(위)으로 — 프로필 기본정보와 동일 */
-.jobpost-section-title { color: #555; font-size: 16px; font-weight: 600; margin: 4px 0 0 4px; }
-.jobpost-form .admin-form-label { color: #555; font-size: 14px; }
+.jobpost-section-title { color: #333; font-size: 16px; font-weight: 600; margin: 4px 0 0 4px; }
+.jobpost-form .admin-form-label { color: #333; font-size: 14px; }
 /* 공고 헤더(회사명·제목) — 화면 폭에 따라 크기를 줄인다(인라인 style 대신 여기서 관리) */
 .jobpost-brand-input { font-size: 14px; }
 /* 제목은 미리보기(.job-detail-title)와 글자 크기뿐 아니라 자간·줄바꿈 규칙까지
@@ -6602,7 +6602,7 @@ div:has(> table.admin-table),
 .jp-title-eg { position: absolute; inset: 0; pointer-events: none; z-index: 0;
   font-weight: 400; line-height: 1.3; font-family: inherit; color: transparent;
   white-space: pre; overflow: hidden; }
-.jp-title-eg em { font-style: normal; color: #cfcfcf; }
+.jp-title-eg em { font-style: normal; color: #b4b4b9; }
 .jobpost-form .admin-form-body { padding: 2px 20px; gap: 0; }
 
 /* 라벨이 직접 자식인 행 → 라벨 좌 / 내용 우 + 하단 구분선 */
@@ -6757,10 +6757,10 @@ div:has(> table.admin-table),
 }
 /* 네이티브 셀렉트 화살표 자리 제거 */
 .jobpost-form .admin-form-select::-ms-expand { display: none; }
-.jobpost-form .admin-form-input::placeholder { color: #cfcfcf; font-size: 12px; }
+.jobpost-form .admin-form-input::placeholder { color: #b4b4b9; font-size: 12px; }
 /* 미리보기형 인라인 입력(제목·지역검색 등)도 placeholder 흐리게 */
 .jobpost-form input::placeholder,
-.jobpost-form textarea::placeholder { color: #d3d3d3; }
+.jobpost-form textarea::placeholder { color: #b4b4b9; }
 /* 원티드식 인라인 편집 카드: 편집 중이면 보라 테두리 강조 */
 .jobpost-form .company-card { transition: border-color .15s, box-shadow .15s; }
 .jobpost-form .company-card:focus-within { border-color: #a8a8ad; box-shadow: 0 0 0 3px rgba(95,0,128,0.06); }
@@ -6770,7 +6770,7 @@ div:has(> table.admin-table),
 .jobpost-form input[type="number"] { -moz-appearance: textfield; }
 /* 기업 정보 입력칸: 값이 안 들어온(빈) 필드는 연한 회색으로 죽여 표시 */
 .jp-company-box input::placeholder,
-.jp-company-box textarea::placeholder { color: #cfcfcf; }
+.jp-company-box textarea::placeholder { color: #b4b4b9; }
 /* 직군/시술분야 선택 트리거도 박스 제거 */
 .jobpost-form .jgf-trigger { border: none !important; background: transparent !important; padding: 0 !important; }
 .jobpost-form .jgf-chips { justify-content: flex-end; }
@@ -15568,7 +15568,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-cond { flex: 1 0 100%; display: flex; flex-wrap: wrap; gap: 8px 10px;
   margin: 4px 0; }
 .jp-cond-f { display: inline-flex; flex-direction: column; gap: 4px; }
-.jp-cond-f > span { font-size: 13px; color: #555; padding-left: 1px; }
+.jp-cond-f > span { font-size: 13px; color: #333; padding-left: 1px; }
 .jp-cond-sel { min-height: 34px; border: 1px solid #ececf0; border-radius: 8px; background: #fff
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
   no-repeat right 9px center; appearance: none; -webkit-appearance: none;
@@ -15579,7 +15579,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding-top: 7px; padding-bottom: 7px; height: auto;
   display: flex; flex-direction: column; justify-content: center;
 }
-.jp-cond-shift.ph { color: #555; }
+.jp-cond-shift.ph { color: #b4b4b9; }
 
 /* 담긴 부문은 보라 테두리로 남는다 — 잠깐 켰다 끄면 무엇이 담겼는지 다시 알 수 없다. */
 .jp-job { border-color: var(--color-primary); }
@@ -15622,7 +15622,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 설명문이라 옆 ＋ 단추와 같은 색으로 흐리게 둔다. 적어 넣은 값이 아니라
    무엇을 하는 자리인지 알려 주는 글이라, 단계 이름과 같은 진하기면 이미
    담긴 줄로 읽힌다. 새 회색을 만들지 않고 ＋ 가 쓰던 색을 그대로 쓴다. */
-.jp-proc-ph { font-size: 13px; color: #8a8a90; margin-right: 2px; }
+.jp-proc-ph { font-size: 13px; color: #b4b4b9; margin-right: 2px; }
 .jp-proc-add { width: 34px; height: 34px; border: 1px dashed #d8d8de; border-radius: 8px;
   background: #fff; font-family: inherit; font-size: 15px; color: #8a8a90; cursor: pointer; line-height: 1; }
 .jp-proc-add:hover { border-color: var(--color-primary); color: var(--color-primary); }
