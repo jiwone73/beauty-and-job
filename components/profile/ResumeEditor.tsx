@@ -342,7 +342,7 @@ export default function ResumeEditor({
             <div className="if-row-body">
               <흠줄 말들={항목흠("career", c.id)} />
               <div className="if-line if-line-head">
-                <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} wide
+                <InlineText value={c.company} placeholder={본사냐 ? "회사명" : "매장명"} required wide
                   잠금={빼기전용} onSave={(v) => updateCareer(c.id, { ...c, company: v })} />
                 {/* 지금 다니는 곳(가장 최근 경력)만 가릴 수 있게 한다. 이 판은
                     좁아서 원장이 인재검색에서 보는 것이 실제 공포다. 끄면
