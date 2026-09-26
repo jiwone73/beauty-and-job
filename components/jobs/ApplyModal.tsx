@@ -11,6 +11,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import ResumeEditor from "@/components/profile/ResumeEditor";
 import { SALARY_TYPE_LABEL } from "@/lib/salary";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
+import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import { compressPhoto, MAX_PHOTOS } from "@/lib/compressImage";
 
 type Step = "write" | "preview" | "edit";
@@ -457,10 +458,11 @@ export default function ApplyModal({
   };
 
   const 첫자소서 = useRef<string | null>(null);
-  const 초안쓰기 = async () => {
-    if (!초안준비.current) return;
+  // 저장에 성공(또는 저장할 것이 없음)하면 true.
+  const 초안쓰기 = async (): Promise<boolean> => {
+    if (!초안준비.current) return true;
     const token = localStorage.getItem("access_token");
-    if (!token) return;
+    if (!token) return false;
     const 지금 = useProfileStore.getState().이력서뽑기();
     // 기본 이력서와 한 글자도 다르지 않고 자소서도 그대로면 붙들어 둘 것이
     // 없다. 남겨 두면 다음에 열 때 '임시저장한 사본' 이라며 기본 이력서와
@@ -471,26 +473,40 @@ export default function ApplyModal({
     try {
       if (같은이력서 && 같은자소서) {
         await fetch(`/api/jobs/${jobId}/apply-draft`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
-        return;
+        return true;
       }
-      await fetch(`/api/jobs/${jobId}/apply-draft`, {
+      const res = await fetch(`/api/jobs/${jobId}/apply-draft`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ resume: { ...사본싸기(false), 뺀사진, 뺀줄 }, cover_letter: coverLetter }),
       });
+      return res.ok;
     } catch (e) {
       console.error("[apply-draft]", e);
+      return false;
     }
   };
-  // 손을 멈추면 알아서 붙들어 둔다. 단추를 누르지 않고 창을 닫아도
-  // 고치던 것이 사라지지 않게 — 단추는 그것을 눈으로 확인하는 자리다.
+  // 자동 임시저장은 없다. 「임시저장」을 눌러야 서버에 붙들어 두고, 저장하지 않은 채 창을 닫으려 하면
+  // 물음창이 뜬다(아래 guard). 「저장된 상태」는 창이 자리 잡은 뒤(초안을 되살린 것 포함)와 임시저장한 직후다.
+  //
+  // 창이 뜬 뒤에도 초안·프로필·자소서 밑글이 차례로 들어오므로, 사용자가 직접 손대기 전까지는 값이
+  // 바뀔 때마다 그 값을 기준으로 다시 잡는다(들어오는 값은 바뀐 것이 아니다).
+  const 지금본문 = JSON.stringify({ r: 사본싸기(false), 뺀사진, 뺀줄, 자소서: coverLetter, 급여: 희망급여 });
+  const 기준본문 = useRef<string | null>(null);
+  const 손댐 = useRef(false);
+  if (!손댐.current && 초안준비.current) 기준본문.current = 지금본문;
   useEffect(() => {
-    if (!초안준비.current) return;
-    const t = setTimeout(초안쓰기, 800);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [뺀사진, 뺀줄, 급여유형, 급여만, 급여협의, intro, coreCompetencies, careers, educations, skills, languages, experiences,
-      links, certificates, email, isEntryLevel, entryExperience, coverLetter]);
+    const 손댔다 = (e: Event) => {
+      const el = e.target as HTMLElement | null;
+      if (!el?.closest?.(".cv-overlay") || el.closest(".ug-box")) return;
+      if (e.type === "pointerdown" && !el.closest("button, label, select, [role=button], [role=option], input, textarea")) return;
+      손댐.current = true;
+    };
+    const 종류 = ["input", "change", "paste", "keydown", "pointerdown"];
+    종류.forEach((t) => document.addEventListener(t, 손댔다, true));
+    return () => 종류.forEach((t) => document.removeEventListener(t, 손댔다, true));
+  }, []);
+  const guard = useUnsavedGuard(기준본문.current !== null && 지금본문 !== 기준본문.current);
 
   // 이력서에 담아 둔 기본 자소서를 밑글로 깐다. 빈 칸에서 다시 쓰게 하면 대부분
   // 빈칸으로 낸다 — 두세 줄 고쳐 내는 것이 실제로 쓰이는 방식이다. 초안이나 손대던
@@ -511,8 +527,10 @@ export default function ApplyModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coverLoaded, 초안됨]);
 
-  const 손으로임시저장 = () => {
-    초안쓰기();
+  const 손으로임시저장 = async () => {
+    const 됨 = await 초안쓰기();
+    if (!됨) { alert("임시저장에 실패했습니다. 다시 시도해 주세요."); return; }
+    기준본문.current = 지금본문;
     set방금저장(true);
     setTimeout(() => set방금저장(false), 2000);
   };
@@ -546,6 +564,7 @@ export default function ApplyModal({
       // 옆에서 — 이 창이 닫히기 전에 실패해도 서버 쪽은 이미 끝나 있다).
       alert("지원이 완료되었습니다!");
       onApplied();
+      guard.준비(); // 지원을 마치고 닫는 것은 「저장하지 않은 채 나가는 것」이 아니다
       onClose();
     } catch (e) {
       console.error(e);
@@ -559,6 +578,14 @@ export default function ApplyModal({
   const wide = true;
 
   return (
+    <>
+    <UnsavedDialog
+      guard={guard}
+      저장할수있나={true}
+      저장글="임시저장"
+      저장={async () => { const 됨 = await 초안쓰기(); if (됨) 기준본문.current = 지금본문; return 됨; }}
+      입력취소={() => { /* 닫으면 이 창의 사본은 기본 이력서로 되돌아간다(위 정리 효과) */ }}
+    />
     <div className="cv-overlay">
       <div
         className="cv-modal"
@@ -578,7 +605,7 @@ export default function ApplyModal({
                 이미 말한다. 제목까지 같은 말을 되풀이하지 않는다. */}
             {step === "write" ? "지원하기" : step === "preview" ? "지원서 미리보기" : "지원서 수정"}
           </h2>
-          <button className="cv-close" onClick={onClose}>✕</button>
+          <button className="cv-close" onClick={() => guard.물어보고이동(onClose)}>✕</button>
         </div>
 
         <div className="cv-body" style={{ overflowY: "auto", flex: 1 }}>
@@ -900,5 +927,6 @@ export default function ApplyModal({
         </div>
       </div>
     </div>
+    </>
   );
 }
