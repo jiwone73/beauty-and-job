@@ -980,29 +980,34 @@ export default function ProfilePage() {
                       }} />
                   </span>
                 </div>
-                {/* 거주지 — 기업정보와 같은 결로 라벨 옆 한 줄. 카드를 따로 두지 않는다:
-                    셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
-                <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 6, padding: "13px 0" }}>
-                  <label className="profile-info-label">{칸그림("거주지 주소")}거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                  {/* 왼쪽 18px 은 라벨 글자 선(아이콘 16 + 사이 6 = 22)에서 슬롯 제 여백 4 를 뺀 값. */}
-                  <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: "0 0 0 18px" }}>
-                    <div className="if-row-body">
-                      <div className="if-line">
-                        <button type="button" className={`if-slot ${addressRoad ? "on" : ""}`} onClick={openPostcode}>
-                          {addressRoad || "주소 검색"}{!addressRoad && <i className="if-req">*</i>}
-                        </button>
-                        <span className="if-sep">|</span>
-                        <InlineText value={addressDetail} placeholder="동·호수"
-                          onSave={(v) => { setAddressDetail(v); patchUser({ address_detail: v }); }} />
+                {/* 거주지 — 라벨 옆에 「주소 검색」 한 줄만 두고, 고르고 나면 그 아래 줄에 주소와
+                    동·호수를 보여 준다. 비어 있을 때 빈 칸 두 줄이 자리를 차지하지 않게 한다. */}
+                <div className="profile-info-row is-last" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">{칸그림("거주지 주소")}거주지 주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></span>
+                  <span>
+                    <button type="button" className="if-slot" onClick={openPostcode}>주소 검색</button>
+                  </span>
+                </div>
+                {addressRoad && (
+                  <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", padding: "0 0 13px" }}>
+                    {/* 왼쪽 18px 은 라벨 글자 선(아이콘 16 + 사이 6 = 22)에서 슬롯 제 여백 4 를 뺀 값. */}
+                    <div className="if-row if-row-plain" style={{ flex: 1, minWidth: 0, borderBottom: "none", padding: "0 0 0 18px" }}>
+                      <div className="if-row-body">
+                        <div className="if-line">
+                          <button type="button" className="if-slot on" onClick={openPostcode}>{addressRoad}</button>
+                        </div>
+                        <div className="if-line">
+                          <InlineText value={addressDetail} placeholder="동·호수"
+                            onSave={(v) => { setAddressDetail(v); patchUser({ address_detail: v }); }} />
+                        </div>
                       </div>
-                    </div>
-                    {addressRoad && (
                       <button className="if-row-del" aria-label="주소 초기화" title="주소 초기화" onClick={handleClearAddress}>
                         <Trash2 size={15} />
                       </button>
-                    )}
+                    </div>
                   </div>
-                </div>
+                )}
+
                 {postcodeOpen && (
                   <div className="postcode-modal-overlay">
                     <div className="postcode-modal" onClick={(e) => e.stopPropagation()}>
