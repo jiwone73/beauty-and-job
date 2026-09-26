@@ -17695,6 +17695,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 /* 프로필의 안 쓴 칸은 PC·모바일 모두 이력서와 같은 옅은 회색 하나(#b4b4b9). 값(.on)은 그대로. */
 .profile-info-card.pf-grid .if-slot:not(.on) { color: #b4b4b9; }
+/* PC 는 값 칸 규칙(.pf-main .pf-grid .profile-info-value { color: #555 })이 빈 값(휴대전화 「010-XXXX-XXXX」 등)까지 덮어 채운 값과 같은 진하기였다. */
+.pf-main .pf-grid .profile-info-value.is-empty { color: #b4b4b9; }
 
 /* 프로필(폰) 2차 — 별표는 제목에만, 사진은 한 단계 작게, 희망급여 한 줄, 로그아웃은 머리줄 아이콘. */
 /* 폰의 프로필 화면 머리줄 아바타(누르면 로그아웃 메뉴). PC 는 사이드가 있어 감춘다. */
