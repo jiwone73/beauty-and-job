@@ -357,10 +357,17 @@ export default function JobGroupSelectModal({
         @media (max-width: 768px) {
           .jgm-backdrop { align-items: flex-end; }
           .jgm-sheet {
-            width: 100%; max-width: 100%; max-height: 88vh; max-height: 88dvh;
+            width: 100%; max-width: 100%; max-height: 92vh; max-height: 92dvh;
             border-radius: 16px 16px 0 0; animation: jgmUp 0.24s ease;
           }
+          /* 스크롤 없이 한 번에 보이게 — 대분류 10개가 다 들어가도록 줄 높이를 줄이고,
+             본문이 남는 높이를 다 쓴다. 아주 작은 화면에서만 안쪽 스크롤이 남는다. */
+          .jgm-header { padding: 14px 20px; }
+          .jgm-chips { padding: 8px 20px; }
           .jgm-body { flex: 1 1 auto; min-height: 0; max-height: none; }
+          .jgm-group { padding: 10px 14px 10px 13px; }
+          .jgm-right { padding: 8px 14px; }
+          .jgm-item { padding: 9px 6px; }
           .jgm-footer { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
           .jgm-left { width: 42%; }
         }
