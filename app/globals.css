@@ -17996,3 +17996,20 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   #section-career .if-row-plain .if-line { flex-wrap: wrap; row-gap: 2px; }
   #section-career .if-line > span.if-bar:nth-child(6) { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
 }
+
+/* ── 이력서(PC) 글자 ─────────────────────────────────────────
+   항목 이름 16px #333 · 내용 15px #555 · 비공개·신입·총 기간 14px #555 · AI 초안/맞춤법 13px #555.
+   (예전에는 16/15/14/13.5/13/12.5px 가 섞여 있고 제목도 #555 였다.) 크기가 요소에 직접 적힌 곳은 !important. */
+@media (min-width: 769px) {
+  .resume-editor .resume-section-title,
+  .resume-editor .rp-cond-k { font-size: 16px; color: #333; }
+  .resume-editor .resume-name { font-size: 15px !important; color: #555; }
+  .resume-editor .resume-job-line, .resume-editor .resume-contact,
+  .resume-editor .rp-cond-v, .resume-editor .resume-skill-chip,
+  .resume-editor .resume-section .if-slot, .resume-editor .if-input,
+  .resume-editor .resume-section textarea, .resume-editor .resume-section input { font-size: 15px; color: #555; }
+  .resume-editor .resume-section .career-open,
+  .resume-editor .resume-section-head > label,
+  .resume-editor .resume-section-title span[style*="font-size"] { font-size: 14px !important; color: #555; }
+  .resume-editor .cl-tool { font-size: 13px; color: #555; }
+}
