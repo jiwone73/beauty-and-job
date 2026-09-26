@@ -17979,3 +17979,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-section > .rp-cond { margin-left: 22px; padding-top: 10px; }
   #section-basic .resume-basic-info { padding-top: 10px; }
 }
+
+/* 이력서 — 제목 글자 아래에서 내용 첫 글자까지를 스킬 섹션 값에 맞춘 마무리(글자 기준).
+   PC 20px(포트폴리오만 18px 이었다), 폰 14px(희망 근무 조건·내 정보 10px, 포트폴리오 11px 이었다). */
+@media (min-width: 769px) {
+  #section-portfolio > .resume-career-head:nth-child(2) { padding-top: 2px; }
+}
+@media (max-width: 768px) {
+  .resume-section > .rp-cond { padding-top: 4px; padding-bottom: 2px; }
+  #section-basic .resume-basic-info { padding-top: 4px; }
+  #section-portfolio > .resume-career-head:nth-child(2) { padding-top: 3px; }
+}
