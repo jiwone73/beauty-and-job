@@ -289,7 +289,6 @@ export default function ApplyModal({
       await useProfileStore.getState().loadFromServer();
       if (내가쓴한줄 !== 원래한줄) useProfileStore.getState().setIntro(내가쓴한줄);
       뜬이력서.current = useProfileStore.getState().이력서뽑기();
-      손댐.current = false; // 방금 받아온 상태가 새 기준이다(고친 것은 여기서 사라진다)
     } catch (e) {
       console.error("[지원서] 이력서 당겨오기 실패", e);
     } finally {
