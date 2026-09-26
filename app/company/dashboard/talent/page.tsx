@@ -34,6 +34,7 @@ const AGE_FILTERS    = ["전체", "20대", "30대", "40대 이상"];
 // 다른 필터와 같은 말을 쓴다. 「무관」은 공고에서 쓰는 말이고(성별 무관
 // 우대), 여기서는 가리지 않고 다 보는 것이라 「전체」다.
 const GENDER_FILTERS = ["전체", "여성", "남성"];
+const AVAILABLE_FILTERS = ["전체", "즉시", "1주 이내", "2주 이내", "1개월 이내"];
 
 function shortenRegion(region: string | null | undefined): string {
   if (!region) return "—";
@@ -110,6 +111,7 @@ export default function TalentPage() {
     });
   };
   const [ageFilter, setAgeFilter]                 = useState("전체");
+  const [availableFilter, setAvailableFilter]     = useState("전체");
   const [genderFilter, setGenderFilter]           = useState("전체");
 
   const [isMobile, setIsMobile] = useState(false);
@@ -188,6 +190,7 @@ export default function TalentPage() {
     setCareerFilter("전체");
     setAgeFilter("전체");
     setGenderFilter("전체");
+    setAvailableFilter("전체");
   };
 
 
@@ -221,6 +224,7 @@ export default function TalentPage() {
         limit: 50,
       };
       if (관심만) params.interested = true;
+      if (availableFilter !== "전체") params.availableFrom = availableFilter;
       if (activeTab === "STORE") {
         if (selectedRegions.length > 0) params.regions = selectedRegions.join(",");
         if (ageFilter !== "전체") params.ageGroup = ageFilter;
@@ -248,7 +252,7 @@ export default function TalentPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, search, selectedJobGroups, careerFilter, selectedRegions, ageFilter, genderFilter, 관심만]);
+  }, [activeTab, search, selectedJobGroups, careerFilter, selectedRegions, ageFilter, genderFilter, availableFilter, 관심만]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -451,6 +455,7 @@ export default function TalentPage() {
     setCareerFilter("전체");
     setAgeFilter("전체");
     setGenderFilter("전체");
+    setAvailableFilter("전체");
   };
 
 
@@ -546,15 +551,16 @@ export default function TalentPage() {
         <div className="jobs-side-list">
           {([
             { 키: "경력", 값: careerFilter !== "전체" ? 1 : 0 },
+            { 키: "출근 가능일", 값: availableFilter !== "전체" ? 1 : 0 },
             ...(activeTab === "STORE" ? [
               { 키: "연령", 값: ageFilter !== "전체" ? 1 : 0 },
               { 키: "성별", 값: genderFilter !== "전체" ? 1 : 0 },
             ] : []),
           ]).map(({ 키, 값 }) => {
             const 열림 = 열린팝?.종류 === 키;
-            const 목록 = 키 === "경력" ? 경력선택지 : 키 === "연령" ? AGE_FILTERS : GENDER_FILTERS;
-            const 고른값 = 키 === "경력" ? careerFilter : 키 === "연령" ? ageFilter : genderFilter;
-            const 고르기 = 키 === "경력" ? setCareerFilter : 키 === "연령" ? setAgeFilter : setGenderFilter;
+            const 목록 = 키 === "경력" ? 경력선택지 : 키 === "출근 가능일" ? AVAILABLE_FILTERS : 키 === "연령" ? AGE_FILTERS : GENDER_FILTERS;
+            const 고른값 = 키 === "경력" ? careerFilter : 키 === "출근 가능일" ? availableFilter : 키 === "연령" ? ageFilter : genderFilter;
+            const 고르기 = 키 === "경력" ? setCareerFilter : 키 === "출근 가능일" ? setAvailableFilter : 키 === "연령" ? setAgeFilter : setGenderFilter;
             return (
               <span key={키} className="jobs-pop-wrap block">
                 <button type="button" className={값 ? "on" : undefined}
@@ -775,6 +781,15 @@ export default function TalentPage() {
                   {경력선택지.map((o) => (
                     <button key={o} className={`co-fseg-btn ${careerFilter === o ? "on" : ""}`}
                       onClick={() => setCareerFilter(o)}>{o}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="co-fseg-label">출근 가능일</div>
+                <div className="co-fseg-opts">
+                  {AVAILABLE_FILTERS.map((o) => (
+                    <button key={o} className={`co-fseg-btn ${availableFilter === o ? "on" : ""}`}
+                      onClick={() => setAvailableFilter(o)}>{o}</button>
                   ))}
                 </div>
               </div>

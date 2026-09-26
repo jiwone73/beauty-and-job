@@ -57,6 +57,7 @@ export function mapResume(data: any) {
     regionPrefer: 희망지역글(data),
     salaryType: p.salary_type || null,
     salaryMin: p.salary_min ? Number(p.salary_min) : null,
+    availableFrom: p.available_from || "",
   };
 }
 

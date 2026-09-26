@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
   const regions     = searchParams.get("regions") || null;        // 쉼표 구분 (매장직)
   const ageGroup    = searchParams.get("ageGroup") || null;       // 매장직
   const gender      = searchParams.get("gender") || null;         // 매장직
+  const availableFrom = searchParams.get("availableFrom") || null; // 출근 가능일 — 고른 기간 안에 나올 수 있는 사람
   // 제안에 「관심 있어요」를 누른 사람만. 알림에서 넘어올 때 쓴다.
   const interested  = searchParams.get("interested") === "1";
   // 스크랩해 둔 사람만. 스크랩 목록도 인재 검색과 같은 카드를 쓰려면 같은 모양으로
@@ -150,6 +151,14 @@ export async function GET(req: NextRequest) {
   else if (careerFilter === "5~10년") careerClause = 묶음(고른단계가("5~10년"), 이력이("career_years BETWEEN 6 AND 10"));
   else if (careerFilter === "10년+")  careerClause = 묶음(고른단계가("10년+"), 이력이("career_years > 10"));
 
+  // 출근 가능일 (CTE 이후) — 「1주 이내」를 고르면 즉시인 사람도 함께 걸린다.
+  // 기간이 짧은 쪽이 긴 쪽에 들어가는 사다리다. 「협의」는 기간이 아니라 어디에도 넣지 않는다.
+  const 출근사다리 = ["즉시", "1주 이내", "2주 이내", "1개월 이내"];
+  const 출근칸 = 출근사다리.indexOf(availableFrom || "");
+  const availableClause = 출근칸 >= 0
+    ? `AND available_from IN (${출근사다리.slice(0, 출근칸 + 1).map((v) => `'${v}'`).join(", ")})`
+    : "";
+
   // 연령 (CTE 이후, 매장직)
   let ageClause = "";
   if (ageGroup === "20대")  ageClause = "AND age BETWEEN 20 AND 29";
@@ -190,6 +199,7 @@ export async function GET(req: NextRequest) {
         u.region_sigungu,
         up.region_prefer,
         up.work_type_prefer,
+        up.available_from,
         up.job_search_status::text AS job_search_status,
         up.job_search_status_at,
         -- 이력서를 마지막으로 손본 때. 오래 방치된 이력서인지가 카드에서 보여야 한다.
@@ -279,7 +289,7 @@ export async function GET(req: NextRequest) {
     )
     SELECT *, COUNT(*) OVER()::int AS total_count
     FROM talent
-    WHERE 1=1 ${careerClause} ${ageClause}
+    WHERE 1=1 ${careerClause} ${ageClause} ${availableClause}
     -- 공개(SEEKING)인 사람이 먼저, 그 안에서는 최근에 로그인한 사람이 먼저다.
     -- 기업 쪽 채용공고 목록과 같은 규칙이다(app/api/jobs/route.ts 의 같은구간) —
     -- 끌어올리려면 이 화면에 따로 단추를 만들 것 없이 그냥 들어오면 된다.
@@ -329,6 +339,7 @@ export async function GET(req: NextRequest) {
       officeJobAreas: r.office_job_areas || [],
       regionPrefer: [r.region_sido, r.region_sigungu].filter(Boolean).join(" ") || r.region_prefer || null,
       workTypePrefer: r.work_type_prefer,
+      availableFrom: r.available_from || null,
       careerYears: r.career_years,
       careerCount: r.career_count,
       educationDetail: r.education_detail,

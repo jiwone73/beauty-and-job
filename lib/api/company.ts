@@ -102,6 +102,8 @@ export type TalentItem = {
   officeJobAreas: string[];
   regionPrefer: string | null;
   workTypePrefer: string | null;
+  /** 출근 가능일 — 즉시·1주 이내·2주 이내·1개월 이내·협의. 안 골랐으면 null. */
+  availableFrom?: string | null;
   careerYears: number | null;
   careerCount: number;
   /** 본인이 고른 경력 단계. 직군 대분류마다 사다리가 다르다. */
@@ -130,6 +132,7 @@ export const companyTalentApi = {
     regions?: string;
     ageGroup?: string;
     gender?: string;
+    availableFrom?: string;
     jobSearchStatus?: string;
     interested?: boolean;   // 제안에 「관심 있어요」를 누른 사람만
     scrapped?: boolean;     // 스크랩해 둔 사람만 — 스크랩 인재 화면
@@ -148,6 +151,8 @@ export const companyTalentApi = {
       qs.set("ageGroup", params.ageGroup);
     if (params?.gender && params.gender !== "무관")
       qs.set("gender", params.gender);
+    if (params?.availableFrom && params.availableFrom !== "전체")
+      qs.set("availableFrom", params.availableFrom);
     if (params?.jobSearchStatus && params.jobSearchStatus !== "전체")
       qs.set("jobSearchStatus", params.jobSearchStatus);
     if (params?.interested) qs.set("interested", "1");

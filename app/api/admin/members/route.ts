@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
         (SELECT p.main_job_group FROM user_profiles p WHERE p.user_id = u.id) AS main_job_group,
         (SELECT p.sub_job FROM user_profiles p WHERE p.user_id = u.id) AS sub_job,
         (SELECT p.work_type_prefer FROM user_profiles p WHERE p.user_id = u.id) AS work_type_prefer,
+        (SELECT p.available_from FROM user_profiles p WHERE p.user_id = u.id) AS available_from,
         (SELECT r.id FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS resume_id,
         (SELECT r.career_type FROM resumes r WHERE r.user_id = u.id ORDER BY r.updated_at DESC LIMIT 1) AS career_type,
         -- 자소서를 썼는가. 「등록 자료」 칸이 이 값으로 채움 여부를 말한다.

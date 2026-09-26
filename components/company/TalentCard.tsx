@@ -99,6 +99,8 @@ export default function TalentCard({
     t.subJob || t.mainJobGroup || t.skillAreas?.[0] || t.officeJobAreas?.[0],
     careerLabel(t.careerStage, t.careerYears, t.careerCount),
     t.workTypePrefer ? 고용형태[t.workTypePrefer] || null : null,
+    // 「협의」는 기간이 아니라 걸러 낼 정보가 못 된다 — 기간을 적은 사람만 붙인다.
+    t.availableFrom && t.availableFrom !== "협의" ? `${t.availableFrom} 출근` : null,
   ].filter(Boolean) as string[];
 
   return (
