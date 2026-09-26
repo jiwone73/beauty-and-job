@@ -3567,7 +3567,9 @@ export default function JobPostForm({
                           {단계들.map((st) => (
                             <button key={st} type="button"
                               className={`jp-step ${켜진단계.includes(st) ? "on" : ""}`}
-                              onClick={() => {
+                              onClick={(e) => {
+                                const 칩 = e.currentTarget;
+                                requestAnimationFrame(() => 칩.scrollIntoView({ inline: "nearest", block: "nearest" }));
                                 const 있음 = 단계행(st);
                                 if (있음) {
                                   if (내행.length === 1) { setPos(있음, "career", ""); return; }
@@ -3601,6 +3603,8 @@ export default function JobPostForm({
                         const 잠금 = false;
                         return (
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
+                            {/* 이름표·인원·급여는 한 줄로 묶는다 — 폰에서는 이 줄만 옆으로 민다(PC 에서는 풀려 있다). */}
+                            <div className="jp-job-line">
                             <span className="jp-job-lab">{row.career || "경력무관"}</span>
                             {!isOffice && (() => {
                               /* 1 아래로 내리면 「00」— 몇 명인지 정하지 않았다는 뜻이다.
@@ -3678,6 +3682,7 @@ export default function JobPostForm({
                                 </button>
                               );
                             })()}
+                            </div>
                             {/* 조건은 줄마다 따로 갖는다 — 인턴과 신입은 같은 자리가 아니다.
                                 새 단계를 켜면 앞 줄 값을 물려받으니, 같으면 손댈 일이 없다. */}
                             <div className={`jp-job-cond ${미정 ? "off" : ""}`}>

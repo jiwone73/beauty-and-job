@@ -18147,3 +18147,27 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-job-steps .jp-step, .jp-job-steps .jp-req { flex-shrink: 0; }
   .jobpost-form .jp-job { margin-left: -19px; margin-right: -19px; }
 }
+
+/* 공고 폼 분야 카드 · 폰 — 여백을 줄여 한 줄에 더 담고, 넘치는 줄만 옆으로 민다.
+   PC 는 .jp-job-line 이 풀려 있어(display: contents) 그대로다. */
+.jp-job-line { display: contents; }
+@media (max-width: 768px) {
+  .jp-job-steps { gap: 4px; }
+  .jp-step { padding: 4px 7px; }
+  .jp-job-line { display: flex; align-items: center; gap: 6px; flex: 1 0 100%; min-width: 0; flex-wrap: nowrap;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .jp-job-line::-webkit-scrollbar { display: none; }
+  .jp-job-line > * { flex-shrink: 0; }
+  .jp-job-lab { width: auto; }
+  .jp-step-num button { width: 24px; }
+  .jp-step-num b { min-width: 20px; }
+  .jp-job-unit { margin-right: 0; }
+  .jp-sal-unit { padding: 0 20px 0 8px; background-position: right 7px center; }
+  .jp-sal-basis { padding: 0 20px 0 8px; background-position: right 7px center; }
+  .jp-sal-amt { padding: 0 8px; }
+  .jp-sal-amt input { width: 52px; }
+  .jp-job-cond { flex-wrap: nowrap; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .jp-job-cond::-webkit-scrollbar { display: none; }
+  .jp-job-cond .jp-cond-f { flex-shrink: 0; }
+  .jp-cond-sel { padding: 0 20px 0 9px; background-position: right 7px center; }
+}
