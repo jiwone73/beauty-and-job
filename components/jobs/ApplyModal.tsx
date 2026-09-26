@@ -494,7 +494,8 @@ export default function ApplyModal({
   const 지금본문 = JSON.stringify({ r: 사본싸기(false), 뺀사진, 뺀줄, 자소서: coverLetter, 급여: 희망급여 });
   const 기준본문 = useRef<string | null>(null);
   const 손댐 = useRef(false);
-  if (!손댐.current && 초안준비.current) 기준본문.current = 지금본문;
+  // 초안 불러오기가 끝나기 전에 손대는 경우에도 기준이 있어야 한다(없으면 그 편집은 보호받지 못한다).
+  if (!손댐.current) 기준본문.current = 지금본문;
   useEffect(() => {
     const 손댔다 = (e: Event) => {
       const el = e.target as HTMLElement | null;
