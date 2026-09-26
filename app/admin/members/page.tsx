@@ -109,7 +109,6 @@ type Member = {
   main_job_group: string | null;
   sub_job: string | null;
   work_type_prefer: string | null;
-  available_from: string | null;
   portfolio_images: { url: string }[] | null;
   resume_file_url: string | null;
   sns_url: string | null;
@@ -404,7 +403,7 @@ function AdminMembersPageInner() {
         </div>
 
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 1340, whiteSpace: "nowrap" }}>
+          <table className="admin-table" style={{ minWidth: 1240, whiteSpace: "nowrap" }}>
             <thead>
               <tr>
                 <th style={{ width: 36 }}>
@@ -413,7 +412,6 @@ function AdminMembersPageInner() {
                 <th>이름</th>
                 <th style={{ width: 180 }}>희망직군</th>
                 <th>지역</th>
-                <th>출근 가능일</th>
                 <th >연락처</th>
                 <th>인재검색</th>
                 <th>가입</th>
@@ -424,9 +422,9 @@ function AdminMembersPageInner() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={11} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>불러오는 중...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={11} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
+                <tr><td colSpan={10} className="admin-empty" style={{ textAlign: "center" }}>검색 결과가 없습니다.</td></tr>
               ) : paginated.map((m) => {
                 const age = calcAge(m.birth_date);
                 const gender = genderLabel(m.gender);
@@ -489,9 +487,6 @@ function AdminMembersPageInner() {
                         ? [shortSido(m.region_sido), m.region_sigungu].filter(Boolean).join(" ")
                         : "-"}
                     </td>
-
-                    {/* 출근 가능일 — 본인이 프로필·이력서에서 고른 값 */}
-                    <td className="admin-td-date">{m.available_from || "-"}</td>
 
                     {/* 연락처: 이메일 / 전화 */}
                     <td className="admin-td-date" >
