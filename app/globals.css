@@ -17862,3 +17862,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .rp-modal .rp-text { font-size: 14px !important; }
 }
+
+/* 이력서 경력·학력(폰) — 한 줄에 다 몰아 넣어 「…」로 잘렸다. 기간(시작 – 끝)만 한 줄에 두고 나머지 항목(고용형태·직책,
+   졸업 여부·전공 등)은 각각 줄을 바꿔 세운다. 항목 사이 세로 막대(│)가 줄바꿈 자리가 된다. */
+@media (max-width: 768px) {
+  #section-career .if-row-plain .if-line,
+  #section-education .if-row-plain .if-line { flex-wrap: wrap; row-gap: 2px; }
+  #section-career .if-bar,
+  #section-education .if-bar { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
+}
