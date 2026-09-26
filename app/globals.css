@@ -17825,7 +17825,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .resume-sidebar { display: none; }
   .resume-m-top { display: block; padding: 12px 8px 6px 16px; background: #fff; border-bottom: 1px solid var(--color-border); margin-bottom: 8px; }
-  .resume-m-title { font-size: 17px; font-weight: 700; color: #555; margin: 0 0 8px; letter-spacing: -.3px; }
+  .resume-m-title { font-size: 17px; font-weight: 700; color: #555; margin: 0 0 8px; letter-spacing: -.3px; text-align: center; }
   .resume-m-bar { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
   .resume-m-rate { font-size: 15px; color: #333; font-weight: 600; white-space: nowrap; }
   .resume-m-rate strong { color: var(--color-primary); font-weight: 700; margin-left: 4px; }
@@ -17846,4 +17846,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
   .resume-bottom-save { padding-top: 12px; padding-bottom: 12px; }
   .resume-bottom-save .resume-save-btn-full { height: 40px; font-size: 14px; border-radius: 6px; }
+}
+
+/* 이력서(폰) 3차 — 희망 근무조건 항목은 14px, 미리보기는 들여쓰기 없이 항목 15px #333·내용 14px #555(작성 화면과 같게). */
+@media (max-width: 768px) {
+  .rp-cond-k { font-size: 14px; }
+  .rp-modal .rp-section-title ~ * { margin-left: 0; }
+  .rp-modal .rp-section-title { font-size: 15px; color: #333; }
+  .rp-modal .rp-name, .rp-modal .rp-meta, .rp-modal .rp-contact, .rp-modal .rp-text, .rp-modal .rp-text span,
+  .rp-modal .rp-item-head strong, .rp-modal .rp-period, .rp-modal .rp-item-sub,
+  .rp-modal .rp-cond-v, .rp-modal .rp-cond-unit, .rp-modal .rp-chip { font-size: 14px; color: #555; }
 }

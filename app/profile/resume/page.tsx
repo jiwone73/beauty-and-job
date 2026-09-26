@@ -542,16 +542,15 @@ function ResumePageContent() {
         </aside>
 
         <main className="resume-editor">
-          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 미리보기·다운로드·임시저장(작은 단추).
+          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 임시저장·미리보기(작은 단추; 다운로드는 미리보기 창에 있다).
               PC 는 사이드와 본문 오른쪽 위 단추가 맡아 CSS 로 감춘다. */}
           <div className="resume-m-top">
             <h1 className="resume-m-title">기본 이력서</h1>
             <div className="resume-m-bar">
               <span className="resume-m-rate">완성도 <strong>{progressRate}%</strong></span>
               <span className="resume-m-btns">
-                <button type="button" onClick={() => setShowPreview(true)}>미리보기</button>
-                <button type="button" onClick={handleDownload} disabled={isDownloading}>{isDownloading ? "받는 중…" : "다운로드"}</button>
                 <button type="button" onClick={() => handleSave(true)} disabled={저장중}>임시저장</button>
+                <button type="button" onClick={() => setShowPreview(true)}>미리보기</button>
               </span>
             </div>
           </div>
