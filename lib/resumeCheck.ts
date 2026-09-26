@@ -57,10 +57,11 @@ export function 이력서흠찾기(입력: {
     if (본사냐 && 빔(e.major)) 흠들.push({ 어디: "education", 누구: e.id, 말: "전공 · 학위가 비었어요." });
   });
 
-  // ── 교육·수료 ── 칸 자체는 선택이다. 하나를 넣었으면 교육기관명과 과정명은 적어야 한다(기간·수료 여부는 선택).
+  // ── 교육·수료 ── 칸 자체는 선택이다. 하나를 넣었으면 교육기관명·과정명·수료 여부는 채워야 한다(기간은 선택).
   experiences.filter((x) => x.category === "교육").forEach((x) => {
     if (빔(x.title)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육기관명을 적어 주세요." });
     if (빔(x.description)) 흠들.push({ 어디: "training", 누구: x.id, 말: "과정명을 적어 주세요." });
+    if (빔(x.status)) 흠들.push({ 어디: "training", 누구: x.id, 말: "수료 여부를 골라 주세요." });
     if (거꾸로(x.startDate, x.endDate)) 흠들.push({ 어디: "training", 누구: x.id, 말: "교육 기간의 시작이 끝보다 늦어요." });
   });
 

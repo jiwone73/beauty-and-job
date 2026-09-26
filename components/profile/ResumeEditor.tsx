@@ -468,7 +468,7 @@ export default function ResumeEditor({
                 <InlineText value={x.description} placeholder="과정명" required
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, description: v })} />
                 <span className="if-bar">│</span>
-                <InlinePick value={x.status || ""} placeholder="수료 여부" options={교육상태}
+                <InlinePick value={x.status || ""} placeholder="수료 여부" required options={교육상태}
                   잠금={빼기전용} onSave={(v) => updateExperience(x.id, { ...x, status: v })} />
               </div>
               <div className="if-line">
