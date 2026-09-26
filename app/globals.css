@@ -18080,3 +18080,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .settings-compact .if-slot, .settings-compact .if-input, .settings-compact .if-sep,
   .settings-compact .admin-form-input, .settings-compact .admin-form-select, .settings-compact .admin-form-textarea { font-size: 14px; }
 }
+
+/* 기업 계정정보 값(가입 유형·휴대폰·이메일) — 개인 프로필과 같은 글자: PC 15px, 폰 14px. 채운 값 #555, 안 채운 값 #b4b4b9.
+   예전에는 글자 크기(16px)와 색(#bbb)을 화면에 직접 적어 두어 폭과 상관없이 같았다. */
+.settings-compact .acc-val { font-size: 15px; color: #555; }
+.settings-compact .acc-val.empty { color: #b4b4b9; }
+@media (max-width: 768px) {
+  .settings-compact .acc-val { font-size: 14px; }
+}

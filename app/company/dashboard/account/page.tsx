@@ -144,10 +144,10 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row" style={row}>
                   <label className="admin-form-label" style={label}><Building2 size={15} className="admin-form-icon" />가입 유형</label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 7 }}>
-                    <span style={{ fontSize: 16, color: 유형이름 ? "#555" : "#bbb" }}>{유형이름 || "미등록"}</span>
+                    <span className={`acc-val${유형이름 ? "" : " empty"}`}>{유형이름 || "미등록"}</span>
                     {/* 반 칸짜리 자리라 한마디만 — 긴 설명은 가입 화면에서 이미 읽었다. */}
                     {유형이름 && (
-                      <span style={{ fontSize: 15, color: "#555" }}>
+                      <span className="acc-val">
                         {유형이름 === "오피스 직군" ? "매장이 아닌 곳 채용" : "살롱·샵 채용"}
                       </span>
                     )}
@@ -163,8 +163,8 @@ export default function CompanyAccountPage() {
                 <div className="admin-form-row" onClick={openPhoneModal} style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Smartphone size={15} className="admin-form-icon" />담당자 휴대폰<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ fontSize: 16, color: phone ? "#555" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
-                    <span style={{ color: "#555", fontSize: 16, flexShrink: 0 }}>›</span>
+                    <span className={`acc-val${phone ? "" : " empty"}`} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{phone ? formatPhone(phone) : "미등록"}</span>
+                    <span className="acc-val" style={{ flexShrink: 0 }}>›</span>
                   </span>
                 </div>
 
@@ -173,8 +173,8 @@ export default function CompanyAccountPage() {
                   style={{ ...row, borderBottom: "none", cursor: "pointer" }}>
                   <label className="admin-form-label" style={label}><Mail size={15} className="admin-form-icon" />이메일<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
                   <span style={{ ...content, display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                    <span style={{ fontSize: 16, color: email ? "#555" : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
-                    <span style={{ color: "#555", fontSize: 16, flexShrink: 0 }}>›</span>
+                    <span className={`acc-val${email ? "" : " empty"}`} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email || "미등록"}</span>
+                    <span className="acc-val" style={{ flexShrink: 0 }}>›</span>
                   </span>
                 </div>
               </div>
