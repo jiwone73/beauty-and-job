@@ -265,6 +265,17 @@ export function InlineYMD({
     return () => { document.removeEventListener("mousedown", 밖); window.removeEventListener("keydown", 키); };
   }, [열림]);
 
+  // 폰에서는 값 칸이 화면 가운데쯤에서 시작해 판이 오른쪽으로 삐져나간다.
+  // 열릴 때(그리고 연→월→일로 넘어가 폭이 바뀔 때) 화면 밖으로 나간 만큼 왼쪽으로 민다.
+  const 판 = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = 판.current;
+    if (!열림 || !el) return;
+    el.style.left = "0px";
+    const 넘침 = el.getBoundingClientRect().right - (window.innerWidth - 12);
+    if (넘침 > 0) el.style.left = `${-넘침}px`;
+  }, [열림, 연, 월]);
+
   const 연들 = Array.from({ length: 몇해 }, (_, i) => 올해 - i);
   const 그달일수 = (y: number, m: number) => new Date(y, m, 0).getDate();
 
@@ -274,7 +285,7 @@ export function InlineYMD({
         {value || placeholder}{!value && 별표(required)}
       </button>
       {열림 && (
-        <span className="if-pop if-pop-ym">
+        <span className="if-pop if-pop-ym" ref={판}>
           {연 === null ? (
             <span className="if-ym-grid">
               {연들.map((y) => (
