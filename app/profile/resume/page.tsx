@@ -67,6 +67,8 @@ function ResumePageContent() {
   const [coverLocal, setCoverLocal] = useState(coverLetter);
   // 희망급여는 프로필에서 정하는 값이라 여기서는 보여만 준다.
   const [pay, setPay] = useState<{ type: string | null; min: number | null }>({ type: null, min: null });
+  // 출근 가능일도 프로필에서 정하는 값이라 여기서는 보여만 준다.
+  const [availableFrom, setAvailableFrom] = useState("");
   // 희망 근무지역은 users.preferred_regions(배열)에 있다. 미리보기가 보던
   // user_profiles.region_prefer 는 비어 있어 그 줄이 통째로 빠졌다.
   const [희망지역, set희망지역] = useState("");
@@ -78,6 +80,7 @@ function ResumePageContent() {
       .then((res) => {
         const pf = res?.data?.profile;
         if (pf) setPay({ type: pf.salary_type || null, min: pf.salary_min ? Number(pf.salary_min) : null });
+        if (typeof pf?.available_from === "string") setAvailableFrom(pf.available_from);
       })
       .catch(() => {});
   }, []);
@@ -640,6 +643,8 @@ function ResumePageContent() {
               <span className="rp-cond-v">{[...(resumeType === "salon" ? skillAreas : effectiveOfficeAreas)].join(", ") || "—"}</span>
               <span className="rp-cond-k">희망 급여</span>
               <span className="rp-cond-v">{희망급여글}</span>
+              <span className="rp-cond-k">출근 가능일</span>
+              <span className="rp-cond-v">{availableFrom || "—"}</span>
             </div>
           </section>
 
@@ -742,6 +747,7 @@ function ResumePageContent() {
                   workTypePrefer,
                   salaryType: pay.type,
                   salaryMin: pay.min,
+                  availableFrom,
                   regionPrefer: 희망지역 || regionPrefer,
                 }}
               />

@@ -53,6 +53,8 @@ interface Props {
   /** 희망급여 — 공고와 같은 모양(원 단위 + 유형). 없으면 「협의」. */
   salaryType?: string | null;
   salaryMin?: number | null;
+  /** 출근 가능일 — 즉시·1주 이내·2주 이내·1개월 이내·협의. 없으면 그 줄을 안 그린다. */
+  availableFrom?: string | null;
   avatarUrl?: string | null;
 }
 
@@ -96,6 +98,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
     workTypePrefer,
     regionPrefer,
     salaryType,
+    availableFrom,
     salaryMin,
     avatarUrl,
   },
@@ -159,7 +162,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           (사람인·잡코리아 모두 인적사항 다음에 둔다) 읽는 차례이기도 하다:
           누구인가 → 무엇을 원하는가 → 무엇을 해왔는가 → 하고 싶은 말.
           지원서 수정 화면도 같은 차례로 세워 둔다. */}
-      {(regionPrefer || workTypePrefer || 희망직군 || salaryMin) && (
+      {(regionPrefer || workTypePrefer || 희망직군 || salaryMin || availableFrom) && (
         <div className="rp-section">
           <h2 className="rp-section-title"><Target size={16} className="resume-section-icon" />희망 근무 조건</h2>
           <div className="rp-cond">
@@ -178,6 +181,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
                 <><b className="rp-cond-unit">{급여앞말(salaryType)}</b> {급여숫자(salaryMin, salaryType)}~</>
               ) : "협의"}
             </span>
+            {availableFrom && (
+              <><span className="rp-cond-k">출근 가능일</span><span className="rp-cond-v">{availableFrom}</span></>
+            )}
           </div>
         </div>
       )}
