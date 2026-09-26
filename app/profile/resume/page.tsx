@@ -542,6 +542,19 @@ function ResumePageContent() {
         </aside>
 
         <main className="resume-editor">
+          {/* 폰 전용 머리 — 페이지 제목, 그 아래 왼쪽에 완성도, 오른쪽에 미리보기·다운로드·임시저장(작은 단추).
+              PC 는 사이드와 본문 오른쪽 위 단추가 맡아 CSS 로 감춘다. */}
+          <div className="resume-m-top">
+            <h1 className="resume-m-title">기본 이력서</h1>
+            <div className="resume-m-bar">
+              <span className="resume-m-rate">완성도 <strong>{progressRate}%</strong></span>
+              <span className="resume-m-btns">
+                <button type="button" onClick={() => setShowPreview(true)}>미리보기</button>
+                <button type="button" onClick={handleDownload} disabled={isDownloading}>{isDownloading ? "받는 중…" : "다운로드"}</button>
+                <button type="button" onClick={() => handleSave(true)} disabled={저장중}>임시저장</button>
+              </span>
+            </div>
+          </div>
           <div className="resume-mobile-progress">
             <div className="rmp-head">
               <span>완성도</span>
@@ -668,10 +681,6 @@ function ResumePageContent() {
           </section>
 
           <div className="resume-bottom-save">
-            {/* 폰에는 위쪽 미리보기·다운로드 줄이 없어 아래 저장 줄에 미리보기·다운로드·임시저장을 둔다(PC 는 CSS 로 감춘다). */}
-            <button type="button" className="resume-bottom-extra resume-bottom-preview" onClick={() => setShowPreview(true)}>미리보기</button>
-            <button type="button" className="resume-bottom-extra resume-bottom-download" onClick={handleDownload} disabled={isDownloading}>{isDownloading ? "저장 중…" : "다운로드"}</button>
-            <button type="button" className="resume-bottom-extra resume-bottom-draft" onClick={() => handleSave(true)} disabled={저장중}>임시저장</button>
             <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={() => handleSave()} disabled={저장중}>
               {저장중 ? "저장 중…" : 저장됨 ? "저장됨 ✓" : "작성 완료"}
             </button>

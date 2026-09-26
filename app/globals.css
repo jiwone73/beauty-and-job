@@ -17818,12 +17818,32 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   background: #fff; color: #555; border: 1px solid #efeff1; border-radius: 999px; padding: 10px 18px;
   font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.12); white-space: nowrap; }
 
-/* 이력서 하단 저장 줄 — 폰에서만: 위 줄에 미리보기·다운로드·임시저장 세 단추, 아래 줄에 작성 완료. */
-.resume-bottom-extra { display: none; }
+
+/* 이력서(폰) 2차 — 테두리 기준 좌우 8px, 글자는 거기서 한 글자(14px) 들여 쓴다. 미리보기·다운로드·임시저장과 완성도는
+   페이지 제목 아래 한 줄로(왼쪽 완성도, 오른쪽 작은 단추). 진행 막대와 하단 큰 단추들은 뺀다. */
+.resume-m-top { display: none; }
 @media (max-width: 768px) {
-  .resume-bottom-save { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
-  .resume-bottom-extra { display: block; flex: 1 1 calc(33.333% - 4px); height: 44px; padding: 0 4px; background: #fff; color: #555;
-    border: 1px solid #d5d5d9; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; white-space: nowrap; }
-  .resume-bottom-extra:disabled { opacity: .6; cursor: default; }
-  .resume-bottom-save .resume-save-btn-full { flex: 1 1 100%; width: 100%; }
+  .resume-sidebar { display: none; }
+  .resume-m-top { display: block; padding: 12px 8px 6px 22px; background: #fff; border-bottom: 1px solid var(--color-border); margin-bottom: 8px; }
+  .resume-m-title { font-size: 17px; font-weight: 700; color: #555; margin: 0 0 8px; letter-spacing: -.3px; }
+  .resume-m-bar { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .resume-m-rate { font-size: 15px; color: #333; font-weight: 600; white-space: nowrap; }
+  .resume-m-rate strong { color: var(--color-primary); font-weight: 700; margin-left: 4px; }
+  .resume-m-btns { display: flex; gap: 4px; }
+  .resume-m-btns button { height: 28px; padding: 0 8px; background: #fff; color: #555; border: 1px solid #d5d5d9; border-radius: 6px;
+    font-size: 13px; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .resume-m-btns button:disabled { opacity: .6; cursor: default; }
+
+  .resume-section > .resume-section-title,
+  .resume-section > .resume-section-head,
+  .resume-section > .rp-cond,
+  .resume-section > .resume-basic-info,
+  .resume-section > .if-row,
+  .resume-section > .resume-skill-chips,
+  .resume-section > .cl-tools,
+  .resume-section > .resume-career-head,
+  .resume-section > .portfolio-grid { padding-left: 14px; }
+
+  .resume-bottom-save { padding-top: 12px; padding-bottom: 12px; }
+  .resume-bottom-save .resume-save-btn-full { height: 40px; font-size: 14px; border-radius: 6px; }
 }
