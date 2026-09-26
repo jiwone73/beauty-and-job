@@ -54,9 +54,9 @@ function ResumePageContent() {
    * 하얗게 비지는 않는다.
    */
   const [프로필확인, set프로필확인] = useState(false);
-  // 작성 완료를 누른 뒤 아직 못 채운 곳. 각 칸 위에 붙는다.
+  // 저장하기를 누른 뒤 아직 못 채운 곳. 각 칸 위에 붙는다.
   const [흠, set흠] = useState<흠[]>([]);
-  // 폰에서 「작성 완료」를 눌렀을 때 됐는지 안 됐는지 화면에서 바로 보이게 한다 — 저장 중/저장됨 표시와 잠깐 뜨는 알림.
+  // 폰에서 「저장하기」를 눌렀을 때 됐는지 안 됐는지 화면에서 바로 보이게 한다 — 저장 중/저장됨 표시와 잠깐 뜨는 알림.
   const [저장중, set저장중] = useState(false);
   const [저장됨, set저장됨] = useState(false);
   const [알림, set알림] = useState("");
@@ -88,7 +88,7 @@ function ResumePageContent() {
   useEffect(() => { setIntroLocal((prev) => prev || intro); }, [intro]);
   useEffect(() => { setCoverLocal((prev) => prev || coverLetter); }, [coverLetter]);
 
-  // 한줄소개·핵심역량·자기소개서는 이 화면 안에서 따로 들고 있다가 「작성 완료」를 눌러야 스토어(자동 저장)로
+  // 한줄소개·핵심역량·자기소개서는 이 화면 안에서 따로 들고 있다가 「저장하기」를 눌러야 스토어(자동 저장)로
   // 넘어갔다 — 안 누르고 나가면 사라졌다. 내가 직접 고친 뒤에는 손을 멈추면 스토어로 넘겨 자동 저장에 태운다.
   // 「내가 고쳤을 때만」 넘긴다: 뒤늦게 서버에서 온 값을 낡은 화면 값으로 덮지 않으려는 것이다.
   const 손댐 = useRef(false);
@@ -317,7 +317,7 @@ function ResumePageContent() {
       // 눌렀는지 알 수 있게 — PC 도 알림창(alert) 대신 같은 알림을 띄우고, 화면을 맨 위(완성도)로 올린다.
       set저장됨(true); setTimeout(() => set저장됨(false), 2500);
       window.scrollTo({ top: 0, behavior: "smooth" });
-      알림표시("✓ 이력서 작성을 마쳤어요");
+      알림표시("✓ 저장되었어요");
     } catch (e: any) {
       // 아직 못 받아온 상태면 그 이유를 그대로 알린다 — "다시 시도"만 권하면
       // 같은 자리에서 계속 실패한다.
@@ -713,7 +713,7 @@ function ResumePageContent() {
 
           <div className="resume-bottom-save">
             <button className={`resume-save-btn-full${저장됨 ? " done" : ""}`} onClick={() => handleSave()} disabled={저장중}>
-              {저장중 ? "저장 중…" : 저장됨 ? "저장됨 ✓" : "작성 완료"}
+              {저장중 ? "저장 중…" : 저장됨 ? "저장됨 ✓" : "저장하기"}
             </button>
             {알림 && <div className="resume-toast" role="status" aria-live="polite">{알림}</div>}
           </div>
