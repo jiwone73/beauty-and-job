@@ -540,6 +540,9 @@ export default function ResumeEditor({
                   잠금={빼기전용} onSave={(v) => updateCertificate(c.id, { ...c, name: v })} />
               </div>
               <div className="if-line">
+                <InlineText value={c.issuer || ""} placeholder="발급 기관"
+                  잠금={빼기전용} onSave={(v) => updateCertificate(c.id, { ...c, issuer: v })} />
+                <span className="if-bar">│</span>
                 <InlineYM value={c.issued_ym} placeholder="취득 년월"
                   잠금={빼기전용} onSave={(v) => updateCertificate(c.id, { ...c, issued_ym: v })} />
               </div>

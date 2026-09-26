@@ -297,11 +297,14 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
             <div key={cert.id} className="rp-item">
               <div className="rp-item-head">
                 <strong>{cert.name}</strong>
-                {cert.issued_ym && (
-                  <span className="rp-period">{cert.issued_ym}</span>
-                )}
               </div>
-              {cert.issuer && <p className="rp-item-sub">{cert.issuer}</p>}
+              {(cert.issuer || cert.issued_ym) && (
+                <p className="rp-item-sub">
+                  {cert.issuer}
+                  {cert.issuer && cert.issued_ym && <span style={{ color: "#c8c8cc" }}> │ </span>}
+                  {cert.issued_ym}
+                </p>
+              )}
             </div>
           ))}
         </div>
