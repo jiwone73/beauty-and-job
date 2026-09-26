@@ -17900,3 +17900,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .rp-modal .rp-item-edu .rp-sub-major { order: 4; flex: 0 0 100%; }
   .rp-modal .rp-item-edu .rp-sub-sep { display: none; }
 }
+
+/* 이력서 한줄소개 입력칸(폰) — 안쪽 여백을 절반으로(10px 12px → 5px 6px). 크기가 요소에 직접 적혀 있어 !important. */
+@media (max-width: 768px) {
+  #section-headline input { padding: 5px 6px !important; }
+}
