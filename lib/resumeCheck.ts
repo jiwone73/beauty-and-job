@@ -46,8 +46,8 @@ export function 이력서흠찾기(입력: {
   }
 
   // ── 학력 ── 학력 구분·학교명·졸업 상태는 매장도 필수다. 전공만 본사에서 묻는다(고졸에게는 적을 것이 없다).
-  // 학력은 오피스만 필수다. 매장은 항목 자체가 선택이고, 넣었다면 아래 칸들은 채워야 한다.
-  if (본사냐 && educations.length === 0) 흠들.push({ 어디: "education", 말: "학력을 넣어 주세요." });
+  // 학력은 매장·오피스 모두 필수다(매장을 선택으로 했다가 다시 필수로 되돌렸다).
+  if (educations.length === 0) 흠들.push({ 어디: "education", 말: "학력을 넣어 주세요." });
   educations.forEach((e) => {
     if (빔(e.level)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학력 구분을 골라 주세요." });
     if (거꾸로(e.startDate, e.endDate)) 흠들.push({ 어디: "education", 누구: e.id, 말: "학력 기간의 시작이 끝보다 늦어요." });
