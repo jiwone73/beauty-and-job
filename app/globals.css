@@ -18022,3 +18022,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 이력서 내 정보의 이름은 볼드(작성 화면과 미리보기 모두, 폰·PC 공통). */
 .resume-editor .resume-name, .rp-modal .rp-name { font-weight: 700 !important; }
+
+/* 이력서 안 적은 칸 — 폰·PC 공통으로 흐린 회색 자리글(#b4b4b9), 적으면 #555. 어학·활동수상·경력·자격증에 더해 학력도.
+   「비공개」 체크와 「(지원 시에만 공개)」 안내도 같은 흐린 회색. (예전에는 폰에서만 걸려 있었고 학력은 빠져 있었다.) */
+.resume-editor #section-language .if-slot:not(.on), .resume-editor #section-experience .if-slot:not(.on),
+.resume-editor #section-career .if-slot:not(.on), .resume-editor #section-certificate .if-slot:not(.on),
+.resume-editor #section-education .if-slot:not(.on) { color: #b4b4b9; }
+.resume-editor #section-language .if-slot.on, .resume-editor #section-experience .if-slot.on,
+.resume-editor #section-career .if-slot.on, .resume-editor #section-certificate .if-slot.on,
+.resume-editor #section-education .if-slot.on { color: #555; }
+.resume-editor .resume-section .career-open { color: #b4b4b9 !important; }
+.resume-editor .resume-section .career-open input[type="checkbox"] { opacity: .45; }
+.resume-editor .resume-section .career-open-note { color: #b4b4b9 !important; }
