@@ -2632,7 +2632,7 @@ input[type="range"].career-slider::-moz-range-thumb {
 .jd-pos-td { padding: 7px 5px; border-bottom: 1px solid #f2f2f2; white-space: nowrap; line-height: 1.5; text-align: left; overflow: hidden; text-overflow: ellipsis; }
 tr:last-child > .jd-pos-td { border-bottom: none; }
 .jd-pos-th:first-child, .jd-pos-td:first-child { padding-left: 6px; }
-.jd-pos-th, .jd-pos-td { font-size: 13px; }
+.jd-pos-th, .jd-pos-td { font-size: 14px; }
 /* 인라인 스타일(fixed·colgroup %·minWidth)을 이겨야 해서 !important. 칸마다 실제 내용만큼만
    차지해, 짧은 값(모집분야·인원)의 남는 자리로 다음 칸이 더 보인다. */
 .jd-pos-table { table-layout: auto !important; min-width: 0 !important; }
@@ -18127,3 +18127,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jobpost-form [style*="font-size: 15px"] { font-size: 14px !important; }
   .jp-proc-ph { font-size: 14px; }
 }
+
+/* 공고 미리보기·공고 상세의 모집분야 표 — 폼 분야 카드와 같은 크기: PC 14px, 폰 13px(폰은 표가 옆으로 스크롤된다). */
+@media (max-width: 768px) {
+  .jd-pos-th, .jd-pos-td { font-size: 13px; }
+}
+/* 폼 분야 카드의 「경력」 이름표도 이름표 색(#333). */
+.jp-job-lab { color: #333; }
