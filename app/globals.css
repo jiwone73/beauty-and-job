@@ -18102,3 +18102,20 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .set-val { font-size: 14px; }
   .admin-form-input.set-val { font-size: 14px !important; }
 }
+
+/* 공고 등록 폼 글자 크기 — 개인 프로필과 같은 규칙: PC 이름표 16px·값 15px, 폰 이름표 15px·값 14px.
+   글자가 커져도 칸 높이·줄바꿈이 그대로이도록 줄 높이·위아래 여백으로 맞춘다(높이는 그대로 32·34·44·38). */
+.jp-pick-g, .jp-pick-i, .jp-step, .jp-job-unit, .jp-step-num b,
+.jp-sal select, .jp-sal input, .jp-sal-amt em, .jp-cond-sel { font-size: 15px; }
+.jp-pick-g .n { font-size: 13px; }
+.jp-job-lab, .jp-cond-f > span { font-size: 16px; line-height: 1.25; }
+.jp-step { line-height: 1.3; }
+.jp-pick-i { line-height: 1.25; }
+.jp-cond-shift { padding-top: 6px; padding-bottom: 6px; }
+@media (max-width: 768px) {
+  .jp-pick-g, .jp-pick-i, .jp-step, .jp-job-unit, .jp-step-num b,
+  .jp-sal select, .jp-sal input, .jp-sal-amt em, .jp-cond-sel { font-size: 14px; }
+  .jp-pick-g .n { font-size: 12px; }
+  .jp-job-lab, .jp-cond-f > span { font-size: 15px; }
+  .jp-job-name { font-size: 14px; }
+}
