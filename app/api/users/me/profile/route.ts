@@ -132,6 +132,10 @@ export async function PATCH(req: NextRequest) {
   // 희망급여 — 공고와 같은 모양(원 단위 + 유형). 비우면 「급여 협의」다.
   if (typeof b.salary_type === "string") fields.push(["salary_type", b.salary_type]);
   if (b.salary_min === null || typeof b.salary_min === "number") fields.push(["salary_min", b.salary_min]);
+  // 출근 가능일 — 날짜가 아니라 말로 고른다(즉시·1주·2주·1개월 이내·협의). 비우면 아직 안 정한 것이다.
+  if (typeof b.available_from === "string" && ["", "즉시", "1주 이내", "2주 이내", "1개월 이내", "협의"].includes(b.available_from)) {
+    fields.push(["available_from", b.available_from]);
+  }
   // 공개 여부는 바꾼 시점이 곧 신선도라, 값과 갱신 시각을 항상 함께 저장한다.
   if (["SEEKING", "OPEN", "CLOSED"].includes(b.job_search_status)) {
     fields.push(["job_search_status", b.job_search_status]);

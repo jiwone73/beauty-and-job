@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Settings, ChevronRight, Plus, X, MapPin, Bell, MoreHorizontal, Trash2,
-  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase, Pencil, Wallet } from "lucide-react";
+  User, Store, Building2, Globe, Phone, Cake, Users as UsersIcon, Mail, Home, Briefcase, Pencil, Wallet, CalendarCheck } from "lucide-react";
 import RegionSelectModal from "@/components/RegionSelectModal";
 import ImageCropModal from "@/components/ImageCropModal";
 import { useSignupStore } from "@/lib/store/signupStore";
@@ -101,6 +101,8 @@ export default function ProfilePage() {
   // 공고와 같은 모양(원 단위 + 유형)이라 「희망 급여와 같아요」로 맞대어 볼 수 있다.
   const [salaryType, setSalaryType] = useState("MONTHLY");
   const [salaryMan, setSalaryMan] = useState("");
+  // 출근 가능일 — 희망급여 아래 새 줄. 즉시·1주·2주·1개월 이내·협의 중에서 고른다.
+  const [availableFrom, setAvailableFrom] = useState("");
   // 금액을 안 적었으면 협의다. 따로 저장하는 값이 아니라 금액에서 따라 나온다.
   const [협의, set협의] = useState(false);
 
@@ -135,6 +137,7 @@ export default function ProfilePage() {
         if (typeof res?.data?.avatar_public === "boolean") setAvatarPublic(res.data.avatar_public);
         const pf = res?.data?.profile;
         if (pf?.salary_type) setSalaryType(pf.salary_type);
+        if (typeof pf?.available_from === "string") setAvailableFrom(pf.available_from);
         if (pf?.salary_min !== null && pf?.salary_min !== undefined && Number(pf.salary_min) === 0) {
           set협의(true);
         } else if (pf?.salary_min) {
@@ -964,6 +967,28 @@ export default function ProfilePage() {
                     </label>
                   </span>
                 </div>
+                {/* 출근 가능일 — 희망급여 바로 아래 새 줄. 뽑는 매장이 급여만큼 먼저 보는 값이라 이 자리에 둔다. */}
+                <div className="profile-info-row" style={{ cursor: "default" }}>
+                  <span className="profile-info-label">{칸그림("출근 가능일")}출근 가능일</span>
+                  <span>
+                    <InlinePick value={availableFrom} placeholder="선택하기"
+                      options={["즉시", "1주 이내", "2주 이내", "1개월 이내", "협의"]}
+                      onSave={async (v) => {
+                        const 앞 = availableFrom;
+                        setAvailableFrom(v);
+                        const token = localStorage.getItem("access_token");
+                        try {
+                          const r = await fetch("/api/users/me/profile", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                            body: JSON.stringify({ available_from: v }),
+                          });
+                          const d = await r.json();
+                          if (!d.success) { setAvailableFrom(앞); alert(d.error?.message || "저장에 실패했어요."); }
+                        } catch { setAvailableFrom(앞); alert("네트워크 오류가 났어요."); }
+                      }} />
+                  </span>
+                </div>
                 {/* 거주지 — 기업정보와 같은 결로 라벨 옆 한 줄. 카드를 따로 두지 않는다:
                     셋으로 갈라 두니 한 페이지가 아니라 세 덩어리로 읽혔다. */}
                 <div className="pf-wide" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 6, padding: "13px 0" }}>
@@ -1091,7 +1116,7 @@ function 칸그림(label: string) {
   const 표: Record<string, any> = {
     "이름": User, "구직유형": Store, "국적": Globe, "휴대전화": Phone,
     "생년월일": Cake, "성별": UsersIcon, "이메일": Mail,
-    "거주지 주소": Home, "희망직군": Briefcase, "희망 근무지역": MapPin, "희망급여": Wallet,
+    "거주지 주소": Home, "희망직군": Briefcase, "희망 근무지역": MapPin, "희망급여": Wallet, "출근 가능일": CalendarCheck,
   };
   const G = 표[label];
   return G ? <G size={16} className="profile-info-icon" /> : null;
