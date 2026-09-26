@@ -17964,3 +17964,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .resume-section > textarea { display: block; }
   #section-basic { padding-bottom: 18px; }
 }
+
+/* #section-basic 의 아래 여백 14px 은 아이디 선택자라 폰의 공통 값(16px)보다 세다 — 폰에서도 16px 로. */
+@media (max-width: 768px) {
+  #section-basic { padding-bottom: 16px; }
+}
