@@ -2262,15 +2262,30 @@ export default function JobPostForm({
 
   // 저장하지 않은 내용이 있는 채로 떠나려 하면 물어본다. 「저장된 상태」는 화면이 자리 잡은 뒤(새 공고는
   // 열린 직후, 고치는 공고는 불러온 직후)와 저장에 성공한 직후의 입력값이다.
+  //
+  // 이 폼은 열린 뒤에도 회사 정보 불러오기·주소 채우기 같은 자동 채움이 한동안 이어진다. 그래서 사용자가
+  // 직접 손대기 전까지는 값이 바뀔 때마다 그것을 「저장된 상태」로 다시 잡는다(자동 채움은 바뀐 것이 아니다).
+  // 처음 손댄 뒤부터는 그 시점의 값이 기준으로 굳고, 달라지면 저장하지 않은 내용이다.
   const 스냅샷문자열 = () => JSON.stringify({ ...snapshot(), at: 0 });
   const [기준, set기준] = useState<string | null>(null);
+  const 손댐 = useRef(false);
+  useEffect(() => {
+    const 손댔다 = (e: Event) => {
+      const el = e.target as HTMLElement | null;
+      if (el?.closest?.(".ug-box")) return; // 저장 물음창을 누른 것은 손댄 것이 아니다
+      if (e.type === "pointerdown" && !el?.closest?.("button, label, select, [role=button], [role=option], input, textarea")) return;
+      손댐.current = true;
+    };
+    const 종류 = ["input", "change", "paste", "keydown", "pointerdown"];
+    종류.forEach((t) => document.addEventListener(t, 손댔다, true));
+    return () => 종류.forEach((t) => document.removeEventListener(t, 손댔다, true));
+  }, []);
+  const 지금값 = 스냅샷문자열();
   useEffect(() => {
     if (editId && 고치는공고상태 === null) return; // 고칠 공고를 아직 불러오는 중
-    const t = setTimeout(() => set기준((b) => b ?? 스냅샷문자열()), 1200);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editId, 고치는공고상태]);
-  const guard = useUnsavedGuard(기준 !== null && 스냅샷문자열() !== 기준);
+    if (!손댐.current) set기준(지금값);
+  }, [지금값, editId, 고치는공고상태]);
+  const guard = useUnsavedGuard(기준 !== null && 지금값 !== 기준);
 
   // ── 복리후생: DB 마스터 태그 + 검색/자동완성 + 새 태그 소프트 등록 ─────────────
   const benefitJobType = jobGroupType === "기업" ? "OFFICE" : jobGroupType === "매장" ? "STORE" : "";
