@@ -740,28 +740,6 @@ export default function ProfilePage() {
                       <span style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
                         <button onClick={() => { setEditField(null); setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg(""); }}
                           style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "14px", border: "1px solid #efeff1", background: "#fff", color: "#555", cursor: "pointer" }}>취소</button>
-                        <button
-                          style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "14px", border: "none", background: phoneVerified ? "#582681" : "#e0e0e0", color: phoneVerified ? "#fff" : "#9a9a9a", cursor: phoneVerified ? "pointer" : "not-allowed" }}
-                          disabled={!phoneVerified}
-                          onClick={async () => {
-                            const d = phoneInput.replace(/\D/g, "");
-                            if (!phoneVerified) { alert("휴대폰 인증을 완료해주세요."); return; }
-                            try {
-                              const token = localStorage.getItem("access_token");
-                              const res = await fetch("/api/users/me", {
-                                method: "PATCH",
-                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                                body: JSON.stringify({ phone: d }),
-                              });
-                              const data = await res.json();
-                              if (!data.success) { alert(data.error?.message || "저장에 실패했습니다."); return; }
-                              setPhoneOverride(d);
-                              setEditField(null);
-                              setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg("");
-                            } catch { alert("네트워크 오류가 발생했습니다."); }
-                          }}>
-                          저장
-                        </button>
                       </span>
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
@@ -816,7 +794,20 @@ export default function ProfilePage() {
                               const data = await res.json();
                               if (!data.success) { setPhoneMsg(data.error?.message || "인증에 실패했습니다."); return; }
                               setPhoneVerified(true);
-                              setPhoneMsg("휴대폰 인증이 완료됐어요.");
+                              // 인증이 끝나면 그 자리에서 저장한다 — 따로 저장을 눌러야 하면
+                              // 인증까지 하고 나가서 번호가 날아간다.
+                              const token = localStorage.getItem("access_token");
+                              const saved = await fetch("/api/users/me", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                body: JSON.stringify({ phone: d }),
+                              });
+                              const sd = await saved.json().catch(() => null);
+                              if (!saved.ok || !sd?.success) { setPhoneMsg(sd?.error?.message || "인증은 됐지만 저장에 실패했어요. 다시 시도해 주세요."); return; }
+                              setPhoneOverride(d);
+                              useAuthStore.setState({ userPhone: d });
+                              setEditField(null);
+                              setPhoneCode(""); setPhoneCodeSent(false); setPhoneVerified(false); setPhoneMsg("");
                             } catch { setPhoneMsg("네트워크 오류가 발생했습니다."); }
                             finally { setPhoneVerifying(false); }
                           }}
