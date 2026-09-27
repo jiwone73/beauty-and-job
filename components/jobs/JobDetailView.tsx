@@ -6,7 +6,7 @@ import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { 시간표시줄들 } from "@/lib/shiftLines";
-import { 급여펴기, 지원방법줄, 회사정보이름 } from "@/lib/positionLine";
+import { 급여펴기, 지원방법줄, 회사정보이름, 회사정보행들 } from "@/lib/positionLine";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -52,17 +52,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   if (previewMode) {
     // 등록폼에는 대표자·설립연도 같은 입력칸이 없다 — 미리보기에서만, 폼이
     // 실제로 다루는 값에 가까운 최소 항목으로 좁힌다("매장명·업종·주소·매장소개 /
-    // 오피스는 회사명·업종·직원수·홈페이지·주소 정도").
-    if (isOfficeJob) {
-      if (ci.name) companyRows.push(["회사명", ci.name]);
-      if (ci.industry) companyRows.push(["업종", ci.industry]);
-      if (ci.size) companyRows.push(["직원수", ci.size]);
-      if (ci.website) companyRows.push(["홈페이지", linkCell(ci.website)]);
-      if (ci.location) companyRows.push(["주소", ci.location]);
-    } else {
-      if (ci.name) companyRows.push(["매장명", ci.name]);
-      if (ci.industry) companyRows.push(["업종", ci.industry]);
-      if (ci.location) companyRows.push(["주소", ci.location]);
+    // 오피스는 회사명·업종·직원수·홈페이지·주소 정도"). 항목·순서는 폼 요약 카드와
+    // 같은 회사정보행들() 하나에서 나온다 — 따로 적으면 다시 갈라진다.
+    for (const [label, v] of 회사정보행들(ci.name, ci.industry, ci.location, isOfficeJob, ci.size, ci.website)) {
+      if (!v) continue;
+      companyRows.push([label, label === "홈페이지" ? linkCell(v) : v]);
     }
   } else if (isOfficeJob) {
     if (ci.name) companyRows.push(["회사명", ci.name]);
@@ -520,9 +514,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             {/* 상세요강 제목과 같은 스타일(jd-detail-title) — 안 그러면 이 제목만 기본값
                 (17px·700)으로 남아 상세요강(16px·#555·600)과 서로 다르게 보였다. */}
             <h2 className="job-detail-section-title jd-detail-title">{companySectionTitle}</h2>
-            {job.brandDesc?.trim() && (
-              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
-            )}
+            {/* 폼은 매장명·업종·주소를 먼저 적고 매장정보(소개)를 맨 아래 마지막 칸으로
+                둔다. 여기서 소개글을 표 "위"에 먼저 그렸더니 같은 정보인데 폼과
+                미리보기가 다른 순서로 보였다 — 표를 먼저, 소개글을 그 아래로. */}
             {companyRows.length > 0 && (
               <div className="job-detail-company-info">
                 {companyRows.map(([label, val], i) => (
@@ -533,6 +527,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                   </div>
                 ))}
               </div>
+            )}
+            {job.brandDesc?.trim() && (
+              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginTop: companyRows.length ? "16px" : 0, marginBottom: 0 }}>{job.brandDesc}</p>
             )}
           </section>
         )}

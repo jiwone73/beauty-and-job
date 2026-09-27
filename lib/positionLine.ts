@@ -30,6 +30,33 @@ export const 지원방법줄 = (methods: string[]) => (methods || []).map(지원
  *  따로 "매장 소개"라 쓴 적이 있었다. 오피스는 "기업정보"로 같다. */
 export const 회사정보이름 = (isOffice: boolean) => (isOffice ? "기업정보" : "매장정보");
 
+/** 매장정보/기업정보 요약 표에 나갈 항목과 순서. 등록 폼 맨 아래 요약 카드와,
+ *  등록 중 눌러 보는 미리보기 모달이 각자 따로 배열을 적어 뒀더니(매장명·업종·주소 …)
+ *  하나를 늘리거나 순서를 바꿀 때 한쪽만 고쳐져 두 화면이 다른 순서로 보였다.
+ *  이제 두 화면 다 이 함수 하나로만 표를 만든다 — "같은 데서 가져온다". */
+export function 회사정보행들(
+  name: string | undefined | null,
+  industry: string | undefined | null,
+  location: string | undefined | null,
+  isOffice: boolean,
+  size?: string | null,
+  website?: string | null
+): [string, string][] {
+  return isOffice
+    ? [
+        ["회사명", name || ""],
+        ["업종", industry || ""],
+        ["직원수", size || ""],
+        ["홈페이지", website || ""],
+        ["주소", location || ""],
+      ]
+    : [
+        ["매장명", name || ""],
+        ["업종", industry || ""],
+        ["주소", location || ""],
+      ];
+}
+
 /** 급여는 "월 320만원"처럼 한 글자로 저장된다 — 등록 화면은 '월급'이라 쓰므로
  *  같은 말로 펴고, 숫자에는 폼과 같이 쉼표를 넣는다. */
 export const 급여펴기 = (v: string) =>
