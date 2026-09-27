@@ -18214,3 +18214,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-job-cond .jp-cond-f.jp-pre > span { color: #b4b4b9; }
   .jp-job-cond .jp-cond-f.jp-pre.has > span { color: #8a8a90; }
 }
+
+/* 분야 카드 대분류 옆 화살표 — PC 는 위아래로 쌓여 아래 화살표, 폰은 한 줄이라 오른쪽 화살표(>). */
+.jp-job-arrow-m { display: none; }
+@media (max-width: 768px) {
+  .jp-job-arrow:not(.jp-job-arrow-m) { display: none; }
+  .jp-job-arrow-m { display: inline-block; margin: 0 0 0 2px; }
+}

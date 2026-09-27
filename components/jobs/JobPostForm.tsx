@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeE
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
 import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
-import { ChevronLeft, ChevronDown, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus } from "lucide-react";
+import { ChevronLeft, ChevronDown, ChevronRight, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { 공고모양 } from "@/lib/jobShape";
@@ -3562,7 +3562,7 @@ export default function JobPostForm({
                         {/* 대분류를 위에 두고 화살표로 아래를 가리킨다 — 위에서 아래로
                             좁혀 고른 길이 그대로 보인다. 대분류는 흐리게, 주인공은 소분류다. */}
                         <span className="jp-job-name">
-                          {그룹 && <span className="jp-job-grp">{그룹}<ChevronDown size={12} strokeWidth={2} className="jp-job-arrow" /></span>}
+                          {그룹 && <span className="jp-job-grp">{그룹}<ChevronDown size={12} strokeWidth={2} className="jp-job-arrow" /><ChevronRight size={12} strokeWidth={2} className="jp-job-arrow jp-job-arrow-m" /></span>}
                           <span className="jp-job-item">{item}</span>
                         </span>
                         <span className="jp-job-steps">
@@ -3638,7 +3638,7 @@ export default function JobPostForm({
                                         : 원단위(새형태) ? String(Number(g.금액) * 10000) : String(Number(g.금액) / 10000);
                                       setPos(c, "salary", 급여쓰기(새형태, 옮김, g.이상));
                                     }}>
-                                    <option value="">급여형태</option>
+                                    <option value="">급여</option>
                                     {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
                                   </select>
                                   <span className="jp-sal-amt">
@@ -3700,8 +3700,8 @@ export default function JobPostForm({
                                       onClick={(e) => { if (고용열림 === c) { set고용열림(null); return; } openPopAt(e.currentTarget, 232, 190); set고용열림(c); }}>
                                       {고른것.join(", ") || (<><span className="jp-ph-pc">선택하기</span><span className="jp-ph-m">고용형태</span></>)}
                                     </button>
-                                    {고용열림 === c && popAt && (
-                                      <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                    {고용열림 === c && popAt && createPortal(
+                                      <div ref={popRef} className="jp-emp-pop" style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
                                         {EMPLOYMENT_TYPES.map((t) => {
                                           const on = 고른것.includes(t);
                                           // 셋을 채우면 더는 못 켜되, 이미 켠 것은 언제든 끌 수 있어야 한다.
@@ -3717,7 +3717,8 @@ export default function JobPostForm({
                                                 color: on ? "#fff" : (잠김 ? "#cfcfcf" : "#666") }}>{t}</button>
                                           );
                                         })}
-                                      </div>
+                                      </div>,
+                                      document.body
                                     )}
                                   </span>
                                 );
@@ -3728,7 +3729,7 @@ export default function JobPostForm({
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
                                   {shiftDisplay(row) || (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>)}
                                 </button>
-                                {shiftModalCat === c && popAt && (
+                                {shiftModalCat === c && popAt && createPortal(
                                   <WorkScheduleModal
                                     value={shiftDisplay(row)}
                                     onChange={(v) => setPos(c, "shiftText", v)}
@@ -3739,7 +3740,8 @@ export default function JobPostForm({
                                     defaultStart={jobGroupType === "매장" ? 10 : 7}
                                     defaultEnd={jobGroupType === "매장" ? 20 : 19}
                                     store={jobGroupType === "매장"}
-                                  />
+                                  />,
+                                  document.body
                                 )}
                               </span>
                               {isOffice && (
