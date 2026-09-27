@@ -10,9 +10,7 @@ import ImageCropModal from "@/components/ImageCropModal";
 import { SNS찾기 } from "@/lib/snsPresets";
 import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
-import { Plus, Trash2, Store, Tag, Link as LinkIcon, Globe, Users, Calendar,
-  UserRound, Phone, Home, FileText, Image as ImageIcon, BadgeCheck,
-  GalleryThumbnails } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -43,20 +41,9 @@ export default function CompanySettingsPage() {
   const [signboardUrl, setSignboardUrl] = useState<string | null>(null);
   const [signboardUploading, setSignboardUploading] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
-  /** 항목마다 왼쪽에 놓는 아이콘. 라벨 이름으로 고른다 — 칸이 늘어도 여기만 손보면 된다. */
-  const 칸그림 = (이름: string) => {
-    const 표: Record<string, any> = {
-      "매장명": Store, "기업명": Store, "회사명": Store, "업종": Tag,
-      "SNS": LinkIcon, "웹사이트": Globe, "브랜드명": BadgeCheck,
-      "직원수": Users, "사원수": Users, "설립연도": Calendar,
-      "대표자": UserRound, "매장 전화번호": Phone, "회사 대표번호": Phone,
-      "주소": Home, "사업자등록번호": FileText,
-      "매장 소개": FileText, "기업 소개": FileText,
-      "회사 로고": ImageIcon, "매장 썸네일": GalleryThumbnails, "기업 썸네일": GalleryThumbnails,
-    };
-    const G = 표[이름];
-    return G ? <G size={15} className="admin-form-icon" /> : null;
-  };
+  /** 항목마다 왼쪽에 놓던 아이콘 — 다 지운다("아이콘 다 지워"). 칸 이름은 그대로 두고
+   *  자리만 비워, 부르는 곳(칸그림(...)) 하나하나를 고치지 않아도 된다. */
+  const 칸그림 = (_이름: string) => null;
 
   // SNS·홈페이지 — 개인회원 프로필과 같은 방식으로 여러 개를 담는다.
   //   website_url 은 열다섯 곳에서 읽고 있어 그대로 두고, 첫 링크를 늘 거기에 맞춘다.
