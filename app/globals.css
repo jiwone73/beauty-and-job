@@ -18341,3 +18341,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-pick { margin: 4px 0 6px; }
   .jobpost-form .jp-job { margin-bottom: 6px; }
 }
+
+/* 조건 줄 — 근무시간이 두 줄이 되면 옆 칸들도 같은 높이로 늘어난다(안 그러면 칸은 짧게 위에 붙고 「성별」 이름만 늘어난 칸 가운데로 내려앉는다). */
+.jp-job-cond .jp-cond-f > .jp-cond-sel { flex: 1 1 auto; }
