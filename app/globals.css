@@ -18349,3 +18349,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .jp-cond-f.jp-pre:not(.has):not(.ov) > span, .jp-job-cond .jp-cond-f.jp-pre:not(.has):not(.ov) > span { display: none; }
 .jp-cond-sel.empty { color: #b4b4b9; }
 .jp-cond-f.ov .jp-cond-sel.empty { color: transparent; }
+
+/* 근무요일/시간 칸(폰) — 옆으로 밀리지 않게 하려고 옆 칸들을 flex-shrink:0 으로 고정했더니
+   (넘치는 줄만 옆 스크롤), 이 칸도 같이 굳어 원래 두 줄로 접히던 요일·시간이 한 줄로 펴져
+   버튼만 넓어졌다. 너비를 잡아 두 줄로 되접히게 한다. */
+@media (max-width: 768px) {
+  .jp-cond-shift { max-width: 116px; }
+}
