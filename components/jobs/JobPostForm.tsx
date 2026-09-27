@@ -29,7 +29,7 @@ import { composeCompanyAddress, splitAddress } from "@/lib/address";
 import { 전화꼴 } from "@/lib/phoneFormat";
 // 금액 칸에 보이는 모양(PC·폰 모두) — 정수 부분에만 천 단위 쉼표(2300 → 2,300). 저장되는 값은 그대로 숫자다.
 // 미리보기·상세(JobDetailView)도 같은 함수를 쓴다(lib/positionLine.ts) — 폼과 다시 짜면 어긋난다.
-import { 천단위 } from "@/lib/positionLine";
+import { 천단위, 지원방법이름 } from "@/lib/positionLine";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
@@ -4081,7 +4081,7 @@ export default function JobPostForm({
                           style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5,
                             ...(contactMethods.length ? null : { width: "auto", height: "auto", minHeight: 24, background: "none", padding: 0, color: "#b4b4b9" }) }}>
                           {/* 복리후생의 '검색하기'와 짝. 왼쪽 라벨이 이미 무슨 칸인지 말한다. */}
-                          {contactMethods.length ? contactMethods.join(", ") : "선택하기"}
+                          {contactMethods.length ? contactMethods.map(지원방법이름).join(", ") : "선택하기"}
                         </button>
                         {contactMethodsOpen && popAt && (
                           <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -4090,7 +4090,7 @@ export default function JobPostForm({
                               return (
                                 <button key={m} type="button"
                                   onClick={() => setContactMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))}
-                                  style={{ padding: "5px 11px", borderRadius: "var(--chip-radius)", fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{m}</button>
+                                  style={{ padding: "5px 11px", borderRadius: "var(--chip-radius)", fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{지원방법이름(m)}</button>
                               );
                             })}
                           </div>

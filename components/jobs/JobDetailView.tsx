@@ -6,7 +6,7 @@ import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { 시간표시줄들 } from "@/lib/shiftLines";
-import { 급여펴기 } from "@/lib/positionLine";
+import { 급여펴기, 지원방법이름 } from "@/lib/positionLine";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -334,7 +334,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     <div className="jd-guide-row">
       <span className="jd-guide-label">지원방법</span>
       <span>
-        {job.contactMethods.join("   ·   ")}
+        {job.contactMethods.map(지원방법이름).join("   ·   ")}
       </span>
     </div>
   ) : null;
