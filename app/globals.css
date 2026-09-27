@@ -18317,3 +18317,18 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(6px + var(--pre, 2) * 1em - 3px); } /* 셀렉트 안 글자에 브라우저가 붙이는 4px 만큼 뺀다 */
 }
+
+/* PC — 조건 줄(고용형태·근무시간·성별·학력·근무지)도 폰과 같게: 위 제목을 지우고 칸 안 글자가 제목을 대신한다.
+   성별·학력·근무지는 값을 고르면 「성별무관」처럼 이름이 붙어서 나온다. */
+@media (min-width: 769px) {
+  .jp-cond-f > span { display: none; }
+  .jp-cond-f.jp-pre { position: relative; }
+  .jp-cond-f.jp-pre > span, .jp-job-cond .jp-cond-f.jp-pre > span { display: flex; position: absolute; left: 11px; top: 0; bottom: 0; align-items: center;
+    pointer-events: none; z-index: 1; padding: 0; line-height: 1; color: #b4b4b9; }
+  .jp-cond-f.jp-pre.has > span, .jp-job-cond .jp-cond-f.jp-pre.has > span { color: #8a8a90; }
+  .jp-cond-sel.empty { color: transparent; }
+  .jp-cond-sel.empty option { color: #555; }
+  .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(11px + var(--pre, 2) * 1em - 3px); }
+  .jp-ph-pc { display: none; }
+  .jp-ph-m { display: inline; }
+}
