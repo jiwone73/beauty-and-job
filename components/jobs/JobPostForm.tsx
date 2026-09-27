@@ -3766,7 +3766,8 @@ export default function JobPostForm({
                                 <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
                                   <option value="">선택하기</option>
-                                  {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
+                                  {/* 저장 값은 그대로(여성 우대) — 보이는 글자만 붙인다(여성우대). */}
+                                  {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t.replace(" ", "")}</option>)}
                                 </select>
                               </label>
                               )}
