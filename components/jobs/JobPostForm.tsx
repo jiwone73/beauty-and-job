@@ -4066,8 +4066,9 @@ export default function JobPostForm({
                   ? { flex: 1, minWidth: 0, border: "none", background: "transparent", borderRadius: 5, fontSize: 15, fontWeight: 400, color: "#555", outline: "none", padding: "3px 2px", minHeight: 24, boxSizing: "border-box" }
                   : { flexShrink: 0, width: 56, height: 22, border: "none", background: PH_BG, borderRadius: 5, fontSize: 15, fontWeight: 400, color: "#555", outline: "none", padding: 0, boxSizing: "border-box" };
                 return (
-                  /* 좁은 화면에선 두 칸이 너무 좁아 세로로 쌓는다(.jobpost-form이 admin-form-row-2col을 1열로 덮어서 직접 지정) */
-                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0" : "10px 28px", alignItems: "start" }}>
+                  /* 지원방법 · 마감일은 폰에서도 2열로 나란히 — 한쪽만 있고 다른 한쪽이 비어
+                     보이면 어색해, 세로로 쌓지 않고 좁은 화면에서도 옆에 붙여 둔다. */
+                  <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: isMobile ? "0 14px" : "10px 28px", alignItems: "start" }}>
                     {/* 지원방법 (좌) — 연보라 블록을 눌러 팝오버에서 복수 선택 */}
                     <div ref={contactMethodsRef} style={{ position: "relative", minWidth: 0 }}>
                      {/* 제목을 값 위에 세운다 — 옆에 두면 라벨 폭(68px)만큼 값이 안으로 밀려
