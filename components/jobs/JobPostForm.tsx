@@ -29,7 +29,7 @@ import { composeCompanyAddress, splitAddress } from "@/lib/address";
 import { 전화꼴 } from "@/lib/phoneFormat";
 // 금액 칸에 보이는 모양(PC·폰 모두) — 정수 부분에만 천 단위 쉼표(2300 → 2,300). 저장되는 값은 그대로 숫자다.
 // 미리보기·상세(JobDetailView)도 같은 함수를 쓴다(lib/positionLine.ts) — 폼과 다시 짜면 어긋난다.
-import { 천단위, 지원방법이름, 지원방법줄 } from "@/lib/positionLine";
+import { 천단위, 지원방법이름, 지원방법줄, 회사정보이름 } from "@/lib/positionLine";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
@@ -456,7 +456,7 @@ export default function JobPostForm({
     : { display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 11px", borderRadius: 9,
         border: "1px solid #e2e2e6", background: on ? "#f4f4f6" : "#fff", color: "#555",
         fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap" };
-  const infoPageLabel = companyProfile?.company_type === "OFFICE" ? "기업정보" : "매장정보";
+  const infoPageLabel = 회사정보이름(companyProfile?.company_type === "OFFICE");
   // 배너 칸이 비어 있으면 무슨 사진을 올리는 자리인지 몰라 그냥 넘어가기 쉽다.
   // (배너는 프로필이 아니라 공고마다 이 자리에서 올린다.)
   const bannerHint = mode === "company" && bannerImages.length === 0 ? (

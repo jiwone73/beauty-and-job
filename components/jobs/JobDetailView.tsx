@@ -6,7 +6,7 @@ import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { 시간표시줄들 } from "@/lib/shiftLines";
-import { 급여펴기, 지원방법줄 } from "@/lib/positionLine";
+import { 급여펴기, 지원방법줄, 회사정보이름 } from "@/lib/positionLine";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -77,7 +77,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   }
   // 매장 SNS(인스타 등)는 공개 화면에 걸지 않는다. 들어가면 DM·프로필에 번호가 있어
   // 상세요강에서 전화번호를 가린 뜻이 없어진다. 관리자는 등록 화면에서 볼 수 있다.
-  const companySectionTitle = isOfficeJob ? "기업정보" : "매장 소개";
+  const companySectionTitle = 회사정보이름(isOfficeJob);
   const hasCompanyInfo = job.brandDesc?.trim() || companyRows.length > 0;
   // 상세 이미지가 있으면 상세내용(텍스트) 섹션은 공개 화면에서 숨김(이미지로 대체). 데이터는 그대로 유지.
   const hasDetailImages = Array.isArray(job.detailImages) && job.detailImages.some((d: any) => d?.url);
@@ -316,38 +316,40 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  // 복리후생·채용 담당자·채용 절차도 '기본정보' 카드 안의 서브블록으로 합침(빈 값은 자동 숨김).
-  // 담당자: 전화·이메일 중 하나라도 있어야 표기. 이름 없으면 '인사담당'으로.
+  // 등록 폼은 전형절차 · 지원 안내 · 담당자 정보를 서로 다른 세 섹션(제 제목 하나씩)으로
+  // 둔다. 미리보기가 이 셋을 "지원 안내" 하나로 뭉쳐 보여줬던 것이 "폼과 다르다"는
+  // 지적의 뿌리였다 — 제목 개수·순서부터 폼과 맞춘다(전형절차 → 지원 안내 → 담당자 정보).
   const hasContact = !!(job.contactPhone || job.contactEmail || job.contactKakao);
   const hasMethods = !!(job.contactMethods?.length);
   const hasProcess = !!(job.process?.length > 0);
-  // 지원 안내: 담당자 · 지원방법 · 채용 절차 (라벨 + 값 한 줄)
-  const contactInner = hasContact ? (
-    <div className="jd-guide-row">
-      <span className="jd-guide-label">{담당자이름}</span>
-      <span>{[job.contactName || "인사담당", 전화꼴(job.contactPhone), job.contactEmail,
-              job.contactKakao ? `카카오톡 ${job.contactKakao}` : ""].filter(Boolean).join("   ·   ")}</span>
+
+  // 담당자 정보 — 섹션 제목이 이미 「담당자 정보」라고 말하니, 안에서 이름을 또
+  // 적지 않는다(폼도 섹션 제목 하나뿐, 안쪽엔 담당자·전화번호·이메일·카카오톡 낱값뿐).
+  const contactSection = hasContact ? (
+    <div className="jd-subblock" key="contact">
+      <h2 className="job-detail-subtitle">{담당자이름}</h2>
+      <p className="job-detail-desc" style={{ margin: 0 }}>
+        {[job.contactName || "인사담당", 전화꼴(job.contactPhone), job.contactEmail,
+          job.contactKakao ? `카카오톡 ${job.contactKakao}` : ""].filter(Boolean).join("   ·   ")}
+      </p>
     </div>
   ) : null;
 
-  {/* 지원방법 · 마감일은 이름표 위, 값 아래(한 칸 들여씀)로 — 폼의 지원 안내 칸과
-      같은 모양이다. 옆에 나란히 두면(jd-guide-row) 2열로 짝지었을 때 반 폭에서
-      값이 어중간하게 꺾여 접혔다("온라인 지 / 원"). */}
+  // 전형절차도 제 섹션이다(폼과 같다) — 지원 안내 밑이 아니라 위, 폼과 같은 자리다.
+  const processSection = hasProcess ? (
+    <div className="jd-subblock" key="process">
+      <h2 className="job-detail-subtitle">{전형절차이름}</h2>
+      <p className="job-detail-desc" style={{ margin: 0 }}>{job.process.join("   →   ")}</p>
+    </div>
+  ) : null;
+
+  /* 지원방법 · 마감일은 이름표 위, 값 아래(한 칸 들여씀)로 — 폼의 지원 안내 칸과
+     같은 모양이다. 옆에 나란히 두면(jd-guide-row) 2열로 짝지었을 때 반 폭에서
+     값이 어중간하게 꺾여 접혔다("온라인 지 / 원"). */
   const methodsInner = hasMethods ? (
     <div className="jd-guide-stack">
       <div className="jd-guide-stack-label">지원방법</div>
       <div className="jd-guide-stack-value">{지원방법줄(job.contactMethods)}</div>
-    </div>
-  ) : null;
-
-  const processInner = hasProcess ? (
-    <div>
-      {job.process?.length > 0 && (
-        <div className="jd-guide-row">
-          <span className="jd-guide-label">{전형절차이름}</span>
-          <span>{job.process.join("   →   ")}</span>
-        </div>
-      )}
     </div>
   ) : null;
 
@@ -360,20 +362,17 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
-  const applyGuideBlock = (hasContact || hasMethods || hasProcess || job.deadline) ? (
+  // 지원 안내 — 폼과 같이 지원방법·마감일 둘만 담는다(담당자·전형절차는 각자 제 섹션으로 뺐다).
+  const applyGuideBlock = (hasMethods || job.deadline) ? (
     <div className="jd-subblock" key="apply-guide">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} className="jd-subtitle-icon" style={{ color: "#555", flexShrink: 0 }} />지원 안내</h2>
+      <h2 className="job-detail-subtitle">지원 안내</h2>
       {/* 지원방법 · 마감일 2열 — 공고 폼의 「지원 안내」와 같은 짝, 같은 자리다(폼도 폰에서
           세로로 안 쌓고 2열로 둔다). jd-guide-2col 은 jd-2col 과 달리 좁은 화면에서도
           접히지 않는다 — 폼이 접지 않으면 여기도 접지 않는다. */}
-      {(hasMethods || job.deadline) && (
-        <div className="jd-guide-2col">
-          <div>{methodsInner}</div>
-          <div>{deadlineInner}</div>
-        </div>
-      )}
-      {contactInner}
-      {processInner}
+      <div className="jd-guide-2col">
+        <div>{methodsInner}</div>
+        <div>{deadlineInner}</div>
+      </div>
     </div>
   ) : null;
 
@@ -472,7 +471,10 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           {positionsSection}
           {workCondSection}
           {locationSection}
+          {/* 폼과 같은 순서: 전형절차 → 지원 안내 → 담당자 정보. */}
+          {processSection}
           {applyGuideBlock}
+          {contactSection}
         </div>
 
 
