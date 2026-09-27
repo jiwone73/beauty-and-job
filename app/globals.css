@@ -18414,3 +18414,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .jd-guide-stack { padding: 6px 0; }
 .jd-guide-stack-label { font-size: 15px; color: #333; margin-bottom: 3px; }
 .jd-guide-stack-value { font-size: 15px; color: #555; padding-left: 8px; }
+/* 폼도 폰에서는 15px 짜리 칸을 14px 로 한 단계 줄인다(.jobpost-form [style*="font-size: 15px"]) —
+   미리보기 모달은 그 규칙이 안 닿는 자리라 여기서 같은 값으로 맞춘다. */
+@media (max-width: 768px) {
+  .jd-guide-stack-label, .jd-guide-stack-value { font-size: 14px; }
+}
