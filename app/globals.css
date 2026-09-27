@@ -18171,3 +18171,42 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-job-cond .jp-cond-f { flex-shrink: 0; }
   .jp-cond-sel { padding: 0 20px 0 9px; background-position: right 7px center; }
 }
+
+/* 공고 폼 분야 카드 · 폰 — 네 줄: ①대분류·소분류·× ②직급 칩 ③경력·인원·급여 ④고용형태·근무시간·성별.
+   위 제목을 지우고 칸 안 기본 글자가 제목을 대신한다. 성별·학력·근무지는 값을 고르면 「성별 무관」처럼 이름이 앞에 붙는다. */
+.jp-ph-m { display: none; }
+@media (max-width: 768px) {
+  .jp-job-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 7px 8px; }
+  .jp-job-name { max-width: none; flex: none; display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+  .jp-job-grp { display: inline; flex-shrink: 0; white-space: nowrap; }
+  .jp-job-item { display: inline; }
+  .jp-job-steps { grid-column: 1 / -1; grid-row: 2; }
+  .jp-job-x { grid-column: 2; grid-row: 1; }
+
+  /* 인원 — 숫자 옆에 위·아래 화살표 */
+  .jp-step-num { display: grid; grid-template-columns: auto 20px; grid-template-rows: 17px 17px; height: 34px; }
+  .jp-step-num b { grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; min-width: 26px; padding: 0 4px; }
+  .jp-step-num button { width: 20px; height: 17px; padding: 0; font-size: 0; position: relative; border-left: 1px solid #f0f0f2; }
+  .jp-step-num button:last-of-type { grid-column: 2; grid-row: 1; }
+  .jp-step-num button:first-of-type { grid-column: 2; grid-row: 2; border-top: 1px solid #f0f0f2; }
+  .jp-step-num button::before { content: ""; position: absolute; left: 50%; top: 50%; margin-left: -3px;
+    border-left: 3px solid transparent; border-right: 3px solid transparent; }
+  .jp-step-num button:last-of-type::before { margin-top: -2px; border-bottom: 4px solid currentColor; }
+  .jp-step-num button:first-of-type::before { margin-top: -1px; border-top: 4px solid currentColor; }
+
+  /* 금액 — 비었을 땐 좁고, 숫자가 들어오면 그 자릿수만큼 */
+  .jp-sal-amt input { width: calc(var(--n, 1) * 1ch + 4px); min-width: 14px; padding: 0; }
+
+  /* 조건 — 위 제목을 지운다 */
+  .jp-cond-f > span { display: none; }
+  .jp-cond-f.jp-pre { position: relative; }
+  .jp-cond-f.jp-pre > span { display: flex; position: absolute; left: 9px; top: 0; bottom: 0; align-items: center;
+    pointer-events: none; z-index: 1; padding: 0; line-height: 1; color: #b4b4b9; }
+  .jp-cond-f.jp-pre.has > span { color: #8a8a90; }
+  .jp-cond-sel.empty { color: transparent; }
+  .jp-cond-sel.empty option { color: #555; }
+  .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(9px + var(--pre, 2) * 1em + 5px); }
+  .jp-ph-pc { display: none; }
+  .jp-ph-m { display: inline; }
+  .jp-job-cond { margin-top: 0; }
+}

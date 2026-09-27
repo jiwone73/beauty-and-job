@@ -3640,6 +3640,7 @@ export default function JobPostForm({
                                   </select>
                                   <span className="jp-sal-amt">
                                     <input inputMode="decimal" disabled={잠금} placeholder="0" value={g.금액}
+                                      style={{ "--n": Math.max(1, g.금액.length) } as CSSProperties}
                                       onChange={(e) => {
                                         const 원 = 원단위(g.형태);
                                         const v = 원 ? e.target.value.replace(/[^0-9]/g, "")
@@ -3694,7 +3695,7 @@ export default function JobPostForm({
                                     <button type="button" disabled={잠금}
                                       className={`jp-cond-sel jp-cond-shift ${고른것.length ? "" : "ph"}`}
                                       onClick={(e) => { if (고용열림 === c) { set고용열림(null); return; } openPopAt(e.currentTarget, 232, 190); set고용열림(c); }}>
-                                      {고른것.join(", ") || "선택하기"}
+                                      {고른것.join(", ") || (<><span className="jp-ph-pc">선택하기</span><span className="jp-ph-m">고용형태</span></>)}
                                     </button>
                                     {고용열림 === c && popAt && (
                                       <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -3722,7 +3723,7 @@ export default function JobPostForm({
                                 <span>{isOffice ? "근무시간" : "근무요일 / 시간"}</span>
                                 <button type="button" disabled={잠금} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
-                                  {shiftDisplay(row) || "-"}
+                                  {shiftDisplay(row) || (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>)}
                                 </button>
                                 {shiftModalCat === c && popAt && (
                                   <WorkScheduleModal
@@ -3739,27 +3740,27 @@ export default function JobPostForm({
                                 )}
                               </span>
                               {isOffice && (
-                                <label className="jp-cond-f">
+                                <label className={`jp-cond-f jp-pre ${row.education ? "has" : ""}`} style={{ "--pre": 2 } as CSSProperties}>
                                   <span>학력</span>
-                                  <select className="jp-cond-sel" disabled={잠금} value={row.education}
+                                  <select className={`jp-cond-sel ${row.education ? "" : "empty"}`} disabled={잠금} value={row.education}
                                     onChange={(e) => setPos(c, "education", e.target.value)}>
                                     <option value="">선택하기</option>
                                     {POS_EDU.map((t) => <option key={t} value={t}>{t}</option>)}
                                   </select>
                                 </label>
                               )}
-                              <label className="jp-cond-f">
+                              <label className={`jp-cond-f jp-pre ${row.gender ? "has" : ""}`} style={{ "--pre": 2 } as CSSProperties}>
                                 <span>성별</span>
-                                <select className="jp-cond-sel" disabled={잠금} value={row.gender}
+                                <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
                                   <option value="">선택하기</option>
                                   {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t}</option>)}
                                 </select>
                               </label>
                               {근무지목록.length >= 2 && (
-                                <label className="jp-cond-f">
+                                <label className={`jp-cond-f jp-pre ${row.location ? "has" : ""}`} style={{ "--pre": 3 } as CSSProperties}>
                                   <span>근무지</span>
-                                  <select className="jp-cond-sel" disabled={잠금} value={row.location}
+                                  <select className={`jp-cond-sel ${row.location ? "" : "empty"}`} disabled={잠금} value={row.location}
                                     onChange={(e) => setPos(c, "location", e.target.value)}>
                                     <option value="">전체</option>
                                     {근무지목록.map((r) => <option key={r} value={r}>{r}</option>)}
