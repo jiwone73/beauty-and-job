@@ -517,7 +517,9 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         {/* 기업 정보 (공고 내용 아래) */}
         {hasCompanyInfo && (
           <section className="job-detail-section">
-            <h2 className="job-detail-section-title">{companySectionTitle}</h2>
+            {/* 상세요강 제목과 같은 스타일(jd-detail-title) — 안 그러면 이 제목만 기본값
+                (17px·700)으로 남아 상세요강(16px·#555·600)과 서로 다르게 보였다. */}
+            <h2 className="job-detail-section-title jd-detail-title">{companySectionTitle}</h2>
             {job.brandDesc?.trim() && (
               <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginBottom: companyRows.length ? "16px" : 0 }}>{job.brandDesc}</p>
             )}
