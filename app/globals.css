@@ -18239,3 +18239,24 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-cond-shift { padding-top: 4px; padding-bottom: 4px; }
   .jp-job-cond { margin: 2px 0; }
 }
+
+/* 공고 폼 모집부문 · 폰 — 좌우 여백도 줄인다(위아래는 위 블록). 바깥 카드 안쪽 6px, 카드 안 칸들의 좌우 안쪽 여백 축소.
+   분야 카드는 화면 끝까지 펼친다(페이지 8px + 바깥 카드 테두리 1px + 안쪽 6px = 15px). */
+@media (max-width: 768px) {
+  .jobpost-form .admin-form-body:has(.jp-pick) { padding-left: 6px; padding-right: 6px; }
+  .jobpost-form .jp-job { margin-left: -15px; margin-right: -15px; padding-left: 10px; padding-right: 10px; }
+  .jp-pick { gap: 6px 8px; }
+  .jp-pick-g { padding: 0 10px; }
+  .jp-pick-items { padding-left: 8px; gap: 5px; }
+  .jp-pick-i { padding: 5px 8px; }
+  .jp-job-head { gap: 4px 6px; }
+  .jp-job-steps { gap: 4px; }
+  .jp-step { padding: 3px 6px; }
+  .jp-job-line { gap: 5px; }
+  .jp-sal select.jp-sal-unit, .jp-sal select.jp-sal-basis { padding: 0 18px 0 6px; background-position: right 5px center; }
+  .jp-sal-amt { padding: 0 5px; }
+  .jp-job-cond { gap: 6px; }
+  .jp-cond-sel { padding: 0 18px 0 7px; background-position: right 5px center; }
+  .jp-cond-f.jp-pre > span { left: 7px; }
+  .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(7px + var(--pre, 2) * 1em + 4px); }
+}
