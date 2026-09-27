@@ -410,17 +410,18 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                           <select className="ws-hourSel" value={qEndMin} onChange={(e) => { const m = Number(e.target.value); setQEndMin(m); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, m); }}>
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
+                          {/* 같은 요일에 타임이 둘인 자리(오전·오후 교대) — 시간 줄 옆에 ＋ 하나로 추가한다. */}
+                          {!둘째타임 && (
+                            <button type="button" aria-label="시간대 추가"
+                              onClick={() => { set둘째타임(true); set확정(r.type);
+                                applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}
+                              style={{ border: "1px solid #ddd", background: "#fff", color: "#582681", borderRadius: 6,
+                                width: 26, height: 26, lineHeight: 1, fontSize: 15, fontFamily: "inherit", cursor: "pointer", padding: 0, flexShrink: 0 }}>
+                              ＋
+                            </button>
+                          )}
                         </div>
-                        {/* 같은 요일에 타임이 둘인 자리(오전·오후 교대). 켜면 시간 줄이 하나 더 선다. */}
-                        {!둘째타임 ? (
-                          <button type="button"
-                            onClick={() => { set둘째타임(true); set확정(r.type);
-                              applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}
-                            style={{ marginTop: 6, border: "none", background: "none", color: "#582681", fontSize: 13,
-                              fontFamily: "inherit", cursor: "pointer", padding: 0 }}>
-                            ＋ 시간대 추가
-                          </button>
-                        ) : (
+                        {둘째타임 && (
                           <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginTop: 6 }}>
                             <select className="ws-hourSel" value={q2시작} onChange={(e) => { setQ2시작(Number(e.target.value)); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
