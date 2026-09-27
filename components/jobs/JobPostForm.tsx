@@ -27,7 +27,7 @@ const 알바로 = (v: string) => v.replace(/아르바이트|파트타임/g, "알
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
 import { 전화꼴 } from "@/lib/phoneFormat";
 
-// 금액 칸에 보이는 모양 — 정수 부분에만 천 단위 쉼표(2300 → 2,300). 저장되는 값은 그대로 숫자다.
+// 금액 칸에 보이는 모양(폰에서만) — 정수 부분에만 천 단위 쉼표(2300 → 2,300). 저장되는 값은 그대로 숫자다.
 const 천단위 = (v: string) => { const [정수, 소수] = v.split("."); return 정수.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (소수 !== undefined ? "." + 소수 : ""); };
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
@@ -211,6 +211,15 @@ export default function JobPostForm({
   const router = useRouter();
   const pathname = usePathname();
   // 임시저장 목록(관리자 직접등록 전용) — 상단에서 이어쓰기
+  // 폰 화면인가 — 분야 카드의 금액 칸 쉼표처럼 폰에서만 달라지는 표시에 쓴다.
+  const [폰, set폰] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(max-width: 768px)");
+    const 갱신 = () => set폰(m.matches);
+    갱신();
+    m.addEventListener("change", 갱신);
+    return () => m.removeEventListener("change", 갱신);
+  }, []);
   const [drafts, setDrafts] = useState<Array<{ id: string; title: string; company_name?: string; created_at?: string }>>([]);
   const [draftMenuOpen, setDraftMenuOpen] = useState(false); // 임시저장 버튼 옆 드롭다운(목록)
   const [draftDeleting, setDraftDeleting] = useState<string | null>(null);
@@ -3642,8 +3651,8 @@ export default function JobPostForm({
                                     {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
                                   </select>
                                   <span className="jp-sal-amt">
-                                    <input inputMode="decimal" disabled={잠금} placeholder="0" value={천단위(g.금액)}
-                                      style={{ "--n": Math.max(1, 천단위(g.금액).length) } as CSSProperties}
+                                    <input inputMode="decimal" disabled={잠금} placeholder="0" value={폰 ? 천단위(g.금액) : g.금액}
+                                      style={{ "--n": Math.max(1, (폰 ? 천단위(g.금액) : g.금액).length) } as CSSProperties}
                                       onChange={(e) => {
                                         const 원 = 원단위(g.형태);
                                         const v = 원 ? e.target.value.replace(/[^0-9]/g, "")
