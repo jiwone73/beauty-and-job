@@ -2538,13 +2538,18 @@ input[type="range"].career-slider::-moz-range-thumb {
    전에는 이 규칙이 폰 전용이라, PC 에서는 기본값(17px·700 → 실제로는 다른 규칙에 밀려
    400)으로 남아 서로 다르게(제목 폭도 달라 보여 "오른쪽으로 밀려야" 한다는 지적까지) 보였다. */
 .job-detail-layout .jd-detail-title { display: flex; align-items: center; gap: 6px;
-  font-size: 16px; color: #555; font-weight: 600 !important; margin-bottom: 12px; }
+  font-size: 16px; color: #333; font-weight: 600 !important; margin-bottom: 12px; }
 
 /* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
 .jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f7f7f8; }
 /* 이력서 칸 이름(.resume-section-title)과 같은 무게로 — 두 화면의 칸 이름이
    같은 크기인데 굵기만 갈리면 한 서비스로 안 읽힌다. */
-.job-detail-subtitle { font-size: 16px; font-weight: 600; color: #555; margin: 0 0 12px; letter-spacing: -0.3px; }
+/* 섹션 제목 색은 폼의 이름표 색(#333)과 같다 — 미리보기만 흐린 회색(#555)으로 남아
+   있어 폼과 다르게 보였다. 폰에서는 폼처럼 15px(PC 16px). */
+.job-detail-subtitle { font-size: 16px; font-weight: 600; color: #333; margin: 0 0 12px; letter-spacing: -0.3px; }
+@media (max-width: 768px) {
+  .job-detail-subtitle, .job-detail-layout .jd-detail-title { font-size: 15px; }
+}
 .jd-sublabel { font-size: 15px; color: var(--color-text-mute); margin: 0 0 8px; }
 /* 지원 안내: 라벨 + 값 한 줄 */
 .jd-guide-row { display: flex; align-items: flex-start; gap: 12px; padding: 6px 0; font-size: 15px; color: var(--color-text); }
