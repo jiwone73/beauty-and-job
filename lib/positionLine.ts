@@ -7,29 +7,51 @@
  *  다른 순서로 적으면 같은 공고를 두고 다른 자리처럼 읽힌다. 한쪽을 고치면
  *  다른 쪽도 같이 고쳐야 한다.
  */
+import { 시간표시줄들 } from "@/lib/shiftLines";
+
+/** 금액에 천 단위 쉼표(2300 → 2,300). 공고 폼 급여 칸과 같은 모양으로 편다 —
+ *  숫자만 따로 쉼표를 넣지 않으면 폼에서 본 "2,300만원"이 여기선 "2300만원"이 된다. */
+export const 천단위 = (v: string) => {
+  const [정수, 소수] = String(v ?? "").split(".");
+  return 정수.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (소수 !== undefined ? "." + 소수 : "");
+};
 
 /** 급여는 "월 320만원"처럼 한 글자로 저장된다 — 등록 화면은 '월급'이라 쓰므로
- *  같은 말로 편다. */
+ *  같은 말로 펴고, 숫자에는 폼과 같이 쉼표를 넣는다. */
 export const 급여펴기 = (v: string) =>
-  String(v || "").replace(/^\s*([시일주월연])\s/, (_m, p1) =>
-    ({ 시: "시급 ", 일: "일급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1]);
+  String(v || "")
+    .replace(/^\s*([시일주월연])\s/, (_m, p1) =>
+      ({ 시: "시급 ", 일: "일급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1])
+    .replace(/\d[\d.]*/, (n) => 천단위(n));
 
-/** 급여 칸에 실제로 나갈 말. 비어 있거나 「협의로 열어둠」이면 협의다. */
+/** 급여 칸에 실제로 나갈 말. 비어 있거나 「협의로 열어둠」이면 협의다. 금액을 적어 두고
+ *  협의 여지만 남긴 경우(salaryNego "open")는 폼과 같이 금액 옆에 "협의"를 붙인다 —
+ *  따로 줄을 만들지 않는다(폼은 상자 안 한 줄, 여기도 같은 자리에 이어 적는다). */
 function 급여값(p: any): string {
   if (p?.salaryNego === "hidden") return "협의";
   const v = 급여펴기(p?.salary);
-  return v || (p?.salaryNego === "open" ? "협의" : "");
+  if (!v) return p?.salaryNego === "open" ? "협의" : "";
+  return p?.salaryNego === "open" ? `${v} 협의` : v;
 }
 
 /** 모집분야 한 자리를 「네일 아티스트 | 1명 | 정규직 | 경력 | 주5일 10~19시 | 월급 240만원」로.
  *  값이 없는 칸은 세로바째로 빠진다 — 빈자리가 생기지 않게. */
 export function 모집분야한줄(p: any, 본사공고: boolean): string {
   if (!p) return "";
-  // 「무관」은 빼고 「여성」·「남성」만 적는다. 공고 상세 표에는 「성별」이라는
+  // 「무관」은 빼고 성별을 가릴 때만 적는다. 공고 상세 표에는 「성별」이라는
   // 열 이름이 있어 「무관」이 읽히지만, 여기는 값만 이어 붙이므로 무엇이 무관인지
   // 알 수가 없다. 게다가 대부분 무관이라 적어도 알려 주는 것이 없다.
-  const 성별 = ["여성", "남성", "여", "남"].includes(String(p.gender || "").trim())
-    ? p.gender : "";
+  // 값은 상세 표(JobDetailView)와 똑같이 원본 그대로("여성 우대") 쓴다 — 「여성」·「남」
+  // 처럼 여기서만 다시 줄이면 같은 공고를 두고 두 화면이 다른 말을 하게 된다.
+  const 성별원문 = String(p.gender || "").trim();
+  const 성별 = 성별원문 && 성별원문 !== "무관" ? 성별원문 : "";
+  // 근무요일/시간 — shiftText(원티드식 자유 문장)가 있으면 그걸 원본으로 삼는다.
+  // 예전엔 workDays·workTime만 봐서, shiftText로만 적은 공고(요즘 대부분)는 여기
+  // 값이 통째로 빠졌다. 협의가 걸린 시간 줄은 상세 표와 같이 "협의"를 붙인다.
+  const 시간원문 = p.shiftText || [p.workDays, p.workTime].filter(Boolean).join(" ");
+  const 시간값 = 시간원문
+    ? 시간표시줄들(시간원문).map((l) => (l.협의 ? `${l.글} 협의` : l.글)).join(", ")
+    : "";
   const 칸 = [
     p.category,
     본사공고 ? "" : (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : ""),
@@ -38,7 +60,7 @@ export function 모집분야한줄(p: any, 본사공고: boolean): string {
     성별,
     p.career,
     본사공고 ? p.education : "",
-    p.workDays || p.workTime || "",
+    시간값,
     급여값(p),
   ];
   return 칸.map((x) => String(x || "").trim()).filter(Boolean).join(" | ");

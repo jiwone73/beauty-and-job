@@ -6,6 +6,7 @@ import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { 시간표시줄들 } from "@/lib/shiftLines";
+import { 급여펴기 } from "@/lib/positionLine";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -85,9 +86,8 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   // (블록을 한 번만 정의하고 위치만 바꿔 끼운다 — 텍스트형 공고는 기존 순서 그대로.)
   const positions = Array.isArray(job.positions) ? job.positions.filter((p: any) => p && p.category) : [];
   // 모집부문 표 열 정의. 값이 아무 행에도 없는 열은 미리보기/상세에서 숨긴다(모집분야는 항상 표시).
-  // 급여는 "월 320만원"처럼 한 글자로 저장된다 — 등록 화면은 '월급'이라 쓰므로 같은 말로 편다.
-  const 급여펴기 = (v: string) => String(v || "").replace(/^\s*([시일주월연])\s/,
-    (_m, p1) => ({ 시: "시급 ", 일: "일급 ", 주: "주급 ", 월: "월급 ", 연: "연봉 " } as Record<string, string>)[p1]);
+  // 급여·근무요일/시간 표시 규칙은 폼·상세·제안 화면이 lib/positionLine.ts 하나를 같이 쓴다 —
+  // 여기서 따로 다시 짜면(예전처럼) 셋이 서로 다른 말을 하게 된다.
   const posColDefs: { key: string; label: string; get: (p: any) => string }[] = [
     { key: "category", label: "모집분야", get: (p) => p.category },
     // 무엇을 몇 명 뽑는가 — 붙여 놓아야 한 번에 읽힌다.
@@ -98,7 +98,12 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     { key: "gender", label: "성별", get: (p) => p.gender },
     { key: "career", label: "경력/직책", get: (p) => p.career },
     { key: "education", label: "학력", get: (p) => (isOfficeJob ? p.education : "") },
-    { key: "shift", label: isOfficeJob ? "근무시간" : "근무요일/시간", get: (p) => (p.workDays || p.workTime || "") },
+    // shiftText(원티드식 자유 문장)로만 적은 공고는 workDays·workTime이 비어 있다 —
+    // 폭 계산용 get도 실제로 보일 값(시간표시줄들)을 봐야 열이 너무 좁게 잡히지 않는다.
+    { key: "shift", label: isOfficeJob ? "근무시간" : "근무요일/시간", get: (p) => {
+        const 원문 = p.shiftText || [p.workDays, p.workTime].filter(Boolean).join(" ");
+        return 원문 ? 시간표시줄들(원문).map((l) => l.글).join(" ") : "";
+      } },
     { key: "salary", label: "급여", get: (p) => 급여펴기(p.salary) },
   ];
   // 값이 비어도 화면에는 "협의" 로 나가는 열(급여·근무요일/시간)은 숨기지 않는다.
@@ -203,13 +208,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
                 {posCols.map((c, j) => {
                   // 값은 있는데 회사가 표에서 '확정'을 골랐으면 그대로 노출한다.
                   // "hidden"(협의·금액 비공개)이면 값을 적어 뒀어도 "협의"만 보이고,
-                  // "open"(협의·금액 제시)이면 금액과 나란히 "(협의)"를 붙이는 대신
-                  // 아래 줄에 "협의가능"으로 따로 뗀다 — 값과 붙어 있으면 협의 여지가
-                  // 금액의 일부처럼 읽혔다.
+                  // "open"(협의·금액 제시)이면 금액 옆에 "협의"를 그대로 이어 적는다 —
+                  // 폼의 급여 칸도 상자 안 한 줄로 "2,300만원 | 협의"이니, 여기서 줄을
+                  // 따로 만들면 같은 값이 폼과 다른 모양으로 보인다.
                   const salaryNego = p.salaryNego === "open" && !!c.get(p) && c.get(p) !== "협의";
                   const salaryBase = p.salaryNego === "hidden" ? "협의"
                     : (c.get(p) || (p.salaryNego === "open" ? "협의" : "-"));
-                  const salaryTxt = salaryNego ? <>{salaryBase}<div>협의</div></> : salaryBase;
+                  const salaryTxt = salaryNego ? `${salaryBase} 협의` : salaryBase;
                   const daysTxt = p.workDays || "";
                   const timeTxt = p.workTime || "";
                   // 요일마다 시간이 다르면("월·수·금은 이 시간, 화·목은 저 시간") 기본 한 벌

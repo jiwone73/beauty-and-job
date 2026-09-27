@@ -27,9 +27,9 @@ import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
 const 알바로 = (v: string) => v.replace(/아르바이트|파트타임/g, "알바");
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
 import { 전화꼴 } from "@/lib/phoneFormat";
-
 // 금액 칸에 보이는 모양(PC·폰 모두) — 정수 부분에만 천 단위 쉼표(2300 → 2,300). 저장되는 값은 그대로 숫자다.
-const 천단위 = (v: string) => { const [정수, 소수] = v.split("."); return 정수.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (소수 !== undefined ? "." + 소수 : ""); };
+// 미리보기·상세(JobDetailView)도 같은 함수를 쓴다(lib/positionLine.ts) — 폼과 다시 짜면 어긋난다.
+import { 천단위 } from "@/lib/positionLine";
 
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
