@@ -320,14 +320,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
           <button type="button" onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 2 }}><X size={15} /></button>
         </div>
 
-        {/* 직접 입력은 매장에만. 오피스는 요일·시간이 정해져 있어 문장으로 적을 일이 없다. */}
-        {store ? (
+        {/* 직접 입력 탭은 당장 숨긴다(나중에 필요할 수 있어 코드는 남겨 둔다) — 탭이
+            하나(빠른 선택)뿐이면 탭 자체가 필요 없어, 매장·오피스 모두 이 줄 하나로 통일. */}
+        <div style={{ borderBottom: "1px solid #eee" }} />
+        {false && store && (
           <div className="ws-tabs">
             <button type="button" className={`ws-tab ${tab === "quick" ? "on" : ""}`} onClick={() => setTab("quick")}>빠른 선택</button>
             <button type="button" className={`ws-tab ${tab === "free" ? "on" : ""}`} onClick={() => setTab("free")}>직접 입력</button>
           </div>
-        ) : (
-          <div style={{ borderBottom: "1px solid #eee" }} />
         )}
 
         <div className="ws-body">
