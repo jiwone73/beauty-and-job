@@ -18365,3 +18365,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .jp-cond-shift { max-width: 150px; word-break: keep-all; }
 }
+
+/* 성별·학력·근무지·급여형태 등 팝오버 트리거 — .jp-cond-f 없이 바로 이 span 이 줄의
+   칸이라, 줄이 늘어나도(근무요일/시간이 여러 줄일 때) 안쪽 버튼까지 안 늘어나고 위쪽에
+   붙어 있었다(바깥 span만 커지고 안 보이는 채로). flex 로 두어 늘어난 높이가 버튼까지 이어지게 한다. */
+.jp-job-cond .jp-sel-pop { display: flex; }
+.jp-job-cond .jp-sel-pop > button { flex: 1 1 auto; }
+
+/* 근무요일/시간 값 옆 「(협의)」 — 시간 글자보다 한 단계 작게. */
+.jp-shift-nego-tag { font-size: 12px; color: #8a8a90; }
+@media (max-width: 768px) {
+  .jp-shift-nego-tag { font-size: 11px; }
+}

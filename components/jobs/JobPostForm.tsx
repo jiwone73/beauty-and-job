@@ -3760,14 +3760,19 @@ export default function JobPostForm({
                                 <button type="button" disabled={잠금} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
                                   {/* 줄 하나를 더 얹지 않는다 — 협의면 시간이 적힌 줄마다(둘째 타임이 있으면
-                                      그 줄까지) 「(협의)」를 붙인다. 요일 줄(물결 없음)은 그대로 둔다. */}
+                                      그 줄까지) 「(협의)」를 붙인다. 요일 줄(물결 없음)은 그대로 둔다.
+                                      「(협의)」는 시간 글자보다 한 단계 작게(모바일 11 · PC 12) 눈에 덜 띄게 둔다. */}
                                   {(() => {
                                     const 원문 = shiftDisplay(row);
                                     if (!원문) return (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>);
                                     const 협의됨 = /\(\+?협의\)\s*$/.test(원문);
                                     const 기준 = 원문.replace(/\s*\(\+?협의\)\s*$/, "");
-                                    if (!협의됨) return 기준;
-                                    return 기준.split("\n").map((줄) => (/~/.test(줄) ? `${줄} (협의)` : 줄)).join("\n");
+                                    return 기준.split("\n").map((줄, i) => (
+                                      <span key={i}>
+                                        {줄}
+                                        {협의됨 && /~/.test(줄) && <span className="jp-shift-nego-tag"> (협의)</span>}
+                                      </span>
+                                    ));
                                   })()}
                                 </button>
                                 {shiftModalCat === c && popAt && createPortal(
