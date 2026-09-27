@@ -323,6 +323,123 @@ function CompanyJobsContent() {
     { label: "미열람 지원서", value: String(cntUnviewed), status: "미열람" },
   ];
 
+  // 공고 하나의 상세(조건·수정/마감/재등록)와 그 공고 지원자 목록. PC는 오른쪽
+  // 패널 하나에 이걸 그리고, 모바일은 공고 개수가 몇 안 되니 목록 안에서 그 줄
+  // 바로 밑에 펼친다("공고개수가 얼마 안되니 펼침으로 하면 어떨까?") — 페이지를
+  // 통째로 넘기는 대신 같은 화면에서 열고 닫는다.
+  const renderPaneBody = (job: CompanyJob) => {
+    const closed = isJobClosed(job);
+    const draft = job.status === "DRAFT";
+    const dl = daysLeft(job.deadline);
+    const 임박 = !closed && !draft && dl !== null && dl <= 7;
+    const 상태 =
+      draft ? { 글: "임시저장", 결: "draft" }
+      : closed ? { 글: "마감", 결: "closed" }
+      : 임박 ? { 글: dl === 0 ? "오늘 마감" : `D-${dl}`, 결: "soon" }
+      : { 글: "진행중", 결: "live" };
+    const 수 = job.application_count ?? 0;
+    const 안본 = job.unviewed_count ?? 0;
+    const 기간 = job.deadline
+      ? `${md(job.created_at)} ~ ${md(job.deadline)}`
+      : `${md(job.created_at)} ~ 상시`;
+    const 부문 = ((job as any).positions || []) as any[];
+    const 목록 = 지원자고르기(job.id);
+    return (
+      <>
+        <div className="co-pane-card">
+          <div className="co-pane-head">
+            <div style={{ minWidth: 0 }}>
+              <div className="co-pane-term">
+                <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
+                {기간}
+              </div>
+              <h2 className="co-pane-title">{job.title}</h2>
+            </div>
+            {/* 재등록은 공고 이름과 같은 줄 — 이 공고를 다시 쓰는 일이라
+                이름 옆이 제 자리다. */}
+            {!draft && (
+              <button type="button" className="co-pane-view"
+                onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                재등록 <ChevronRight size={15} />
+              </button>
+            )}
+          </div>
+
+          {/* 조건 줄 — 공고 미리보기의 모집부문 표와 같은 차례.
+              오른쪽 끝에 고치고 마감하는 길을 글자로 둔다(단추 상자를
+              두면 카드 안에 상자가 셋이 된다). */}
+          <div className="co-pane-pos">
+            <div style={{ minWidth: 0 }}>
+              {(() => {
+                const 경력글 = (v: string) =>
+                  v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
+                const 줄들 = 부문.length > 0
+                  ? 부문.map((p: any) => [
+                      p.category || p.group,
+                      p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : null,
+                      p.location,
+                      p.employment || (job as any).employment_type,
+                      p.gender,
+                      p.career,
+                      p.education,
+                      [p.workDays, p.workTime].filter(Boolean).join(" "),
+                      p.salary,
+                    ].filter(Boolean).join("  |  "))
+                  : [[
+                      ((job as any).categories || []).join(" · "),
+                      (job as any).employment_type,
+                      경력글((job as any).experience_level),
+                      (job as any).headcount ? `${(job as any).headcount}명` : null,
+                    ].filter(Boolean).join("  |  ")];
+                return 줄들.filter(Boolean).map((줄: string, i: number) => (
+                  <div key={i} className="co-pane-posline">{줄}</div>
+                ));
+              })()}
+            </div>
+            <span className="co-pane-acts">
+              {draft ? (
+                <>
+                  <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
+                  <i>|</i>
+                  <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
+                </>
+              ) : closed ? (
+                <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
+              ) : (
+                <>
+                  <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
+                  <i>|</i>
+                  <button type="button" onClick={() => handleClose(job.id)}>마감</button>
+                </>
+              )}
+            </span>
+          </div>
+        </div>
+
+        <div className="co-pane-list">
+        {/* 공고 머리 밑 띠 — 아래 목록이 이 공고의 지원자라는 것을 글로 말한다.
+            보낸 제안·스크랩과 같은 부품이다. 몇 명인지도 여기서 말한다. */}
+        <div className="co-pane-band">
+          <span>이 공고의 지원자 {목록.length}명</span>
+          {안본 > 0 && <><span className="apl-bar-sep">|</span><span>미열람 {안본}</span></>}
+          <ChevronDown size={16} aria-hidden="true" />
+        </div>
+
+        <div className="co-pane-apps">
+          {수 === 0
+            ? <p className="apl-none">아직 지원자가 없어요.</p>
+            : 목록.length === 0
+              ? <p className="apl-none">찾는 지원자가 없어요.</p>
+              : 목록.map((a) => (
+                <ApplicantCard key={a.id} a={a} showJob={false}
+                  onOpen={(x) => set지원서(x.id)} onNote={메모저장} />
+              ))}
+        </div>
+        </div>
+      </>
+    );
+  };
+
   // 왼쪽 사이드는 이 화면이 직접 그린다 — 고정 메뉴(공고·지원자 관리 / 공고 등록)는
   // 등록이 머리줄에 이미 있고, 관리 화면은 지금 보고 있는 이 화면이라 같은 말이었다.
   const 사이드 = isMobile ? null : (
@@ -354,8 +471,36 @@ function CompanyJobsContent() {
     </div>
   );
 
+  // 공고가 여럿이면 지금 보는 상세(데스크톱 오른쪽 패널·모바일 펼친 줄) 옆이
+  // 아니라 화면 제목 "공고·지원자 관리"와 같은 줄 양옆에 화살표를 둔다
+  // ("공고지원자 관리 제목과 같은 행에 양옆으로 화살표를 넣으면 될거 같아") —
+  // 제목은 스크롤해도 자리가 늘 같아서 공고 하나하나 넘겨 보기에 더 낫다.
+  // 아직 아무 공고도 안 골랐으면(모바일 목록 화면) 넘길 대상이 없어 화살표 없이
+  // 제목 글자만 보인다.
+  const jobsPaneTitle = (filtered.length > 1 && 지금공고) ? (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+      <button type="button" className="co-pane-nav" aria-label="이전 공고"
+        onClick={() => {
+          const idx = filtered.findIndex((j) => j.id === 지금공고!.id);
+          if (idx === -1) return;
+          set고른공고(filtered[(idx - 1 + filtered.length) % filtered.length].id);
+        }}>
+        <ChevronLeft size={20} />
+      </button>
+      공고·지원자 관리
+      <button type="button" className="co-pane-nav" aria-label="다음 공고"
+        onClick={() => {
+          const idx = filtered.findIndex((j) => j.id === 지금공고!.id);
+          if (idx === -1) return;
+          set고른공고(filtered[(idx + 1) % filtered.length].id);
+        }}>
+        <ChevronRight size={20} />
+      </button>
+    </span>
+  ) : undefined;
+
   return (
-    <CompanyLayout activePage="jobs" side={사이드}>
+    <CompanyLayout activePage="jobs" side={사이드} title={jobsPaneTitle}>
       <div className="co-joblist" style={{ width: isMobile ? "100%" : "100%", maxWidth: "100%" }}>
       {/* 상태 고르개 (데스크톱만).
           누르면 걸리는 필터인데 네모 상자 넷으로 그려 두니 그냥 숫자판처럼 보였다.
@@ -363,9 +508,8 @@ function CompanyJobsContent() {
           켜져 있는지가 밑줄로 바로 보이고, 상자가 사라져 아래 줄과 안 붙는다. */}
 
 
-      {/* 컨트롤 바 (모바일) — 목록 화면에서만. 상세(고른공고)로 들어가면 목록
-          컨트롤(신규등록·필터·선택)은 뜻이 없다. */}
-      {isMobile && !고른공고 && (
+      {/* 컨트롤 바 (모바일) */}
+      {isMobile && (
         <>
           <style>{`
             .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #555; cursor: pointer; }
@@ -464,8 +608,8 @@ function CompanyJobsContent() {
         </div>
       )}
 
-      {/* 모바일 리스트 — 상세를 안 보고 있을 때만 */}
-      {!loading && filtered.length > 0 && isMobile && !고른공고 && (
+      {/* 모바일 리스트 */}
+      {!loading && filtered.length > 0 && isMobile && (
         <div className="co-list">
           <style>{`
             .co-list { display: flex; flex-direction: column; gap: 10px; }
@@ -490,41 +634,50 @@ function CompanyJobsContent() {
             const dl = daysLeft(job.deadline);
             const badgeLabel = closed ? "마감" : formatDeadline(job.deadline);
             const badgeColor = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
+            const 펼침 = 고른공고 === job.id;
             return (
-              <div key={job.id} className="co-row">
-                {selectMode && (
-                  <input type="checkbox" className="co-row-check" checked={on}
-                    onChange={() => toggleCheck(job.id)} />
-                )}
-                <div className={`co-li ${on ? "on" : ""}`}
-                  onClick={() => {
-                    if (selectMode) { toggleCheck(job.id); return; }
-                    // PC는 이름을 누르면 오른쪽 패널에 상세+그 공고 지원자를 보여준다.
-                    // 모바일은 좌우로 나눌 자리가 없어 같은 내용을 다음 화면으로
-                    // 드릴다운한다("피씨에 있는 내용을 모바일화 해야지") — 예전에는
-                    // 구직자용 공개 페이지를 새 탭으로 열어, 관리 화면인데 관리할
-                    // 길이 없었다.
-                    set고른공고(job.id);
-                  }}>
-                  <div className="co-li-r1">
-                    <span className="co-li-title">{job.title}</span>
-                    <span className="co-li-status" style={{ color: badgeColor }}>
-                      {badgeLabel}
-                    </span>
-                  </div>
-                  <div className="co-li-r2">
-                    {/* 등록일 하나만 보여주면 기간 감이 안 온다. 같은 자리에 게시 기간으로 적는다(상시는 마감일 없음). */}
-                    <span>{job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`}</span>
-                    {job.application_count > 0 ? (
-                      <span style={{ color: "#582681" }}
-                        onClick={(e) => { if (!selectMode) { e.stopPropagation(); router.push(`/company/dashboard/applicants?job_id=${job.id}`); } }}>
-                        지원자 <b style={{ color: "#582681" }}>{job.application_count}</b>
+              <div key={job.id}>
+                <div className="co-row">
+                  {selectMode && (
+                    <input type="checkbox" className="co-row-check" checked={on}
+                      onChange={() => toggleCheck(job.id)} />
+                  )}
+                  <div className={`co-li ${on ? "on" : ""}${펼침 ? " open" : ""}`}
+                    onClick={() => {
+                      if (selectMode) { toggleCheck(job.id); return; }
+                      // PC는 이름을 누르면 오른쪽 패널에 상세+그 공고 지원자를 보여준다.
+                      // 모바일은 공고 개수가 몇 안 되니 같은 내용을 그 줄 바로 밑에
+                      // 펼친다("공고개수가 얼마 안되니 펼침으로 하면 어떨까?") — 예전에는
+                      // 구직자용 공개 페이지를 새 탭으로 열어, 관리 화면인데 관리할
+                      // 길이 없었다. 다시 누르면 접는다.
+                      set고른공고((prev) => (prev === job.id ? null : job.id));
+                    }}>
+                    <div className="co-li-r1">
+                      <span className="co-li-title">{job.title}</span>
+                      <span className="co-li-status" style={{ color: badgeColor }}>
+                        {badgeLabel}
                       </span>
-                    ) : (
-                      <span>지원자 <b>{job.application_count}</b></span>
-                    )}
+                    </div>
+                    <div className="co-li-r2">
+                      {/* 등록일 하나만 보여주면 기간 감이 안 온다. 같은 자리에 게시 기간으로 적는다(상시는 마감일 없음). */}
+                      <span>{job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`}</span>
+                      {/* 지원자 수도 같은 펼침을 연다 — 따로 페이지로 나가면 방금 펼친
+                          상세와 다른 곳에서 같은 지원자를 또 보게 된다. */}
+                      {job.application_count > 0 ? (
+                        <span style={{ color: "#582681" }}>
+                          지원자 <b style={{ color: "#582681" }}>{job.application_count}</b>
+                        </span>
+                      ) : (
+                        <span>지원자 <b>{job.application_count}</b></span>
+                      )}
+                    </div>
                   </div>
                 </div>
+                {펼침 && (
+                  <div className="co-pane co-pane-inline">
+                    {renderPaneBody(job)}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -537,134 +690,15 @@ function CompanyJobsContent() {
           있는 줄도 모르고 지나치기 쉬웠다. 카드마다 그 자리에 붙인다.
           할 일은 상태마다 다르다 — 마감된 공고에 '수정'은 뜻이 없고, 대신 다시 올리는 것이 할 일이다. */}
       {/* 데스크톱 — 왼쪽에 공고 이름만, 오른쪽에 고른 공고와 그 지원자.
-          예전에는 공고 카드를 세로로 쌓고 그 안에서 지원자를 펼쳤다. 공고가
-          여럿이면 접었다 폈다 하며 오르내려야 했고, 위 탭이 왼쪽 목록과 같은
-          말을 두 번 했다. */}
-      {!loading && (!isMobile || 고른공고) && (
+          모바일은 이제 목록 안에서 그 줄 바로 밑에 같은 내용을 펼친다(위
+          renderPaneBody, co-pane-inline) — 여기는 데스크톱 전용 오른쪽 패널이다. */}
+      {!loading && !isMobile && (
           <section className="co-pane">
-            {isMobile && (
-              <button type="button" className="admin-back-btn" style={{ marginBottom: 10 }}
-                onClick={() => set고른공고(null)}>
-                <ChevronLeft size={18} /> 목록으로
-              </button>
-            )}
             {!지금공고 ? (
               <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
                 왼쪽에서 공고를 골라 주세요.
               </div>
-            ) : (() => {
-              const job = 지금공고;
-              const closed = isJobClosed(job);
-              const draft = job.status === "DRAFT";
-              const dl = daysLeft(job.deadline);
-              const 임박 = !closed && !draft && dl !== null && dl <= 7;
-              const 상태 =
-                draft ? { 글: "임시저장", 결: "draft" }
-                : closed ? { 글: "마감", 결: "closed" }
-                : 임박 ? { 글: dl === 0 ? "오늘 마감" : `D-${dl}`, 결: "soon" }
-                : { 글: "진행중", 결: "live" };
-              const 수 = job.application_count ?? 0;
-              const 안본 = job.unviewed_count ?? 0;
-              const 기간 = job.deadline
-                ? `${md(job.created_at)} ~ ${md(job.deadline)}`
-                : `${md(job.created_at)} ~ 상시`;
-              const 부문 = ((job as any).positions || []) as any[];
-              const 목록 = 지원자고르기(job.id);
-              return (
-                <>
-                  <div className="co-pane-card">
-                    <div className="co-pane-head">
-                      <div style={{ minWidth: 0 }}>
-                        <div className="co-pane-term">
-                          <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
-                          {기간}
-                        </div>
-                        <h2 className="co-pane-title">{job.title}</h2>
-                      </div>
-                      {/* 재등록은 공고 이름과 같은 줄 — 이 공고를 다시 쓰는 일이라
-                          이름 옆이 제 자리다. */}
-                      {!draft && (
-                        <button type="button" className="co-pane-view"
-                          onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                          재등록 <ChevronRight size={15} />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* 조건 줄 — 공고 미리보기의 모집부문 표와 같은 차례.
-                        오른쪽 끝에 고치고 마감하는 길을 글자로 둔다(단추 상자를
-                        두면 카드 안에 상자가 셋이 된다). */}
-                    <div className="co-pane-pos">
-                      <div style={{ minWidth: 0 }}>
-                        {(() => {
-                          const 경력글 = (v: string) =>
-                            v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
-                          const 줄들 = 부문.length > 0
-                            ? 부문.map((p: any) => [
-                                p.category || p.group,
-                                p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : null,
-                                p.location,
-                                p.employment || (job as any).employment_type,
-                                p.gender,
-                                p.career,
-                                p.education,
-                                [p.workDays, p.workTime].filter(Boolean).join(" "),
-                                p.salary,
-                              ].filter(Boolean).join("  |  "))
-                            : [[
-                                ((job as any).categories || []).join(" · "),
-                                (job as any).employment_type,
-                                경력글((job as any).experience_level),
-                                (job as any).headcount ? `${(job as any).headcount}명` : null,
-                              ].filter(Boolean).join("  |  ")];
-                          return 줄들.filter(Boolean).map((줄: string, i: number) => (
-                            <div key={i} className="co-pane-posline">{줄}</div>
-                          ));
-                        })()}
-                      </div>
-                      <span className="co-pane-acts">
-                        {draft ? (
-                          <>
-                            <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
-                            <i>|</i>
-                            <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
-                          </>
-                        ) : closed ? (
-                          <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
-                        ) : (
-                          <>
-                            <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
-                            <i>|</i>
-                            <button type="button" onClick={() => handleClose(job.id)}>마감</button>
-                          </>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="co-pane-list">
-                  {/* 공고 머리 밑 띠 — 아래 목록이 이 공고의 지원자라는 것을 글로 말한다.
-                      보낸 제안·스크랩과 같은 부품이다. 몇 명인지도 여기서 말한다. */}
-                  <div className="co-pane-band">
-                    <span>이 공고의 지원자 {목록.length}명</span>
-                    {안본 > 0 && <><span className="apl-bar-sep">|</span><span>미열람 {안본}</span></>}
-                    <ChevronDown size={16} aria-hidden="true" />
-                  </div>
-
-                  <div className="co-pane-apps">
-                    {수 === 0
-                      ? <p className="apl-none">아직 지원자가 없어요.</p>
-                      : 목록.length === 0
-                        ? <p className="apl-none">찾는 지원자가 없어요.</p>
-                        : 목록.map((a) => (
-                          <ApplicantCard key={a.id} a={a} showJob={false}
-                            onOpen={(x) => set지원서(x.id)} onNote={메모저장} />
-                        ))}
-                  </div>
-                  </div>
-                </>
-              );
-            })()}
+            ) : renderPaneBody(지금공고)}
           </section>
       )}
       </div>

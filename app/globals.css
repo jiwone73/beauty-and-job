@@ -16174,6 +16174,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-side-dot { position: absolute; right: 9px; top: 14px; width: 6px; height: 6px; border-radius: 50%; background: #c0504d; }
 
 .co-pane { min-width: 0; display: flex; flex-direction: column; gap: 0; }
+/* 모바일 목록에서 그 줄 바로 밑에 펼치는 상세("공고개수가 얼마 안되니 펼침으로
+   하면 어떨까?") — .co-pane 자체는 맨바탕이라(위 주석) 목록의 카드형 줄(.co-li)
+   사이에 두면 경계가 없어 붕 떠 보인다. 카드 테두리를 하나 둘러 준다. */
+.co-pane-inline { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 14px 14px 4px; }
 /* 테두리를 두르지 않는다 — 카드가 셋(공고·머리줄·지원자)이면 상자가 겹쳐
    보인다. 흰 바탕과 여백만으로 갈린다. */
 /* 카드 밑에 진한 선 하나 — 여기서 공고가 끝나고 지원자가 시작한다. */
@@ -17682,6 +17686,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.
    옮긴 상자가 사이드 윗부분에 걸치므로 누름은 통과시킨다. */
 .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center; }
+/* 공고·지원자 관리 제목 양옆 화살표 — 공고를 하나씩 넘겨 본다(co-pane-nav). */
+.co-pane-nav { display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0; border: none; background: none; color: #8a8a90;
+  cursor: pointer; border-radius: 50%; flex-shrink: 0; }
+.co-pane-nav:hover { background: #f7f7f8; color: var(--color-primary); }
 /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
    지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
    선 대신 여백으로 아래 목록과 뗀다. */

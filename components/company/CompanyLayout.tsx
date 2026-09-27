@@ -33,8 +33,10 @@ const PAGE_TITLES: Record<string, string> = {
 export default function CompanyLayout({ children, activePage, title, 제목숨김, side, sideExtra }: {
   children: React.ReactNode;
   activePage: string;
-  /** 화면 제목을 갈아 끼운다 — 한 사람의 이력서처럼 제목이 내용마다 달라지는 곳. */
-  title?: string;
+  /** 화면 제목을 갈아 끼운다 — 한 사람의 이력서처럼 제목이 내용마다 달라지는 곳.
+   *  글자가 아니라 요소를 통째로 줄 수도 있다(공고·지원자 관리의 좌우 화살표처럼
+   *  제목 자체에 조작을 붙이는 화면용). */
+  title?: React.ReactNode;
   /** 본문 제목(h1)을 세우지 않는다. 본문이 제 이름을 스스로 적는 화면용 —
    *  상품 상세가 그렇다. 두 번 적으면 어느 쪽이 그 화면 이름인지 흐려진다. */
   제목숨김?: boolean;
