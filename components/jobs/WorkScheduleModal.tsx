@@ -415,8 +415,8 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             <button type="button" aria-label="시간대 추가"
                               onClick={() => { set둘째타임(true); set확정(r.type);
                                 applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}
-                              style={{ border: "1px solid #ddd", background: "#fff", color: "#582681", borderRadius: 6,
-                                width: 26, height: 26, lineHeight: 1, fontSize: 15, fontFamily: "inherit", cursor: "pointer", padding: 0, flexShrink: 0 }}>
+                              style={{ marginLeft: "auto", border: "1px solid #ddd", background: "#fff", color: "#582681", borderRadius: 6,
+                                width: 28, height: 28, lineHeight: 1, fontSize: 19, fontFamily: "inherit", cursor: "pointer", padding: 0, flexShrink: 0 }}>
                               ＋
                             </button>
                           )}
@@ -442,6 +442,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                               style={{ border: "none", background: "none", color: "#aaa", fontSize: 17, lineHeight: 1, cursor: "pointer", padding: "0 2px" }}>×</button>
                           </div>
                         )}
+                        {/* 조율 여지는 시간에 걸리는 값이라 시간 바로 밑에 둔다 — 요일·주말 칸보다
+                            앞에 서야 "이 시간이 협의 대상"이라는 게 자리로 바로 읽힌다. */}
+                        <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, marginBottom: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
+                          <input type="checkbox" checked={nego} onChange={(e) => { setNego(e.target.checked); set확정(r.type); }}
+                            style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
+                          협의
+                        </label>
                         {/* 「주 5일」만으로는 평일 5일인지 평일 4일＋토인지 알 수 없다.
                             주말에 나오는지부터 묻고, 고르면 그 요일 시간 줄이 따라 선다 —
                             주말 시간이 다른 매장이 많아 어차피 갈려야 한다. */}
@@ -511,13 +518,6 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             </select>
                           </div>
                         )}
-                        {/* 조율 여지는 시간에 걸리는 값이라 시간 바로 밑, 이 카드 안에 둔다.
-                            팝오버 맨 아래에 두면 어느 항목에 걸리는지 자리로 알 수 없었다. */}
-                        <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
-                          <input type="checkbox" checked={nego} onChange={(e) => { setNego(e.target.checked); set확정(r.type); }}
-                            style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                          협의
-                        </label>
                       </div>
                     )}
                   </div>
