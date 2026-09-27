@@ -23,6 +23,7 @@ interface JobItem {
   application_count: number;
   unviewed_count: number;
   deadline: string | null;
+  listed_until: string | null;
   created_at: string;
 }
 
@@ -44,6 +45,8 @@ const EXP_LABEL: Record<string, string> = {
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(".", ".");
 }
+// 게재기한이 오늘이면 빨간색 — 오늘 안에 손 안 대면 그대로 내려간다.
+const 오늘인가 = (iso: string) => new Date(iso).toDateString() === new Date().toDateString();
 
 export default function CompanyDashboard() {
   const router = useRouter();
@@ -175,9 +178,11 @@ export default function CompanyDashboard() {
             />
           ) : (
             <div style={{ overflowX: "auto" }}>
-            <table className="company-table dash-table" style={{ width: "100%" }}>
+            <table className="company-table dash-table applicant-dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>이름</th><th>지원공고</th><th>경력</th><th>지원일</th></tr>
+                {/* 이름은 대부분 3자라 그만큼만 잡고, 남는 폭은 지원공고 칸에 준다
+                    ("이름칸이 너무 넓어. 보통이름은 3자"). */}
+                <tr><th style={{ width: 52 }}>이름</th><th>지원공고</th><th>경력</th><th>지원일</th></tr>
               </thead>
               <tbody>
                 {안본지원자.map((a) => (
@@ -254,14 +259,20 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>게재기한</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
                   <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
-                    <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
+                    {/* 지원 마감일(job.deadline)은 상시채용이 대부분이라 이 표에선 정보가
+                        거의 없다("마감일은 크게 의미가 없어 보여. 대부분 상시고") — 회사가
+                        실제로 대응해야 하는 값인 게재기한(listed_until, 플랜에 따라 자동으로
+                        내려가는 날짜)으로 바꾼다. 지원 마감일 자체는 공고 상세에 그대로 있다. */}
+                    <td className="company-td-sub" style={job.listed_until && 오늘인가(job.listed_until) ? { color: "#c0504d" } : undefined}>
+                      {job.listed_until ? formatDate(job.listed_until) : "-"}
+                    </td>
                     <td>
                       {(() => {
                         // 마감일 칸이 바로 옆에 언제까지인지 말해주니, 여기는 지금 상태만

@@ -8205,6 +8205,9 @@ div:has(> table.admin-table),
 .company-table.dash-table .company-td-name {
   max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+/* 미열람 지원서 표의 이름 칸 — 공고명(200px)과 같은 폭을 물려받아 이름 석 자에 비해
+   너무 넓었다. 이름은 3자 정도만 잡고, 남는 폭은 지원공고 칸이 가져간다. */
+.applicant-dash-table .company-td-name { max-width: 52px; }
 .company-table.dash-table .td-clamp2 {
   display: block; -webkit-line-clamp: unset; max-width: 200px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; overflow-wrap: normal;
