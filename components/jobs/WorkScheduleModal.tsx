@@ -410,12 +410,15 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                           <select className="ws-hourSel" value={qEndMin} onChange={(e) => { const m = Number(e.target.value); setQEndMin(m); set확정(r.type); applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, m); }}>
                             {MIN_OPTIONS.map((m) => <option key={m} value={m}>{m}분</option>)}
                           </select>
-                          {/* 같은 요일에 타임이 둘인 자리(오전·오후 교대) — 시간 줄 옆에 ＋ 하나로 추가한다. */}
+                          {/* 같은 요일에 타임이 둘인 자리(오전·오후 교대) — 시간 줄 옆에 ＋ 하나로 추가한다.
+                              예전엔 marginLeft:auto로 320px 상자 오른쪽 끝까지 밀어 뒀는데, 그러면
+                              시간칸과 뚝 떨어져 혼자 밀린 것처럼 보였다. 아래 두 번째 타임 줄의 "×"처럼
+                              시간칸 바로 옆에 자연스럽게 붙인다. */}
                           {!둘째타임 && (
                             <button type="button" aria-label="시간대 추가"
                               onClick={() => { set둘째타임(true); set확정(r.type);
                                 applyQuick(r.type, r.type === "custom" ? qDays : [], qStart, qStartMin, qEnd, qEndMin, qWeekDays, qBiweekly, q주말, true); }}
-                              style={{ marginLeft: "auto", border: "1px solid #ddd", background: "#fff", color: "#582681", borderRadius: 6,
+                              style={{ border: "1px solid #ddd", background: "#fff", color: "#582681", borderRadius: 6,
                                 width: 28, height: 28, lineHeight: 1, fontSize: 19, fontFamily: "inherit", cursor: "pointer", padding: 0, flexShrink: 0 }}>
                               ＋
                             </button>
