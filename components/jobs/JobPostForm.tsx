@@ -4158,9 +4158,6 @@ export default function JobPostForm({
                   <div key={f.k} style={{ padding: "4px 0", minWidth: 0 }}>
                     <div style={{ fontSize: 15, color: "#333", marginBottom: 3 }}>
                       {f.이름}
-                      {/* 넷 중 하나만 선택이다. 별표를 셋에 붙이는 것보다
-                          하나에 「선택」을 다는 쪽이 눈에 덜 걸린다. */}
-                      {f.k === "kakao" && <span style={{ marginLeft: 4, fontSize: 13, color: "#555" }}>선택</span>}
                     </div>
                     {/* 크롬은 자리글·name 에 든 낱말로 칸을 알아보고 연락처 아이콘을 띄운다.
                         그래서 자리글을 속성에서 빼고 우리가 그린다. 값은 이름표 아래 한 칸 들여쓴다.
