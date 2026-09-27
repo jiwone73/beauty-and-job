@@ -980,6 +980,38 @@ export default function JobPostForm({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [shiftModalCat]);
+  // 성별·학력·근무지·급여형태·이상정액협의 — 브라우저 기본 select 목록은 전형절차 팝오버와
+  // 생김새가 달라 부품이 다른 화면처럼 보였다. 같은 팝오버 하나를 여러 칸이 나눠 쓴다
+  // (한 번에 하나만 열리니 key 로만 가른다).
+  const [셀렉팝, set셀렉팝] = useState<string | null>(null);
+  useEffect(() => {
+    if (!셀렉팝) return;
+    const onDown = (e: MouseEvent) => { if (!(e.target as HTMLElement)?.closest?.(".jp-sel-pop")) set셀렉팝(null); };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [셀렉팝]);
+  // 목록 항목은 전형절차 팝오버(.jp-proc-opt)와 같은 생김새로 통일한다.
+  const 드롭다운 = (key: string, 트리거class: string, 보일값: string, placeholder: string,
+    options: { value: string; label: string }[], onPick: (v: string) => void, disabled: boolean, width = 148) => (
+    <span className="jp-sel-pop" style={{ position: "relative" }}>
+      <button type="button" disabled={disabled} className={`${트리거class} ${보일값 ? "" : "empty"}`}
+        onClick={(e) => { if (셀렉팝 === key) { set셀렉팝(null); return; } openPopAt(e.currentTarget, width, Math.min(options.length, 6) * 32 + 12); set셀렉팝(key); }}>
+        {보일값 || placeholder}
+      </button>
+      {셀렉팝 === key && popAt && createPortal(
+        <div ref={popRef} className="jp-sel-pop" style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200,
+          background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+          padding: 6, width, maxWidth: "calc(100vw - 16px)", maxHeight: 260, overflowY: "auto", boxSizing: "border-box" }}>
+          {options.map((o) => (
+            <button key={o.value} type="button" className="jp-proc-opt"
+              style={o.label === 보일값 ? { background: "#f7f7f8", color: "var(--color-primary)" } : undefined}
+              onClick={() => { onPick(o.value); set셀렉팝(null); }}>{o.label}</button>
+          ))}
+        </div>,
+        document.body
+      )}
+    </span>
+  );
   // 모집분야 추가 팝오버: 바깥 클릭 시 닫기
   useEffect(() => {
     if (!addRowOpen) return;
@@ -3636,16 +3668,13 @@ export default function JobPostForm({
                               const g = 급여읽기(row.salary);
                               return (
                                 <span className={`jp-sal ${미정 ? "off" : ""}`}>
-                                  <select className="jp-sal-unit" disabled={잠금} value={g.형태}
-                                    onChange={(e) => {
-                                      const 새형태 = e.target.value;
+                                  {드롭다운(`${c}:salunit`, "jp-sal-unit", g.형태, "급여",
+                                    SALARY_UNITS.map((u) => ({ value: u.label, label: u.label })),
+                                    (새형태) => {
                                       const 옮김 = !g.금액 || 원단위(g.형태) === 원단위(새형태) ? g.금액
                                         : 원단위(새형태) ? String(Number(g.금액) * 10000) : String(Number(g.금액) / 10000);
                                       setPos(c, "salary", 급여쓰기(새형태, 옮김, g.이상));
-                                    }}>
-                                    <option value="">급여</option>
-                                    {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
-                                  </select>
+                                    }, 잠금, 96)}
                                   <span className="jp-sal-amt">
                                     <input inputMode="decimal" disabled={잠금} placeholder="0" value={천단위(g.금액)}
                                       style={{ "--n": Math.max(1, 천단위(g.금액).length) } as CSSProperties}
@@ -3659,10 +3688,10 @@ export default function JobPostForm({
                                   </span>
                                   {/* 협의를 따로 체크하지 않는다 — 적어 둔 금액을 어떻게 볼지(이상·정액·협의)를
                                       금액 바로 옆에서 고르게 한다. 체크 하나를 줄 끝에 떼어 두면 금액과 상관없어 보인다. */}
-                                  <select className="jp-sal-basis" disabled={잠금}
-                                    value={row.salaryNego === "open" ? "협의" : (g.이상 ? "이상" : "정액")}
-                                    onChange={(e) => {
-                                      const v = e.target.value;
+                                  {드롭다운(`${c}:salbasis`, "jp-sal-basis",
+                                    row.salaryNego === "open" ? "협의" : (g.이상 ? "이상" : "정액"), "",
+                                    [{ value: "이상", label: "이상" }, { value: "정액", label: "정액" }, { value: "협의", label: "협의" }],
+                                    (v) => {
                                       if (v === "협의") {
                                         setPos(c, "salaryNego", "open");
                                         setPos(c, "salary", 급여쓰기(g.형태, g.금액, false));
@@ -3670,11 +3699,7 @@ export default function JobPostForm({
                                       }
                                       setPos(c, "salaryNego", "");
                                       setPos(c, "salary", 급여쓰기(g.형태, g.금액, v === "이상"));
-                                    }}>
-                                    <option value="이상">이상</option>
-                                    <option value="정액">정액</option>
-                                    <option value="협의">협의</option>
-                                  </select>
+                                    }, 잠금, 80)}
                                 </span>
                               );
                             })()}
@@ -3749,40 +3774,20 @@ export default function JobPostForm({
                                   document.body
                                 )}
                               </span>
-                              {isOffice && (
-                                <label className={`jp-cond-f jp-pre ${row.education ? "has" : ""}`} style={{ "--pre": 2 } as CSSProperties}>
-                                  <span>학력</span>
-                                  <select className={`jp-cond-sel ${row.education ? "" : "empty"}`} disabled={잠금} value={row.education}
-                                    onChange={(e) => setPos(c, "education", e.target.value)}>
-                                    <option value="" disabled hidden>학력</option>
-                                    {POS_EDU.map((t) => <option key={t} value={t}>{t}</option>)}
-                                  </select>
-                                </label>
-                              )}
-                              {/* 성별 우대는 매장 공고만 — 오피스 공고에서는 받지 않는다. */}
-                              {!isOffice && (
-                              <label className="jp-cond-f">
-                                {/* 「성별」을 접두사로 붙이지 않는다 — 목록 글자 자체가 뜻을 다 담는다
-                                    (성별우대/성별무관/여성우대/남성우대). 저장 값은 그대로(무관·여성 우대·남성 우대). */}
-                                <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
-                                  onChange={(e) => setPos(c, "gender", e.target.value)}>
-                                  <option value="" disabled hidden>성별우대</option>
-                                  <option value="무관">성별무관</option>
-                                  <option value="여성 우대">여성우대</option>
-                                  <option value="남성 우대">남성우대</option>
-                                </select>
-                              </label>
-                              )}
-                              {근무지목록.length >= 2 && (
-                                <label className={`jp-cond-f jp-pre ov ${row.location ? "has" : ""}`} style={{ "--pre": 3 } as CSSProperties}>
-                                  <span>근무지</span>
-                                  <select className={`jp-cond-sel ${row.location ? "" : "empty"}`} disabled={잠금} value={row.location}
-                                    onChange={(e) => setPos(c, "location", e.target.value)}>
-                                    <option value="">전체</option>
-                                    {근무지목록.map((r) => <option key={r} value={r}>{r}</option>)}
-                                  </select>
-                                </label>
-                              )}
+                              {isOffice && 드롭다운(`${c}:edu`, "jp-cond-sel", row.education ? `학력${row.education}` : "", "학력",
+                                POS_EDU.map((t) => ({ value: t, label: t })),
+                                (v) => setPos(c, "education", v), 잠금, 108)}
+                              {/* 성별 우대는 매장 공고만 — 오피스 공고에서는 받지 않는다.
+                                  「성별」을 접두사로 붙이지 않는다 — 목록 글자 자체가 뜻을 다 담는다
+                                  (성별우대/성별무관/여성우대/남성우대). 저장 값은 그대로(무관·여성 우대·남성 우대). */}
+                              {!isOffice && 드롭다운(`${c}:gender`, "jp-cond-sel",
+                                row.gender === "무관" ? "성별무관" : row.gender === "여성 우대" ? "여성우대" : row.gender === "남성 우대" ? "남성우대" : "",
+                                "성별우대",
+                                [{ value: "무관", label: "성별무관" }, { value: "여성 우대", label: "여성우대" }, { value: "남성 우대", label: "남성우대" }],
+                                (v) => setPos(c, "gender", v), 잠금, 96)}
+                              {근무지목록.length >= 2 && 드롭다운(`${c}:loc`, "jp-cond-sel", row.location ? `근무지${row.location}` : "", "근무지",
+                                [{ value: "", label: "전체" }, ...근무지목록.map((r) => ({ value: r, label: r }))],
+                                (v) => setPos(c, "location", v), 잠금, 148)}
                             </div>
                           </div>
                         );

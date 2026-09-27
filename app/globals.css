@@ -15539,12 +15539,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-sal { display: inline-flex; align-items: center; height: 34px; border: 1px solid #ececf0;
   border-radius: 8px; overflow: hidden; background: #fff; flex-shrink: 0; }
 .jp-sal:focus-within { border-color: var(--color-primary); }
-.jp-sal select, .jp-sal input { border: none; outline: none; background: none;
+.jp-sal input { border: none; outline: none; background: none;
   font-family: inherit; font-size: 13px; color: #555; height: 100%; }
-/* 셀렉트 화살표는 아래로 향한 갈매기 하나만 — 맥 기본 위아래 두 개는 상자 안에서 무겁다. */
-.jp-sal select { appearance: none; -webkit-appearance: none; background: #fff
+/* 급여형태·이상정액협의 — select 대신 버튼+팝오버(전형절차와 같은 목록)를 쓰지만
+   생김새는 select 시절 그대로다. 화살표는 아래로 향한 갈매기 하나만. */
+.jp-sal-unit, .jp-sal-basis { border: none; outline: none; background: #fff
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
-  no-repeat right 9px center; cursor: pointer; }
+  no-repeat right 9px center; appearance: none; -webkit-appearance: none; cursor: pointer;
+  font-family: inherit; font-size: 13px; height: 100%; display: inline-flex; align-items: center; text-align: left; }
 .jp-sal-unit { padding: 0 24px 0 11px; color: #555; }
 .jp-sal-amt { display: inline-flex; align-items: baseline; gap: 3px; height: 100%;
   padding: 0 10px; border-left: 1px solid #f0f0f2; }
@@ -15589,7 +15591,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .jp-job-row.off .jp-job-lab, .jp-job-cond.off .jp-cond-f > span { color: #555; }
 .jp-job-row.off .jp-step-num, .jp-sal.off { background: #fafafb; border-color: #f0f0f2; }
 .jp-job-row.off .jp-step-num b, .jp-job-row.off .jp-job-unit { color: #555; }
-.jp-cond-sel:disabled, .jp-sal select:disabled, .jp-sal input:disabled {
+.jp-cond-sel:disabled, .jp-sal-unit:disabled, .jp-sal-basis:disabled, .jp-sal input:disabled {
   color: #c8c8ce; background-color: #fafafb; cursor: not-allowed; }
 .jp-sal.off .jp-sal-amt em { color: #555; }
 
@@ -18107,7 +18109,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    글자가 커져도 칸 높이·줄바꿈이 그대로이도록 줄 높이·위아래 여백으로 맞춘다. 타일 오른쪽 숫자(11.5px)와
    분야 그룹명(11.5px)은 보조 표시라 그대로 둔다. */
 .jp-pick-g, .jp-pick-i, .jp-step, .jp-job-name, .jp-job-unit, .jp-step-num b,
-.jp-sal select, .jp-sal input, .jp-sal-amt em, .jp-cond-sel,
+.jp-sal-unit, .jp-sal-basis, .jp-sal input, .jp-sal-amt em, .jp-cond-sel,
 .jp-job-lab, .jp-cond-f > span { font-size: 14px; }
 .jp-job-lab, .jp-cond-f > span { line-height: 1.4; }
 .jp-step { line-height: 1.4; }
@@ -18115,7 +18117,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .jp-cond-shift { padding-top: 6px; padding-bottom: 6px; }
 @media (max-width: 768px) {
   .jp-pick-g, .jp-pick-i, .jp-step, .jp-job-name, .jp-job-unit, .jp-step-num b,
-  .jp-sal select, .jp-sal input, .jp-sal-amt em, .jp-cond-sel,
+  .jp-sal-unit, .jp-sal-basis, .jp-sal input, .jp-sal-amt em, .jp-cond-sel,
   .jp-job-lab, .jp-cond-f > span { font-size: 13px; }
 }
 
@@ -18162,8 +18164,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-step-num button { width: 24px; }
   .jp-step-num b { min-width: 20px; }
   .jp-job-unit { margin-right: 0; }
-  .jp-sal select.jp-sal-unit { padding: 0 20px 0 8px; background-position: right 7px center; }
-  .jp-sal select.jp-sal-basis { padding: 0 20px 0 8px; background-position: right 7px center; }
+  .jp-sal-unit { padding: 0 20px 0 8px; background-position: right 7px center; }
+  .jp-sal-basis { padding: 0 20px 0 8px; background-position: right 7px center; }
   .jp-sal-amt { padding: 0 8px; }
   .jp-sal-amt input { width: 52px; }
   .jp-job-cond { flex-wrap: nowrap; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -18253,7 +18255,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-job-steps { gap: 4px; }
   .jp-step { padding: 3px 6px; }
   .jp-job-line { gap: 5px; }
-  .jp-sal select.jp-sal-unit, .jp-sal select.jp-sal-basis { padding: 0 18px 0 6px; background-position: right 5px center; }
+  .jp-sal-unit, .jp-sal-basis { padding: 0 18px 0 6px; background-position: right 5px center; }
   .jp-sal-amt { padding: 0 5px; }
   .jp-job-cond { gap: 6px; }
   .jp-cond-sel { padding: 0 18px 0 7px; background-position: right 5px center; }
