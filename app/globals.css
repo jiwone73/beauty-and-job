@@ -5733,12 +5733,16 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     font-size: 10px;
     line-height: 1;
   }
-  /* 탭바 높이만큼 하단 여백 */
-  body {
+  /* 탭바 높이만큼 하단 여백 — 탭바는 개인회원 계정에만 뜬다(BottomTabBar.tsx,
+     /company 화면·기업회원 로그인 시 렌더 안 함). 기업회원이 자기 공고를
+     "/jobs/[id]"에서 보면 탭바가 없는데도 이 규칙만 무조건 걸려 있어, 탭바가
+     없는데도 몸통 아래 60px가 비고 "공고 수정하기" 버튼이 그만큼 위로 떠 있었다.
+     :has()로 탭바가 실제로 있을 때만 건다. */
+  body:has(.bottom-tab-bar) {
     padding-bottom: calc(60px + env(safe-area-inset-bottom));
   }
   /* 입사지원 CTA를 탭바 위로 올림 */
-  .job-detail-mobile-cta {
+  body:has(.bottom-tab-bar) .job-detail-mobile-cta {
     bottom: calc(60px + env(safe-area-inset-bottom));
   }
 }

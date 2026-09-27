@@ -6,7 +6,7 @@ import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { 시간표시줄들 } from "@/lib/shiftLines";
-import { 급여펴기, 지원방법줄, 회사정보이름, 회사정보행들 } from "@/lib/positionLine";
+import { 급여펴기, 지원방법줄, 회사정보이름, 회사정보행들, 소개글이름 } from "@/lib/positionLine";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -530,10 +530,11 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
             )}
             {job.brandDesc?.trim() && (
               <div style={{ marginTop: companyRows.length ? "16px" : 0 }}>
-                {/* 폼은 이 글도 매장명·업종·주소와 같은 이름표 붙은 줄 하나다("매장정보" 이름표 +
-                    글). 여기는 이름표 없이 글만 있어 "이게 무슨 글인지" 매장명·업종·주소만
-                    보고는 알 수 없었다. */}
-                <span className="job-detail-company-label">{companySectionTitle}</span>
+                {/* 폼은 이 글도 매장명·업종·주소와 같은 이름표 붙은 줄 하나다. 이름표는 섹션
+                    이름("매장정보")이 아니라 매장정보 설정 페이지 안의 그 칸 이름("매장 소개")
+                    이다 — 섹션 이름을 그대로 붙이면 매장정보 페이지에서 이 칸을 찾는 사람에게
+                    다른 이름으로 읽힌다. */}
+                <span className="job-detail-company-label">{소개글이름(isOfficeJob)}</span>
                 <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", margin: "3px 0 0" }}>{job.brandDesc}</p>
               </div>
             )}
