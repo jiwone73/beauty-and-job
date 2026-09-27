@@ -16181,7 +16181,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* "전체적으로 텍스트를 왼쪽으로 좀 더 밀어" — 좌우 안쪽 여백을 14px→10px로 줄여
    더 왼쪽에서 시작하게 한다(오른쪽은 그대로 두어도 되지만 균형을 위해 같이 줄인다). */
 /* 공고카드 글자 크기·색("공고명 15px #333, 나머지 14px #555") — 모바일 펼침에서만. */
+/* 공고명 줄에 수정 아이콘을 같이 두는 짜임 — PC·모바일 공통("마감, 재등록,
+   수정은 피씨에서도 동일하게 적용해줘"). 글자 크기·색·굵기(15px #333 700)는
+   모바일 전용으로 따로 아래 co-pane-inline 규칙이 얹는다. */
+.co-pane-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .co-pane-inline .co-pane-title { font-size: 15px; font-weight: 700; color: #333; }
+/* 진행중 줄로 올린 마감·재등록(패딩 없는 글자 단추)과 공고명 줄로 올린 수정
+   아이콘 — PC·모바일 공통. */
+.co-pane-flat { padding: 0; border: none; background: none; font-family: inherit; font-size: 14px; color: #555; cursor: pointer; }
+.co-pane-flat:hover { color: var(--color-primary); }
+.co-pane-edit-ic { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; border: none; background: none; color: #8a8a90; cursor: pointer; }
+.co-pane-edit-ic:hover { color: var(--color-primary); }
 .co-pane-inline .co-pane-term,
 .co-pane-inline .co-pane-posline,
 .co-pane-inline .co-pane-acts button { font-size: 14px; color: #555; }

@@ -355,22 +355,44 @@ function CompanyJobsContent() {
               <div className="co-pane-term">
                 <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
                 {기간}
+                {/* 마감·재등록을 패딩 없는 글자 단추로 만들어 진행중 줄로 올린다
+                    ("마감, 재등록을 패딩없는 버튼타입으로 만들어서 진행중
+                    라인으로 올리고" — "피씨에서도 동일하게 적용해줘"). */}
+                <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+                  {!draft && (
+                    <button type="button" className="co-pane-flat"
+                      onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                      재등록
+                    </button>
+                  )}
+                  {!draft && closed && <i style={{ fontStyle: "normal", color: "#dcdce2" }}>|</i>}
+                  {closed ? (
+                    <button type="button" className="co-pane-flat" onClick={() => handleDelete(job.id)}>삭제</button>
+                  ) : !draft ? (
+                    <button type="button" className="co-pane-flat" onClick={() => handleClose(job.id)}>마감</button>
+                  ) : (
+                    <button type="button" className="co-pane-flat" onClick={() => handleDelete(job.id)}>삭제</button>
+                  )}
+                </span>
               </div>
-              <h2 className="co-pane-title">{job.title}</h2>
+              <h2 className="co-pane-title">
+                {job.title}
+                {/* 수정(임시저장은 이어서 작성)을 공고명 줄로 올리고 아이콘
+                    하나로 표시한다("수정은 공고명 라인으로 올려. 수정은
+                    아이콘으로 표시"). 마감된 공고는 고칠 게 없어 자리를 안 준다. */}
+                {!closed && (
+                  <button type="button" className="co-pane-edit-ic"
+                    aria-label={draft ? "이어서 작성" : "수정"}
+                    onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                    <Edit size={15} />
+                  </button>
+                )}
+              </h2>
             </div>
-            {/* 재등록은 공고 이름과 같은 줄 — 이 공고를 다시 쓰는 일이라
-                이름 옆이 제 자리다. */}
-            {!draft && (
-              <button type="button" className="co-pane-view"
-                onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
-                재등록 <ChevronRight size={15} />
-              </button>
-            )}
           </div>
 
-          {/* 조건 줄 — 공고 미리보기의 모집부문 표와 같은 차례.
-              오른쪽 끝에 고치고 마감하는 길을 글자로 둔다(단추 상자를
-              두면 카드 안에 상자가 셋이 된다). */}
+          {/* 조건 줄 — 공고 미리보기의 모집부문 표와 같은 차례. 고치고 마감하는
+              길은 위 두 줄(진행중·공고명)로 옮겼다. */}
           <div className="co-pane-pos">
             <div style={{ minWidth: 0 }}>
               {(() => {
@@ -399,23 +421,6 @@ function CompanyJobsContent() {
                 ));
               })()}
             </div>
-            <span className="co-pane-acts">
-              {draft ? (
-                <>
-                  <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>이어서 작성</button>
-                  <i>|</i>
-                  <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
-                </>
-              ) : closed ? (
-                <button type="button" onClick={() => handleDelete(job.id)}>삭제</button>
-              ) : (
-                <>
-                  <button type="button" onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>수정</button>
-                  <i>|</i>
-                  <button type="button" onClick={() => handleClose(job.id)}>마감</button>
-                </>
-              )}
-            </span>
           </div>
         </div>
 
