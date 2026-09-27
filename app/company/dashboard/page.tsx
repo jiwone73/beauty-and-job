@@ -254,7 +254,7 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>미열람</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
@@ -262,9 +262,6 @@ export default function CompanyDashboard() {
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
                     <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
-                    <td className="company-td-sub" style={job.unviewed_count > 0 ? { color: "#582681" } : undefined}>
-                      {job.unviewed_count > 0 ? `${job.unviewed_count}명` : "-"}
-                    </td>
                     <td>
                       {(() => {
                         // 마감일 칸이 바로 옆에 언제까지인지 말해주니, 여기는 지금 상태만
