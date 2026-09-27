@@ -991,17 +991,19 @@ export default function JobPostForm({
     return () => document.removeEventListener("mousedown", onDown);
   }, [셀렉팝]);
   // 목록 항목은 전형절차 팝오버(.jp-proc-opt)와 같은 생김새로 통일한다.
+  // 목록 폭은 고정값이 아니라 담긴 글자만큼(max-content) — 짧은 말(이상·정액…)인데
+  // 200px 상자에 담으면 오른쪽이 휑하게 남는다.
   const 드롭다운 = (key: string, 트리거class: string, 보일값: string, placeholder: string,
-    options: { value: string; label: string }[], onPick: (v: string) => void, disabled: boolean, width = 148) => (
+    options: { value: string; label: string }[], onPick: (v: string) => void, disabled: boolean, 배치폭 = 148) => (
     <span className="jp-sel-pop" style={{ position: "relative" }}>
       <button type="button" disabled={disabled} className={`${트리거class} ${보일값 ? "" : "empty"}`}
-        onClick={(e) => { if (셀렉팝 === key) { set셀렉팝(null); return; } openPopAt(e.currentTarget, width, Math.min(options.length, 6) * 32 + 12); set셀렉팝(key); }}>
+        onClick={(e) => { if (셀렉팝 === key) { set셀렉팝(null); return; } openPopAt(e.currentTarget, 배치폭, Math.min(options.length, 6) * 32 + 12); set셀렉팝(key); }}>
         {보일값 || placeholder}
       </button>
       {셀렉팝 === key && popAt && createPortal(
         <div ref={popRef} className="jp-sel-pop" style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200,
           background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-          padding: 6, width, maxWidth: "calc(100vw - 16px)", maxHeight: 260, overflowY: "auto", boxSizing: "border-box" }}>
+          padding: 6, width: "max-content", minWidth: 84, maxWidth: "calc(100vw - 16px)", maxHeight: 260, overflowY: "auto", boxSizing: "border-box" }}>
           {options.map((o) => (
             <button key={o.value} type="button" className="jp-proc-opt"
               style={o.label === 보일값 ? { background: "#f7f7f8", color: "var(--color-primary)" } : undefined}
@@ -2890,7 +2892,7 @@ export default function JobPostForm({
       <button type="button" className="jp-proc-add" aria-label="전형 단계 더하기"
         onClick={(e) => { if (절차열림) { set절차열림(false); return; } openPopAt(e.currentTarget, 200, 250); set절차열림(true); }}>＋</button>
       {절차열림 && popAt && (
-        <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width: 200, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+        <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 6, width: "max-content", minWidth: 84, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
           {(PRESET_PROCESS[jobGroupType === "기업" ? "기업" : "매장"]).filter((x) => !hiringProcess.includes(x)).map((x) => (
             <button key={x} type="button" className="jp-proc-opt"
               onClick={() => { setHiringProcess([...hiringProcess, x]); set절차열림(false); }}>{x}</button>
