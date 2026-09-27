@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronDown, ChevronRight, Trash2, Upload, Eye, Save, Brie
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { 공고모양 } from "@/lib/jobShape";
+import { 시간표시줄들 } from "@/lib/shiftLines";
 import { 전형절차이름, 근무지이름, 담당자이름 } from "@/lib/constants";
 import { 상세합치기 } from "@/lib/detailMerge";
 import { formatSalaryWon } from "@/lib/salary";
@@ -3730,7 +3731,10 @@ export default function JobPostForm({
                                     <button type="button" disabled={잠금}
                                       className={`jp-cond-sel jp-cond-shift ${고른것.length ? "" : "ph"}`}
                                       onClick={(e) => { if (고용열림 === c) { set고용열림(null); return; } openPopAt(e.currentTarget, 232, 190); set고용열림(c); }}>
-                                      {고른것.join(", ") || (<><span className="jp-ph-pc">선택하기</span><span className="jp-ph-m">고용형태</span></>)}
+                                      {/* 저장 값(콤마로 이음)은 그대로 두고, 이 칸 안에서 보일 때만 줄을 나눈다 —
+                                          "정규직, 프리랜서"처럼 폭에 맞는 동안은 한 줄로 붙어 있다가 갑자기
+                                          꺾이면 보기 어수선했다. 둘 이상이면 하나씩 줄로 선다. */}
+                                      {고른것.join("\n") || (<><span className="jp-ph-pc">선택하기</span><span className="jp-ph-m">고용형태</span></>)}
                                     </button>
                                     {고용열림 === c && popAt && createPortal(
                                       <div ref={popRef} className="jp-emp-pop" style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -3759,21 +3763,13 @@ export default function JobPostForm({
                                 <span>{isOffice ? "근무시간" : "근무요일 / 시간"}</span>
                                 <button type="button" disabled={잠금} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
-                                  {/* 줄 하나를 더 얹지 않는다 — 협의면 시간이 적힌 줄마다(둘째 타임이 있으면
-                                      그 줄까지) 「(협의)」를 붙인다. 요일 줄(물결 없음)은 그대로 둔다.
-                                      「(협의)」는 시간 글자보다 한 단계 작게(모바일 11 · PC 12) 눈에 덜 띄게 둔다. */}
-                                  {(() => {
-                                    const 원문 = shiftDisplay(row);
-                                    if (!원문) return (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>);
-                                    const 협의됨 = /\(\+?협의\)\s*$/.test(원문);
-                                    const 기준 = 원문.replace(/\s*\(\+?협의\)\s*$/, "");
-                                    return 기준.split("\n").map((줄, i) => (
-                                      <span key={i}>
-                                        {줄}
-                                        {협의됨 && /~/.test(줄) && <span className="jp-shift-nego-tag"> (협의)</span>}
-                                      </span>
-                                    ));
-                                  })()}
+                                  {/* 폼·미리보기·상세가 서로 다르게 보이면 안 된다 — 「어느 줄에 (협의)를
+                                      붙일지」는 lib/shiftLines.ts 하나에서만 정한다. */}
+                                  {시간표시줄들(shiftDisplay(row)).length
+                                    ? 시간표시줄들(shiftDisplay(row)).map((l, i) => (
+                                        <span key={i}>{l.글}{l.협의 && <span className="jp-shift-nego-tag"> (협의)</span>}</span>
+                                      ))
+                                    : (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>)}
                                 </button>
                                 {shiftModalCat === c && popAt && createPortal(
                                   <WorkScheduleModal
