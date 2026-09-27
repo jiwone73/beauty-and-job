@@ -499,7 +499,7 @@ export default function CompanySettingsPage() {
                             {signboardUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
                               <>
                                 {/* 칸 이름이 '썸네일' 이라 말하니, 여기서는 무엇을 올리는지만 */}
-                                <span style={{fontSize:11.5, fontWeight:500}}>로고 / 간판</span>
+                                <span style={{fontSize:11.5, fontWeight:500}}>로고·간판</span>
                                 {/* 고르기 창이 받는 것과 같은 목록(accept) — 다른 파일을 골랐다 되돌아오는 일을 던다 */}
                                 <span style={{fontSize:8.5, color:"#c4b8d3"}}>JPG · PNG · WEBP</span>
                               </>
