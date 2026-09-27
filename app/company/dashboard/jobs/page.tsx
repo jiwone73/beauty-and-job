@@ -7,7 +7,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight, ChevronLeft
+  Users, Edit, X, Trash2, ChevronDown, ChevronRight, ChevronLeft
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
@@ -214,11 +214,14 @@ function CompanyJobsContent() {
   });
 
   // 고른 공고가 목록에서 사라졌으면(탭·검색을 바꿨다) 맨 위 것으로 옮긴다.
+  // 모바일도 이제 한 번에 하나만 보여주니("공고목록은 1개야 상단에") 똑같이 맨
+  // 위 것을 골라 둔다 — 예전에는 목록에서 직접 고르는 화면이라 자동으로 고를
+  // 필요가 없었다.
   useEffect(() => {
-    if (isMobile || filtered.length === 0) return;
+    if (filtered.length === 0) return;
     if (!고른공고 || !filtered.some((j) => j.id === 고른공고)) set고른공고(filtered[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile, filtered.map((j) => j.id).join(","), 고른공고]);
+  }, [filtered.map((j) => j.id).join(","), 고른공고]);
   const 지금공고 = filtered.find((j) => j.id === 고른공고) || null;
 
   const toggleCheck = (id: string) => setChecked(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id]);
@@ -471,14 +474,13 @@ function CompanyJobsContent() {
     </div>
   );
 
-  // 공고가 여럿이면 지금 보는 상세(데스크톱 오른쪽 패널·모바일 펼친 줄) 옆이
-  // 아니라 화면 제목 "공고·지원자 관리"와 같은 줄 양옆에 화살표를 둔다
-  // ("공고지원자 관리 제목과 같은 행에 양옆으로 화살표를 넣으면 될거 같아") —
-  // 제목은 스크롤해도 자리가 늘 같아서 공고 하나하나 넘겨 보기에 더 낫다.
-  // 아직 아무 공고도 안 골랐으면(모바일 목록 화면) 넘길 대상이 없어 화살표 없이
-  // 제목 글자만 보인다.
-  const jobsPaneTitle = (filtered.length > 1 && 지금공고) ? (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+  // 모바일은 공고를 한 번에 하나만 보여주니 고를 목록이 없다 — 화면 제목
+  // "공고·지원자 관리"와 같은 줄 양 끝에 화살표를 두어 넘긴다("제목과 같은
+  // 행에 양옆으로 화살표를 넣으면 될거 같아" / "화살표는 왼쪽 오른쪽 끝으로
+  // 이동해줘"). 지금 작업은 모바일만이라 PC 제목은 그대로 둔다("피씨는
+  // 건드리면 안되") — PC는 왼쪽 목록에서 직접 고른다.
+  const jobsPaneTitle = (isMobile && filtered.length > 1 && 지금공고) ? (
+    <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
       <button type="button" className="co-pane-nav" aria-label="이전 공고"
         onClick={() => {
           const idx = filtered.findIndex((j) => j.id === 지금공고!.id);
@@ -572,22 +574,11 @@ function CompanyJobsContent() {
             </div>
           </div>
           <div className="co-mbar">
+            {/* 공고 목록은 한 번에 하나만 보여준다("공고목록은 1개야 상단에.
+                나머지를 보려면 제목옆에 < >") — 여러 줄에 체크해 고르던 선택
+                모드·일괄 작업(마감·복사 등록·삭제)은 보일 줄이 하나뿐이라
+                더 이상 뜻이 없어 뺀다. */}
             <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
-            <div className="co-mbar-actions">
-              {selectMode && (
-                <>
-                  <button className="co-mbar-btn" disabled={checked.length === 0} onClick={handleBulkClose}>
-                    <Ban size={14} /> 공고마감
-                  </button>
-                  <button className="co-mbar-btn" disabled={checked.length !== 1} onClick={handleReRegister}>
-                    <Copy size={14} /> 복사 등록
-                  </button>
-                </>
-              )}
-              <button className={`co-mbar-btn ${selectMode ? "on" : ""}`} onClick={toggleSelectMode}>
-                {selectMode ? "취소" : "선택"}
-              </button>
-            </div>
           </div>
         </>
       )}
@@ -608,80 +599,18 @@ function CompanyJobsContent() {
         </div>
       )}
 
-      {/* 모바일 리스트 */}
+      {/* 모바일 — 공고 하나만 보여준다("공고목록은 1개야 상단에. 나머지를 보려면
+          제목옆에 < >를 누르면 되") — 고를 목록이 없으니 위 제목 옆 화살표
+          (jobsPaneTitle)로 다음/이전 공고로 넘긴다. 지금 작업은 모바일만이라
+          PC 쪽(사이드+아래 co-pane)은 그대로 둔다. */}
       {!loading && filtered.length > 0 && isMobile && (
-        <div className="co-list">
-          <style>{`
-            .co-list { display: flex; flex-direction: column; gap: 10px; }
-            .co-list-meta { font-size: 12.5px; color: #555; padding: 2px 2px 4px; }
-            .co-list-meta strong { color: #582681; }
-            .co-row { display: flex; align-items: center; gap: 10px; }
-            .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
-            .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
-            .co-li.on { border-color: #582681; background: #f7f7f8; }
-            .co-li-r1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
-            .co-li-title { font-size: 15.5px; color: #582681; line-height: 1.35; word-break: break-all; min-width: 0; }
-            .co-li-r1r { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
-            .co-li-status { font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
-            .co-rebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #582681; background: #fff; color: #582681; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
-            .co-closebtn { display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ddd; background: #fff; color: #555; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
-            .co-li-r2 { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: #555; }
-            .co-li-r2 b { color: #555; font-weight: 500; }
-          `}</style>
-          {filtered.map((job) => {
-            const on = checked.includes(job.id);
-            const closed = isJobClosed(job);
-            const dl = daysLeft(job.deadline);
-            const badgeLabel = closed ? "마감" : formatDeadline(job.deadline);
-            const badgeColor = closed ? "#888" : !job.deadline ? "#10b981" : (dl !== null && dl <= 7) ? "#e74c3c" : "#10b981";
-            const 펼침 = 고른공고 === job.id;
-            return (
-              <div key={job.id}>
-                <div className="co-row">
-                  {selectMode && (
-                    <input type="checkbox" className="co-row-check" checked={on}
-                      onChange={() => toggleCheck(job.id)} />
-                  )}
-                  <div className={`co-li ${on ? "on" : ""}${펼침 ? " open" : ""}`}
-                    onClick={() => {
-                      if (selectMode) { toggleCheck(job.id); return; }
-                      // PC는 이름을 누르면 오른쪽 패널에 상세+그 공고 지원자를 보여준다.
-                      // 모바일은 공고 개수가 몇 안 되니 같은 내용을 그 줄 바로 밑에
-                      // 펼친다("공고개수가 얼마 안되니 펼침으로 하면 어떨까?") — 예전에는
-                      // 구직자용 공개 페이지를 새 탭으로 열어, 관리 화면인데 관리할
-                      // 길이 없었다. 다시 누르면 접는다.
-                      set고른공고((prev) => (prev === job.id ? null : job.id));
-                    }}>
-                    <div className="co-li-r1">
-                      <span className="co-li-title">{job.title}</span>
-                      <span className="co-li-status" style={{ color: badgeColor }}>
-                        {badgeLabel}
-                      </span>
-                    </div>
-                    <div className="co-li-r2">
-                      {/* 등록일 하나만 보여주면 기간 감이 안 온다. 같은 자리에 게시 기간으로 적는다(상시는 마감일 없음). */}
-                      <span>{job.deadline ? `${md(job.created_at)} ~ ${md(job.deadline)}` : `${md(job.created_at)} ~ 상시`}</span>
-                      {/* 지원자 수도 같은 펼침을 연다 — 따로 페이지로 나가면 방금 펼친
-                          상세와 다른 곳에서 같은 지원자를 또 보게 된다. */}
-                      {job.application_count > 0 ? (
-                        <span style={{ color: "#582681" }}>
-                          지원자 <b style={{ color: "#582681" }}>{job.application_count}</b>
-                        </span>
-                      ) : (
-                        <span>지원자 <b>{job.application_count}</b></span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {펼침 && (
-                  <div className="co-pane co-pane-inline">
-                    {renderPaneBody(job)}
-                  </div>
-                )}
+          <section className="co-pane co-pane-inline">
+            {!지금공고 ? (
+              <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
+                불러오는 중...
               </div>
-            );
-          })}
-        </div>
+            ) : renderPaneBody(지금공고)}
+          </section>
       )}
 
       {/* 목록 (데스크톱) — 표에서 카드로.
@@ -689,9 +618,7 @@ function CompanyJobsContent() {
           표에는 그 할 일이 없었다. 체크칸을 정확히 하나 켜야 툴바 단추가 살아나서,
           있는 줄도 모르고 지나치기 쉬웠다. 카드마다 그 자리에 붙인다.
           할 일은 상태마다 다르다 — 마감된 공고에 '수정'은 뜻이 없고, 대신 다시 올리는 것이 할 일이다. */}
-      {/* 데스크톱 — 왼쪽에 공고 이름만, 오른쪽에 고른 공고와 그 지원자.
-          모바일은 이제 목록 안에서 그 줄 바로 밑에 같은 내용을 펼친다(위
-          renderPaneBody, co-pane-inline) — 여기는 데스크톱 전용 오른쪽 패널이다. */}
+      {/* 데스크톱 — 왼쪽에 공고 이름만, 오른쪽에 고른 공고와 그 지원자. */}
       {!loading && !isMobile && (
           <section className="co-pane">
             {!지금공고 ? (
@@ -702,16 +629,6 @@ function CompanyJobsContent() {
           </section>
       )}
       </div>
-
-      {/* 선택 액션바 (모바일) */}
-      {isMobile && !고른공고 && selectMode && checked.length > 0 && (
-        <div className="co-selbar">
-          <span className="co-selbar-count">{checked.length}개 선택됨</span>
-          <button className="co-selbar-del" onClick={handleBulkDelete} aria-label="삭제">
-            <Trash2 size={20} />
-          </button>
-        </div>
-      )}
 
       {/* 상세 모달 */}
       {selected && (
