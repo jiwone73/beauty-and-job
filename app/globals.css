@@ -2534,6 +2534,11 @@ input[type="range"].career-slider::-moz-range-thumb {
 .job-detail-section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 12px; }
 .jd-detail-title-ic { display: none; }
 .job-detail-section-title { font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.3px; }
+/* 상세요강·매장정보 제목을 「모집부문」·「지원 안내」 같은 다른 제목과 같게 — PC·폰 모두.
+   전에는 이 규칙이 폰 전용이라, PC 에서는 기본값(17px·700 → 실제로는 다른 규칙에 밀려
+   400)으로 남아 서로 다르게(제목 폭도 달라 보여 "오른쪽으로 밀려야" 한다는 지적까지) 보였다. */
+.job-detail-layout .jd-detail-title { display: flex; align-items: center; gap: 6px;
+  font-size: 16px; color: #555; font-weight: 600 !important; margin-bottom: 12px; }
 
 /* 기본정보 카드 안의 서브블록(근무조건·근무지역·복리후생·채용담당자·채용절차) */
 .jd-subblock { padding-top: 16px; margin-top: 16px; border-top: 1px solid #f7f7f8; }
@@ -2807,10 +2812,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .job-detail-section { padding: 12px 8px; }
   .jd-detail-img-title { padding: 12px 8px 0 !important; }
   .jd-detail-img-desc { padding: 9px 8px 0 !important; }
-  /* 상세요강 제목을 「지원 안내」·「근무지」와 같게 — 아이콘 16px, 16px, #555, 600. */
-  .job-detail-layout .jd-detail-title { display: flex; align-items: center; gap: 6px;
-    font-size: 16px; color: #555; font-weight: 600 !important; margin-bottom: 12px; }
-  /* 상세요강 아이콘도 폼에는 없다 — PC 와 같이 폰에서도 숨긴다. */
+  /* 상세요강 제목 규칙은 PC 에도 있어야 해서 아래로(미디어쿼리 밖) 옮겼다. */
   /* 지원방법·마감일 등 행간 상하 여백이 넓다는 지적 — 줄 자체 패딩과
      2열 사이 간격을 확 줄인다. */
   .jd-guide-row { padding: 2px 0; }
