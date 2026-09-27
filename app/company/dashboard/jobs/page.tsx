@@ -7,7 +7,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight
+  Users, Edit, X, Trash2, Copy, Ban, ChevronDown, ChevronRight, ChevronLeft
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
@@ -363,8 +363,9 @@ function CompanyJobsContent() {
           켜져 있는지가 밑줄로 바로 보이고, 상자가 사라져 아래 줄과 안 붙는다. */}
 
 
-      {/* 컨트롤 바 (모바일) */}
-      {isMobile && (
+      {/* 컨트롤 바 (모바일) — 목록 화면에서만. 상세(고른공고)로 들어가면 목록
+          컨트롤(신규등록·필터·선택)은 뜻이 없다. */}
+      {isMobile && !고른공고 && (
         <>
           <style>{`
             .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #555; cursor: pointer; }
@@ -463,8 +464,8 @@ function CompanyJobsContent() {
         </div>
       )}
 
-      {/* 모바일 리스트 */}
-      {!loading && filtered.length > 0 && isMobile && (
+      {/* 모바일 리스트 — 상세를 안 보고 있을 때만 */}
+      {!loading && filtered.length > 0 && isMobile && !고른공고 && (
         <div className="co-list">
           <style>{`
             .co-list { display: flex; flex-direction: column; gap: 10px; }
@@ -498,10 +499,12 @@ function CompanyJobsContent() {
                 <div className={`co-li ${on ? "on" : ""}`}
                   onClick={() => {
                     if (selectMode) { toggleCheck(job.id); return; }
-                    // 카드형과 같다 — 이름을 누르면 그 공고를 본다. 임시저장만
-                    // 보여 줄 화면이 없어 이어서 쓰러 간다.
-                    if (job.status === "DRAFT") router.push(`/company/dashboard/jobs/new?id=${job.id}`);
-                    else window.open(`/jobs/${job.id}`, "_blank", "noopener");
+                    // PC는 이름을 누르면 오른쪽 패널에 상세+그 공고 지원자를 보여준다.
+                    // 모바일은 좌우로 나눌 자리가 없어 같은 내용을 다음 화면으로
+                    // 드릴다운한다("피씨에 있는 내용을 모바일화 해야지") — 예전에는
+                    // 구직자용 공개 페이지를 새 탭으로 열어, 관리 화면인데 관리할
+                    // 길이 없었다.
+                    set고른공고(job.id);
                   }}>
                   <div className="co-li-r1">
                     <span className="co-li-title">{job.title}</span>
@@ -537,8 +540,14 @@ function CompanyJobsContent() {
           예전에는 공고 카드를 세로로 쌓고 그 안에서 지원자를 펼쳤다. 공고가
           여럿이면 접었다 폈다 하며 오르내려야 했고, 위 탭이 왼쪽 목록과 같은
           말을 두 번 했다. */}
-      {!loading && !isMobile && (
+      {!loading && (!isMobile || 고른공고) && (
           <section className="co-pane">
+            {isMobile && (
+              <button type="button" className="admin-back-btn" style={{ marginBottom: 10 }}
+                onClick={() => set고른공고(null)}>
+                <ChevronLeft size={18} /> 목록으로
+              </button>
+            )}
             {!지금공고 ? (
               <div className="company-card" style={{ padding: "60px 20px", textAlign: "center", color: "#555" }}>
                 왼쪽에서 공고를 골라 주세요.
@@ -661,7 +670,7 @@ function CompanyJobsContent() {
       </div>
 
       {/* 선택 액션바 (모바일) */}
-      {isMobile && selectMode && checked.length > 0 && (
+      {isMobile && !고른공고 && selectMode && checked.length > 0 && (
         <div className="co-selbar">
           <span className="co-selbar-count">{checked.length}개 선택됨</span>
           <button className="co-selbar-del" onClick={handleBulkDelete} aria-label="삭제">
