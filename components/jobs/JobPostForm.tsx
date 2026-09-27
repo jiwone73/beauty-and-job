@@ -3759,7 +3759,9 @@ export default function JobPostForm({
                                 <span>{isOffice ? "근무시간" : "근무요일 / 시간"}</span>
                                 {/* 급여(만원 | 이상▼)처럼 값과 협의 여부를 테두리 하나로 묶는다.
                                     값을 아직 안 정했으면(입력 전) 협의 칸도 통째로 안 보인다. */}
-                                <span className={`jp-shift-box ${미정 ? "off" : ""}`}>
+                                {/* div 로 둔다 — .jp-cond-f > span 을 통째로 숨기는 규칙(옛 이름표 자리)에
+                                    걸리지 않게. */}
+                                <div className={`jp-shift-box ${미정 ? "off" : ""}`}>
                                   <button type="button" disabled={잠금} className={`jp-shift-val ${shiftDisplay(row) ? "" : "ph"}`}
                                     onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
                                     {shiftDisplay(row).replace(/\s*\(\+?협의\)\s*$/, "") || (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>)}
@@ -3772,7 +3774,7 @@ export default function JobPostForm({
                                       const 기준값 = shiftDisplay(row).replace(/\s*\(\+?협의\)\s*$/, "");
                                       setPos(c, "shiftText", v === "협의" ? `${기준값} (협의)` : 기준값);
                                     }, 잠금, 70)}
-                                </span>
+                                </div>
                                 {shiftModalCat === c && popAt && createPortal(
                                   <WorkScheduleModal
                                     value={shiftDisplay(row)}
