@@ -4078,7 +4078,8 @@ export default function JobPostForm({
                          왼쪽 끝이 다른 섹션과 어긋났다. 모집부문 조건 칸과 같은 규칙이다. */}
                      <div style={{ padding: "4px 0" }}>
                       <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>지원방법</div>
-                      <div style={{ minWidth: 0 }}>
+                      {/* 이름표는 위, 값은 한 칸 들여써 그 아래 딸린 값임을 보인다. */}
+                      <div style={{ minWidth: 0, paddingLeft: 8 }}>
                         <button type="button"
                           onClick={(e) => { if (contactMethodsOpen) { setContactMethodsOpen(false); return; } openPopAt(e.currentTarget, 232, 150); setContactMethodsOpen(true); }}
                           style={{ ...fld(contactMethods.length > 0), textAlign: "left", cursor: "pointer", lineHeight: 1.5,
@@ -4104,7 +4105,7 @@ export default function JobPostForm({
                        <div style={{ padding: "4px 0" }}>
                          <div style={{ ...lblS, width: "auto", paddingTop: 0, marginBottom: 3 }}>홈페이지 URL</div>
                          <input value={externalApplyUrl} onChange={(e) => setExternalApplyUrl(e.target.value)}
-                           placeholder="https://example.com/recruit" inputMode="url" style={fld(!!externalApplyUrl)} />
+                           placeholder="https://example.com/recruit" inputMode="url" style={{ ...fld(!!externalApplyUrl), marginLeft: 8 }} />
                        </div>
                      )}
                     </div>
@@ -4113,7 +4114,7 @@ export default function JobPostForm({
                       <div style={{ fontSize: 15, color: "#333", marginBottom: 3 }}>마감일</div>
                       <button type="button"
                         onClick={(e) => { if (deadlineModalOpen) { setDeadlineModalOpen(false); return; } setDeadlineDraft(alwaysOpen ? "" : form.deadline); setAlwaysOpenDraft(alwaysOpen); openPopAt(e.currentTarget, 240, 168); setDeadlineModalOpen(true); }}
-                        style={{ border: "none", background: "transparent", padding: 0, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#b4b4b9", cursor: "pointer" }}>
+                        style={{ border: "none", background: "transparent", padding: 0, paddingLeft: 8, fontSize: 15, color: (alwaysOpen || form.deadline) ? "#555" : "#b4b4b9", cursor: "pointer" }}>
                         {alwaysOpen ? "상시채용" : form.deadline ? `~ ${form.deadline.replace(/-/g, ".")}` : "YYYY.MM.DD"}
                       </button>
                       {deadlineModalOpen && popAt && (
@@ -4162,8 +4163,9 @@ export default function JobPostForm({
                       {f.k === "kakao" && <span style={{ marginLeft: 4, fontSize: 13, color: "#555" }}>선택</span>}
                     </div>
                     {/* 크롬은 자리글·name 에 든 낱말로 칸을 알아보고 연락처 아이콘을 띄운다.
-                        그래서 자리글을 속성에서 빼고 우리가 그린다. */}
-                    <span style={{ position: "relative", display: "flex", minWidth: 0 }}>
+                        그래서 자리글을 속성에서 빼고 우리가 그린다. 값은 이름표 아래 한 칸 들여쓴다.
+                        (margin 으로 — padding 을 쓰면 이 안의 자리글 절대위치가 입력칸과 어긋난다) */}
+                    <span style={{ position: "relative", display: "flex", minWidth: 0, marginLeft: 8 }}>
                       <input value={f.v} inputMode={f.im} aria-label={`담당자 ${f.이름}`}
                         autoComplete={`bw-${f.k}`} name={`bw-${f.k}`} data-lpignore="true" data-1p-ignore
                         onChange={(e) => f.set(e.target.value)}
