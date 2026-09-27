@@ -3762,7 +3762,8 @@ export default function JobPostForm({
                               {/* 성별 우대는 매장 공고만 — 오피스 공고에서는 받지 않는다. */}
                               {!isOffice && (
                               <label className={`jp-cond-f jp-pre ${row.gender ? "has" : ""}`} style={{ "--pre": 2 } as CSSProperties}>
-                                <span>성별</span>
+                                {/* 안 골랐을 땐 「성별우대」, 고르면 「성별」+값(성별무관). */}
+                                <span>{row.gender ? "성별" : "성별우대"}</span>
                                 <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
                                   <option value="">선택하기</option>
