@@ -6653,6 +6653,9 @@ div:has(> table.admin-table),
   .admin-form-row-2col { grid-template-columns: 1fr; gap: 0; }
   /* 좌우 여백(패딩) 축소 */
   .admin-form-body { padding: 14px; }
+  /* 매장정보 설정은 왼쪽 여백이 유독 많아 보였다("왼쪽 테두리 여백 많아") — PC 값(20px)의
+     절반으로 왼쪽만 더 줄인다(위·아래·오른쪽은 다른 admin-form-body와 같이 14px 그대로). */
+  .admin-form-body.settings-compact { padding-left: 10px; }
   /* 공고 등록폼은 표·이미지가 들어가 폭이 아쉬우므로 좌우 여백을 최소로.
      (페이지 컨테이너 14px + 카드 20px = 34px씩 먹던 것을 8px + 10px로) */
   .co-m-content:has(.jobpost-form) { padding-left: 8px; padding-right: 8px; }
