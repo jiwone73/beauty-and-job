@@ -301,6 +301,10 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         @media (max-width: 768px) {
           .ws-weekend-lbl { font-size: 13px; }
           .ws-weekend-ph { font-size: 13px; color: #b4b4b9; }
+          /* 폰에서는 트리거(왼쪽) 기준으로 붙이지 않고 좌우 12px 씩 고르게 띄운다 —
+             320px 고정폭이 좁은 화면 대부분을 트리거 왼쪽에 붙어 채워, 오른쪽만 여백이
+             좁아 보였다. width:auto + left/right 로 화면 폭에 맞춰 늘고 준다(반응형). */
+          .ws-pop { left: 12px !important; right: 12px; width: auto !important; max-width: none; }
         }
       `}</style>
       <div ref={popRef} className="ws-pop posshift-pop" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
