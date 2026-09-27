@@ -3648,7 +3648,10 @@ export default function JobPostForm({
                           <div key={c} className={`jp-job-row ${미정 ? "off" : ""}`}>
                             {/* 이름표·인원·급여는 한 줄로 묶는다 — 폰에서는 이 줄만 옆으로 민다(PC 에서는 풀려 있다). */}
                             <div className="jp-job-line">
-                            <span className="jp-job-lab">{row.career || "경력무관"}</span>
+                            {/* 아직 직급 칩을 하나도 안 눌렀으면 "경력무관"이 아니라 "-" — "경력무관"은
+                                직급 칩 중 하나(고를 수 있는 값)라, 안 고른 상태에 그 글자를 그대로 두면
+                                이미 경력무관을 고른 것처럼 읽혔다. */}
+                            <span className={`jp-job-lab ${row.career ? "" : "ph"}`}>{row.career || "-"}</span>
                             {!isOffice && (() => {
                               /* 1 아래로 내리면 「00」— 몇 명인지 정하지 않았다는 뜻이다.
                                  원문이 「00명」으로 적힌 공고가 흔한데 여태 1 이 하한이라
