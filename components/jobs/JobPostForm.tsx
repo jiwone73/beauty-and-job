@@ -605,7 +605,10 @@ export default function JobPostForm({
   const set부문 = <K extends keyof PosRow>(rows: string[], k: K, v: PosRow[K]) =>
     setPosMeta((m) => { const n = { ...m }; rows.forEach((c) => { n[c] = { ...(n[c] || emptyPos), [k]: v }; }); return n; });
   const 부문조건 = ["employment", "workDays", "workTime", "shiftText", "shiftNego", "education", "gender", "location"] as const;
+  // 폰에서 보라 테두리로 표시할 분야 카드 — 마지막으로 만지거나 새로 담은 것 하나.
+  const [활성분야, set활성분야] = useState<string | null>(null);
   const addCatRow = (base: string) => {
+    set활성분야(base);
     if (categories.length >= MAX_POS_ROWS) { alert(`모집부문은 최대 ${MAX_POS_ROWS}행까지예요.`); return; }
     const dup = categories.some((c) => baseCat(c) === base);
     const key = dup ? nextDupKey(base, categories) : base;
@@ -3561,7 +3564,8 @@ export default function JobPostForm({
                   const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
                   const 단계행 = (st: string) => 내행.find((c) => 행읽기(c).career === st);
                   return (
-                    <div key={item} className="jp-job">
+                    <div key={item} className={`jp-job ${활성분야 === item ? "sel" : ""}`}
+                      onPointerDownCapture={() => set활성분야(item)} onFocusCapture={() => set활성분야(item)}>
                       <div className="jp-job-head">
                         {/* 대분류를 위에 두고 화살표로 아래를 가리킨다 — 위에서 아래로
                             좁혀 고른 길이 그대로 보인다. 대분류는 흐리게, 주인공은 소분류다. */}

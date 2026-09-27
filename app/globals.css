@@ -18291,3 +18291,15 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-pick-items .jp-pick-i.on::before { border-color: var(--color-primary); background-color: var(--color-primary);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='8'><path d='M1 4L3.8 6.6L9 1' fill='none' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>"); }
 }
+
+/* 공고 폼 분야 카드 · 폰 — 카드는 바깥 카드의 회색 테두리까지만 펼친다(안쪽 6px 만큼), 글자는 카드 테두리에서 7px.
+   보라 테두리는 지금 고른(마지막으로 만진·새로 담은) 카드 하나에만. 고용형태 등 조건 칸은 위 직급 칩 크기로. */
+@media (max-width: 768px) {
+  .jobpost-form .jp-job { margin-left: -6px; margin-right: -6px; padding-left: 7px; padding-right: 7px; border-color: #ececf0; }
+  .jobpost-form .jp-job.sel { border-color: var(--color-primary); }
+  .jp-job-cond { gap: 5px; }
+  .jp-cond-sel { min-height: 26px; padding: 0 16px 0 6px; background-position: right 4px center; }
+  .jp-cond-shift { padding-top: 2px; padding-bottom: 2px; line-height: 1.3; }
+  .jp-cond-f.jp-pre > span { left: 6px; }
+  .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(6px + var(--pre, 2) * 1em + 4px); }
+}
