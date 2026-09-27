@@ -17,7 +17,7 @@ import RegionSelectModal from "@/components/RegionSelectModal";
 import AddressMap from "@/components/AddressMap";
 import ImageCropModal from "@/components/ImageCropModal";
 import BannerStrip from "@/components/jobs/BannerStrip";
-import { getGroupOfItem, getJobGroups, 직군의경력단계 } from "@/lib/data/jobGroups";
+import { getJobGroups, 직군의경력단계 } from "@/lib/data/jobGroups";
 import { BANNER_PRESETS, drawSampleBanner } from "@/lib/bannerTemplate";
 import { REGIONS } from "@/lib/data/regions";
 import { EMPLOYMENT_TYPES } from "@/lib/data/employment";
@@ -3561,16 +3561,13 @@ export default function JobPostForm({
                   const 단계들 = [...직군의경력단계(item, isOffice ? "OFFICE" : "STORE"), "경력무관"];
                   const 내행 = categories.filter((c) => baseCat(c) === item);
                   const 켜진단계 = 내행.map((c) => 행읽기(c).career).filter(Boolean);
-                  const 그룹 = getGroupOfItem(jobGroupType === "기업" ? "OFFICE" : "STORE", item);
                   const 단계행 = (st: string) => 내행.find((c) => 행읽기(c).career === st);
                   return (
                     <div key={item} className={`jp-job ${활성분야 === item ? "sel" : ""}`}
                       onPointerDownCapture={() => set활성분야(item)} onFocusCapture={() => set활성분야(item)}>
                       <div className="jp-job-head">
-                        {/* 대분류를 위에 두고 화살표로 아래를 가리킨다 — 위에서 아래로
-                            좁혀 고른 길이 그대로 보인다. 대분류는 흐리게, 주인공은 소분류다. */}
+                        {/* 대분류(헤어·바버 >)는 카드에 적지 않는다 — 소분류 이름만. */}
                         <span className="jp-job-name">
-                          {그룹 && <span className="jp-job-grp">{그룹}<ChevronDown size={12} strokeWidth={2} className="jp-job-arrow" /><ChevronRight size={12} strokeWidth={2} className="jp-job-arrow jp-job-arrow-m" /></span>}
                           <span className="jp-job-item">{item}</span>
                         </span>
                         <span className="jp-job-steps">

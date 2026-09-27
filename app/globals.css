@@ -18309,3 +18309,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .jp-job-cond { flex: 0 0 calc(100% + 7px); margin-left: -7px; }
 }
+
+/* 분야 카드 — 대분류 표시(헤어·바버 >)는 뺐다. 소분류 이름은 이름표 색(#333). PC·폰 공통. */
+.jp-job-name, .jp-job-item { color: #333; }
