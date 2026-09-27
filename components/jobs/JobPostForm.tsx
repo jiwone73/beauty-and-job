@@ -3754,7 +3754,7 @@ export default function JobPostForm({
                                   <span>학력</span>
                                   <select className={`jp-cond-sel ${row.education ? "" : "empty"}`} disabled={잠금} value={row.education}
                                     onChange={(e) => setPos(c, "education", e.target.value)}>
-                                    <option value="">학력</option>
+                                    <option value="" disabled hidden>학력</option>
                                     {POS_EDU.map((t) => <option key={t} value={t}>{t}</option>)}
                                   </select>
                                 </label>
@@ -3766,7 +3766,7 @@ export default function JobPostForm({
                                 <span>성별</span>
                                 <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
-                                  <option value="">성별우대</option>
+                                  <option value="" disabled hidden>성별우대</option>
                                   {/* 저장 값은 그대로(여성 우대) — 보이는 글자만 붙인다(여성우대). */}
                                   {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t.replace(" ", "")}</option>)}
                                 </select>
