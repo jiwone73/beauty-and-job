@@ -6659,7 +6659,8 @@ div:has(> table.admin-table),
      따로 뜬다(모달이 폼 트리 밖에 그려짐) — 상세요강·매장정보(job-detail-company-row) 글자가
      폼은 14px 로 줄었는데 미리보기만 15px 그대로 남아 서로 달라 보였다. 미리보기도 같이 줄인다. */
   .jobpost-preview-scope .job-detail-company-row, .jobpost-preview-scope .job-detail-company-row *,
-  .jobpost-preview-scope .job-detail-desc { font-size: 14px !important; }
+  .jobpost-preview-scope .job-detail-desc,
+  .jobpost-preview-scope .job-detail-brand-desc { font-size: 14px !important; }
 }
 
 /* 기업정보 컴팩트 폼: 개인 프로필처럼 라벨 좌·값 우 1행 */
