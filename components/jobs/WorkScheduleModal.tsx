@@ -305,6 +305,13 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
              320px 고정폭이 좁은 화면 대부분을 트리거 왼쪽에 붙어 채워, 오른쪽만 여백이
              좁아 보였다. width:auto + left/right 로 화면 폭에 맞춰 늘고 준다(반응형). */
           .ws-pop { left: 12px !important; right: 12px; width: auto !important; max-width: none; }
+          /* 버튼 위아래·좌우 안쪽 여백도 공고 폼 분야 카드(폰)에서 줄인 것과 같은 정도로 줄인다. */
+          .ws-tabs { padding: 6px 8px 0; }
+          .ws-body { padding: 8px; }
+          .ws-quick-row { padding: 6px 8px; margin-bottom: 5px; }
+          .ws-weekchip { height: 28px; padding: 0 8px; }
+          .ws-hourSel { height: 28px; padding: 0 3px; }
+          .ws-footer { padding: 6px 8px; }
         }
       `}</style>
       <div ref={popRef} className="ws-pop posshift-pop" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
@@ -508,7 +515,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                         <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
                           <input type="checkbox" checked={nego} onChange={(e) => { setNego(e.target.checked); set확정(r.type); }}
                             style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-                          협의 가능
+                          협의
                         </label>
                       </div>
                     )}
@@ -536,14 +543,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
             <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#555", cursor: "pointer" }}>
               <input type="checkbox" checked={nego} onChange={(e) => setNego(e.target.checked)}
                 style={{ width: 13, height: 13, margin: 0, accentColor: "#582681" }} />
-              협의 가능
+              협의
             </label>
           )}
         </div>
 
         <div className="ws-footer">
           <button type="button" onClick={onClose} style={{ border: "1px solid #ddd", background: "#fff", color: "#555", borderRadius: 7, padding: "6px 12px", fontSize: 13, cursor: "pointer" }}>취소</button>
-          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t} (협의)` : t); onClose(); }} className="company-primary-btn" style={{ borderRadius: 7, padding: "6px 12px", fontSize: 13 }}>적용</button>
+          <button type="button" onClick={() => { const t = draft.trim(); onChange(t && nego && t !== "협의" ? `${t}\u00A0(협의)` : t); onClose(); }} className="company-primary-btn" style={{ borderRadius: 7, padding: "6px 12px", fontSize: 13 }}>적용</button>
         </div>
       </div>
     </>
