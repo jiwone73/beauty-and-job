@@ -18362,6 +18362,27 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-cond-shift { max-width: 150px; word-break: keep-all; }
 }
 
-/* 근무요일/시간 옆 「협의」— 눌리는 칸이 아니라 글자다. 값 색(#555)보다 살짝 진한
-   보라로 두어 "그냥 값"이 아니라 "조건"이라는 걸 알린다. */
-.jp-shift-nego { align-self: center; font-size: 13px; color: var(--color-primary); flex-shrink: 0; }
+/* 근무요일/시간 — 급여(만원 | 이상▼)처럼 값과 협의 여부를 테두리 하나로 묶는다.
+   왼쪽(시간값)을 누르면 근무요일/시간 창이, 오른쪽(협의 화살표)을 누르면 확정·협의
+   둘 중 고르는 작은 목록이 뜬다. 오른쪽 칸은 값이 있을 때만 나타나고, 확정 상태면
+   글자 없이 화살표만 남는다(비었다고 안 보이는 게 아니라 "확정"이라 말이 없는 것). */
+.jp-shift-box { display: inline-flex; align-items: stretch; border: 1px solid #ececf0; border-radius: 8px;
+  overflow: hidden; background: #fff; }
+.jp-shift-box.off { background: #fafafb; border-color: #f0f0f2; }
+.jp-shift-box:focus-within { border-color: var(--color-primary); }
+.jp-shift-val { flex: 1 1 auto; min-width: 0; border: none; outline: none; background: none;
+  font-family: inherit; font-size: 14px; color: #555; text-align: left; white-space: pre-line; line-height: 1.45;
+  padding: 7px 8px 7px 11px; cursor: pointer; }
+.jp-shift-val.ph { color: #b4b4b9; }
+.jp-shift-val:disabled { color: #c8c8ce; background-color: #fafafb; cursor: not-allowed; }
+.jp-shift-nego-btn { flex-shrink: 0; align-self: stretch; min-width: 40px; border: none; outline: none;
+  border-left: 1px solid #f0f0f2; background: #fff
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='9' height='6'><path d='M1 1L4.5 4.5L8 1' fill='none' stroke='%238a8a90' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/></svg>")
+  no-repeat right 9px center; appearance: none; -webkit-appearance: none;
+  font-family: inherit; font-size: 14px; color: var(--color-primary); padding: 0 24px 0 10px; cursor: pointer; }
+.jp-shift-nego-btn:disabled { color: #c8c8ce; background-color: #fafafb; cursor: not-allowed; }
+@media (max-width: 768px) {
+  .jp-shift-val, .jp-shift-nego-btn { font-size: 13px; }
+  .jp-shift-val { padding: 6px 6px 6px 9px; max-width: 150px; word-break: keep-all; }
+  .jp-shift-nego-btn { padding: 0 20px 0 8px; background-position: right 7px center; min-width: 34px; }
+}
