@@ -18210,3 +18210,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-ph-m { display: inline; }
   .jp-job-cond { margin-top: 0; }
 }
+@media (max-width: 768px) {
+  .jp-job-cond .jp-cond-f.jp-pre > span { color: #b4b4b9; }
+  .jp-job-cond .jp-cond-f.jp-pre.has > span { color: #8a8a90; }
+}
