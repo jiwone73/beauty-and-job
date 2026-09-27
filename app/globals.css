@@ -18271,3 +18271,23 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-pick-items::-webkit-scrollbar { display: none; }
   .jp-pick-i { flex: 0 0 auto; white-space: nowrap; min-height: 30px; }
 }
+
+/* 공고 폼 대분류 · 폰 — 대분류를 누르면 그 아래로 풀다운 메뉴가 열리고, 소분류를 여러 개 체크할 수 있다.
+   메뉴는 다른 곳을 누르면 닫힌다(PC 는 그대로 펼침). 오른쪽 열은 오른쪽 끝에 맞춰 화면 밖으로 안 나가게 한다. */
+@media (max-width: 768px) {
+  .jp-pick { grid-auto-flow: row; }
+  .jp-pick > div { display: block; position: relative; }
+  .jp-pick > div:has(.jp-pick-items) { z-index: 30; }
+  .jp-pick-items { position: absolute; top: calc(100% + 4px); left: 0; grid-column: auto; min-width: 100%; width: max-content;
+    max-width: calc(100vw - 32px); display: flex; flex-direction: column; flex-wrap: nowrap; gap: 0; overflow: visible;
+    margin: 0; padding: 4px; background: #fff; border: 1px solid #e5e5e8; border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
+  .jp-pick > div:nth-child(even) .jp-pick-items { left: auto; right: 0; }
+  .jp-pick-items .jp-pick-i { display: flex; align-items: center; gap: 9px; flex: none; border: none; border-radius: 7px;
+    background: #fff; color: #555; min-height: 38px; padding: 6px 10px; text-align: left; white-space: nowrap; }
+  .jp-pick-items .jp-pick-i::before { content: ""; flex: none; width: 16px; height: 16px; box-sizing: border-box;
+    border: 1.5px solid #cfcfd6; border-radius: 4px; background: #fff center / 10px no-repeat; }
+  .jp-pick-items .jp-pick-i.on { background: #f7f3fa; color: var(--color-primary); }
+  .jp-pick-items .jp-pick-i.on::before { border-color: var(--color-primary); background-color: var(--color-primary);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='8'><path d='M1 4L3.8 6.6L9 1' fill='none' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>"); }
+}

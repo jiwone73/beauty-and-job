@@ -3501,7 +3501,11 @@ export default function JobPostForm({
                   return (
                     <div key={g.group}>
                       <button type="button" className={`jp-pick-g ${고른수 > 0 ? "on" : ""} ${열림 ? "open" : ""}`}
-                        onClick={() => set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : [...p, g.group])}>
+                        onClick={() => {
+                          // 폰에서는 풀다운 메뉴라 하나만 열어 둔다 — 여럿이 겹쳐 뜨면 서로 가린다.
+                          const 폰 = window.matchMedia("(max-width: 768px)").matches;
+                          set열린그룹((p) => p.includes(g.group) ? p.filter((x) => x !== g.group) : 폰 ? [g.group] : [...p, g.group]);
+                        }}>
                         {g.group}
                         <span className="n">{고른수 > 0 ? `${고른수}/${g.items.length}` : g.items.length}</span>
                       </button>
