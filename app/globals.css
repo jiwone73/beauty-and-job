@@ -16181,7 +16181,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* "전체적으로 텍스트를 왼쪽으로 좀 더 밀어" — 좌우 안쪽 여백을 14px→10px로 줄여
    더 왼쪽에서 시작하게 한다(오른쪽은 그대로 두어도 되지만 균형을 위해 같이 줄인다). */
 /* 공고카드 글자 크기·색("공고명 15px #333, 나머지 14px #555") — 모바일 펼침에서만. */
-.co-pane-inline .co-pane-title { font-size: 15px; color: #333; }
+.co-pane-inline .co-pane-title { font-size: 15px; font-weight: 700; color: #333; }
 .co-pane-inline .co-pane-term,
 .co-pane-inline .co-pane-posline,
 .co-pane-inline .co-pane-acts button { font-size: 14px; color: #555; }
