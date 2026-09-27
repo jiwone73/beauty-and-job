@@ -18221,3 +18221,21 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-job-arrow:not(.jp-job-arrow-m) { display: none; }
   .jp-job-arrow-m { display: inline-block; margin: 0 0 0 2px; }
 }
+
+/* 공고 폼 모집부문 · 폰 — 위아래 여백을 줄인다(PC 는 그대로). 대분류·소분류 버튼, 분야 카드의 칩·인원·급여·조건 칸. */
+@media (max-width: 768px) {
+  .jp-pick { gap: 6px 10px; margin: 10px 0 12px; }
+  .jp-pick-g { height: 34px; }
+  .jp-pick-items { gap: 5px; margin: 6px 0 2px; }
+  .jp-pick-i { min-height: 30px; padding: 5px 10px; }
+  .jp-job { padding: 9px 15px 8px; margin-bottom: 8px; }
+  .jp-job-head { gap: 4px 8px; }
+  .jp-step { padding: 3px 7px; }
+  .jp-job-row { padding: 6px 0 0; margin-top: 6px; }
+  .jp-step-num { height: 30px; grid-template-rows: 15px 15px; }
+  .jp-step-num button { height: 15px; }
+  .jp-sal, .jp-minwage { height: 30px; }
+  .jp-cond-sel { min-height: 30px; }
+  .jp-cond-shift { padding-top: 4px; padding-bottom: 4px; }
+  .jp-job-cond { margin: 2px 0; }
+}
