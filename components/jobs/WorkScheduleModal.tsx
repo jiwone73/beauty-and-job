@@ -294,6 +294,14 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
         .ws-weekchip.on { border: 1.5px solid #582681; background: #582681; color: #fff; }
         .ws-hourSel { height: 30px; border: 1px solid #ddd; border-radius: 6px; padding: 0 4px; font-size: 13px; color: #555; background: #fff; }
         .ws-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-top: 1px solid #eee; }
+        /* 주말 근무 줄의 두 안내 글자 — 다른 글자는 13px 인데 이 둘만 12.5/12px 로 남아 있었다.
+           "고르면 시간 따로 정해요"는 실제 값이 아니라 안내라, 흐린 회색(플레이스홀더 색)으로 뗀다. */
+        .ws-weekend-lbl { font-size: 13px; color: #555; }
+        .ws-weekend-ph { font-size: 12px; color: #555; }
+        @media (max-width: 768px) {
+          .ws-weekend-lbl { font-size: 13px; }
+          .ws-weekend-ph { font-size: 13px; color: #b4b4b9; }
+        }
       `}</style>
       <div ref={popRef} className="ws-pop posshift-pop" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 10px 0" }}>
@@ -450,7 +458,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                           })()
                         ) : (
                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 12.5, color: "#555" }}>주말 근무</span>
+                          <span className="ws-weekend-lbl">주말 근무</span>
                           {["토", "일"].map((d) => {
                             const on = q주말.includes(d);
                             return (
@@ -464,7 +472,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             );
                           })}
                           {/* 눌러 보기 전에는 주말 시간을 따로 잡을 수 있다는 걸 알 수 없었다. */}
-                          {q주말.length === 0 && <span style={{ fontSize: 12, color: "#555" }}>고르면 시간 따로 정해요</span>}
+                          {q주말.length === 0 && <span className="ws-weekend-ph">고르면 시간 따로 정해요</span>}
                         </div>
                         )}
                         {q주말.length > 0 && (
@@ -474,7 +482,7 @@ export default function WorkScheduleModal({ value, onChange, onClose, popRef, le
                             {/* 지정 요일은 바로 위 체크가 「토·일은 시간 다르게」라고 이미 말한다 —
                                 여기 또 적으면 그만큼 자리를 먹어 칸이 밀려난다. */}
                             {r.type !== "custom" && (
-                              <span style={{ fontSize: 12.5, color: "#555", marginRight: 2, flexShrink: 0 }}>{q주말.join("·")}</span>
+                              <span className="ws-weekend-lbl" style={{ marginRight: 2, flexShrink: 0 }}>{q주말.join("·")}</span>
                             )}
                             <select className="ws-hourSel" value={q주말시작} onChange={(e) => { const v = Number(e.target.value); setQ주말시작(v); set확정(r.type); 주말반영(r.type, v, q주말시작분, q주말끝, q주말끝분); }}>
                               {HOUR_OPTIONS.map((h) => <option key={h} value={h}>{h}시</option>)}
