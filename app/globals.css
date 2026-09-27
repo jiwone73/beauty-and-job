@@ -18361,3 +18361,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .jp-cond-shift { max-width: 150px; word-break: keep-all; }
 }
+
+/* 근무요일/시간 옆 「협의」— 눌리는 칸이 아니라 글자다. 값 색(#555)보다 살짝 진한
+   보라로 두어 "그냥 값"이 아니라 "조건"이라는 걸 알린다. */
+.jp-shift-nego { align-self: center; font-size: 13px; color: var(--color-primary); flex-shrink: 0; }

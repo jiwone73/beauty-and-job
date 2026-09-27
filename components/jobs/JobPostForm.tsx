@@ -3759,7 +3759,8 @@ export default function JobPostForm({
                                 <span>{isOffice ? "근무시간" : "근무요일 / 시간"}</span>
                                 <button type="button" disabled={잠금} className={`jp-cond-sel jp-cond-shift ${shiftDisplay(row) ? "" : "ph"}`}
                                   onClick={(e) => { if (shiftModalCat === c) { setShiftModalCat(null); return; } openPopAt(e.currentTarget, 320, 360); setShiftModalCat(c); }}>
-                                  {shiftDisplay(row) || (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>)}
+                                  {/* 값 끝의 「(협의)」는 시간 글자와 안 섞고, 옆에 따로 「협의」 한 마디로 뗀다. */}
+                                  {shiftDisplay(row).replace(/\s*\(\+?협의\)\s*$/, "") || (<><span className="jp-ph-pc">-</span><span className="jp-ph-m">{isOffice ? "근무시간" : "근무요일 / 시간"}</span></>)}
                                 </button>
                                 {shiftModalCat === c && popAt && createPortal(
                                   <WorkScheduleModal
@@ -3776,18 +3777,13 @@ export default function JobPostForm({
                                   document.body
                                 )}
                               </span>
-                              {/* 급여의 이상·정액·협의처럼, 근무요일/시간도 값은 그대로 두고 협의 여지만
-                                  따로 붙인다 — 값 끝에 「(협의)」를 붙이고 뗀다(근무요일/시간 창 안의
-                                  「협의」 체크와 같은 표시). 값이 없거나 통째로 협의(「협의」·「시간협의」)면
-                                  붙일 것이 없어 안 보인다. */}
-                              {!!shiftDisplay(row) && shiftDisplay(row) !== "협의" && shiftDisplay(row) !== "시간협의" && 드롭다운(
-                                `${c}:shiftnego`, "jp-cond-sel",
-                                /\(\+?협의\)\s*$/.test(shiftDisplay(row)) ? "협의" : "확정", "",
-                                [{ value: "확정", label: "확정" }, { value: "협의", label: "협의" }],
-                                (v) => {
-                                  const 기준값 = shiftDisplay(row).replace(/\s*\(\+?협의\)\s*$/, "");
-                                  setPos(c, "shiftText", v === "협의" ? `${기준값} (협의)` : 기준값);
-                                }, 잠금, 70)}
+                              {/* 값 옆에 협의 여부만 한 마디로 뗀다 — 풀다운이 아니라 글자다.
+                                  값이 없거나 통째로 협의(「협의」·「시간협의」)면 붙일 것이 없어 안 보인다.
+                                  켜고 끄는 건 근무요일/시간 창 안의 「협의」 체크에서 한다. */}
+                              {!!shiftDisplay(row) && shiftDisplay(row) !== "협의" && shiftDisplay(row) !== "시간협의"
+                                && /\(\+?협의\)\s*$/.test(shiftDisplay(row)) && (
+                                <span className="jp-shift-nego">협의</span>
+                              )}
                               {isOffice && 드롭다운(`${c}:edu`, "jp-cond-sel", row.education ? `학력${row.education}` : "", "학력",
                                 POS_EDU.map((t) => ({ value: t, label: t })),
                                 (v) => setPos(c, "education", v), 잠금, 108)}
