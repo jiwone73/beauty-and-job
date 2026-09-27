@@ -3762,8 +3762,8 @@ export default function JobPostForm({
                               {/* 성별 우대는 매장 공고만 — 오피스 공고에서는 받지 않는다. */}
                               {!isOffice && (
                               <label className={`jp-cond-f jp-pre ${row.gender ? "has" : ""}`} style={{ "--pre": 2 } as CSSProperties}>
-                                {/* 안 골랐을 땐 「성별우대」, 고르면 「성별」+값(성별무관). */}
-                                <span>{row.gender ? "성별" : "성별우대"}</span>
+                                {/* 안 골랐을 땐 칸 안 첫 항목 「성별우대」가 이름이다. 고르면 「성별」+값(성별무관). */}
+                                <span>성별</span>
                                 <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
                                   <option value="">성별우대</option>
@@ -3773,7 +3773,7 @@ export default function JobPostForm({
                               </label>
                               )}
                               {근무지목록.length >= 2 && (
-                                <label className={`jp-cond-f jp-pre ${row.location ? "has" : ""}`} style={{ "--pre": 3 } as CSSProperties}>
+                                <label className={`jp-cond-f jp-pre ov ${row.location ? "has" : ""}`} style={{ "--pre": 3 } as CSSProperties}>
                                   <span>근무지</span>
                                   <select className={`jp-cond-sel ${row.location ? "" : "empty"}`} disabled={잠금} value={row.location}
                                     onChange={(e) => setPos(c, "location", e.target.value)}>
