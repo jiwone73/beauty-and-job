@@ -3761,14 +3761,15 @@ export default function JobPostForm({
                               )}
                               {/* 성별 우대는 매장 공고만 — 오피스 공고에서는 받지 않는다. */}
                               {!isOffice && (
-                              <label className={`jp-cond-f jp-pre ${row.gender ? "has" : ""}`} style={{ "--pre": 2 } as CSSProperties}>
-                                {/* 안 골랐을 땐 칸 안 첫 항목 「성별우대」가 이름이다. 고르면 「성별」+값(성별무관). */}
-                                <span>성별</span>
+                              <label className="jp-cond-f">
+                                {/* 「성별」을 접두사로 붙이지 않는다 — 목록 글자 자체가 뜻을 다 담는다
+                                    (성별우대/성별무관/여성우대/남성우대). 저장 값은 그대로(무관·여성 우대·남성 우대). */}
                                 <select className={`jp-cond-sel ${row.gender ? "" : "empty"}`} disabled={잠금} value={row.gender}
                                   onChange={(e) => setPos(c, "gender", e.target.value)}>
                                   <option value="" disabled hidden>성별우대</option>
-                                  {/* 저장 값은 그대로(여성 우대) — 보이는 글자만 붙인다(여성우대). */}
-                                  {["무관", "여성 우대", "남성 우대"].map((t) => <option key={t} value={t}>{t.replace(" ", "")}</option>)}
+                                  <option value="무관">성별무관</option>
+                                  <option value="여성 우대">여성우대</option>
+                                  <option value="남성 우대">남성우대</option>
                                 </select>
                               </label>
                               )}
