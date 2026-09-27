@@ -18315,5 +18315,5 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 
 /* 폰 — 성별·학력·근무지 이름과 고른 값 사이 띄어쓰기 없음(성별무관). */
 @media (max-width: 768px) {
-  .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(6px + var(--pre, 2) * 1em + 1px); }
+  .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(6px + var(--pre, 2) * 1em - 3px); } /* 셀렉트 안 글자에 브라우저가 붙이는 4px 만큼 뺀다 */
 }
