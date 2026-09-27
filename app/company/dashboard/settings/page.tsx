@@ -474,7 +474,7 @@ export default function CompanySettingsPage() {
                     세운다 — 두 칸을 쌓은 높이가 썸네일 카드와 얼추 같아 나란히 선다. */}
                 {/* 아래 칸들과 같은 2열 격자를 쓴다. 따로 폭을 잡으면 왼쪽 기준선이
                     셋이 되어(썸네일 / 매장명·업종 / 직원수) 열이 어긋난다. */}
-                <div className="admin-form-row-2col" style={{alignItems:"start"}}>
+                <div className="admin-form-row-2col settings-thumb-2col" style={{alignItems:"start"}}>
                 <div style={{flexShrink:0}}>
                 <div style={{marginBottom:"6px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림(L.thumb)}{L.thumb}<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
