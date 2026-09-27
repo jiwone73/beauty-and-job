@@ -18260,3 +18260,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .jp-cond-f.jp-pre > span { left: 7px; }
   .jp-cond-f.jp-pre.has .jp-cond-sel { padding-left: calc(7px + var(--pre, 2) * 1em + 4px); }
 }
+
+/* 공고 폼 소분류 버튼 · 폰 — 2열로 쪼개면 「헤어 디자이너」가 세 줄로 꺾인다. 한 행에 한 줄로 늘어놓고 넘치면 옆으로 민다.
+   대분류 버튼 칸(2열 그리드)을 풀어 소분류 줄이 화면 폭 전체를 쓰게 한다. */
+@media (max-width: 768px) {
+  .jp-pick { grid-auto-flow: dense; }
+  .jp-pick > div { display: contents; }
+  .jp-pick-items { grid-column: 1 / -1; display: flex; flex-wrap: nowrap; gap: 5px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; margin: 0; padding: 0; border-left: none; }
+  .jp-pick-items::-webkit-scrollbar { display: none; }
+  .jp-pick-i { flex: 0 0 auto; white-space: nowrap; min-height: 30px; }
+}
