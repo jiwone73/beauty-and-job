@@ -2549,6 +2549,9 @@ input[type="range"].career-slider::-moz-range-thumb {
 /* 채용 담당자 · 채용 절차 2열 배치 */
 .jd-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; align-items: start; }
 @media (max-width: 640px) { .jd-2col { grid-template-columns: 1fr; } }
+/* 지원방법 · 마감일 2열 — 공고 폼과 같이 좁은 화면에서도 접지 않는다(.jd-2col 과 다른 점). */
+.jd-guide-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px; align-items: start; }
+@media (max-width: 768px) { .jd-guide-2col { gap: 4px 14px; } }
 
 /* 사용자 선호: 상세/미리보기 영역은 볼드 없이 전부 평체(인라인 볼드까지 강제 무력화) */
 .job-detail-layout, .job-detail-layout * { font-weight: 400 !important; }

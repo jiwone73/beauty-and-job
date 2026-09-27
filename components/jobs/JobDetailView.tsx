@@ -360,14 +360,17 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const applyGuideBlock = (hasContact || hasMethods || hasProcess || job.deadline) ? (
     <div className="jd-subblock" key="apply-guide">
       <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#555", flexShrink: 0 }} />지원 안내</h2>
-      {(hasContact || hasMethods) && (
-        <div className="jd-2col">
+      {/* 지원방법 · 마감일 2열 — 공고 폼의 「지원 안내」와 같은 짝, 같은 자리다(폼도 폰에서
+          세로로 안 쌓고 2열로 둔다). jd-guide-2col 은 jd-2col 과 달리 좁은 화면에서도
+          접히지 않는다 — 폼이 접지 않으면 여기도 접지 않는다. */}
+      {(hasMethods || job.deadline) && (
+        <div className="jd-guide-2col">
           <div>{methodsInner}</div>
-          <div>{contactInner}</div>
+          <div>{deadlineInner}</div>
         </div>
       )}
+      {contactInner}
       {processInner}
-      {deadlineInner}
     </div>
   ) : null;
 
