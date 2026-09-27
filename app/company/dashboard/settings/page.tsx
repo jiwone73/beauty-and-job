@@ -355,13 +355,13 @@ export default function CompanySettingsPage() {
      프로필에 둔다("사업자등록번호는 계정설정보다 프로필이 맞다"). 가입 때 검증한
      값이라 여기서도 고치지는 못한다. 매장·오피스가 짝지을 칸이 달라 조각으로 빼 둔다. */
   const 사업자번호칸 = (
-    <div className="admin-form-row">
+    <div className="admin-form-row settings-row-inline-m">
       <label className="admin-form-label">{칸그림("사업자등록번호")}사업자등록번호</label>
       <span style={{ fontSize: 16, color: info?.business_number ? "#555" : "#bbb" }}>{info?.business_number || "미등록"}</span>
     </div>
   );
   const 링크목록 = (
-    <div className="admin-form-row">
+    <div className="admin-form-row settings-row-inline-m">
       <label className="admin-form-label">{칸그림(isStore ? "SNS" : "웹사이트")}{isStore ? "SNS" : "웹사이트"}</label>
       <div className="if-row if-row-plain" style={{ borderBottom: "none", padding: 0, minWidth: 0 }}>
         <div className="if-row-body">
@@ -624,7 +624,7 @@ export default function CompanySettingsPage() {
                 {/* 두 칸씩 끝까지 맞아떨어지게 짝을 지었다 — 혼자 남아 반쪽만 차지하는 줄이 없다. */}
                 <div className="admin-form-row-2col">
                   {사업자번호칸}
-                  <div className="admin-form-row">
+                  <div className="admin-form-row settings-row-inline-m">
                     <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
                     <select className="admin-form-select" data-empty={!form.company_size}
                       style={{ height: 42, boxSizing: "border-box" }}
@@ -638,7 +638,7 @@ export default function CompanySettingsPage() {
                 {/* 담당자 휴대폰(계정 설정, 내부용)과는 별개로 예약 문의 등에 쓸 매장 공개
                     번호 — 필수는 아니다("매장전화번호 추가해줘. 필수는 아닌듯"). */}
                 <div className="admin-form-row-2col">
-                  <div className="admin-form-row">
+                  <div className="admin-form-row settings-row-inline-m">
                     <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
                     <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
                       value={formatPhone(form.company_phone)}
@@ -675,7 +675,7 @@ export default function CompanySettingsPage() {
                     </div>
                   </div>
                   <div className="admin-form-row-2col">
-                    <div className="admin-form-row">
+                    <div className="admin-form-row settings-row-inline-m">
                       <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
                       <select className="admin-form-select" data-empty={!form.company_size}
                         style={{ height: 42, boxSizing: "border-box" }}
@@ -685,7 +685,7 @@ export default function CompanySettingsPage() {
                         {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                       </select>
                     </div>
-                    <div className="admin-form-row">
+                    <div className="admin-form-row settings-row-inline-m">
                       <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
                       <input className="admin-form-input" placeholder="숫자만 입력해주세요" inputMode="numeric" maxLength={13}
                         value={formatPhone(form.company_phone)}

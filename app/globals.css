@@ -6758,6 +6758,27 @@ div:has(> table.admin-table),
 }
 @media (max-width: 767px) {
   .settings-compact .admin-form-row { padding: 12px 0; }
+  /* 사업자등록번호·직원수·매장전화번호·SNS — 모바일에서만 "이름표 밑에 값"(2행)을
+     걷고 이름표·값을 한 줄에 둔다("이름표하고 값하고 같은줄에"). 한 줄에 다
+     담기 버거운 주소·매장소개는 그대로 2행이라 이 class를 안 붙였다. */
+  .settings-compact .admin-form-row.settings-row-inline-m:has(> .admin-form-label) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .settings-compact .admin-form-row.settings-row-inline-m:has(> .admin-form-label) > .admin-form-label {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .settings-compact .admin-form-row.settings-row-inline-m:has(> .admin-form-label) > *:not(.admin-form-label) {
+    padding-left: 0 !important;
+    flex: 1;
+    min-width: 0;
+  }
+  .settings-compact .admin-form-row.settings-row-inline-m:has(> .admin-form-label) .admin-form-input,
+  .settings-compact .admin-form-row.settings-row-inline-m:has(> .admin-form-label) .admin-form-select {
+    padding-left: 0 !important;
+  }
 }
 
 /* 박스 제거 → 프로필처럼 값은 테두리 없이 우측 정렬 텍스트 */
