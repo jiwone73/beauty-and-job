@@ -6761,7 +6761,11 @@ div:has(> table.admin-table),
      걷고 이름표·값을 한 줄에 둔다("이름표하고 값하고 같은줄에"). 한 줄에 다
      담기 버거운 주소·매장소개는 그대로 2행이라 이 class를 안 붙였다. */
   .settings-compact .admin-form-row.settings-row-inline-m:has(> .admin-form-label) {
+    /* flex-direction을 안 적어 뒀더니 기본 .admin-form-row 의 column이 그대로
+       남아, 세로로 쌓인 채 align-items:center가 가로축(교차축)을 가운데로
+       몰아 이름표·값이 전부 가운데 정렬로 보였다("이거 왜이래?"). */
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 10px;
   }
