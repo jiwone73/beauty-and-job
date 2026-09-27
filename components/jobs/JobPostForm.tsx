@@ -27,6 +27,9 @@ const 알바로 = (v: string) => v.replace(/아르바이트|파트타임/g, "알
 import { composeCompanyAddress, splitAddress } from "@/lib/address";
 import { 전화꼴 } from "@/lib/phoneFormat";
 
+// 금액 칸에 보이는 모양 — 정수 부분에만 천 단위 쉼표(2300 → 2,300). 저장되는 값은 그대로 숫자다.
+const 천단위 = (v: string) => { const [정수, 소수] = v.split("."); return 정수.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (소수 !== undefined ? "." + 소수 : ""); };
+
 // 근무지역 인라인 자동완성용: "시도 시군구" 평탄화 목록
 const ALL_REGIONS: string[] = REGIONS.flatMap((r) => r.sigungu.map((g) => `${r.sido} ${g}`));
 
@@ -3639,8 +3642,8 @@ export default function JobPostForm({
                                     {SALARY_UNITS.map((u) => <option key={u.label} value={u.label}>{u.label}</option>)}
                                   </select>
                                   <span className="jp-sal-amt">
-                                    <input inputMode="decimal" disabled={잠금} placeholder="0" value={g.금액}
-                                      style={{ "--n": Math.max(1, g.금액.length) } as CSSProperties}
+                                    <input inputMode="decimal" disabled={잠금} placeholder="0" value={천단위(g.금액)}
+                                      style={{ "--n": Math.max(1, 천단위(g.금액).length) } as CSSProperties}
                                       onChange={(e) => {
                                         const 원 = 원단위(g.형태);
                                         const v = 원 ? e.target.value.replace(/[^0-9]/g, "")
