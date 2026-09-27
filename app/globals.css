@@ -18130,6 +18130,16 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .profile-info-card.pf-grid > .pf-wide > .if-row-plain .if-line { flex-wrap: wrap; row-gap: 2px; }
   .profile-info-card.pf-grid > .pf-wide > .if-row-plain .if-sep { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
 }
+/* 매장정보 주소(폰) — 위 프로필 거주지 주소와 같은 문제("주소가 1줄에 다 안 나와, 나머지는
+   2행에"). 도로명 주소는 제 길이만큼 줄바꿈되게 두고, 구분선("|")을 폭 100%짜리 빈
+   줄로 만들어 그 뒤 상세 주소(동·호수)를 다음 줄로 내린다. */
+@media (max-width: 768px) {
+  .settings-addr-line .if-line { flex-wrap: wrap; row-gap: 2px; }
+  .settings-addr-line .if-sep { flex: 0 0 100%; height: 0; padding: 0; margin: 0; font-size: 0; line-height: 0; overflow: hidden; }
+  /* 도로명 주소 칸(.if-slot)은 기본이 말줄임(...)인 한 줄이라, 줄이 넘어가도 잘리기만
+     하고 다음 줄로 못 내려갔다. 여기서만 줄바꿈을 허용한다. */
+  .settings-addr-line .if-slot { white-space: normal; text-overflow: clip; overflow: visible; line-height: 1.4; }
+}
 
 /* 프로필 카드 — 맨 아래 가까운 칸(출근 가능일)의 선택 목록이 카드 경계에서 잘려 「1개월 이내」·「협의」가 안 보였다.
    목록이 카드 밖으로 나올 수 있게 잘라내지 않는다. */

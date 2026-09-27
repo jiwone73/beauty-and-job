@@ -676,7 +676,7 @@ export default function CompanySettingsPage() {
                   주소는 검색으로만 넣으므로 눌러서 여는 자리글, 상세주소는 그 자리에서 친다. */}
               <div className="admin-form-row" style={{ gridColumn: "1 / -1" }}>
                 <label className="admin-form-label">{칸그림("주소")}주소<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                <div className="if-row if-row-plain" style={{ borderBottom: "none", padding: 0 }}>
+                <div className="if-row if-row-plain settings-addr-line" style={{ borderBottom: "none", padding: 0 }}>
                   <div className="if-row-body">
                     <div className="if-line">
                       <button type="button" className={`if-slot ${form.address ? "on" : ""}`} onClick={handleAddressSearch}>
