@@ -6,7 +6,7 @@ import LazyMap from "@/components/jobs/LazyMap";
 import BannerStrip from "@/components/jobs/BannerStrip";
 import { 전화꼴 } from "@/lib/phoneFormat";
 import { 시간표시줄들 } from "@/lib/shiftLines";
-import { 급여펴기, 지원방법이름 } from "@/lib/positionLine";
+import { 급여펴기, 지원방법줄 } from "@/lib/positionLine";
 import { Briefcase, CheckCircle2, ChevronRight, Users, GraduationCap, MapPin, Send, Tag, FileText } from "lucide-react";
 
 // 등록 화면에 적은 것만 내보낸다. '(협의)'·'상세요강 참조' 처럼 화면이 덧붙이던 말은
@@ -177,7 +177,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   const posColMinWidth = posColBlended.reduce((sum, w) => sum + w * 13 + 6, 0);
   const positionsSection = positions.length > 0 ? (
     <div className="jd-subblock" key="positions">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} style={{ color: "#555", flexShrink: 0 }} />모집부문</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Briefcase size={16} className="jd-subtitle-icon" style={{ color: "#555", flexShrink: 0 }} />모집부문</h2>
       {/* 표를 테두리로 감싼다. 칸 밑줄만 있으면 바로 아래 복리후생 줄까지 표의 한
           부분처럼 읽혀, 어디까지가 자리별 조건인지 알 수 없다. */}
       {/* 좁은 화면에서 표가 카드 폭보다 넓어지면 가로 스크롤이 되긴 하지만, 스크롤바가
@@ -270,7 +270,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
           근무기간은 뺐다. 매장 공고는 대부분 상시 근무라 거의 비어 있었고, 그 반열이
           복리후생을 좁혀 태그가 여러 줄로 접혔다. */}
       {(job.benefits || []).length > 0 && (<>
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 18 }}><Tag size={16} style={{ color: "#555", flexShrink: 0 }} />복리후생</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 18 }}><Tag size={16} className="jd-subtitle-icon" style={{ color: "#555", flexShrink: 0 }} />복리후생</h2>
       <div style={{ fontSize: 13.5, color: "#555", lineHeight: 1.5 }}>{(job.benefits || []).join(", ")}</div>
       </>)}
     </div>
@@ -302,7 +302,7 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
 
   const locationSection = hasMap ? (
     <div className="jd-subblock" key="location">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} style={{ color: "#555", flexShrink: 0 }} />{근무지이름}</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={16} className="jd-subtitle-icon" style={{ color: "#555", flexShrink: 0 }} />{근무지이름}</h2>
       {/* 근무지가 여럿이면 다 적는다. 폼의 「근무지 추가」로 넣은 지점이 여태
           지원 창에서 고를 때만 보여, 폼과 공고가 갈렸다. 지도는 첫 주소로 그린다. */}
       {[job.companyAddress, ...(((job as any).workLocations || []) as any[])
@@ -330,12 +330,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
     </div>
   ) : null;
 
+  {/* 지원방법 · 마감일은 이름표 위, 값 아래(한 칸 들여씀)로 — 폼의 지원 안내 칸과
+      같은 모양이다. 옆에 나란히 두면(jd-guide-row) 2열로 짝지었을 때 반 폭에서
+      값이 어중간하게 꺾여 접혔다("온라인 지 / 원"). */}
   const methodsInner = hasMethods ? (
-    <div className="jd-guide-row">
-      <span className="jd-guide-label">지원방법</span>
-      <span>
-        {job.contactMethods.map(지원방법이름).join("   ·   ")}
-      </span>
+    <div className="jd-guide-stack">
+      <div className="jd-guide-stack-label">지원방법</div>
+      <div className="jd-guide-stack-value">{지원방법줄(job.contactMethods)}</div>
     </div>
   ) : null;
 
@@ -351,15 +352,17 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
   ) : null;
 
   const deadlineInner = job.deadline ? (
-    <div className="jd-guide-row">
-      <span className="jd-guide-label">마감일</span>
-      <span>{job.deadline === "상시채용" ? "상시채용" : `~${job.deadline}`}</span>
+    <div className="jd-guide-stack">
+      <div className="jd-guide-stack-label">마감일</div>
+      {/* 폼과 같은 글자("~ 2026.10.12", 물결 뒤 띄어쓰기) — job.deadline 은 이미
+          lib/jobShape.ts 에서 점(.) 표기로 바뀌어 들어온다. */}
+      <div className="jd-guide-stack-value">{job.deadline === "상시채용" ? "상시채용" : `~ ${job.deadline}`}</div>
     </div>
   ) : null;
 
   const applyGuideBlock = (hasContact || hasMethods || hasProcess || job.deadline) ? (
     <div className="jd-subblock" key="apply-guide">
-      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} style={{ color: "#555", flexShrink: 0 }} />지원 안내</h2>
+      <h2 className="job-detail-subtitle" style={{ display: "flex", alignItems: "center", gap: 6 }}><Send size={16} className="jd-subtitle-icon" style={{ color: "#555", flexShrink: 0 }} />지원 안내</h2>
       {/* 지원방법 · 마감일 2열 — 공고 폼의 「지원 안내」와 같은 짝, 같은 자리다(폼도 폰에서
           세로로 안 쌓고 2열로 둔다). jd-guide-2col 은 jd-2col 과 달리 좁은 화면에서도
           접히지 않는다 — 폼이 접지 않으면 여기도 접지 않는다. */}

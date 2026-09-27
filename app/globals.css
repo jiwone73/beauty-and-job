@@ -18400,3 +18400,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    좁아졌다 넓어졌다 하지 않게 한다(PC 14px·폰 13px 기준 4글자 + 여유). */
 .jp-job-lab { min-width: 4em; }
 .jp-job-row .jp-job-lab.ph { color: #b4b4b9; }
+
+/* 공고 상세 섹션 제목 아이콘 — 폼(등록 화면)에는 이 아이콘이 없다. PC·폰 모두 숨겨
+   폼과 맞춘다. */
+.jd-subtitle-icon { display: none; }
+
+/* 지원방법 · 마감일 — 이름표 위, 값은 8px 들여써서 아래(폼 지원 안내 칸과 같은 모양·색). */
+.jd-guide-stack { padding: 6px 0; }
+.jd-guide-stack-label { font-size: 15px; color: #333; margin-bottom: 3px; }
+.jd-guide-stack-value { font-size: 15px; color: #555; padding-left: 8px; }
