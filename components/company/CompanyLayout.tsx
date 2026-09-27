@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings, UserCog,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Send
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Send, Tag
 } from "lucide-react";
 
 
@@ -176,9 +176,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
   // 사이드에 흩어져 있던 것을 한 줄에 세우느라 항목 이름도 짧게 줄였다.
   const TOP_NAV = [
     { id: "dashboard",  label: "홈",          href: base },
-    // 이 갈래에 든 넷 중 프로필은 매장정보 하나뿐이고 나머지는 계정·보안·알림이다.
-    // 넷을 다 덮는 말은 '설정'이라 그렇게 부른다.
-    { id: "settings",   label: "설정",         href: `${base}/settings` },
+    // 설정은 여기 있었는데 아바타를 누르면 나오는 메뉴로 옮겼다("데스크탑도 헤더에
+    // 설정은 지우고 아바타 누르면 설정나오게 해줘") — 로그아웃과 같은 자리, 계정
+    // 하나에 딸린 일이라는 게 더 잘 읽힌다.
     // 공고와 지원자는 한 덩어리다 — 공고를 올리는 이유가 지원자를 받는 것이다.
     // 잡코리아도 「공고·지원자 관리」로 묶어 부른다.
     { id: "jobs",       label: "공고·지원자",  href: `${base}/jobs` },
@@ -287,9 +287,6 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     : id === "proposals" ? (activePage === "proposals" || activePage === "scrapped")
     : id === "settings" ? 묶음 === "settings"
     : activePage === id;
-  // 공고 작성 화면(jobs-new)은 이제 독립 메뉴가 없다 — 목록 메뉴 "채용공고"의
-  // 연장이니 그 메뉴가 계속 켜져 있어야 한다.
-  const navActive = (id: string) => activePage === id || (id === "jobs" && activePage === "jobs-new");
   // 옆줄에서 접은 묶음만 적어 둔다 — 처음에는 다 펴져 있다.
   const [접은것, set접은것] = useState<string[]>([]);
   const 접기 = (id: string) =>
@@ -306,12 +303,15 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
 
   if (isMobile) {
     const logoImg = companyInfo.thumb || companyInfo.logo || (companyInfo.type === "STORE" ? companyInfo.cover : "");
+    // 데스크톱 머리줄(TOP_NAV)과 같은 다섯 갈래로 통일한다("대시보드 공고·지원
+    // 인재풀 제안·스크랩 상품안내로 하고") — 지원자는 공고·지원 안에서, 설정은
+    // 아바타 메뉴에서 본다.
     const MTABS = [
       { id: "dashboard", label: "대시보드", icon: Briefcase, href: base },
-      { id: "jobs", label: "공고", icon: FileText, href: `${base}/jobs` },
-      { id: "applicants", label: "지원자", icon: Users, href: `${base}/applicants` },
-      { id: "talent", label: "인재검색", icon: Search, href: `${base}/talent` },
-      { id: "settings", label: "기업정보", icon: Settings, href: `${base}/settings` },
+      { id: "jobs", label: "공고·지원", icon: FileText, href: `${base}/jobs` },
+      { id: "talent", label: "인재풀", icon: Search, href: `${base}/talent` },
+      { id: "proposals", label: "제안·스크랩", icon: Send, href: `${base}/proposals` },
+      { id: "plans", label: "상품안내", icon: Tag, href: `${base}/plans` },
     ];
     return (
       <div className="co-m">
@@ -338,6 +338,11 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 60 }} onClick={() => setLogoMenuOpen(false)} />
               <div className="co-m-logomenu">
+                {/* 하단 탭에서 설정을 빼면서("기업정보" 탭이 없어졌다) 아바타 메뉴가
+                    그 문을 대신한다. */}
+                <button onClick={() => { setLogoMenuOpen(false); router.push(`${base}/settings`); }}>
+                  <Settings size={16} /> 설정
+                </button>
                 <button onClick={() => { setLogoMenuOpen(false); localStorage.removeItem("access_token"); useAuthStore.getState().logout(); router.push("/company/login"); }}>
                   <LogOut size={16} /> 로그아웃
                 </button>
@@ -374,8 +379,8 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
 
         <nav className="co-m-tabs">
           {MTABS.map((t) => (
-            <Link key={t.id} href={t.href} className={`co-m-tab ${navActive(t.id) ? "on" : ""}`}>
-              <t.icon size={21} strokeWidth={navActive(t.id) ? 2.4 : 1.8} />
+            <Link key={t.id} href={t.href} className={`co-m-tab ${topActive(t.id) ? "on" : ""}`}>
+              <t.icon size={21} strokeWidth={topActive(t.id) ? 2.4 : 1.8} />
               <span>{t.label}</span>
             </Link>
           ))}
@@ -434,8 +439,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                 </>
               )}
             </div>
-            {/* 아바타와 매장 이름 — 누르면 로그아웃만 나온다. 계정 갈래는 '설정' 메뉴가
-                맡으므로, 여기서 또 같은 곳으로 가는 문을 내지 않는다. */}
+            {/* 아바타와 매장 이름 — 머리줄에 있던 '설정'을 여기로 옮겼다("헤더에 설정은
+                지우고 아바타 누르면 설정나오게 해줘") — 로그아웃과 같은 자리, 계정 하나에
+                딸린 일이라는 게 더 잘 읽힌다. */}
             <div className="co-top-mewrap">
               <button type="button" className="co-top-me" title="내 메뉴"
                 aria-haspopup="menu" aria-expanded={meMenuOpen}
@@ -450,6 +456,10 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                   {/* 바깥을 누르면 닫힌다 */}
                   <div className="co-top-memask" onClick={() => setMeMenuOpen(false)} />
                   <div className="co-top-memenu" role="menu">
+                    <button type="button" role="menuitem"
+                      onClick={() => { setMeMenuOpen(false); router.push(`${base}/settings`); }}>
+                      <Settings size={15} />설정
+                    </button>
                     <button type="button" role="menuitem" onClick={나가기}>
                       <LogOut size={15} />로그아웃
                     </button>
