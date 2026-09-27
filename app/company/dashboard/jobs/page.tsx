@@ -556,29 +556,13 @@ function CompanyJobsContent() {
             .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
           `}</style>
           <div className="co-topbar">
-            {/* 모바일도 같은 규칙 — 선택 중에는 아래 선택 바의 액션만 남긴다. */}
-            {checked.length === 0 && (
-              <Link href="/company/dashboard/jobs/new" className="co-addbtn">
-                신규 등록
-              </Link>
-            )}
-            <div className="co-statrow">
-              {statusCards.map((s) => (
-                <button key={s.label} type="button"
-                  className={`co-stat${Number(s.value) > 0 ? " has" : ""}${statusFilter === s.status ? " on" : ""}`}
-                  onClick={() => setStatusFilter(s.status)}>
-                  <span className="l">{s.label}</span>
-                  <span className="n">{s.value}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="co-mbar">
             {/* 공고 목록은 한 번에 하나만 보여준다("공고목록은 1개야 상단에.
                 나머지를 보려면 제목옆에 < >") — 여러 줄에 체크해 고르던 선택
-                모드·일괄 작업(마감·복사 등록·삭제)은 보일 줄이 하나뿐이라
-                더 이상 뜻이 없어 뺀다. */}
-            <span className="co-mbar-count">총 <strong>{filtered.length}</strong>건</span>
+                모드·일괄 작업, 전체/진행중/마감 같은 숫자판(카운트)도 이제
+                뜻이 없어 뺀다("제목 밑에 있는 카운트 다 지워"). */}
+            <Link href="/company/dashboard/jobs/new" className="co-addbtn">
+              신규 등록
+            </Link>
           </div>
         </>
       )}

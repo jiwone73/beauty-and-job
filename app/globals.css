@@ -16177,7 +16177,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 모바일 목록에서 그 줄 바로 밑에 펼치는 상세("공고개수가 얼마 안되니 펼침으로
    하면 어떨까?") — .co-pane 자체는 맨바탕이라(위 주석) 목록의 카드형 줄(.co-li)
    사이에 두면 경계가 없어 붕 떠 보인다. 카드 테두리를 하나 둘러 준다. */
-.co-pane-inline { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 14px 14px 4px; }
+.co-pane-inline { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 14px 10px 4px; }
+/* "전체적으로 텍스트를 왼쪽으로 좀 더 밀어" — 좌우 안쪽 여백을 14px→10px로 줄여
+   더 왼쪽에서 시작하게 한다(오른쪽은 그대로 두어도 되지만 균형을 위해 같이 줄인다). */
+/* 공고카드 글자 크기·색("공고명 15px #333, 나머지 14px #555") — 모바일 펼침에서만. */
+.co-pane-inline .co-pane-title { font-size: 15px; color: #333; }
+.co-pane-inline .co-pane-term,
+.co-pane-inline .co-pane-posline,
+.co-pane-inline .co-pane-acts button { font-size: 14px; color: #555; }
 /* 테두리를 두르지 않는다 — 카드가 셋(공고·머리줄·지원자)이면 상자가 겹쳐
    보인다. 흰 바탕과 여백만으로 갈린다. */
 /* 카드 밑에 진한 선 하나 — 여기서 공고가 끝나고 지원자가 시작한다. */
