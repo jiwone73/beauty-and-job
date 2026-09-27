@@ -15693,6 +15693,16 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 8px 10px; border-radius: 7px; font-family: inherit; font-size: 13px; color: #555; cursor: pointer; }
 .jp-proc-opt:hover { background: #f7f7f8; color: var(--color-primary); }
 
+/* components/ui/PopSelect.tsx — 네이티브 select를 대신하는 범용 팝오버 목록.
+   .jp-sel-pop/.jp-proc-opt(공고 등록 폼)과 같은 생김새를 쓰되, 그 화면 전용
+   규칙(.jp-job-cond 등)이 섞여 들어오지 않게 새 class로 둔다. */
+.ui-pop-list { position: fixed; z-index: 300; background: #fff; border: 1px solid #e5e5e5; border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 6px; max-height: 280px; overflow-y: auto; box-sizing: border-box; }
+.ui-pop-opt { display: block; width: 100%; text-align: left; border: none; background: none;
+  padding: 8px 10px; border-radius: 7px; font-family: inherit; font-size: 14px; color: #555; cursor: pointer; }
+.ui-pop-opt:hover { background: #f7f7f8; color: var(--color-primary); }
+.ui-pop-group { padding: 8px 10px 4px; font-size: 12px; color: #b4b4b9; font-weight: 600; }
+
 /* 머리줄 오른쪽 — 지금 밀린 것. 0 이면 흐리게 두어 눈에 안 걸리게 한다. */
 .admin-todo { display: flex; align-items: center; gap: 4px; }
 .admin-todo-item { border: none; background: none; padding: 6px 10px; border-radius: 7px;

@@ -11,6 +11,7 @@ import { SNS찾기 } from "@/lib/snsPresets";
 import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import { InlineSuggest, InlineText } from "@/components/profile/inline/InlineField";
 import { Trash2 } from "lucide-react";
+import PopSelect from "@/components/ui/PopSelect";
 import type { CompanyInfo } from "@/lib/types/company";
 
 declare global {
@@ -545,20 +546,11 @@ export default function CompanySettingsPage() {
               </div>
               <div className="admin-form-row" style={{borderBottom:"none"}}>
                 <label className="admin-form-label">{칸그림("업종")}업종<span style={{ color: "#e74c3c", marginLeft: "2px" }}>*</span></label>
-                <select className="admin-form-select" data-empty={!form.industry} style={{ height: 42, boxSizing: "border-box" }}
-                  value={form.industry}
-                  onChange={(e) => setForm({ ...form, industry: e.target.value })}>
-                  <option value="">선택하기</option>
-                  {industryGroupsFor(info?.company_type as any).map((g, gi) =>
-                    g.label ? (
-                      <optgroup key={gi} label={g.label}>
-                        {g.items.map((it) => <option key={it} value={it}>{it}</option>)}
-                      </optgroup>
-                    ) : (
-                      g.items.map((it) => <option key={it} value={it}>{it}</option>)
-                    )
-                  )}
-                </select>
+                <PopSelect value={form.industry} style={{ height: 42, boxSizing: "border-box" }}
+                  onChange={(v) => setForm({ ...form, industry: v })}
+                  groups={industryGroupsFor(info?.company_type as any).map((g) => ({
+                    label: g.label || undefined, items: g.items.map((it) => ({ value: it, label: it })),
+                  }))} />
               </div>
                 </div>
                 </div>
@@ -616,13 +608,9 @@ export default function CompanySettingsPage() {
                   {사업자번호칸}
                   <div className="admin-form-row settings-row-inline-m">
                     <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
-                    <select className="admin-form-select" data-empty={!form.company_size}
-                      style={{ height: 42, boxSizing: "border-box" }}
-                      value={form.company_size}
-                      onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                      <option value="">선택하기</option>
-                      {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
+                    <PopSelect value={form.company_size} style={{ height: 42, boxSizing: "border-box" }}
+                      onChange={(v) => setForm({ ...form, company_size: v })}
+                      options={sizeOptions.map((o) => ({ value: o, label: o }))} />
                   </div>
                 </div>
                 {/* 담당자 휴대폰(계정 설정, 내부용)과는 별개로 예약 문의 등에 쓸 매장 공개
@@ -667,13 +655,9 @@ export default function CompanySettingsPage() {
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row settings-row-inline-m">
                       <label className="admin-form-label">{칸그림(L.size)}{L.size}</label>
-                      <select className="admin-form-select" data-empty={!form.company_size}
-                        style={{ height: 42, boxSizing: "border-box" }}
-                        value={form.company_size}
-                        onChange={(e) => setForm({ ...form, company_size: e.target.value })}>
-                        <option value="">선택하기</option>
-                        {sizeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
-                      </select>
+                      <PopSelect value={form.company_size} style={{ height: 42, boxSizing: "border-box" }}
+                        onChange={(v) => setForm({ ...form, company_size: v })}
+                        options={sizeOptions.map((o) => ({ value: o, label: o }))} />
                     </div>
                     <div className="admin-form-row settings-row-inline-m">
                       <label className="admin-form-label">{칸그림(L.phone)}{L.phone}</label>
