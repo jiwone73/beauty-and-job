@@ -529,7 +529,13 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
               </div>
             )}
             {job.brandDesc?.trim() && (
-              <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", marginTop: companyRows.length ? "16px" : 0, marginBottom: 0 }}>{job.brandDesc}</p>
+              <div style={{ marginTop: companyRows.length ? "16px" : 0 }}>
+                {/* 폼은 이 글도 매장명·업종·주소와 같은 이름표 붙은 줄 하나다("매장정보" 이름표 +
+                    글). 여기는 이름표 없이 글만 있어 "이게 무슨 글인지" 매장명·업종·주소만
+                    보고는 알 수 없었다. */}
+                <span className="job-detail-company-label">{companySectionTitle}</span>
+                <p className="job-detail-brand-desc" style={{ whiteSpace: "pre-line", margin: "3px 0 0" }}>{job.brandDesc}</p>
+              </div>
             )}
           </section>
         )}

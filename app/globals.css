@@ -6656,6 +6656,7 @@ div:has(> table.admin-table),
   /* 좁은 화면에선 글자를 한 단계 줄여 한 줄에 더 담기게 */
   .jobpost-form .job-detail-meta-item, .jobpost-form .job-detail-meta-item *,
   .jobpost-form .job-detail-company-row, .jobpost-form .job-detail-company-row *,
+  .jobpost-form .job-detail-company-label,
   .jobpost-form .admin-form-label { font-size: 14px !important; }
   .jobpost-form .jobpost-title-input { font-size: 17px; }
   .jobpost-form .jobpost-brand-input { font-size: 14px; }
@@ -6666,6 +6667,7 @@ div:has(> table.admin-table),
      따로 뜬다(모달이 폼 트리 밖에 그려짐) — 상세요강·매장정보(job-detail-company-row) 글자가
      폼은 14px 로 줄었는데 미리보기만 15px 그대로 남아 서로 달라 보였다. 미리보기도 같이 줄인다. */
   .jobpost-preview-scope .job-detail-company-row, .jobpost-preview-scope .job-detail-company-row *,
+  .jobpost-preview-scope .job-detail-company-label,
   .jobpost-preview-scope .job-detail-desc,
   .jobpost-preview-scope .job-detail-brand-desc { font-size: 14px !important; }
 }
