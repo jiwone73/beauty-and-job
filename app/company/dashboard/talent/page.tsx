@@ -973,7 +973,7 @@ export default function TalentPage() {
               직군, 경력, 업데이트, 제안·스크랩"). */}
           <table className="apl-table">
             <thead>
-              <tr><th>인재</th><th>직군</th><th>경력</th><th>업데이트</th><th>제안·스크랩</th></tr>
+              <tr><th>인재</th><th>희망지역</th><th>희망직군</th><th>경력</th><th>업데이트</th><th>제안·스크랩</th></tr>
             </thead>
             <tbody>
               {talents.map((t) => (

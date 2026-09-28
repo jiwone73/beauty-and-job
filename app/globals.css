@@ -18704,10 +18704,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .apl-tr { border-top: 1px solid #f2f2f4; }
 .apl-tr:hover { background: #fafafb; }
 .apl-tr.new { background: #f9f7fc; }
-.apl-td { padding: 8px 12px; color: #555; vertical-align: top; white-space: nowrap; }
-/* 인재 칸 — 사진 옆에 이름·나이성별·지역 3줄("사진을 인재로 라벨링하고,
-   사진 옆에 이름, 나이/성별, 지역 이렇게 3줄로"). */
-.apl-td-who { padding: 6px 12px; }
+/* 한 줄짜리 값(지역·지원분야·경력 등)은 1행과 2행 딱 중간에 오게 세로
+   가운데 정렬("1행 항목들은 1행에 표시하지 말고 1행과 2행 중간에 표시해줘")
+   — 인재 칸(2줄)만 위로 붙인다. */
+.apl-td { padding: 8px 12px; color: #555; vertical-align: middle; white-space: nowrap; }
+/* 인재 칸 — 사진 옆에 이름·나이/성별 2줄("지역은 인재 다음에 따로 빼고"). */
+.apl-td-who { padding: 6px 12px; vertical-align: top; }
 .apl-td-whobtn { display: flex; align-items: center; gap: 8px; border: none;
   background: none; padding: 0; cursor: pointer; text-align: left; font-family: inherit; }
 .apl-td-avatar { width: 32px; height: 40px; flex-shrink: 0; border-radius: 4px;
@@ -18718,7 +18720,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .apl-td-name { color: #333; font-weight: 700; white-space: nowrap; }
 .apl-td-sub { color: #555; white-space: nowrap; }
 .apl-td-role { color: #333; font-weight: 700; }
-.apl-td-memo-in { width: 130px; border: 1px solid #e2e2e6; border-radius: 6px;
+/* 메모 칸은 2행 높이를 그대로 확보한다("메모 칸은 2행 확보해줘") — 다른
+   칸처럼 가운데로 좁히지 않고 위아래 꽉 채운다. */
+.apl-td-memo { vertical-align: top; padding-top: 12px; }
+.apl-td-memo-in { width: 130px; height: 40px; border: 1px solid #e2e2e6; border-radius: 6px;
   padding: 5px 8px; font-size: 12.5px; color: #555; font-family: inherit; }
 .apl-td-acts { display: flex; align-items: center; gap: 8px; }
+/* 표 안 제안하기는 패딩을 줄인다("제안하기 버튼 패딩 줄여줘"). */
+.apl-td-acts .tal-btn { padding: 4px 9px; font-size: 13px; }
 .apl-td-scrap { background: none; border: none; padding: 2px; cursor: pointer; display: inline-flex; }

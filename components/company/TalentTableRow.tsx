@@ -56,10 +56,10 @@ export default function TalentTableRow({
           <span className="apl-td-wholines">
             <span className="apl-td-name"><b>{t.name}</b></span>
             <span className="apl-td-sub">{나이성별 || "—"}</span>
-            <span className="apl-td-sub">{지역 || "—"}</span>
           </span>
         </button>
       </td>
+      <td className="apl-td">{지역 || "—"}</td>
       <td className="apl-td apl-td-role">{직군}</td>
       <td className="apl-td">{경력}</td>
       <td className="apl-td">{t.resumeUpdatedAt ? 업데이트날(t.resumeUpdatedAt) : "—"}</td>
