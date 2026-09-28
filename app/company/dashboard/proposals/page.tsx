@@ -62,10 +62,12 @@ const 성별글 = (g: string | null) =>
   : g === "MALE" || g === "남성" || g === "M" ? "남" : null;
 const 인적 = (p: 제안) =>
   [성별글(p.gender), p.age ? `만 ${p.age}세` : null].filter(Boolean).join(" · ");
-// 둘째 줄은 희망직군 하나다. 지역·경력·근무형태까지 넣었더니 한 줄이 세 줄이
-// 되어 표가 무거워졌다 — 여기서 견주는 것은 「누가 답했나」이지 사람의 조건이
-// 아니고, 조건은 이력서를 열면 다 있다.
-const 조건 = (p: 제안) => p.subJob || "";
+// 이 칸은 인재의 희망직군이 아니라 모집분야다 — 이건 기업이 사람에게 보낸
+// 제안이라, "어떤 직군으로 제안했나"가 맞는 값이다("이건 제안이기 때문에
+// 모집분야가 되는게 맞지 않냐" — 공고가 이미 있는 이상 구직자 정보가 아니라
+// 회사가 고른 자리). 지역·경력·근무형태까지 넣었더니 표가 무거워졌다 —
+// 사람 쪽 조건은 이력서를 열면 다 있다.
+const 조건 = (p: 제안) => p.positionLine || "";
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
@@ -617,8 +619,11 @@ export default function CompanyProposalsPage() {
             <thead>
               <tr>
                 <th className="c-who">인재</th>
-                {!고른공고 && <th className="c-post">공고</th>}
-                <th className="c-job">희망직군</th>
+                {/* "공고"만 쓰면 인재 쪽 값(희망직군 등)과 같은 급으로 읽혀
+                    헷갈렸다("공고는 구직자가 고른게 아니라 기업이 제안하려고
+                    고른거라 햇갈리는거야") — 우리가 고른 자리임을 밝힌다. */}
+                {!고른공고 && <th className="c-post">제안한 공고</th>}
+                <th className="c-job">모집분야</th>
                 <th className="c-date">제안일</th>
                 <th className="c-st">현재 상태</th>
                 <th>진행 상황 (채팅)</th>
