@@ -169,7 +169,8 @@ export default function ApplicantCard({
             </span>
           </div>
           <div className="tal-who tal-line2">
-            <span>{지역}</span>
+            {/* "지역이름 옆에 경력 년수 넣어줘" — 나이·성별과 같은 " · " 결로 잇는다. */}
+            <span>{[지역, 경력].filter(Boolean).join(" · ")}</span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
         </div>
