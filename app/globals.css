@@ -16753,7 +16753,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 
 /* 표의 공고명 — 누르면 그 공고만 본다. 옆줄의 공고 목록이 하던 일이다.
    공고명은 길어서(평균 35자) 한 줄로 자른다. 잘린 것은 마우스를 올리면 보인다. */
-.prop-post { max-width: 100%; font-family: inherit; font-size: 13.5px; color: #555;
+.prop-post { max-width: 100%; font-family: inherit; font-size: 14px; color: #555;
   background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
   /* 공고명은 평균 35자다. 한 줄로 자르면 어느 공고인지 못 가린다 — 세 줄까지
      보이고 그 뒤로만 …으로 접는다. 줄이 이미 인재 칸 세 줄 높이라 표는 안 늘어난다. */
@@ -16816,9 +16816,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 열 폭은 정한 대로 지킨다. 그냥 두면 브라우저가 「제안」처럼 내용 긴 열에
    자리를 더 떼어 주고, 그만큼 진행 상황이 눌린다. 말줄임(…)도 폭이 고정돼야 든다. */
-.prop-table { width: 100%; min-width: 740px; table-layout: fixed; border-collapse: collapse; font-size: 14.5px; }
+/* 이름(15px)만 빼고 나머지는 다른 두 표(공고지원자·인재풀)와 같은 14px로
+   통일한다("폰트 14로 통일하기로 했잖아 이름빼고"). */
+.prop-table { width: 100%; min-width: 740px; table-layout: fixed; border-collapse: collapse; font-size: 14px; }
 .prop-table th {
-  padding: 8px 10px; text-align: left; font-weight: 500; font-size: 14.5px;
+  padding: 8px 10px; text-align: left; font-weight: 500; font-size: 14px;
   color: var(--color-text); border-bottom: 1px solid var(--card-line); white-space: nowrap;
 }
 .prop-table td { padding: 8px 10px; border-top: 1px solid #f4f4f6; color: var(--color-text); vertical-align: middle; }
@@ -18693,7 +18695,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 한 줄짜리 값(지역·지원분야·경력 등)은 1행과 2행 딱 중간에 오게 세로
    가운데 정렬("1행 항목들은 1행에 표시하지 말고 1행과 2행 중간에 표시해줘")
    — 인재 칸(2줄)만 위로 붙인다. */
-.apl-td { padding: 8px 12px; color: #555; vertical-align: middle; white-space: nowrap; }
+/* 표 본문 전체 14px — 경력·희망연봉·지원일·출근가능일이 지원분야·메모와
+   달리 13px(표 기본값)에 그대로 남아 있었다("지원분야부터 메모까지 값들이
+   14px 정말 맞아?" — 실제로는 안 맞았다). */
+.apl-td { padding: 8px 12px; color: #555; font-size: 14px; vertical-align: middle; white-space: nowrap; }
 /* 인재 칸 — 사진 옆에 이름·나이/성별·지역 3줄. 지역은 한때 따로 칸을 뺐다가
    보낸제안 표와 통일하며 다시 3행으로 합쳤다("공고지원자 인재풀도 인재 쪽
    3행으로 해줘") — 사진도 그만큼(32×40→44×55) 키운다. */
