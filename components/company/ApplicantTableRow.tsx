@@ -10,11 +10,10 @@ import type { CompanyApplication } from "@/lib/types/company";
 // 값 계산은 ApplicantCard(모바일 카드)와 같은 규칙을 그대로 따른다 — 표와
 // 카드에서 같은 사람이 다른 값으로 보이면 안 된다.
 //
-// 칸 순서: 인재(사진+이름/나이·성별) · 지역 · 지원분야 · 경력 · 희망연봉 ·
-// 지원일 · 출근가능일 · 메모("지역은 인재 다음에 따로 빼고, 모집분야를
-// 지원분야로 라벨링"). 한 줄짜리 값은 1행·2행 정중앙에 오도록 세로 가운데
-// 정렬(vertical-align: middle, CSS) — 인재 칸만 2행이라 나머지가 위로
-// 붙어 보였다("1행 항목들은... 1행과 2행 중간에 표시해줘").
+// 칸 순서: 인재(사진+이름/나이·성별/지역, 3행) · 지원분야 · 경력 · 희망연봉 ·
+// 지원일 · 출근가능일 · 메모. 지역은 한때 따로 칸을 뺐다가, 보낸제안 표와
+// 통일하며 다시 인재 칸 3행으로 합쳤다("공고지원자 인재풀도 인재 쪽 3행으로
+// 해줘") — 칸을 나눠 인재 칸이 좁아지면 사진이 작아 보였다.
 
 const 날짜 = (s: string) => {
   const d = new Date(s);
@@ -74,10 +73,10 @@ export default function ApplicantTableRow({
               {유입 && <MessageCircle size={12} className="tal-name-chat-ic" />}
             </span>
             <span className="apl-td-sub">{나이성별 || "—"}</span>
+            <span className="apl-td-sub">{지역 || "—"}</span>
           </span>
         </button>
       </td>
-      <td className="apl-td">{지역 || "—"}</td>
       <td className="apl-td apl-td-role">
         {(a as any).position_title || "—"}
         {마감(a) && <span className="job-closed-tag">마감</span>}

@@ -469,7 +469,7 @@ function CompanyJobsContent() {
           <table className="apl-table">
             <thead>
               <tr>
-                <th>인재</th><th>지역</th><th>지원분야</th><th>경력</th><th>희망연봉</th>
+                <th>인재</th><th>지원분야</th><th>경력</th><th>희망연봉</th>
                 <th>지원일</th><th>출근가능일</th><th>메모</th>
               </tr>
             </thead>
