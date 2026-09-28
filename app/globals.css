@@ -17621,6 +17621,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .co-m-logomenu button:active { background: #f7f7f8; }
 .co-m-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .co-m-ibtn { position: relative; background: none; border: none; padding: 8px; color: #555; cursor: pointer; }
+/* 헤더의 "새공고" 작성 단추 — 아이콘만이면 무슨 뜻인지 안 읽혀 글자를 더한
+   압축형("새공고 작성을 +새공고 로 바꾸자"). */
+.co-m-addbtn { display: inline-flex; align-items: center; gap: 1px; height: 30px; padding: 0 9px;
+  border: 1px solid #582681; border-radius: 15px; background: #fff; color: #582681;
+  font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .co-m-badge { position: absolute; top: 2px; right: 2px; background: #e74c3c; color: #fff; font-size: 9px; line-height: 1.4; border-radius: 8px; padding: 0 4px; }
 /* 아래 카드들은 바깥 여백(8px)에 카드 자신의 머리 여백(13px)이 더해져
    글자가 21px 에서 시작한다. 이 제목은 상자가 없어 바깥 여백만 받으면

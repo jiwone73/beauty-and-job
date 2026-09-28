@@ -2,7 +2,6 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 인재열람가능, 이름가리기, 회사에지원함 } from "@/lib/companyEntitlement";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 실을 쓴다 — 그래서 owner 를 지정하지 않고
 // 받은 뒤에 이 제안의 당사자인지 따진다. 남의 스레드는 404 로 돌려보낸다(있는지
@@ -130,14 +129,11 @@ async function 알림(proposalId: string, 보낸쪽: "USER" | "COMPANY", 미리�
   const r = rows[0];
   const 줄임 = 미리보기.length > 40 ? `${미리보기.slice(0, 40)}…` : 미리보기;
   if (보낸쪽 === "USER") {
-    // 무료 기업회원이면 알림에도 이름을 가린다 — 지원자만 예외(인재 목록과 같은 규칙).
-    const 보임 = (await 인재열람가능(r.company_id)) || (await 회사에지원함(r.company_id, r.user_id));
-    const 이름 = 보임 ? r.user_name : 이름가리기(r.user_name);
-    await pool.query(
-      `INSERT INTO notifications (company_id, type, title, message, related_id, related_type)
-       VALUES ($1, 'PROPOSAL_INTEREST', $2, $3, $4, 'proposal')`,
-      [r.company_id, `${이름 || "구직자"}님이 답했어요`, 줄임, proposalId]
-    ).catch((e) => console.error("[proposal msg notify company]", e));
+    // 기업 쪽 종 알림에는 더 안 남긴다 — 구직자가 보낸 채팅 메시지는 이제 헤더의
+    // 채팅 아이콘(제안·스크랩의 미답변 대화 수, unanswered_chats)이 전담한다
+    // ("채팅아이콘은 말그대로 채팅메시지, 그외는 종에 넣으면 되고" — 같은 일이
+    // 두 아이콘에 겹쳐 뜨면 안 된다는 요청). 관심을 처음 보인 순간(interest, 위
+    // proposals/[id]/route.ts)은 메시지가 아니라 그대로 종에 남는다.
   } else {
     await pool.query(
       `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)

@@ -1,13 +1,14 @@
 "use client";
 import { StoreIcon, OfficeIcon } from "@/components/icons/JobTypeIcon";
 import { useState, useEffect, Suspense } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Edit, X, Trash2, ChevronDown, ChevronRight, ChevronLeft
+  Users, Edit, X, Trash2, ChevronDown, ChevronRight, ChevronLeft, Plus
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
@@ -73,6 +74,13 @@ function CompanyJobsContent() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [companyType, setCompanyType] = useState<string | null>(null);
+  // "신규 등록" 버튼을 헤더로 옮긴다("신규등록버튼을 지우고 새공고 작성 버튼을
+  // 헤더에 넣어줘") — PC 머리줄의 "새 공고 작성"과 같은 자리(co-m-header-slot)에
+  // 포탈한다(JobPostForm이 임시저장·미리보기 아이콘을 꽂는 것과 같은 방식).
+  const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setHeaderSlot(document.getElementById("co-m-header-slot"));
+  }, [isMobile]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -520,61 +528,18 @@ function CompanyJobsContent() {
           켜져 있는지가 밑줄로 바로 보이고, 상자가 사라져 아래 줄과 안 붙는다. */}
 
 
-      {/* 컨트롤 바 (모바일) */}
-      {isMobile && (
-        <>
-          <style>{`
-            .co-sumtog { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 13px; margin-bottom: 10px; background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #555; cursor: pointer; }
-            .co-sumtog .chev { transition: transform .2s; color: #555; }
-            .co-sumtog .chev.open { transform: rotate(180deg); }
-            .company-stat-grid.co-4 { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 12px; }
-            .company-stat-grid.co-4 .company-stat-card { padding: 9px 5px; align-items: center; text-align: center; gap: 2px; }
-            .company-stat-grid.co-4 .company-stat-value { font-size: 16px; }
-            .company-stat-grid.co-4 .company-stat-label { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-            .co-topbar { display: flex; align-items: stretch; gap: 7px; margin-bottom: 10px; }
-            .co-addbtn { display: inline-flex; align-items: center; justify-content: center; gap: 3px; height: 46px; padding: 0 15px; flex-shrink: 0; border-radius: 9px; border: none; background: #582681; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; }
-            .co-statrow { display: flex; gap: 6px; flex: 1; min-width: 0; }
-            .co-stat { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 46px; padding: 0 3px; border: 1px solid #eee; border-radius: 9px; background: #fff; cursor: pointer; font: inherit; transition: border-color .15s, background .15s; }
-            .co-stat .l { font-size: 11px; color: #555; white-space: nowrap; }
-            .co-stat .n { font-size: 17px; line-height: 1; color: #555; }
-            .co-stat.has .n { color: #582681; }
-            .co-stat.on { border-color: #582681; background: #f7f7f8; }
-            .co-mbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-            .co-mbar-left { display: flex; align-items: center; gap: 11px; }
-            .co-mbar-count { font-size: 13.5px; color: #555; line-height: 1; position: relative; top: 2px; }
-            .co-mbar-count strong { color: #582681; }
-            .co-mbar-actions { display: flex; gap: 8px; }
-            .co-mbar-btn { display: inline-flex; align-items: center; gap: 5px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 13.5px; font-weight: 500; cursor: pointer; text-decoration: none; }
-            .co-mbar-btn.on { border-color: #582681; color: #582681; background: #f7f7f8; }
-            .co-mbar-btn.primary { border: none; background: #582681; color: #fff; }
-            .co-mbar-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-            .co-sheet-ov { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; }
-            .co-sheet { width: 100%; background: #fff; border-radius: 18px 18px 0 0; padding: 0 18px calc(20px + env(safe-area-inset-bottom)); max-height: 82vh; overflow-y: auto; animation: co-sheet-up .22s ease; }
-            @keyframes co-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
-            .co-sheet-grip { width: 38px; height: 4px; border-radius: 2px; background: #d8d8dc; margin: 9px auto 4px; }
-            .co-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 14px; }
-            .co-sheet-title { font-size: 17px; font-weight: 400; color: #555; }
-            .co-sheet-reset { background: none; border: none; color: #555; font-size: 13.5px; font-weight: 400; cursor: pointer; }
-            .co-sheet-body { display: flex; flex-direction: column; gap: 18px; }
-            .co-fseg-label { font-size: 13px; font-weight: 400; color: #555; margin-bottom: 9px; }
-            .co-fseg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-            .co-fseg-btn { padding: 9px 16px; border-radius: 999px; border: 1px solid #e2e2e6; background: #fff; color: #555; font-size: 14px; font-weight: 400; cursor: pointer; }
-            .co-fseg-btn.on { border-color: #efeff1; background: #f7f7f8; color: #582681; font-weight: 400; }
-            .co-sheet-apply { margin-top: 22px; width: 100%; height: 50px; border: none; border-radius: 12px; background: #f7f7f8; color: #582681; font-size: 16px; font-weight: 400; cursor: pointer; }
-            .co-selbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 55; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #fff; border-top: 1px solid #eee; box-shadow: 0 -4px 16px rgba(0,0,0,0.06); }
-            .co-selbar-count { font-size: 14px; font-weight: 600; color: #555; }
-            .co-selbar-del { background: none; border: none; cursor: pointer; color: #e74c3c; display: inline-flex; padding: 6px; }
-          `}</style>
-          <div className="co-topbar">
-            {/* 공고 목록은 한 번에 하나만 보여준다("공고목록은 1개야 상단에.
-                나머지를 보려면 제목옆에 < >") — 여러 줄에 체크해 고르던 선택
-                모드·일괄 작업, 전체/진행중/마감 같은 숫자판(카운트)도 이제
-                뜻이 없어 뺀다("제목 밑에 있는 카운트 다 지워"). */}
-            <Link href="/company/dashboard/jobs/new" className="co-addbtn">
-              신규 등록
-            </Link>
-          </div>
-        </>
+      {/* "신규 등록" 버튼은 헤더의 "새 공고 작성"으로 옮기고 여기서는 지운다
+          ("신규등록버튼을 지우고 새공고 작성 버튼을 헤더에 넣어줘") — 이 자리에
+          있던 필터·선택 모드 관련 죽은 CSS도 전에 다 걷어냈으니 이 블록 자체가
+          이제 필요 없다. */}
+      {isMobile && headerSlot && createPortal(
+        <button className="co-m-addbtn" onClick={() => router.push("/company/dashboard/jobs/new")}
+          aria-label="새 공고 작성" title="새 공고 작성">
+          {/* 아이콘만으로는 무슨 뜻인지 안 읽혀 글자를 더한다("새공고 작성을
+              +새공고 로 바꾸자") — "작성"은 빼 좁은 헤더에 맞춘다. */}
+          <Plus size={16} />새공고
+        </button>,
+        headerSlot
       )}
 
       {/* 로딩 */}

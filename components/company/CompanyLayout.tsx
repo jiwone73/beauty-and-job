@@ -6,7 +6,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   Briefcase, Users, FileText, Settings, UserCog,
-  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Send, Tag
+  Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Send, Tag,
+  MessageCircle
 } from "lucide-react";
 
 
@@ -55,6 +56,11 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "", manager: "" });
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
+  // 채팅 알림 — 구직자가 마지막으로 말했는데 매장이 아직 답 안 한 대화 수
+  // ("헤더에 채팅 알림 아이콘 넣어줘. 숫자도 반영" / "구직자가 보낸 채팅메시지가
+  // 되겠지"). 대시보드 통계와 같은 값(unanswered_chats)을 그대로 쓴다 —
+  // 따로 새로 세면 홈 숫자와 갈라질 수 있다.
+  const [chatUnread, setChatUnread] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
   const [logoMenuOpen, setLogoMenuOpen] = useState(false);
   const [meMenuOpen, setMeMenuOpen] = useState(false);
@@ -101,6 +107,15 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
       .catch((e) => console.error("[notifs]", e));
   };
   useEffect(() => { loadNotifs(); }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/dashboard/stats", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success && res.data) setChatUnread(res.data.unanswered_chats || 0); })
+      .catch((e) => console.error("[chat unread]", e));
+  }, []);
 
   const handleNotifClick = async (n: any) => {
     const token = localStorage.getItem("access_token");
@@ -331,6 +346,14 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
           </div>
           <div className="co-m-actions">
             <div id="co-m-header-slot" style={{ display: "flex", alignItems: "center" }} />
+            {/* 채팅 — 구직자가 보낸 메시지 전용("채팅아이콘은 말그대로 채팅메시지").
+                누르면 목록이 아니라 바로 답해야 할 대화들(채팅중)로 들어간다 —
+                용도가 "지금 답 안 한 대화를 처리하는 것"이라 목록을 한 번 더
+                거치게 하지 않는다. */}
+            <button className="co-m-ibtn" onClick={() => router.push(`${base}/proposals?status=채팅중`)} aria-label="채팅">
+              <MessageCircle size={20} />
+              {chatUnread > 0 && <span className="co-m-badge">{chatUnread > 9 ? "9+" : chatUnread}</span>}
+            </button>
             <button className="co-m-ibtn" onClick={() => setNotifOpen((v) => !v)} aria-label="알림">
               <Bell size={20} />
               {unread > 0 && <span className="co-m-badge">{unread > 9 ? "9+" : unread}</span>}
