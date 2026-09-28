@@ -10,10 +10,14 @@ export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   try {
+    // confirmed_at — 입금을 확인한(=결제가 확정된) 시각. "결제일"은 신청일
+    // (created_at)이 아니라 이 값이다 — 무통장입금이라 신청과 결제 사이에
+    // 며칠 뜰 수 있다.
     const { rows } = await pool.query(
       `SELECT id, plan, days, amount, status, depositor,
               to_char(applied_from, 'YYYY-MM-DD')  AS applied_from,
               to_char(applied_until, 'YYYY-MM-DD') AS applied_until,
+              to_char(confirmed_at, 'YYYY-MM-DD')  AS confirmed_at,
               created_at
          FROM company_orders WHERE company_id = $1
         ORDER BY created_at DESC LIMIT 50`,

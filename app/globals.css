@@ -14371,15 +14371,25 @@ button,
 .co-bill-plus { font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--color-primary);
   margin-left: 5px; }
 
-.co-bill-h { font-size: 16px; color: #1a1a1a; margin: 34px 0 12px; }
+.co-bill-htop { display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin: 34px 0 12px; flex-wrap: wrap; }
+.co-bill-h { font-size: 16px; color: #1a1a1a; margin: 0; }
+/* 기간 필터 — 자주 찾는 구간만 단추로("살짝 뷰티워크에 맞게 바꿔봐": 달력
+   대신 단추 넷). */
+.co-bill-period { display: flex; gap: 6px; }
+.co-bill-period button { border: 1px solid var(--color-border); border-radius: 8px;
+  background: #fff; color: #555; font-size: 13px; font-family: inherit;
+  padding: 6px 12px; cursor: pointer; }
+.co-bill-period button.on { border-color: var(--color-primary); color: var(--color-primary); font-weight: 700; }
 .co-bill-empty { font-size: 14px; color: #555; padding: 26px 0; text-align: center;
   border: 1px solid var(--color-border); border-radius: 12px; background: #fff; margin: 0; }
 .co-bill-tb { width: 100%; border-collapse: collapse; background: #fff;
   border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; }
 .co-bill-tb th { font-size: 14px; font-weight: 400; color: #555; text-align: left;
   padding: 13px 16px; background: #f7f7f8; white-space: nowrap; }
-.co-bill-tb td { font-size: 14px; color: #555; padding: 14px 16px; border-top: 1px solid #f2f2f2; }
+.co-bill-tb td { font-size: 14px; color: #555; padding: 14px 16px; border-top: 1px solid #f2f2f2; white-space: nowrap; }
 .co-bill-tb td.on { color: var(--color-primary); }
+.co-bill-no { font-family: "SF Mono", Menlo, monospace; font-size: 13px; letter-spacing: .2px; }
 
 
 

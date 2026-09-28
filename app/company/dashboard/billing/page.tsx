@@ -25,17 +25,30 @@ type 주문 = {
   status: "PENDING" | "PAID" | "CANCELED";
   /** 이 주문에 얹힌 보관 일수 */
   kept_days: number;
-  applied_until: string | null; created_at: string;
+  applied_from: string | null; applied_until: string | null;
+  /** 입금 확인(=결제 확정) 날짜. 신청일과 달라, 무통장입금은 며칠 뜰 수 있다. */
+  confirmed_at: string | null;
+  created_at: string;
 };
 
 const 상태이름: Record<주문["status"], string> = {
   PENDING: "입금대기", PAID: "적용됨", CANCELED: "취소",
 };
 
+// 기간 필터 — 신청이 잦은 서비스가 아니라 데이터 자체가 몇 건 안 된다(구매
+// 이력 최대 50건). 셀렉미처럼 직접 날짜를 고르는 달력까지는 과하다 싶어
+// 자주 찾는 구간만 단추로 둔다("살짝 뷰티워크에 맞게 바꿔봐").
+const 기간필터_목록 = ["전체", "1개월", "3개월", "6개월"] as const;
+type 기간필터 = typeof 기간필터_목록[number];
+const 기간필터_일수: Record<기간필터, number | null> = {
+  전체: null, "1개월": 30, "3개월": 90, "6개월": 180,
+};
+
 export default function CompanyBillingPage() {
   const [it, setIt] = useState<이용권 | null>(null);
   const [주문들, set주문들] = useState<주문[]>([]);
   const [보관중, set보관중] = useState(false);
+  const [기간, set기간] = useState<기간필터>("전체");
 
   const 불러오기 = () => {
     const token = localStorage.getItem("access_token");
@@ -67,6 +80,12 @@ export default function CompanyBillingPage() {
   };
 
   const 이름 = it?.plan ? 플랜[it.plan].name : 스타트.name;
+
+  const 일수 = 기간필터_일수[기간];
+  const 필터된주문 = 일수 == null ? 주문들
+    : 주문들.filter((o) => (Date.now() - new Date(o.created_at).getTime()) / 86400000 <= 일수);
+  // 짧은 결제번호 — uuid 그대로 적으면 눈으로 대조할 값이 못 된다.
+  const 결제번호 = (id: string) => id.slice(0, 8).toUpperCase();
 
   return (
     <CompanyLayout activePage="billing">
@@ -114,23 +133,40 @@ export default function CompanyBillingPage() {
             얘기지" 삭제. 진행 중인 공고·노출 수는 대시보드에서 이미 보고, 여기는
             결제·이용권만 남긴다. */}
 
-        <p className="co-bill-h">결제 내역</p>
+        <div className="co-bill-htop">
+          <p className="co-bill-h">결제 내역</p>
+          {주문들.length > 0 && (
+            <div className="co-bill-period">
+              {기간필터_목록.map((f) => (
+                <button key={f} type="button" className={f === 기간 ? "on" : ""} onClick={() => set기간(f)}>
+                  {f}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         {주문들.length === 0 ? (
           <p className="co-bill-empty">아직 신청한 이용권이 없습니다.</p>
+        ) : 필터된주문.length === 0 ? (
+          <p className="co-bill-empty">이 기간에는 결제 내역이 없습니다.</p>
         ) : (
           <table className="co-bill-tb">
             <thead>
-              <tr><th>신청일</th><th>플랜</th><th>기간</th><th>금액</th><th>상태</th><th>적용</th></tr>
+              <tr>
+                <th>결제번호</th><th>신청상품</th><th>이용기간</th><th>결제금액</th>
+                <th>결제일</th><th>적용기간</th><th>결제상태</th>
+              </tr>
             </thead>
             <tbody>
-              {주문들.map((o) => (
+              {필터된주문.map((o) => (
                 <tr key={o.id}>
-                  <td>{o.created_at.slice(0, 10)}</td>
+                  <td className="co-bill-no">{결제번호(o.id)}</td>
                   <td>{플랜[o.plan]?.name || o.plan}</td>
                   <td>{o.days}일{o.kept_days > 0 && <i className="co-bill-plus">+{o.kept_days}</i>}</td>
                   <td>{원(o.amount)}</td>
+                  <td>{o.confirmed_at ? o.confirmed_at : "—"}</td>
+                  <td>{o.applied_from && o.applied_until ? `${o.applied_from} ~ ${o.applied_until}` : "—"}</td>
                   <td className={o.status === "PENDING" ? "on" : undefined}>{상태이름[o.status]}</td>
-                  <td>{o.applied_until ? `${o.applied_until}까지` : "—"}</td>
                 </tr>
               ))}
             </tbody>
