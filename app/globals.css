@@ -15505,9 +15505,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
 .co-jc-term { font-size: var(--card-meta); color: var(--card-meta-c); font-variant-numeric: tabular-nums; }
 .co-jc-badge { font-size: var(--card-badge); padding: 2px 9px; border-radius: 20px; white-space: nowrap; }
-/* "진행중" 글자 왼쪽 여백이 너무 많다("50% 더 줄여") — 공고카드(co-pane-term)
-   안 배지만 왼쪽 안쪽 여백을 절반으로. 다른 화면(제안·스크랩)의 배지는 그대로 둔다. */
-.co-pane-term .co-jc-badge { padding-left: 4.5px; }
 .co-jc-badge.live { background: #f4f0f8; color: var(--color-primary); }
 .co-jc-badge.soon { background: #fbf0f0; color: #c0504d; }
 .co-jc-badge.draft { background: #f4f4f6; color: #8a8a90; }
