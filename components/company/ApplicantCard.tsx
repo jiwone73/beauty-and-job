@@ -147,9 +147,10 @@ export default function ApplicantCard({
         {onCheck && (
           <input type="checkbox" className="tal-check" checked={!!checked} onChange={() => onCheck(a.id)} />
         )}
-        {/* 3줄이던 본문이 4줄이 되며 카드가 길어진 만큼 사진도 같이 늘린다
-            ("지금 3줄에서 4줄로 가자. 아바타도 그만큼 기렁짐") — .apl-card로만
-            잡아 인재풀 카드(3줄, 60px 정사각형)는 그대로 둔다. */}
+        {/* "원점부터 다시" — 아바타와 3줄(직군 / 이름(나이·성별)+최종합격 /
+            지역+지원일)의 위아래가 정확히 맞도록 새로 짠다. 모바일·PC 구분
+            없이 하나로("이해안되면 질문해"라 하셨지만 이 구조는 명확해서
+            바로 반영). */}
         <div className="tal-avatar" onClick={() => onOpen(a)} title="지원서 보기">
           {(a as any).user_avatar_url
             ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
@@ -158,37 +159,13 @@ export default function ApplicantCard({
 
         {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
             지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다.
-            모바일은 4행(직군/이름+면접결과/나이·성별·경력/지역+지원일)
-            그대로, 데스크탑만 3행으로 합친다("데탑에만 3줄로 해달라니까")
-            — 매체 쿼리로 -m/-dt 켜고 끈다(위 한줄소개 dt/m와 같은 방식). */}
+            1행 직군, 2행 이름(나이·성별)+최종합격, 3행 지역+지원일. */}
         <div className="tal-main">
           <button type="button" className="tal-name tal-open tal-role" title="지원서 보기"
             onClick={() => onOpen(a)}>
             {(a as any).position_title || "—"}
           </button>
-
-          {/* 모바일: 4행 그대로("폰은 아까 끝났잖아") */}
-          <div className="tal-who tal-line2 tal-line2-m">
-            <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
-              <b>{a.user_name}</b>
-              {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
-            </button>
-            <span className="tal-st-r">
-              {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
-            </span>
-          </div>
-          <div className="tal-who tal-line2 tal-line2-m">
-            <span>{[나이성별, 경력].filter(Boolean).join(" · ")}</span>
-          </div>
-          <div className="tal-who tal-line2 tal-line2-m">
-            <span>{지역}</span>
-            <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
-          </div>
-
-          {/* 데스크탑: 3행 — 이름(나이·성별)+면접결과 / 경력|지역+지원일
-              ("김가이드 (28세·남) 그 밑으로 경력 I 서울 강남구 이렇게 해줘.
-              1행이 없어지는거고"). */}
-          <div className="tal-who tal-line2 tal-line2-dt">
+          <div className="tal-who tal-line2">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               <b>{a.user_name}</b>
               {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
@@ -198,22 +175,22 @@ export default function ApplicantCard({
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
             </span>
           </div>
-          <div className="tal-who tal-line2 tal-line2-dt">
-            <span>{경력 && <>{경력}{지역 && <span className="tal-sep"> | </span>}</>}{지역}</span>
+          <div className="tal-who tal-line2">
+            <span>{지역}</span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
         </div>
       </div>
 
-      {/* 스크랩 단추·제안하기 단추(인재풀 카드) 대신 구분선 하나 놓고 희망연봉·
-          출근가능일만 —"스크랩 아이콘은 지우고... 제안하기 버튼은 삭제하고 구분선
-          하나 넣어서, 희망연봉, 출근가능일 넣어줘". 직군·경력은 이미 위에 있어
-          다시 적지 않는다. */}
-      {(희망연봉 || 출근가능일) && (
+      {/* 스크랩 단추·제안하기 단추(인재풀 카드) 대신 구분선 하나 놓고 경력·
+          희망연봉·출근가능일 —"경력 I 월 xxx I 출근 가능일 이렇게 들어가야해".
+          있는 것만 "|"로 잇는다. */}
+      {(경력 || 희망연봉 || 출근가능일) && (
         <div className="tal-foot">
           <span className="tal-tags">
-            {희망연봉 && <span>{희망연봉}</span>}
-            {출근가능일 && <>{희망연봉 && <span className="tal-sep">|</span>}<span>{출근가능일}</span></>}
+            {[경력, 희망연봉, 출근가능일].filter(Boolean).map((v, i) => (
+              <span key={i}>{i > 0 && <span className="tal-sep">|</span>}<span>{v}</span></span>
+            ))}
           </span>
         </div>
       )}
