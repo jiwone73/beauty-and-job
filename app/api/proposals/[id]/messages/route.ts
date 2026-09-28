@@ -10,7 +10,7 @@ async function 당사자(req: NextRequest, proposalId: string) {
   const { auth, res } = requireAuth(req);
   if (res) return { auth: null, 쪽: null as null, res };
   const { rows } = await pool.query(
-    `SELECT p.company_id, p.user_id, p.created_at, p.interested_at,
+    `SELECT p.company_id, p.user_id, p.created_at, p.interested_at, p.declined_at, p.canceled_at,
             EXISTS (SELECT 1 FROM user_company_blocks b
                      WHERE b.user_id = p.user_id AND b.company_id = p.company_id) AS blocked,
             -- 약속 장소의 기본값. 그 공고의 근무지가 먼저고, 없으면 매장 주소다.
@@ -74,12 +74,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // 차단된 사이에는 말이 오가지 않는다. 읽기는 남겨 둔다 — 지난 대화까지
   // 사라지면 무슨 일이 있었는지 확인할 길이 없다.
   if (제안?.blocked) return err("PROP_MSG_005", "더 이상 대화할 수 없어요.", 403);
-  // 대화는 상대가 제안을 받아들여야 열린다. 매장이 먼저 말을 걸 수 있으면
-  // 제안을 받아들이지 않은 사람에게도 말이 가 버린다 — 제안 자체가 첫 마디다.
-  // 화면에서만 단추를 감추고 있었는데, 그건 화면 얘기지 규칙이 아니다.
-  if (쪽 === "COMPANY" && !제안?.interested_at) {
-    return err("PROP_MSG_007", "아직 제안을 받아들이지 않았어요. 답을 기다려 주세요.", 400);
-  }
+  // 매장은 제안을 보낸 순간부터 말을 걸 수 있다 — 수락을 기다리지 않는다
+  // ("제안하기가 완료되면 수락전이라도 채팅을 할수 있게 해줘"). 전에는 상대가
+  // 받아들여야 열렸는데(PROP_MSG_007), 그 규칙을 없앤다. 다만 상대가 거절했거나
+  // 매장이 거뒀으면 끝난 제안이라 계속 막는다("상대가 거절을 하면 막아야지").
+  if (제안?.declined_at) return err("PROP_MSG_007", "구직자가 제안을 거절했어요.", 400);
+  if (제안?.canceled_at) return err("PROP_MSG_007", "거둔 제안이에요.", 400);
   try {
     const b = await req.json().catch(() => ({}));
     const kind = b?.kind === "APPOINTMENT" ? "APPOINTMENT" : "TEXT";

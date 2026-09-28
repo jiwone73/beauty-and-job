@@ -163,9 +163,11 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   return { 글: `${그분에게} 제안을 보냈습니다`, 때: p.createdAt };
 }
 
-/** 이 줄에 열린 대화가 있나. 수락해야 말을 걸 수 있고, 거절·거둔 제안은 끝난 것이다. */
+/** 이 줄에 열린 대화가 있나. 제안을 보낸 순간부터 열려 있다 — 수락을 기다리지
+ *  않는다("제안하기가 완료되면 수락전이라도 채팅을 할수 있게 해줘"). 거절·거둔
+ *  제안만 끝난 것이다("상대가 거절을 하면 막아야지" — 비활성화가 곧 거절 표시). */
 function 대화열림(p: 제안): boolean {
-  return !!p.interestedAt && !p.declinedAt && !p.canceledAt && !p.blocked;
+  return !p.declinedAt && !p.canceledAt && !p.blocked;
 }
 
 /** 다음에 할 일. 우리 차례인 것만 색을 채운다. */
@@ -689,14 +691,17 @@ export default function CompanyProposalsPage() {
                         </button>
                       )}
                     </td>
-                    {/* 무슨 일이 있었나. 대화가 열린 줄은 이 글자가 곧 채팅으로 가는 문이다 —
-                        버튼 열을 따로 두지 않고 여기 하나로 모았다. 미답변이면 빨갛다. */}
-                    {/* 언제 그랬는지는 무슨 일이 있었는지에 딸린 값이다. 열을 따로
-                        두면 그 폭만큼 공고명과 희망직군이 눌린다 — 같은 칸 아래줄에 둔다. */}
+                    {/* 맨 위에 "채팅하기" 단추를 따로 둔다("채팅하기라는 버튼을 맨위칸에
+                        만들자") — 제안을 보낸 순간부터 눌린다. 꺼져 있으면 곧 상대가
+                        거절했거나 거둔 제안이라는 뜻이다("채팅하기가 비활성화 되면
+                        상대가 거절한것으로 가늠하면되겠네"). 무슨 일이 있었나는 그
+                        아래 글자로, 언제는 그 밑에. */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
-                      {대화열림(p)
-                        ? <button type="button" onClick={() => set대화(p)}>{활.글}</button>
-                        : <span>{활.글}</span>}
+                      <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
+                        onClick={() => set대화(p)}>
+                        채팅하기
+                      </button>
+                      <span>{활.글}</span>
                       {활.때 && <em className="prop-when">{때(활.때)}</em>}
                     </td>
                   </tr>

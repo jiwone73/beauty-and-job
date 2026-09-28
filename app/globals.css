@@ -16768,7 +16768,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    잦은 칸이라 폭이 곧 읽히는 양이다. */
 .prop-table .c-post { width: 172px; max-width: 172px; }
 .prop-table.has-post .c-who  { width: 172px; }
-.prop-table.has-post .c-job  { width: 170px; }
+/* 모집분야가 이제 직군 한 단어뿐이라 170px는 너무 넓었다("모집분야 영역을
+   너무 크게 잡았어") — 좁히되 긴 직군명은 2줄까지는 허용한다. */
+.prop-table.has-post .c-job  { width: 110px; }
 .prop-table.has-post .c-date { width: 70px; }
 .prop-table.has-post .c-st   { width: 72px; }
 /* 인재 칸은 아바타와 글이 칸 끝까지 차서, 여백이 없으면 옆 칸 공고명과 붙어
@@ -16879,20 +16881,25 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    이름·직군 칸이 좁아져 거기가 두 줄로 접혔다. 낱말 중간에서 끊지 않는다. */
 /* 진행상황은 줄이고 모집분야는 늘린다("진행상황 넓이를 줄이고 희망직군을
    좀더 여백을 가져가"). */
-.prop-table .c-recent { width: 170px; }
+/* 모집분야를 좁히며 남은 폭을 여기로 준다 — 가장 긴 문구("OOO님에게 보낸
+   제안을 거뒀습니다")도 잘리지 않게("진행상황 메시지에 ... 있으면 안됨"). */
+.prop-table .c-recent { width: 230px; }
+/* "채팅하기"는 맨 위 자리 단추다("채팅하기라는 버튼을 맨위칸에 만들자") —
+   제안을 보낸 순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는
+   뜻("채팅하기가 비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */
+.prop-chatbtn { display: inline-flex; margin-bottom: 4px; padding: 3px 9px;
+  border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
+  font: inherit; font-size: 13px; color: #555; cursor: pointer; }
+.prop-chatbtn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.prop-chatbtn:disabled { border-color: #ececf0; color: #b0b0b6; cursor: default; }
 /* 무슨 일이 있었나는 한 줄을 넘기지 않는다 — 날짜(.prop-when)는 그 아래
    따로 한 줄이라 예외("진행상황은 1줄 안넘게 해야 해 날짜 빼고"). */
 .c-recent span { display: block; white-space: nowrap; overflow: hidden;
   text-overflow: ellipsis; max-width: 100%; line-height: 1.45; }
-/* 미답변 — 구직자가 마지막으로 한 말이 그대로 여기 떠 있다. 그 글자를 빨갛게 해서
-   답할 것이 무엇인지 바로 읽히게 한다(공고 줄에는 빨간 표시를 두지 않는다). */
-.c-recent.todo span, .c-recent.todo button { color: #c0504d; }
-/* 여기 적힌 한 줄이 곧 채팅으로 가는 문이다 — 옅은 밑줄로 누를 자리임을 알린다.
-   자세한 말은 이 칸에 늘어놓지 않는다(채팅창에서 본다). */
-.c-recent button { display: block; white-space: nowrap; overflow: hidden;
-  text-overflow: ellipsis; max-width: 100%; border: none; background: none; padding: 0;
-  font: inherit; color: inherit; text-align: left; cursor: pointer;
-  text-decoration: underline; text-decoration-color: #a5a5ae; text-underline-offset: 3px; }
+/* 미답변 — 구직자가 마지막으로 한 말이 그대로 여기 떠 있다. 채팅 단추도 함께
+   빨갛게 해서 답할 것이 있다는 게 한눈에 읽히게 한다. */
+.c-recent.todo span { color: #c0504d; }
+.c-recent.todo .prop-chatbtn:not(:disabled) { border-color: #c0504d; color: #c0504d; }
 .c-recent button:hover { text-decoration-color: currentColor; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
   color: #555; white-space: nowrap; }
@@ -17052,7 +17059,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 모집분야 열 — 이제 값이 긴 조건 한 줄(positionLine)이라 두 줄까지만
    채우고 모자라면 …으로 자른다("2줄까지 채우고 모자르면 ..."). 낱말
    가운데서 끊기지 않게 keep-all 을 준다. */
-.prop-table .c-job { width: 170px; max-width: 170px; color: var(--color-text);
+.prop-table .c-job { width: 110px; max-width: 110px; color: var(--color-text);
   line-height: 1.45; }
 /* 접는 일은 안쪽 조각이 한다 — 칸에 직접 걸었더니 칸이 표 칸이기를 그만두어
    세로 가운데 맞춤이 죽고 글이 위로 붙었다. */

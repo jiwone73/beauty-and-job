@@ -216,6 +216,13 @@ export default function ProposalsPage() {
                             <button type="button" className="prop-go"
                               onClick={(e) => 관심열기(p.id, e)}>수락하기</button>
                           )}
+                          {/* 수락 전에도 채팅이 열린다 — 공고(제안 내용)는 이미 왼쪽에
+                              다 나와 있어 누가 왜 말 거는지는 안다("채팅전에 무조건
+                              공고 전달이 되야해" — 그 전달은 이 카드 자체가 한다). */}
+                          {st === "대기" && (
+                            <button type="button" className="prop-go ghost"
+                              onClick={(e) => { e.stopPropagation(); set대화(p); }}>채팅하기</button>
+                          )}
                           {(st === "수락" || st === "채팅중") && (
                             <button type="button" className="prop-go"
                               onClick={(e) => { e.stopPropagation(); set대화(p); }}>채팅하기</button>
