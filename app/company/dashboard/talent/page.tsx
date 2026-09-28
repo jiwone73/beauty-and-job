@@ -868,39 +868,53 @@ export default function TalentPage() {
             .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
             .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
             .co-li.on { border-color: #582681; background: #f7f7f8; }
-            .co-li-r1 { display: flex; align-items: center; gap: 10px; }
-            .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+            /* 아바타-글 간격도 지원자 카드 모바일과 같은 8px로("모바일 인재풀은
+               다 틀어졌어... 이거 통일해줘 공고지원자랑"). */
+            /* 아바타 윗변과 직군명을 수평으로("아바타하고 직군하고 수평으로
+               맞추어") — 지원자 카드·인재풀(PC)과 같은 flex-start. */
+            .co-li-r1 { display: flex; align-items: flex-start; gap: 8px; }
+            .co-li-namerow { display: flex; align-items: center; justify-content: space-between; gap: 8px; position: relative; }
             .co-li-scrap { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; flex-shrink: 0; }
-            /* 이력서 사진과 같은 사각형. 원형 40px 은 얼굴이 너무 작아 알아볼 수 없었다. */
-            .co-li-avatar { width: 44px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+            /* 사진 크기도 지원자 카드와 같은 60x76으로("아바타크기 ... 통일"). */
+            .co-li-avatar { width: 60px; height: 76px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
             /* 지원자 카드와 같은 크기·색으로("인재풀도 동일하게 맞추되").
                이 파일 다른 곳에서도 겪은, 설명 안 되는 캐스케이드 문제(같은
                배점인데 뒤에 쓴 규칙이 안 이김) 때문에 !important로 못박는다. */
             /* 이름은 회색으로 통일("이름은 회색(#555)로 통일하고 (모바일포함)"). */
-            .co-li-name { font-size: 14px !important; font-weight: 700 !important; color: #555 !important; flex-shrink: 0; }
-            .co-li-ageg { font-size: 13px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-meta2 { font-size: 13px; color: #555; margin-top: 2px; }
+            .co-li-name { font-size: 14px !important; font-weight: 700 !important; color: #555 !important; flex-shrink: 0; line-height: 1.55 !important; }
+            /* 나머지(나이·성별·경력·지역)도 지원자 카드와 같은 14px로. */
+            .co-li-ageg { font-size: 14px !important; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55; }
+            .co-li-meta2 { font-size: 14px !important; color: #555; margin-top: 2px; line-height: 1.55; }
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
             /* 맨 윗줄은 굵게 통일("맨윗줄은 PC는 15px 굵게(#333), 모바일은
                14px 굵게(#333)로 통일해줘"). */
-            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55 !important; }
             /* 제안하기를 맨 위 직군 줄로 올리고 오른쪽 정렬, 아이콘은 뺀다
                ("제안하기 버튼을 위로 올려서 오른쪽 정렬해줘. 제안하기 앞에
                아이콘은 삭제"). */
+            /* 보라색 쓰지 않는다("그리고 보라색쓰지마 제안하기") — 다른 테두리
+               버튼(.tal-btn)과 같은 회색. */
             .co-li-propose { flex-shrink: 0; background: none; border: 1px solid #e2e2e6; border-radius: 8px;
-              padding: 4px 10px; cursor: pointer; color: #582681; font-size: 13px; font-weight: 500; font-family: inherit; }
+              padding: 4px 10px; cursor: pointer; color: #555; font-size: 13px; font-weight: 500; font-family: inherit; }
             .co-li-sent { flex-shrink: 0; font-size: 13px; color: #555; text-decoration: none; }
             /* 스크랩·제안하기를 세로로 쌓는 자리("제안하기 버튼을 스크랩
-               밑으로 이동해줘"). */
-            .co-li-actcol { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+               밑으로 이동해줘") — absolute로 빼서 줄 흐름에서 키를 안
+               차지하게 한다. 안 그러면 이 줄(namerow)이 버튼 두 개 높이만큼
+               부풀어 바로 아랫줄(경력·지역)과의 간격이 확 벌어진다
+               ("줄간격이 저런데?"). */
+            .co-li-actcol { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+            .co-li-nameinfo { padding-right: 56px; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
             const region = t.regionPrefer ? shortenRegion(t.regionPrefer) : null;
             const ageGender = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
-            const meta2 = [careerLabel(t.careerYears, t.careerCount), region].filter(Boolean).join(" · ");
+            const career = careerLabel(t.careerYears, t.careerCount);
+            // 지원자 카드와 같은 4줄로("모바일은 4줄이잖아" → "공고지원자 봐봐
+            // 아니야?") — 1행 직군, 2행 이름, 3행 나이·성별·경력, 4행 지역.
+            const row3 = [ageGender, career].filter(Boolean).join(" · ");
             return (
               <div key={t.id} className="co-row">
                 <div className="co-li"
@@ -918,7 +932,6 @@ export default function TalentPage() {
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{t.name}</span>
-                          {ageGender && <span className="co-li-ageg">{ageGender}</span>}
                         </div>
                         {/* 제안하기를 스크랩 바로 밑으로("제안하기 버튼을 스크랩
                             밑으로 이동해줘") — 세로로 쌓는다. */}
@@ -942,7 +955,8 @@ export default function TalentPage() {
                           )}
                         </div>
                       </div>
-                      <div className="co-li-meta2">{meta2}</div>
+                      {row3 && <div className="co-li-meta2">{row3}</div>}
+                      {region && <div className="co-li-meta2">{region}</div>}
                     </div>
                   </div>
                 </div>

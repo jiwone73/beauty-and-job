@@ -18634,6 +18634,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 14px !important;
 }
 .apl-card .tal-line2 b { font-size: 15px !important; }
+/* 모바일은 직군(14px)과 이름 크기가 달라 보였다("김가이드가 더 커보여")
+   — 모바일에서만 이름도 14px로 맞춘다. PC는 직군·이름 둘 다 15px라
+   이미 같다. */
+@media (max-width: 768px) {
+  .apl-card .tal-line2 b { font-size: 14px !important; }
+}
 /* 구분선 밑(희망연봉·출근가능일)도 같은 14px("구분선 밑에는 폰트 13
    (메모포함)") — 메모는 이미 13px 규칙이 있다. */
 .apl-card .tal-tags { font-size: 14px !important; }
@@ -18675,12 +18681,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 /* 줄 사이 행간도 인재풀과 같은 비율(1.55)로("인재풀기준으로 맞춰"). */
 .apl-card .tal-who { line-height: 1.55; }
-/* 면접결과·지원일은 본문보다 작게("면접결과, 지원일도 작은글씨로") — 나이·
-   성별·지역과 같은 크기로, PC·모바일 공통("데스크탑에도 적용해줘"). 실측(글자
-   Range.getBoundingClientRect)으로도 나머지와 정확히 같은 높이임을 확인했다
-   — "내눈에는 지역 폰트가 제일 커보여"는 화면 오른쪽 끝에 혼자 떨어져 있어
-   생기는 착시였다. 1px 인상에 맞춰 14px로. */
-.apl-card .tal-st-r, .apl-card .tal-when-r { font-size: 14px !important; }
+/* 면접결과·지원일은 본문보다 한 단계 작게("최종합격은 13이 되야 해") —
+   나이·성별·지역(14px)보다 1px 작은 13px로, PC·모바일 공통. */
+.apl-card .tal-st-r, .apl-card .tal-when-r { font-size: 13px !important; }
 /* 지원자 카드는 3줄에서 4줄로("지금 3줄에서 4줄로 가자") — 사진도 그만큼
    늘린다. .apl-card로만 잡아 인재풀 카드(3줄, 정사각형)는 그대로 둔다. */
 /* 60px(정사각형)과 처음 늘렸던 80px의 정가운데("정사각형하고 지금하고
