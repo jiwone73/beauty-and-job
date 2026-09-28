@@ -178,6 +178,12 @@ export default function TalentCard({
         {/* 무슨 날짜인지 이름표가 없어 헷갈렸다 — 사람인처럼 「26-07-04 업데이트」로 적는다. */}
         {t.resumeUpdatedAt && <span className="tal-when">{업데이트날(t.resumeUpdatedAt)} 업데이트</span>}
       </div>
+      {/* 다른 기업들이 이 사람에게 보낸 제안까지 합한 수 — 인기 신호("좋은기능인대.
+          적용해줘" — 경쟁사 카드의 「받은 대화요청 N건」). 0건은 안 보여준다 —
+          아무도 관심 없다는 것까지 광고할 필요는 없다. */}
+      {(t.receivedProposalCount ?? 0) > 0 && (
+        <div className="tal-received">받은 대화요청 {t.receivedProposalCount}건</div>
+      )}
     </div>
   );
 }

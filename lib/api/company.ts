@@ -121,6 +121,8 @@ export type TalentItem = {
   interestProposalId?: string | null; // 그 대화를 이어 갈 제안 스레드
   /** 채워 넣기용 샘플 인재. 실존 인물이 아니라 이름·사진이 서로 안 맞을 수 있어 카드에서 흐리게 보여준다. */
   isSample?: boolean;
+  /** 지금까지 받은 대화요청(제안) 수 — 어느 기업이든 합한 전체 건수. */
+  receivedProposalCount?: number;
 };
 
 export const companyTalentApi = {

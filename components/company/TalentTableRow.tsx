@@ -62,7 +62,14 @@ export default function TalentTableRow({
       </td>
       <td className="apl-td apl-td-role">{직군}</td>
       <td className="apl-td">{경력}</td>
-      <td className="apl-td">{t.resumeUpdatedAt ? 업데이트날(t.resumeUpdatedAt) : "—"}</td>
+      <td className="apl-td">
+        {t.resumeUpdatedAt ? 업데이트날(t.resumeUpdatedAt) : "—"}
+        {/* 다른 기업 합산 제안 수 — 인기 신호("받은 대화요청 N건", 경쟁사 카드
+            참고). 0건은 안 보여준다. */}
+        {(t.receivedProposalCount ?? 0) > 0 && (
+          <span className="apl-td-received">받은 대화요청 {t.receivedProposalCount}건</span>
+        )}
+      </td>
       <td className="apl-td apl-td-acts">
         {t.proposedAt || t.interestedAt ? (
           <Link className="tal-btn" href={`${base}/proposals`}>제안완료</Link>

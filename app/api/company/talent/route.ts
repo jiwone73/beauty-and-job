@@ -262,7 +262,14 @@ export async function GET(req: NextRequest) {
           SELECT id FROM proposals
            WHERE company_id = $1 AND user_id = u.id AND interested_at IS NOT NULL
            ORDER BY interested_at DESC LIMIT 1
-        ) AS interest_proposal_id
+        ) AS interest_proposal_id,
+        -- 이 사람이 지금까지 받은 대화요청(제안) 수 — 어느 기업이든 상관없이 전체
+        -- 합이다("좋은기능인대... 적용해줘" — 경쟁사 카드의 「받은 대화요청 N건」).
+        -- 다른 제안 수 지표(대시보드 「보낸제안」)와 같은 규칙으로 취소·거절도
+        -- 뺴지 않고 그대로 센다.
+        (
+          SELECT COUNT(*)::int FROM proposals WHERE user_id = u.id
+        ) AS received_proposal_count
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
       WHERE u.status = 'ACTIVE'
@@ -356,6 +363,7 @@ export async function GET(req: NextRequest) {
       scrapJobIds: r.scrap_job_ids || [],
       proposedAt: r.proposed_at || null,
       resumeUpdatedAt: r.resume_updated_at || null,
+      receivedProposalCount: r.received_proposal_count ?? 0,
     }));
     return ok(data, 200, { total, page, limit, talentAccess: 열람가능 } as any);
   } catch (e: any) {
