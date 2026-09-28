@@ -866,7 +866,9 @@ export default function TalentPage() {
             .co-list { display: flex; flex-direction: column; gap: 10px; }
             .co-row { display: flex; align-items: center; gap: 10px; }
             .co-row-check { width: 20px; height: 20px; accent-color: #582681; flex-shrink: 0; margin: 0; }
-            .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 13px 14px; cursor: pointer; }
+            /* 카드 패딩은 모바일 표준값 5px로("페이지 여백 7px, 카드 패딩
+               5px. 사이트 전체 고정값"). */
+            .co-li { flex: 1; min-width: 0; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 5px; cursor: pointer; }
             .co-li.on { border-color: #582681; background: #f7f7f8; }
             /* 아바타-글 간격도 지원자 카드 모바일과 같은 8px로("모바일 인재풀은
                다 틀어졌어... 이거 통일해줘 공고지원자랑"). */
@@ -882,29 +884,42 @@ export default function TalentPage() {
             /* 지원자 카드와 같은 크기·색으로("인재풀도 동일하게 맞추되").
                이 파일 다른 곳에서도 겪은, 설명 안 되는 캐스케이드 문제(같은
                배점인데 뒤에 쓴 규칙이 안 이김) 때문에 !important로 못박는다. */
-            /* 이름은 회색으로 통일("이름은 회색(#555)로 통일하고 (모바일포함)"). */
-            .co-li-name { font-size: 14px !important; font-weight: 700 !important; color: #555 !important; flex-shrink: 0; line-height: 1.55 !important; }
+            /* 이름은 회색으로 통일("이름은 회색(#555)로 통일하고 (모바일포함)").
+               globals.css의 ".company-layout .co-li-name"(전역, 볼드 600)이
+               클래스 2개라 여기 한 개짜리보다 세거서 이겼다 — 셀렉터를
+               ".co-list .co-li-name"으로 두 개로 맞춰 이 화면에서만 이긴다. */
+            .co-list .co-li-name { font-size: 14px !important; font-weight: 700 !important; color: #555 !important; flex-shrink: 0; line-height: 22px !important; }
             /* 나머지(나이·성별·경력·지역)도 지원자 카드와 같은 14px로. */
-            .co-li-ageg { font-size: 14px !important; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55; }
-            .co-li-meta2 { font-size: 14px !important; color: #555; margin-top: 2px; line-height: 1.55; }
-            .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; position: relative; }
+            .co-li-ageg { font-size: 14px !important; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
+            /* 3줄 합이 아바타 76px과 위아래 딱 맞게 — 공고지원자 카드와 정확히
+               같은 값(줄높이 22px, 1·2행 사이 7px, 2·3행 사이 3px: 22*3+7+3=76). */
+            .co-li-meta2 { font-size: 14px !important; color: #555; margin-top: 3px; line-height: 22px; }
+            .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 7px; position: relative; }
             /* 맨 윗줄은 굵게 통일("맨윗줄은 PC는 15px 굵게(#333), 모바일은
                14px 굵게(#333)로 통일해줘"). 오른쪽에 떠 있는 스크랩·제안하기
                (아래 .co-li-actcol)와 안 겹치게 자리를 비워 둔다. */
-            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55 !important; padding-right: 56px; }
+            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 22px !important; padding-right: 56px; }
             /* 제안하기를 맨 위 직군 줄로 올리고 오른쪽 정렬, 아이콘은 뺀다
                ("제안하기 버튼을 위로 올려서 오른쪽 정렬해줘. 제안하기 앞에
                아이콘은 삭제"). */
             /* 보라색 쓰지 않는다("그리고 보라색쓰지마 제안하기") — 다른 테두리
                버튼(.tal-btn)과 같은 회색. */
-            .co-li-propose { flex-shrink: 0; background: none; border: 1px solid #e2e2e6; border-radius: 8px;
-              padding: 4px 10px; cursor: pointer; color: #555; font-size: 13px; font-weight: 500; font-family: inherit; }
-            .co-li-sent { flex-shrink: 0; font-size: 13px; color: #555; text-decoration: none; }
+            /* 버튼 높이를 1행 텍스트 높이(22px)에 맞춘다 — 패딩으로 키를
+               키우던 걸 고정 높이 + 세로 중앙 정렬로 바꾸고, 옆 패딩도
+               줄인다("버튼쪽 패딩도 줄여"). 안 그러면 버튼이 2행 아래
+               3행 자리까지 내려와 겹쳐 보였다. */
+            .co-li-propose { box-sizing: border-box; height: 22px; display: inline-flex; align-items: center;
+              flex-shrink: 0; background: none; border: 1px solid #e2e2e6; border-radius: 8px;
+              padding: 0 8px; cursor: pointer; color: #555; font-size: 13px; font-weight: 500; font-family: inherit; line-height: 1; }
+            .co-li-sent { box-sizing: border-box; height: 22px; display: inline-flex; align-items: center;
+              flex-shrink: 0; font-size: 13px; color: #555; text-decoration: none; line-height: 1; }
+            .co-li-scrap { height: 22px; align-items: center; justify-content: center; }
             /* 스크랩·제안하기를 세로로 쌓아 1행(직군) 자리에서 시작시킨다
                ("스크랩하고 제안하기버튼을 한줄씩 위로 올려줘") — absolute로
                빼서 줄 흐름에서 키를 안 차지하게 한다. 안 그러면 이 줄이
-               버튼 두 개 높이만큼 부풀어 바로 아랫줄과의 간격이 벌어진다. */
-            .co-li-actcol { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+               버튼 두 개 높이만큼 부풀어 바로 아랫줄과의 간격이 벌어진다.
+               gap도 위 jobrow 간격(7.6px 반올림)에 맞춰 2행 끝과 딱 맞춘다. */
+            .co-li-actcol { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
