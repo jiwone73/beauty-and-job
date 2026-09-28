@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, BookmarkCheck, ChevronDown, Pencil } from "lucide-react";
+import { Bookmark, BookmarkCheck, ChevronDown, Pencil, MessageCircle } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { 마감인가 } from "@/lib/jobClosed";
 import type { CompanyApplication } from "@/lib/types/company";
@@ -139,13 +139,19 @@ export default function ApplicantCard({
             지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다. */}
         <div className="tal-main">
           <button type="button" className="tal-name tal-open" title="지원서 보기"
-            onClick={() => onOpen(a)}>{(a as any).user_intro || a.user_name}</button>
+            onClick={() => onOpen(a)}>
+            {(a as any).user_intro || a.user_name}
+            {/* 제안을 통해 지원한 사람(제안 후 지원·대화 후 지원)은 이름 옆에
+                채팅 아이콘("그리고 제안을 통해 지원한 사람은 이름옆에 채팅아이콘을
+                붙여줘"). user_intro가 있으면 이름은 아래 줄에 따로 있어 거기서 붙인다. */}
+            {!(a as any).user_intro && 유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
+          </button>
           {/* 이름 줄 오른쪽에 상태값, 지역 줄 오른쪽에 지원일. 둘 다 태그와
               같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들이다. */}
           <div className="tal-who tal-line2">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               {/* 이름만 굵게. 괄호 속 성별·나이는 평체로 둔다. */}
-              {(a as any).user_intro ? <b>{a.user_name}</b> : ""}
+              {(a as any).user_intro ? <><b>{a.user_name}</b>{유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}</> : ""}
               {(a as any).user_intro && 나이성별 ? " " : ""}
               {나이성별 && `(${나이성별})`}
             </button>
@@ -187,18 +193,21 @@ export default function ApplicantCard({
           )}
           {유입 && <span className="tal-from">{유입}</span>}
         </span>
-        {/* 메모는 직군 줄 오른쪽에. 화살표를 누르면 한 줄이 열린다 —
-            늘 열어 두면 안 쓰는 사람에게도 빈 칸이 한 줄 남는다. */}
+        {/* 메모 단추는 태그·직군 줄 안에 있어도 "메모"라는 글자만 고정으로
+            보인다 — 내용을 여기 같이 적으면 헤어·바버 같은 태그 줄과 한 줄에
+            섞인다("작성시 헤어바버 줄이 아니라 그 밑에 줄에 넣어줘"). 실제
+            내용은 아래 별도 줄에서, 있을 때만 그 줄이 생긴다("메모가 있으면
+            줄이 하나 더 생성되는거고 없으면 없는거고"). */}
         {onNote && (
           <button type="button" className={`tal-memo-btn${메모 ? " has" : ""}`}
             onClick={() => set메모쓰기((v) => !v)}>
-            <Pencil size={13} />{메모 || "메모"}
+            <Pencil size={13} />메모
             <ChevronDown size={13} className={메모쓰기 ? "up" : ""} />
           </button>
         )}
       </div>
 
-      {onNote && 메모쓰기 && (
+      {onNote && 메모쓰기 ? (
         <div className="tal-memo">
           <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
             placeholder="통화함 · 화요일 3시 면접 · 경력 확인 필요 …"
@@ -209,7 +218,9 @@ export default function ApplicantCard({
               if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
             }} />
         </div>
-      )}
+      ) : (onNote && 메모 && (
+        <div className="tal-memo-row">{메모}</div>
+      ))}
     </div>
   );
 }

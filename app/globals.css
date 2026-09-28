@@ -18530,3 +18530,64 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .jd-guide-stack-label, .jd-guide-stack-value { font-size: 14px; }
 }
+
+/* 지원자 카드(ApplicantCard, .tal-card) — "지원자 카드내용 폰트 14로 모두
+   통일하되 이름만 #333 볼드체. 나머진 #555 평체." 이름·소개 줄(.tal-name)만
+   #333·700, 나머지(나이·성별·지역·상태·지원일·태그·유입경로·메모)는 #555·400.
+   "데탑은 1치수씩 커지는거" — PC는 한 단계 큰 15px, 폰은 14px. 파일 앞쪽
+   .tal-name.tal-open 등 기존 규칙(17px, 다른 색)이 이겨 버릴 수 있어(같은
+   배점의 규칙은 뒤에 쓴 쪽이 이긴다지만, 이 파일에서 실제로 안 그런 사례가
+   있었다) 여기서 !important로 확실히 못박는다. */
+.tal-card .tal-name,
+.tal-card .tal-name.tal-open {
+  font-size: 15px !important; color: #333 !important; font-weight: 700 !important;
+}
+.tal-card .tal-line2 b { color: #333 !important; font-weight: 700 !important; }
+.tal-card .tal-who,
+.tal-card .tal-line2,
+.tal-card .tal-st-r,
+.tal-card .tal-when-r,
+.tal-card .tal-tags,
+.tal-card .tal-job,
+.tal-card .tal-from {
+  font-size: 15px !important; color: #555 !important; font-weight: 400 !important;
+}
+@media (max-width: 768px) {
+  .tal-card .tal-name,
+  .tal-card .tal-name.tal-open,
+  .tal-card .tal-who,
+  .tal-card .tal-line2,
+  .tal-card .tal-st-r,
+  .tal-card .tal-when-r,
+  .tal-card .tal-tags,
+  .tal-card .tal-job,
+  .tal-card .tal-from {
+    font-size: 14px !important;
+  }
+}
+/* 메모는 매장이 자기가 보려고 적는 작은 부가 정보라 나머지 카드 글자
+   (14/15px)보다 한 단계 더 작다 — "메모내용 크기는 13으로 하되" + "데탑이랑
+   똑같이 적용. 폰트만 1치수 차이"(PC 14 / 폰 13). 저장된 메모 글은
+   .tal-memo-row(태그 줄과 다른 줄)에, 쓰는 중엔 .tal-memo-in에 뜬다. */
+.tal-card .tal-memo-btn,
+.tal-card .tal-memo-in,
+.tal-card .tal-memo-row {
+  font-size: 14px !important; color: #555 !important; font-weight: 400 !important;
+}
+.tal-memo-row { padding: 2px 0 8px; }
+/* 제안을 통해 지원한 사람 이름 옆 채팅 아이콘 — "모바일 데탑 동일"이라
+   크기 차이를 안 둔다. */
+.tal-name-chat-ic { color: #582681; vertical-align: -2px; margin-left: 4px; flex-shrink: 0; }
+@media (max-width: 768px) {
+  .tal-card .tal-memo-btn,
+  .tal-card .tal-memo-in,
+  .tal-card .tal-memo-row {
+    font-size: 13px !important;
+  }
+}
+/* 공고카드 안에 펼친 지원자 카드는 아바타를 최대한 왼쪽으로 민다("아바타
+   왼쪽으로 최대한 밀어" — "모바일만") — 카드 패딩 표준값(5px)에 맞춘다.
+   PC·인재검색 등 다른 자리의 .tal-card는 그대로 둔다. */
+@media (max-width: 768px) {
+  .co-pane-apps .tal-card { padding-left: 5px; padding-right: 5px; }
+}
