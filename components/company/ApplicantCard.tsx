@@ -158,18 +158,39 @@ export default function ApplicantCard({
 
         {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
             지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다.
-            1행 직군, 2행 이름(나이·성별)+채팅아이콘+면접결과, 3행 경력|지역
-            +지원일자("김가이드 (28세·남) 그 밑으로 경력 I 서울 강남구 이렇게
-            해줘. 1행이 없어지는거고"). */}
+            모바일은 4행(직군/이름+면접결과/나이·성별·경력/지역+지원일)
+            그대로, 데스크탑만 3행으로 합친다("데탑에만 3줄로 해달라니까")
+            — 매체 쿼리로 -m/-dt 켜고 끈다(위 한줄소개 dt/m와 같은 방식). */}
         <div className="tal-main">
           <button type="button" className="tal-name tal-open tal-role" title="지원서 보기"
             onClick={() => onOpen(a)}>
             {(a as any).position_title || "—"}
           </button>
-          <div className="tal-who tal-line2">
+
+          {/* 모바일: 4행 그대로("폰은 아까 끝났잖아") */}
+          <div className="tal-who tal-line2 tal-line2-m">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               <b>{a.user_name}</b>
-              {/* 제안을 통해 지원한 사람은 이름 옆에 채팅 아이콘. */}
+              {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
+            </button>
+            <span className="tal-st-r">
+              {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+            </span>
+          </div>
+          <div className="tal-who tal-line2 tal-line2-m">
+            <span>{[나이성별, 경력].filter(Boolean).join(" · ")}</span>
+          </div>
+          <div className="tal-who tal-line2 tal-line2-m">
+            <span>{지역}</span>
+            <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
+          </div>
+
+          {/* 데스크탑: 3행 — 이름(나이·성별)+면접결과 / 경력|지역+지원일
+              ("김가이드 (28세·남) 그 밑으로 경력 I 서울 강남구 이렇게 해줘.
+              1행이 없어지는거고"). */}
+          <div className="tal-who tal-line2 tal-line2-dt">
+            <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
+              <b>{a.user_name}</b>
               {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
               {나이성별 && ` (${나이성별})`}
             </button>
@@ -177,7 +198,7 @@ export default function ApplicantCard({
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
             </span>
           </div>
-          <div className="tal-who tal-line2">
+          <div className="tal-who tal-line2 tal-line2-dt">
             <span>{경력 && <>{경력}{지역 && <span className="tal-sep"> | </span>}</>}{지역}</span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
