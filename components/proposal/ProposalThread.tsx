@@ -47,6 +47,9 @@ export default function ProposalThread({
   proposalId, 제목, 상대, token, onClose,
 }: {
   proposalId: string;
+  /** 부제목 — 공고명 대신 상대방 쪽 정보(희망직군/모집분야)를 넣어 쓴다
+   *  ("상대방의 희망직군이나 모집분야를 넣는건 어때?"). 무엇을 넣을지는
+   *  부르는 쪽이 정한다. */
   제목: string;
   상대: string;
   token: string;
@@ -60,6 +63,16 @@ export default function ProposalThread({
   const [약속값, set약속값] = useState("");
   const [차단됨, set차단됨] = useState(false);
   const [메뉴, set메뉴] = useState(false);
+  const 메뉴Ref = useRef<HTMLDivElement>(null);
+  // 다른 곳을 누르면 메뉴가 닫힌다("다른곳을 클릭하며 메뉴가 닫히게 해줘").
+  useEffect(() => {
+    if (!메뉴) return;
+    const 닫기 = (e: MouseEvent) => {
+      if (메뉴Ref.current && !메뉴Ref.current.contains(e.target as Node)) set메뉴(false);
+    };
+    document.addEventListener("mousedown", 닫기);
+    return () => document.removeEventListener("mousedown", 닫기);
+  }, [메뉴]);
   // 어디서 볼지. 기본값은 그 공고의 근무지고, 다른 데서 보기로 했으면 고쳐 쓴다.
   const [장소, set장소] = useState("");
   const [기본장소, set기본장소] = useState("");
@@ -166,7 +179,7 @@ export default function ProposalThread({
             있으니까 좀 이상해" / "상대방정보는 가운데로 해줘") — 점 3개도
             세로로(MoreVertical). */}
         <div className="pth-head">
-          <div className="pth-more">
+          <div className="pth-more" ref={메뉴Ref}>
             <button type="button" onClick={() => set메뉴((v) => !v)} aria-label="더보기"><MoreVertical size={20} /></button>
             {메뉴 && (
               <div className="pth-menu">

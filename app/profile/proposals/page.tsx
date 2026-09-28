@@ -278,10 +278,14 @@ export default function ProposalsPage() {
         </div>
       )}
 
+      {/* 부제는 공고명 대신 모집분야(직군)로 — 구직자 쪽 화면이라 "상대방"인
+          매장이 뭘 뽑는지가 맞는 정보다("저 부제는 구직자가 보는 화면에
+          모집분야가 나오는게 맞을거 같아"). 여러 모집분야 중 값이 다 이어진
+          한 줄에서 맨 앞 직군만 자른다 — 보낸제안 표의 모집분야 칸과 같은 규칙. */}
       {대화 && (
         <ProposalThread
           proposalId={대화.id}
-          제목={대화.job_title}
+          제목={(대화.positionLines?.[0] || "").split("|")[0].trim() || 대화.job_title}
           상대={대화.brand_name || 대화.company_name}
           token={localStorage.getItem("access_token") || ""}
           onClose={() => set대화(null)}

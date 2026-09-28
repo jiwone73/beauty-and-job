@@ -712,10 +712,13 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
+      {/* 공고명(모집분야) 대신 구직자 본인의 희망직군을 보여준다 — 공고명은
+          우리 쪽 정보라 "상대방정보만 있으면 되잖아"에 안 맞았다("지금
+          부제는 구직자 희망직군이 아니고 모집분야잖아" — 그래서 바꾼다). */}
       {대화 && (
         <ProposalThread
           proposalId={대화.id}
-          제목={대화.jobTitle || "제안한 공고"}
+          제목={대화.subJob || "직군 미정"}
           상대={대화.userName}
           token={typeof window !== "undefined" ? localStorage.getItem("access_token") || "" : ""}
           onClose={() => { set대화(null); 불러오기(); }}
