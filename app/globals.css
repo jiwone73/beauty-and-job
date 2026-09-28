@@ -16387,6 +16387,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   width: 100%; border: 1px solid var(--color-primary); border-radius: 8px;
   padding: 6px 10px; font-family: inherit; font-size: 13px; color: #555;
 }
+/* 메모 입력칸 안 왼쪽 아이콘 뱃지("메모 입력창에 메모아이콘 뱃지를 넣어줘"). */
+.tal-memo-in-wrap { position: relative; }
+.tal-memo-in-wrap .tal-memo-in { padding-left: 28px; }
+.tal-memo-in-badge { position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+  color: #8a8a90; pointer-events: none; }
 
 /* 받은 제안 — 날짜 아래에 공고로 가는 길을 둔다. 오른쪽 위에 시간과 갈 곳이
    같이 있어 시선이 한 번만 움직인다. */
@@ -18574,10 +18579,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .tal-card .tal-memo-row {
   font-size: 14px !important; color: #555 !important; font-weight: 400 !important;
 }
-.tal-memo-row { padding: 2px 0 8px; }
+.tal-memo-row { padding: 2px 0 8px; cursor: pointer; }
+.tal-memo-row:hover { color: var(--color-primary) !important; }
 /* 제안을 통해 지원한 사람 이름 옆 채팅 아이콘 — "모바일 데탑 동일"이라
    크기 차이를 안 둔다. */
-.tal-name-chat-ic { color: #582681; vertical-align: -2px; margin-left: 4px; flex-shrink: 0; }
+/* svg 기본 리셋(Tailwind preflight)이 display:block이라 이름 글자 바로 뒤에
+   두면 줄바꿈되어 새 줄로 떨어졌다("채팅아이콘은 이름 옆에 넣어야지") —
+   inline-block으로 되돌려 글자와 한 줄에 서게 한다. */
+.tal-name-chat-ic { display: inline-block; color: #582681; vertical-align: -2px; margin-left: 4px; flex-shrink: 0; }
 /* 희망연봉·출근가능일을 태그 옆에 이을 때 쓰는 구분선("I 로 분리"). */
 .tal-sep { color: #dcdce2; }
 @media (max-width: 768px) {

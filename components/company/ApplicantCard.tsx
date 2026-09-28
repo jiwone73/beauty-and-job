@@ -77,6 +77,10 @@ export default function ApplicantCard({
   const 출근가능일 = (a as any).user_available_from ? `출근가능 ${(a as any).user_available_from}` : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
   const [메모쓰기, set메모쓰기] = useState(false);
+  // 메모 줄을 접었다 폈다 한다("메모를 접었다 폈다 할수 있게 해주고") — 쓰기
+  // 모드와는 다른 상태다. 내용이 있으면 펼쳤을 때 글로, 없으면 펼치는 순간
+  // 바로 입력 칸으로 들어간다.
+  const [펼침, set펼침] = useState(false);
   const [메모, set메모] = useState(a.note || "");
   const 메모칸 = useRef<HTMLInputElement>(null);
   useEffect(() => { set메모(a.note || ""); }, [a.note]);
@@ -88,10 +92,13 @@ export default function ApplicantCard({
     onNote?.(a, v);
   };
 
-  // 대분류(헤어·바버 등)로 대신 채우지 않는다 — 소분류만("헤어바버는 소분류로
-  // 넣어줘" / "소분류만 보여주면 되"). 소분류가 없으면 그 자리는 그냥 빈다.
+  // 구직자 본인이 정한 희망 직군(user_sub_job)이 아니라, 기업이 이 공고를
+  // 등록할 때 고른 소분류(모집분야, position_title) — "희망직군이 아니라
+  // 기업이 채용공고 등록 당시 선택했던 소분류 직군을 넣어줘". 대분류로 대신
+  // 채우지 않는다("헤어바버는 소분류로 넣어줘" / "소분류만 보여주면 되") —
+  // 없으면 그 자리는 그냥 빈다.
   const 태그 = [
-    (a as any).user_sub_job,
+    (a as any).position_title,
     (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
   ].filter(Boolean) as string[];
 
@@ -213,27 +220,37 @@ export default function ApplicantCard({
             줄이 하나 더 생성되는거고 없으면 없는거고"). */}
         {onNote && (
           <button type="button" className={`tal-memo-btn${메모 ? " has" : ""}`}
-            onClick={() => set메모쓰기((v) => !v)}>
+            onClick={() => {
+              // 내용이 없으면 펼치는 순간 바로 쓰는 칸으로 — 펼쳐도 읽을 게
+              // 없으면 뜻이 없다.
+              if (!메모) { set펼침(true); set메모쓰기(true); return; }
+              set펼침((v) => !v);
+            }}>
             <Pencil size={13} />메모
-            <ChevronDown size={13} className={메모쓰기 ? "up" : ""} />
+            <ChevronDown size={13} className={펼침 ? "up" : ""} />
           </button>
         )}
       </div>
 
-      {onNote && 메모쓰기 ? (
+      {onNote && 펼침 && (메모쓰기 ? (
         <div className="tal-memo">
-          <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
-            placeholder="통화함 · 화요일 3시 면접 · 경력 확인 필요 …"
-            onChange={(e) => set메모(e.target.value)}
-            onBlur={메모저장}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") { e.currentTarget.blur(); }
-              if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
-            }} />
+          {/* 입력칸에 메모 아이콘 뱃지("메모 입력창에 메모아이콘 뱃지를 넣어줘"). */}
+          <div className="tal-memo-in-wrap">
+            <Pencil size={12} className="tal-memo-in-badge" />
+            <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
+              placeholder="통화함 · 화요일 3시 면접 · 경력 확인 필요 …"
+              onChange={(e) => set메모(e.target.value)}
+              onBlur={메모저장}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.currentTarget.blur(); }
+                if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
+              }} />
+          </div>
         </div>
-      ) : (onNote && 메모 && (
-        <div className="tal-memo-row">{메모}</div>
-      ))}
+      ) : (메모 && (
+        <div className="tal-memo-row" role="button" tabIndex={0} title="메모 고치기"
+          onClick={() => set메모쓰기(true)}>{메모}</div>
+      )))}
     </div>
   );
 }
