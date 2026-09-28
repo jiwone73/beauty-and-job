@@ -16902,7 +16902,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* "채팅하기"는 맨 위 자리 단추다("채팅하기라는 버튼을 맨위칸에 만들자") —
    제안을 보낸 순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는
    뜻("채팅하기가 비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */
-.prop-chatbtn { display: inline-flex; margin-top: 4px; padding: 3px 9px;
+/* 패딩을 제안취소 버튼과 같은 값으로("두 버튼 폰트 크기 같은거 맞지? 패딩값을
+   제안취소로 통일해줘"). */
+.prop-chatbtn { display: inline-flex; margin-top: 4px; padding: 2px 7px;
   border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
   font: inherit; font-size: 13px; color: #555; cursor: pointer; }
 .prop-chatbtn:hover { border-color: var(--color-primary); color: var(--color-primary); }
