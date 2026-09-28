@@ -360,6 +360,16 @@ function CompanyJobsContent() {
                     (패딩값적은)"라 해서 작은 테두리 버튼으로, 순서도 "마감하고
                     재등록 위치 바꾸고"에 맞춰 마감(또는 삭제)을 먼저 둔다. */}
                 <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  {/* 수정(임시저장은 이어서 작성) 아이콘을 마감 버튼 왼쪽으로
+                      옮긴다("수정 아이콘 마감버튼 왼쪽으로 올려") — 공고명 줄에서
+                      이 줄로. 마감된 공고는 고칠 게 없어 자리를 안 준다. */}
+                  {!closed && (
+                    <button type="button" className="co-pane-edit-ic"
+                      aria-label={draft ? "이어서 작성" : "수정"}
+                      onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
+                      <Edit size={15} />
+                    </button>
+                  )}
                   {closed || draft ? (
                     <button type="button" className="co-pane-btn" onClick={() => handleDelete(job.id)}>삭제</button>
                   ) : (
@@ -373,24 +383,9 @@ function CompanyJobsContent() {
                   )}
                 </span>
               </div>
-              <h2 className="co-pane-title">
-                {/* 공고명이 길면 아이콘과 붙어 보였다("공고명이랑 아이콘이랑 너무
-                    붙었어") — 공고명을 제 너비만 쓰는 칸으로 묶어 그 안에서
-                    줄바꿈되게 하고("공고명이 어느영역이상 못넘어오게"), 아이콘은
-                    폭이 줄지 않는 고정 칸으로 따로 뗀다. 둘 사이는 gap으로만 띈다
-                    (space-between이면 공고명이 길수록 아이콘과 다시 붙는다). */}
-                <span style={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>{job.title}</span>
-                {/* 수정(임시저장은 이어서 작성)을 공고명 줄로 올리고 아이콘
-                    하나로 표시한다("수정은 공고명 라인으로 올려. 수정은
-                    아이콘으로 표시"). 마감된 공고는 고칠 게 없어 자리를 안 준다. */}
-                {!closed && (
-                  <button type="button" className="co-pane-edit-ic"
-                    aria-label={draft ? "이어서 작성" : "수정"}
-                    onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
-                    <Edit size={15} />
-                  </button>
-                )}
-              </h2>
+              {/* 공고명은 길어도 2줄까지만("공고명 2줄 ... 제한", co-pane-title CSS
+                  의 line-clamp). */}
+              <h2 className="co-pane-title">{job.title}</h2>
             </div>
           </div>
 
@@ -401,6 +396,10 @@ function CompanyJobsContent() {
               {(() => {
                 const 경력글 = (v: string) =>
                   v === "NEW" ? "신입" : v === "EXPERIENCED" ? "경력" : "경력무관";
+                // 학력은 오피스 공고에서만 의미가 있다 — 매장은 늘 "무관"이라 그
+                // 값이 뜨는 게 아니라 왜 뜨는지부터 헷갈렸다("무관은 무슨 무관이야?").
+                // 근무시간은 이 줄에서 뺀다("근무시간은 빼자") — 상세는 위에서 본다.
+                const isOffice = (job as any).job_type === "OFFICE";
                 const 줄들 = 부문.length > 0
                   ? 부문.map((p: any) => [
                       p.category || p.group,
@@ -409,8 +408,7 @@ function CompanyJobsContent() {
                       p.employment || (job as any).employment_type,
                       p.gender,
                       p.career,
-                      p.education,
-                      [p.workDays, p.workTime].filter(Boolean).join(" "),
+                      isOffice ? p.education : null,
                       p.salary,
                     ].filter(Boolean).join("  |  "))
                   : [[
