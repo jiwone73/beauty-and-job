@@ -875,18 +875,26 @@ export default function TalentPage() {
             .co-li-avatar { width: 44px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-            /* 지원자 카드와 같은 크기·색으로("인재풀도 동일하게 맞추되"). */
-            .co-li-name { font-size: 14px; font-weight: 700; color: #333; flex-shrink: 0; }
+            /* 지원자 카드와 같은 크기·색으로("인재풀도 동일하게 맞추되").
+               이 파일 다른 곳에서도 겪은, 설명 안 되는 캐스케이드 문제(같은
+               배점인데 뒤에 쓴 규칙이 안 이김) 때문에 !important로 못박는다. */
+            /* 이름은 회색으로 통일("이름은 회색(#555)로 통일하고 (모바일포함)"). */
+            .co-li-name { font-size: 14px !important; font-weight: 700 !important; color: #555 !important; flex-shrink: 0; }
             .co-li-ageg { font-size: 13px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .co-li-meta2 { font-size: 13px; color: #555; margin-top: 2px; }
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
-            .co-li-job { font-size: 14px; font-weight: 400; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            /* 맨 윗줄은 굵게 통일("맨윗줄은 PC는 15px 굵게(#333), 모바일은
+               14px 굵게(#333)로 통일해줘"). */
+            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             /* 제안하기를 맨 위 직군 줄로 올리고 오른쪽 정렬, 아이콘은 뺀다
                ("제안하기 버튼을 위로 올려서 오른쪽 정렬해줘. 제안하기 앞에
                아이콘은 삭제"). */
             .co-li-propose { flex-shrink: 0; background: none; border: 1px solid #e2e2e6; border-radius: 8px;
               padding: 4px 10px; cursor: pointer; color: #582681; font-size: 13px; font-weight: 500; font-family: inherit; }
             .co-li-sent { flex-shrink: 0; font-size: 13px; color: #555; text-decoration: none; }
+            /* 스크랩·제안하기를 세로로 쌓는 자리("제안하기 버튼을 스크랩
+               밑으로 이동해줘"). */
+            .co-li-actcol { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
@@ -906,29 +914,33 @@ export default function TalentPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="co-li-jobrow">
                         <div className="co-li-job">{t.subJob || t.mainJobGroup || "직군 미정"}</div>
-                        {t.proposedAt || t.interestedAt ? (
-                          <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
-                            className="co-li-sent">
-                            제안완료
-                          </Link>
-                        ) : (
-                          <button type="button" className="co-li-propose"
-                            onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
-                            제안하기
-                          </button>
-                        )}
                       </div>
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{t.name}</span>
                           {ageGender && <span className="co-li-ageg">{ageGender}</span>}
                         </div>
-                        <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
-                          onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
-                          {t.scrapped
-                            ? <BookmarkCheck size={19} style={{ color: "#582681" }} />
-                            : <Bookmark size={19} style={{ color: "#555" }} />}
-                        </button>
+                        {/* 제안하기를 스크랩 바로 밑으로("제안하기 버튼을 스크랩
+                            밑으로 이동해줘") — 세로로 쌓는다. */}
+                        <div className="co-li-actcol">
+                          <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
+                            onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
+                            {t.scrapped
+                              ? <BookmarkCheck size={19} style={{ color: "#582681" }} />
+                              : <Bookmark size={19} style={{ color: "#555" }} />}
+                          </button>
+                          {t.proposedAt || t.interestedAt ? (
+                            <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
+                              className="co-li-sent">
+                              제안완료
+                            </Link>
+                          ) : (
+                            <button type="button" className="co-li-propose"
+                              onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
+                              제안하기
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <div className="co-li-meta2">{meta2}</div>
                     </div>

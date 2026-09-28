@@ -18563,7 +18563,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .tal-card .tal-name.tal-open {
   font-size: 15px !important; color: #333 !important; font-weight: 700 !important;
 }
-.tal-card .tal-line2 b { color: #333 !important; font-weight: 700 !important; }
+/* 이름은 회색으로 통일("이름은 회색(#555)로 통일하고 (모바일포함)") —
+   인재풀 카드의 이름과 같은 색. */
+.tal-card .tal-line2 b { color: #555 !important; font-weight: 700 !important; }
 .tal-card .tal-who,
 .tal-card .tal-line2,
 .tal-card .tal-st-r,
@@ -18662,11 +18664,17 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    물려받은 display:inline-block 때문에 인라인 포맷팅 컨텍스트의 반 리딩
    (half-leading)이 끼어들었다. 나머지 줄(.tal-line2, 진짜 div)처럼 block으로
    못박아 없앤다("1,2,3,4 줄 간격 모두 동일하게 제발"). */
-.tal-card .tal-name.tal-role { font-size: 15px !important; font-weight: 400 !important; margin-bottom: 0; line-height: 18px; display: block !important; }
-/* 줄 사이 행간 — 너무 좁히면 붙어 보이고("내용이 너무 위아래로 붙고") 너무
-   넓으면 첫 줄만 떠 보인다. 세 줄 모두 이 값 하나로("균등하게 해줘 행간" →
-   19px도 아직 넓다 해서 17px로 → 글자 커진 만큼(13→14) 18px로). */
-.apl-card .tal-who { line-height: 18px; }
+/* 맨 윗줄은 인재풀과 같은 규칙: PC 15px, 모바일 14px, 둘 다 굵게 #333
+   ("맨윗줄은 PC는 15px 굵게(#333), 모바일은 14px 굵게(#333)로 통일해줘"). */
+/* 고정 px 대신 인재풀과 같은 비율(1.45)로("인재풀기준으로 맞춰") —
+   display:block + margin-bottom:0 은 그대로 둔다(반 리딩 문제는 비율이
+   아니라 inline-block 때문이었다). */
+.tal-card .tal-name.tal-role { font-size: 15px !important; font-weight: 700 !important; margin-bottom: 0; line-height: 1.45; display: block !important; }
+@media (max-width: 768px) {
+  .tal-card .tal-name.tal-role { font-size: 14px !important; }
+}
+/* 줄 사이 행간도 인재풀과 같은 비율(1.55)로("인재풀기준으로 맞춰"). */
+.apl-card .tal-who { line-height: 1.55; }
 /* 면접결과·지원일은 본문보다 작게("면접결과, 지원일도 작은글씨로") — 나이·
    성별·지역과 같은 크기로, PC·모바일 공통("데스크탑에도 적용해줘"). 실측(글자
    Range.getBoundingClientRect)으로도 나머지와 정확히 같은 높이임을 확인했다
@@ -18678,9 +18686,32 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 60px(정사각형)과 처음 늘렸던 80px의 정가운데("정사각형하고 지금하고
    딱 중간정도로 해줘"). */
 .apl-card .tal-avatar { height: 76px; }
-/* 사진이 위(flex-start)에 붙어 있으니 4줄 글보다 짧아 보였다("사진이 위로
-   너무 올라갔어 딱 중간정도가 맞을 듯") — 줄 가운데로 맞춘다. */
-.apl-card .tal-top { align-items: center; }
+/* 처음엔 가운데 정렬이었지만("사진이 위로 너무 올라갔어 딱 중간정도가
+   맞을 듯") 그 뒤 폰트·줄간격을 인재풀과 맞추면서 아바타 높이(76px)와 세
+   줄 글 높이가 거의 같아져, 이제는 인재풀처럼 위(flex-start)로 맞춰야
+   직군명과 사진 윗변이 수평이 된다("공고지원자는 아바타 높이와 직군명이
+   수평이아닌거 같아 인재풀은 수평인데") — 기본값(flex-start)이라 규칙
+   자체를 없앤다. */
+/* 인재풀(PC, TalentCard) 사진도 지원자 카드와 같은 크기로("아바타 사진은
+   공고지원자 아바타 크기로 통일") — .apl-card가 아닌 .tal-card만 잡는다. */
+.tal-card:not(.apl-card) .tal-avatar { height: 76px; }
+/* 지역·태그(나머지)도 지원자 카드와 같은 14px로("폰트랑 색상이 틀린거
+   같은데" → "비교해줘" → 지역·태그만 15px로 남아 있었다). 이름(.tal-who b)은
+   15px 그대로라 따로 되돌린다 — .tal-who 전체를 줄이면 이름까지 같이
+   줄어든다. */
+.tal-card:not(.apl-card) .tal-who,
+.tal-card:not(.apl-card) .tal-tags {
+  font-size: 14px !important;
+}
+.tal-card:not(.apl-card) .tal-who b { font-size: 15px !important; }
+/* 고정 px 대신 인재풀 원래 비율(1.45/1.55배) 그대로 쓰고, 지원자 카드
+   쪽을 여기 맞춘다("인재풀기준으로 맞춰") — 15px*1.45와 14px*1.55가 어차피
+   21.7~21.75px로 거의 같은 값이라 굳이 고정 px로 못박을 필요가 없었다.
+   맨 윗줄은 지원자 카드 때와 같은 이유(inline-block 반 리딩)로
+   display:block과 margin-bottom:0만 그대로 가져온다. */
+.tal-card:not(.apl-card) .tal-name {
+  margin-bottom: 0 !important; display: block !important;
+}
 /* 모바일은 4행 그대로("폰은 아까 끝났잖아. 폰에 있는 공고지원자 관리 카드
    원래대로 돌려놔"), 데스크탑만 3행으로 합친다("데탑에만 3줄로 해달라니까")
    — 위 한줄소개 dt/m 전환과 같은 방식. 기본(모바일 우선)은 -m만 보이고,
