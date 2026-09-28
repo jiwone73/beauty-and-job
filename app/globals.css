@@ -18620,14 +18620,17 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   /* 아바타와 이름·나이·지역 사이 간격도 같이 줄인다("이름 나이 지역정보를
      아바타쪽으로 더 밀어"). */
   .co-pane-apps .tal-top { gap: 8px; }
-  /* 모바일은 이름만 빼고 나이·성별·지역·최종합격·지원일자를 12px로("모바일은
-     이름빼고 ... 12로 줄여줘"). 이름(.tal-line2 b)은 부모 축소를 받지 않게
-     따로 못박는다. */
+  /* 모바일은 이름만 빼고 나이·성별·경력·지역·최종합격·지원일자를 13px로
+     ("모바일은 이름빼고 ... 12로 줄여줘" → "폰트 12-> 13 변경"). 이름
+     (.tal-line2 b)은 부모 축소를 받지 않게 따로 못박는다. */
   .co-pane-apps .tal-line2,
   .co-pane-apps .tal-who {
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
   .co-pane-apps .tal-line2 b { font-size: 14px !important; }
+  /* 구분선 밑(희망연봉·출근가능일)도 같은 13px("구분선 밑에는 폰트 13
+     (메모포함)") — 메모는 이미 13px 규칙이 있다. */
+  .co-pane-apps .tal-tags { font-size: 13px !important; }
 }
 /* 카드 위·아래 패딩도 줄인다("카드 자체 위, 아래 패딩도 좀 줄여줘"). 위는
    14px→8px로 직접 못박고, 아래는 카드 자신의 패딩이 원래 0이라(마지막 줄—
@@ -18647,5 +18650,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    하고 성별이 최종합격 지원 보다 작은거 같은데" — 셋 다 12px가 되어야 맞다). */
 .tal-card .tal-st-r, .tal-card .tal-when-r { font-size: 12.5px !important; }
 @media (max-width: 768px) {
-  .co-pane-apps .tal-st-r, .co-pane-apps .tal-when-r { font-size: 12px !important; }
+  .co-pane-apps .tal-st-r, .co-pane-apps .tal-when-r { font-size: 13px !important; }
 }
+/* 지원자 카드는 3줄에서 4줄로("지금 3줄에서 4줄로 가자") — 사진도 그만큼
+   늘린다. .apl-card로만 잡아 인재풀 카드(3줄, 정사각형)는 그대로 둔다. */
+.apl-card .tal-avatar { height: 80px; }

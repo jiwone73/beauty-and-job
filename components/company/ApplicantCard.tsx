@@ -142,11 +142,14 @@ export default function ApplicantCard({
   }
 
   return (
-    <div className={`tal-card${checked ? " on" : ""}${a.status === "APPLIED" && !마감(a) ? " todo" : ""}`}>
+    <div className={`tal-card apl-card${checked ? " on" : ""}${a.status === "APPLIED" && !마감(a) ? " todo" : ""}`}>
       <div className="tal-top">
         {onCheck && (
           <input type="checkbox" className="tal-check" checked={!!checked} onChange={() => onCheck(a.id)} />
         )}
+        {/* 3줄이던 본문이 4줄이 되며 카드가 길어진 만큼 사진도 같이 늘린다
+            ("지금 3줄에서 4줄로 가자. 아바타도 그만큼 기렁짐") — .apl-card로만
+            잡아 인재풀 카드(3줄, 60px 정사각형)는 그대로 둔다. */}
         <div className="tal-avatar" onClick={() => onOpen(a)} title="지원서 보기">
           {(a as any).user_avatar_url
             ? <img src={(a as any).user_avatar_url} alt={a.user_name} loading="lazy" />
@@ -154,31 +157,30 @@ export default function ApplicantCard({
         </div>
 
         {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
-            지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다. */}
+            지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다.
+            1행 직군, 2행 이름+채팅아이콘·면접결과, 3행 나이·성별·경력,
+            4행 지역·지원일자("1행 직군, 2행 이름+채팅아이콘, 최종합격, 3행
+            나이,성별,경력, 4행 지역 지원일자"). */}
         <div className="tal-main">
-          {/* 맨 윗줄은 직군제목(기업이 이 공고에 등록한 소분류) — 인재풀 카드의
-              "한 줄 소개" 자리와 같은 위치지만, 지원자 카드는 무엇으로 지원했는지가
-              먼저 읽혀야 해 직군으로 바꾼다("직군제목은 14px, #333"). */}
           <button type="button" className="tal-name tal-open tal-role" title="지원서 보기"
             onClick={() => onOpen(a)}>
             {(a as any).position_title || "—"}
           </button>
-          {/* 이름 줄 오른쪽에 면접결과, 지역 줄 오른쪽에 지원일 — 첨부와 같이
-              작은 글씨("면접결과, 지원일도 작은글씨로"). */}
           <div className="tal-who tal-line2">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               <b>{a.user_name}</b>
               {/* 제안을 통해 지원한 사람은 이름 옆에 채팅 아이콘. */}
               {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
-              {나이성별 && ` (${나이성별})`}
             </button>
             <span className="tal-st-r">
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
             </span>
           </div>
           <div className="tal-who tal-line2">
-            {/* "지역이름 옆에 경력 년수 넣어줘" — 나이·성별과 같은 " · " 결로 잇는다. */}
-            <span>{[지역, 경력].filter(Boolean).join(" · ")}</span>
+            <span>{[나이성별, 경력].filter(Boolean).join(" · ")}</span>
+          </div>
+          <div className="tal-who tal-line2">
+            <span>{지역}</span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
         </div>
