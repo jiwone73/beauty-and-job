@@ -1309,6 +1309,23 @@ export default function JobPostForm({
       if (j.job_type) setJobGroupType(j.job_type === "STORE" ? "매장" : "기업");
       if (j.company_id) setCompanyId(j.company_id);
 
+      // 지원방법·연락처 공개여부·홈페이지URL은 회원(기업회원 자기 화면)이든
+      // 대행(관리자)이든 같은 규칙이다("가릴지 말지는 폼의 「비공개」 하나로만
+      // 정한다. 회원이든 대행이든 같다" — 저장 쪽 주석). 그런데 복원은 아래
+      // admin 전용 블록 안에만 있어, 기업회원이 자기 공고를 열 때마다
+      // 지원방법이 빈 채로 열렸다 — 그대로 "공고 수정"을 누르면 저장돼 있던
+      // 값이 빈 배열로 덮어써졌다("선택후 공고수정 버튼 누르고 다시 들어와서
+      // 보면 반영안되어 있어" — 여러 번 제기된 이슈, 원인이 이거였다). 세
+      // 값 다 모드 상관없이 항상 복원한다.
+      set숨김({
+        name: j.contact_name_hidden !== false,
+        phone: j.contact_phone_hidden !== false,
+        mail: j.contact_email_hidden !== false,
+        kakao: j.contact_kakao_hidden !== false,
+      });
+      setContactMethods(Array.isArray(j.contact_methods) ? j.contact_methods : []);
+      setExternalApplyUrl(j.external_apply_url || "");
+
       // 관리자 편집: 회원 공고면 회원 모드, 외부(비회원) 공고면 회사·담당자·지원방식 복원
       if (mode === "admin") {
         const isMemberJob = j.company?.is_member === true;
@@ -1337,13 +1354,6 @@ export default function JobPostForm({
         setNmManagerPhone(j.external_contact_phone || "");
         setNmContactEmail(j.external_contact_email || "");
         setNmKakaoId(j.external_contact_kakao || "");
-        set숨김({
-          name: j.contact_name_hidden !== false,
-          phone: j.contact_phone_hidden !== false,
-          mail: j.contact_email_hidden !== false,
-          kakao: j.contact_kakao_hidden !== false,
-        });
-        setContactMethods(Array.isArray(j.contact_methods) ? j.contact_methods : []);
         // 올릴 때 쓰던 자리로 돌아온다. 글을 붙여넣어 올린 공고인데 수정 화면이
         // 「회사명 / URL」로 열리면, 어디서 가져온 공고인지 알 수 없고 원문을 다시
         // 붙여넣을 자리도 없다. 원문 주소가 있으면 URL 로 가져온 것, 없으면 붙여넣기다.
@@ -1351,7 +1361,6 @@ export default function JobPostForm({
         if (["MANAGED", "EMAIL", "REDIRECT"].includes(j.apply_method)) {
           setApplyMethod(j.apply_method === "EMAIL" ? "MANAGED" : j.apply_method);
         }
-        setExternalApplyUrl(j.external_apply_url || "");
       }
     }).catch(console.error);
   }, [editId, loadEditData]);
