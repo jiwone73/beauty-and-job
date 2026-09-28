@@ -3068,12 +3068,10 @@ export default function JobPostForm({
                 </div>
               )}
             </div>
+            {/* 저장 버튼은 하단에 하나만 둔다("왜 버튼이 2개야? 뭐가 틀린거야?
+                하단쪽에만 있으면 될텐데" → "여기 공고저장하기 삭제해") — 머리줄엔
+                미리보기까지만. */}
             <button className="admin-secondary-btn" onClick={() => setShowPreview(true)}><Eye size={15} /> 미리보기</button>
-            <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
-              {/* 머리줄·하단 두 단추가 말이 다르면 뭐가 다른 건지 헷갈린다("왜 버튼이
-                  2개야? 뭐가 틀린거야?") — 같은 말로("공고 수정하기 로 하던지"). */}
-              {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 저장하기" : "공고 등록하기")}
-            </button>
           </div>
         )}
       </div>
