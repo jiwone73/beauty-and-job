@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, BookmarkCheck, Pencil, MessageCircle } from "lucide-react";
+import { Pencil, MessageCircle } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatSalaryWon } from "@/lib/salary";
 import { 마감인가 } from "@/lib/jobClosed";
@@ -39,7 +39,9 @@ export default function ApplicantCard({
 }: {
   a: CompanyApplication;
   onOpen: (a: CompanyApplication) => void;
-  /** 넘기지 않으면 스크랩 단추를 그리지 않는다 — 이미 지원한 사람은 담아 둘 이유가 없다. */
+  /** 더 안 쓴다 — 이미 지원한 사람은 담아 둘 이유가 없다. 담는 일은 인재검색이
+   *  맡는다("스크랩 아이콘은 지우고, 거기에 최종합격, 지원일 넣으면 되고").
+   *  호출부와의 호환을 위해 타입만 남겨 둔다. */
   onToggleScrap?: (a: CompanyApplication) => void;
   /** 매장만 보는 한 줄 메모. 「통화함」·「화요일 3시 면접」처럼 자기가 나중에 보려고
    *  적는 것이라, 남을 위한 상태값과 달리 실제로 쓰인다. */
@@ -154,40 +156,21 @@ export default function ApplicantCard({
         {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
             지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다. */}
         <div className="tal-main">
-          {/* 한줄소개는 칸이 넉넉한 데스크탑에만 둔다 — 모바일은 칸이 좁아
-              소개 대신 이름부터 보여준다("모바일은 칸이 좁으니 … " → "아니다
-              모바일은 한줄소개 빼자. 데스크탑만 넣자"). 두 화면이 쓰는 내용
-              자체가 달라 자리를 나누고 매체 쿼리로만 켜고 끈다. */}
-          <button type="button" className="tal-name tal-open tal-name-dt" title="지원서 보기"
+          {/* 맨 윗줄은 직군제목(기업이 이 공고에 등록한 소분류) — 인재풀 카드의
+              "한 줄 소개" 자리와 같은 위치지만, 지원자 카드는 무엇으로 지원했는지가
+              먼저 읽혀야 해 직군으로 바꾼다("직군제목은 14px, #333"). */}
+          <button type="button" className="tal-name tal-open tal-role" title="지원서 보기"
             onClick={() => onOpen(a)}>
-            {(a as any).user_intro || a.user_name}
-            {/* 제안을 통해 지원한 사람(제안 후 지원)은 이름 옆에 채팅 아이콘("그리고
-                제안을 통해 지원한 사람은 이름옆에 채팅아이콘을 붙여줘"). user_intro가
-                있으면 이름은 아래 줄에 따로 있어 거기서 붙인다. */}
-            {!(a as any).user_intro && 유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
+            {(a as any).position_title || "—"}
           </button>
-          <button type="button" className="tal-name tal-open tal-name-m" title="지원서 보기"
-            onClick={() => onOpen(a)}>
-            {a.user_name}
-            {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
-          </button>
-          {/* 이름 줄 오른쪽에 상태값, 지역 줄 오른쪽에 지원일. 둘 다 태그와
-              같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들이다. */}
-          <div className="tal-who tal-line2 tal-line2-dt">
+          {/* 이름 줄 오른쪽에 면접결과, 지역 줄 오른쪽에 지원일 — 첨부와 같이
+              작은 글씨("면접결과, 지원일도 작은글씨로"). */}
+          <div className="tal-who tal-line2">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
-              {/* 이름만 굵게. 괄호 속 성별·나이는 평체로 둔다. */}
-              {(a as any).user_intro ? <><b>{a.user_name}</b>{유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}</> : ""}
-              {(a as any).user_intro && 나이성별 ? " " : ""}
-              {나이성별 && `(${나이성별})`}
-            </button>
-            <span className="tal-st-r">
-              {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
-            </span>
-          </div>
-          <div className="tal-who tal-line2 tal-line2-m">
-            {/* 모바일은 이름을 이미 위 tal-name-m 에서 보여줬으니 여기는 나이·성별만. */}
-            <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
-              {나이성별 && `(${나이성별})`}
+              <b>{a.user_name}</b>
+              {/* 제안을 통해 지원한 사람은 이름 옆에 채팅 아이콘. */}
+              {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
+              {나이성별 && ` (${나이성별})`}
             </button>
             <span className="tal-st-r">
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
@@ -199,41 +182,20 @@ export default function ApplicantCard({
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
         </div>
-
-        {onToggleScrap && (
-          <div className="tal-acts">
-            <button type="button" title={(a as any).scrapped ? "스크랩 해제" : "스크랩"}
-              className="tal-scrap" onClick={(e) => { e.stopPropagation(); onToggleScrap(a); }}>
-              {(a as any).scrapped
-                ? <BookmarkCheck size={18} style={{ color: "#582681" }} />
-                : <Bookmark size={18} style={{ color: "#555" }} />}
-            </button>
-          </div>
-        )}
       </div>
 
-      <div className="tal-foot">
-        <span className="tal-tags">
-          {/* 직군과 경력 — 훑으면서 고르는 값이라 구분선 아래 왼쪽에 둔다. */}
-          {태그.length > 0 && <span>{태그.map((g) => `#${g}`).join(" ")}</span>}
-          {경력 && <span>#{경력}</span>}
-          {/* 헤어·바버 같은 태그 옆에 희망연봉·출근가능일 — "I 로 분리". 앞에
-              보일 태그가 하나도 없으면(소분류·경력 다 없음) 구분선만 홀로
-              남지 않게 그때는 안 붙인다. */}
-          {희망연봉 && <>{(태그.length > 0 || 경력) && <span className="tal-sep">|</span>}<span>{희망연봉}</span></>}
-          {출근가능일 && <>{(태그.length > 0 || 경력 || 희망연봉) && <span className="tal-sep">|</span>}<span>{출근가능일}</span></>}
-          {showJob && (
-            <span className="tal-job">
-              {a.job_title}
-              {/* 모집부문이 넷인 공고에서는 「지원했다」만으로 무엇을 받았는지
-                  알 수 없다. 지원 때 고른 자리를 공고 이름 뒤에 붙인다. */}
-              {(a as any).position_title && <span style={{ color: "#555" }}> · {(a as any).position_title}</span>}
-              {마감(a) && <span className="job-closed-tag">마감</span>}
-            </span>
-          )}
-          {유입 && <span className="tal-from">{유입}</span>}
-        </span>
-      </div>
+      {/* 스크랩 단추·제안하기 단추(인재풀 카드) 대신 구분선 하나 놓고 희망연봉·
+          출근가능일만 —"스크랩 아이콘은 지우고... 제안하기 버튼은 삭제하고 구분선
+          하나 넣어서, 희망연봉, 출근가능일 넣어줘". 직군·경력은 이미 위에 있어
+          다시 적지 않는다. */}
+      {(희망연봉 || 출근가능일) && (
+        <div className="tal-foot">
+          <span className="tal-tags">
+            {희망연봉 && <span>{희망연봉}</span>}
+            {출근가능일 && <>{희망연봉 && <span className="tal-sep">|</span>}<span>{출근가능일}</span></>}
+          </span>
+        </div>
+      )}
 
       {/* 메모는 태그 줄 오른쪽 단추가 아니라 기본으로 한 줄 더 두는 입력칸이다
           ("오른쪽 끝 메모 아이콘을 삭제하고 한줄 더 기본으로 생성해서 거기에

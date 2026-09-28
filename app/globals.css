@@ -18620,12 +18620,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
      아바타쪽으로 더 밀어"). */
   .co-pane-apps .tal-top { gap: 8px; }
 }
-/* 지원자 카드 이름 자리 — 데스크탑만 한줄소개, 모바일은 이름("모바일은
-   한줄소개 빼자. 데스크탑만 넣자"). PC 기본은 -dt만 보이고 -m은 숨긴다,
-   768px 이하에서 뒤집는다. */
-.tal-name-m, .tal-line2-m { display: none; }
-@media (max-width: 768px) {
-  .tal-name-dt, .tal-line2-dt { display: none; }
-  .tal-name-m { display: block; }
-  .tal-line2-m { display: flex; }
-}
+/* 지원자 카드 맨 윗줄 — 인재풀 카드는 한 줄 소개를 보여주지만, 지원자
+   카드는 그 자리에 직군제목(공고에 등록한 소분류)을 넣는다("직군제목은
+   14px, #333, 나머지는 첨부 폰트 크기 색상 그대로"). .tal-name 공통 규칙이
+   15px 로 못박아 뒀어도(위) 여기서 한 단계 낮춘다 — 같은 배점이라 뒤에
+   쓴 쪽(이 규칙)이 이긴다. */
+.tal-card .tal-role { font-size: 14px !important; }
+/* 면접결과·지원일은 본문보다 작게("면접결과, 지원일도 작은글씨로") — 위
+   .tal-card .tal-st-r/.tal-when-r 규칙(본문과 같은 14/15px)을 여기서 낮춘다. */
+.tal-card .tal-st-r, .tal-card .tal-when-r { font-size: 12.5px !important; }
