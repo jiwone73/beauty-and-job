@@ -875,10 +875,18 @@ export default function TalentPage() {
             .co-li-avatar { width: 44px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0; border: 1px solid #e0e0e0; background: #f5f5f5; color: #582681; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
             .co-li-avatar img { width: 100%; height: 100%; object-fit: cover; }
             .co-li-nameinfo { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
-            .co-li-name { font-size: 15.5px; font-weight: 600; color: #555; flex-shrink: 0; }
-            .co-li-ageg { font-size: 12.5px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .co-li-meta2 { font-size: 12.5px; color: #555; margin-top: 2px; }
-            .co-li-job { font-size: 15.5px; color: #582681; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            /* 지원자 카드와 같은 크기·색으로("인재풀도 동일하게 맞추되"). */
+            .co-li-name { font-size: 14px; font-weight: 700; color: #333; flex-shrink: 0; }
+            .co-li-ageg { font-size: 13px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .co-li-meta2 { font-size: 13px; color: #555; margin-top: 2px; }
+            .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+            .co-li-job { font-size: 14px; font-weight: 400; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            /* 제안하기를 맨 위 직군 줄로 올리고 오른쪽 정렬, 아이콘은 뺀다
+               ("제안하기 버튼을 위로 올려서 오른쪽 정렬해줘. 제안하기 앞에
+               아이콘은 삭제"). */
+            .co-li-propose { flex-shrink: 0; background: none; border: 1px solid #e2e2e6; border-radius: 8px;
+              padding: 4px 10px; cursor: pointer; color: #582681; font-size: 13px; font-weight: 500; font-family: inherit; }
+            .co-li-sent { flex-shrink: 0; font-size: 13px; color: #555; text-decoration: none; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
@@ -896,7 +904,20 @@ export default function TalentPage() {
                         : <span>{t.name?.slice(0, 1) || "?"}</span>}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div className="co-li-job">{t.subJob || t.mainJobGroup || "직군 미정"}</div>
+                      <div className="co-li-jobrow">
+                        <div className="co-li-job">{t.subJob || t.mainJobGroup || "직군 미정"}</div>
+                        {t.proposedAt || t.interestedAt ? (
+                          <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
+                            className="co-li-sent">
+                            제안완료
+                          </Link>
+                        ) : (
+                          <button type="button" className="co-li-propose"
+                            onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
+                            제안하기
+                          </button>
+                        )}
+                      </div>
                       <div className="co-li-namerow">
                         <div className="co-li-nameinfo">
                           <span className="co-li-name">{t.name}</span>
@@ -912,19 +933,6 @@ export default function TalentPage() {
                       <div className="co-li-meta2">{meta2}</div>
                     </div>
                   </div>
-                  {t.proposedAt || t.interestedAt ? (
-                    <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
-                      style={{ display: "inline-block", marginTop: 10, fontSize: 13, color: "#555", textDecoration: "none" }}>
-                      제안완료
-                    </Link>
-                  ) : (
-                    <button type="button"
-                      style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 10, background: "none", border: "1px solid #e2e2e6", borderRadius: 8, padding: "6px 10px", cursor: "pointer", color: "#582681", fontSize: 13, fontWeight: 500 }}
-                      onClick={(e) => { e.stopPropagation(); openPropose(t); }}>
-                      <Send size={13} />
-                      <span>제안하기</span>
-                    </button>
-                  )}
                 </div>
               </div>
             );
