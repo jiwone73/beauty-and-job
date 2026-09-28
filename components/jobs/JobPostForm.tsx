@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeE
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
 import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
-import { ChevronLeft, ChevronDown, ChevronRight, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus } from "lucide-react";
+import { ChevronLeft, ChevronDown, ChevronRight, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus, X } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { 공고모양 } from "@/lib/jobShape";
@@ -4097,7 +4097,17 @@ export default function JobPostForm({
                           {contactMethods.length ? 지원방법줄(contactMethods) : "선택하기"}
                         </button>
                         {contactMethodsOpen && popAt && (
-                          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box", display: "flex", flexWrap: "wrap", gap: 6 }}>
+                          <div ref={popRef} style={{ position: "fixed", left: popAt.left, top: popAt.top, zIndex: 200, background: "#fff", border: "1px solid #e5e5e5", borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", padding: 10, width: 232, maxWidth: "calc(100vw - 16px)", boxSizing: "border-box" }}>
+                            {/* 고르는 즉시 바로 반영돼 "적용" 단추는 필요 없다 — 그냥
+                                닫는 X만 둔다("여기도 취소 적용 버튼 넣어줘" →
+                                "수정적용이 아니라 X 를 넣어서 닫을수 있게 해줘"). */}
+                            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 4 }}>
+                              <button type="button" aria-label="닫기" onClick={() => setContactMethodsOpen(false)}
+                                style={{ border: "none", background: "none", padding: 2, cursor: "pointer", color: "#8a8a90", lineHeight: 0 }}>
+                                <X size={16} />
+                              </button>
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                             {methodOptions.map((m) => {
                               const on = contactMethods.includes(m);
                               return (
@@ -4106,6 +4116,7 @@ export default function JobPostForm({
                                   style={{ padding: "5px 11px", borderRadius: "var(--chip-radius)", fontSize: 13, cursor: "pointer", border: on ? "1.5px solid #582681" : "1.5px solid #efeff1", background: on ? "#582681" : "#fff", color: on ? "#fff" : "#666" }}>{지원방법이름(m)}</button>
                               );
                             })}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -4412,11 +4423,12 @@ export default function JobPostForm({
         </div>
       )}
 
-      {isMobile && (
-        <button type="button" className="jobpost-mobile-submit" onClick={() => handleSubmit("publish")}>
-          {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정 완료" : "공고 등록")}
-        </button>
-      )}
+      {/* 위쪽(머리줄) 단추만 있으면 긴 폼을 다 채우고 다시 위로 올라가야 한다 —
+          PC도 모바일처럼 페이지 맨 아래에 같은 저장 단추를 둔다("공고수정 버튼이
+          하단에 있어야 하지 않나?" / "페이지 하단"). */}
+      <button type="button" className="jobpost-mobile-submit" onClick={() => handleSubmit("publish")}>
+        {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정 완료" : "공고 등록")}
+      </button>
 
       <RegionSelectModal
         open={regionModalOpen}
