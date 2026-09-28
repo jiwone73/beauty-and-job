@@ -158,8 +158,9 @@ export default function ApplicantCard({
 
         {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
             지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다.
-            1행 직군, 2행 이름+채팅아이콘, 3행 나이·성별·경력+면접결과,
-            4행 지역·지원일자("최종합격을 한줄 내려줘. 나이 성별, 경력 쪽에"). */}
+            1행 직군, 2행 이름(나이·성별)+채팅아이콘+면접결과, 3행 경력|지역
+            +지원일자("김가이드 (28세·남) 그 밑으로 경력 I 서울 강남구 이렇게
+            해줘. 1행이 없어지는거고"). */}
         <div className="tal-main">
           <button type="button" className="tal-name tal-open tal-role" title="지원서 보기"
             onClick={() => onOpen(a)}>
@@ -170,16 +171,14 @@ export default function ApplicantCard({
               <b>{a.user_name}</b>
               {/* 제안을 통해 지원한 사람은 이름 옆에 채팅 아이콘. */}
               {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
+              {나이성별 && ` (${나이성별})`}
             </button>
-          </div>
-          <div className="tal-who tal-line2">
-            <span>{[나이성별, 경력].filter(Boolean).join(" · ")}</span>
             <span className="tal-st-r">
               {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
             </span>
           </div>
           <div className="tal-who tal-line2">
-            <span>{지역}</span>
+            <span>{경력 && <>{경력}{지역 && <span className="tal-sep"> | </span>}</>}{지역}</span>
             <span className="tal-when-r">{날짜(a.applied_at)} 지원</span>
           </div>
         </div>
