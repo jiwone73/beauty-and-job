@@ -48,7 +48,7 @@ export default function ApplicantTableRow({
   const 출근가능일 = (a as any).user_available_from || "—";
 
   const [메모, set메모] = useState(a.note || "");
-  const 메모칸 = useRef<HTMLInputElement>(null);
+  const 메모칸 = useRef<HTMLTextAreaElement>(null);
   useEffect(() => { set메모(a.note || ""); }, [a.note]);
   const 메모저장 = () => {
     const v = 메모.trim();
@@ -86,13 +86,16 @@ export default function ApplicantTableRow({
       <td className="apl-td">{날짜(a.applied_at)}</td>
       <td className="apl-td">{출근가능일}</td>
       <td className="apl-td apl-td-memo">
-        <input ref={메모칸} className="apl-td-memo-in" value={메모} maxLength={60}
+        {/* 테두리 끝까지 채우고 3행까지 쓸 수 있게("메모창 테두리 끝까지
+            확대해주고 3행으로 넣을수 있게 해줘") — 한 줄 input에서
+            textarea로 바꾼다. Enter는 이제 줄바꿈이라 저장은 벗어날 때만. */}
+        <textarea ref={메모칸} className="apl-td-memo-in" value={메모} maxLength={60}
+          rows={3}
           placeholder="메모…"
           onChange={(e) => set메모(e.target.value)}
           onClick={(e) => e.stopPropagation()}
           onBlur={메모저장}
           onKeyDown={(e) => {
-            if (e.key === "Enter") e.currentTarget.blur();
             if (e.key === "Escape") set메모(a.note || "");
           }} />
       </td>

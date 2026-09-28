@@ -18685,7 +18685,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   border: 1px solid #ececf0; border-radius: 8px; font-size: 13px; }
 .apl-table thead th {
   text-align: left; padding: 10px 12px; background: #f7f7f8;
-  font-weight: 700; color: #555; white-space: nowrap;
+  font-weight: 700; color: #555; font-size: 14px; white-space: nowrap;
 }
 .apl-tr { border-top: 1px solid #f2f2f4; }
 .apl-tr:hover { background: #fafafb; }
@@ -18711,12 +18711,13 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .apl-td-name { color: #555; font-weight: 700; font-size: 15px; white-space: nowrap; }
 .apl-td-sub { color: #555; font-size: 14px; white-space: nowrap; }
 /* 지원분야는 평체로("헤어디자이너는 평체로 하자"). */
-.apl-td-role { color: #333; font-weight: 400; }
-/* 메모 칸은 2행 높이를 그대로 확보한다("메모 칸은 2행 확보해줘") — 다른
-   칸처럼 가운데로 좁히지 않고 위아래 꽉 채운다. */
-.apl-td-memo { vertical-align: top; padding-top: 12px; }
-.apl-td-memo-in { width: 130px; height: 40px; border: 1px solid #e2e2e6; border-radius: 6px;
-  padding: 5px 8px; font-size: 12.5px; color: #555; font-family: inherit; }
+.apl-td-role { color: #333; font-weight: 400; font-size: 14px; }
+/* 메모 칸은 3행 높이를 확보한다("메모창 테두리 끝까지 확대해주고 3행으로
+   넣을수 있게 해줘") — 다른 칸처럼 가운데로 좁히지 않고 위아래 꽉 채운다. */
+.apl-td-memo { vertical-align: top; padding-top: 8px; min-width: 180px; }
+.apl-td-memo-in { display: block; width: 100%; height: 70px; box-sizing: border-box;
+  border: 1px solid #e2e2e6; border-radius: 6px; resize: none;
+  padding: 6px 8px; font-size: 14px; line-height: 1.4; color: #555; font-family: inherit; }
 .apl-td-acts { display: flex; align-items: center; gap: 8px; }
 /* 표 안 제안하기는 패딩을 줄인다("제안하기 버튼 패딩 줄여줘"). */
 .apl-td-acts .tal-btn { padding: 4px 9px; font-size: 13px; }
