@@ -66,13 +66,16 @@ export default function ApplicantCard({
   const 상태색 = a.status === "APPLIED" ? "#582681"
     : (a.status === "REJECTED" || a.status === "WITHDRAWN") ? "#b4b4b9" : "#555";
 
-  const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
-    : (a as any).proposed_at ? "제안 후 지원" : null;
+  // "대화 후 지원"은 빼고 "제안 후 지원" 하나로 — 대화(interested_at)는 늘 제안이
+  // 먼저 있어야 나오는 값이라 굳이 나눠 적을 뜻이 없었다("대화 후 지원은 어디서
+  // 나온 문구지? 삭제해").
+  const 유입 = (a as any).proposed_at ? "제안 후 지원" : null;
   // 희망연봉·출근가능일 — 헤어·바버 같은 태그 옆에("헤어바버 옆에 희망연봉
   // 기재. 출근가능일 기재"). 아예 안 정한 사람에겐 "급여 협의"만 덩그러니
-  // 뜨는 게 뜻이 없어, 급여유형을 고른 적 있는 사람만 보여준다.
+  // 뜨는 게 뜻이 없어, 급여유형을 고른 적 있는 사람만 보여준다. "희망" 말은
+  // 앞에 안 붙인다("급여에서 희망은 삭제해줘").
   const 희망연봉 = (a as any).user_salary_type
-    ? `희망 ${formatSalaryWon((a as any).user_salary_min, (a as any).user_salary_type)}`
+    ? formatSalaryWon((a as any).user_salary_min, (a as any).user_salary_type)
     : null;
   const 출근가능일 = (a as any).user_available_from ? `출근가능 ${(a as any).user_available_from}` : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
@@ -158,9 +161,9 @@ export default function ApplicantCard({
           <button type="button" className="tal-name tal-open tal-name-dt" title="지원서 보기"
             onClick={() => onOpen(a)}>
             {(a as any).user_intro || a.user_name}
-            {/* 제안을 통해 지원한 사람(제안 후 지원·대화 후 지원)은 이름 옆에
-                채팅 아이콘("그리고 제안을 통해 지원한 사람은 이름옆에 채팅아이콘을
-                붙여줘"). user_intro가 있으면 이름은 아래 줄에 따로 있어 거기서 붙인다. */}
+            {/* 제안을 통해 지원한 사람(제안 후 지원)은 이름 옆에 채팅 아이콘("그리고
+                제안을 통해 지원한 사람은 이름옆에 채팅아이콘을 붙여줘"). user_intro가
+                있으면 이름은 아래 줄에 따로 있어 거기서 붙인다. */}
             {!(a as any).user_intro && 유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
           </button>
           <button type="button" className="tal-name tal-open tal-name-m" title="지원서 보기"
