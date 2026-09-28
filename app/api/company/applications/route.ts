@@ -64,6 +64,11 @@ export async function GET(req: NextRequest) {
        up.main_job_group AS user_main_job_group,
        up.sub_job AS user_sub_job,
        up.work_type_prefer AS user_work_type_prefer,
+       -- 희망연봉·출근가능일 — 지원자 카드 태그 줄에("헤어바버 옆에 희망연봉
+       -- 기재. 출근가능일 기재").
+       up.salary_type AS user_salary_type,
+       up.salary_min AS user_salary_min,
+       up.available_from AS user_available_from,
        -- 직군이 늘 main_job_group 에 있는 것은 아니다. 매장은 skill_areas 에만,
        -- 오피스는 office_job_areas 에만 든 사람이 있다.
        up.skill_areas AS user_skill_areas,

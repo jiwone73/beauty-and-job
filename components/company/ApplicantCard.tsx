@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Bookmark, BookmarkCheck, ChevronDown, Pencil, MessageCircle } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
+import { formatSalaryWon } from "@/lib/salary";
 import { 마감인가 } from "@/lib/jobClosed";
 import type { CompanyApplication } from "@/lib/types/company";
 
@@ -67,6 +68,13 @@ export default function ApplicantCard({
 
   const 유입 = (a as any).proposal_interested_at ? "대화 후 지원"
     : (a as any).proposed_at ? "제안 후 지원" : null;
+  // 희망연봉·출근가능일 — 헤어·바버 같은 태그 옆에("헤어바버 옆에 희망연봉
+  // 기재. 출근가능일 기재"). 아예 안 정한 사람에겐 "급여 협의"만 덩그러니
+  // 뜨는 게 뜻이 없어, 급여유형을 고른 적 있는 사람만 보여준다.
+  const 희망연봉 = (a as any).user_salary_type
+    ? `희망 ${formatSalaryWon((a as any).user_salary_min, (a as any).user_salary_type)}`
+    : null;
+  const 출근가능일 = (a as any).user_available_from ? `출근가능 ${(a as any).user_available_from}` : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
   const [메모쓰기, set메모쓰기] = useState(false);
   const [메모, set메모] = useState(a.note || "");
@@ -80,9 +88,10 @@ export default function ApplicantCard({
     onNote?.(a, v);
   };
 
+  // 대분류(헤어·바버 등)로 대신 채우지 않는다 — 소분류만("헤어바버는 소분류로
+  // 넣어줘" / "소분류만 보여주면 되"). 소분류가 없으면 그 자리는 그냥 빈다.
   const 태그 = [
-    (a as any).user_sub_job || (a as any).user_main_job_group
-      || (a as any).user_skill_areas?.[0] || (a as any).user_office_job_areas?.[0],
+    (a as any).user_sub_job,
     (a as any).user_work_type_prefer ? 고용형태[(a as any).user_work_type_prefer] : null,
   ].filter(Boolean) as string[];
 
@@ -182,6 +191,9 @@ export default function ApplicantCard({
           {/* 직군과 경력 — 훑으면서 고르는 값이라 구분선 아래 왼쪽에 둔다. */}
           {태그.length > 0 && <span>{태그.map((g) => `#${g}`).join(" ")}</span>}
           {경력 && <span>#{경력}</span>}
+          {/* 헤어·바버 같은 태그 옆에 희망연봉·출근가능일 — "I 로 분리". */}
+          {희망연봉 && <><span className="tal-sep">|</span><span>{희망연봉}</span></>}
+          {출근가능일 && <><span className="tal-sep">|</span><span>{출근가능일}</span></>}
           {showJob && (
             <span className="tal-job">
               {a.job_title}

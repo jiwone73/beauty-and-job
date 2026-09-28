@@ -18578,6 +18578,8 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 제안을 통해 지원한 사람 이름 옆 채팅 아이콘 — "모바일 데탑 동일"이라
    크기 차이를 안 둔다. */
 .tal-name-chat-ic { color: #582681; vertical-align: -2px; margin-left: 4px; flex-shrink: 0; }
+/* 희망연봉·출근가능일을 태그 옆에 이을 때 쓰는 구분선("I 로 분리"). */
+.tal-sep { color: #dcdce2; }
 @media (max-width: 768px) {
   .tal-card .tal-memo-btn,
   .tal-card .tal-memo-in,
