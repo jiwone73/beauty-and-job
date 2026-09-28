@@ -18717,9 +18717,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .apl-td-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .apl-td-wholines { display: flex; flex-direction: column; line-height: 1.5; min-width: 0; }
-.apl-td-name { color: #333; font-weight: 700; white-space: nowrap; }
+/* 이름은 카드와 같은 회색 굵게("김가이드 #555 볼드체 맞는지 다시확인해줘"
+   — 확인해 보니 #333로 잘못 나가고 있었다, #555로 고친다). */
+.apl-td-name { color: #555; font-weight: 700; white-space: nowrap; }
 .apl-td-sub { color: #555; white-space: nowrap; }
-.apl-td-role { color: #333; font-weight: 700; }
+/* 지원분야는 평체로("헤어디자이너는 평체로 하자"). */
+.apl-td-role { color: #333; font-weight: 400; }
 /* 메모 칸은 2행 높이를 그대로 확보한다("메모 칸은 2행 확보해줘") — 다른
    칸처럼 가운데로 좁히지 않고 위아래 꽉 채운다. */
 .apl-td-memo { vertical-align: top; padding-top: 12px; }
