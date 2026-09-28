@@ -18611,6 +18611,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    PC·인재검색 등 다른 자리의 .tal-card는 그대로 둔다. */
 @media (max-width: 768px) {
   .co-pane-apps .tal-card { padding-left: 5px; padding-right: 5px; }
+  /* 아바타와 이름·나이·지역 사이 간격도 같이 줄인다("이름 나이 지역정보를
+     아바타쪽으로 더 밀어"). */
+  .co-pane-apps .tal-top { gap: 8px; }
 }
 /* 지원자 카드 이름 자리 — 데스크탑만 한줄소개, 모바일은 이름("모바일은
    한줄소개 빼자. 데스크탑만 넣자"). PC 기본은 -dt만 보이고 -m은 숨긴다,
