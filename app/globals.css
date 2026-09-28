@@ -18654,7 +18654,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 /* 지원자 카드는 3줄에서 4줄로("지금 3줄에서 4줄로 가자") — 사진도 그만큼
    늘린다. .apl-card로만 잡아 인재풀 카드(3줄, 정사각형)는 그대로 둔다. */
-.apl-card .tal-avatar { height: 80px; }
+/* 60px(정사각형)과 처음 늘렸던 80px의 정가운데("정사각형하고 지금하고
+   딱 중간정도로 해줘"). */
+.apl-card .tal-avatar { height: 70px; }
 /* 사진이 위(flex-start)에 붙어 있으니 4줄 글보다 짧아 보였다("사진이 위로
    너무 올라갔어 딱 중간정도가 맞을 듯") — 줄 가운데로 맞춘다. */
 .apl-card .tal-top { align-items: center; }
