@@ -222,14 +222,13 @@ export default function CompanyProposalsPage() {
   // ── 스크랩 인재 ──
   // 왼쪽 맨 위는 「전체 스크랩」, 그 아래 「공고별 스크랩」으로 진행 중인 공고 전부
   // (담은 사람이 없으면 0). 공고를 누르면 오른쪽이 그 공고로 담은 사람만 보인다.
-  // 공고 없이 담은 사람은 따로 칸을 두지 않는다 — 공고 목록 사이에 공고가 아닌 칸이
-  // 끼면 어색했다. 전체 스크랩에서 「공고 미연결」 칩으로 추려 본다.
+  // 공고연결/미연결 칩은 없앴다("공고연결 지워" — 제안하기가 어차피 자기 공고
+  // 선택창을 다시 띄워서, 미리 연결해 두는 것이 혼동만 더했다).
   // 왼쪽 숫자와 오른쪽 목록이 한 데이터에서 나오도록 여기서 한 번에 부른다.
   const [스크랩인재, set스크랩인재] = useState<TalentItem[]>([]);
   const [스크랩로딩, set스크랩로딩] = useState(true);
   const [진행공고, set진행공고] = useState<{ id: string; title: string; raw?: any }[]>([]);
   const [고른스크랩, set고른스크랩] = useState(""); // "" 이면 전체 스크랩, 아니면 공고 id
-  const [연결칩, set연결칩] = useState<"전체" | "연결" | "미연결">("전체");
   useEffect(() => {
     if (!스크랩모드) return;
     (async () => {
@@ -251,19 +250,10 @@ export default function CompanyProposalsPage() {
       }
     })();
   }, [스크랩모드]);
-  const 스크랩수 = (key: string) => 스크랩인재.filter((t) => (t.scrapJobIds || []).includes(key)).length;
-  // 전체 스크랩 — 어디로든 담겨 있는 사람. 공고에 하나라도 담겼으면 「공고 연결」,
-  // 공고 없이만 담겼으면 「공고 미연결」이다. 둘을 더하면 전체가 된다.
   const 담긴사람 = 스크랩인재.filter((t) => (t.scrapJobIds || []).length > 0);
-  const 연결됨 = (t: TalentItem) => (t.scrapJobIds || []).some((k) => k !== "none");
-  const 연결칩들 = [
-    { 키: "전체" as const, 이름: "전체", 수: 담긴사람.length },
-    { 키: "연결" as const, 이름: "공고 연결", 수: 담긴사람.filter(연결됨).length },
-    { 키: "미연결" as const, 이름: "공고 미연결", 수: 담긴사람.filter((t) => !연결됨(t)).length },
-  ];
   const 보일스크랩 = 고른스크랩
     ? 스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩))
-    : 담긴사람.filter((t) => 연결칩 === "전체" || (연결칩 === "연결") === 연결됨(t));
+    : 담긴사람;
   // 공고 하나에 담거나 뺀다. 화면을 먼저 바꾸고 서버가 알려 준 담은 공고로 맞춘다.
   // 모든 공고에서 빠진 사람도 목록 데이터에는 남겨 둔다 — 실수로 뺐을 때 바로 되담을 수 있게.
   const 스크랩담기 = async (item: TalentItem, key: string, on: boolean) => {
@@ -520,22 +510,7 @@ export default function CompanyProposalsPage() {
             talents={보일스크랩}
             scrapJobs={진행공고} onScrapJob={스크랩담기}
             proposeJobId={고른스크랩 || undefined}
-            hideCount={!!스크랩머리}
-            chips={고른스크랩 ? undefined : (
-              // .prop-chips 는 보낸 제안 표에 붙으려고 아래 여백이 -8px 이다. 여기는
-              // 바로 밑이 「총 N명」 줄이라 그대로 두면 글자를 덮는다.
-              <div className="prop-chips" style={{ marginBottom: 10 }}>
-                {연결칩들.map((c) => (
-                  <span key={c.키} className="prop-chipwrap">
-                    <button type="button"
-                      className={`prop-chip${연결칩 === c.키 ? " on" : ""}${c.수 === 0 ? " zero" : ""}`}
-                      onClick={() => set연결칩(c.키)}>
-                      {c.이름}<em>{c.수}</em>
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )} />
+            hideCount={!!스크랩머리} />
         </>
       ) : (<>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
@@ -697,12 +672,13 @@ export default function CompanyProposalsPage() {
                         상대가 거절한것으로 가늠하면되겠네"). 무슨 일이 있었나는 그
                         아래 글자로, 언제는 그 밑에. */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
+                      <span>{활.글}</span>
+                      {활.때 && <em className="prop-when">{때(활.때)}</em>}
+                      {/* 채팅하기는 시간 밑으로("채팅하기 버튼을 시간 밑으로 이동해줘"). */}
                       <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
                         onClick={() => set대화(p)}>
                         채팅하기
                       </button>
-                      <span>{활.글}</span>
-                      {활.때 && <em className="prop-when">{때(활.때)}</em>}
                     </td>
                   </tr>
                 );

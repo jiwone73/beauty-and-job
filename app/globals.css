@@ -15994,7 +15994,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-unread:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 스크랩·이력서는 윗줄 오른쪽에, 제안/대화는 그 아랫줄에. 넷을 한 줄에 늘어놓으면
    '보는 것'과 '보내는 것'이 뒤섞여 무엇이 다음 할 일인지 안 보인다. */
-.tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
+/* 제안하기를 스크랩 옆, 이름 줄 높이로 올린다("제안하기 버튼은 이름 줄에
+   오른쪽 정렬") — 세로로 쌓던 것을 가로로 나란히, 위쪽(이름 줄)에 맞춘다. */
+.tal-acts { flex-direction: row; align-items: flex-start; gap: 8px; }
 .tal-acts-top { display: flex; align-items: center; gap: 6px; }
 /* 「제안함」은 상태다. 버튼 모양이면 눌러야 하는 줄 알고 또 보낸다. */
 .tal-sent { font-size: 14.5px; color: #555; white-space: nowrap; padding: 6px 2px; }
@@ -16051,7 +16053,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-name:hover, .tal-open:hover { color: var(--color-primary); text-decoration: underline;
   text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
 .tal-who { font-size: calc(var(--card-sub) + 1px); color: #555; line-height: 1.55; }
-.tal-acts { flex-direction: column; align-items: flex-end; gap: 8px; }
+/* 제안하기를 스크랩 옆, 이름 줄 높이로 올린다("제안하기 버튼은 이름 줄에
+   오른쪽 정렬") — 세로로 쌓던 것을 가로로 나란히, 위쪽(이름 줄)에 맞춘다. */
+.tal-acts { flex-direction: row; align-items: flex-start; gap: 8px; }
 .tal-foot { justify-content: space-between; margin-top: 11px; padding: 9px 0 11px; }
 .tal-tags { font-size: calc(var(--card-meta) + 1px); color: #555; }
 .tal-when { margin-left: auto; font-size: calc(var(--card-meta) + 1px); color: #555; }
@@ -16850,12 +16854,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
 .prop-table .c-time { width: 86px; white-space: nowrap; color: #555; }
 .prop-table th.c-time { color: #555; }
-/* 대기 줄에서만 거두는 길. 상태 밑에 작은 글자로 둔다 — 버튼 열을 따로 두지 않는다. */
-/* "제안 취소"도 나머지 값과 같은 14px로("제안취소도 통일해줘 폰트크기"). */
-.prop-cancel { display: block; margin-top: 3px; border: none; background: none; padding: 0;
-  font-family: inherit; font-size: 14px; color: #555; cursor: pointer;
-  text-decoration: underline; text-decoration-color: #dcdce0; text-underline-offset: 3px; }
-.prop-cancel:hover { color: #c0504d; }
+/* 대기 줄에서만 거두는 길. 상태 밑에 버튼 꼴로 둔다("제안취소를 버튼 타입으로
+   바꿔줘") — 글자 밑줄이 아니라 다른 단추(.prop-chatbtn)와 같은 테두리 단추. */
+.prop-cancel { display: flex; width: fit-content; margin-top: 4px; padding: 3px 9px;
+  border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
+  font-family: inherit; font-size: 14px; color: #555; cursor: pointer; }
+.prop-cancel:hover { border-color: #c0504d; color: #c0504d; }
 /* 테두리 없이 글자로 — 공고 관리의 「수정 | 마감」과 같은 꼴이다. */
 .prop-acts { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
 /* 좌우 여백을 두지 않는다 — 2px 이라도 있으면 글자 오른끝이 제목보다 그만큼
@@ -16887,7 +16891,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* "채팅하기"는 맨 위 자리 단추다("채팅하기라는 버튼을 맨위칸에 만들자") —
    제안을 보낸 순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는
    뜻("채팅하기가 비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */
-.prop-chatbtn { display: inline-flex; margin-bottom: 4px; padding: 3px 9px;
+.prop-chatbtn { display: inline-flex; margin-top: 4px; padding: 3px 9px;
   border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
   font: inherit; font-size: 13px; color: #555; cursor: pointer; }
 .prop-chatbtn:hover { border-color: var(--color-primary); color: var(--color-primary); }
@@ -18684,10 +18688,17 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 }
 .tal-card:not(.apl-card) .tal-who b { font-size: 15px !important; }
 /* 고정 px 대신 인재풀 원래 비율(1.45/1.55배) 그대로("인재풀기준으로 맞춰").
-   맨 윗줄은 inline-block 반 리딩 때문에 display:block과 margin-bottom:0만
-   그대로 가져온다. */
+   맨 윗줄은 inline-block 반 리딩 때문에 display:block만 그대로 가져온다.
+   아바타(76px)가 3줄 합(67.4px)보다 커 보였다("아바타 사이즈가 3줄
+   높이를 넘었어") — 지원자 카드와 같은 방식(70:30)으로 남는 8.6px를
+   1행 밑 6px·2행 밑 2.5px로 나눠 아바타 높이에 맞춘다("기존 아바타
+   사이즈에 3열 배치해서 수평 유지하고 여백은 1열 밑에 70 2열 밑에
+   30으로 유지해줘"). */
 .tal-card:not(.apl-card) .tal-name {
-  margin-bottom: 0 !important; display: block !important;
+  margin-bottom: 6px !important; display: block !important;
+}
+.tal-card:not(.apl-card) .tal-who + .tal-who {
+  margin-top: 2.5px;
 }
 
 /* PC 테이블 뷰("PC는 테이블 뷰로 바꾸자. 모바일은 카드 뷰로 그대로") —
