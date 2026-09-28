@@ -16178,16 +16178,23 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-side-none { padding: 22px 10px; font-size: 13px; color: #555; text-align: center; }
 .co-side-item {
   position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
-  border: none; background: none; font-family: inherit; padding: 10px 22px 10px 10px;
+  border: none; background: none; font-family: inherit; padding: 10px 32px 10px 10px;
   border-radius: 8px; color: #555; font-size: 14px; line-height: 1.45;
 }
 .co-side-item:hover { background: #f7f7f9; }
 .co-side-item.on { background: var(--color-bg-soft); color: #555; }
 /* 이름은 두 줄까지. 넘치면 줄인다 — 목록이 들쭉날쭉하면 훑기가 어렵다. */
 .co-side-t { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-/* 아직 안 본 지원자가 있는 공고에만 점 하나. */
-/* 아직 안 본 지원자가 있는 공고 — 손대야 할 것이라 빨강. */
-.co-side-dot { position: absolute; right: 9px; top: 14px; width: 6px; height: 6px; border-radius: 50%; background: #c0504d; }
+/* 아직 안 본 지원자가 있는 공고 — 손대야 할 것이라 빨강. 숫자를 눌러야
+   미확인만 보인다("사이드 공고를 누르면 확인한 내용까지, 숫자를 누르면
+   미확인만") — 이름 누르기와 다른 자리라 눈에 띄게 배지로. */
+.co-side-unread {
+  position: absolute; right: 8px; top: 10px; min-width: 17px; height: 17px;
+  padding: 0 4px; border-radius: 9px; background: #c0504d; color: #fff;
+  font-size: 11px; font-weight: 700; line-height: 17px; text-align: center;
+  cursor: pointer;
+}
+.co-side-unread:hover { background: #a8433f; }
 
 .co-pane { min-width: 0; display: flex; flex-direction: column; gap: 0; }
 /* 모바일 목록에서 그 줄 바로 밑에 펼치는 상세("공고개수가 얼마 안되니 펼침으로

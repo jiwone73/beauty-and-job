@@ -152,12 +152,16 @@ function CompanyJobsContent() {
   // 왼쪽에서 고른 공고. 화면을 열면 첫 공고가 골라져 있다 — 아무것도 안 고른
   // 빈 오른쪽 판은 「뭘 눌러야 하지」로 읽힌다.
   const [고른공고, set고른공고] = useState<string | null>(null);
+  // 사이드에서 미열람 숫자를 눌렀을 때만 켜진다 — 공고 이름을 누르면 확인한
+  // 내용까지 다 보이고, 숫자를 누르면 그 공고의 미확인만 보인다("사이드 공고를
+  // 누르면 확인한 내용까지, 숫자를 누르면 미확인만").
+  const [미열람만, set미열람만] = useState(false);
   const [지원자찾기, set지원자찾기] = useState<Record<string, string>>({});
   const 지원자고르기 = (jobId: string) => {
     const 말 = (지원자찾기[jobId] || "").trim();
 
     let 목록 = (공고지원자[jobId] || [])
-      .filter((a) => statusFilter !== "미열람" || a.status === "APPLIED")
+      .filter((a) => (statusFilter !== "미열람" && !미열람만) || a.status === "APPLIED")
 ;
     if (말) {
       const q = 말.toLowerCase();
@@ -502,10 +506,22 @@ function CompanyJobsContent() {
           return (
             <button key={job.id} type="button"
               className={`co-side-item${고른공고 === job.id ? " on" : ""}`}
-              onClick={() => set고른공고(job.id)}>
+              onClick={() => { set고른공고(job.id); set미열람만(false); }}>
               {/* 이름만 둔다 — 조건과 성적은 오른쪽 카드가 말한다. */}
               <span className="co-side-t">{job.title}</span>
-              {안본 > 0 && <span className="co-side-dot" title={`미열람 ${안본}`} />}
+              {/* 숫자를 따로 누르면 이 공고의 미확인만 본다 — 공고 이름을 누른 것과 다른 동작. */}
+              {안본 > 0 && (
+                <span className="co-side-unread" role="button" tabIndex={0}
+                  title={`미열람 ${안본}건 보기`}
+                  onClick={(e) => { e.stopPropagation(); set고른공고(job.id); set미열람만(true); }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter" && e.key !== " ") return;
+                    e.preventDefault(); e.stopPropagation();
+                    set고른공고(job.id); set미열람만(true);
+                  }}>
+                  {안본}
+                </span>
+              )}
             </button>
           );
         })}
