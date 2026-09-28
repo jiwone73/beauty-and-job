@@ -153,7 +153,10 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   }
   // 우리가 한 일에도 주체를 밝힌다. 「메시지를 보냈습니다」만 있으면 그 줄이
   // 누구의 줄인지 알면서도 누가 보냈는지는 모른다.
-  if (p.messageCount > 0) {
+  // 제안 메시지 자체가 이제 첫 메시지로 들어가(messageCount 1부터 시작) —
+  // 그것만으로는 아직 "제안을 보낸" 단계다. 진짜 주고받음(2개째부터)만
+  // "메시지를 보냈습니다"로 올린다.
+  if (p.messageCount > 1) {
     return p.lastSender === "USER"
       ? { 글: `${그분} 메시지를 보냈습니다`, 때: p.lastMessageAt }
       : { 글: `${그분에게} 메시지를 보냈습니다`, 때: p.lastMessageAt };

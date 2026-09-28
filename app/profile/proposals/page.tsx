@@ -66,7 +66,9 @@ function 상태(p: Proposal): 상태키 {
   if (p.canceled_at) return "취소됨";
   if (p.declined_at) return "거절";
   if (p.appointment_at) return "면접예정";
-  if (p.interested_at) return p.message_count > 0 ? "채팅중" : "수락";
+  // 제안 메시지 자체가 첫 메시지로 들어가 있어(message_count 1부터 시작) —
+  // 진짜 대화(2개째부터)가 있어야 "채팅중"이다.
+  if (p.interested_at) return p.message_count > 1 ? "채팅중" : "수락";
   if (마감인가(p.job_status, p.deadline)) return "공고마감";
   return "대기";
 }

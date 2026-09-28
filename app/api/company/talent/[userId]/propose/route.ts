@@ -97,16 +97,25 @@ export async function POST(
     // 남는 기록. 알림은 지워질 수 있어 여기가 제안의 원본이다.
     const 넣음 = await client.query(
       `INSERT INTO proposals (company_id, user_id, job_posting_id, message, position_index)
-       VALUES ($1, $2, $3, $4, $5)`,
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id`,
       [auth!.sub, params.userId, jobPostingId, message, 고른자리]
-    ).then(() => true).catch((e: any) => {
-      if (e?.code === "23505") return false;
+    ).then((r) => r.rows[0]?.id as string).catch((e: any) => {
+      if (e?.code === "23505") return null;
       throw e;
     });
     if (!넣음) {
       await client.query("ROLLBACK").catch(() => {});
       return err("PROPOSAL_006", "이 공고로 이미 제안을 보냈어요.", 409);
     }
+    // 제안 메시지를 채팅 첫 마디로도 남긴다 — 예전에는 proposals.message 에만
+    // 저장돼 채팅창을 열면 "아직 주고받은 말이 없어요"로 비어 보였다("제안
+    // 사유가 채팅 첫 메시지로 안 보인다" — 경쟁사 화면과 비교해 발견).
+    await client.query(
+      `INSERT INTO proposal_messages (proposal_id, sender, kind, body)
+       VALUES ($1, 'COMPANY', 'TEXT', $2)`,
+      [넣음, message]
+    ).catch((e) => console.error("[talent propose] 첫 메시지 저장 실패", e));
 
     await client.query(
       `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)

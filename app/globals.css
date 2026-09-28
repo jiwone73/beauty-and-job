@@ -15790,9 +15790,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: #fff; border-radius: 14px; width: 100%; max-width: 480px;
   height: min(640px, 86vh); display: flex; flex-direction: column; overflow: hidden;
 }
-.pth-head { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid #f2f2f4; }
-.pth-head > div { flex: 1; min-width: 0; }
-.pth-head button { border: none; background: none; color: #999; cursor: pointer; padding: 2px; display: flex; }
+.pth-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid #f2f2f4; }
+/* 상대방 정보(가운데)만 남는 폭을 다 쓰고, 메뉴·닫기는 제 크기만 차지한다. */
+.pth-titlebox { flex: 1; min-width: 0; text-align: center; }
+.pth-head button { border: none; background: none; color: #999; cursor: pointer; padding: 2px; display: flex; flex-shrink: 0; }
 .pth-who { font-size: 16px; color: #555; }
 .pth-job { font-size: 13px; color: #555; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -15872,8 +15873,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .pth-warn { margin: 0; padding: 0 18px 12px; font-size: 12.5px; color: #555; }
 
 .pth-more { position: relative; flex-shrink: 0; }
+/* 메뉴 단추가 왼쪽 끝으로 옮겨져 드롭다운도 왼쪽에서 펼친다. */
 .pth-menu {
-  position: absolute; right: 0; top: 28px; z-index: 2; background: #fff;
+  position: absolute; left: 0; top: 28px; z-index: 2; background: #fff;
   border: 1px solid #ececf0; border-radius: 10px; padding: 4px; min-width: 108px;
 }
 .pth-menu button {

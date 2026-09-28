@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, CalendarPlus, Send, MoreHorizontal, MapPin } from "lucide-react";
+import { X, CalendarPlus, Send, MoreVertical, MapPin } from "lucide-react";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 화면을 쓴다 — 한쪽만 다르게 보이면
 // 무슨 말이 어떻게 갔는지 서로 다르게 기억하게 된다.
@@ -161,19 +161,23 @@ export default function ProposalThread({
   return (
     <div className="pth-back" onClick={onClose}>
       <div className="pth" onClick={(e) => e.stopPropagation()}>
+        {/* 메뉴(더보기)는 왼쪽 끝, 닫기는 오른쪽 끝, 상대방 정보는 가운데다
+            ("신고 차단 메뉴 위치는 왼쪽 끝이 좋지 않아?" / "가운데 메뉴가
+            있으니까 좀 이상해" / "상대방정보는 가운데로 해줘") — 점 3개도
+            세로로(MoreVertical). */}
         <div className="pth-head">
-          <div>
-            <div className="pth-who">{상대}</div>
-            <div className="pth-job">{제목}</div>
-          </div>
           <div className="pth-more">
-            <button type="button" onClick={() => set메뉴((v) => !v)} aria-label="더보기"><MoreHorizontal size={20} /></button>
+            <button type="button" onClick={() => set메뉴((v) => !v)} aria-label="더보기"><MoreVertical size={20} /></button>
             {메뉴 && (
               <div className="pth-menu">
                 <button type="button" onClick={신고}>신고하기</button>
                 <button type="button" onClick={차단}>차단하기</button>
               </div>
             )}
+          </div>
+          <div className="pth-titlebox">
+            <div className="pth-who">{상대}</div>
+            <div className="pth-job">{제목}</div>
           </div>
           <button type="button" onClick={onClose} aria-label="닫기"><X size={20} /></button>
         </div>
