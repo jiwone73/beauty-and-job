@@ -18620,7 +18620,23 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   /* 아바타와 이름·나이·지역 사이 간격도 같이 줄인다("이름 나이 지역정보를
      아바타쪽으로 더 밀어"). */
   .co-pane-apps .tal-top { gap: 8px; }
+  /* 모바일은 이름만 빼고 나이·성별·지역·최종합격·지원일자를 12px로("모바일은
+     이름빼고 ... 12로 줄여줘"). 이름(.tal-line2 b)은 부모 축소를 받지 않게
+     따로 못박는다. */
+  .co-pane-apps .tal-line2,
+  .co-pane-apps .tal-who,
+  .co-pane-apps .tal-st-r,
+  .co-pane-apps .tal-when-r {
+    font-size: 12px !important;
+  }
+  .co-pane-apps .tal-line2 b { font-size: 14px !important; }
 }
+/* 카드 위·아래 패딩도 줄인다("카드 자체 위, 아래 패딩도 좀 줄여줘"). 위는
+   14px→8px로 직접 못박고, 아래는 카드 자신의 패딩이 원래 0이라(마지막 줄—
+   구분선(.tal-foot) 또는 메모칸 — 이 자기 몫의 안쪽 여백으로 채운다) 그
+   마지막 줄들의 여백을 줄인다. PC·모바일 공통. */
+.co-pane-apps .tal-card { padding-top: 8px; }
+.co-pane-apps .tal-foot { margin-top: 6px; padding: 6px 0 8px; }
 /* 지원자 카드 맨 윗줄 — 인재풀 카드는 한 줄 소개를 보여주지만, 지원자
    카드는 그 자리에 직군제목(공고에 등록한 소분류)을 넣는다("직군제목은
    14px, #333, 나머지는 첨부 폰트 크기 색상 그대로"). .tal-name 공통 규칙이
