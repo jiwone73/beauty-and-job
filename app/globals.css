@@ -6572,6 +6572,13 @@ div:has(> table.admin-table),
 .admin-back-btn:hover { color: #582681; }
 .admin-form-actions { display: flex; gap: 8px; }
 .jobpost-mobile-submit { width: 100%; height: 52px; margin: 18px 0 8px; border: none; border-radius: 12px; background: #582681; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; }
+/* PC 하단 저장 단추 — 모바일과 같은 폭(100%)이면 넓은 화면에서 유난히 커
+   보였다("하단 버튼이 너무 커. 그냥 라벨만 감쌀만큼 크기로 오른쪽 정렬해줘").
+   라벨만큼만 감싸고 오른쪽 끝에 붙인다(margin-left:auto). */
+.jobpost-desktop-submit { display: block; margin: 18px 0 8px auto; width: fit-content;
+  height: 44px; padding: 0 28px; border: none; border-radius: 10px;
+  background: #582681; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+.jobpost-desktop-submit:hover { background: var(--color-primary-hover, #6b3a9e); }
 @media (max-width: 767px) {
   .admin-form-header { gap: 8px; flex-wrap: nowrap; align-items: center; }
   .admin-back-btn { white-space: nowrap; flex-shrink: 0; font-size: 13px; padding: 6px 0; }
