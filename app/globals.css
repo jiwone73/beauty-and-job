@@ -16880,15 +16880,17 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 진행상황은 줄이고 모집분야는 늘린다("진행상황 넓이를 줄이고 희망직군을
    좀더 여백을 가져가"). */
 .prop-table .c-recent { width: 170px; }
-/* 시각은 문구 뒤에 이어 붙는다 — 자리가 있으면 같은 줄에, 모자라면 그때 넘어간다.
-   예전에는 둘 다 블록이라 짧은 문구에서도 시각이 늘 아랫줄로 떨어졌다. */
-.c-recent span { display: inline; white-space: normal; word-break: keep-all; line-height: 1.45; }
+/* 무슨 일이 있었나는 한 줄을 넘기지 않는다 — 날짜(.prop-when)는 그 아래
+   따로 한 줄이라 예외("진행상황은 1줄 안넘게 해야 해 날짜 빼고"). */
+.c-recent span { display: block; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; max-width: 100%; line-height: 1.45; }
 /* 미답변 — 구직자가 마지막으로 한 말이 그대로 여기 떠 있다. 그 글자를 빨갛게 해서
    답할 것이 무엇인지 바로 읽히게 한다(공고 줄에는 빨간 표시를 두지 않는다). */
 .c-recent.todo span, .c-recent.todo button { color: #c0504d; }
 /* 여기 적힌 한 줄이 곧 채팅으로 가는 문이다 — 옅은 밑줄로 누를 자리임을 알린다.
    자세한 말은 이 칸에 늘어놓지 않는다(채팅창에서 본다). */
-.c-recent button { display: inline; border: none; background: none; padding: 0;
+.c-recent button { display: block; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; max-width: 100%; border: none; background: none; padding: 0;
   font: inherit; color: inherit; text-align: left; cursor: pointer;
   text-decoration: underline; text-decoration-color: #a5a5ae; text-underline-offset: 3px; }
 .c-recent button:hover { text-decoration-color: currentColor; }
