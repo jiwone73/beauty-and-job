@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, BookmarkCheck, ChevronDown, Pencil, MessageCircle } from "lucide-react";
+import { Bookmark, BookmarkCheck, Pencil, MessageCircle } from "lucide-react";
 import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
 import { formatSalaryWon } from "@/lib/salary";
 import { 마감인가 } from "@/lib/jobClosed";
@@ -76,17 +76,14 @@ export default function ApplicantCard({
     : null;
   const 출근가능일 = (a as any).user_available_from ? `출근가능 ${(a as any).user_available_from}` : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
-  const [메모쓰기, set메모쓰기] = useState(false);
-  // 메모 줄을 접었다 폈다 한다("메모를 접었다 폈다 할수 있게 해주고") — 쓰기
-  // 모드와는 다른 상태다. 내용이 있으면 펼쳤을 때 글로, 없으면 펼치는 순간
-  // 바로 입력 칸으로 들어간다.
-  const [펼침, set펼침] = useState(false);
+  // 예전엔 "메모" 단추를 눌러야 줄이 열렸는데, 그 단추를 없애고 입력칸을
+  // 기본으로 한 줄 더 둔다("오른쪽 끝 메모 아이콘을 삭제하고 한줄 더
+  // 기본으로 생성해서 거기에 메모아이콘을 넣어줘") — 접었다 펴는 상태가
+  // 필요 없어졌다.
   const [메모, set메모] = useState(a.note || "");
   const 메모칸 = useRef<HTMLInputElement>(null);
   useEffect(() => { set메모(a.note || ""); }, [a.note]);
-  useEffect(() => { if (메모쓰기) 메모칸.current?.focus(); }, [메모쓰기]);
   const 메모저장 = () => {
-    set메모쓰기(false);
     const v = 메모.trim();
     if (v === (a.note || "")) return;
     onNote?.(a, v);
@@ -215,44 +212,28 @@ export default function ApplicantCard({
           )}
           {유입 && <span className="tal-from">{유입}</span>}
         </span>
-        {/* 메모 단추는 태그·직군 줄 안에 있어도 "메모"라는 글자만 고정으로
-            보인다 — 내용을 여기 같이 적으면 헤어·바버 같은 태그 줄과 한 줄에
-            섞인다("작성시 헤어바버 줄이 아니라 그 밑에 줄에 넣어줘"). 실제
-            내용은 아래 별도 줄에서, 있을 때만 그 줄이 생긴다("메모가 있으면
-            줄이 하나 더 생성되는거고 없으면 없는거고"). */}
-        {onNote && (
-          <button type="button" className={`tal-memo-btn${메모 ? " has" : ""}`}
-            onClick={() => {
-              // 내용이 없으면 펼치는 순간 바로 쓰는 칸으로 — 펼쳐도 읽을 게
-              // 없으면 뜻이 없다.
-              if (!메모) { set펼침(true); set메모쓰기(true); return; }
-              set펼침((v) => !v);
-            }}>
-            <Pencil size={13} />메모
-            <ChevronDown size={13} className={펼침 ? "up" : ""} />
-          </button>
-        )}
       </div>
 
-      {onNote && 펼침 && (메모쓰기 ? (
+      {/* 메모는 태그 줄 오른쪽 단추가 아니라 기본으로 한 줄 더 두는 입력칸이다
+          ("오른쪽 끝 메모 아이콘을 삭제하고 한줄 더 기본으로 생성해서 거기에
+          메모아이콘을 넣어줘") — 늘 떠 있어 누르기 전에 펼칠 것도 없다.
+          아이콘은 입력칸 안 뱃지로 고정돼 글자를 적어도 안 없어진다("텍스트
+          입력시 삭제 안되게"). */}
+      {onNote && (
         <div className="tal-memo">
-          {/* 입력칸에 메모 아이콘 뱃지("메모 입력창에 메모아이콘 뱃지를 넣어줘"). */}
           <div className="tal-memo-in-wrap">
             <Pencil size={12} className="tal-memo-in-badge" />
             <input ref={메모칸} className="tal-memo-in" value={메모} maxLength={60}
-              placeholder="통화함 · 화요일 3시 면접 · 경력 확인 필요 …"
+              placeholder="메모 — 통화함 · 화요일 3시 면접 · 경력 확인 필요 …"
               onChange={(e) => set메모(e.target.value)}
               onBlur={메모저장}
               onKeyDown={(e) => {
                 if (e.key === "Enter") { e.currentTarget.blur(); }
-                if (e.key === "Escape") { set메모(a.note || ""); set메모쓰기(false); }
+                if (e.key === "Escape") { set메모(a.note || ""); }
               }} />
           </div>
         </div>
-      ) : (메모 && (
-        <div className="tal-memo-row" role="button" tabIndex={0} title="메모 고치기"
-          onClick={() => set메모쓰기(true)}>{메모}</div>
-      )))}
+      )}
     </div>
   );
 }
