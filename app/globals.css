@@ -15927,10 +15927,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .tal-sub { font-size: 12.5px; color: #555; }
 .tal-name {
-  display: inline-block; background: none; border: none; padding: 0; font-family: inherit;
+  display: block; max-width: 100%; background: none; border: none; padding: 0; font-family: inherit;
   font-size: 17px; color: #555; cursor: pointer; margin-bottom: 4px; text-align: left;
   text-decoration: underline; text-decoration-color: #d8d3de;
   text-decoration-thickness: 1px; text-underline-offset: 3px;
+  /* 한줄소개가 길면 카드 밖으로 넘치거나 줄이 꺾이지 않고 말줄임(…)으로 자른다
+     ("한줄소개 칸이 넘어가면 …"). */
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .tal-name:hover { color: var(--color-primary); text-decoration-color: var(--color-primary); }
 .tal-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #555; }
@@ -16203,8 +16206,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane-btn { padding: 2px 7px; border: 1px solid #e2e2e6; border-radius: 6px;
   background: #fff; font-family: inherit; font-size: 13px; color: #555; cursor: pointer; white-space: nowrap; }
 .co-pane-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.co-pane-edit-ic { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; border: none; background: none; color: #8a8a90; cursor: pointer; }
-.co-pane-edit-ic:hover { color: var(--color-primary); }
 .co-pane-inline .co-pane-term,
 .co-pane-inline .co-pane-posline,
 .co-pane-inline .co-pane-acts button { font-size: 14px; color: #555; }

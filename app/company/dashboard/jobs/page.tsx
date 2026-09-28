@@ -372,14 +372,15 @@ function CompanyJobsContent() {
                     (패딩값적은)"라 해서 작은 테두리 버튼으로, 순서도 "마감하고
                     재등록 위치 바꾸고"에 맞춰 마감(또는 삭제)을 먼저 둔다. */}
                 <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                  {/* 수정(임시저장은 이어서 작성) 아이콘을 마감 버튼 왼쪽으로
-                      옮긴다("수정 아이콘 마감버튼 왼쪽으로 올려") — 공고명 줄에서
-                      이 줄로. 마감된 공고는 고칠 게 없어 자리를 안 준다. */}
+                  {/* 수정(임시저장은 이어서 작성)을 마감 버튼 왼쪽으로 옮긴다("수정
+                      아이콘 마감버튼 왼쪽으로 올려") — 공고명 줄에서 이 줄로.
+                      마감된 공고는 고칠 게 없어 자리를 안 준다. 아이콘만으론 눌러야
+                      할 곳인지 알기 어려워 옆의 마감·재등록과 같은 글자 버튼으로
+                      바꾼다("수정아이콘을 수정버튼으로 바꿔줘"). */}
                   {!closed && (
-                    <button type="button" className="co-pane-edit-ic"
-                      aria-label={draft ? "이어서 작성" : "수정"}
+                    <button type="button" className="co-pane-btn"
                       onClick={() => router.push(`/company/dashboard/jobs/new?id=${job.id}`)}>
-                      <Edit size={15} />
+                      {draft ? "이어서 작성" : "수정"}
                     </button>
                   )}
                   {closed || draft ? (
