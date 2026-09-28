@@ -16019,10 +16019,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    이미 내가 골라서 제안까지 보낸 사람이라 알아볼 만큼이면 되고, 72x92 는 처음 보는
    얼굴을 살피는 크기다. 연락처 줄이 없어 아래 여백은 이 카드가 직접 맡는다. */
 .tal-card.prop { padding-bottom: 14px; }
-/* 보낸 제안은 원형. 이력서를 훑어보는 자리(인재검색·지원자)에서는 증명사진
-   비율이 그대로 보이는 네모가 맞지만, 여기는 「누구에게 보냈나」를 알아보는
-   자리라 대화 상대처럼 둥근 편이 읽기 쉽다. */
-.tal-card.prop .tal-avatar { width: 56px; height: 56px; border-radius: 50%; font-size: 17px; }
+/* 보낸 제안도 다른 자리와 같은 네모로("전부다 4각형으로"). */
+.tal-card.prop .tal-avatar { width: 56px; height: 56px; border-radius: 4px; font-size: 17px; }
 
 /* 카드 목록의 기준 폭 — 인재 검색 카드가 기준이다(사이드 176 + 여백 28 을 뺀 값).
    사이드가 없는 화면(지원자)도 같은 폭으로 세워야 카드 크기가 화면마다 달라지지
@@ -16038,7 +16036,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    맨 위는 본인이 고른 한 마디(한줄소개)다. 이름·나이·지역은 그 사람을 특정하는
    값이라 그 아래로 내린다. 연락처는 카드에서 뺐다 — 이력서를 열면 나오고,
    공고를 올린 곳에만 열린다. 아랫줄은 사람을 거르는 태그 셋과 이력서 수정일. */
-.tal-avatar { width: 60px; height: 60px; border-radius: 50%; font-size: 20px; }
+/* 여기서 원형(50%)으로 덮어썼던 것은 바로 위 "보낸 제안은 원형" 규칙을 그대로
+   끌어다 쓴 실수였다 — 인재검색·지원자는 증명사진처럼 네모가 맞다는 설명과
+   어긋났다("사진은 4각형으로 해줘"로 다시 확인됨). */
+.tal-avatar { width: 60px; height: 60px; border-radius: 4px; font-size: 20px; }
 .tal-main { cursor: pointer; }
 .tal-main:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 6px; }
 /* 한줄소개 — 카드에서 가장 먼저 읽는 줄이라 본문보다 한 칸 크다. 토큰(15.5px)에
