@@ -18658,7 +18658,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 비율(1.4)로 맞췄는데도 줄마다 글자 크기가 달라(직군 14px, 나머지 13px)
    실제 줄 높이(px)가 미묘하게 달라 간격이 균등해 보이지 않았다 — 픽셀
    값 하나로 통일한다. */
-.tal-card .tal-name.tal-role { font-size: 15px !important; font-weight: 400 !important; margin-bottom: 0; line-height: 18px; }
+/* 1,2행 간격만 유독 6px 더 컸던 원인 — .tal-role이 다른 .tal-name 규칙에서
+   물려받은 display:inline-block 때문에 인라인 포맷팅 컨텍스트의 반 리딩
+   (half-leading)이 끼어들었다. 나머지 줄(.tal-line2, 진짜 div)처럼 block으로
+   못박아 없앤다("1,2,3,4 줄 간격 모두 동일하게 제발"). */
+.tal-card .tal-name.tal-role { font-size: 15px !important; font-weight: 400 !important; margin-bottom: 0; line-height: 18px; display: block !important; }
 /* 줄 사이 행간 — 너무 좁히면 붙어 보이고("내용이 너무 위아래로 붙고") 너무
    넓으면 첫 줄만 떠 보인다. 세 줄 모두 이 값 하나로("균등하게 해줘 행간" →
    19px도 아직 넓다 해서 17px로 → 글자 커진 만큼(13→14) 18px로). */
