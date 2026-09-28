@@ -16184,12 +16184,15 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 공고명 줄에 수정 아이콘을 같이 두는 짜임 — PC·모바일 공통("마감, 재등록,
    수정은 피씨에서도 동일하게 적용해줘"). 글자 크기·색·굵기(15px #333 700)는
    모바일 전용으로 따로 아래 co-pane-inline 규칙이 얹는다. */
-.co-pane-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.co-pane-title { display: flex; align-items: center; gap: 8px; }
 .co-pane-inline .co-pane-title { font-size: 15px; font-weight: 700; color: #333; }
 /* 진행중 줄로 올린 마감·재등록(패딩 없는 글자 단추)과 공고명 줄로 올린 수정
    아이콘 — PC·모바일 공통. */
-.co-pane-flat { padding: 0; border: none; background: none; font-family: inherit; font-size: 14px; color: #555; cursor: pointer; }
-.co-pane-flat:hover { color: var(--color-primary); }
+/* 진행중 줄의 마감·재등록 — 글자뿐이던 것을 작은 테두리 버튼으로("버튼형으로
+   만들어줘 (패딩값적은)"). */
+.co-pane-btn { padding: 3px 10px; border: 1px solid #e2e2e6; border-radius: 999px;
+  background: #fff; font-family: inherit; font-size: 13px; color: #555; cursor: pointer; white-space: nowrap; }
+.co-pane-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .co-pane-edit-ic { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; border: none; background: none; color: #8a8a90; cursor: pointer; }
 .co-pane-edit-ic:hover { color: var(--color-primary); }
 .co-pane-inline .co-pane-term,

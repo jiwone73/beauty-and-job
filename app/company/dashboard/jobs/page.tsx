@@ -355,28 +355,31 @@ function CompanyJobsContent() {
               <div className="co-pane-term">
                 <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
                 {기간}
-                {/* 마감·재등록을 패딩 없는 글자 단추로 만들어 진행중 줄로 올린다
-                    ("마감, 재등록을 패딩없는 버튼타입으로 만들어서 진행중
-                    라인으로 올리고" — "피씨에서도 동일하게 적용해줘"). */}
-                <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+                {/* 마감·재등록을 진행중 줄로 올린다("마감, 재등록을 ... 진행중
+                    라인으로 올리고"). 처음엔 글자뿐이었는데 "버튼형으로 만들어줘
+                    (패딩값적은)"라 해서 작은 테두리 버튼으로, 순서도 "마감하고
+                    재등록 위치 바꾸고"에 맞춰 마감(또는 삭제)을 먼저 둔다. */}
+                <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  {closed || draft ? (
+                    <button type="button" className="co-pane-btn" onClick={() => handleDelete(job.id)}>삭제</button>
+                  ) : (
+                    <button type="button" className="co-pane-btn" onClick={() => handleClose(job.id)}>마감</button>
+                  )}
                   {!draft && (
-                    <button type="button" className="co-pane-flat"
+                    <button type="button" className="co-pane-btn"
                       onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
                       재등록
                     </button>
                   )}
-                  {!draft && closed && <i style={{ fontStyle: "normal", color: "#dcdce2" }}>|</i>}
-                  {closed ? (
-                    <button type="button" className="co-pane-flat" onClick={() => handleDelete(job.id)}>삭제</button>
-                  ) : !draft ? (
-                    <button type="button" className="co-pane-flat" onClick={() => handleClose(job.id)}>마감</button>
-                  ) : (
-                    <button type="button" className="co-pane-flat" onClick={() => handleDelete(job.id)}>삭제</button>
-                  )}
                 </span>
               </div>
               <h2 className="co-pane-title">
-                {job.title}
+                {/* 공고명이 길면 아이콘과 붙어 보였다("공고명이랑 아이콘이랑 너무
+                    붙었어") — 공고명을 제 너비만 쓰는 칸으로 묶어 그 안에서
+                    줄바꿈되게 하고("공고명이 어느영역이상 못넘어오게"), 아이콘은
+                    폭이 줄지 않는 고정 칸으로 따로 뗀다. 둘 사이는 gap으로만 띈다
+                    (space-between이면 공고명이 길수록 아이콘과 다시 붙는다). */}
+                <span style={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>{job.title}</span>
                 {/* 수정(임시저장은 이어서 작성)을 공고명 줄로 올리고 아이콘
                     하나로 표시한다("수정은 공고명 라인으로 올려. 수정은
                     아이콘으로 표시"). 마감된 공고는 고칠 게 없어 자리를 안 준다. */}
