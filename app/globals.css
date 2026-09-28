@@ -18652,10 +18652,13 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    margin-bottom을 없애고 아래 나머지 줄과 같은 line-height 하나로만 간격을
    낸다 — 줄마다 다른 규칙(margin 다르고 line-height 다르고)이 섞이면 간격이
    들쭉날쭉해진다("이름하고 직군은 너무 간격이 넓어. 균등하게 해줘"). */
-.tal-card .tal-name.tal-role { font-size: 14px !important; font-weight: 400 !important; margin-bottom: 0; line-height: 1.4; }
+/* 비율(1.4)로 맞췄는데도 줄마다 글자 크기가 달라(직군 14px, 나머지 13px)
+   실제 줄 높이(px)가 미묘하게 달라 간격이 균등해 보이지 않았다 — 픽셀
+   값 하나로 통일한다. */
+.tal-card .tal-name.tal-role { font-size: 14px !important; font-weight: 400 !important; margin-bottom: 0; line-height: 19px; }
 /* 줄 사이 행간 — 너무 좁히면 붙어 보이고("내용이 너무 위아래로 붙고") 너무
    넓으면 첫 줄만 떠 보인다. 네 줄 모두 이 값 하나로("균등하게 해줘 행간"). */
-.apl-card .tal-who { line-height: 1.4; }
+.apl-card .tal-who { line-height: 19px; }
 /* 면접결과·지원일은 본문보다 작게("면접결과, 지원일도 작은글씨로"). 모바일
    나이·성별·지역과 같은 12px로 맞춘다 — 예전엔 이 규칙(12.5px, 폭 상관없이
    적용)이 모바일 전용 규칙보다 파일 뒤쪽에 있어 늘 이겨 버렸다("서울강남구
