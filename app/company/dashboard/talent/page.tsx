@@ -18,7 +18,7 @@ import { Pop, PopItem } from "@/components/filters/SidePop";
 import { SIDO_LIST, getSigunguList } from "@/lib/data/regions";
 import { shortSido } from "@/lib/regionShort";
 import { formatSalaryWon } from "@/lib/salary";
-import TalentCard from "@/components/company/TalentCard";
+import TalentTableRow from "@/components/company/TalentTableRow";
 import UpsellBar from "@/components/company/UpsellBar";
 import { 플랜 } from "@/lib/companyPlans";
 
@@ -965,18 +965,24 @@ export default function TalentPage() {
           })}
         </div>
       ) : (
-        <div className="tal-list">
+        <div>
           {/* 이름이 가려진 카드는 그 자체로 광고다 — 「여기 사람이 있는데 지금은
               못 본다」. 여태 막히기만 하고 사러 가는 길이 없었다. */}
           {!열람가능 && <UpsellBar 무엇="인재 이름·연락처" />}
-          {/* 표에서 카드로. 표는 관리자 화면을 그대로 가져온 것이라 사람을 줄로
-              읽게 만들었다. 채용공고 관리 카드와 같은 구조로 맞춘다 — 위에 이름과
-              사진, 오른쪽에 할 일, 아랫줄에 연락처. */}
-          {talents.map((t) => (
-            <TalentCard key={t.id} t={t} base={base}
-              onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)} onToggleScrap={toggleScrap} onPropose={openPropose}
-              scrapJobs={scrapJobs} onScrapJob={scrapJob} />
-          ))}
+          {/* PC는 표로("PC는 테이블 뷰로 바꾸자... 인재풀도 같이. 인재 다음에
+              직군, 경력, 업데이트, 제안·스크랩"). */}
+          <table className="apl-table">
+            <thead>
+              <tr><th>인재</th><th>직군</th><th>경력</th><th>업데이트</th><th>제안·스크랩</th></tr>
+            </thead>
+            <tbody>
+              {talents.map((t) => (
+                <TalentTableRow key={t.id} t={t} base={base}
+                  onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)}
+                  onToggleScrap={toggleScrap} onPropose={openPropose} />
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
       </div>

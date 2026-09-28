@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
+import ApplicantTableRow from "@/components/company/ApplicantTableRow";
 import ApplicationModal from "@/components/company/ApplicationModal";
 import type { CompanyJob, JobStatus, CompanyApplication } from "@/lib/types/company";
 import { genderLabel, calcAge } from "@/lib/memberFormat";
@@ -447,16 +448,35 @@ function CompanyJobsContent() {
           <ChevronDown size={16} aria-hidden="true" />
         </div>
 
-        <div className="co-pane-apps">
-          {수 === 0
-            ? <p className="apl-none">아직 지원자가 없어요.</p>
-            : 목록.length === 0
-              ? <p className="apl-none">찾는 지원자가 없어요.</p>
-              : 목록.map((a) => (
-                <ApplicantCard key={a.id} a={a} showJob={false}
+        {수 === 0 ? (
+          <p className="apl-none">아직 지원자가 없어요.</p>
+        ) : 목록.length === 0 ? (
+          <p className="apl-none">찾는 지원자가 없어요.</p>
+        ) : isMobile ? (
+          <div className="co-pane-apps">
+            {목록.map((a) => (
+              <ApplicantCard key={a.id} a={a} showJob={false}
+                onOpen={(x) => set지원서(x.id)} onNote={메모저장} />
+            ))}
+          </div>
+        ) : (
+          /* PC는 카드 대신 표로("PC는 테이블 뷰로 바꾸자. 모바일은 카드 뷰로
+             그대로"). */
+          <table className="apl-table">
+            <thead>
+              <tr>
+                <th>인재</th><th>모집분야</th><th>경력</th><th>희망연봉</th>
+                <th>지원일</th><th>출근가능일</th><th>메모</th>
+              </tr>
+            </thead>
+            <tbody>
+              {목록.map((a) => (
+                <ApplicantTableRow key={a.id} a={a}
                   onOpen={(x) => set지원서(x.id)} onNote={메모저장} />
               ))}
-        </div>
+            </tbody>
+          </table>
+        )}
         </div>
       </>
     );
