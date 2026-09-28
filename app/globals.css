@@ -14371,11 +14371,6 @@ button,
 .co-bill-plus { font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--color-primary);
   margin-left: 5px; }
 
-.co-bill-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
-.co-bill-stats > div { border: 1px solid var(--color-border); border-radius: 12px; padding: 18px 20px; background: #fff; }
-.co-bill-stats span { display: block; font-size: 13px; color: #555; margin-bottom: 8px; }
-.co-bill-stats b { font-weight: 400; font-size: 22px; color: #1a1a1a; letter-spacing: -.5px; }
-.co-bill-stats i { font-style: normal; font-size: 13px; color: #555; margin-left: 4px; }
 .co-bill-h { font-size: 16px; color: #1a1a1a; margin: 34px 0 12px; }
 .co-bill-empty { font-size: 14px; color: #555; padding: 26px 0; text-align: center;
   border: 1px solid var(--color-border); border-radius: 12px; background: #fff; margin: 0; }

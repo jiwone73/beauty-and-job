@@ -6,10 +6,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { 플랜, 스타트, 원, 보관표기, type PlanId } from "@/lib/companyPlans";
 
 /**
- * 내 이용권 — 무엇을 언제까지 쓰는가, 그동안 얼마나 노출됐는가, 무엇을 냈는가.
- *
- * 메인 채용관은 자리를 파는 상품이라 노출 횟수가 곧 영수증이다. 숨기면 산 사람은
- * 값이 무엇이었는지 끝내 알 수 없고, 다음에 또 살 이유도 없다.
+ * 내 이용권 — 무엇을 언제까지 쓰는가, 무엇을 냈는가.
  */
 
 type 이용권 = {
@@ -113,11 +110,9 @@ export default function CompanyBillingPage() {
           </div>
         )}
 
-        <div className="co-bill-stats">
-          <div><span>진행 중 공고</span><b>{it?.진행중 ?? 0}<i>건</i></b></div>
-          <div><span>메인 공고 노출</span><b>{(it?.노출 ?? 0).toLocaleString("ko-KR")}<i>회</i></b></div>
-          <div><span>공고 게재</span><b>{it?.게재종료 ? <>{it.게재종료}<i>까지</i></> : <>—</>}</b></div>
-        </div>
+        {/* 진행 중 공고·메인 노출·게재기간 카드 — "저 카드는 필요없으니 지우라는
+            얘기지" 삭제. 진행 중인 공고·노출 수는 대시보드에서 이미 보고, 여기는
+            결제·이용권만 남긴다. */}
 
         <p className="co-bill-h">결제 내역</p>
         {주문들.length === 0 ? (
