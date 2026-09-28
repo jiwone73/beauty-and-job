@@ -887,10 +887,11 @@ export default function TalentPage() {
             /* 나머지(나이·성별·경력·지역)도 지원자 카드와 같은 14px로. */
             .co-li-ageg { font-size: 14px !important; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55; }
             .co-li-meta2 { font-size: 14px !important; color: #555; margin-top: 2px; line-height: 1.55; }
-            .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+            .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 3px; position: relative; }
             /* 맨 윗줄은 굵게 통일("맨윗줄은 PC는 15px 굵게(#333), 모바일은
-               14px 굵게(#333)로 통일해줘"). */
-            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55 !important; }
+               14px 굵게(#333)로 통일해줘"). 오른쪽에 떠 있는 스크랩·제안하기
+               (아래 .co-li-actcol)와 안 겹치게 자리를 비워 둔다. */
+            .co-li-job { font-size: 14px !important; font-weight: 700 !important; color: #333 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.55 !important; padding-right: 56px; }
             /* 제안하기를 맨 위 직군 줄로 올리고 오른쪽 정렬, 아이콘은 뺀다
                ("제안하기 버튼을 위로 올려서 오른쪽 정렬해줘. 제안하기 앞에
                아이콘은 삭제"). */
@@ -899,22 +900,24 @@ export default function TalentPage() {
             .co-li-propose { flex-shrink: 0; background: none; border: 1px solid #e2e2e6; border-radius: 8px;
               padding: 4px 10px; cursor: pointer; color: #555; font-size: 13px; font-weight: 500; font-family: inherit; }
             .co-li-sent { flex-shrink: 0; font-size: 13px; color: #555; text-decoration: none; }
-            /* 스크랩·제안하기를 세로로 쌓는 자리("제안하기 버튼을 스크랩
-               밑으로 이동해줘") — absolute로 빼서 줄 흐름에서 키를 안
-               차지하게 한다. 안 그러면 이 줄(namerow)이 버튼 두 개 높이만큼
-               부풀어 바로 아랫줄(경력·지역)과의 간격이 확 벌어진다
-               ("줄간격이 저런데?"). */
+            /* 스크랩·제안하기를 세로로 쌓아 1행(직군) 자리에서 시작시킨다
+               ("스크랩하고 제안하기버튼을 한줄씩 위로 올려줘") — absolute로
+               빼서 줄 흐름에서 키를 안 차지하게 한다. 안 그러면 이 줄이
+               버튼 두 개 높이만큼 부풀어 바로 아랫줄과의 간격이 벌어진다. */
             .co-li-actcol { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-            .co-li-nameinfo { padding-right: 56px; }
           `}</style>
           {talents.map((t) => {
             const gl = genderLabel(t.gender);
             const region = t.regionPrefer ? shortenRegion(t.regionPrefer) : null;
             const ageGender = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
             const career = careerLabel(t.careerYears, t.careerCount);
-            // 지원자 카드와 같은 4줄로("모바일은 4줄이잖아" → "공고지원자 봐봐
-            // 아니야?") — 1행 직군, 2행 이름, 3행 나이·성별·경력, 4행 지역.
-            const row3 = [ageGender, career].filter(Boolean).join(" · ");
+            // 공고지원자와 같은 3줄로("공고지원자가 3줄로 간것 처럼 인재검색도
+            // 3줄로... 2번째줄이 이름 나이 성별이고 3번째줄이 경력, 지역").
+            // 스크랩·제안하기는 한 줄씩 위로 — 스크랩은 1행(직군), 제안하기는
+            // 2행(이름) 자리에 오게 옮긴다("스크랩하고 제안하기버튼을 한줄씩
+            // 위로 올려줘"). 구분선 아래 내용(공고지원자의 경력|희망연봉|
+            // 출근가능일 같은 자리)은 만들지 않는다.
+            const row3 = [career, region].filter(Boolean).join(" · ");
             return (
               <div key={t.id} className="co-row">
                 <div className="co-li"
@@ -928,13 +931,8 @@ export default function TalentPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="co-li-jobrow">
                         <div className="co-li-job">{t.subJob || t.mainJobGroup || "직군 미정"}</div>
-                      </div>
-                      <div className="co-li-namerow">
-                        <div className="co-li-nameinfo">
-                          <span className="co-li-name">{t.name}</span>
-                        </div>
-                        {/* 제안하기를 스크랩 바로 밑으로("제안하기 버튼을 스크랩
-                            밑으로 이동해줘") — 세로로 쌓는다. */}
+                        {/* 스크랩·제안하기를 세로로 쌓아 1행에서 시작시킨다 —
+                            스크랩이 1행, 제안하기가 2행 높이에 걸린다. */}
                         <div className="co-li-actcol">
                           <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
                             onClick={(e) => { e.stopPropagation(); toggleScrap(t); }}>
@@ -955,8 +953,13 @@ export default function TalentPage() {
                           )}
                         </div>
                       </div>
+                      <div className="co-li-namerow">
+                        <div className="co-li-nameinfo">
+                          <span className="co-li-name">{t.name}</span>
+                          {ageGender && <span className="co-li-ageg">{ageGender}</span>}
+                        </div>
+                      </div>
                       {row3 && <div className="co-li-meta2">{row3}</div>}
-                      {region && <div className="co-li-meta2">{region}</div>}
                     </div>
                   </div>
                 </div>
