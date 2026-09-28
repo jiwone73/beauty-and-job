@@ -18612,3 +18612,12 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 @media (max-width: 768px) {
   .co-pane-apps .tal-card { padding-left: 5px; padding-right: 5px; }
 }
+/* 지원자 카드 이름 자리 — 데스크탑만 한줄소개, 모바일은 이름("모바일은
+   한줄소개 빼자. 데스크탑만 넣자"). PC 기본은 -dt만 보이고 -m은 숨긴다,
+   768px 이하에서 뒤집는다. */
+.tal-name-m, .tal-line2-m { display: none; }
+@media (max-width: 768px) {
+  .tal-name-dt, .tal-line2-dt { display: none; }
+  .tal-name-m { display: block; }
+  .tal-line2-m { display: flex; }
+}

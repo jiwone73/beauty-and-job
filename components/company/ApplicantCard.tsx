@@ -151,7 +151,11 @@ export default function ApplicantCard({
         {/* 여는 자리는 글자뿐이다 — 줄 전체를 누르게 두면 오른쪽 빈 자리나
             지원일을 눌러도 창이 열려, 눌렀는지 아닌지 헷갈린다. */}
         <div className="tal-main">
-          <button type="button" className="tal-name tal-open" title="지원서 보기"
+          {/* 한줄소개는 칸이 넉넉한 데스크탑에만 둔다 — 모바일은 칸이 좁아
+              소개 대신 이름부터 보여준다("모바일은 칸이 좁으니 … " → "아니다
+              모바일은 한줄소개 빼자. 데스크탑만 넣자"). 두 화면이 쓰는 내용
+              자체가 달라 자리를 나누고 매체 쿼리로만 켜고 끈다. */}
+          <button type="button" className="tal-name tal-open tal-name-dt" title="지원서 보기"
             onClick={() => onOpen(a)}>
             {(a as any).user_intro || a.user_name}
             {/* 제안을 통해 지원한 사람(제안 후 지원·대화 후 지원)은 이름 옆에
@@ -159,13 +163,27 @@ export default function ApplicantCard({
                 붙여줘"). user_intro가 있으면 이름은 아래 줄에 따로 있어 거기서 붙인다. */}
             {!(a as any).user_intro && 유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
           </button>
+          <button type="button" className="tal-name tal-open tal-name-m" title="지원서 보기"
+            onClick={() => onOpen(a)}>
+            {a.user_name}
+            {유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}
+          </button>
           {/* 이름 줄 오른쪽에 상태값, 지역 줄 오른쪽에 지원일. 둘 다 태그와
               같은 회색이다 — 훑을 때 눈이 걸리지 않아야 하는 값들이다. */}
-          <div className="tal-who tal-line2">
+          <div className="tal-who tal-line2 tal-line2-dt">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               {/* 이름만 굵게. 괄호 속 성별·나이는 평체로 둔다. */}
               {(a as any).user_intro ? <><b>{a.user_name}</b>{유입 && <MessageCircle size={13} className="tal-name-chat-ic" />}</> : ""}
               {(a as any).user_intro && 나이성별 ? " " : ""}
+              {나이성별 && `(${나이성별})`}
+            </button>
+            <span className="tal-st-r">
+              {a.status === "WITHDRAWN" ? "지원취소" : STATUS_LABEL[a.status]}
+            </span>
+          </div>
+          <div className="tal-who tal-line2 tal-line2-m">
+            {/* 모바일은 이름을 이미 위 tal-name-m 에서 보여줬으니 여기는 나이·성별만. */}
+            <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>
               {나이성별 && `(${나이성별})`}
             </button>
             <span className="tal-st-r">
