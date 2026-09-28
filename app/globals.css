@@ -18643,7 +18643,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    14px, #333, 나머지는 첨부 폰트 크기 색상 그대로"). .tal-name 공통 규칙이
    15px 로 못박아 뒀어도(위) 여기서 한 단계 낮춘다 — 같은 배점이라 뒤에
    쓴 쪽(이 규칙)이 이긴다. */
-.tal-card .tal-role { font-size: 14px !important; }
+/* 평체로, 아래 줄과의 간격도 다른 줄 사이만큼만("직군은 평체로 바꾸고,
+   직군하고 이름사이에 여백을 좀 줄여. 다른데 보다 여백이 커") — .tal-name의
+   기본 margin-bottom(6px)이 나머지 줄 사이(0, line-height로만 뜬 간격)보다
+   컸다. */
+.tal-card .tal-role { font-size: 14px !important; font-weight: 400 !important; margin-bottom: 1px; }
 /* 면접결과·지원일은 본문보다 작게("면접결과, 지원일도 작은글씨로"). 모바일
    나이·성별·지역과 같은 12px로 맞춘다 — 예전엔 이 규칙(12.5px, 폭 상관없이
    적용)이 모바일 전용 규칙보다 파일 뒤쪽에 있어 늘 이겨 버렸다("서울강남구
