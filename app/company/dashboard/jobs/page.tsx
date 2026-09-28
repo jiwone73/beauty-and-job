@@ -351,7 +351,11 @@ function CompanyJobsContent() {
       <>
         <div className="co-pane-card">
           <div className="co-pane-head">
-            <div style={{ minWidth: 0 }}>
+            {/* flex:1 이 없으면 이 칸이 제 글자 너비만 차지해, 안의
+                marginLeft:auto(수정 아이콘·마감·재등록)가 카드 오른쪽 끝이
+                아니라 글자 바로 옆에서 멈췄다("수정아이콘, 버튼은 오른쪽
+                정렬"). */}
+            <div style={{ minWidth: 0, flex: 1 }}>
               <div className="co-pane-term">
                 <span className={`co-jc-badge ${상태.결}`}>{상태.글}</span>
                 {기간}
