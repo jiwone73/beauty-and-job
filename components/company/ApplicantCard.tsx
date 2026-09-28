@@ -199,9 +199,11 @@ export default function ApplicantCard({
           {/* 직군과 경력 — 훑으면서 고르는 값이라 구분선 아래 왼쪽에 둔다. */}
           {태그.length > 0 && <span>{태그.map((g) => `#${g}`).join(" ")}</span>}
           {경력 && <span>#{경력}</span>}
-          {/* 헤어·바버 같은 태그 옆에 희망연봉·출근가능일 — "I 로 분리". */}
-          {희망연봉 && <><span className="tal-sep">|</span><span>{희망연봉}</span></>}
-          {출근가능일 && <><span className="tal-sep">|</span><span>{출근가능일}</span></>}
+          {/* 헤어·바버 같은 태그 옆에 희망연봉·출근가능일 — "I 로 분리". 앞에
+              보일 태그가 하나도 없으면(소분류·경력 다 없음) 구분선만 홀로
+              남지 않게 그때는 안 붙인다. */}
+          {희망연봉 && <>{(태그.length > 0 || 경력) && <span className="tal-sep">|</span>}<span>{희망연봉}</span></>}
+          {출근가능일 && <>{(태그.length > 0 || 경력 || 희망연봉) && <span className="tal-sep">|</span>}<span>{출근가능일}</span></>}
           {showJob && (
             <span className="tal-job">
               {a.job_title}
