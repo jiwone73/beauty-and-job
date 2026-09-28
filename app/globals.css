@@ -18729,5 +18729,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   padding: 6px 8px; font-size: 14px; line-height: 1.4; color: #555; font-family: inherit; }
 .apl-td-acts { display: flex; align-items: center; gap: 8px; }
 /* 표 안 제안하기는 패딩을 줄인다("제안하기 버튼 패딩 줄여줘"). */
-.apl-td-acts .tal-btn { padding: 4px 9px; font-size: 13px; }
+/* 인재풀 표의 "제안하기" 버튼만 13px로 남아 있었다("다 14로 통일해야해"). */
+.apl-td-acts .tal-btn { padding: 4px 9px; font-size: 14px; }
 .apl-td-scrap { background: none; border: none; padding: 2px; cursor: pointer; display: inline-flex; }
