@@ -16781,7 +16781,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    잦은 칸이라 폭이 곧 읽히는 양이다. */
 /* 너무 넓어져 모집분야·현재상태 쪽에 도로 나눠준다("제안한 공고 넓이가
    너무 커. 이거 줄이고 모집분야하고 현재 상태 폭좀 더 가져가자"). */
-.prop-table .c-post { width: 170px; max-width: 170px; }
+/* 모집분야와 붙어 보여서("제안한공고하고 모집분야가 너무 붙었네") 현재상태와
+   같은 방식으로 오른쪽 여백을 더 준다. */
+.prop-table .c-post { width: 170px; max-width: 170px; padding-right: 22px; }
 .prop-table.has-post .c-who  { width: 172px; }
 /* 모집분야가 이제 직군 한 단어뿐이라 170px는 너무 넓었다("모집분야 영역을
    너무 크게 잡았어") — 좁히되 긴 직군명은 2줄까지는 허용한다. */
