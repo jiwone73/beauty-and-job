@@ -633,23 +633,25 @@ export default function CompanyProposalsPage() {
                 const 할 = 다음할일(p);
                 return (
                   <tr key={p.id} className={할?.우리차례 ? "mine" : undefined}>
-                    <td className="c-who">
-                      <button type="button" className="prop-who" onClick={() => 이력서열기(p)}>
-                        <span className="prop-av">
+                    {/* 인재 칸은 공고지원자·인재풀 표와 같은 부품(.apl-td-*)을
+                        쓰되("PC 쪽 보낸제안 테이블 인재쪽 적용해줘. 기존
+                        룰이랑 통일"), 지역은 칸을 따로 빼지 않고 이름·나이
+                        밑 3행으로 다시 넣는다 — 칸을 나눴더니 인재 칸이
+                        좁아져 사진이 작아 보였다("인재를 2행으로 하니까
+                        아바타가 너무 작아. 지역을 인재에 다시 넣고 그
+                        폭만큼 아바타를 키우자"). 사진은 그 폭만큼(.prop-table
+                        전용으로) 32×40→44×55로 키운다. */}
+                    <td className="apl-td apl-td-who">
+                      <button type="button" className="apl-td-whobtn" onClick={() => 이력서열기(p)}>
+                        <span className="apl-td-avatar">
                           {p.avatarUrl
                             ? <img src={p.avatarUrl} alt="" loading="lazy" />
                             : <span>{(p.userName || "?").slice(0, 1)}</span>}
                         </span>
-                        <span className="prop-whoinfo">
-                          {/* 아바타 옆은 늘 세 줄이다(이름 / 성별·나이 / 희망지역) —
-                              값이 없는 사람도 자리를 비워 두어야 줄 높이가
-                              들쭉날쭉하지 않다. */}
-                          <b>{p.userName}</b>
-                          <i>{인적(p)}</i>
-                          {/* 희망지역은 성별·나이 밑에. 열을 따로 주면 그 폭만큼
-                              진행 상황이 좁아지는데, 지역은 사람을 가릴 때 보는
-                              값이라 사람 옆에 붙어 있는 편이 읽힌다. */}
-                          <em>{p.regionPrefer || ""}</em>
+                        <span className="apl-td-wholines">
+                          <span className="apl-td-name">{p.userName}</span>
+                          <span className="apl-td-sub">{인적(p) || "—"}</span>
+                          <span className="apl-td-sub">{p.regionPrefer || "—"}</span>
                         </span>
                       </button>
                     </td>
