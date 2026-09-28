@@ -3072,7 +3072,7 @@ export default function JobPostForm({
             <button className="company-primary-btn" onClick={() => handleSubmit("publish")}>
               {/* 머리줄·하단 두 단추가 말이 다르면 뭐가 다른 건지 헷갈린다("왜 버튼이
                   2개야? 뭐가 틀린거야?") — 같은 말로("공고 수정하기 로 하던지"). */}
-              {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정하기" : "공고 등록하기")}
+              {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 저장하기" : "공고 등록하기")}
             </button>
           </div>
         )}
@@ -4426,15 +4426,18 @@ export default function JobPostForm({
       )}
 
       {/* 위쪽(머리줄) 단추만 있으면 긴 폼을 다 채우고 다시 위로 올라가야 한다 —
-          PC도 모바일처럼 페이지 맨 아래에 같은 저장 단추를 둔다("공고수정 버튼이
-          하단에 있어야 하지 않나?" / "페이지 하단"). 모바일은 화면 폭을 다 쓰는
-          큰 단추가 자연스럽지만, PC는 화면이 넓어 같은 크기면 유난히 커 보였다
-          ("하단 버튼이 너무 커. 그냥 라벨만 감쌀만큼 크기로 오른쪽 정렬해줘") —
-          PC만 라벨 크기로 줄이고 오른쪽으로 붙인다. 머리줄 단추와 같은 일을
-          하는 두 번째 단추일 뿐, 다른 동작은 아니다("왜 버튼이 2개야?"). */}
-      <button type="button" className={isMobile ? "jobpost-mobile-submit" : "jobpost-desktop-submit"}
+          페이지 맨 아래에도 같은 저장 단추를("공고수정 버튼이 하단에 있어야
+          하지 않나?" / "페이지 하단"). 라벨만 감싸는 크기로 가운데 정렬,
+          모바일·PC 공통("하단 버튼이 너무 커. 그냥 라벨만 감쌀만큼 크기로" →
+          "공고 저장하기로 하단 가운데에 넣어줘" → "모바일 피씨 공통적용").
+          "수정"은 읽기 모드에 있는 버튼의 말이고, 여기는 이미 편집 중이라
+          "저장"이 맞다("수정은 read 모드에서 수정버튼이 있는거지. 여긴 이미
+          수정모드인데 저장이 맞음") — 새 공고는 아직 아무것도 없으니 그대로
+          "등록". 머리줄 단추와 같은 일을 하는 두 번째 단추일 뿐이다("왜
+          버튼이 2개야?"). */}
+      <button type="button" className="jobpost-submit-bottom"
         onClick={() => handleSubmit("publish")}>
-        {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 수정하기" : "공고 등록하기")}
+        {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 저장하기" : "공고 등록하기")}
       </button>
 
       <RegionSelectModal
