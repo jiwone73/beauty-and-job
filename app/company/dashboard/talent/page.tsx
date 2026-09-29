@@ -320,36 +320,6 @@ export default function TalentPage() {
     }
   };
 
-  // 스크랩을 담을 공고 — 진행 중인 공고만. 북마크를 누르면 여기서 고른다.
-  const [scrapJobs, setScrapJobs] = useState<{ id: string; title: string }[]>([]);
-  useEffect(() => {
-    companyJobsApi.list({ status: "ACTIVE", limit: 100 })
-      .then((res: any) => {
-        if (!res?.success || !res.data) return;
-        setScrapJobs(res.data
-          .filter((j: any) => !j.deadline || new Date(j.deadline) >= new Date(new Date().toDateString()))
-          .map((j: any) => ({ id: j.id, title: j.title })));
-      })
-      .catch(() => {});
-  }, []);
-
-  // 공고 하나에 담거나 뺀다. 화면을 먼저 바꾸고, 서버가 알려 준 담은 공고로 맞춘다.
-  const scrapJob = async (item: TalentItem, key: string, on: boolean) => {
-    const 앞 = item.scrapJobIds || [];
-    const 뒤 = on ? Array.from(new Set([...앞, key])) : 앞.filter((k) => k !== key);
-    const 맞추기 = (ids: string[]) => setTalents((prev) => prev.map((t) =>
-      t.id === item.id ? { ...t, scrapJobIds: ids, scrapped: ids.length > 0 } : t));
-    맞추기(뒤);
-    try {
-      const res: any = on
-        ? await companyTalentApi.scrap(item.id, key === "none" ? null : key)
-        : await companyTalentApi.unscrap(item.id, key);
-      if (res?.success && Array.isArray(res.data?.scrapJobIds)) 맞추기(res.data.scrapJobIds);
-    } catch {
-      맞추기(앞);
-    }
-  };
-
   const openPropose = async (item: TalentItem) => {
     setProposeTarget(item);
     setProposeJobId("");
@@ -1126,7 +1096,7 @@ export default function TalentPage() {
             {/* 빈 칸을 두고 '문구 채우기' 버튼을 옆에 달아 뒀더니, 버튼을 못 찾으면
                 결국 빈 칸이었다. 공고를 고르는 순간 채워 두고 고쳐 쓰게 한다. */}
             <textarea value={proposeMessage} onChange={(e) => setProposeMessage(e.target.value.slice(0, 1000))}
-              placeholder="보낼 메시지"
+              placeholder={proposeJobId ? "보낼 메시지" : "공고를 고르면 메시지가 자동으로 채워져요"}
               rows={5}
               style={{ width: "100%", boxSizing: "border-box", border: "1px solid #ddd", borderRadius: 8, padding: "10px 12px", fontSize: 14, resize: "vertical", outline: "none", marginBottom: 4 }} />
             <p style={{ fontSize: 11.5, color: "#555", margin: "0 0 16px", textAlign: "right" }}>{proposeMessage.length}/1000</p>

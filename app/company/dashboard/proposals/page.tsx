@@ -215,28 +215,17 @@ export default function CompanyProposalsPage() {
   const 스크랩모드 = pathname.endsWith("/proposals/scrapped");
 
   // ── 스크랩 인재 ──
-  // 왼쪽 맨 위는 「전체 스크랩」, 그 아래 「공고별 스크랩」으로 진행 중인 공고 전부
-  // (담은 사람이 없으면 0). 공고를 누르면 오른쪽이 그 공고로 담은 사람만 보인다.
-  // 공고연결/미연결 칩은 없앴다("공고연결 지워" — 제안하기가 어차피 자기 공고
-  // 선택창을 다시 띄워서, 미리 연결해 두는 것이 혼동만 더했다).
-  // 왼쪽 숫자와 오른쪽 목록이 한 데이터에서 나오도록 여기서 한 번에 부른다.
+  // 어느 공고로 담을지 고르는 팝오버는 없앴다("연결 안하기로 했는데" / "스크랩
+  // 버튼을 누르면 이 팝오버 없이 바로 토글되게") — 스크랩은 그냥 담거나 빼는
+  // 북마크고, 공고 고르기는 제안하기가 맡는다.
   const [스크랩인재, set스크랩인재] = useState<TalentItem[]>([]);
   const [스크랩로딩, set스크랩로딩] = useState(true);
-  const [진행공고, set진행공고] = useState<{ id: string; title: string; raw?: any }[]>([]);
-  const [고른스크랩, set고른스크랩] = useState(""); // "" 이면 전체 스크랩, 아니면 공고 id
   useEffect(() => {
     if (!스크랩모드) return;
     (async () => {
       set스크랩로딩(true);
       try {
-        const [잡, 인]: any[] = await Promise.all([
-          companyJobsApi.list({ status: "ACTIVE", limit: 100 }),
-          companyTalentApi.list({ scrapped: true, limit: 200 }),
-        ]);
-        const 공고 = (잡?.success && 잡.data ? 잡.data : [])
-          .filter((j: any) => !j.deadline || new Date(j.deadline) >= new Date(new Date().toDateString()))
-          .map((j: any) => ({ id: j.id, title: j.title, raw: j }));
-        set진행공고(공고);
+        const 인: any = await companyTalentApi.list({ scrapped: true, limit: 200 });
         set스크랩인재(인?.success ? (인.data || []) : []);
       } catch (e) {
         console.error("[scrapped]", e);
@@ -245,25 +234,19 @@ export default function CompanyProposalsPage() {
       }
     })();
   }, [스크랩모드]);
-  const 담긴사람 = 스크랩인재.filter((t) => (t.scrapJobIds || []).length > 0);
-  const 보일스크랩 = 고른스크랩
-    ? 스크랩인재.filter((t) => (t.scrapJobIds || []).includes(고른스크랩))
-    : 담긴사람;
-  // 공고 하나에 담거나 뺀다. 화면을 먼저 바꾸고 서버가 알려 준 담은 공고로 맞춘다.
-  // 모든 공고에서 빠진 사람도 목록 데이터에는 남겨 둔다 — 실수로 뺐을 때 바로 되담을 수 있게.
-  const 스크랩담기 = async (item: TalentItem, key: string, on: boolean) => {
-    const 앞 = item.scrapJobIds || [];
-    const 뒤 = on ? Array.from(new Set([...앞, key])) : 앞.filter((k) => k !== key);
-    const 맞추기 = (ids: string[]) => set스크랩인재((prev) => prev.map((t) =>
-      t.id === item.id ? { ...t, scrapJobIds: ids, scrapped: ids.length > 0 } : t));
-    맞추기(뒤);
+  // 목록 자체가 스크랩한 사람만 부른 것이라, 빼면 바로 줄에서 지운다. 되돌릴 수
+  // 없는 일(다시 스크랩하려면 인재풀에서 그 사람을 또 찾아야 한다)이라 한 번 묻는다
+  // ("스크랩 버튼 누르면 알림창 띄어줘 삭제할건지").
+  const [뺄것, set뺄것] = useState<TalentItem | null>(null);
+  const 스크랩빼기 = async () => {
+    const item = 뺄것;
+    if (!item) return;
+    set뺄것(null);
+    set스크랩인재((prev) => prev.filter((t) => t.id !== item.id));
     try {
-      const res: any = on
-        ? await companyTalentApi.scrap(item.id, key === "none" ? null : key)
-        : await companyTalentApi.unscrap(item.id, key);
-      if (res?.success && Array.isArray(res.data?.scrapJobIds)) 맞추기(res.data.scrapJobIds);
+      await companyTalentApi.unscrap(item.id);
     } catch {
-      맞추기(앞);
+      set스크랩인재((prev) => [...prev, item]);
     }
   };
 
@@ -415,17 +398,6 @@ export default function CompanyProposalsPage() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [목록, 고른공고]);
-  // 스크랩 인재의 공고 머리 — 보낸 제안과 같은 모양. 「공고 없이 담은 사람」에는 없다.
-  const 스크랩머리 = useMemo(() => {
-    const g = 진행공고.find((x) => x.id === 고른스크랩)?.raw;
-    if (!g) return null;
-    return 머리만들기({
-      제목: g.title, 시작: g.created_at, 마감일: g.deadline, 부문: g.positions,
-      직군: g.categories, 고용형태: g.employment_type, 경력: g.experience_level,
-      인원: g.headcount, 상태: g.status,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [진행공고, 고른스크랩]);
   const 우리차례수 = 줄들.filter((p) => 다음할일(p)?.우리차례).length;
   // 전체로 볼 때만 공고별로 묶는다. 차례는 줄 차례 그대로 — 먼저 나온 공고가 먼저다.
   const 묶음들 = useMemo(() => {
@@ -491,22 +463,8 @@ export default function CompanyProposalsPage() {
   return (
     <CompanyLayout activePage={스크랩모드 ? "scrapped" : "proposals"}>
       {스크랩모드 ? (
-        <>
-          {스크랩머리 && (
-            <div className="co-pane">
-              <button type="button" className="prop-back" onClick={() => set고른스크랩("")}>
-                ‹ 스크랩 인재 전체
-              </button>
-              {머리판(스크랩머리, 고른스크랩)}
-              {띠(`이 공고로 스크랩한 인재 ${보일스크랩.length}명`)}
-            </div>
-          )}
-          <ScrappedTalentList base={base} loading={스크랩로딩}
-            talents={보일스크랩}
-            scrapJobs={진행공고} onScrapJob={스크랩담기}
-            proposeJobId={고른스크랩 || undefined}
-            hideCount={!!스크랩머리} />
-        </>
+        <ScrappedTalentList base={base} loading={스크랩로딩}
+          talents={스크랩인재} onToggleScrap={set뺄것} />
       ) : (<>
       {/* 공고가 먼저고 그 아래 제안이 붙는다. 공고·지원자 관리와 같은 머리 블록을
           쓴다 — 같은 공고를 두 화면에서 다르게 그리면 같은 것으로 안 읽힌다.
@@ -730,6 +688,19 @@ export default function CompanyProposalsPage() {
         />
       )}
       </>)}
+
+      {/* 스크랩 인재 탭에서도 열려야 해서 위 갈래(보낸 제안 전용) 밖에 둔다. */}
+      {뺄것 && (
+        <div className="rp-modal-overlay">
+          <div className="prop-dec">
+            <p className="prop-dec-t">{뺄것.name}님을 스크랩에서 뺄까요?</p>
+            <div className="prop-dec-acts">
+              <button type="button" onClick={() => set뺄것(null)}>취소</button>
+              <button type="button" className="key" onClick={스크랩빼기}>스크랩 빼기</button>
+            </div>
+          </div>
+        </div>
+      )}
     </CompanyLayout>
   );
 }
