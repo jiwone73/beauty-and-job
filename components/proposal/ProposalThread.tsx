@@ -244,8 +244,11 @@ export default function ProposalThread({
                     <span className="pth-appt-wait">답을 기다리는 중</span>
                   ) : (
                     <div className="pth-appt-acts">
-                      <button type="button" onClick={() => 약속답(m.id, "DECLINED")}>어려워요</button>
-                      <button type="button" className="key" onClick={() => 약속답(m.id, "ACCEPTED")}>좋아요</button>
+                      {/* "거절하기"는 제안 자체를 거절할 때 쓰는 말이라 여기(면접
+                          시간 하나만 안 맞는 것)에는 안 맞아 "일정 변경"으로 —
+                          "어려워요/좋아요"는 쓰지 않는 말이라 뺀다("이런말 안써"). */}
+                      <button type="button" onClick={() => 약속답(m.id, "DECLINED")}>일정 변경</button>
+                      <button type="button" className="key" onClick={() => 약속답(m.id, "ACCEPTED")}>수락하기</button>
                     </div>
                   )}
                 </div>
@@ -286,7 +289,7 @@ export default function ProposalThread({
             <div className="pth-send">
               {/* 최종 일정은 매장이 정한다 — 그날 예약이 몇 개인지는 매장만 알고,
                   장소도 그 공고의 근무지라 구직자가 고칠 값이 아니다. 구직자는
-                  메시지로 묻고 「좋아요·어려워요」로 답한다. */}
+                  메시지로 묻고 「수락하기·일정 변경」으로 답한다. */}
               {나 === "COMPANY" && (
                 <button type="button" className={`pth-appt-open${약속열림 ? " on" : ""}`} title="면접 약속 잡기"
                   onClick={약속열기}>

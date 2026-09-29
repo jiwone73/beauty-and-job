@@ -109,26 +109,35 @@ export default function ProposalsPage() {
   // 수락/거절이 아니라 한 방향이라, 관심 없으면 그냥 두면 된다.
   // 관심은 대개 조건부라 한마디를 붙일 수 있게 열어 준다(선택).
   // 관심을 보낸 뒤에는 그 자리에서 대화를 이어 간다 — 새 화면으로 보내지 않는다.
+  //
+  // 카드 안에 수락하기·채팅하기·거절하기를 나란히 두었더니 뭐가 다른지
+  // 헷갈렸다("수락하기 채팅하기가 똑같은 의미 아닌가?" / "수락하기가 뭔지
+  // 잘모르잖아") — 카드에는 버튼을 두지 않고, 눌렀을 때 뜨는 별도 질문(모달)
+  // 하나로 합친다: 여기서 수락하면 무엇이 열리는지 먼저 설명하고, 수락·거절
+  // 둘 중 하나를 고르게 한다("카드에 버튼은 삭제하고 별도의 질문으로 확인을
+  // 받자는거지" / "제안 내용에 관심이 있고 채팅을 통해 더 알아보길 원하면
+  // 수락하기고 아니면 거절하기 둘이지").
   const [대화, set대화] = useState<Proposal | null>(null);
-  const [관심쓰는중, set관심쓰는중] = useState<string | null>(null);
+  const [답할것, set답할것] = useState<Proposal | null>(null);
   const [한마디, set한마디] = useState("");
 
-  const 관심열기 = (id: string, e: React.MouseEvent) => {
+  const 답변열기 = (p: Proposal, e: React.MouseEvent) => {
     e.stopPropagation();
     set한마디("");
-    set관심쓰는중(id);
+    set답할것(p);
   };
 
-  const 관심보내기 = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const 관심보내기 = async () => {
+    const p = 답할것;
+    if (!p) return;
     const token = localStorage.getItem("access_token");
     if (!token) return;
     const 글 = 한마디.trim();
     // 눌린 표시를 먼저 바꾼다 — 응답을 기다리는 동안 아무 일도 안 일어난 것처럼 보인다.
-    set목록((prev) => prev.map((p) => (p.id === id
-      ? { ...p, interested_at: new Date().toISOString(), interest_message: 글 || null } : p)));
-    set관심쓰는중(null);
-    await fetch(`/api/users/me/proposals/${id}`, {
+    set목록((prev) => prev.map((x) => (x.id === p.id
+      ? { ...x, interested_at: new Date().toISOString(), interest_message: 글 || null } : x)));
+    set답할것(null);
+    await fetch(`/api/users/me/proposals/${p.id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ message: 글 }),
@@ -216,7 +225,7 @@ export default function ProposalsPage() {
                           )}
                           {st === "대기" && (
                             <button type="button" className="prop-go"
-                              onClick={(e) => 관심열기(p.id, e)}>수락하기</button>
+                              onClick={(e) => 답변열기(p, e)}>수락하기</button>
                           )}
                           {/* 수락 전에도 채팅이 열린다 — 공고(제안 내용)는 이미 왼쪽에
                               다 나와 있어 누가 왜 말 거는지는 안다("채팅전에 무조건
@@ -242,14 +251,14 @@ export default function ProposalsPage() {
                         </div>
                       </div>
 
-                      {관심쓰는중 === p.id && (
+                      {답할것?.id === p.id && (
                         <div className="prop-interest-box" onClick={(e) => e.stopPropagation()}>
                           <textarea value={한마디} onChange={(e) => set한마디(e.target.value)} rows={2}
                             maxLength={300} autoFocus
                             placeholder="궁금한 점이나 조건이 있으면 적어주세요 (예: 주 4일 가능할까요?)" />
                           <div className="prop-interest-acts">
-                            <button type="button" onClick={(e) => { e.stopPropagation(); set관심쓰는중(null); }}>취소</button>
-                            <button type="button" className="key" onClick={(e) => 관심보내기(p.id, e)}>보내기</button>
+                            <button type="button" onClick={(e) => { e.stopPropagation(); set답할것(null); }}>취소</button>
+                            <button type="button" className="key" onClick={(e) => { e.stopPropagation(); 관심보내기(); }}>보내기</button>
                           </div>
                         </div>
                       )}
