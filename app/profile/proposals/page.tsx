@@ -100,9 +100,10 @@ function 최근활동(p: Proposal): { 글: string; 차례: string | null } {
   return { 글: `💬 ${때(시각)}`, 차례: 차례말(p) };
 }
 
-/** 이 줄에 열린 대화가 있나 — 거절·거둔 제안만 끝난 것이다. */
+/** 이 줄에 열린 대화가 있나. 채팅은 수락 이후부터다("채팅은 진행중에서만"
+ *  / "수락전 채팅은 안돼"). */
 function 대화열림(p: Proposal): boolean {
-  return !p.declined_at && !p.canceled_at;
+  return !!p.interested_at && !p.declined_at && !p.canceled_at;
 }
 
 // 종료 탭 — 무엇으로 끝났는지 한 마디, 그 일이 있었던 날.
@@ -309,14 +310,9 @@ export default function ProposalsPage() {
                               <tr className="prop-msg-row">
                                 <td colSpan={5}>
                                   {p.message && <p className="prop-msg-text">“{p.message}”</p>}
+                                  {/* 채팅은 수락 이후부터다("채팅은 진행중에서만" /
+                                      "수락전 채팅은 안돼") — 여기서는 수락·거절만 고른다. */}
                                   <div className="prop-msg-acts">
-                                    {/* 수락 전에도 채팅은 열려 있다("제안하기가 완료되면
-                                        수락전이라도 채팅을 할수 있게 해줘") — 기업이
-                                        덧붙인 말을 읽고 답할 곳이 있어야 한다. */}
-                                    <button type="button" className="prop-chat-solid"
-                                      onClick={() => set대화(p)}>
-                                      채팅하기
-                                    </button>
                                     <button type="button" className="prop-cancel"
                                       onClick={() => { set거절할것(p); set같이차단(false); set거절사유(""); }}>
                                       거절하기
@@ -344,12 +340,11 @@ export default function ProposalsPage() {
                       {버킷.진행중.map((p) => {
                         const st = 상태(p);
                         const 활 = 최근활동(p);
-                        const 내차례 = 활.차례 === "답변 필요" || 활.차례 === "확인 필요";
                         const 단계 = 현재단계(st);
                         return (
                           <div className="prop-card2" key={p.id}>
                             <div className="prop-card2-co">
-                              <span className="prop-card2-logo">
+                              <span className="apl-td-avatar">
                                 {p.company_logo_url
                                   ? <img src={p.company_logo_url} alt="" loading="lazy" />
                                   : <span>{(p.brand_name || p.company_name || "?").slice(0, 1)}</span>}
@@ -382,14 +377,9 @@ export default function ProposalsPage() {
                             </div>
 
                             <div className="prop-card2-status">
-                              <div className="prop-card2-status-top">
-                                <MessageCircle size={15} />
-                                <b>{상태이름진행중[st]}</b>
-                              </div>
-                              <span className="prop-upd">{활.글.replace("💬 ", "")}</span>
-                              {활.차례 && (
-                                <span className={내차례 ? "prop-turn mine" : "prop-turn"}>({활.차례})</span>
-                              )}
+                              <MessageCircle size={15} />
+                              <b>{상태이름진행중[st]}</b>
+                              <span>{활.글.replace("💬 ", "")}</span>
                             </div>
 
                             <div className="prop-card2-recent">
@@ -426,7 +416,7 @@ export default function ProposalsPage() {
                         return (
                           <div className="prop-card2 ended" key={p.id}>
                             <div className="prop-card2-co">
-                              <span className="prop-card2-logo">
+                              <span className="apl-td-avatar">
                                 {p.company_logo_url
                                   ? <img src={p.company_logo_url} alt="" loading="lazy" />
                                   : <span>{(p.brand_name || p.company_name || "?").slice(0, 1)}</span>}

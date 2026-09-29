@@ -87,12 +87,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // 차단된 사이에는 말이 오가지 않는다. 읽기는 남겨 둔다 — 지난 대화까지
   // 사라지면 무슨 일이 있었는지 확인할 길이 없다.
   if (제안?.blocked) return err("PROP_MSG_005", "더 이상 대화할 수 없어요.", 403);
-  // 매장은 제안을 보낸 순간부터 말을 걸 수 있다 — 수락을 기다리지 않는다
-  // ("제안하기가 완료되면 수락전이라도 채팅을 할수 있게 해줘"). 전에는 상대가
-  // 받아들여야 열렸는데(PROP_MSG_007), 그 규칙을 없앤다. 다만 상대가 거절했거나
-  // 매장이 거뒀으면 끝난 제안이라 계속 막는다("상대가 거절을 하면 막아야지").
+  // 거절했거나 매장이 거둔 제안은 끝난 것이라 계속 막는다
+  // ("상대가 거절을 하면 막아야지").
   if (제안?.declined_at) return err("PROP_MSG_007", "구직자가 제안을 거절했어요.", 400);
   if (제안?.canceled_at) return err("PROP_MSG_007", "거둔 제안이에요.", 400);
+  // 채팅은 수락 이후부터다("수락전 채팅은 안돼") — 구직자가 아직 답하지
+  // 않은 제안에 매장이 먼저 말을 거는 일은 없다.
+  if (!제안?.interested_at) return err("PROP_MSG_007", "아직 수락하지 않은 제안이에요.", 400);
   try {
     const b = await req.json().catch(() => ({}));
     const kind = b?.kind === "APPOINTMENT" ? "APPOINTMENT" : "TEXT";

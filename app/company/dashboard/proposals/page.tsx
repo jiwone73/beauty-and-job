@@ -185,11 +185,11 @@ function 최근활동(p: 제안): { 글: string; 차례: string | null } {
   return { 글: `💬 ${때(시각)}`, 차례: 차례말(p) };
 }
 
-/** 이 줄에 열린 대화가 있나. 제안을 보낸 순간부터 열려 있다 — 수락을 기다리지
- *  않는다("제안하기가 완료되면 수락전이라도 채팅을 할수 있게 해줘"). 거절·거둔
- *  제안만 끝난 것이다("상대가 거절을 하면 막아야지" — 비활성화가 곧 거절 표시). */
+/** 이 줄에 열린 대화가 있나. 채팅은 수락 이후부터다("채팅은 진행중에서만" /
+ *  "수락전 채팅은 안돼") — 구직자가 아직 답하지 않은 제안엔 매장이 먼저 말을
+ *  걸 수 없다. 거절·거둔 제안은 그 전에 이미 끝난 것이다. */
 function 대화열림(p: 제안): boolean {
-  return !p.declinedAt && !p.canceledAt && !p.blocked;
+  return !!p.interestedAt && !p.declinedAt && !p.canceledAt && !p.blocked;
 }
 
 /** 다음에 할 일. 우리 차례인 것만 색을 채운다. */
@@ -682,11 +682,15 @@ export default function CompanyProposalsPage() {
                         채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요"). */}
                     <td className={`c-manage${할?.우리차례 ? " todo" : ""}`}>
                       <div className="prop-actrow">
-                        <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
-                          title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
-                          onClick={() => set대화(p)}>
-                          채팅하기
-                        </button>
+                        {/* 채팅은 수락 이후부터다("채팅은 진행중에서만" / "수락전 채팅은
+                            안돼") — 답변대기 줄에는 채팅하기 자체를 두지 않는다. */}
+                        {st !== "답변대기" && (
+                          <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
+                            title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
+                            onClick={() => set대화(p)}>
+                            채팅하기
+                          </button>
+                        )}
                         {/* 거두는 일은 아직 답이 없는 줄에서만. 수락한 뒤에는 드물고, 잘못
                             누르면 되돌릴 수 없다 — 그때는 대화로 정리한다. */}
                         {st === "답변대기" && (
