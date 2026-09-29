@@ -74,11 +74,20 @@ export const 급여펴기 = (v: string) =>
 /** 급여 칸에 실제로 나갈 말. 비어 있거나 「협의로 열어둠」이면 협의다. 금액을 적어 두고
  *  협의 여지만 남긴 경우(salaryNego "open")는 폼과 같이 금액 옆에 "협의"를 붙인다 —
  *  따로 줄을 만들지 않는다(폼은 상자 안 한 줄, 여기도 같은 자리에 이어 적는다). */
-function 급여값(p: any): string {
+export function 급여값(p: any): string {
   if (p?.salaryNego === "hidden") return "협의";
   const v = 급여펴기(p?.salary);
   if (!v) return p?.salaryNego === "open" ? "협의" : "";
   return p?.salaryNego === "open" ? `${v} 협의` : v;
+}
+
+/** 근무요일/시간 — shiftText(원티드식 자유 문장)가 있으면 그걸 원본으로 삼는다.
+ *  예전엔 workDays·workTime만 봐서, shiftText로만 적은 공고(요즘 대부분)는 여기
+ *  값이 통째로 빠졌다. 협의가 걸린 시간 줄은 상세 표와 같이 "협의"를 붙인다. */
+export function 근무시간값(p: any): string {
+  const 시간원문 = p?.shiftText || [p?.workDays, p?.workTime].filter(Boolean).join(" ");
+  if (!시간원문) return "";
+  return 시간표시줄들(시간원문).map((l) => (l.협의 ? `${l.글} 협의` : l.글)).join(", ");
 }
 
 /** 모집분야 한 자리를 「네일 아티스트 | 1명 | 정규직 | 경력 | 주5일 10~19시 | 월급 240만원」로.
@@ -92,13 +101,6 @@ export function 모집분야한줄(p: any, 본사공고: boolean): string {
   // 처럼 여기서만 다시 줄이면 같은 공고를 두고 두 화면이 다른 말을 하게 된다.
   const 성별원문 = String(p.gender || "").trim();
   const 성별 = 성별원문 && 성별원문 !== "무관" ? 성별원문 : "";
-  // 근무요일/시간 — shiftText(원티드식 자유 문장)가 있으면 그걸 원본으로 삼는다.
-  // 예전엔 workDays·workTime만 봐서, shiftText로만 적은 공고(요즘 대부분)는 여기
-  // 값이 통째로 빠졌다. 협의가 걸린 시간 줄은 상세 표와 같이 "협의"를 붙인다.
-  const 시간원문 = p.shiftText || [p.workDays, p.workTime].filter(Boolean).join(" ");
-  const 시간값 = 시간원문
-    ? 시간표시줄들(시간원문).map((l) => (l.협의 ? `${l.글} 협의` : l.글)).join(", ")
-    : "";
   const 칸 = [
     p.category,
     본사공고 ? "" : (p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : ""),
@@ -107,10 +109,56 @@ export function 모집분야한줄(p: any, 본사공고: boolean): string {
     성별,
     p.career,
     본사공고 ? p.education : "",
-    시간값,
+    근무시간값(p),
     급여값(p),
   ];
   return 칸.map((x) => String(x || "").trim()).filter(Boolean).join(" | ");
+}
+
+/** 시간 표시 줄 안에서 실제 시간 구간이 시작하는 자리("10:00~19:00", "10시 ~ 20시").
+ *  이 앞은 요일 쪽("월,화,수,목,금", "주 5일")이다 — 숫자로만 가르면 "주5일"의
+ *  "5"에서 잘못 끊긴다. */
+const 시간구간패턴 = /\d{1,2}(:\d{2})?\s*시?\s*~\s*\d{1,2}(:\d{2})?\s*시?/;
+
+/** 요일이 적힌 줄인가("월, 화, 수, 목") — 시간 구간이 없는 줄을 요일 줄과
+ *  "협의"류(시간 줄) 중 어디로 보낼지 가른다. */
+const 요일글자패턴 = /[월화수목금토일]/;
+
+/** 근무조건 세 줄 — 요일·시간·급여를 각각 한 줄씩("근무조건 3행. 요일, 시간, 급여
+ *  1칸씩"). 근무시간값 한 줄엔 요일과 시간이 붙어 있어(예: "월,화,수,목,금
+ *  09:00~18:00") 시간구간패턴으로 자른 앞쪽을 요일 줄로, 뒤쪽(+협의)을 시간 줄로
+ *  나눈다. shiftText가 요일 줄과 시간 줄을 아예 따로 적은 경우(예: "월, 화, 수,
+ *  목" 한 줄 + "10시 ~ 20시" 한 줄)도 있어, 시간 구간이 없는 줄은 요일 글자가
+ *  있으면 요일 줄로, 없으면("협의"류) 시간 줄로 보낸다. */
+export function 근무조건3행(p: any): { 요일: string; 시간: string; 급여: string } {
+  if (!p) return { 요일: "", 시간: "", 급여: "" };
+  const 시간원문 = p?.shiftText || [p?.workDays, p?.workTime].filter(Boolean).join(" ");
+  const 요일들: string[] = [];
+  const 시간들: string[] = [];
+  for (const 줄 of 시간표시줄들(시간원문)) {
+    const m = 줄.글.match(시간구간패턴);
+    if (m && m.index !== undefined) {
+      const 요일부분 = 줄.글.slice(0, m.index).trim();
+      if (요일부분) 요일들.push(요일부분);
+      시간들.push(줄.협의 ? `${m[0]} 협의` : m[0]);
+    } else if (줄.글) {
+      const 문자 = 줄.협의 ? `${줄.글} 협의` : 줄.글;
+      (요일글자패턴.test(줄.글) ? 요일들 : 시간들).push(문자);
+    }
+  }
+  return { 요일: 요일들.join(", "), 시간: 시간들.join(", "), 급여: 급여값(p) };
+}
+
+/** 제안이 가리키는 자리의 근무조건 세 줄. 제안분야들과 같은 규칙으로 자리를 고른다. */
+export function 근무조건3행들(
+  positions: any, 자리번호: number | null | undefined
+): { 요일: string; 시간: string; 급여: string }[] {
+  const 목록 = Array.isArray(positions) ? positions.filter((p: any) => p && p.category) : [];
+  if (목록.length === 0) return [];
+  if (자리번호 !== null && 자리번호 !== undefined && 목록[자리번호]) {
+    return [근무조건3행(목록[자리번호])];
+  }
+  return 목록.map(근무조건3행);
 }
 
 /** 제안이 가리키는 자리. 기업이 고른 자리가 있으면 그것만, 없으면(옛 제안) 전부. */

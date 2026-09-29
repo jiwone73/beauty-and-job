@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
-import { 제안분야들 } from "@/lib/positionLine";
+import { 제안분야들, 근무조건3행들 } from "@/lib/positionLine";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 인재열람가능, 이름가리기, 지원함SQL } from "@/lib/companyEntitlement";
@@ -103,6 +103,18 @@ export async function GET(req: NextRequest) {
       // 그때는 공고의 분야를 전부 적는다.
       positionLine: 제안분야들(r.job_positions, r.position_index,
         (r.job_type || "") === "OFFICE").join(" / ") || null,
+      // 모집분야 칸을 직군 한 단어로 줄인 만큼("모집분야에는 헤어디자이너 까지만
+      // 써"), 근무시간·급여는 따로 근무조건 칸으로 뺀다("근무조건은 근무시간,
+      // 급여 요렇게만"). 칸 안에서 요일·시간·급여를 각각 한 줄씩 보여준다
+      // ("근무조건 3행. 요일, 시간, 급여 1칸씩").
+      ...(() => {
+        const 행 = 근무조건3행들(r.job_positions, r.position_index);
+        return {
+          workConditionDay: 행.map((x) => x.요일).filter(Boolean).join(" / ") || null,
+          workConditionTime: 행.map((x) => x.시간).filter(Boolean).join(" / ") || null,
+          workConditionSalary: 행.map((x) => x.급여).filter(Boolean).join(" / ") || null,
+        };
+      })(),
       interestMessage: r.interest_message,
       userId: r.user_id,
       userName: (열람가능 || r.applied_here) ? r.user_name : 이름가리기(r.user_name),

@@ -16785,17 +16785,18 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    같은 방식으로 오른쪽 여백을 더 준다. */
 .prop-table .c-post { width: 170px; max-width: 170px; padding-right: 22px; }
 .prop-table.has-post .c-who  { width: 172px; }
-/* 모집분야가 이제 직군 한 단어뿐이라 170px는 너무 넓었다("모집분야 영역을
-   너무 크게 잡았어") — 좁히되 긴 직군명은 2줄까지는 허용한다. */
-/* max-width도 같이 못박는다 — 아래(17085줄 부근) 기본 .c-job 규칙의
-   max-width:110px가 셀렉터 개수(specificity)가 달라도 width가 아닌
-   max-width엔 안 걸려 그대로 남아, 넓힌 width를 도로 눌러 버렸다. */
-.prop-table.has-post .c-job  { width: 152px; max-width: 152px; }
-.prop-table.has-post .c-st   { width: 102px; max-width: 102px; }
+/* 근무조건 칸이 따로 생겨서 모집분야는 다시 직군 한 단어만큼만("근무조건이
+   모집분야 다음에 추가되야"). */
+/* 요일·시간·급여를 각각 한 줄씩 3행으로("근무조건 3행. 요일, 시간, 급여
+   1칸씩") — 제일 중요한 칸이라("근무조건이 제일 중요하니 넓이 더 확보") 넓이를
+   더 준 만큼 진행상황·액션에서 그만큼 덜어 온다(852/810 합은 그대로). */
+.prop-table .c-cond { width: 190px; max-width: 190px; color: var(--color-text); line-height: 1.45; }
+.prop-table .c-cond span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 표 자체 폭을 칸 합계에 정확히 맞춘다 — 100%로 늘어나 있으면 브라우저가
    남는 폭을 진행상황 칸에 몰아줘 버렸다(칸별 max-width를 표에서는 그대로
    안 지킴). */
-.prop-table.has-post { width: 826px; }
+.prop-table.has-post { width: 852px; }
+.prop-table:not(.has-post) { width: 810px; }
 /* 인재 칸은 아바타와 글이 칸 끝까지 차서, 여백이 없으면 옆 칸 공고명과 붙어
    한 덩이로 읽혔다. 오른쪽만 한 칸 더 띄운다. */
 .prop-table.has-post .c-who { padding-right: 18px; }
@@ -16854,15 +16855,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table tr.mine td:first-child { box-shadow: inset 2px 0 0 #c0504d; }
 /* 한 줄에 한 값 — 칸 안에서 글이 접히면 줄 높이가 사람마다 달라 표가 들쭉날쭉해진다.
    넘치면 접지 말고 말줄임으로 자른다. */
-.prop-table .c-date, .prop-table .c-st { white-space: nowrap; }
-/* 현재상태와 진행상황이 너무 붙어 보였다("현재상태하고 진행상황이 너무
-   붙었어") — 오른쪽 여백을 더 준다. */
-.prop-table .c-st { padding-right: 22px; }
+.prop-table .c-date { white-space: nowrap; }
 .prop-table .c-who { width: 180px; }
-/* 날짜·상태도 폭을 못 박는다 — 비워 두면 남은 자리를 진행 상황과 똑같이 나눠 갖고,
+/* 날짜도 폭을 못 박는다 — 비워 두면 남은 자리를 진행 상황과 똑같이 나눠 갖고,
    정작 글이 긴 진행 상황이 좁아진다. */
 .prop-table .c-date { width: 120px; }
-.prop-table .c-st { width: 130px; }
 .prop-whoinfo b, .prop-whoinfo i, .prop-whoinfo em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* 단추 열은 가운데로. 오른쪽 정렬이면 열 끝은 맞아도 단추 안쪽 여백 때문에
    머리 글자와 단추 글자가 12px 어긋나 보인다. */
@@ -16876,11 +16873,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
 .prop-table .c-time { width: 86px; white-space: nowrap; color: #555; }
 .prop-table th.c-time { color: #555; }
-/* 대기 줄에서만 거두는 길. 상태 밑에 버튼 꼴로 둔다("제안취소를 버튼 타입으로
-   바꿔줘") — 글자 밑줄이 아니라 다른 단추(.prop-chatbtn)와 같은 테두리 단추.
-   여백은 더 줄이고("제안취소 버튼 여백 줄여줘") 글자도 채팅하기와 같은
-   13px로("폰트도 줄여 채팅하기 폰트로"). */
-.prop-cancel { display: flex; width: fit-content; margin-top: 2px; padding: 2px 7px;
+/* 제안취소·채팅하기를 한 줄(3행)에 나란히 둔다("3번째는 제안취소, 채팅하기
+   버튼 생각하는데 어떄?" — 현재상태·진행상황을 한 칸으로 합치며). */
+.prop-actrow { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+/* 버튼 꼴로 둔다("제안취소를 버튼 타입으로 바꿔줘") — 글자 밑줄이 아니라
+   다른 단추(.prop-chatbtn)와 같은 테두리 단추. 여백은 더 줄이고("제안취소
+   버튼 여백 줄여줘") 글자도 채팅하기와 같은 13px로("폰트도 줄여 채팅하기
+   폰트로"). 이제 행 안에서 나란히 서므로 위 여백은 행(.prop-actrow)이 맡는다. */
+.prop-cancel { display: flex; width: fit-content; padding: 2px 7px;
   border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
   font-family: inherit; font-size: 13px; color: #555; cursor: pointer; }
 .prop-cancel:hover { border-color: #c0504d; color: #c0504d; }
@@ -16913,13 +16913,20 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    제안을 거뒀습니다")도 잘리지 않게("진행상황 메시지에 ... 있으면 안됨"). */
 /* max-width로 고정하지 않으면 다른 칸을 줄인 만큼 이 칸이 남는 폭을 전부
    가져가 버렸다 — 모집분야·현재상태에 준 폭이 여기로 도로 새는 것을 막는다. */
-.prop-table .c-recent { width: 230px; max-width: 230px; }
-/* "채팅하기"는 맨 위 자리 단추다("채팅하기라는 버튼을 맨위칸에 만들자") —
-   제안을 보낸 순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는
-   뜻("채팅하기가 비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */
-/* 패딩을 제안취소 버튼과 같은 값으로("두 버튼 폰트 크기 같은거 맞지? 패딩값을
-   제안취소로 통일해줘"). */
-.prop-chatbtn { display: inline-flex; margin-top: 4px; padding: 2px 7px;
+/* 현재상태를 이 칸의 1행으로 합쳤으니 그만큼 넓힌다("현재상태와 진행상황이
+   중복이 되니, 진행상황·액션 으로 통일"). */
+.prop-table .c-recent { width: 210px; max-width: 210px; }
+/* 업데이트 줄은 상태 배지보다 눈에 덜 띄어도 된다("업데이트는 폰트 12로",
+   "색상을 제안한공고에 있는 날짜처럼 흐리게") — 제안한 공고 칸의 날짜(.prop-post-date)와 같은 값. */
+.prop-upd { font-size: 12px; color: #9a9aa3; }
+/* "채팅하기"는 액션 행(3행)에 제안취소와 나란히 선다("채팅하기라는 버튼을
+   맨위칸에 만들자" 당시엔 혼자였지만, 지금은 1행이 상태 몫) — 제안을 보낸
+   순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는 뜻
+   ("채팅하기가 비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). 위
+   여백은 행(.prop-actrow)이 맡으므로 여기선 없앤다.
+   패딩은 제안취소 버튼과 같은 값으로("두 버튼 폰트 크기 같은거 맞지?
+   패딩값을 제안취소로 통일해줘"). */
+.prop-chatbtn { display: inline-flex; padding: 2px 7px;
   border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
   font: inherit; font-size: 13px; color: #555; cursor: pointer; }
 .prop-chatbtn:hover { border-color: var(--color-primary); color: var(--color-primary); }

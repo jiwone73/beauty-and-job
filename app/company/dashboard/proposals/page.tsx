@@ -7,7 +7,6 @@ import ProposalThread from "@/components/proposal/ProposalThread";
 import ScrappedTalentList from "@/components/company/ScrappedTalentList";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import { 마감인가 } from "@/lib/jobClosed";
-import { 님 } from "@/lib/josa";
 import { 모집분야한줄 } from "@/lib/positionLine";
 import { ChevronDown, Send, ChevronRight } from "lucide-react";
 
@@ -49,6 +48,12 @@ type 제안 = {
   /** 제안한 자리 한 줄. 공고에 모집분야가 여럿일 때 누구에게 어느 자리를
    *  보냈는지가 없어 매장도 알 수 없었다. */
   positionLine: string | null;
+  /** 근무시간·급여만 담은 값("근무조건은 근무시간, 급여 요렇게만") — 모집분야
+   *  칸을 직군 한 단어로 줄인 만큼 따로 둔다. 요일·시간·급여를 각각 한 줄씩
+   *  보여준다("근무조건 3행. 요일, 시간, 급여 1칸씩"). */
+  workConditionDay: string | null;
+  workConditionTime: string | null;
+  workConditionSalary: string | null;
   gender: string | null;
   age: number | null;
   subJob: string | null;
@@ -108,7 +113,7 @@ type 상태키 = "면접예정" | "채팅중" | "수락" | "거절" | "취소" |
 // 공고가 닫힐 때 같이 닫히고 이름도 「공고마감」이다 — 매장도 구직자도
 // 아는 말이고, 자연 마감이든 사람을 뽑아 조기 마감이든 같은 말이다.
 const 상태이름: Record<상태키, string> = {
-  답변대기: "대기", 수락: "수락", 채팅중: "채팅중",
+  답변대기: "검토중", 수락: "수락", 채팅중: "채팅중",
   면접예정: "면접예정",
   거절: "거절", 취소: "제안취소", 공고마감: "공고마감",
 };
@@ -131,39 +136,26 @@ function 상태(p: 제안): 상태키 {
   return "답변대기";
 }
 
-/** 마지막으로 무슨 일이 있었나. 주체를 반드시 밝힌다 — 「답장 기다리는 중」은
- *  누가 기다리는지가 없어 카드에서 가장 헷갈리던 말이었다. */
+/** 마지막으로 무슨 일이 있었나. 「○○님에게 보냈습니다」식 문장은 주체를
+ *  밝히려다 칸을 넘겼다("~ 했습니다 이런거 넣지말고") — 날짜를 앞세우고
+ *  이름은 괄호로 뒤에 붙인다("날자 업데이트됨 (이름)"). 칸이 좁으면 말줄임이
+ *  뒤(괄호 속 이름)부터 지운다 — 이름은 인재 칸에 이미 있어 지워져도 된다. */
 function 최근활동(p: 제안): { 글: string; 때: string | null } {
-  // 이름 뒤 조사를 「이」로 붙박아 두어 받침 없는 이름이 전부 틀렸다
-  // (「정용희이 읽었습니다」). 님을 붙이면 받침이 생겨 조사도 하나로 정해지고,
-  // 다른 화면이 쓰는 「○○님에게 제안하기」와도 결이 맞는다.
-  const 그분 = 님(p.userName);
-  // 우리가 한 일도 상대 이름으로 적는다 — 「○○님에게 보냈습니다」면 누가 누구에게
-  // 한 일인지가 한 번에 읽히고, 「우리가」를 따로 붙일 이유가 없어진다.
-  const 그분에게 = 님(p.userName, "에게");
-  if (p.canceledAt) return { 글: `${그분에게} 보낸 제안을 거뒀습니다`, 때: p.canceledAt };
-  if (p.appliedAt) return { 글: `${그분} 지원했습니다`, 때: p.appliedAt };
-  if (p.declinedAt) return { 글: `${그분} 거절했습니다`, 때: p.declinedAt };
   if (p.blocked) return { 글: "차단됨", 때: null };
-  // 약속이 잡혀 있어도, 그 뒤로 구직자가 말을 걸었으면 그 말을 먼저 적는다 —
+  let 시각: string;
+  if (p.canceledAt) 시각 = p.canceledAt;
+  else if (p.appliedAt) 시각 = p.appliedAt;
+  else if (p.declinedAt) 시각 = p.declinedAt;
+  // 약속이 잡혀 있어도, 그 뒤로 구직자가 말을 걸었으면 그 말을 먼저 친다 —
   // 답해야 할 것이 무엇인지가 이 칸에 떠 있어야 한다(빨간 글자가 곧 미답변이다).
-  if (p.appointmentAt && p.lastSender !== "USER") {
-    const d = new Date(p.appointmentAt);
-    return { 글: `${d.getMonth() + 1}.${d.getDate()} 면접 약속 되었습니다`, 때: p.lastMessageAt };
-  }
-  // 우리가 한 일에도 주체를 밝힌다. 「메시지를 보냈습니다」만 있으면 그 줄이
-  // 누구의 줄인지 알면서도 누가 보냈는지는 모른다.
+  else if (p.appointmentAt && p.lastSender !== "USER") 시각 = p.lastMessageAt!;
   // 제안 메시지 자체가 이제 첫 메시지로 들어가(messageCount 1부터 시작) —
-  // 그것만으로는 아직 "제안을 보낸" 단계다. 진짜 주고받음(2개째부터)만
-  // "메시지를 보냈습니다"로 올린다.
-  if (p.messageCount > 1) {
-    return p.lastSender === "USER"
-      ? { 글: `${그분} 메시지를 보냈습니다`, 때: p.lastMessageAt }
-      : { 글: `${그분에게} 메시지를 보냈습니다`, 때: p.lastMessageAt };
-  }
-  if (p.interestedAt) return { 글: `${그분} 제안을 수락했습니다`, 때: p.interestedAt };
-  if (p.readAt) return { 글: `${그분} 읽었습니다`, 때: p.readAt };
-  return { 글: `${그분에게} 제안을 보냈습니다`, 때: p.createdAt };
+  // 그것만으로는 아직 "제안을 보낸" 단계다. 진짜 주고받음(2개째부터)만 친다.
+  else if (p.messageCount > 1) 시각 = p.lastMessageAt!;
+  else if (p.interestedAt) 시각 = p.interestedAt;
+  else if (p.readAt) 시각 = p.readAt;
+  else 시각 = p.createdAt;
+  return { 글: `${때(시각)} 업데이트됨 (${p.userName})`, 때: null };
 }
 
 /** 이 줄에 열린 대화가 있나. 제안을 보낸 순간부터 열려 있다 — 수락을 기다리지
@@ -606,11 +598,16 @@ export default function CompanyProposalsPage() {
                     고른거라 햇갈리는거야") — 우리가 고른 자리임을 밝힌다. */}
                 {!고른공고 && <th className="c-post">제안한 공고</th>}
                 <th className="c-job">모집분야</th>
+                {/* 근무시간·급여만 따로("근무조건은 근무시간, 급여 요렇게만") —
+                    모집분야 다음 자리("근무조건이 모집분야 다음에 추가되야"). */}
+                <th className="c-cond">근무조건</th>
                 {/* 공고 하나를 골라 봤을 때는 "제안한 공고" 칸이 없으니 제안일을
                     그대로 제 칸에 둔다 — 밑에 붙일 칸 자체가 없다. */}
                 {고른공고 && <th className="c-date">제안일</th>}
-                <th className="c-st">현재 상태</th>
-                <th>진행 상황 (채팅)</th>
+                {/* 현재상태와 진행상황이 같은 말을 두 번 했다("현재상태와
+                    진행상황이 중복이 되니") — 한 칸으로 합친다: 1행 단계,
+                    2행 최근활동(주체 포함)+시간, 3행 제안취소·채팅하기. */}
+                <th className="c-recent">진행상황·액션</th>
               </tr>
             </thead>
             <tbody>
@@ -664,30 +661,38 @@ export default function CompanyProposalsPage() {
                         달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
                     {/* 좁은 칸이라 긴 값은 …으로 잘린다. 잘린 것은 마우스를 올리면 그대로 보인다. */}
                     <td className="c-job" title={조건(p)}><span>{조건(p)}</span></td>
-                    {고른공고 && <td className="c-date">{날짜(p.createdAt)}</td>}
-                    <td className="c-st">
-                      <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
-                      {/* 거두는 일은 아직 답이 없는 줄에서만. 수락한 뒤에는 드물고, 잘못
-                          누르면 되돌릴 수 없다 — 그때는 대화로 정리한다. */}
-                      {st === "답변대기" && (
-                        <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
-                          제안 취소
-                        </button>
-                      )}
+                    {/* 근무조건은 요일·시간·급여를 각각 한 줄씩("근무조건 3행.
+                        요일, 시간, 급여 1칸씩") — 제일 중요한 칸이라 넓이도 더 준다. */}
+                    <td className="c-cond" title={[p.workConditionDay, p.workConditionTime, p.workConditionSalary]
+                      .filter(Boolean).join(" · ") || undefined}>
+                      {p.workConditionDay || p.workConditionTime || p.workConditionSalary ? (
+                        <>
+                          <span>{p.workConditionDay}</span>
+                          <span>{p.workConditionTime}</span>
+                          <span>{p.workConditionSalary}</span>
+                        </>
+                      ) : <span>—</span>}
                     </td>
-                    {/* 맨 위에 "채팅하기" 단추를 따로 둔다("채팅하기라는 버튼을 맨위칸에
-                        만들자") — 제안을 보낸 순간부터 눌린다. 꺼져 있으면 곧 상대가
-                        거절했거나 거둔 제안이라는 뜻이다("채팅하기가 비활성화 되면
-                        상대가 거절한것으로 가늠하면되겠네"). 무슨 일이 있었나는 그
-                        아래 글자로, 언제는 그 밑에. */}
+                    {고른공고 && <td className="c-date">{날짜(p.createdAt)}</td>}
+                    {/* 1행 단계, 2행 날짜 업데이트됨(이름), 3행 액션 버튼. 채팅하기가
+                        꺼져 있으면 상대가 거절했거나 거둔 제안이라는 뜻이다("채팅하기가
+                        비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
-                      <span>{활.글}</span>
-                      {활.때 && <em className="prop-when">{때(활.때)}</em>}
-                      {/* 채팅하기는 시간 밑으로("채팅하기 버튼을 시간 밑으로 이동해줘"). */}
-                      <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
-                        onClick={() => set대화(p)}>
-                        채팅하기
-                      </button>
+                      <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
+                      <span className="prop-upd">{활.글}</span>
+                      <div className="prop-actrow">
+                        {/* 거두는 일은 아직 답이 없는 줄에서만. 수락한 뒤에는 드물고, 잘못
+                            누르면 되돌릴 수 없다 — 그때는 대화로 정리한다. */}
+                        {st === "답변대기" && (
+                          <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
+                            제안 취소
+                          </button>
+                        )}
+                        <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
+                          onClick={() => set대화(p)}>
+                          채팅하기
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
