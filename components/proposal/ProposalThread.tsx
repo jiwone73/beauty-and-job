@@ -62,6 +62,10 @@ export default function ProposalThread({
   const [약속열림, set약속열림] = useState(false);
   const [약속값, set약속값] = useState("");
   const [차단됨, set차단됨] = useState(false);
+  // 회사가 유료(스탠다드 이상)가 아니면 채팅 자체가 막힌다 — 그 이유를 그대로
+  // 보여준다. 안 보여주면 "아직 주고받은 말이 없어요"로 보여 왜 답이 안
+  // 오는지 알 수 없다.
+  const [막힘, set막힘] = useState<string | null>(null);
   const [메뉴, set메뉴] = useState(false);
   const 메뉴Ref = useRef<HTMLDivElement>(null);
   // 다른 곳을 누르면 메뉴가 닫힌다("다른곳을 클릭하며 메뉴가 닫히게 해줘").
@@ -89,6 +93,8 @@ export default function ProposalThread({
       set나(r.data.me);
       set차단됨(!!r.data.blocked);
       set기본장소(r.data.기본장소 || "");
+    } else {
+      set막힘(r?.error?.message || "불러오지 못했어요.");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, token]);
@@ -213,7 +219,9 @@ export default function ProposalThread({
         )}
 
         <div className="pth-body">
-          {메시지들.length === 0 && (
+          {막힘 ? (
+            <p className="pth-empty">{막힘}</p>
+          ) : 메시지들.length === 0 && (
             <p className="pth-empty">아직 주고받은 말이 없어요.</p>
           )}
           {메시지들.map((m) => {
@@ -264,7 +272,9 @@ export default function ProposalThread({
           <div ref={바닥} />
         </div>
 
-        {차단됨 ? (
+        {막힘 ? (
+          <p className="pth-closed">{막힘}</p>
+        ) : 차단됨 ? (
           <p className="pth-closed">차단된 채팅이에요.</p>
         ) : (
           <>

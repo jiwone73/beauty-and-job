@@ -142,7 +142,7 @@ export async function GET(req: NextRequest) {
       lastMessageAt: r.last_message_at || null,
       messageCount: r.message_count || 0,
       appointmentAt: r.appointment_at || null,
-    })));
+    })), 200, { talentAccess: 열람가능 } as any);
   } catch (e: any) {
     console.error("[company proposals]", e);
     return err("SERVER_001", "불러오지 못했습니다.", 500);

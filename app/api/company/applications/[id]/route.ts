@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
-import { 이름가리기 } from "@/lib/companyEntitlement";
+import { 이름가리기, 인재열람가능 } from "@/lib/companyEntitlement";
 import { ok, err, requireAuth } from "@/lib/api";
 import { sendResumeViewedEmail } from "@/lib/email";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -267,7 +267,11 @@ export async function PATCH(
       const proposalId = upserted.rows[0]?.id;
       const co = await pool.query(`SELECT COALESCE(brand_name, company_name) AS name FROM companies WHERE id = $1`, [auth!.sub]);
       const companyName = co.rows[0]?.name || "기업";
-      if (proposalId) {
+      // 채팅은 유료(스탠다드 이상) 상품이다("무료, 라이트 회원은 채팅창도 안
+      // 열리고"). 합격시켜도 그 등급이 아니면 실제로 채팅을 못 여니, 인사말도
+      // 넣지 않고 "채팅 가능" 같은 문구도 구직자에게 보내지 않는다.
+      const 채팅가능 = await 인재열람가능(auth!.sub);
+      if (proposalId && 채팅가능) {
         // 지원(제안 없이 시작)으로 열린 대화는 첫 메시지가 없어 대화창이 빈 채로
         // 시작한다 — 제안하기는 회사가 쓴 메시지가 그대로 첫 말이 되는데, 합격
         // 처리에는 그런 글이 없어서다. 기존 대화가 없을 때만 인사말을 하나 넣는다.
@@ -281,13 +285,17 @@ export async function PATCH(
             [proposalId, `'${row.job_title}' 합격을 축하드립니다. 편하게 채팅으로 이야기해요.`]
           ).catch((e) => console.error("[PATCH application] 합격 인사말 저장 실패", e));
         }
+      }
+      if (proposalId) {
         await pool.query(
           `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)
            VALUES ($1, 'PASSED', $2, $3, $4, 'job_posting')`,
           [
             row.user_id,
             `${companyName}에서 합격 처리했어요`,
-            `'${row.job_title}' 지원 건이 합격 처리됐어요. 이제 채팅으로 이야기하실 수 있어요.`,
+            채팅가능
+              ? `'${row.job_title}' 지원 건이 합격 처리됐어요. 이제 채팅으로 이야기하실 수 있어요.`
+              : `'${row.job_title}' 지원 건이 합격 처리됐어요.`,
             row.job_posting_id,
           ]
         );

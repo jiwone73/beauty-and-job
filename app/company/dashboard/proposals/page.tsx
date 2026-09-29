@@ -250,12 +250,17 @@ export default function CompanyProposalsPage() {
     }
   };
 
+  // 채팅은 유료(스탠다드 이상)만 된다("무료, 라이트 회원은 채팅창도 안
+  // 열리고") — 채팅하기 버튼을 미리 꺼 둔다. 열어 봐야 API 가 막으므로,
+  // 눌러서 알게 하지 않는다.
+  const [채팅가능, set채팅가능] = useState(true);
   const 불러오기 = useCallback(async () => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
     const r = await fetch("/api/company/proposals", { headers: { Authorization: `Bearer ${token}` } })
       .then((x) => x.json()).catch(() => null);
     if (r?.success && Array.isArray(r.data)) set목록(r.data);
+    set채팅가능((r?.meta as any)?.talentAccess !== false);
     set로딩(false);
   }, []);
   useEffect(() => { 불러오기(); }, [불러오기]);
@@ -646,7 +651,8 @@ export default function CompanyProposalsPage() {
                             제안 취소
                           </button>
                         )}
-                        <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
+                        <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
+                          title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
                           onClick={() => set대화(p)}>
                           채팅하기
                         </button>

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 인재열람가능 } from "@/lib/companyEntitlement";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 실을 쓴다 — 그래서 owner 를 지정하지 않고
 // 받은 뒤에 이 제안의 당사자인지 따진다. 남의 스레드는 404 로 돌려보낸다(있는지
@@ -41,6 +42,13 @@ async function 당사자(req: NextRequest, proposalId: string) {
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const { 쪽, res, 제안 } = await 당사자(req, params.id);
   if (res) return res;
+  // 채팅은 유료 상품이다("무료회원은 채팅기능이 비활성화되는거야. 합격시켜도
+  // 무료회원이면 채팅비활성화") — 제안이든 지원 합격이든 연 경로와 상관없이,
+  // 지금 회사가 유료가 아니면 채팅 자체를 막는다. 구직자도 회사가 유료가
+  // 아니면 볼 수 없다 — 어차피 답이 오갈 수 없는 채팅이다.
+  if (!(await 인재열람가능(제안!.company_id))) {
+    return err("PROP_MSG_008", "유료 상품에 가입해야 채팅할 수 있습니다.", 403);
+  }
   try {
     const { rows } = await pool.query(
       `SELECT id, sender, kind, body, appointment_at, appointment_place, appointment_status, created_at
@@ -71,6 +79,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const { 쪽, res, 제안 } = await 당사자(req, params.id);
   if (res) return res;
+  // 채팅은 유료 상품이다 — GET 과 같은 규칙(위 주석 참고).
+  if (!(await 인재열람가능(제안!.company_id))) {
+    return err("PROP_MSG_008", "유료 상품에 가입해야 채팅할 수 있습니다.", 403);
+  }
   // 차단된 사이에는 말이 오가지 않는다. 읽기는 남겨 둔다 — 지난 대화까지
   // 사라지면 무슨 일이 있었는지 확인할 길이 없다.
   if (제안?.blocked) return err("PROP_MSG_005", "더 이상 대화할 수 없어요.", 403);
