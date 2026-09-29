@@ -16865,9 +16865,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    같은 표 안에서 이 열만 흐려 다른 화면처럼 보였다. */
 .prop-table .c-time { width: 86px; white-space: nowrap; color: #555; }
 .prop-table th.c-time { color: #555; }
-/* 제안취소·채팅하기를 한 줄(3행)에 나란히 둔다("3번째는 제안취소, 채팅하기
-   버튼 생각하는데 어떄?" — 현재상태·진행상황을 한 칸으로 합치며). */
-.prop-actrow { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+/* 채팅하기를 위, 제안취소를 아래로 세로 배치한다("관리 버튼은 폭이 좁으면
+   채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요") — 칸이 210px로 좁아
+   가로로 나란히 두면 줄바꿈이 들쭉날쭉했다. */
+.prop-actrow { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 4px; }
 /* 버튼 꼴로 둔다("제안취소를 버튼 타입으로 바꿔줘") — 글자 밑줄이 아니라
    다른 단추(.prop-chatbtn)와 같은 테두리 단추. 여백은 더 줄이고("제안취소
    버튼 여백 줄여줘") 글자도 채팅하기와 같은 13px로("폰트도 줄여 채팅하기
@@ -16911,6 +16912,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 업데이트 줄은 상태 배지보다 눈에 덜 띄어도 된다("업데이트는 폰트 12로",
    "색상을 제안한공고에 있는 날짜처럼 흐리게") — 제안한 공고 칸의 날짜(.prop-post-date)와 같은 값. */
 .prop-upd { font-size: 12px; color: #9a9aa3; }
+/* 기업이 답할 차례만 포인트 컬러로 강조한다("기업이 해야 할 차례인 문구는
+   포인트 컬러로 강조해 주세요") — 인재 차례는 강조하지 않는다, 우리가 할
+   일이 아니라서다. */
+.prop-turn { font-style: normal; }
+.prop-turn.mine { color: var(--color-primary); font-weight: 600; }
 /* "채팅하기"는 액션 행(3행)에 제안취소와 나란히 선다("채팅하기라는 버튼을
    맨위칸에 만들자" 당시엔 혼자였지만, 지금은 1행이 상태 몫) — 제안을 보낸
    순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는 뜻

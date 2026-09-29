@@ -136,12 +136,29 @@ function 상태(p: 제안): 상태키 {
   return "답변대기";
 }
 
-/** 마지막으로 무슨 일이 있었나. 「○○님에게 보냈습니다」식 문장은 주체를
- *  밝히려다 칸을 넘겼다("~ 했습니다 이런거 넣지말고") — 날짜를 앞세우고
- *  이름은 괄호로 뒤에 붙인다("날자 업데이트됨 (이름)"). 칸이 좁으면 말줄임이
- *  뒤(괄호 속 이름)부터 지운다 — 이름은 인재 칸에 이미 있어 지워져도 된다. */
-function 최근활동(p: 제안): { 글: string; 때: string | null } {
-  if (p.blocked) return { 글: "차단됨", 때: null };
+/** 지금 누가 답할 차례인지 — 말로 대놓고 적는다("누가 답변할 차례인지 글자로
+ *  대놓고 써주네" 참고 화면: "💬 9.26 23:25 (인재 답변 대기)"). 면접예정만
+ *  "확인"이라 쓴다 — 약속을 받아들일지 말지지 말을 주고받는 게 아니다. */
+function 차례말(p: 제안): string | null {
+  const st = 상태(p);
+  if (st === "거절" || st === "취소" || st === "공고마감") return null;
+  if (st === "면접예정") return p.lastSender === "USER" ? "기업 답변 필요" : "인재 확인 대기";
+  if (st === "채팅중") return p.lastSender === "USER" ? "기업 답변 필요" : "인재 답변 대기";
+  // 수락만 하고 말이 아직 없으면 매장이 먼저 걸 차례다.
+  if (st === "수락") return "기업 답변 필요";
+  // 답변대기라도 이미 몇 마디 오갔으면(messageCount 1은 제안 메시지 자체라 아직
+  // "주고받음"이 아니다) 마지막으로 보낸 쪽 기준으로 차례가 갈린다.
+  if (p.messageCount > 1) return p.lastSender === "USER" ? "기업 답변 필요" : "인재 답변 대기";
+  return "인재 답변 대기";
+}
+
+/** 마지막으로 무슨 일이 있었나. 날짜 앞에 💬, 뒤에 지금 누구 차례인지를
+ *  적는다("💬 9.26 23:25 (인재 답변 대기)"). 끝난 제안(거절·취소·공고마감)은
+ *  더 답할 차례가 없어 날짜만 남는다. 차례는 따로 반환해 기업 차례일 때만
+ *  포인트 컬러로 강조할 수 있게 한다("기업이 해야 할 차례인 문구는 포인트
+ *  컬러로 강조해 주세요"). */
+function 최근활동(p: 제안): { 글: string; 차례: string | null } {
+  if (p.blocked) return { 글: "차단됨", 차례: null };
   let 시각: string;
   if (p.canceledAt) 시각 = p.canceledAt;
   else if (p.appliedAt) 시각 = p.appliedAt;
@@ -155,7 +172,7 @@ function 최근활동(p: 제안): { 글: string; 때: string | null } {
   else if (p.interestedAt) 시각 = p.interestedAt;
   else if (p.readAt) 시각 = p.readAt;
   else 시각 = p.createdAt;
-  return { 글: `${때(시각)} 업데이트됨 (${p.userName})`, 때: null };
+  return { 글: `💬 ${때(시각)}`, 차례: 차례말(p) };
 }
 
 /** 이 줄에 열린 대화가 있나. 제안을 보낸 순간부터 열려 있다 — 수락을 기다리지
@@ -642,8 +659,25 @@ export default function CompanyProposalsPage() {
                         비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
-                      <span className="prop-upd">{활.글}</span>
+                      <span className="prop-upd">
+                        {활.글}
+                        {/* 기업이 답할 차례만 포인트 컬러로 강조한다("기업이 해야 할 차례인
+                            문구는 포인트 컬러로 강조해 주세요") — 인재 차례는 강조하지 않는다,
+                            우리가 할 일이 아니라서다. */}
+                        {활.차례 && (
+                          <em className={활.차례 === "기업 답변 필요" ? "prop-turn mine" : "prop-turn"}>
+                            {" "}({활.차례})
+                          </em>
+                        )}
+                      </span>
                       <div className="prop-actrow">
+                        {/* 채팅하기를 위, 제안취소를 아래로("관리 버튼은 폭이 좁으면
+                            채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요"). */}
+                        <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
+                          title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
+                          onClick={() => set대화(p)}>
+                          채팅하기
+                        </button>
                         {/* 거두는 일은 아직 답이 없는 줄에서만. 수락한 뒤에는 드물고, 잘못
                             누르면 되돌릴 수 없다 — 그때는 대화로 정리한다. */}
                         {st === "답변대기" && (
@@ -651,11 +685,6 @@ export default function CompanyProposalsPage() {
                             제안 취소
                           </button>
                         )}
-                        <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
-                          title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
-                          onClick={() => set대화(p)}>
-                          채팅하기
-                        </button>
                       </div>
                     </td>
                   </tr>
