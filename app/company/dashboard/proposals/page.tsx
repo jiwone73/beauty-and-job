@@ -137,23 +137,23 @@ function 상태(p: 제안): 상태키 {
 }
 
 /** 지금 누가 답할 차례인지 — 말로 대놓고 적는다("누가 답변할 차례인지 글자로
- *  대놓고 써주네" 참고 화면: "💬 9.26 23:25 (인재 답변 대기)"). 면접예정만
+ *  대놓고 써주네" 참고 화면: "💬 9.26 23:25 (인재 답변대기)"). 면접예정만
  *  "확인"이라 쓴다 — 약속을 받아들일지 말지지 말을 주고받는 게 아니다. */
 function 차례말(p: 제안): string | null {
   const st = 상태(p);
   if (st === "거절" || st === "취소" || st === "공고마감") return null;
-  if (st === "면접예정") return p.lastSender === "USER" ? "기업 답변 필요" : "인재 확인 대기";
-  if (st === "채팅중") return p.lastSender === "USER" ? "기업 답변 필요" : "인재 답변 대기";
+  if (st === "면접예정") return p.lastSender === "USER" ? "기업 답변필요" : "인재 확인대기";
+  if (st === "채팅중") return p.lastSender === "USER" ? "기업 답변필요" : "인재 답변대기";
   // 수락만 하고 말이 아직 없으면 매장이 먼저 걸 차례다.
-  if (st === "수락") return "기업 답변 필요";
+  if (st === "수락") return "기업 답변필요";
   // 답변대기라도 이미 몇 마디 오갔으면(messageCount 1은 제안 메시지 자체라 아직
   // "주고받음"이 아니다) 마지막으로 보낸 쪽 기준으로 차례가 갈린다.
-  if (p.messageCount > 1) return p.lastSender === "USER" ? "기업 답변 필요" : "인재 답변 대기";
-  return "인재 답변 대기";
+  if (p.messageCount > 1) return p.lastSender === "USER" ? "기업 답변필요" : "인재 답변대기";
+  return "인재 답변대기";
 }
 
 /** 마지막으로 무슨 일이 있었나. 날짜 앞에 💬, 뒤에 지금 누구 차례인지를
- *  적는다("💬 9.26 23:25 (인재 답변 대기)"). 끝난 제안(거절·취소·공고마감)은
+ *  적는다("💬 9.26 23:25 (인재 답변대기)"). 끝난 제안(거절·취소·공고마감)은
  *  더 답할 차례가 없어 날짜만 남는다. 차례는 따로 반환해 기업 차례일 때만
  *  포인트 컬러로 강조할 수 있게 한다("기업이 해야 할 차례인 문구는 포인트
  *  컬러로 강조해 주세요"). */
@@ -635,7 +635,7 @@ export default function CompanyProposalsPage() {
                             {p.jobTitle || "공고 없음"}
                           </button>
                         ) : <span className="prop-post none">공고 없음</span>}
-                        <span className="prop-post-date">{날짜(p.createdAt)}</span>
+                        <span className="prop-post-date">{날짜(p.createdAt)} 제안</span>
                       </td>
                     )}
                     {/* 직군은 열을 따로 준다. 이름 아래에 붙이면 사람에 따라 줄 수가
@@ -667,7 +667,7 @@ export default function CompanyProposalsPage() {
                           강조한다("기업이 해야 할 차례인 문구는 포인트 컬러로 강조해
                           주세요") — 인재 차례는 강조하지 않는다, 우리가 할 일이 아니라서다. */}
                       {활.차례 && (
-                        <span className={활.차례 === "기업 답변 필요" ? "prop-turn mine" : "prop-turn"}>
+                        <span className={활.차례 === "기업 답변필요" ? "prop-turn mine" : "prop-turn"}>
                           ({활.차례})
                         </span>
                       )}
