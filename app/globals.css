@@ -16942,6 +16942,54 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    표 전체 폭 합은 그대로다. */
 .prop-table .c-recent { width: 125px; max-width: 125px; }
 .prop-table .c-manage { width: 85px; max-width: 85px; }
+/* 받은제안 표(.received)는 진행상황·관리 칸이 없다("제안내용에 진행상황
+   관리가 있는게 너무 쌩뚱맞잖아") — 남은 칸(기업~제안일) 폭 합으로 표
+   자체를 고정한다. 100%+table-layout:fixed 로 두면 브라우저가 남는 폭을
+   어디론가 몰아준다(이 표에서 반복해서 겪은 문제). */
+.prop-table.received { width: 705px; }
+.prop-table.received .apl-td-who { width: 180px; }
+/* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
+   보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
+   않을까?"). */
+.prop-msg-text { margin: 0; }
+.prop-msg-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+
+/* 받은제안 / 진행중 / 종료 세 탭. 제안 정보와 지금 할 일을 한 표에 섞지
+   않으려고 나눴다("제안내용에 진행상황 관리가 있는게 너무 쌩뚱맞잖아"). */
+.prop-tabs { display: flex; gap: 22px; margin-bottom: 16px; border-bottom: 1px solid #ececf0; }
+.prop-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 10px 2px;
+  font-size: 15px; color: #9a9aa3; cursor: pointer; }
+.prop-tab.on { color: #333; font-weight: 700; border-bottom-color: var(--color-primary); }
+.prop-tab-n { font-size: 13px; color: inherit; opacity: .7; }
+
+/* 진행중·종료 탭 — 표가 아니라 카드로 보인다(상태마다 보여줄 것이 달라
+   표 한 칸에 다 넣기 어렵다). */
+.prop-cards { display: flex; flex-direction: column; gap: 12px; }
+.prop-card2 { border: 1px solid #ececf0; border-radius: 10px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px; }
+.prop-card2-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.prop-card2-post { background: none; border: none; padding: 0; cursor: pointer; text-align: right;
+  font-size: 14px; color: #555; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.prop-stepper { display: flex; align-items: center; }
+.prop-stepper-dot { font-size: 12.5px; color: #b0b0b6; padding: 3px 10px; border: 1px solid #e2e2e6;
+  border-radius: 999px; white-space: nowrap; }
+.prop-stepper-dot.on { color: #555; border-color: #d0d0d6; }
+.prop-stepper-dot.current { color: var(--color-primary); border-color: var(--color-primary); font-weight: 700; }
+.prop-stepper-line { flex: 1 1 auto; min-width: 16px; height: 1px; background: #e2e2e6; margin: 0 4px; }
+.prop-stepper-line.on { background: #b9a0d1; }
+
+.prop-card2-status { display: flex; align-items: baseline; gap: 6px; }
+.prop-card2-preview { display: block; width: 100%; box-sizing: border-box; text-align: left;
+  background: #f7f7f8; border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  font-size: 13.5px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-card2-acts { display: flex; justify-content: flex-end; }
+
+.prop-badge { display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 10px;
+  border-radius: 999px; background: #f4f4f6; color: #8a8a92; }
+.prop-badge-거절 { background: #fbeceb; color: #c0504d; }
+.prop-reason { margin: 0; padding: 9px 12px; background: #f7f7f8; border-radius: 8px;
+  font-size: 13.5px; color: #555; line-height: 1.5; }
 /* 업데이트 줄은 상태 배지보다 눈에 덜 띄어도 된다("업데이트는 폰트 12로",
    "색상을 제안한공고에 있는 날짜처럼 흐리게") — 제안한 공고 칸의 날짜(.prop-post-date)와 같은 값. */
 /* 1행(단계)과 2행(💬) 사이 위아래 여백 — 붙어 보여서 아이콘 높이만큼 띄운다
@@ -16955,11 +17003,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    / "... 안나오게해줘") 줄바꿈을 허락한다. .c-recent span 의 nowrap·말줄임이
    더 구체적인 선택자(.c-recent span)라 .prop-turn 하나로는 안 이겨서
    span.prop-turn 으로 specificity 를 맞춘다. */
-.c-recent span.prop-turn { display: block; font-style: normal; font-size: 14px; color: #9a9aa3;
+/* 받은제안 표는 이 문구를 "관리"(.c-manage, "채팅"으로 이름 바꿈) 칸에
+   둔다("관리항목에 채팅하기는 좀 안맞네" / "진행상황엔 면접예정만 남겨두고")
+   — 두 칸 다 같은 규칙을 쓰게 선택자를 같이 둔다. */
+.c-recent span.prop-turn, .c-manage span.prop-turn { display: block; font-style: normal; font-size: 14px; color: #9a9aa3;
   margin-top: 1px; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
 /* .c-recent.todo span(빨강)보다 더 구체적이어야 "기업 답변 필요"의 포인트
    컬러가 이긴다("우리 차례"인 줄은 거의 늘 .todo 이기도 하다). */
-.c-recent span.prop-turn.mine { color: var(--color-primary); font-weight: 600; }
+.c-recent span.prop-turn.mine, .c-manage span.prop-turn.mine { color: var(--color-primary); font-weight: 600; }
 /* "채팅하기"는 액션 행(3행)에 제안취소와 나란히 선다("채팅하기라는 버튼을
    맨위칸에 만들자" 당시엔 혼자였지만, 지금은 1행이 상태 몫) — 제안을 보낸
    순간부터 눌리고, 꺼져 있으면 상대가 거절했거나 거둔 제안이라는 뜻
@@ -16974,12 +17025,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-chatbtn:disabled { border-color: #ececf0; color: #b0b0b6; cursor: default; }
 /* 무슨 일이 있었나는 한 줄을 넘기지 않는다 — 날짜(.prop-when)는 그 아래
    따로 한 줄이라 예외("진행상황은 1줄 안넘게 해야 해 날짜 빼고"). */
-.c-recent span { display: block; white-space: nowrap; overflow: hidden;
+.c-recent span, .c-manage span { display: block; white-space: nowrap; overflow: hidden;
   text-overflow: ellipsis; max-width: 100%; line-height: 1.45; }
 /* 미답변 — 구직자가 마지막으로 한 말이 그대로 여기 떠 있다. 채팅 단추도 함께
    빨갛게 해서 답할 것이 있다는 게 한눈에 읽히게 한다. */
-.c-recent.todo span { color: #c0504d; }
-.c-recent.todo .prop-chatbtn:not(:disabled) { border-color: #c0504d; color: #c0504d; }
+.c-recent.todo span, .c-manage.todo span { color: #c0504d; }
+.c-recent.todo .prop-chatbtn:not(:disabled), .c-manage.todo .prop-chatbtn:not(:disabled) { border-color: #c0504d; color: #c0504d; }
 .c-recent button:hover { text-decoration-color: currentColor; }
 .c-recent i { display: inline; margin-left: 5px; font-style: normal;
   color: #555; white-space: nowrap; }

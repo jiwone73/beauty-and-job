@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   try {
     const { rows } = await pool.query(
       `SELECT p.id, p.message, p.read_at, p.interested_at, p.created_at,
-              p.declined_at, p.canceled_at, p.position_index,
+              p.declined_at, p.canceled_at, p.decline_reason, p.position_index,
               p.job_posting_id,
               c.company_name, c.brand_name,
               -- 받은제안 표의 "기업" 칸 — 보낸제안 표의 "인재" 칸과 같은 자리(1행
@@ -28,6 +28,11 @@ export async function GET(req: NextRequest) {
                 WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_sender,
               (SELECT m.created_at FROM proposal_messages m
                 WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at,
+              -- "진행중" 탭의 최근 대화 미리보기 — 글(TEXT)만 본다, 약속 카드는
+              -- 한 줄로 미리 보여줄 말이 없다.
+              (SELECT m.body FROM proposal_messages m
+                WHERE m.proposal_id = p.id AND m.kind = 'TEXT'
+                ORDER BY m.created_at DESC LIMIT 1) AS last_message_body,
               jp.title AS job_title, jp.status AS job_status, jp.deadline,
               jp.location, jp.employment_type, jp.salary_type, jp.salary_min, jp.salary_max,
               jp.contact_methods, jp.job_type, jp.positions, jp.created_at AS job_created_at,

@@ -7,19 +7,25 @@ import { ok, err, requireAuth } from "@/lib/api";
 //
 // 지금까지 할 수 있는 건 「치우기」(hidden_at)뿐이었는데 그건 내 화면에서만
 // 사라지는 것이라, 기업 쪽에는 계속 「읽음 · 답변 대기」로 남아 상대를 기다리게
-// 뒀다. 거절은 상대에게 전해져야 한다. 목록에서도 같이 내린다.
+// 뒀다. 거절은 상대에게 전해져야 한다.
+//
+// 거둔 제안(기업 쪽 취소)과 같이, 거절도 목록에서 사라지지 않고 "종료" 탭에
+// 남는다("종료" 탭에 거절함/거절 사유가 보이는 참고 화면) — hidden_at은
+// 더 이상 건드리지 않는다. 사유는 선택 입력이다.
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const { auth, res } = requireAuth(req, "user");
   if (res) return res;
   const body = await req.json().catch(() => ({}));
+  const 사유 = String(body?.reason || "").trim().slice(0, 300) || null;
   try {
     const { rowCount, rows } = await pool.query(
       `UPDATE proposals
-          SET declined_at = COALESCE(declined_at, NOW()), hidden_at = COALESCE(hidden_at, NOW())
+          SET declined_at = COALESCE(declined_at, NOW()),
+              decline_reason = COALESCE(decline_reason, $3)
         WHERE id = $1 AND user_id = $2
         RETURNING company_id,
                   (SELECT COALESCE(brand_name, company_name) FROM companies WHERE id = company_id) AS co_name`,
-      [params.id, auth!.sub]
+      [params.id, auth!.sub, 사유]
     );
     if (!rowCount) return err("PROP_DEC_001", "제안을 찾을 수 없습니다.", 404);
 

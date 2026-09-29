@@ -9,10 +9,9 @@ import ProfileShell from "@/components/profile/ProfileShell";
 /**
  * 받은 제안 — 기업이 인재검색에서 나를 보고 공고를 보내온 기록.
  *
- * 보낸제안(기업 쪽) 표를 그대로 가져온다("받은제안은 보낸제안 테이블을 그대로
- * 가져오면 되. 인재만 기업으로 바꾸면 되지") — 두 화면이 같은 제안을 두고
- * 다른 모양으로 말하면 기업과 구직자가 서로 다른 것을 보는 셈이 된다. 같은
- * CSS 부품(.prop-table 등)을 그대로 쓴다.
+ * 받은제안 / 진행중 / 종료 세 탭으로 나눈다 — 제안 정보(기업·공고·조건)와
+ * 지금 무엇을 해야 하는지는 서로 다른 질문이라, 하나의 표 안에서 뒤섞으면
+ * 어느 쪽도 뚜렷하지 않았다. 탭마다 지금 볼 것만 남긴다.
  */
 
 type Proposal = {
@@ -31,6 +30,7 @@ type Proposal = {
   company_region_sigungu: string | null;
   last_sender: "USER" | "COMPANY" | null;
   last_message_at: string | null;
+  last_message_body: string | null;
   job_title: string;
   job_status: string;
   deadline: string | null;
@@ -38,6 +38,7 @@ type Proposal = {
   employment_type: string | null;
   declined_at: string | null;
   canceled_at: string | null;
+  decline_reason: string | null;
   job_created_at: string | null;
   positionLines: string[];
   workConditionDay: string | null;
@@ -47,19 +48,9 @@ type Proposal = {
   appointment_at: string | null;
 };
 
-// 상태 이름·색은 보낸제안 표와 똑같이 쓴다 — 같은 제안을 두 화면이 다르게
-// 부르면 기업과 구직자가 서로 다른 것으로 읽는다.
+// 상태 갈래는 보낸제안 표와 똑같이 쓴다 — 같은 제안을 두 화면이 다르게
+// 나누면 기업과 구직자가 서로 다른 것으로 읽는다.
 type 상태키 = "면접예정" | "채팅중" | "수락" | "거절" | "취소" | "공고마감" | "답변대기";
-const 상태이름: Record<상태키, string> = {
-  답변대기: "검토중", 수락: "수락", 채팅중: "채팅중",
-  면접예정: "면접예정", 거절: "거절", 취소: "제안취소", 공고마감: "공고마감",
-};
-const 상태색: Record<상태키, string> = {
-  수락: "#1f7a4d",
-  면접예정: "#582681", 채팅중: "#582681",
-  거절: "var(--color-text)", 취소: "var(--color-text)",
-  공고마감: "var(--color-text)", 답변대기: "var(--color-text)",
-};
 function 상태(p: Proposal): 상태키 {
   if (p.declined_at) return "거절";
   if (p.canceled_at) return "취소";
@@ -69,6 +60,16 @@ function 상태(p: Proposal): 상태키 {
   if (p.interested_at) return p.message_count > 1 ? "채팅중" : "수락";
   if (마감인가(p.job_status, p.deadline)) return "공고마감";
   return "답변대기";
+}
+
+// 탭 갈래 — 답변대기는 「받은제안」, 수락·채팅중·면접예정은 「진행중」,
+// 거절·취소·공고마감은 「종료」.
+type 탭키 = "받은제안" | "진행중" | "종료";
+function 탭of(p: Proposal): 탭키 {
+  const st = 상태(p);
+  if (st === "답변대기") return "받은제안";
+  if (st === "거절" || st === "취소" || st === "공고마감") return "종료";
+  return "진행중";
 }
 
 /** 지금 누가 답할 차례인지 — 보낸제안 표와 같은 규칙, 1인칭이라 "기업/인재"
@@ -103,6 +104,22 @@ function 대화열림(p: Proposal): boolean {
   return !p.declined_at && !p.canceled_at;
 }
 
+// 종료 탭 — 무엇으로 끝났는지 한 마디, 그 일이 있었던 날.
+const 종료라벨: Record<string, string> = { 거절: "거절함", 취소: "제안 취소됨", 공고마감: "공고마감" };
+function 종료일(p: Proposal): string {
+  if (p.declined_at) return p.declined_at;
+  if (p.canceled_at) return p.canceled_at;
+  return p.deadline || p.created_at;
+}
+
+// 진행중 탭의 스테퍼 — 수락→채팅중→면접예정 순서로 지금 어디까지 왔는지.
+const 단계들 = ["수락", "채팅중", "면접예정"] as const;
+function 현재단계(st: 상태키): number {
+  if (st === "면접예정") return 2;
+  if (st === "채팅중") return 1;
+  return 0;
+}
+
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
     .replace(/\.$/, "").replace(/\s/g, "");
@@ -118,10 +135,32 @@ const 때 = (s: string) => {
 // 표의 모집분야 칸과 같은 규칙.
 const 조건 = (p: Proposal) => (p.positionLines?.[0] || "").split("|")[0].trim();
 
+// 기업 아바타+매장명+업종+지역 — 받은제안 표의 "기업" 칸과 진행중·종료 카드
+// 머리에서 똑같이 쓴다.
+function 기업칸(p: Proposal, onClick: () => void) {
+  return (
+    <button type="button" className="apl-td-whobtn" onClick={onClick}>
+      <span className="apl-td-avatar">
+        {p.company_logo_url
+          ? <img src={p.company_logo_url} alt="" loading="lazy" />
+          : <span>{(p.brand_name || p.company_name || "?").slice(0, 1)}</span>}
+      </span>
+      <span className="apl-td-wholines">
+        <span className="apl-td-name">{p.brand_name || p.company_name}</span>
+        <span className="apl-td-sub">{p.company_industry || "—"}</span>
+        <span className="apl-td-sub">
+          {[p.company_region_sido, p.company_region_sigungu].filter(Boolean).join(" ") || "—"}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 export default function ProposalsPage() {
   const router = useRouter();
   const [목록, set목록] = useState<Proposal[]>([]);
   const [불러오는중, set불러오는중] = useState(true);
+  const [탭, set탭] = useState<탭키>("받은제안");
 
   const 불러오기 = () => {
     const token = localStorage.getItem("access_token");
@@ -170,9 +209,11 @@ export default function ProposalsPage() {
   };
 
   // 거절은 상대에게 전해져야 한다 — 예전의 「치우기」는 내 화면에서만 사라져서
-  // 기업 쪽에는 계속 「답변 대기」로 남아 기약 없이 기다리게 했다.
+  // 기업 쪽에는 계속 「답변 대기」로 남아 기약 없이 기다리게 했다. 사유는
+  // 선택이고, "종료" 탭에서 기업 입장 참고용으로 보인다.
   const [거절할것, set거절할것] = useState<Proposal | null>(null);
   const [같이차단, set같이차단] = useState(false);
+  const [거절사유, set거절사유] = useState("");
   const 거절하기 = async () => {
     const p = 거절할것;
     if (!p) return;
@@ -182,11 +223,15 @@ export default function ProposalsPage() {
     await fetch(`/api/proposals/${p.id}/decline`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ block: 같이차단 }),
+      body: JSON.stringify({ block: 같이차단, reason: 거절사유.trim() || undefined }),
     }).catch(() => {});
     set같이차단(false);
+    set거절사유("");
     불러오기();
   };
+
+  const 버킷: Record<탭키, Proposal[]> = { 받은제안: [], 진행중: [], 종료: [] };
+  목록.forEach((p) => 버킷[탭of(p)].push(p));
 
   return (
     <ProfileShell>
@@ -205,107 +250,164 @@ export default function ProposalsPage() {
             ) : 목록.length === 0 ? (
               <p className="pf-notif-empty">아직 받은 제안이 없어요.</p>
             ) : (
-              <div className="prop-tablewrap">
-                <table className="prop-table has-post">
-                  <thead>
-                    <tr>
-                      <th className="apl-td-who">기업</th>
-                      <th className="c-post">제안한 공고</th>
-                      <th className="c-job">모집분야</th>
-                      <th className="c-cond">근무조건</th>
-                      <th className="c-recent">진행상황</th>
-                      <th className="c-manage">관리</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {목록.map((p) => {
-                      const st = 상태(p);
-                      const 활 = 최근활동(p);
-                      const 내차례 = 활.차례 === "답변 필요" || 활.차례 === "확인 필요";
-                      return (
-                        <Fragment key={p.id}>
-                        <tr className={내차례 ? "mine" : undefined}>
-                          <td className="apl-td apl-td-who">
-                            <button type="button" className="apl-td-whobtn" onClick={() => 열기(p)}>
-                              <span className="apl-td-avatar">
-                                {p.company_logo_url
-                                  ? <img src={p.company_logo_url} alt="" loading="lazy" />
-                                  : <span>{(p.brand_name || p.company_name || "?").slice(0, 1)}</span>}
-                              </span>
-                              <span className="apl-td-wholines">
-                                <span className="apl-td-name">{p.brand_name || p.company_name}</span>
-                                <span className="apl-td-sub">{p.company_industry || "—"}</span>
-                                <span className="apl-td-sub">
-                                  {[p.company_region_sido, p.company_region_sigungu].filter(Boolean).join(" ") || "—"}
-                                </span>
-                              </span>
-                            </button>
-                          </td>
-                          <td className="c-post">
-                            <button type="button" className="prop-post" title={p.job_title}
-                              onClick={() => 열기(p)}>
-                              {p.job_title}
-                            </button>
-                            <span className="prop-post-date">{날짜(p.created_at)} 제안</span>
-                          </td>
-                          <td className="c-job" title={조건(p)}><span>{조건(p)}</span></td>
-                          <td className="c-cond" title={[p.workConditionDay, p.workConditionTime, p.workConditionSalary]
-                            .filter(Boolean).join(" · ") || undefined}>
-                            {p.workConditionDay || p.workConditionTime || p.workConditionSalary ? (
-                              <>
-                                <span>{p.workConditionDay}</span>
-                                <span>{p.workConditionTime}</span>
-                                <span>{p.workConditionSalary}</span>
-                              </>
-                            ) : <span>—</span>}
-                          </td>
-                          <td className={`c-recent${내차례 ? " todo" : ""}`}>
-                            <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
-                            <span className="prop-upd">{활.글}</span>
-                            {활.차례 && (
-                              <span className={내차례 ? "prop-turn mine" : "prop-turn"}>({활.차례})</span>
-                            )}
-                          </td>
-                          <td className={`c-manage${내차례 ? " todo" : ""}`}>
-                            <div className="prop-actrow">
-                              {st === "답변대기" && (
-                                <button type="button" className="prop-chatbtn"
-                                  onClick={(e) => { e.stopPropagation(); set한마디(""); set답할것(p); }}>
-                                  수락하기
-                                </button>
-                              )}
-                              {/* 면접예정이라도 "일정 확인"이라 하면 일정 볼 때만 쓰는
-                                  버튼처럼 읽힌다 — 면접 전 문의사항으로도 채팅할 수 있어
-                                  ("일정확인 목적이아니라 면접전에 문의사항이 있어서
-                                  채팅할 수도 있잖아") 모든 상태에서 "채팅하기"로 통일한다. */}
-                              <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
-                                onClick={(e) => { e.stopPropagation(); set대화(p); }}>
-                                채팅하기
+              <>
+                <div className="prop-tabs">
+                  {(["받은제안", "진행중", "종료"] as const).map((k) => (
+                    <button key={k} type="button"
+                      className={`prop-tab${탭 === k ? " on" : ""}`}
+                      onClick={() => set탭(k)}>
+                      {k} <span className="prop-tab-n">{버킷[k].length}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {탭 === "받은제안" && (
+                  버킷.받은제안.length === 0 ? (
+                    <p className="pf-notif-empty">받은 제안이 없어요.</p>
+                  ) : (
+                    <div className="prop-tablewrap">
+                      <table className="prop-table received">
+                        <thead>
+                          <tr>
+                            <th className="apl-td-who">기업</th>
+                            <th className="c-post">제안한 공고</th>
+                            <th className="c-job">모집분야</th>
+                            <th className="c-cond">근무조건</th>
+                            <th className="c-date">제안일</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {버킷.받은제안.map((p) => (
+                            <Fragment key={p.id}>
+                              <tr>
+                                <td className="apl-td apl-td-who">{기업칸(p, () => 열기(p))}</td>
+                                <td className="c-post">
+                                  <button type="button" className="prop-post" title={p.job_title}
+                                    onClick={() => 열기(p)}>
+                                    {p.job_title}
+                                  </button>
+                                </td>
+                                <td className="c-job" title={조건(p)}><span>{조건(p)}</span></td>
+                                <td className="c-cond" title={[p.workConditionDay, p.workConditionTime, p.workConditionSalary]
+                                  .filter(Boolean).join(" · ") || undefined}>
+                                  {p.workConditionDay || p.workConditionTime || p.workConditionSalary ? (
+                                    <>
+                                      <span>{p.workConditionDay}</span>
+                                      <span>{p.workConditionTime}</span>
+                                      <span>{p.workConditionSalary}</span>
+                                    </>
+                                  ) : <span>—</span>}
+                                </td>
+                                <td className="c-date">{날짜(p.created_at)}</td>
+                              </tr>
+                              {/* 수락·거절은 기업이 보낸 말 박스 하단 오른쪽에 둔다
+                                  ("수락 거절은 기업이 보낸 메시지 박스 하단 오른쪽에
+                                  거절하기 수락하기 버튼을 넣으면 되지 않을까?"). */}
+                              <tr className="prop-msg-row">
+                                <td colSpan={5}>
+                                  {p.message && <p className="prop-msg-text">“{p.message}”</p>}
+                                  <div className="prop-msg-acts">
+                                    <button type="button" className="prop-cancel"
+                                      onClick={() => { set거절할것(p); set같이차단(false); set거절사유(""); }}>
+                                      거절하기
+                                    </button>
+                                    <button type="button" className="prop-chatbtn"
+                                      onClick={() => { set한마디(""); set답할것(p); }}>
+                                      수락하기
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            </Fragment>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )
+                )}
+
+                {탭 === "진행중" && (
+                  버킷.진행중.length === 0 ? (
+                    <p className="pf-notif-empty">진행 중인 제안이 없어요.</p>
+                  ) : (
+                    <div className="prop-cards">
+                      {버킷.진행중.map((p) => {
+                        const st = 상태(p);
+                        const 활 = 최근활동(p);
+                        const 내차례 = 활.차례 === "답변 필요" || 활.차례 === "확인 필요";
+                        const 단계 = 현재단계(st);
+                        return (
+                          <div className="prop-card2" key={p.id}>
+                            <div className="prop-card2-head">
+                              {기업칸(p, () => 열기(p))}
+                              <button type="button" className="prop-card2-post" title={p.job_title}
+                                onClick={() => 열기(p)}>
+                                {p.job_title}
                               </button>
-                              {st === "답변대기" && (
-                                <button type="button" className="prop-cancel"
-                                  onClick={(e) => { e.stopPropagation(); set거절할것(p); set같이차단(false); }}>
-                                  거절하기
-                                </button>
+                            </div>
+                            <div className="prop-stepper">
+                              {단계들.map((label, i) => (
+                                <Fragment key={label}>
+                                  {i > 0 && <span className={`prop-stepper-line${i <= 단계 ? " on" : ""}`} />}
+                                  <span className={`prop-stepper-dot${i <= 단계 ? " on" : ""}${i === 단계 ? " current" : ""}`}>
+                                    {label}
+                                  </span>
+                                </Fragment>
+                              ))}
+                            </div>
+                            <div className="prop-card2-status">
+                              <span className="prop-upd">{활.글}</span>
+                              {활.차례 && (
+                                <span className={내차례 ? "prop-turn mine" : "prop-turn"}>({활.차례})</span>
                               )}
                             </div>
-                          </td>
-                        </tr>
-                        {/* 기업이 제안하며 쓴 말은 확인창까지 가지 않아도 표에서 바로
-                            보여야 한다("차라리 테이블 목록 밑에 구분선을 하나 두고 그
-                            밑에 보여주면 어때? 그걸 보고 수락버튼을 눌러야지") — 줄
-                            전체 너비로, 구분선(점선) 아래에 펼친다. */}
-                        {p.message && (
-                          <tr className="prop-msg-row">
-                            <td colSpan={6}>“{p.message}”</td>
-                          </tr>
-                        )}
-                        </Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            {대화열림(p) && p.last_message_body && (
+                              <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
+                                “{p.last_message_body}” ›
+                              </button>
+                            )}
+                            <div className="prop-card2-acts">
+                              <button type="button" className="prop-chatbtn" onClick={() => set대화(p)}>
+                                채팅하기
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+
+                {탭 === "종료" && (
+                  버킷.종료.length === 0 ? (
+                    <p className="pf-notif-empty">종료된 제안이 없어요.</p>
+                  ) : (
+                    <div className="prop-cards">
+                      {버킷.종료.map((p) => {
+                        const st = 상태(p);
+                        return (
+                          <div className="prop-card2 ended" key={p.id}>
+                            <div className="prop-card2-head">
+                              {기업칸(p, () => 열기(p))}
+                              <button type="button" className="prop-card2-post" title={p.job_title}
+                                onClick={() => 열기(p)}>
+                                {p.job_title}
+                              </button>
+                            </div>
+                            <div className="prop-card2-status">
+                              <span className={`prop-badge prop-badge-${st}`}>{종료라벨[st]}</span>
+                              <span className="prop-upd">{날짜(종료일(p))}</span>
+                            </div>
+                            {st === "거절" && p.decline_reason && (
+                              <p className="prop-reason">거절 사유: “{p.decline_reason}”</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )
+                )}
+              </>
             )}
           </div>
         </section>
@@ -335,13 +437,16 @@ export default function ProposalsPage() {
         <div className="rp-modal-overlay">
           <div className="prop-dec">
             <p className="prop-dec-t">{거절할것.brand_name || 거절할것.company_name}의 제안을 거절할까요?</p>
+            <textarea value={거절사유} onChange={(e) => set거절사유(e.target.value)} rows={2}
+              maxLength={300}
+              placeholder="거절 사유가 있으면 적어주세요 (선택)" />
             <label className="prop-dec-blk">
               <input type="checkbox" checked={같이차단}
                 onChange={(e) => set같이차단(e.target.checked)} />
               이 매장의 제안 다시 받지 않기
             </label>
             <div className="prop-dec-acts">
-              <button type="button" onClick={() => { set거절할것(null); set같이차단(false); }}>취소</button>
+              <button type="button" onClick={() => { set거절할것(null); set같이차단(false); set거절사유(""); }}>취소</button>
               <button type="button" className="key" onClick={거절하기}>거절하기</button>
             </div>
           </div>
