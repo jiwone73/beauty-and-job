@@ -136,6 +136,16 @@ function 상태(p: 제안): 상태키 {
   return "답변대기";
 }
 
+// 검토중/진행중/종료 3탭 — 받은제안(구직자 화면)과 같은 나눔이다("보낸제안도
+// 마찬가지로 3탭으로 바꿔줘"). 상태 칩은 탭 안에서 더 잘게 거르는 데만 쓴다.
+type 탭키 = "검토중" | "진행중" | "종료";
+function 탭of상태(st: 상태키): 탭키 {
+  if (st === "답변대기") return "검토중";
+  if (st === "거절" || st === "취소" || st === "공고마감") return "종료";
+  return "진행중";
+}
+function 탭of(p: 제안): 탭키 { return 탭of상태(상태(p)); }
+
 /** 지금 누가 답할 차례인지 — 말로 대놓고 적는다("누가 답변할 차례인지 글자로
  *  대놓고 써주네" 참고 화면: "💬 9.26 23:25 (인재 답변대기)"). 면접예정만
  *  "확인"이라 쓴다 — 약속을 받아들일지 말지지 말을 주고받는 게 아니다. */
@@ -222,6 +232,8 @@ export default function CompanyProposalsPage() {
   // 표 안의 한 칸으로는 못 적는다 — 평균 35자, 열에 아홉이 57자까지 간다).
   const [고른공고, set고른공고] = useState("");
   const [고른상태, set고른상태] = useState<상태키 | "전체">("전체");
+  const [탭, set탭] = useState<탭키>("검토중");
+  const 탭고르기 = (t: 탭키) => { set탭(t); set고른상태("전체"); };
   const router = useRouter();
   const pathname = usePathname();
   const base = pathname.split("/").filter(Boolean)[0] === "company"
@@ -284,34 +296,6 @@ export default function CompanyProposalsPage() {
 
 
 
-  // 왼쪽 공고 목록. 제안을 보낸 공고만 나온다 — 안 보낸 공고를 늘어놓으면
-  // 고를 것이 없는 줄이 대부분을 차지한다.
-  const 공고들 = useMemo(() => {
-    const 표 = new Map<string, { id: string; 제목: string; 수: number; 내차례: number; 살아있나: boolean; 마감: boolean }>();
-    for (const p of 목록) {
-      const id = p.jobPostingId || "none";
-      const 내차례 = 다음할일(p)?.우리차례 ? 1 : 0;
-      // 아직 끝나지 않은 제안이 하나라도 있으면 그 공고는 살아 있다 — 공고가
-      // 마감돼도 대화 중이거나 면접이 잡힌 사람은 그대로 남는다.
-      const 진행 = !["거절", "취소", "공고마감"].includes(상태(p)) ? 1 : 0;
-      const 앞 = 표.get(id);
-      if (앞) { 앞.수 += 1; 앞.내차례 += 내차례; 앞.살아있나 = 앞.살아있나 || !!진행; }
-      else 표.set(id, {
-        id, 제목: p.jobTitle || "공고 없음", 수: 1, 내차례, 살아있나: !!진행,
-        마감: 마감인가(p.jobStatus, p.jobDeadline),
-      });
-    }
-    return [...표.values()]
-      // 미답변이 있는 공고가 먼저. 그다음 진행중, 마감은 아래로.
-      .sort((a, b) => Number(b.내차례 > 0) - Number(a.내차례 > 0)
-        || Number(a.마감) - Number(b.마감) || b.수 - a.수);
-  }, [목록]);
-
-  // 끝난 제안만 남은 마감 공고는 접어 둔다. 볼 일이 없는데 목록만 길어진다.
-  const [지난것펼침, set지난것펼침] = useState(false);
-  const 보일공고 = 공고들.filter((g) => !g.마감 || g.살아있나);
-  const 접힌공고 = 공고들.filter((g) => g.마감 && !g.살아있나);
-
   // 다른 화면에서 공고를 짚고 들어오면(?job=) 그 공고를 고른 채로 연다.
   // 스크랩 인재 옆 공고 목록을 누르면 이 길로 온다.
   useEffect(() => {
@@ -322,44 +306,53 @@ export default function CompanyProposalsPage() {
   // 대시보드 카드에서 넘어오면 그 상태 칩이 골라진 채로 열린다(?status=채팅중).
   useEffect(() => {
     const s = new URLSearchParams(window.location.search).get("status");
-    if (s && (s === "전체" || Object.keys(상태이름).includes(s))) set고른상태(s as 상태키 | "전체");
+    if (s && (s === "전체" || Object.keys(상태이름).includes(s))) {
+      set고른상태(s as 상태키 | "전체");
+      if (s !== "전체") set탭(탭of상태(s as 상태키));
+    }
   }, []);
 
   const 공고고른것 = 고른공고
     ? 목록.filter((p) => (p.jobPostingId || "none") === 고른공고)
     : 목록;
 
-  // 상태 칩은 제안이 흘러가는 차례 그대로 세운다.
-  //
-  //   답변대기 → 수락 → 채팅중 → 면접예정
-  //
-  // 0건이어도 자리를 지킨다. 있는 것만 세우면 흐름이 끊겨, 지금 어디까지 왔고
-  // 어디서 막혔는지가 안 보인다. 끝난 것(거절·취소·공고마감)은 흐름 밖이라 뒤에 두고
-  // 0건이면 감춘다 — 없는 일까지 자리를 잡으면 줄만 길어진다.
+  // 3탭(검토중/진행중/종료)으로 먼저 가르고, 탭 안에서는 상태 칩으로 더
+  // 잘게 거른다. 탭 개수는 공고 필터만 반영한다 — 탭 자체를 바꾸는 숫자다.
+  const 탭한것 = useMemo(() => 공고고른것.filter((p) => 탭of(p) === 탭), [공고고른것, 탭]);
+  const 탭수 = useMemo(() => {
+    const 표: Record<탭키, number> = { 검토중: 0, 진행중: 0, 종료: 0 };
+    for (const p of 공고고른것) 표[탭of(p)] += 1;
+    return 표;
+  }, [공고고른것]);
+
+  // 상태 칩은 탭 안에서 제안이 흘러가는 차례 그대로 세운다 — 검토중은 상태가
+  // 하나뿐이라 칩이 필요 없다. 0건이어도 자리를 지킨다. 있는 것만 세우면
+  // 흐름이 끊겨, 지금 어디까지 왔고 어디서 막혔는지가 안 보인다.
   const 칩들 = useMemo(() => {
-    const 흐름: 상태키[] = ["답변대기", "수락", "채팅중", "면접예정"];
-    const 끝: 상태키[] = ["거절", "취소", "공고마감"];
+    if (탭 === "검토중") return [];
+    const 흐름: 상태키[] = 탭 === "진행중" ? ["수락", "채팅중", "면접예정"] : [];
+    const 끝: 상태키[] = 탭 === "종료" ? ["거절", "취소", "공고마감"] : [];
     const 셈 = new Map<상태키, number>();
-    for (const p of 공고고른것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
+    for (const p of 탭한것) 셈.set(상태(p), (셈.get(상태(p)) || 0) + 1);
     // 「전체」가 맨 앞 — 기본으로 골라져 있는 칸이라 첫 자리가 자연스럽다. 그 뒤로
     // 선 하나를 두고 흐름이 이어서 시작하고, 흐름 밖에서 끝난 것(제안취소 등)은
     // 오른쪽 끝에 떼어 둔다. 그리는 차례는 아래 칩 줄이 정한다.
     return [
       ...흐름.map((k) => ({ 키: k, 수: 셈.get(k) || 0 })),
       ...끝.filter((k) => (셈.get(k) || 0) > 0).map((k) => ({ 키: k, 수: 셈.get(k)! })),
-      { 키: "전체" as const, 수: 공고고른것.length },
+      { 키: "전체" as const, 수: 탭한것.length },
     ];
-  }, [공고고른것]);
+  }, [탭한것, 탭]);
 
   const 줄들 = useMemo(() => {
-    const l = 고른상태 === "전체" ? 공고고른것 : 공고고른것.filter((p) => 상태(p) === 고른상태);
+    const l = 고른상태 === "전체" ? 탭한것 : 탭한것.filter((p) => 상태(p) === 고른상태);
     // 우리 차례인 것이 먼저. 그다음 최근 활동 순.
     return [...l].sort((a, b) => {
       const 급 = (p: 제안) => (다음할일(p)?.우리차례 ? 0 : 1);
       return 급(a) - 급(b) ||
         +new Date(b.lastMessageAt || b.createdAt) - +new Date(a.lastMessageAt || a.createdAt);
     });
-  }, [공고고른것, 고른상태]);
+  }, [탭한것, 고른상태]);
 
   // 공고 머리에 쓸 값. 그 공고로 보낸 제안 아무 줄에서나 가져온다 — 같은 공고면
   // 어느 줄이든 같은 값이다.
@@ -509,10 +502,22 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
-      {/* 상태는 흐름이다. 칩만 나란히 두면 그냥 단추 여섯 개로 보여, 지금
-          어디까지 왔고 어디서 막혔는지가 안 읽힌다. 사이를 화살표로 잇는다.
-          끝난 것(거절·제안취소·공고마감)과 「전체」는 흐름 밖이라 선으로 떼어
-          오른쪽에 모은다 — 흐름 앞에 두면 흐름이 왼쪽 끝에서 시작하지 못한다. */}
+      {/* 검토중/진행중/종료 3탭 — 받은제안(구직자 화면)과 같은 나눔이다
+          ("보낸제안도 마찬가지로 3탭으로 바꿔줘"). */}
+      <div className="prop-tabs">
+        {(["검토중", "진행중", "종료"] as const).map((t) => (
+          <button key={t} type="button" className={`prop-tab${탭 === t ? " on" : ""}`}
+            onClick={() => 탭고르기(t)}>
+            {t} <span className="prop-tab-n">{탭수[t]}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* 탭 안에서 상태 흐름을 칩으로 더 잘게 거른다. 검토중은 상태가 하나뿐이라
+          칩이 없다. 칩만 나란히 두면 그냥 단추로 보여, 지금 어디까지 왔고 어디서
+          막혔는지가 안 읽힌다. 사이를 화살표로 잇는다. 끝난 것(거절·제안취소·
+          공고마감)과 「전체」는 흐름 밖이라 선으로 떼어 오른쪽에 모은다. */}
+      {칩들.length > 0 && (
       <div className="prop-chips">
         {(() => {
           const 끝키 = ["거절", "취소", "공고마감"];
@@ -545,6 +550,7 @@ export default function CompanyProposalsPage() {
           );
         })()}
       </div>
+      )}
 
       {로딩 ? (
         <p style={{ padding: "48px 0", textAlign: "center", color: "#555", fontSize: 14 }}>불러오는 중…</p>
