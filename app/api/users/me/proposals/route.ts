@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
-import { 제안분야들 } from "@/lib/positionLine";
+import { 제안분야들, 근무조건3행들 } from "@/lib/positionLine";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 
@@ -18,6 +18,16 @@ export async function GET(req: NextRequest) {
               p.declined_at, p.canceled_at, p.position_index,
               p.job_posting_id,
               c.company_name, c.brand_name,
+              -- 받은제안 표의 "기업" 칸 — 보낸제안 표의 "인재" 칸과 같은 자리(1행
+              -- 매장명, 2행 업종, 3행 지역). "받은제안은 보낸제안 테이블을 그대로
+              -- 가져오면 되. 인재만 기업으로 바꾸면 되지."
+              c.logo_url AS company_logo_url, c.industry AS company_industry,
+              c.region_sido AS company_region_sido, c.region_sigungu AS company_region_sigungu,
+              -- 마지막으로 누가 말했나 — 진행상황 칸의 "매장 답변대기"/"답변 필요"를 가른다.
+              (SELECT sender FROM proposal_messages m
+                WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_sender,
+              (SELECT m.created_at FROM proposal_messages m
+                WHERE m.proposal_id = p.id ORDER BY m.created_at DESC LIMIT 1) AS last_message_at,
               jp.title AS job_title, jp.status AS job_status, jp.deadline,
               jp.location, jp.employment_type, jp.salary_type, jp.salary_min, jp.salary_max,
               jp.contact_methods, jp.job_type, jp.positions, jp.created_at AS job_created_at,
@@ -41,10 +51,17 @@ export async function GET(req: NextRequest) {
 
     const unread = rows.filter((r) => !r.read_at).length;
     // 모집분야는 공고 상세와 같은 규칙으로 한 줄로 편다(lib/positionLine).
-    const 목록 = rows.map((r) => ({
-      ...r,
-      positionLines: 제안분야들(r.positions, r.position_index, (r.job_type || "") === "OFFICE"),
-    }));
+    const 목록 = rows.map((r) => {
+      const 조건행들 = 근무조건3행들(r.positions, r.position_index);
+      return {
+        ...r,
+        positionLines: 제안분야들(r.positions, r.position_index, (r.job_type || "") === "OFFICE"),
+        // 근무조건(요일·시간·급여) — 보낸제안 표의 근무조건 칸과 같은 규칙.
+        workConditionDay: 조건행들.map((x) => x.요일).filter(Boolean).join(" / ") || null,
+        workConditionTime: 조건행들.map((x) => x.시간).filter(Boolean).join(" / ") || null,
+        workConditionSalary: 조건행들.map((x) => x.급여).filter(Boolean).join(" / ") || null,
+      };
+    });
     return ok({ proposals: 목록, unread });
   } catch (e: any) {
     console.error("[proposals GET]", e);

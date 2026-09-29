@@ -15774,6 +15774,23 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 7px 14px; border-radius: 8px; border: 1px solid #e5e5ea;
   background: #fff; color: #555; font-size: 13.5px; font-family: inherit; cursor: pointer;
 }
+/* 받은제안 표 위 안내 — 수락이 정확히 뭘 여는지 표를 보기 전에 한 번
+   밝힌다("페이지 상단에... 수락하면 어떻게 되는건지 간단히 설명을 해줘"). */
+.prop-notice { margin: 0 0 14px; padding: 11px 16px; background: #f7f7f8; border-radius: 8px;
+  font-size: 13.5px; color: #555; line-height: 1.5; }
+/* 수락 확인창 안의 설명·원문 메시지 — 판단은 채팅을 열기 전에 해야 하니
+   ("기업에서 보낸 메시지는 어디에서 보여주면 좋을지도 고민해봐") 채팅
+   첫 메시지로만 두지 않고 확인창에서 같이 보여준다. */
+.prop-dec-sub { margin: -8px 0 14px; font-size: 13.5px; color: #555; line-height: 1.5; }
+.prop-dec-msg { margin: -6px 0 14px; padding: 10px 12px; background: #f7f7f8; border-radius: 8px;
+  font-size: 13.5px; color: #555; line-height: 1.5; }
+.prop-dec textarea {
+  width: 100%; box-sizing: border-box; padding: 9px 11px; margin-bottom: 4px;
+  border: 1px solid var(--color-primary); border-radius: 8px;
+  font-size: 14px; font-family: inherit; line-height: 1.5; color: #555;
+  resize: none; outline: none;
+}
+.prop-dec textarea::placeholder { color: #b0b0b6; font-size: 13px; }
 .prop-interest-acts button.key {
   border-color: var(--color-primary); color: var(--color-primary);
 }
@@ -16767,6 +16784,15 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 진행상황 칸의 💬 날짜(.prop-upd, 14px)와 크기를 맞춘다("제안한공고에 있는
    날짜도 크기 똑같이 해줘 진행상황 날짜랑"). */
 .prop-post-date { display: block; margin-top: 3px; font-size: 14px; color: #9a9aa3; }
+/* 기업이 제안하며 쓴 말은 확인창까지 안 가도 목록에서 바로 보여야 한다
+   ("내생각엔 목록에서 바로 보여주는게 좋아"). 한 줄로 자른다 — 전체는
+   title(마우스 올리면)로. */
+/* 기업이 제안하며 쓴 말 — 줄 전체 너비로 구분선(점선) 아래에 펼친다
+   ("차라리 테이블 목록 밑에 구분선을 하나 두고 그 밑에 보여주면 어때?"). */
+/* .prop-table td 와 specificity 가 같아 순서상 뒤에 오는 쪽이 이긴다 —
+   .prop-table 을 앞에 붙여 확실히 이기게 한다. */
+.prop-table tr.prop-msg-row td { padding: 8px 12px 14px; border-top: 1px dashed #ececf0; border-bottom: 1px solid #f4f4f6;
+  font-size: 13.5px; color: #666; line-height: 1.5; }
 /* 공고 열이 붙으면 열이 일곱이다. 판 폭(옆줄 176 + 간격 28 을 뺀 814)에 다
    들어가도록 나머지 열을 한 번에 조인다 — 못 조이면 표가 옆으로 굴러 「진행
    상황」과 「업데이트」가 화면 밖으로 나간다. 남는 자리는 진행 상황이 쓴다. */
