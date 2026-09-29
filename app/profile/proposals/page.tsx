@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, MessageCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 마감인가 } from "@/lib/jobClosed";
 import ProfileShell from "@/components/profile/ProfileShell";
@@ -117,7 +117,6 @@ function 종료일(p: Proposal): string {
 // 진행중 탭의 스테퍼 — 수락→채팅중→면접예정→결과 순서로 지금 어디까지 왔는지.
 // "결과"는 이 탭에 있는 동안은 늘 남은 단계다(결과가 나면 종료 탭으로 간다).
 const 단계들 = ["수락", "채팅중", "면접예정", "결과"] as const;
-const 상태이름진행중: Record<string, string> = { 수락: "수락", 채팅중: "채팅중", 면접예정: "면접예정" };
 function 현재단계(st: 상태키): number {
   if (st === "면접예정") return 2;
   if (st === "채팅중") return 1;
@@ -317,7 +316,7 @@ export default function ProposalsPage() {
                                       onClick={() => { set거절할것(p); set같이차단(false); set거절사유(""); }}>
                                       거절하기
                                     </button>
-                                    <button type="button" className="prop-chatbtn"
+                                    <button type="button" className="prop-chat-solid"
                                       onClick={() => { set한마디(""); set답할것(p); }}>
                                       수락하기
                                     </button>
@@ -353,7 +352,7 @@ export default function ProposalsPage() {
                                 <span className="prop-card2-name">{p.brand_name || p.company_name}</span>
                                 <span className="prop-card2-job">{조건(p) ? `${조건(p)} 모집` : p.job_title}</span>
                                 <button type="button" className="prop-card2-viewjob" onClick={() => 열기(p)}>
-                                  공고 보기 <ChevronRight size={14} />
+                                  공고 보기 <ChevronRight size={12} />
                                 </button>
                               </div>
                             </div>
@@ -371,15 +370,13 @@ export default function ProposalsPage() {
                                 {단계들.map((label, i) => (
                                   <span key={label} className={i < 단계 ? "on" : i === 단계 ? "current" : undefined}>
                                     {label}
+                                    {/* 지금 단계 밑에 날짜를 바로 붙인다 — 상태 칸에 같은 말
+                                        (면접예정)을 또 적지 않는다("면접에정이 2번 나올필요
+                                        없으니... 날자를 프로그레스바 면접예정밑에 넣어"). */}
+                                    {i === 단계 && <em>{활.글.replace("💬 ", "")}</em>}
                                   </span>
                                 ))}
                               </div>
-                            </div>
-
-                            <div className="prop-card2-status">
-                              <MessageCircle size={15} />
-                              <b>{상태이름진행중[st]}</b>
-                              <span>{활.글.replace("💬 ", "")}</span>
                             </div>
 
                             <div className="prop-card2-recent">
@@ -425,7 +422,7 @@ export default function ProposalsPage() {
                                 <span className="prop-card2-name">{p.brand_name || p.company_name}</span>
                                 <span className="prop-card2-job">{조건(p) ? `${조건(p)} 모집` : p.job_title}</span>
                                 <button type="button" className="prop-card2-viewjob" onClick={() => 열기(p)}>
-                                  공고 보기 <ChevronRight size={14} />
+                                  공고 보기 <ChevronRight size={12} />
                                 </button>
                               </div>
                             </div>

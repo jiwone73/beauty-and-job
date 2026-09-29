@@ -16938,23 +16938,37 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table .c-recent { width: 125px; max-width: 125px; }
 .prop-table .c-manage { width: 85px; max-width: 85px; }
 /* 받은제안 표(.received)는 진행상황·관리 칸이 없다("제안내용에 진행상황
-   관리가 있는게 너무 쌩뚱맞잖아") — 남은 칸(기업~제안일) 폭 합으로 표
-   자체를 고정한다. 100%+table-layout:fixed 로 두면 브라우저가 남는 폭을
-   어디론가 몰아준다(이 표에서 반복해서 겪은 문제). */
-.prop-table.received { width: 705px; }
-.prop-table.received .apl-td-who { width: 180px; }
+   관리가 있는게 너무 쌩뚱맞잖아") — 남은 칸(기업~제안일) 다섯 칸의 폭을
+   퍼센트로 나눠 표를 판 너비 100%까지 채운다("오른쪽이 많이 남잖아.
+   전체적으로 여백을 균등분할 해"). 다섯 칸 모두 값을 주지 않으면 남는 폭을
+   브라우저가 어디론가 몰아준다(이 표에서 반복해서 겪은 문제) — 그래서
+   퍼센트 합을 정확히 100으로 맞춘다.  기업 25 / 제안한 공고 23 /
+   모집분야 15 / 근무조건 20.5 / 제안일 16.5. */
+.prop-table.received { width: 100%; }
+.prop-table.received .apl-td-who { width: 25%; }
+.prop-table.received .c-post { width: 23%; max-width: none; }
+.prop-table.received .c-job { width: 15%; max-width: none; }
+.prop-table.received .c-cond { width: 20.5%; max-width: none; }
+.prop-table.received .c-date { width: 16.5%; }
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
    않을까?"). */
 .prop-msg-text { margin: 0; }
 .prop-msg-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+/* 거절하기·수락하기는 진행중 카드의 단추와 같은 크기다("받은제안에 있는
+   거절하기 수락하기 버튼이 너무 작네 버튼은 진행중 페이지에 있는 버튼으로
+   통일시켜줘") — 진행중은 좁은 세로 칸이라 폭 100%를 쓰지만, 여기는 한
+   줄에 나란히 있어 폭은 내용만큼만 쓴다. */
+.prop-msg-acts .prop-cancel { padding: 7px 16px; font-size: 14px; }
 
 /* 받은제안 / 진행중 / 종료 세 탭. 제안 정보와 지금 할 일을 한 표에 섞지
    않으려고 나눴다("제안내용에 진행상황 관리가 있는게 너무 쌩뚱맞잖아"). */
-.prop-tabs { display: flex; gap: 22px; margin-bottom: 16px; border-bottom: 1px solid #ececf0; }
+/* 탭 왼쪽이 판 테두리에 바짝 붙어 보였다("받은제안 탭 테두리하고 붙었어") —
+   위 안내문(.prop-notice)과 같은 16px 인셋을 준다. */
+.prop-tabs { display: flex; gap: 22px; margin-bottom: 16px; padding-left: 16px; border-bottom: 1px solid #ececf0; }
 .prop-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 10px 2px;
   font-size: 15px; color: #9a9aa3; cursor: pointer; }
-.prop-tab.on { color: #333; font-weight: 700; border-bottom-color: var(--color-primary); }
+.prop-tab.on { color: var(--color-primary); font-weight: 700; border-bottom-color: var(--color-primary); }
 .prop-tab-n { font-size: 13px; color: inherit; opacity: .7; }
 
 /* 진행중·종료 탭 — 표가 아니라 한 줄짜리 카드로 보인다(상태마다 보여줄 것이
@@ -16970,7 +16984,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 사진은 받은제안 표의 기업 칸(.apl-td-avatar)과 같은 크기·모양을 쓴다 —
    같은 기업 사진이 탭마다 다른 크기면 같은 것으로 안 읽힌다("사진
    사이즈도 틀리고"). */
-.prop-card2-co { display: flex; align-items: center; gap: 12px; flex: 0 0 150px; min-width: 0; }
+.prop-card2-co { display: flex; align-items: center; gap: 12px; flex: 0 0 200px; min-width: 0; }
 .prop-card2-logo { width: 53.3px; height: 66.625px; flex-shrink: 0; border-radius: 4px; overflow: hidden;
   display: flex; align-items: center; justify-content: center; background: #f4f0f8;
   color: var(--color-primary); font-weight: 700; font-size: 16px; }
@@ -16981,19 +16995,21 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    하나. 옅은 회색을 새로 만들지 않는다"). */
 .prop-card2-name { font-size: 15px; font-weight: 700; color: #555;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prop-card2-job { font-size: 14px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-card2-job { font-size: 13px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 공고 보기 링크는 공고·지원자 판의 같은 링크(.co-pane-view)와 같은 값이다. */
 .prop-card2-viewjob { padding: 0; border: none; background: none;
-  display: inline-flex; align-items: center; gap: 2px; font-size: 13.5px; color: #555; cursor: pointer; }
+  display: inline-flex; align-items: center; gap: 2px; font-size: 13px; color: #555; cursor: pointer; }
 .prop-card2-viewjob:hover { color: var(--color-primary); }
 
 /* 스테퍼: 점 4개(수락·채팅중·면접예정·결과)를 선으로 잇는다. 지난 단계와
    현재 단계는 채우고, 현재 단계는 조금 더 크게 해 어디까지 왔는지 한눈에
    보이게 한다. "결과"는 이 탭에 있는 한 늘 빈 채로 남는다. 라벨은 표 본문과
    같은 크기(14px)다 — 작게 줄이면 안 보인다("프로그래스바 밑에 글씨는
-   보이지도 않아"). 지난 단계는 진행상황 칸의 날짜와 같은 톤(#9a9aa3)이고
-   지금 단계만 포인트 컬러로 강조한다. */
-.prop-step { flex: 0 0 175px; }
+   보이지도 않아"). 지금 단계 밑에는 날짜를 바로 붙인다 — 상태 칸을 따로
+   두어 같은 말(면접예정)을 두 번 하지 않는다("면접에정이 2번 나올필요
+   없으니... 날자를 프로그레스바 면접예정밑에 넣어"). 현재 단계도 굵기는
+   그대로 둔다("면접예정 둘다 평체로 바꿔") — 색만 포인트 컬러로 구분한다. */
+.prop-step { flex: 0 0 170px; }
 .prop-step-dots { display: flex; align-items: center; }
 .prop-step-dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e2e6; flex-shrink: 0; }
 .prop-step-dot.on { background: var(--color-primary); }
@@ -17001,18 +17017,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-step-line { flex: 1 1 auto; height: 2px; background: #e2e2e6; margin: 0 2px; }
 .prop-step-line.on { background: var(--color-primary); }
 .prop-step-labels { display: flex; margin-top: 8px; }
-.prop-step-labels span { flex: 1; text-align: center; font-size: 14px; color: #555; white-space: nowrap; }
-.prop-step-labels span:first-child { text-align: left; }
-.prop-step-labels span:last-child { text-align: right; }
-.prop-step-labels span.current { color: var(--color-primary); font-weight: 700; }
-
-/* 상태는 한 줄로 — 아이콘 + 단계 이름 + 날짜. 누구 차례인지는 스테퍼가
-   이미 말하고 있어 따로 적지 않는다("확인필요는 왜있는지 모르겠고"). 날짜는
-   진행상황 칸의 날짜(.prop-upd)와 같은 값이다. */
-.prop-card2-status { flex: 0 0 145px; display: flex; align-items: center; gap: 6px; min-width: 0; }
-.prop-card2-status svg { flex-shrink: 0; color: var(--color-primary); }
-.prop-card2-status b { font-size: 14px; color: #555; font-weight: 700; white-space: nowrap; }
-.prop-card2-status span { font-size: 14px; color: #9a9aa3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-step-labels span { flex: 1; display: flex; flex-direction: column; gap: 2px;
+  align-items: center; text-align: center; font-size: 14px; color: #555; white-space: nowrap; }
+.prop-step-labels span:first-child { align-items: flex-start; text-align: left; }
+.prop-step-labels span:last-child { align-items: flex-end; text-align: right; }
+.prop-step-labels span.current { color: var(--color-primary); }
+.prop-step-labels em { font-style: normal; font-size: 14px; color: #9a9aa3; }
 
 .prop-card2-recent { flex: 1 1 auto; min-width: 0; }
 .prop-card2-recent-label { display: block; font-size: 14px; color: #555; margin-bottom: 5px; }
