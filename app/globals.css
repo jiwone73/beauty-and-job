@@ -16915,7 +16915,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table .c-manage { width: 105px; max-width: 105px; }
 /* 업데이트 줄은 상태 배지보다 눈에 덜 띄어도 된다("업데이트는 폰트 12로",
    "색상을 제안한공고에 있는 날짜처럼 흐리게") — 제안한 공고 칸의 날짜(.prop-post-date)와 같은 값. */
-.prop-upd { font-size: 14px; color: #9a9aa3; }
+/* 1행(단계)과 2행(💬) 사이 위아래 여백 — 붙어 보여서 아이콘 높이만큼 띄운다
+   ("여백을 아이콘 기준으로 해서 좀더 위 아래 여백 키워줘"). */
+.prop-upd { font-size: 14px; color: #9a9aa3; margin-top: 6px; }
 /* 기업이 답할 차례만 포인트 컬러로 강조한다("기업이 해야 할 차례인 문구는
    포인트 컬러로 강조해 주세요") — 인재 차례는 강조하지 않는다, 우리가 할
    일이 아니라서다. */
