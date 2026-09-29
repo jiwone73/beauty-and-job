@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 인재열람가능 } from "@/lib/companyEntitlement";
+import { shortRegion } from "@/lib/regionShort";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 실을 쓴다 — 그래서 owner 를 지정하지 않고
 // 받은 뒤에 이 제안의 당사자인지 따진다. 남의 스레드는 404 로 돌려보낸다(있는지
@@ -67,7 +68,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       messages: rows,
       blocked: !!제안?.blocked,
       expired: false,
-      기본장소: 제안?.기본장소 || null,
+      기본장소: 제안?.기본장소 ? shortRegion(제안.기본장소) : null,
       매장명: 제안?.매장명 || null,
     });
   } catch (e: any) {
@@ -97,7 +98,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const kind = b?.kind === "APPOINTMENT" ? "APPOINTMENT" : "TEXT";
     const body = String(b?.body || "").trim().slice(0, 1000);
     const at = b?.appointmentAt ? new Date(b.appointmentAt) : null;
-    const 장소 = String(b?.place || "").trim().slice(0, 200) || 제안?.기본장소 || null;
+    const 장소 = String(b?.place || "").trim().slice(0, 200)
+      || (제안?.기본장소 ? shortRegion(제안.기본장소) : null);
 
     if (kind === "TEXT" && !body) return err("PROP_MSG_003", "보낼 내용을 적어주세요.", 400);
     if (kind === "APPOINTMENT") {

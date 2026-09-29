@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronRight, MessageCircle } from "lucide-react";
 import ProposalThread from "@/components/proposal/ProposalThread";
 import { 마감인가 } from "@/lib/jobClosed";
 import ProfileShell from "@/components/profile/ProfileShell";
@@ -112,8 +113,10 @@ function 종료일(p: Proposal): string {
   return p.deadline || p.created_at;
 }
 
-// 진행중 탭의 스테퍼 — 수락→채팅중→면접예정 순서로 지금 어디까지 왔는지.
-const 단계들 = ["수락", "채팅중", "면접예정"] as const;
+// 진행중 탭의 스테퍼 — 수락→채팅중→면접예정→결과 순서로 지금 어디까지 왔는지.
+// "결과"는 이 탭에 있는 동안은 늘 남은 단계다(결과가 나면 종료 탭으로 간다).
+const 단계들 = ["수락", "채팅중", "면접예정", "결과"] as const;
+const 상태이름진행중: Record<string, string> = { 수락: "수락", 채팅중: "채팅중", 면접예정: "면접예정" };
 function 현재단계(st: 상태키): number {
   if (st === "면접예정") return 2;
   if (st === "채팅중") return 1;
@@ -307,6 +310,13 @@ export default function ProposalsPage() {
                                 <td colSpan={5}>
                                   {p.message && <p className="prop-msg-text">“{p.message}”</p>}
                                   <div className="prop-msg-acts">
+                                    {/* 수락 전에도 채팅은 열려 있다("제안하기가 완료되면
+                                        수락전이라도 채팅을 할수 있게 해줘") — 기업이
+                                        덧붙인 말을 읽고 답할 곳이 있어야 한다. */}
+                                    <button type="button" className="prop-chatbtn"
+                                      onClick={() => set대화(p)}>
+                                      채팅하기
+                                    </button>
                                     <button type="button" className="prop-cancel"
                                       onClick={() => { set거절할것(p); set같이차단(false); set거절사유(""); }}>
                                       거절하기
@@ -338,37 +348,65 @@ export default function ProposalsPage() {
                         const 단계 = 현재단계(st);
                         return (
                           <div className="prop-card2" key={p.id}>
-                            <div className="prop-card2-head">
-                              {기업칸(p, () => 열기(p))}
-                              <button type="button" className="prop-card2-post" title={p.job_title}
-                                onClick={() => 열기(p)}>
-                                {p.job_title}
-                              </button>
+                            <div className="prop-card2-co">
+                              <span className="prop-card2-logo">
+                                {p.company_logo_url
+                                  ? <img src={p.company_logo_url} alt="" loading="lazy" />
+                                  : <span>{(p.brand_name || p.company_name || "?").slice(0, 1)}</span>}
+                              </span>
+                              <div className="prop-card2-colines">
+                                <span className="prop-card2-name">{p.brand_name || p.company_name}</span>
+                                <span className="prop-card2-job">{조건(p) ? `${조건(p)} 모집` : p.job_title}</span>
+                                <button type="button" className="prop-card2-viewjob" onClick={() => 열기(p)}>
+                                  공고 보기 <ChevronRight size={14} />
+                                </button>
+                              </div>
                             </div>
-                            <div className="prop-stepper">
-                              {단계들.map((label, i) => (
-                                <Fragment key={label}>
-                                  {i > 0 && <span className={`prop-stepper-line${i <= 단계 ? " on" : ""}`} />}
-                                  <span className={`prop-stepper-dot${i <= 단계 ? " on" : ""}${i === 단계 ? " current" : ""}`}>
+
+                            <div className="prop-step">
+                              <div className="prop-step-dots">
+                                {단계들.map((label, i) => (
+                                  <Fragment key={label}>
+                                    {i > 0 && <span className={`prop-step-line${i <= 단계 ? " on" : ""}`} />}
+                                    <span className={`prop-step-dot${i <= 단계 ? " on" : ""}${i === 단계 ? " current" : ""}`} />
+                                  </Fragment>
+                                ))}
+                              </div>
+                              <div className="prop-step-labels">
+                                {단계들.map((label, i) => (
+                                  <span key={label} className={i < 단계 ? "on" : i === 단계 ? "current" : undefined}>
                                     {label}
                                   </span>
-                                </Fragment>
-                              ))}
+                                ))}
+                              </div>
                             </div>
+
                             <div className="prop-card2-status">
-                              <span className="prop-upd">{활.글}</span>
+                              <div className="prop-card2-status-top">
+                                <MessageCircle size={15} />
+                                <b>{상태이름진행중[st]}</b>
+                              </div>
+                              <span className="prop-upd">{활.글.replace("💬 ", "")}</span>
                               {활.차례 && (
                                 <span className={내차례 ? "prop-turn mine" : "prop-turn"}>({활.차례})</span>
                               )}
                             </div>
-                            {대화열림(p) && p.last_message_body && (
+
+                            <div className="prop-card2-recent">
+                              <span className="prop-card2-recent-label">최근 대화</span>
                               <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
-                                “{p.last_message_body}” ›
+                                <span>{p.last_message_body || "아직 나눈 대화가 없어요"}</span>
+                                <ChevronRight size={16} />
                               </button>
-                            )}
+                            </div>
+
                             <div className="prop-card2-acts">
-                              <button type="button" className="prop-chatbtn" onClick={() => set대화(p)}>
+                              <button type="button" className="prop-card2-chat" onClick={() => set대화(p)}>
                                 채팅하기
+                              </button>
+                              <button type="button" className="prop-card2-undo"
+                                onClick={() => { set거절할것(p); set같이차단(false); set거절사유(""); }}>
+                                제안취소
                               </button>
                             </div>
                           </div>
@@ -387,20 +425,27 @@ export default function ProposalsPage() {
                         const st = 상태(p);
                         return (
                           <div className="prop-card2 ended" key={p.id}>
-                            <div className="prop-card2-head">
-                              {기업칸(p, () => 열기(p))}
-                              <button type="button" className="prop-card2-post" title={p.job_title}
-                                onClick={() => 열기(p)}>
-                                {p.job_title}
-                              </button>
+                            <div className="prop-card2-co">
+                              <span className="prop-card2-logo">
+                                {p.company_logo_url
+                                  ? <img src={p.company_logo_url} alt="" loading="lazy" />
+                                  : <span>{(p.brand_name || p.company_name || "?").slice(0, 1)}</span>}
+                              </span>
+                              <div className="prop-card2-colines">
+                                <span className="prop-card2-name">{p.brand_name || p.company_name}</span>
+                                <span className="prop-card2-job">{조건(p) ? `${조건(p)} 모집` : p.job_title}</span>
+                                <button type="button" className="prop-card2-viewjob" onClick={() => 열기(p)}>
+                                  공고 보기 <ChevronRight size={14} />
+                                </button>
+                              </div>
                             </div>
-                            <div className="prop-card2-status">
+                            <div className="prop-card2-end">
                               <span className={`prop-badge prop-badge-${st}`}>{종료라벨[st]}</span>
                               <span className="prop-upd">{날짜(종료일(p))}</span>
+                              {st === "거절" && p.decline_reason && (
+                                <p className="prop-reason">거절 사유: “{p.decline_reason}”</p>
+                              )}
                             </div>
-                            {st === "거절" && p.decline_reason && (
-                              <p className="prop-reason">거절 사유: “{p.decline_reason}”</p>
-                            )}
                           </div>
                         );
                       })}

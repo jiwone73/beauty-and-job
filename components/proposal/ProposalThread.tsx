@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, CalendarPlus, Send, MoreVertical, MapPin } from "lucide-react";
+import { shortRegion } from "@/lib/regionShort";
 
 // 제안 스레드의 대화. 매장과 구직자가 같은 화면을 쓴다 — 한쪽만 다르게 보이면
 // 무슨 말이 어떻게 갔는지 서로 다르게 기억하게 된다.
@@ -209,7 +210,7 @@ export default function ProposalThread({
             <b>{약속때(잡힌약속.appointment_at)}</b>
             {잡힌약속.appointment_place && (
               <a href={길찾기(잡힌약속.appointment_place)} target="_blank" rel="noopener noreferrer">
-                <MapPin size={13} />{잡힌약속.appointment_place}
+                <MapPin size={13} />{shortRegion(잡힌약속.appointment_place)}
               </a>
             )}
             <button type="button" className="pth-fixed-cancel" onClick={() => 약속취소(잡힌약속.id)}>
@@ -236,7 +237,7 @@ export default function ProposalThread({
                   {m.appointment_place && (
                     <a className="pth-appt-place" href={길찾기(m.appointment_place)} target="_blank" rel="noopener noreferrer">
                       <MapPin size={13} />
-                      <span>{m.appointment_place}</span>
+                      <span>{shortRegion(m.appointment_place)}</span>
                     </a>
                   )}
                   {m.appointment_status === "ACCEPTED" ? (
