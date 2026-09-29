@@ -16921,7 +16921,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 기업이 답할 차례만 포인트 컬러로 강조한다("기업이 해야 할 차례인 문구는
    포인트 컬러로 강조해 주세요") — 인재 차례는 강조하지 않는다, 우리가 할
    일이 아니라서다. */
-.prop-turn { font-style: normal; }
+/* 105px 칸(패딩 빼면 85px 남짓)엔 "(기업 답변 필요)" 같은 아홉 글자가 한
+   줄로 못 들어간다 — 말줄임으로 자르면 또 안 보이게 되니("이거 누락됬잖아")
+   줄바꿈을 허락한다(.c-recent span 의 nowrap·말줄임을 여기서만 되돌린다). */
+.prop-turn { display: block; font-style: normal; font-size: 14px; color: #9a9aa3;
+  margin-top: 1px; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.3; }
 .prop-turn.mine { color: var(--color-primary); font-weight: 600; }
 /* "채팅하기"는 액션 행(3행)에 제안취소와 나란히 선다("채팅하기라는 버튼을
    맨위칸에 만들자" 당시엔 혼자였지만, 지금은 1행이 상태 몫) — 제안을 보낸
