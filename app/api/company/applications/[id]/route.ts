@@ -251,11 +251,16 @@ export async function PATCH(
   // 지원서에는 없던 채팅·면접약속 기능을 여기서부터 쓸 수 있게 하는 것이 핵심이다.
   if (body.status === "PASSED") {
     try {
+      // 예전에 이 사람에게 보낸 제안이 거절되었거나 우리가 거뒀어도, 합격시킨
+      // 것은 그걸 뒤집는 결정적인 행동이다 — declined_at·canceled_at을 그대로
+      // 두면 채팅 메시지 전송이 막힌 채로 남는다(POST /api/proposals/[id]/messages
+      // 가 그 값을 본다). 합격시키는 순간 둘 다 지운다.
       const upserted = await pool.query(
         `INSERT INTO proposals (company_id, user_id, job_posting_id, message, interested_at)
          VALUES ($1, $2, $3, '', NOW())
          ON CONFLICT (company_id, user_id, job_posting_id)
-         DO UPDATE SET interested_at = COALESCE(proposals.interested_at, EXCLUDED.interested_at)
+         DO UPDATE SET interested_at = COALESCE(proposals.interested_at, EXCLUDED.interested_at),
+                       declined_at = NULL, canceled_at = NULL
          RETURNING id`,
         [auth!.sub, row.user_id, row.job_posting_id]
       );
@@ -263,6 +268,19 @@ export async function PATCH(
       const co = await pool.query(`SELECT COALESCE(brand_name, company_name) AS name FROM companies WHERE id = $1`, [auth!.sub]);
       const companyName = co.rows[0]?.name || "기업";
       if (proposalId) {
+        // 지원(제안 없이 시작)으로 열린 대화는 첫 메시지가 없어 대화창이 빈 채로
+        // 시작한다 — 제안하기는 회사가 쓴 메시지가 그대로 첫 말이 되는데, 합격
+        // 처리에는 그런 글이 없어서다. 기존 대화가 없을 때만 인사말을 하나 넣는다.
+        const 기존메시지 = await pool.query(
+          `SELECT 1 FROM proposal_messages WHERE proposal_id = $1 LIMIT 1`, [proposalId]
+        );
+        if (기존메시지.rowCount === 0) {
+          await pool.query(
+            `INSERT INTO proposal_messages (proposal_id, sender, kind, body)
+             VALUES ($1, 'COMPANY', 'TEXT', $2)`,
+            [proposalId, `'${row.job_title}' 합격을 축하드립니다. 편하게 채팅으로 이야기해요.`]
+          ).catch((e) => console.error("[PATCH application] 합격 인사말 저장 실패", e));
+        }
         await pool.query(
           `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)
            VALUES ($1, 'PASSED', $2, $3, $4, 'job_posting')`,
