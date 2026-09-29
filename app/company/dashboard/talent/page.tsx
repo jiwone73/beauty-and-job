@@ -400,7 +400,8 @@ export default function TalentPage() {
       // 공고 없이 담아 둔 사람이면 서버가 스크랩을 이 공고로 옮긴다. 북마크 목록도 따라간다.
       const 담은곳: string[] | undefined = r?.data?.scrapJobIds;
       setTalents((prev) => prev.map((t) => (t.id === 보낸이
-        ? { ...t, proposedAt: 지금, ...(담은곳 ? { scrapJobIds: 담은곳, isScrapped: 담은곳.length > 0 } : {}) }
+        ? { ...t, proposedAt: 지금, latestProposalState: "active" as const,
+            ...(담은곳 ? { scrapJobIds: 담은곳, isScrapped: 담은곳.length > 0 } : {}) }
         : t)));
       setProposeTarget(null);
     } catch (e: any) {
@@ -925,10 +926,16 @@ export default function TalentPage() {
                               ? <BookmarkCheck size={19} style={{ color: "#582681" }} />
                               : <Bookmark size={19} style={{ color: "#555" }} />}
                           </button>
-                          {t.proposedAt || t.interestedAt ? (
+                          {/* 취소·공고마감은 다시 제안할 수 있다 — 거절만 막아 둔다. */}
+                          {t.latestProposalState === "active" ? (
                             <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
                               className="co-li-sent">
                               제안완료
+                            </Link>
+                          ) : t.latestProposalState === "rejected" ? (
+                            <Link href={`${base}/proposals`} onClick={(e) => e.stopPropagation()}
+                              className="co-li-sent">
+                              거절됨
                             </Link>
                           ) : (
                             <button type="button" className="co-li-propose"

@@ -122,12 +122,19 @@ export default function TalentCard({
                 : <Bookmark size={18} style={{ color: "#555" }} />}
             </button>
           </span>
-          {t.proposedAt || t.interestedAt ? (
+          {/* 취소·공고마감은 다시 제안할 수 있어야 한다("제안취소를 없애면 어때?"
+              — 대신 배지를 실제 상태에 맞춘다. 취소는 우리가 거둔 것이고 공고마감은
+              상대 의사와 무관해 막을 이유가 없다). 거절만 막아 둔다. */}
+          {t.latestProposalState === "active" ? (
             <Link className="tal-sent" href={`${base}/proposals`}
               title={t.proposedAt
                 ? `${날짜(t.proposedAt)}에 보냄 · 보낸 제안에서 보기`
                 : "보낸 제안에서 보기"}>
               제안완료
+            </Link>
+          ) : t.latestProposalState === "rejected" ? (
+            <Link className="tal-sent" href={`${base}/proposals`} title="보낸 제안에서 보기">
+              거절됨
             </Link>
           ) : (
             <button type="button" className="tal-btn" onClick={() => onPropose(t)}>

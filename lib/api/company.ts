@@ -116,6 +116,11 @@ export type TalentItem = {
   scrapJobIds?: string[];       // 어느 공고로 담았나 — 공고 id, 공고 없이 담은 것은 "none"
   resumeUpdatedAt?: string | null;    // 이력서를 마지막으로 손본 때
   proposedAt?: string | null;   // 이미 제안한 사람이면 마지막 제안 시각
+  /** 가장 최근 제안으로 다시 제안해도 되는지 — "active"면 살아있는 제안이라
+   *  카드가 「제안완료」를 보여주고 막는다. "rejected"면 「거절됨」을 보여주고
+   *  막는다. "reopenable"(취소·공고마감)이거나 null(제안한 적 없음)이면
+   *  「제안하기」 버튼을 그대로 둔다. */
+  latestProposalState?: "active" | "rejected" | "reopenable" | null;
   interestedAt?: string | null;   // 제안에 「관심 있어요」를 누른 시각 — 누르면 연락처가 열린다
   interestMessage?: string | null;    // 관심에 붙인 한마디("주 4일 가능할까요?")
   interestProposalId?: string | null; // 그 대화를 이어 갈 제안 스레드

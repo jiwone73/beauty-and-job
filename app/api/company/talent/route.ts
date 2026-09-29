@@ -4,6 +4,19 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 인재열람가능, 이름가리기, 재직가리기, 지원함SQL } from "@/lib/companyEntitlement";
+import { 마감인가 } from "@/lib/jobClosed";
+
+/** 카드의 「제안완료」/「제안하기」를 가른다. 보낸제안 표의 상태 우선순위(거절 >
+ *  취소 > 면접예정/수락/채팅중 > 공고마감 > 답변대기)와 같은 규칙이되, 카드는
+ *  다시 제안해도 되는지만 알면 되므로 세 갈래로 묶는다. */
+function 최근제안상태(r: any): "active" | "rejected" | "reopenable" | null {
+  if (!r.proposed_at) return null;
+  if (r.latest_declined_at) return "rejected";
+  if (r.latest_canceled_at) return "reopenable";
+  if (r.latest_interested_at || r.latest_has_appointment) return "active";
+  if (마감인가(r.latest_job_status, r.latest_job_deadline)) return "reopenable";
+  return "active"; // 답변대기 — 아직 아무 일도 없는 살아있는 제안이다.
+}
 
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
@@ -269,9 +282,30 @@ export async function GET(req: NextRequest) {
         -- 뺴지 않고 그대로 센다.
         (
           SELECT COUNT(*)::int FROM proposals WHERE user_id = u.id
-        ) AS received_proposal_count
+        ) AS received_proposal_count,
+        -- 가장 최근 제안 하나로 「지금 다시 제안해도 되나」를 가른다. 제안취소는
+        -- 우리가 거둔 것이고 공고마감은 상대 의사와 무관해 — 둘 다 다시 제안할 수
+        -- 있어야 한다("취소·마감이면 제안하기 버튼을 살린다"). 거절만 막아 둔다.
+        최근제안.declined_at AS latest_declined_at,
+        최근제안.canceled_at AS latest_canceled_at,
+        최근제안.interested_at AS latest_interested_at,
+        최근제안.job_status AS latest_job_status,
+        최근제안.job_deadline AS latest_job_deadline,
+        최근제안.has_appointment AS latest_has_appointment
       FROM users u
       JOIN user_profiles up ON up.user_id = u.id
+      LEFT JOIN LATERAL (
+        SELECT p.declined_at, p.canceled_at, p.interested_at,
+               jp.status AS job_status, jp.deadline AS job_deadline,
+               EXISTS (
+                 SELECT 1 FROM proposal_messages m
+                  WHERE m.proposal_id = p.id AND m.kind = 'APPOINTMENT' AND m.appointment_status = 'ACCEPTED'
+               ) AS has_appointment
+          FROM proposals p
+          LEFT JOIN job_postings jp ON jp.id = p.job_posting_id
+         WHERE p.company_id = $1 AND p.user_id = u.id
+         ORDER BY p.created_at DESC LIMIT 1
+      ) 최근제안 ON true
       WHERE u.status = 'ACTIVE'
         AND NOT EXISTS (
           SELECT 1 FROM user_company_blocks b
@@ -362,6 +396,9 @@ export async function GET(req: NextRequest) {
       scrapped: r.scrapped,
       scrapJobIds: r.scrap_job_ids || [],
       proposedAt: r.proposed_at || null,
+      // 카드의 「제안완료」/「제안하기」를 정한다 — 취소·마감이면 다시 제안할 수
+      // 있게 열어 준다("제안취소를 없애면 어때?" — 대신 배지를 상태에 맞춘다).
+      latestProposalState: 최근제안상태(r),
       resumeUpdatedAt: r.resume_updated_at || null,
       receivedProposalCount: r.received_proposal_count ?? 0,
     }));

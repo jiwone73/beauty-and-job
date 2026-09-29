@@ -71,8 +71,11 @@ export default function TalentTableRow({
         )}
       </td>
       <td className="apl-td apl-td-acts">
-        {t.proposedAt || t.interestedAt ? (
+        {/* 취소·공고마감은 다시 제안할 수 있다 — 거절만 막아 둔다(TalentCard와 같은 규칙). */}
+        {t.latestProposalState === "active" ? (
           <Link className="tal-btn" href={`${base}/proposals`}>제안완료</Link>
+        ) : t.latestProposalState === "rejected" ? (
+          <Link className="tal-btn" href={`${base}/proposals`}>거절됨</Link>
         ) : (
           <button type="button" className="tal-btn" onClick={() => onPropose(t)}>제안하기</button>
         )}
