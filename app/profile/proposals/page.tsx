@@ -197,7 +197,7 @@ export default function ProposalsPage() {
                 띄우니, 그 확인창 문구를 다시 안 읽어도 되게 여기서도 미리
                 말해 둔다. */}
             <p className="prop-notice">
-              제안을 수락하시면 채팅으로 궁금한 점을 묻고 면접까지 진행하실 수 있어요.
+              제안을 수락하시면 해당 기업에게 수락 사실이 알려지고, 채팅으로 궁금한 점을 묻고 면접까지 진행하실 수 있어요.
             </p>
 
             {불러오는중 ? (
@@ -274,9 +274,13 @@ export default function ProposalsPage() {
                                   수락하기
                                 </button>
                               )}
+                              {/* 면접예정이라도 "일정 확인"이라 하면 일정 볼 때만 쓰는
+                                  버튼처럼 읽힌다 — 면접 전 문의사항으로도 채팅할 수 있어
+                                  ("일정확인 목적이아니라 면접전에 문의사항이 있어서
+                                  채팅할 수도 있잖아") 모든 상태에서 "채팅하기"로 통일한다. */}
                               <button type="button" className="prop-chatbtn" disabled={!대화열림(p)}
                                 onClick={(e) => { e.stopPropagation(); set대화(p); }}>
-                                {st === "면접예정" ? "일정 확인" : "채팅하기"}
+                                채팅하기
                               </button>
                               {st === "답변대기" && (
                                 <button type="button" className="prop-cancel"
@@ -314,7 +318,7 @@ export default function ProposalsPage() {
         <div className="rp-modal-overlay">
           <div className="prop-dec">
             <p className="prop-dec-t">{답할것.brand_name || 답할것.company_name}의 제안을 수락할까요?</p>
-            <p className="prop-dec-sub">수락하면 채팅으로 궁금한 점을 묻고 면접까지 진행하실 수 있어요.</p>
+            <p className="prop-dec-sub">수락하면 이 기업에게 수락 사실이 알려지고, 채팅창이 열려 궁금한 점을 묻고 면접까지 진행하실 수 있어요.</p>
             {답할것.message && <p className="prop-dec-msg">“{답할것.message}”</p>}
             <textarea value={한마디} onChange={(e) => set한마디(e.target.value)} rows={2}
               maxLength={300}
