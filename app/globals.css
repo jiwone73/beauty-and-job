@@ -16909,9 +16909,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 현재상태를 이 칸의 1행으로 합쳤으니 그만큼 넓힌다("현재상태와 진행상황이
    중복이 되니, 진행상황·액션 으로 통일"). */
 /* 진행상황과 관리를 다른 열로 나눈다("진행상황하고 관리로 열을 구분해야지")
-   — 210px를 둘로 쪼갠다(120 + 90), 표 전체 폭 합은 그대로다. */
-.prop-table .c-recent { width: 120px; max-width: 120px; }
-.prop-table .c-manage { width: 90px; max-width: 90px; }
+   — 210px를 둘로 쪼갠다. 진행상황 내용이 잘리는 것과 관리 버튼이 좁아지는
+   것 사이에서 반반으로("관리 열 폭을 넓혀야지"), 표 전체 폭 합은 그대로다. */
+.prop-table .c-recent { width: 105px; max-width: 105px; }
+.prop-table .c-manage { width: 105px; max-width: 105px; }
 /* 업데이트 줄은 상태 배지보다 눈에 덜 띄어도 된다("업데이트는 폰트 12로",
    "색상을 제안한공고에 있는 날짜처럼 흐리게") — 제안한 공고 칸의 날짜(.prop-post-date)와 같은 값. */
 .prop-upd { font-size: 14px; color: #9a9aa3; }
