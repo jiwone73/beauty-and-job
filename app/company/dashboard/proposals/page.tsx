@@ -584,10 +584,11 @@ export default function CompanyProposalsPage() {
                 {/* 공고 하나를 골라 봤을 때는 "제안한 공고" 칸이 없으니 제안일을
                     그대로 제 칸에 둔다 — 밑에 붙일 칸 자체가 없다. */}
                 {고른공고 && <th className="c-date">제안일</th>}
-                {/* 현재상태와 진행상황이 같은 말을 두 번 했다("현재상태와
-                    진행상황이 중복이 되니") — 한 칸으로 합친다: 1행 단계,
-                    2행 최근활동(주체 포함)+시간, 3행 제안취소·채팅하기. */}
-                <th className="c-recent">진행상황·액션</th>
+                {/* 진행상황과 관리는 다른 열이다("진행상황하고 관리로 열을
+                    구분해야지") — 진행상황은 1행 단계, 2행 누구 차례인지(💬).
+                    관리는 채팅하기·제안취소 버튼만 세로로. */}
+                <th className="c-recent">진행상황</th>
+                <th className="c-manage">관리</th>
               </tr>
             </thead>
             <tbody>
@@ -654,9 +655,9 @@ export default function CompanyProposalsPage() {
                       ) : <span>—</span>}
                     </td>
                     {고른공고 && <td className="c-date">{날짜(p.createdAt)}</td>}
-                    {/* 1행 단계, 2행 날짜 업데이트됨(이름), 3행 액션 버튼. 채팅하기가
-                        꺼져 있으면 상대가 거절했거나 거둔 제안이라는 뜻이다("채팅하기가
-                        비활성화 되면 상대가 거절한것으로 가늠하면되겠네"). */}
+                    {/* 진행상황: 1행 단계, 2행 누구 차례인지(💬). 채팅하기가 꺼져 있으면
+                        상대가 거절했거나 거둔 제안이라는 뜻이다("채팅하기가 비활성화
+                        되면 상대가 거절한것으로 가늠하면되겠네"). */}
                     <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
                       <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
                       <span className="prop-upd">
@@ -670,9 +671,11 @@ export default function CompanyProposalsPage() {
                           </em>
                         )}
                       </span>
+                    </td>
+                    {/* 관리: 채팅하기를 위, 제안취소를 아래로("관리 버튼은 폭이 좁으면
+                        채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요"). */}
+                    <td className={`c-manage${할?.우리차례 ? " todo" : ""}`}>
                       <div className="prop-actrow">
-                        {/* 채팅하기를 위, 제안취소를 아래로("관리 버튼은 폭이 좁으면
-                            채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요"). */}
                         <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
                           title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
                           onClick={() => set대화(p)}>
