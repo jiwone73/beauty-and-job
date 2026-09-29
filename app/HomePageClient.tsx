@@ -587,12 +587,12 @@ function Footer() {
             <Sep breaks />
             <span className="footer-info-item">전화번호 : 02-2039-1310</span>
           </div>
-          {/* 통신판매업·유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
+          {/* 유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
               번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
           <div>
             <span className="footer-info-item">사업자등록번호 : 734-25-01099</span>
             <Sep breaks />
-            <span className="footer-info-item">통신판매업신고번호 : </span>
+            <span className="footer-info-item">통신판매업신고번호 : 제2026-서울마포-2433호</span>
             <Sep breaks />
             <span className="footer-info-item">유료직업소개사업 등록번호 : </span>
             <Sep breaks />
