@@ -15821,7 +15821,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .pth-msg span { display: block; margin-top: 3px; font-size: 11.5px; color: #555; }
 .pth-msg.mine { align-self: flex-end; }
-.pth-msg.mine p { background: #f4f0f8; color: #3a2a48; }
+.pth-msg.mine p { background: var(--color-primary); color: #fff; }
 .pth-msg.mine span { text-align: right; }
 
 .pth-appt {
