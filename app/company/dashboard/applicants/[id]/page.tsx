@@ -24,6 +24,7 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
 
   const [자료, set자료] = useState<any>(null);
   const [로딩, set로딩] = useState(true);
+  const [실패, set실패] = useState<string | null>(null);
   const [내려받는중, set내려받는중] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +40,9 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
       if (r.data.status === "APPLIED") {
         companyApplicationsApi.updateStatus(params.id, "VIEWED").catch(() => {});
       }
+    } else {
+      // 지원일 50일 경과·취소·거절이면 이력서를 더 열 수 없다 — 그 이유를 보여준다.
+      set실패(r?.error?.message || "지원서를 불러오지 못했어요.");
     }
     set로딩(false);
   }, [params.id]);
@@ -102,7 +106,7 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
         {로딩 ? (
           <div className="admin-empty">지원서 불러오는 중...</div>
         ) : !자료 ? (
-          <div className="admin-empty">지원서를 불러오지 못했어요.</div>
+          <div className="admin-empty">{실패 || "지원서를 불러오지 못했어요."}</div>
         ) : (
           <div className="tres-sheet">
             <ApplicationDocument

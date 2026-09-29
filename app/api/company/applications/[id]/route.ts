@@ -26,7 +26,10 @@ export async function GET(
             u.region_sido AS user_region_sido, u.region_sigungu AS user_region_sigungu,
             u.address_road AS user_address_road, u.address_detail AS user_address_detail,
             a.job_posting_id, jp.title AS job_title,
-            a.resume_file_url, a.resume_file_name, a.resume_file_size
+            a.resume_file_url, a.resume_file_name, a.resume_file_size,
+            -- 지원일로부터 50일이 지났으면 이력서를 더 열 수 없다(날짜만 견준다 —
+            -- 마감인가()와 같은 방식. 시각까지 견주면 당일 시각 차이로 어긋난다).
+            (a.applied_at::date < CURRENT_DATE - INTERVAL '50 days') AS 기간지남
      FROM applications a
      JOIN users u ON u.id = a.user_id
      JOIN job_postings jp ON jp.id = a.job_posting_id
@@ -35,6 +38,12 @@ export async function GET(
   );
   if (result.rowCount === 0) {
     return err("APP_002", "지원 내역을 찾을 수 없습니다.", 404);
+  }
+  // 지원일로부터 50일이 지났거나, 채용 절차가 취소·거절로 끝난 지원자는 이력서를
+  // 더 열 수 없다("지원일로부터 50일이 경과한 지원자의 이력서는 열람이
+  // 불가합니다... 취소/거절한 지원자의 이력서도 열람이 불가합니다").
+  if (result.rows[0].기간지남 || ["REJECTED", "WITHDRAWN"].includes(result.rows[0].status)) {
+    return err("APP_006", "지원일로부터 50일이 지났거나 채용 절차가 끝나 이력서를 열람할 수 없습니다.", 403);
   }
   // 처음 조회 시 viewed_at 자동 기록 + 구직자에게 열람 알림
   // 떠난 사람에게는 「지원서를 확인했어요」를 보내지 않는다.
