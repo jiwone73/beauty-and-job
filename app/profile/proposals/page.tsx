@@ -313,7 +313,7 @@ export default function ProposalsPage() {
                                     {/* 수락 전에도 채팅은 열려 있다("제안하기가 완료되면
                                         수락전이라도 채팅을 할수 있게 해줘") — 기업이
                                         덧붙인 말을 읽고 답할 곳이 있어야 한다. */}
-                                    <button type="button" className="prop-chatbtn"
+                                    <button type="button" className="prop-chat-solid"
                                       onClick={() => set대화(p)}>
                                       채팅하기
                                     </button>
@@ -401,7 +401,7 @@ export default function ProposalsPage() {
                             </div>
 
                             <div className="prop-card2-acts">
-                              <button type="button" className="prop-card2-chat" onClick={() => set대화(p)}>
+                              <button type="button" className="prop-chat-solid" onClick={() => set대화(p)}>
                                 채팅하기
                               </button>
                               <button type="button" className="prop-card2-undo"
