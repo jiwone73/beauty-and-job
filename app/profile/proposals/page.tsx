@@ -362,11 +362,11 @@ export default function ProposalsPage() {
 
                             <div className="prop-step">
                               <div className="prop-step-dots">
+                                <span className="prop-step-line-bg" />
+                                <span className="prop-step-line-fill"
+                                  style={{ width: `${(단계 / (단계들.length - 1)) * 75}%` }} />
                                 {단계들.map((label, i) => (
-                                  <Fragment key={label}>
-                                    {i > 0 && <span className={`prop-step-line${i <= 단계 ? " on" : ""}`} />}
-                                    <span className={`prop-step-dot${i <= 단계 ? " on" : ""}${i === 단계 ? " current" : ""}`} />
-                                  </Fragment>
+                                  <span key={label} className={`prop-step-dot${i <= 단계 ? " on" : ""}${i === 단계 ? " current" : ""}`} />
                                 ))}
                               </div>
                               <div className="prop-step-labels">

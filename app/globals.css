@@ -17030,20 +17030,29 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    두어 같은 말(면접예정)을 두 번 하지 않는다("면접에정이 2번 나올필요
    없으니... 날자를 프로그레스바 면접예정밑에 넣어"). 현재 단계도 굵기는
    그대로 둔다("면접예정 둘다 평체로 바꿔") — 색만 포인트 컬러로 구분한다. */
-.prop-step { flex: 0 0 215px; }
-.prop-step-dots { display: flex; align-items: center; }
-.prop-step-dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e2e6; flex-shrink: 0; }
+/* 점 4개가 똑같은 폭(1fr)씩 나눠 갖고, 라벨도 같은 4칸 그리드를 써서 그
+   가운데에 놓인다 — 점과 라벨 줄이 서로 다른 방식(점은 흐르는 선, 라벨은
+   내용만큼)으로 자리를 잡으면 라벨이 점 기준에서 벗어난다("채팅중, 종료가
+   점을 기준으로 왼쪽으로 나갔잖아. 가운데로 정렬" / "점을 기준으로
+   중앙으로 배치해야지"). 이어주는 선은 점들과 겹치는 막대 하나로 깔고, 그
+   위에 지난 만큼만 포인트 컬러로 채운다 — 그래야 내용 길이가 달라도(날짜가
+   어느 단계에 붙든) 점 위치 자체가 흔들리지 않는다("텍스트 위치
+   고정해달라고 했는데" / "프로그레스 값이 달라도 쏠림현상없게"). */
+.prop-step { flex: 0 0 235px; }
+.prop-step-dots { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; height: 13px; }
+/* 선은 첫 점(수락)에서 마지막 점(종료)까지만 — 점 위치가 4등분(1fr) 칸의
+   가운데(12.5%~87.5%)라 선도 거기서 시작하고 거기서 끝난다("종료뒤에 라인은
+   지워" / "점으로 끝난건데"). */
+.prop-step-line-bg { position: absolute; left: 12.5%; right: 12.5%; top: 50%; transform: translateY(-50%);
+  height: 2px; background: #e2e2e6; }
+.prop-step-line-fill { position: absolute; left: 12.5%; top: 50%; transform: translateY(-50%);
+  height: 2px; background: var(--color-primary); }
+.prop-step-dot { position: relative; justify-self: center; width: 9px; height: 9px; border-radius: 50%;
+  background: #e2e2e6; z-index: 1; }
 .prop-step-dot.on { background: var(--color-primary); }
 .prop-step-dot.current { width: 13px; height: 13px; }
-.prop-step-line { flex: 1 1 auto; height: 2px; background: #e2e2e6; margin: 0 2px; }
-.prop-step-line.on { background: var(--color-primary); }
-/* 라벨은 칸을 똑같이 나눠 가지면(flex:1) "면접예정"처럼 긴 말이 제 칸보다
-   넓어 옆 라벨과 붙어 버린다("채팅중, 면접예정 이 붙었잖아") — 각자 필요한
-   폭만 쓴다. 사이 여백은 space-between 대신 고정값을 준다 — 지금 단계 밑에
-   날짜가 붙어 그 칸만 넓어지면 양옆 간격이 달라 보인다("프로그레스 값이
-   달라도 쏠림현상없게" / "텍스트간 여백을 고정으로 해두면 문제없어보이는데"). */
-.prop-step-labels { display: flex; gap: 14px; margin-top: 8px; }
-.prop-step-labels span { flex: none; display: flex; flex-direction: column; gap: 2px;
+.prop-step-labels { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 8px; }
+.prop-step-labels span { display: flex; flex-direction: column; align-items: center; gap: 2px;
   font-size: 14px; color: #555; white-space: nowrap; }
 .prop-step-labels span.current { color: var(--color-primary); }
 .prop-step-labels em { font-style: normal; font-size: 14px; color: #9a9aa3; }
