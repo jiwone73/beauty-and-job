@@ -22,7 +22,6 @@ import {
   Building2,
   Bookmark,
   Sparkles,
-  Instagram,
   ChevronDown } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
@@ -605,17 +604,36 @@ function Footer() {
         <div className="footer-bottomrow" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginTop: 28, paddingTop: 20, borderTop: "1px solid #eee" }}>
           <span style={{ fontSize: 13, color: "#555" }}>© {new Date().getFullYear()} 바를정. All rights reserved.</span>
           <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-            <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ color: "#555", display: "flex" }}>
-              <Instagram size={18} />
+            {/* "아이콘이 너무 작아서 안보여"에 맞춰 26px로 키우고, 실제 브랜드
+                색(인스타 그라데이션·네이버 블로그 초록)을 직접 SVG로 그렸다 —
+                자기 계정 링크에 브랜드 로고를 쓰는 건 통상적인 용도라
+                저작권 문제가 없지만, 참고로 받은 스톡 이미지(워터마크 있는
+                파일)는 그대로 쓰지 않고 새로 그렸다. */}
+            <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ display: "flex" }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#FEE411" />
+                    <stop offset="15%" stopColor="#FEDA77" />
+                    <stop offset="30%" stopColor="#F58529" />
+                    <stop offset="50%" stopColor="#DD2A7B" />
+                    <stop offset="70%" stopColor="#8134AF" />
+                    <stop offset="100%" stopColor="#515BD4" />
+                  </linearGradient>
+                </defs>
+                <rect width="24" height="24" rx="6" fill="url(#ig-grad)" />
+                <rect x="5" y="5" width="14" height="14" rx="4" fill="none" stroke="#fff" strokeWidth="1.6" />
+                <circle cx="12" cy="12" r="3.6" fill="none" stroke="#fff" strokeWidth="1.6" />
+                <circle cx="17" cy="7" r="1" fill="#fff" />
+              </svg>
             </a>
             {/* 네이버 블로그 — 계정 URL이 아직 없어 아이콘만 먼저 둔다.
-                주소가 정해지면 a 태그(href·target·aria-label)로 바꾼다. Rss
-                아이콘은 "블로그"로 안 읽혀서("이건 뭘까요?") 블로그 배지 모양
-                아이콘으로 바꿨다 — 배경은 사이트 글자색 #555 그대로. */}
+                주소가 정해지면 a 태그(href·target·aria-label)로 바꾼다. */}
             <span aria-hidden style={{ display: "flex" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <rect width="24" height="24" rx="6" fill="#555" />
-                <text x="12" y="15.5" textAnchor="middle" fontSize="8.5" fontWeight="700"
+              <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect x="1" y="2" width="22" height="14" rx="7" fill="#4CD137" />
+                <polygon points="9,16 15,16 12,21" fill="#4CD137" />
+                <text x="12" y="11.5" textAnchor="middle" fontSize="7.5" fontWeight="700"
                   fontFamily="Arial, sans-serif" fill="#fff">blog</text>
               </svg>
             </span>
