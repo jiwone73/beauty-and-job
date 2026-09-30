@@ -15855,7 +15855,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   padding: 11px 13px; background: #fff;
 }
 .pth-appt.mine { align-self: flex-end; }
-.pth-appt-when { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 16px; color: #555; font-weight: 700; }
+/* font-weight 를 이 줄(부모)에 두면 안에 든 <b>가 브라우저 기본값
+   (font-weight: bolder)을 타고 700에서 한 단계 더 굵은 900으로 올라간다
+   ("아래 것이 더 굵어") — .pth-fixed b 처럼 <b>에 직접 700을 박아야 한다. */
+.pth-appt-when { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 16px; color: #555; }
+.pth-appt-when b { font-weight: 700; }
 /* "약속됐어요"/"취소된 약속이에요"는 뷰티워크 보라로("약속됐어요 만
    뷰티워크 보라색 폰트"). */
 .pth-appt-done { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14.5px; color: var(--color-primary); }

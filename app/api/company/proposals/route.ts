@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
               u.gender,
               CASE WHEN u.birth_date IS NULL THEN NULL
                    ELSE EXTRACT(YEAR FROM AGE(u.birth_date))::int END AS age,
-              up.sub_job, up.main_job_group,
+              up.sub_job, up.main_job_group, up.skill_areas, up.office_job_areas,
               -- 희망지역. 표에서 사람을 가릴 때 직군만큼이나 먼저 보는 값이다.
               u.region_sido, u.region_sigungu, up.region_prefer,
               jp.title AS job_title,
@@ -130,7 +130,9 @@ export async function GET(req: NextRequest) {
       gender: r.gender || null,
       age: r.age ?? null,
       // 직군은 소분류가 먼저다 — 「속눈썹·반영구 아티스트」가 「네일·속눈썹」보다 말이 된다.
-      subJob: r.sub_job || r.main_job_group || null,
+      // sub_job 이 비어 있어도 매장·오피스 어느 쪽으로든 고른 소분류가 있으면
+      // 그걸 쓰고, 대분류(main_job_group)는 정말 아무것도 없을 때만 쓴다.
+      subJob: r.sub_job || r.skill_areas?.[0] || r.office_job_areas?.[0] || r.main_job_group || null,
       regionPrefer: 짧은지역([r.region_sido, r.region_sigungu].filter(Boolean).join(" ")) || 짧은지역(r.region_prefer) || null,
       jobTitle: r.job_title,
       lastSender: r.last_sender,
