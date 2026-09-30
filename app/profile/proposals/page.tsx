@@ -114,14 +114,17 @@ function 종료일(p: Proposal): string {
   return p.deadline || p.created_at;
 }
 
-// 진행중 탭의 스테퍼 — 수락→채팅중→면접예정→결과 순서로 지금 어디까지 왔는지.
-// "결과"는 이 탭에 있는 동안은 늘 남은 단계다(결과가 나면 종료 탭으로 간다).
-const 단계들 = ["수락", "채팅중", "면접예정", "결과"] as const;
+// 진행중 탭의 스테퍼 — 수락→채팅중 두 단계만. 면접예정은 나란히 놓을 단계가
+// 아니라 채팅 중에 일어난 사건이라("면접예정은 채팅의 결과물인거고") 스테퍼
+// 옆에 배지 하나로 붙인다("면접 예정 · 10/15").
+const 단계들 = ["수락", "채팅중"] as const;
 function 현재단계(st: 상태키): number {
-  if (st === "면접예정") return 2;
-  if (st === "채팅중") return 1;
-  return 0;
+  return st === "수락" ? 0 : 1;
 }
+const 면접배지 = (s: string) => {
+  const d = new Date(s);
+  return `면접 예정 · ${d.getMonth() + 1}/${d.getDate()}`;
+};
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
@@ -371,12 +374,18 @@ export default function ProposalsPage() {
                                   <span key={label} className={i < 단계 ? "on" : i === 단계 ? "current" : undefined}>
                                     {label}
                                     {/* 지금 단계 밑에 날짜를 바로 붙인다 — 상태 칸에 같은 말
-                                        (면접예정)을 또 적지 않는다("면접에정이 2번 나올필요
+                                        (채팅중)을 또 적지 않는다("면접에정이 2번 나올필요
                                         없으니... 날자를 프로그레스바 면접예정밑에 넣어"). */}
                                     {i === 단계 && <em>{활.글.replace("💬 ", "")}</em>}
                                   </span>
                                 ))}
                               </div>
+                              {/* 면접예정은 채팅 중에 일어난 사건이라 스테퍼 단계가 아니라
+                                  배지로 따로 붙인다("면접예정은 채팅의 결과물인거고" /
+                                  "탭으로 다 쪼개놓으면 프로그래스바가 의미가 퇴색되지"). */}
+                              {p.appointment_at && (
+                                <span className="prop-interview-badge">{면접배지(p.appointment_at)}</span>
+                              )}
                             </div>
 
                             <div className="prop-card2-recent">

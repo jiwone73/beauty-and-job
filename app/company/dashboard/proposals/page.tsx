@@ -151,12 +151,17 @@ function 탭of상태(st: 상태키): 탭키 {
 function 탭of(p: 제안): 탭키 { return 탭of상태(상태(p)); }
 
 // 진행중 탭의 스테퍼 — 받은제안(구직자 화면)과 같은 부품·같은 순서다.
-const 단계들 = ["수락", "채팅중", "면접예정", "결과"] as const;
+// 수락→채팅중 두 단계만. 면접예정은 나란히 놓을 단계가 아니라 채팅 중에
+// 일어난 사건이라("면접예정은 채팅의 결과물인거고") 스테퍼 옆에 배지 하나로
+// 붙인다("면접 예정 · 10/15").
+const 단계들 = ["수락", "채팅중"] as const;
 function 현재단계(st: 상태키): number {
-  if (st === "면접예정") return 2;
-  if (st === "채팅중") return 1;
-  return 0;
+  return st === "수락" ? 0 : 1;
 }
+const 면접배지 = (s: string) => {
+  const d = new Date(s);
+  return `면접 예정 · ${d.getMonth() + 1}/${d.getDate()}`;
+};
 // 종료 탭 — 여기는 매장 자신이 거뒀거나(취소) 인재가 거절한 것이라, "제안취소"란
 // 말이 구직자 화면과 달리 그대로 맞다(내가 취소한 것이 맞으므로).
 const 종료라벨: Record<string, string> = { 거절: "거절함", 취소: "제안취소됨", 공고마감: "공고마감" };
@@ -647,6 +652,9 @@ export default function CompanyProposalsPage() {
                       </span>
                     ))}
                   </div>
+                  {p.appointmentAt && (
+                    <span className="prop-interview-badge">{면접배지(p.appointmentAt)}</span>
+                  )}
                 </div>
                 <div className="prop-card2-recent">
                   <span className="prop-card2-recent-label">최근 대화</span>
