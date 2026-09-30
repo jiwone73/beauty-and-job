@@ -557,42 +557,75 @@ export default function CompanySettingsPage() {
                 </div>
               </div>
               )}
-              {/* 회사 로고 — 매장은 상호가 곧 브랜드라 쓸 만한 로고 파일이 없는 경우가 많고,
-                  목록 썸네일·공고 상단은 배너 이미지가 이미 채운다. 그래서 오피스에만 둔다. */}
+              {/* 회사 로고 — 매장 쪽 "매장 로고·썸네일"과 같은 jobcard 모양·2열 배치로
+                  맞춘다("이거 채용공고카드 모양이었잖아" / "기억안나?" / "그리고 2열이잖아").
+                  오른쪽 짝은 브랜드명·사업자등록번호("로고 옆에 넣어"). */}
               {!isStore && (
-              <div className="admin-form-row">
-                <div>
-                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"8px"}}>
+              <div className="admin-form-row" style={{paddingBottom:0}}>
+                <div className="admin-form-row-2col settings-thumb-2col" style={{alignItems:"start"}}>
+                <div style={{flexShrink:0}}>
+                <div style={{marginBottom:"6px"}}>
                   <label className="admin-form-label" style={{margin:0}}>{칸그림("회사 로고")}회사 로고</label>
-                  <label title={logoUrl ? "로고 변경" : "로고 등록"}
-                    style={{display:"inline-flex", alignItems:"center", justifyContent:"center", width:38, height:38, flexShrink:0,
-                      borderRadius:10, border:"1px solid #e2e2e6", background:"#fff", color:"#582681",
-                      cursor: logoUploading ? "wait" : "pointer"}}>
-                    {logoUploading ? "…" : <Camera size={18} />}
-                    <input type="file" accept="image/jpeg,image/png,image/webp"
-                      disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
-                  </label>
                 </div>
-                <div style={{display:"flex", alignItems:"center", gap:"12px"}}>
-                  {/* 공고에 실제로 찍히는 크기(56px)에 맞춘 미리보기. 로고는 여백이 살아야 해서 잘라내지 않고(contain) 흰 바탕에 얹는다. */}
-                  <div style={{position:"relative", width:64, height:64, borderRadius:"12px", border:"1px solid #eee",
-                    background:"#fff", display:"flex", alignItems:"center", justifyContent:"center",
-                    overflow:"hidden", flexShrink:0, padding:6, boxSizing:"border-box"}}>
-                    {logoUrl ? (
-                      <>
-                        <img src={logoUrl} alt="회사 로고" style={{width:"100%", height:"100%", objectFit:"contain"}} />
-                        <button type="button" onClick={handleLogoDelete} title="로고 삭제"
-                          style={{position:"absolute", top:2, right:2, width:18, height:18, borderRadius:"50%",
+                <div style={{display:"flex", flexDirection:"column", alignItems:"flex-start", gap:"8px"}}>
+                  <div style={{width:97, flexShrink:0, marginLeft:21}}>
+                    <div className={`jobcard${logoUrl ? " jobcard-photo" : ""}`}
+                      style={{cursor:"default", transform:"none", boxShadow:"none", borderRadius:9, position:"relative"}}>
+                      <label className={`jobcard-cover${logoUrl ? "" : " jobcard-cover-empty"}`}
+                        title={logoUrl ? "로고 바꾸기" : "로고 올리기"}
+                        style={{ aspectRatio: "3 / 2", display:"block",
+                          cursor: logoUploading ? "wait" : "pointer" }}>
+                        <input type="file" accept="image/jpeg,image/png,image/webp"
+                          disabled={logoUploading} onChange={handleLogoUpload} style={{display:"none"}} />
+                        {logoUrl ? (
+                          <img src={logoUrl} alt="회사 로고" className="jobcard-cover-img" />
+                        ) : (
+                          <span style={{position:"absolute", inset:0, display:"flex", flexDirection:"column",
+                            alignItems:"center", justifyContent:"center", gap:2, color:"#555"}}>
+                            {logoUploading ? <span style={{fontSize:11}}>올리는 중…</span> : (
+                              <>
+                                <span style={{fontSize:11.5, fontWeight:500}}>회사 로고</span>
+                                <span style={{fontSize:8.5, color:"#c4b8d3"}}>JPG · PNG · WEBP</span>
+                              </>
+                            )}
+                          </span>
+                        )}
+                        <span style={{position:"absolute", right:4, bottom:4, width:19, height:19,
+                          borderRadius:"50%", background:"#582681", color:"#fff", display:"flex",
+                          alignItems:"center", justifyContent:"center",
+                          boxShadow:"0 1px 3px rgba(0,0,0,0.28)", zIndex:2}}>
+                          <Pencil size={10} />
+                        </span>
+                      </label>
+                      {logoUrl && (
+                        <button type="button" onClick={handleLogoDelete} title="로고 지우기"
+                          style={{position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%",
                             background:"rgba(0,0,0,0.55)", color:"#fff", border:"none", cursor:"pointer",
-                            display:"flex", alignItems:"center", justifyContent:"center"}}>
-                          <X size={11} />
+                            display:"flex", alignItems:"center", justifyContent:"center", zIndex:2}}>
+                          <X size={10} />
                         </button>
-                      </>
-                    ) : (
-                      <span style={{fontSize:"20px", fontWeight:700, color:"#e3e3e6"}}>{form.company_name?.[0] || "?"}</span>
-                    )}
+                      )}
+                      <div className="jobcard-body" style={{padding:"3px 6px 4px"}}>
+                        <p className="jobcard-title" style={{fontSize:9.5, fontWeight:500,
+                          color:"#555", margin:0, textAlign:"center", lineHeight:1.3}}>
+                          채용공고
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <p style={{flex:1, minWidth:0, fontSize:"12.5px", color:"#999", margin:0, lineHeight:1.5}}>공고에 자동으로 노출되는 대표 로고예요.</p>
+                </div>
+                </div>
+                {/* 오른쪽 — 브랜드명·사업자등록번호 */}
+                <div style={{minWidth:0}}>
+                  <div className="admin-form-row" style={{paddingTop:0}}>
+                    <label className="admin-form-label">{칸그림("브랜드명")}브랜드명</label>
+                    <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
+                      value={form.brand_name}
+                      onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
+                  </div>
+                  <div style={{borderBottom:"none"}}>
+                    {사업자번호칸}
+                  </div>
                 </div>
                 </div>
               </div>
@@ -628,15 +661,6 @@ export default function CompanySettingsPage() {
                 </>
               ) : (
                 <>
-                  <div className="admin-form-row-2col">
-                    {사업자번호칸}
-                    <div className="admin-form-row">
-                      <label className="admin-form-label">{칸그림("브랜드명")}브랜드명</label>
-                      <input className="admin-form-input" placeholder="예) 헤라, 닥터지"
-                        value={form.brand_name}
-                        onChange={(e) => setForm({ ...form, brand_name: e.target.value })} />
-                    </div>
-                  </div>
                   <div className="admin-form-row-2col">
                     <div className="admin-form-row">
                       <label className="admin-form-label">{칸그림("대표자")}대표자</label>
