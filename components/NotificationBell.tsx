@@ -59,6 +59,17 @@ export default function NotificationBell({ ownerType }: { ownerType: "user" | "c
     불러오기();
   };
 
+  // 되돌릴 수 없어 한 번 더 확인한다("전체읽기, 전체삭제 기능이 있어야
+  // 하지 않겠어?" — 둘 다 넣되 삭제는 확인 후).
+  const 전체삭제 = async () => {
+    if (!confirm("모든 알림을 삭제할까요?")) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    await fetch(기준, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+    setOpen(false);
+    불러오기();
+  };
+
   return (
     <div className="hdr-bell-wrap">
       <button className="hdr-bell" onClick={() => setOpen((v) => !v)} aria-label="알림">
@@ -71,7 +82,12 @@ export default function NotificationBell({ ownerType }: { ownerType: "user" | "c
           <div className="hdr-bell-panel">
             <div className="hdr-bell-head">
               <span>알림</span>
-              {unread > 0 && <button onClick={모두읽음} className="hdr-bell-readall">모두 읽음</button>}
+              {items.length > 0 && (
+                <span className="hdr-bell-acts">
+                  {unread > 0 && <button onClick={모두읽음} className="hdr-bell-readall">전체읽기</button>}
+                  <button onClick={전체삭제} className="hdr-bell-readall hdr-bell-delall">전체삭제</button>
+                </span>
+              )}
             </div>
             <div className="hdr-bell-list">
               {items.length === 0 ? (

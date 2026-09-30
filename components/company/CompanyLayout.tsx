@@ -382,7 +382,12 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
             <div className="co-m-notif">
               <div className="co-m-notif-head">
                 <span>알림</span>
-                {unread > 0 && <button onClick={markAllRead} style={{ background: "none", border: "none", color: "#582681", fontSize: 13, cursor: "pointer" }}>모두 읽음</button>}
+                {notifs.length > 0 && (
+                  <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    {unread > 0 && <button onClick={markAllRead} style={{ background: "none", border: "none", color: "#582681", fontSize: 13, cursor: "pointer" }}>전체읽기</button>}
+                    <button onClick={deleteAllNotif} style={{ background: "none", border: "none", color: "#999", fontSize: 13, cursor: "pointer" }}>전체삭제</button>
+                  </span>
+                )}
               </div>
               {notifs.length === 0 ? (
                 <p className="co-m-notif-empty">새 알림이 없어요</p>
@@ -444,7 +449,12 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                   <div className="company-notif-dropdown">
                     <div className="company-notif-head">
                       <span>알림</span>
-                      {unread > 0 && <button onClick={markAllRead} className="company-notif-readall">모두 읽음</button>}
+                      {notifs.length > 0 && (
+                        <span className="company-notif-acts">
+                          {unread > 0 && <button onClick={markAllRead} className="company-notif-readall">전체읽기</button>}
+                          <button onClick={deleteAllNotif} className="company-notif-readall company-notif-delall">전체삭제</button>
+                        </span>
+                      )}
                     </div>
                     <div className="company-notif-list">
                       {notifs.length === 0 ? (
