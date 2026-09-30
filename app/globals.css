@@ -17030,7 +17030,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    두어 같은 말(면접예정)을 두 번 하지 않는다("면접에정이 2번 나올필요
    없으니... 날자를 프로그레스바 면접예정밑에 넣어"). 현재 단계도 굵기는
    그대로 둔다("면접예정 둘다 평체로 바꿔") — 색만 포인트 컬러로 구분한다. */
-.prop-step { flex: 0 0 145px; }
+.prop-step { flex: 0 0 215px; }
 .prop-step-dots { display: flex; align-items: center; }
 .prop-step-dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e2e6; flex-shrink: 0; }
 .prop-step-dot.on { background: var(--color-primary); }
@@ -17045,12 +17045,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-step-labels { display: flex; gap: 14px; margin-top: 8px; }
 .prop-step-labels span { flex: none; display: flex; flex-direction: column; gap: 2px;
   font-size: 14px; color: #555; white-space: nowrap; }
-/* 면접예정은 스테퍼 단계가 아니라 배지 하나("면접예정은 채팅의 결과물인거고"
-   / "탭으로 다 쪼개놓으면 프로그래스바가 의미가 퇴색되지") — 공고 상태
-   뱃지(.co-jc-badge.live)와 같은 배경·글자색이다. */
-.prop-interview-badge { display: inline-block; margin-top: 8px; padding: 2px 9px;
-  border-radius: 999px; background: #f4f0f8; color: var(--color-primary);
-  font-size: 13px; font-weight: 600; white-space: nowrap; }
 .prop-step-labels span.current { color: var(--color-primary); }
 .prop-step-labels em { font-style: normal; font-size: 14px; color: #9a9aa3; }
 
@@ -17058,6 +17052,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    좀 늘려줘") — 왼쪽에 여유를 더 준다. */
 .prop-card2-recent { flex: 1 1 auto; min-width: 0; margin-left: 16px; }
 .prop-card2-recent-label { display: block; font-size: 14px; color: #555; margin-bottom: 5px; }
+/* 언제·누가 보냈는지는 "최근 대화"보다 작게("글자는 최근대화보다 좀
+   작게") — 날짜와 같은 톤(#9a9aa3)이다. */
+.prop-card2-recent-meta { font-size: 12.5px; color: #9a9aa3; margin-left: 4px; }
 .prop-card2-preview { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
   width: 100%; box-sizing: border-box; text-align: left; background: #f7f7f8; border: none;
   border-radius: 8px; padding: 10px 12px; cursor: pointer; color: #555; }

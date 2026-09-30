@@ -114,17 +114,17 @@ function 종료일(p: Proposal): string {
   return p.deadline || p.created_at;
 }
 
-// 진행중 탭의 스테퍼 — 수락→채팅중 두 단계만. 면접예정은 나란히 놓을 단계가
-// 아니라 채팅 중에 일어난 사건이라("면접예정은 채팅의 결과물인거고") 스테퍼
-// 옆에 배지 하나로 붙인다("면접 예정 · 10/15").
-const 단계들 = ["수락", "채팅중"] as const;
+// 진행중 탭의 스테퍼 — 수락→채팅중→면접예정→종료 순서로 지금 어디까지
+// 왔는지. 마지막 "종료"는 이 탭에 있는 동안은 늘 빈 채로 남는다 — 채팅중
+// 다음에도 갈 곳이 있다는 것만 보여준다("채팅중 다음이 목적지가 어디야?
+// 프로그래스바에 이름이 없어서"). 이름은 종료 탭과 같은 말을 쓴다
+// ("프로그래스바 결과도 종료가 되는게 맞겠지").
+const 단계들 = ["수락", "채팅중", "면접예정", "종료"] as const;
 function 현재단계(st: 상태키): number {
-  return st === "수락" ? 0 : 1;
+  if (st === "면접예정") return 2;
+  if (st === "채팅중") return 1;
+  return 0;
 }
-const 면접배지 = (s: string) => {
-  const d = new Date(s);
-  return `면접 예정 · ${d.getMonth() + 1}/${d.getDate()}`;
-};
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
@@ -380,16 +380,19 @@ export default function ProposalsPage() {
                                   </span>
                                 ))}
                               </div>
-                              {/* 면접예정은 채팅 중에 일어난 사건이라 스테퍼 단계가 아니라
-                                  배지로 따로 붙인다("면접예정은 채팅의 결과물인거고" /
-                                  "탭으로 다 쪼개놓으면 프로그래스바가 의미가 퇴색되지"). */}
-                              {p.appointment_at && (
-                                <span className="prop-interview-badge">{면접배지(p.appointment_at)}</span>
-                              )}
                             </div>
 
                             <div className="prop-card2-recent">
-                              <span className="prop-card2-recent-label">최근 대화</span>
+                              <span className="prop-card2-recent-label">
+                                최근 대화
+                                {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
+                                    시간하고 누가 보냈는지 적어줘"). */}
+                                {p.last_message_at && (
+                                  <span className="prop-card2-recent-meta">
+                                    ({때(p.last_message_at)} ㅣ {p.last_sender === "USER" ? "나" : (p.brand_name || p.company_name)})
+                                  </span>
+                                )}
+                              </span>
                               <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
                                 <span>{p.last_message_body || "아직 나눈 대화가 없어요"}</span>
                                 <ChevronRight size={16} />
