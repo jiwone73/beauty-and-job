@@ -15823,6 +15823,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   background: #f7f7f8; font-size: 14.5px; color: #555;
 }
 .pth-fixed b { font-size: 16px; font-weight: 700; }
+/* "면접 약속" 라벨을 뱃지 꼴로("면접약속을 뱃지 형태로 바꿔주고") — 공고
+   상태 뱃지(.co-jc-badge.live)와 같은 배경·글자색이다. */
+.pth-fixed-badge { display: inline-block; padding: 2px 9px; border-radius: 999px;
+  background: #f4f0f8; color: var(--color-primary); font-weight: 600; }
 .pth-fixed-cancel {
   margin-left: auto; padding: 0; border: none; background: none; cursor: pointer;
   font-size: 14.5px; color: #8a8a90; text-decoration: underline; text-underline-offset: 2px;
@@ -15847,8 +15851,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .pth-appt.mine { align-self: flex-end; }
 .pth-appt-when { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 16px; color: #555; font-weight: 700; }
-.pth-appt-done { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14.5px; color: #555; }
-.pth-appt-no   { display: block; margin-top: 6px; font-size: 14.5px; color: #555; }
+/* "약속됐어요"/"취소된 약속이에요"는 뷰티워크 보라로("약속됐어요 만
+   뷰티워크 보라색 폰트"). */
+.pth-appt-done { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14.5px; color: var(--color-primary); }
+.pth-appt-no   { display: block; margin-top: 6px; font-size: 14.5px; color: var(--color-primary); }
 .pth-appt-wait { display: block; margin-top: 6px; font-size: 14.5px; color: #555; }
 .pth-appt-acts { display: flex; gap: 6px; margin-top: 9px; }
 .pth-appt-acts button {
@@ -16891,7 +16897,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 채팅하기를 위, 제안취소를 아래로 세로 배치한다("관리 버튼은 폭이 좁으면
    채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요") — 칸이 210px로 좁아
    가로로 나란히 두면 줄바꿈이 들쭉날쭉했다. */
-.prop-actrow { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 4px; }
+.prop-actrow { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 4px; }
 /* 버튼 꼴로 둔다("제안취소를 버튼 타입으로 바꿔줘") — 글자 밑줄이 아니라
    다른 단추(.prop-chatbtn)와 같은 테두리 단추. 여백은 더 줄이고("제안취소
    버튼 여백 줄여줘") 글자도 채팅하기와 같은 13px로("폰트도 줄여 채팅하기
@@ -16937,19 +16943,28 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    표 전체 폭 합은 그대로다. */
 .prop-table .c-recent { width: 125px; max-width: 125px; }
 .prop-table .c-manage { width: 85px; max-width: 85px; }
+/* 받은제안 쪽 버튼을 키운 것과 같은 기준 — 관리 칸은 85px로 좁아 폭까지
+   맞추진 못해도 세로 여백만은 키워 작아 보이지 않게 한다
+   ("보낸제안 페이지도 같은 기준으로 정돈해줘"). */
+.c-manage .prop-chatbtn, .c-manage .prop-cancel {
+  width: 100%; justify-content: center; padding: 6px 0; font-size: 13.5px;
+}
 /* 받은제안 표(.received)는 진행상황·관리 칸이 없다("제안내용에 진행상황
    관리가 있는게 너무 쌩뚱맞잖아") — 남은 칸(기업~제안일) 다섯 칸의 폭을
    퍼센트로 나눠 표를 판 너비 100%까지 채운다("오른쪽이 많이 남잖아.
    전체적으로 여백을 균등분할 해"). 다섯 칸 모두 값을 주지 않으면 남는 폭을
    브라우저가 어디론가 몰아준다(이 표에서 반복해서 겪은 문제) — 그래서
-   퍼센트 합을 정확히 100으로 맞춘다.  기업 25 / 제안한 공고 23 /
-   모집분야 15 / 근무조건 20.5 / 제안일 16.5. */
+   퍼센트 합을 정확히 100으로 맞춘다. 값은 내용 길이에 반응하지 않는
+   고정 비율이라("값 내용에 따라 반응형으로 움직이나?" — 아니다), 제안일처럼
+   짧은 날짜만 들어가는 칸은 여백이 남는다("제안일은... 오른쪽 여백이
+   낭비야") — 그만큼 줄여 모집분야·근무조건에 더 준다. 기업 25 /
+   제안한 공고 23 / 모집분야 18 / 근무조건 24 / 제안일 10. */
 .prop-table.received { width: 100%; }
 .prop-table.received .apl-td-who { width: 25%; }
 .prop-table.received .c-post { width: 23%; max-width: none; }
-.prop-table.received .c-job { width: 15%; max-width: none; }
-.prop-table.received .c-cond { width: 20.5%; max-width: none; }
-.prop-table.received .c-date { width: 16.5%; }
+.prop-table.received .c-job { width: 18%; max-width: none; }
+.prop-table.received .c-cond { width: 24%; max-width: none; }
+.prop-table.received .c-date { width: 10%; }
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
    않을까?"). */
@@ -17009,22 +17024,27 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    두어 같은 말(면접예정)을 두 번 하지 않는다("면접에정이 2번 나올필요
    없으니... 날자를 프로그레스바 면접예정밑에 넣어"). 현재 단계도 굵기는
    그대로 둔다("면접예정 둘다 평체로 바꿔") — 색만 포인트 컬러로 구분한다. */
-.prop-step { flex: 0 0 170px; }
+.prop-step { flex: 0 0 215px; }
 .prop-step-dots { display: flex; align-items: center; }
 .prop-step-dot { width: 9px; height: 9px; border-radius: 50%; background: #e2e2e6; flex-shrink: 0; }
 .prop-step-dot.on { background: var(--color-primary); }
 .prop-step-dot.current { width: 13px; height: 13px; }
 .prop-step-line { flex: 1 1 auto; height: 2px; background: #e2e2e6; margin: 0 2px; }
 .prop-step-line.on { background: var(--color-primary); }
-.prop-step-labels { display: flex; margin-top: 8px; }
-.prop-step-labels span { flex: 1; display: flex; flex-direction: column; gap: 2px;
-  align-items: center; text-align: center; font-size: 14px; color: #555; white-space: nowrap; }
-.prop-step-labels span:first-child { align-items: flex-start; text-align: left; }
-.prop-step-labels span:last-child { align-items: flex-end; text-align: right; }
+/* 라벨은 칸을 똑같이 나눠 가지면(flex:1) "면접예정"처럼 긴 말이 제 칸보다
+   넓어 옆 라벨과 붙어 버린다("채팅중, 면접예정 이 붙었잖아") — 각자 필요한
+   폭만 쓴다. 사이 여백은 space-between 대신 고정값을 준다 — 지금 단계 밑에
+   날짜가 붙어 그 칸만 넓어지면 양옆 간격이 달라 보인다("프로그레스 값이
+   달라도 쏠림현상없게" / "텍스트간 여백을 고정으로 해두면 문제없어보이는데"). */
+.prop-step-labels { display: flex; gap: 14px; margin-top: 8px; }
+.prop-step-labels span { flex: none; display: flex; flex-direction: column; gap: 2px;
+  font-size: 14px; color: #555; white-space: nowrap; }
 .prop-step-labels span.current { color: var(--color-primary); }
 .prop-step-labels em { font-style: normal; font-size: 14px; color: #9a9aa3; }
 
-.prop-card2-recent { flex: 1 1 auto; min-width: 0; }
+/* 스테퍼 끝(결과)과 너무 붙어 보였다("프로그레스바와 최근대화 간 여백을
+   좀 늘려줘") — 왼쪽에 여유를 더 준다. */
+.prop-card2-recent { flex: 1 1 auto; min-width: 0; margin-left: 16px; }
 .prop-card2-recent-label { display: block; font-size: 14px; color: #555; margin-bottom: 5px; }
 .prop-card2-preview { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
   width: 100%; box-sizing: border-box; text-align: left; background: #f7f7f8; border: none;

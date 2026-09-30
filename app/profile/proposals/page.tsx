@@ -391,9 +391,12 @@ export default function ProposalsPage() {
                               <button type="button" className="prop-chat-solid" onClick={() => set대화(p)}>
                                 채팅하기
                               </button>
+                              {/* "제안 취소"는 제안을 보낸 기업이 쓰는 말이다 — 구직자는
+                                  자기가 한 수락을 되돌리는 것이라 "수락 취소"("제안을 받는
+                                  사람 입장에서는 제안 취소보다 다른 좋은말 없을까?"). */}
                               <button type="button" className="prop-card2-undo"
                                 onClick={() => { set거절할것(p); set같이차단(false); set거절사유(""); }}>
-                                제안취소
+                                수락 취소
                               </button>
                             </div>
                           </div>
@@ -465,13 +468,21 @@ export default function ProposalsPage() {
         </div>
       )}
 
+      {/* 진행중 탭의 "수락 취소"도 이 확인창을 같이 쓴다 — 되돌리는 방법은
+          거절과 같다(declined_at). 다만 이미 수락한 뒤라 "거절할까요"라고
+          물으면 어색해, 이미 관심을 보인 제안(interested_at)인지로 문구를
+          가른다("제안을 받는 사람 입장에서는 제안 취소보다 다른 좋은말
+          없을까? 제안 취소는 제안한 사람이 취소할떄 쓰는말이고"). */}
       {거절할것 && (
         <div className="rp-modal-overlay">
           <div className="prop-dec">
-            <p className="prop-dec-t">{거절할것.brand_name || 거절할것.company_name}의 제안을 거절할까요?</p>
+            <p className="prop-dec-t">
+              {거절할것.brand_name || 거절할것.company_name}
+              {거절할것.interested_at ? "의 수락을 취소할까요?" : "의 제안을 거절할까요?"}
+            </p>
             <textarea value={거절사유} onChange={(e) => set거절사유(e.target.value)} rows={2}
               maxLength={300}
-              placeholder="거절 사유가 있으면 적어주세요 (선택)" />
+              placeholder={거절할것.interested_at ? "취소 사유가 있으면 적어주세요 (선택)" : "거절 사유가 있으면 적어주세요 (선택)"} />
             <label className="prop-dec-blk">
               <input type="checkbox" checked={같이차단}
                 onChange={(e) => set같이차단(e.target.checked)} />
@@ -479,7 +490,9 @@ export default function ProposalsPage() {
             </label>
             <div className="prop-dec-acts">
               <button type="button" onClick={() => { set거절할것(null); set같이차단(false); set거절사유(""); }}>취소</button>
-              <button type="button" className="key" onClick={거절하기}>거절하기</button>
+              <button type="button" className="key" onClick={거절하기}>
+                {거절할것.interested_at ? "수락 취소" : "거절하기"}
+              </button>
             </div>
           </div>
         </div>
@@ -490,7 +503,10 @@ export default function ProposalsPage() {
       {대화 && (
         <ProposalThread
           proposalId={대화.id}
-          제목={(대화.positionLines?.[0] || "").split("|")[0].trim() || 대화.job_title}
+          제목={(() => {
+            const 직군 = (대화.positionLines?.[0] || "").split("|")[0].trim();
+            return 직군 ? `${직군} 모집` : 대화.job_title;
+          })()}
           상대={대화.brand_name || 대화.company_name}
           token={localStorage.getItem("access_token") || ""}
           onClose={() => set대화(null)}

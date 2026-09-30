@@ -195,7 +195,7 @@ export default function ProposalThread({
         {/* 잡힌 약속은 스크롤해서 찾을 것이 아니라 늘 보여야 한다. */}
         {잡힌약속?.appointment_at && (
           <div className="pth-fixed">
-            <span>면접 약속</span>
+            <span className="pth-fixed-badge">면접 약속</span>
             <b>{약속때(잡힌약속.appointment_at)}</b>
             {잡힌약속.appointment_place && (
               <a href={길찾기(잡힌약속.appointment_place)} target="_blank" rel="noopener noreferrer">
