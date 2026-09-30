@@ -23,7 +23,6 @@ import {
   Bookmark,
   Sparkles,
   Instagram,
-  Rss,
   ChevronDown } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
 import JobCard from "@/components/JobCard";
@@ -587,14 +586,14 @@ function Footer() {
             <Sep breaks />
             <span className="footer-info-item">전화번호 : 02-2039-1310</span>
           </div>
-          {/* 유료직업소개·직업정보제공은 신고·등록이 끝나면 채운다.
-              번호가 나오기 전에 적어 두면 없는 번호를 표시하는 것이 된다. */}
+          {/* 직업정보제공사업은 신고·등록이 끝나면 채운다. 번호가 나오기 전에
+              적어 두면 없는 번호를 표시하는 것이 된다. 유료직업소개사업은
+              헤드헌팅(사람을 소개·알선)을 할 때 필요한 신고라 뺐다
+              ("헤드헌팅 안하니까 지금은 지워도 될듯"). */}
           <div>
             <span className="footer-info-item">사업자등록번호 : 734-25-01099</span>
             <Sep breaks />
             <span className="footer-info-item">통신판매업신고번호 : 제2026-서울마포-2433호</span>
-            <Sep breaks />
-            <span className="footer-info-item">유료직업소개사업 등록번호 : </span>
             <Sep breaks />
             <span className="footer-info-item">직업정보제공사업 신고번호 : </span>
           </div>
@@ -610,9 +609,15 @@ function Footer() {
               <Instagram size={18} />
             </a>
             {/* 네이버 블로그 — 계정 URL이 아직 없어 아이콘만 먼저 둔다.
-                주소가 정해지면 a 태그(href·target·aria-label)로 바꾼다. */}
-            <span aria-hidden style={{ color: "#555", display: "flex" }}>
-              <Rss size={18} />
+                주소가 정해지면 a 태그(href·target·aria-label)로 바꾼다. Rss
+                아이콘은 "블로그"로 안 읽혀서("이건 뭘까요?") 블로그 배지 모양
+                아이콘으로 바꿨다 — 배경은 사이트 글자색 #555 그대로. */}
+            <span aria-hidden style={{ display: "flex" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="6" fill="#555" />
+                <text x="12" y="15.5" textAnchor="middle" fontSize="8.5" fontWeight="700"
+                  fontFamily="Arial, sans-serif" fill="#fff">blog</text>
+              </svg>
             </span>
           </div>
         </div>
