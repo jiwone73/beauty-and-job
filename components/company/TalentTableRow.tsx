@@ -64,27 +64,29 @@ export default function TalentTableRow({
       <td className="apl-td">{경력}</td>
       <td className="apl-td">
         {t.resumeUpdatedAt ? 업데이트날(t.resumeUpdatedAt) : "—"}
-        {/* 다른 기업 합산 제안 수 — 인기 신호("받은 대화요청 N건", 경쟁사 카드
-            참고). 0건은 안 보여준다. */}
-        {(t.receivedProposalCount ?? 0) > 0 && (
-          <span className="apl-td-received">받은 대화요청 {t.receivedProposalCount}건</span>
-        )}
       </td>
       <td className="apl-td apl-td-acts">
-        {/* 취소·공고마감은 다시 제안할 수 있다 — 거절만 막아 둔다(TalentCard와 같은 규칙). */}
-        {t.latestProposalState === "active" ? (
-          <Link className="tal-btn" href={`${base}/proposals`}>제안완료</Link>
-        ) : t.latestProposalState === "rejected" ? (
-          <Link className="tal-btn" href={`${base}/proposals`}>거절됨</Link>
-        ) : (
-          <button type="button" className="tal-btn" onClick={() => onPropose(t)}>제안하기</button>
-        )}
         <button type="button" title={t.scrapped ? "스크랩 해제" : "스크랩"}
           className="apl-td-scrap" onClick={() => onToggleScrap(t)}>
           {t.scrapped
             ? <BookmarkCheck size={17} style={{ color: "#582681" }} />
             : <Bookmark size={17} style={{ color: "#555" }} />}
         </button>
+        {/* 취소·공고마감은 다시 제안할 수 있다 — 거절만 막아 둔다(TalentCard와 같은 규칙). */}
+        {t.latestProposalState === "active" ? (
+          <Link className="tal-btn" href={`${base}/proposals`}>제안완료</Link>
+        ) : t.latestProposalState === "rejected" ? (
+          <Link className="tal-btn" href={`${base}/proposals`}>거절됨</Link>
+        ) : (
+          <button type="button" className="tal-btn propose" onClick={() => onPropose(t)}>제안하기</button>
+        )}
+        {/* 다른 기업 합산 제안 수 — 인기 신호("받은 대화요청 N건", 경쟁사 카드
+            참고). 0건은 안 보여준다. 업데이트 칸이 아니라 제안·스크랩 칸
+            맨 밑에("업데이트에 넣는건 아닌거 같아... 제안스트랩 열에 맨
+            밑에 넣어줘"), 이름도 "받은제안"으로. */}
+        {(t.receivedProposalCount ?? 0) > 0 && (
+          <span className="apl-td-received">받은제안 {t.receivedProposalCount}건</span>
+        )}
       </td>
     </tr>
   );

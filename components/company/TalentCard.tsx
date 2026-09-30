@@ -137,9 +137,16 @@ export default function TalentCard({
               거절됨
             </Link>
           ) : (
-            <button type="button" className="tal-btn" onClick={() => onPropose(t)}>
+            <button type="button" className="tal-btn propose" onClick={() => onPropose(t)}>
               제안하기
             </button>
+          )}
+          {/* 다른 기업들이 이 사람에게 보낸 제안까지 합한 수 — 인기 신호("좋은기능인대.
+              적용해줘" — 경쟁사 카드의 「받은 대화요청 N건」). 0건은 안 보여준다 —
+              아무도 관심 없다는 것까지 광고할 필요는 없다. 스크랩·제안하기 밑
+              세 번째 줄로("스크랩인재도 동일하게... 그밑에 받은제안 몇건"). */}
+          {(t.receivedProposalCount ?? 0) > 0 && (
+            <span className="tal-received">받은제안 {t.receivedProposalCount}건</span>
           )}
         </div>
       </div>
@@ -150,12 +157,6 @@ export default function TalentCard({
         {/* 무슨 날짜인지 이름표가 없어 헷갈렸다 — 사람인처럼 「26-07-04 업데이트」로 적는다. */}
         {t.resumeUpdatedAt && <span className="tal-when">{업데이트날(t.resumeUpdatedAt)} 업데이트</span>}
       </div>
-      {/* 다른 기업들이 이 사람에게 보낸 제안까지 합한 수 — 인기 신호("좋은기능인대.
-          적용해줘" — 경쟁사 카드의 「받은 대화요청 N건」). 0건은 안 보여준다 —
-          아무도 관심 없다는 것까지 광고할 필요는 없다. */}
-      {(t.receivedProposalCount ?? 0) > 0 && (
-        <div className="tal-received">받은 대화요청 {t.receivedProposalCount}건</div>
-      )}
     </div>
   );
 }

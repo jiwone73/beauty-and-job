@@ -15972,6 +15972,11 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 .tal-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .tal-btn.key { border-color: var(--color-primary); color: var(--color-primary); }
+/* "제안하기"만 꽉 찬 보라로 — PDF받기·인쇄·스크랩 같은 다른 tal-btn까지
+   덩달아 보라색이 되면 안 된다("인재검색페이지도 스크랩페이지도... 제안하기
+   버튼 배경색을 보라색으로 해줘"). */
+.tal-btn.propose { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.tal-btn.propose:hover { opacity: .92; color: #fff; }
 .tal-foot {
   display: flex; align-items: center; gap: 12px; margin-top: 12px;
   padding: 11px 0; border-top: 1px solid #f2f2f4;
@@ -16005,9 +16010,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-unread:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* 스크랩·이력서는 윗줄 오른쪽에, 제안/대화는 그 아랫줄에. 넷을 한 줄에 늘어놓으면
    '보는 것'과 '보내는 것'이 뒤섞여 무엇이 다음 할 일인지 안 보인다. */
-/* 제안하기를 스크랩 옆, 이름 줄 높이로 올린다("제안하기 버튼은 이름 줄에
-   오른쪽 정렬") — 세로로 쌓던 것을 가로로 나란히, 위쪽(이름 줄)에 맞춘다. */
-.tal-acts { flex-direction: row; align-items: flex-start; gap: 8px; }
+/* 스크랩 위, 제안하기 그 아래, 받은제안 건수 맨 밑 — 세로로 쌓는다
+   ("스크랩인재도 동일하게 스크랩 아이콘 밑에 제안하기버튼, 그밑에 받은제안
+   몇건 이렇게 표시해줘"). */
+.tal-acts { flex-direction: column; align-items: flex-end; gap: 6px; }
 .tal-acts-top { display: flex; align-items: center; gap: 6px; }
 /* 「제안함」은 상태다. 버튼 모양이면 눌러야 하는 줄 알고 또 보낸다. */
 .tal-sent { font-size: 14.5px; color: #555; white-space: nowrap; padding: 6px 2px; }
@@ -16064,17 +16070,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .tal-name:hover, .tal-open:hover { color: var(--color-primary); text-decoration: underline;
   text-decoration-color: var(--color-primary); text-underline-offset: 3px; }
 .tal-who { font-size: calc(var(--card-sub) + 1px); color: #555; line-height: 1.55; }
-/* 제안하기를 스크랩 옆, 이름 줄 높이로 올린다("제안하기 버튼은 이름 줄에
-   오른쪽 정렬") — 세로로 쌓던 것을 가로로 나란히, 위쪽(이름 줄)에 맞춘다. */
-.tal-acts { flex-direction: row; align-items: flex-start; gap: 8px; }
 .tal-foot { justify-content: space-between; margin-top: 11px; padding: 9px 0 11px; }
 .tal-tags { font-size: calc(var(--card-meta) + 1px); color: #555; }
 .tal-when { margin-left: auto; font-size: calc(var(--card-meta) + 1px); color: #555; }
-/* 받은 대화요청 수 — 구분선 아래 자기만의 줄로, 눈에 덜 띄는 옅은 회색
-   ("받은 대화요청" 경쟁사 카드 참고). */
-.tal-received { margin-top: 2px; font-size: 12.5px; color: #9a9aa3; }
-/* 표(인재풀 PC)의 업데이트 칸에 받은 대화요청 수를 둘째 줄로. */
-.apl-td-received { display: block; margin-top: 2px; font-size: 11.5px; color: #9a9aa3; }
+/* 받은제안 수 — 스크랩·제안하기 밑 세 번째 줄, 눈에 덜 띄는 옅은 회색. */
+.tal-received { font-size: 12px; color: #9a9aa3; }
+/* 표(인재풀 PC)의 제안·스크랩 칸 맨 밑에("받은제안 몇건은 사이즈 12로 해줘"). */
+.apl-td-received { display: block; font-size: 12px; color: #9a9aa3; }
 
 /* 인재 이력서 페이지 — 모달이 아니라 제 주소를 가진 화면이다. 위에 돌아갈 길과
    그 사람에게 할 수 있는 일을 세우고, 이력서는 종이처럼 흰 판 위에 놓는다. */
@@ -16266,7 +16268,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 }
 /* 화면 제목(.co-set-title)과 같은 크기 — 이 판의 주인이 무엇인지 한눈에. */
 /* 공고명은 이 판의 주인이다 — 한 줄 소개와 함께 진한 먹색으로 남는다. */
-.co-pane-title { margin: 4px 0 0; font-size: var(--page-title); font-weight: 400; color: var(--color-text-strong); line-height: 1.35; }
+.co-pane-title { margin: 4px 0 0; font-size: 16px; font-weight: 400; color: #555; line-height: 1.35; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
 .co-pane-acts { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }
@@ -16975,6 +16977,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
    않을까?"). */
 .prop-msg-text { margin: 0; }
+/* 보낸제안 표는 한 줄로 자른다 — 여러 줄로 늘어나면 표가 무거워진다
+   ("보낸제안 메시지 있는 칸 1줄만 줄이자"). */
+.prop-msg-text-1line { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .prop-msg-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 /* 거절하기·수락하기는 진행중 카드의 단추와 같은 크기다("받은제안에 있는
    거절하기 수락하기 버튼이 너무 작네 버튼은 진행중 페이지에 있는 버튼으로
@@ -18976,7 +18981,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .apl-td-memo-in { display: block; width: 100%; height: 70px; box-sizing: border-box;
   border: 1px solid #e2e2e6; border-radius: 6px; resize: none;
   padding: 6px 8px; font-size: 14px; line-height: 1.4; color: #555; font-family: inherit; }
-.apl-td-acts { display: flex; align-items: center; gap: 8px; }
+/* 맨 위 스크랩 아이콘, 그다음 제안하기, 맨 밑에 받은제안 건수 — 세로로
+   쌓는다("맨윗줄은 스크랩 아이콘, 2번째 제안하기 버튼 맨3번째 받은제안
+   몇건"). */
+.apl-td-acts { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 /* 표 안 제안하기는 패딩을 줄인다("제안하기 버튼 패딩 줄여줘"). */
 /* 인재풀 표의 "제안하기" 버튼만 13px로 남아 있었다("다 14로 통일해야해"). */
 .apl-td-acts .tal-btn { padding: 4px 9px; font-size: 14px; }
