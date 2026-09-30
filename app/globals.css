@@ -15977,6 +15977,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    버튼 배경색을 보라색으로 해줘"). */
 .tal-btn.propose { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
 .tal-btn.propose:hover { opacity: .92; color: #fff; }
+/* 제안완료·거절됨은 테두리만 보라색으로("요것도 버튼 테두리만 보라색") —
+   .key 처럼 글자색까지 바꾸면 상태 표시가 아니라 눌러야 할 버튼처럼 보인다. */
+.tal-btn.sent { border-color: var(--color-primary); }
 .tal-foot {
   display: flex; align-items: center; gap: 12px; margin-top: 12px;
   padding: 11px 0; border-top: 1px solid #f2f2f4;
@@ -16905,7 +16908,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    버튼 여백 줄여줘") 글자도 채팅하기와 같은 13px로("폰트도 줄여 채팅하기
    폰트로"). 이제 행 안에서 나란히 서므로 위 여백은 행(.prop-actrow)이 맡는다. */
 .prop-cancel { display: flex; width: fit-content; padding: 2px 7px;
-  border: 1px solid #e2e2e6; border-radius: 6px; background: #fff;
+  border: 1px solid var(--color-primary); border-radius: 6px; background: #fff;
   font-family: inherit; font-size: 13px; color: #555; cursor: pointer; }
 .prop-cancel:hover { border-color: #c0504d; color: #c0504d; }
 /* 테두리 없이 글자로 — 공고 관리의 「수정 | 마감」과 같은 꼴이다. */
@@ -16980,6 +16983,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    길어지면 반응형으로 높이가 늘어나야해") — 자르는 대신 자연스럽게 줄바꿈. */
 .prop-msg-text { margin: 0; }
 .prop-msg-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+/* 보낸제안(기업)의 제안 취소는 버튼이 하나뿐이라, 받은제안의 거절·수락처럼
+   글 아래로 내리지 않고 같은 줄 오른쪽에 둔다("메시지가 버튼위치 시작전에
+   줄바꿈하라고 했는데. 버튼위에 글자가 있어") — 글이 버튼 자리를 침범하기
+   전에 먼저 줄바꿈하도록 글만 flex 로 좁힌다. */
+.prop-msg-line { display: flex; align-items: flex-start; gap: 12px; }
+.prop-msg-line .prop-msg-text { flex: 1; min-width: 0; }
+.prop-msg-line .prop-msg-acts { flex: none; margin-top: 0; }
 /* 거절하기·수락하기는 진행중 카드의 단추와 같은 크기다("받은제안에 있는
    거절하기 수락하기 버튼이 너무 작네 버튼은 진행중 페이지에 있는 버튼으로
    통일시켜줘") — 진행중은 좁은 세로 칸이라 폭 100%를 쓰지만, 여기는 한
@@ -18983,7 +18993,9 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 맨 위 스크랩 아이콘, 그다음 제안하기, 맨 밑에 받은제안 건수 — 세로로
    쌓는다("맨윗줄은 스크랩 아이콘, 2번째 제안하기 버튼 맨3번째 받은제안
    몇건"). */
-.apl-td-acts { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+/* 세로로 쌓다 보니 아바타보다 한 뼘 아래로 처져 보였다("받은제안 1건이
+   아바타하고 수평이 되게 조정해줘") — 살짝 끌어올려 눈높이를 맞춘다. */
+.apl-td-acts { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; position: relative; top: -6px; }
 /* 표 안 제안하기는 패딩을 줄인다("제안하기 버튼 패딩 줄여줘"). */
 /* 인재풀 표의 "제안하기" 버튼만 13px로 남아 있었다("다 14로 통일해야해"). */
 .apl-td-acts .tal-btn { padding: 4px 9px; font-size: 14px; }

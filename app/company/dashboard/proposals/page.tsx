@@ -767,17 +767,17 @@ export default function CompanyProposalsPage() {
                   </td>
                   <td className="c-date">{날짜(p.createdAt)}</td>
                 </tr>
-                {/* 제안하며 쓴 말과 제안 취소는 줄 밑에 — 받은제안(구직자
-                    화면)의 메시지 칸과 같다. */}
+                {/* 제안하며 쓴 말과 제안 취소는 버튼 하나뿐이라 같은 줄 오른쪽에 둔다
+                    ("메시지가 버튼위치 시작전에 줄바꿈하라고 했는데"). */}
                 <tr className="prop-msg-row">
                   <td colSpan={고른공고 ? 4 : 5}>
-                    {/* 보낸제안 표는 한 줄만 — 여러 줄로 늘어나면 표가 무거워진다
-                        ("보낸제안 메시지 있는 칸 1줄만 줄이자"). */}
-                    {p.message && <p className="prop-msg-text">“{p.message}”</p>}
-                    <div className="prop-msg-acts">
-                      <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
-                        제안 취소
-                      </button>
+                    <div className="prop-msg-line">
+                      {p.message && <p className="prop-msg-text">“{p.message}”</p>}
+                      <div className="prop-msg-acts">
+                        <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
+                          제안 취소
+                        </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
