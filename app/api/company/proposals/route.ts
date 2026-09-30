@@ -78,7 +78,13 @@ export async function GET(req: NextRequest) {
               (SELECT m.appointment_at FROM proposal_messages m
                 WHERE m.proposal_id = p.id AND m.kind = 'APPOINTMENT'
                   AND m.appointment_status = 'ACCEPTED'
-                ORDER BY m.appointment_at DESC LIMIT 1) AS appointment_at
+                ORDER BY m.appointment_at DESC LIMIT 1) AS appointment_at,
+              -- "진행중" 카드의 최근 대화 미리보기. 받은제안(구직자 화면)과 같다.
+              (SELECT m.body FROM proposal_messages m
+                WHERE m.proposal_id = p.id AND m.kind = 'TEXT'
+                ORDER BY m.created_at DESC LIMIT 1) AS last_message_body,
+              -- "종료" 카드의 거절 사유. 인재가 왜 거절했는지 매장도 참고할 수 있다.
+              p.decline_reason
          FROM proposals p
          JOIN users u ON u.id = p.user_id
          LEFT JOIN user_profiles up ON up.user_id = u.id
@@ -140,8 +146,10 @@ export async function GET(req: NextRequest) {
       jobCategories: r.job_categories || null,
       jobHeadcount: r.job_headcount ?? null,
       lastMessageAt: r.last_message_at || null,
+      lastMessageBody: r.last_message_body || null,
       messageCount: r.message_count || 0,
       appointmentAt: r.appointment_at || null,
+      declineReason: r.decline_reason || null,
     })), 200, { talentAccess: 열람가능 } as any);
   } catch (e: any) {
     console.error("[company proposals]", e);

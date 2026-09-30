@@ -39,8 +39,10 @@ type 제안 = {
   jobHeadcount: number | null;
   lastSender: "USER" | "COMPANY" | null;
   lastMessageAt: string | null;
+  lastMessageBody: string | null;
   messageCount: number;
   appointmentAt: string | null;
+  declineReason: string | null;
   blocked: boolean;
   appliedAt: string | null;
   /** 기업이 제안을 거둔 시각. 수락 전에만 누를 수 있다. */
@@ -113,7 +115,7 @@ type 상태키 = "면접예정" | "채팅중" | "수락" | "거절" | "취소" |
 // 공고가 닫힐 때 같이 닫히고 이름도 「공고마감」이다 — 매장도 구직자도
 // 아는 말이고, 자연 마감이든 사람을 뽑아 조기 마감이든 같은 말이다.
 const 상태이름: Record<상태키, string> = {
-  답변대기: "검토중", 수락: "수락", 채팅중: "채팅중",
+  답변대기: "수락대기", 수락: "수락", 채팅중: "채팅중",
   면접예정: "면접예정",
   거절: "거절", 취소: "제안취소", 공고마감: "공고마감",
 };
@@ -136,15 +138,31 @@ function 상태(p: 제안): 상태키 {
   return "답변대기";
 }
 
-// 검토중/진행중/종료 3탭 — 받은제안(구직자 화면)과 같은 나눔이다("보낸제안도
+// 수락대기/진행중/종료 3탭 — 받은제안(구직자 화면)과 같은 나눔이다("보낸제안도
 // 마찬가지로 3탭으로 바꿔줘"). 상태 칩은 탭 안에서 더 잘게 거르는 데만 쓴다.
-type 탭키 = "검토중" | "진행중" | "종료";
+type 탭키 = "수락대기" | "진행중" | "종료";
 function 탭of상태(st: 상태키): 탭키 {
-  if (st === "답변대기") return "검토중";
+  if (st === "답변대기") return "수락대기";
   if (st === "거절" || st === "취소" || st === "공고마감") return "종료";
   return "진행중";
 }
 function 탭of(p: 제안): 탭키 { return 탭of상태(상태(p)); }
+
+// 진행중 탭의 스테퍼 — 받은제안(구직자 화면)과 같은 부품·같은 순서다.
+const 단계들 = ["수락", "채팅중", "면접예정", "결과"] as const;
+function 현재단계(st: 상태키): number {
+  if (st === "면접예정") return 2;
+  if (st === "채팅중") return 1;
+  return 0;
+}
+// 종료 탭 — 여기는 매장 자신이 거뒀거나(취소) 인재가 거절한 것이라, "제안취소"란
+// 말이 구직자 화면과 달리 그대로 맞다(내가 취소한 것이 맞으므로).
+const 종료라벨: Record<string, string> = { 거절: "거절함", 취소: "제안취소됨", 공고마감: "공고마감" };
+function 종료일(p: 제안): string {
+  if (p.declinedAt) return p.declinedAt;
+  if (p.canceledAt) return p.canceledAt;
+  return p.jobDeadline || p.createdAt;
+}
 
 /** 지금 누가 답할 차례인지 — 말로 대놓고 적는다("누가 답변할 차례인지 글자로
  *  대놓고 써주네" 참고 화면: "💬 9.26 23:25 (인재 답변대기)"). 면접예정만
@@ -232,7 +250,7 @@ export default function CompanyProposalsPage() {
   // 표 안의 한 칸으로는 못 적는다 — 평균 35자, 열에 아홉이 57자까지 간다).
   const [고른공고, set고른공고] = useState("");
   const [고른상태, set고른상태] = useState<상태키 | "전체">("전체");
-  const [탭, set탭] = useState<탭키>("검토중");
+  const [탭, set탭] = useState<탭키>("수락대기");
   const 탭고르기 = (t: 탭키) => { set탭(t); set고른상태("전체"); };
   const router = useRouter();
   const pathname = usePathname();
@@ -316,20 +334,20 @@ export default function CompanyProposalsPage() {
     ? 목록.filter((p) => (p.jobPostingId || "none") === 고른공고)
     : 목록;
 
-  // 3탭(검토중/진행중/종료)으로 먼저 가르고, 탭 안에서는 상태 칩으로 더
+  // 3탭(수락대기/진행중/종료)으로 먼저 가르고, 탭 안에서는 상태 칩으로 더
   // 잘게 거른다. 탭 개수는 공고 필터만 반영한다 — 탭 자체를 바꾸는 숫자다.
   const 탭한것 = useMemo(() => 공고고른것.filter((p) => 탭of(p) === 탭), [공고고른것, 탭]);
   const 탭수 = useMemo(() => {
-    const 표: Record<탭키, number> = { 검토중: 0, 진행중: 0, 종료: 0 };
+    const 표: Record<탭키, number> = { 수락대기: 0, 진행중: 0, 종료: 0 };
     for (const p of 공고고른것) 표[탭of(p)] += 1;
     return 표;
   }, [공고고른것]);
 
-  // 상태 칩은 탭 안에서 제안이 흘러가는 차례 그대로 세운다 — 검토중은 상태가
+  // 상태 칩은 탭 안에서 제안이 흘러가는 차례 그대로 세운다 — 수락대기는 상태가
   // 하나뿐이라 칩이 필요 없다. 0건이어도 자리를 지킨다. 있는 것만 세우면
   // 흐름이 끊겨, 지금 어디까지 왔고 어디서 막혔는지가 안 보인다.
   const 칩들 = useMemo(() => {
-    if (탭 === "검토중") return [];
+    if (탭 === "수락대기") return [];
     const 흐름: 상태키[] = 탭 === "진행중" ? ["수락", "채팅중", "면접예정"] : [];
     const 끝: 상태키[] = 탭 === "종료" ? ["거절", "취소", "공고마감"] : [];
     const 셈 = new Map<상태키, number>();
@@ -502,10 +520,10 @@ export default function CompanyProposalsPage() {
         </div>
       )}
 
-      {/* 검토중/진행중/종료 3탭 — 받은제안(구직자 화면)과 같은 나눔이다
+      {/* 수락대기/진행중/종료 3탭 — 받은제안(구직자 화면)과 같은 나눔이다
           ("보낸제안도 마찬가지로 3탭으로 바꿔줘"). */}
       <div className="prop-tabs">
-        {(["검토중", "진행중", "종료"] as const).map((t) => (
+        {(["수락대기", "진행중", "종료"] as const).map((t) => (
           <button key={t} type="button" className={`prop-tab${탭 === t ? " on" : ""}`}
             onClick={() => 탭고르기(t)}>
             {t} <span className="prop-tab-n">{탭수[t]}</span>
@@ -513,7 +531,7 @@ export default function CompanyProposalsPage() {
         ))}
       </div>
 
-      {/* 탭 안에서 상태 흐름을 칩으로 더 잘게 거른다. 검토중은 상태가 하나뿐이라
+      {/* 탭 안에서 상태 흐름을 칩으로 더 잘게 거른다. 수락대기는 상태가 하나뿐이라
           칩이 없다. 칩만 나란히 두면 그냥 단추로 보여, 지금 어디까지 왔고 어디서
           막혔는지가 안 읽힌다. 사이를 화살표로 잇는다. 끝난 것(거절·제안취소·
           공고마감)과 「전체」는 흐름 밖이라 선으로 떼어 오른쪽에 모은다. */}
@@ -565,6 +583,88 @@ export default function CompanyProposalsPage() {
           {목록.length === 0 && (
             <p style={{ fontSize: 13, marginTop: 6 }}>인재 검색에서 마음에 드는 분에게 제안을 보내보세요</p>
           )}
+        </div>
+      ) : 탭 !== "수락대기" ? (
+        // 진행중·종료는 받은제안(구직자 화면)과 같은 한 줄짜리 카드다
+        // ("보낸제안 페이지도 받은제안이랑 똑같이 해줘" → "진행중·종료 탭을
+        // 카드형으로 전면 개편"). 수락대기는 사람이 많고 훑어볼 것뿐이라
+        // 표를 그대로 둔다.
+        <div className="prop-cards">
+          {줄들.map((p) => {
+            const st = 상태(p);
+            const 활 = 최근활동(p);
+            const 사람칸 = (
+              <div className="prop-card2-co">
+                <span className="apl-td-avatar">
+                  {p.avatarUrl
+                    ? <img src={p.avatarUrl} alt="" loading="lazy" />
+                    : <span>{(p.userName || "?").slice(0, 1)}</span>}
+                </span>
+                <div className="prop-card2-colines">
+                  <span className="prop-card2-name">{p.userName}</span>
+                  <span className="prop-card2-job">{조건(p) || "—"}</span>
+                  <button type="button" className="prop-card2-viewjob"
+                    onClick={() => p.jobPostingId && 공고고르기(p.jobPostingId)}>
+                    공고 보기 <ChevronRight size={12} />
+                  </button>
+                </div>
+              </div>
+            );
+            if (탭 === "종료") {
+              return (
+                <div className="prop-card2 ended" key={p.id}>
+                  {사람칸}
+                  <div className="prop-card2-end">
+                    <span className={`prop-badge prop-badge-${st}`}>{종료라벨[st]}</span>
+                    <span className="prop-upd">{날짜(종료일(p))}</span>
+                    {st === "거절" && p.declineReason && (
+                      <p className="prop-reason">거절 사유: “{p.declineReason}”</p>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+            const 단계 = 현재단계(st);
+            return (
+              <div className="prop-card2" key={p.id}>
+                {사람칸}
+                <div className="prop-step">
+                  <div className="prop-step-dots">
+                    {단계들.map((label, i) => (
+                      <Fragment key={label}>
+                        {i > 0 && <span className={`prop-step-line${i <= 단계 ? " on" : ""}`} />}
+                        <span className={`prop-step-dot${i <= 단계 ? " on" : ""}${i === 단계 ? " current" : ""}`} />
+                      </Fragment>
+                    ))}
+                  </div>
+                  <div className="prop-step-labels">
+                    {단계들.map((label, i) => (
+                      <span key={label} className={i === 단계 ? "current" : undefined}>
+                        {label}
+                        {i === 단계 && <em>{활.글.replace("💬 ", "")}</em>}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="prop-card2-recent">
+                  <span className="prop-card2-recent-label">최근 대화</span>
+                  <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
+                    <span>{p.lastMessageBody || "아직 나눈 대화가 없어요"}</span>
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+                {/* 거두는 일(제안 취소)은 답이 없는 줄에서만 하는 일이라 이미
+                    수락한 뒤인 진행중에는 채팅하기만 있다. */}
+                <div className="prop-card2-acts">
+                  <button type="button" className="prop-chat-solid" disabled={!대화열림(p) || !채팅가능}
+                    title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
+                    onClick={() => set대화(p)}>
+                    채팅하기
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="prop-tablewrap">
