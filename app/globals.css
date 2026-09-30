@@ -16995,6 +16995,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    통일시켜줘") — 진행중은 좁은 세로 칸이라 폭 100%를 쓰지만, 여기는 한
    줄에 나란히 있어 폭은 내용만큼만 쓴다. */
 .prop-msg-acts .prop-cancel { padding: 7px 16px; font-size: 14px; }
+/* 보낸제안의 제안 취소는 버튼 하나뿐이라 옆에 나란히 두므로, 거절하기·
+   수락하기만큼 크지 않아도 된다 — 인재검색 「제안완료」와 같은 크기로
+   ("패딩값이 너무 커. 2번째 스샷으로 통일해줘"). */
+.prop-msg-line .prop-msg-acts .prop-cancel { padding: 4px 10px; font-size: 14px; }
 
 /* 받은제안 / 진행중 / 종료 세 탭. 제안 정보와 지금 할 일을 한 표에 섞지
    않으려고 나눴다("제안내용에 진행상황 관리가 있는게 너무 쌩뚱맞잖아"). */
