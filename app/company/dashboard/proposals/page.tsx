@@ -23,6 +23,8 @@ type 제안 = {
   readAt: string | null;
   interestedAt: string | null;
   declinedAt: string | null;
+  /** 제안하며 매장이 쓴 말. */
+  message: string;
   interestMessage: string | null;
   userId: string;
   userName: string;
@@ -675,7 +677,12 @@ export default function CompanyProposalsPage() {
               제안한 자리 · <b>{제안한자리.join(" / ")}</b>
             </p>
           )}
-          <table className={`prop-table${고른공고 ? "" : " has-post"}`}>
+          {/* 수락대기 탭은 상태가 하나뿐이라 진행상황·관리 열이 쌩뚱맞다
+              ("수락대기 탭에서 진행상황 관리 뺴기로 하고 제안일 넣기로
+              했잖아") — 받은제안(구직자 화면)과 같은 짜임이다: 제안일 열을
+              두고, 제안하며 쓴 말과 제안 취소를 줄 밑 메시지 칸으로 내린다
+              ("보냈던 메시지도 똑같이 보여줘야지"). */}
+          <table className={`prop-table${고른공고 ? " no-post" : " has-post"} received`}>
             <thead>
               <tr>
                 <th className="c-who">인재</th>
@@ -687,122 +694,81 @@ export default function CompanyProposalsPage() {
                 {/* 근무시간·급여만 따로("근무조건은 근무시간, 급여 요렇게만") —
                     모집분야 다음 자리("근무조건이 모집분야 다음에 추가되야"). */}
                 <th className="c-cond">근무조건</th>
-                {/* 공고 하나를 골라 봤을 때는 "제안한 공고" 칸이 없으니 제안일을
-                    그대로 제 칸에 둔다 — 밑에 붙일 칸 자체가 없다. */}
-                {고른공고 && <th className="c-date">제안일</th>}
-                {/* 진행상황과 관리는 다른 열이다("진행상황하고 관리로 열을
-                    구분해야지") — 진행상황은 1행 단계, 2행 누구 차례인지(💬).
-                    관리는 채팅하기·제안취소 버튼만 세로로. */}
-                <th className="c-recent">진행상황</th>
-                <th className="c-manage">관리</th>
+                <th className="c-date">제안일</th>
               </tr>
             </thead>
             <tbody>
               {묶음들.map((묶음) => (
               <Fragment key={묶음.키}>
-              {묶음.줄.map((p, i) => {
-                const st = 상태(p);
-                const 활 = 최근활동(p);
-                const 할 = 다음할일(p);
-                return (
-                  <tr key={p.id} className={할?.우리차례 ? "mine" : undefined}>
-                    {/* 인재 칸은 공고지원자·인재풀 표와 같은 부품(.apl-td-*)을
-                        쓰되("PC 쪽 보낸제안 테이블 인재쪽 적용해줘. 기존
-                        룰이랑 통일"), 지역은 칸을 따로 빼지 않고 이름·나이
-                        밑 3행으로 다시 넣는다 — 칸을 나눴더니 인재 칸이
-                        좁아져 사진이 작아 보였다("인재를 2행으로 하니까
-                        아바타가 너무 작아. 지역을 인재에 다시 넣고 그
-                        폭만큼 아바타를 키우자"). 사진은 그 폭만큼(.prop-table
-                        전용으로) 32×40→44×55로 키운다. */}
-                    <td className="apl-td apl-td-who">
-                      <button type="button" className="apl-td-whobtn" onClick={() => 이력서열기(p)}>
-                        <span className="apl-td-avatar">
-                          {p.avatarUrl
-                            ? <img src={p.avatarUrl} alt="" loading="lazy" />
-                            : <span>{(p.userName || "?").slice(0, 1)}</span>}
-                        </span>
-                        <span className="apl-td-wholines">
-                          <span className="apl-td-name">{p.userName}</span>
-                          <span className="apl-td-sub">{인적(p) || "—"}</span>
-                          <span className="apl-td-sub">{p.regionPrefer || "—"}</span>
-                        </span>
+              {묶음.줄.map((p, i) => (
+                <Fragment key={p.id}>
+                <tr>
+                  {/* 인재 칸은 공고지원자·인재풀 표와 같은 부품(.apl-td-*)을
+                      쓰되("PC 쪽 보낸제안 테이블 인재쪽 적용해줘. 기존
+                      룰이랑 통일"), 지역은 칸을 따로 빼지 않고 이름·나이
+                      밑 3행으로 다시 넣는다 — 칸을 나눴더니 인재 칸이
+                      좁아져 사진이 작아 보였다("인재를 2행으로 하니까
+                      아바타가 너무 작아. 지역을 인재에 다시 넣고 그
+                      폭만큼 아바타를 키우자"). 사진은 그 폭만큼(.prop-table
+                      전용으로) 32×40→44×55로 키운다. */}
+                  <td className="apl-td apl-td-who">
+                    <button type="button" className="apl-td-whobtn" onClick={() => 이력서열기(p)}>
+                      <span className="apl-td-avatar">
+                        {p.avatarUrl
+                          ? <img src={p.avatarUrl} alt="" loading="lazy" />
+                          : <span>{(p.userName || "?").slice(0, 1)}</span>}
+                      </span>
+                      <span className="apl-td-wholines">
+                        <span className="apl-td-name">{p.userName}</span>
+                        <span className="apl-td-sub">{인적(p) || "—"}</span>
+                        <span className="apl-td-sub">{p.regionPrefer || "—"}</span>
+                      </span>
+                    </button>
+                  </td>
+                  {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
+                      있던 공고 목록이 하던 일이다. */}
+                  {!고른공고 && (
+                    <td className="c-post">
+                      {p.jobPostingId ? (
+                        <button type="button" className="prop-post" title={p.jobTitle || undefined}
+                                onClick={() => 공고고르기(p.jobPostingId!)}>
+                          {p.jobTitle || "공고 없음"}
+                        </button>
+                      ) : <span className="prop-post none">공고 없음</span>}
+                    </td>
+                  )}
+                  {/* 직군은 열을 따로 준다. 이름 아래에 붙이면 사람에 따라 줄 수가
+                      달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
+                  {/* 좁은 칸이라 긴 값은 …으로 잘린다. 잘린 것은 마우스를 올리면 그대로 보인다. */}
+                  <td className="c-job" title={조건(p)}><span>{조건(p)}</span></td>
+                  {/* 근무조건은 요일·시간·급여를 각각 한 줄씩("근무조건 3행.
+                      요일, 시간, 급여 1칸씩") — 제일 중요한 칸이라 넓이도 더 준다. */}
+                  <td className="c-cond" title={[p.workConditionDay, p.workConditionTime, p.workConditionSalary]
+                    .filter(Boolean).join(" · ") || undefined}>
+                    {p.workConditionDay || p.workConditionTime || p.workConditionSalary ? (
+                      <>
+                        <span>{p.workConditionDay}</span>
+                        <span>{p.workConditionTime}</span>
+                        <span>{p.workConditionSalary}</span>
+                      </>
+                    ) : <span>—</span>}
+                  </td>
+                  <td className="c-date">{날짜(p.createdAt)}</td>
+                </tr>
+                {/* 제안하며 쓴 말과 제안 취소는 줄 밑에 — 받은제안(구직자
+                    화면)의 메시지 칸과 같다. */}
+                <tr className="prop-msg-row">
+                  <td colSpan={고른공고 ? 4 : 5}>
+                    {p.message && <p className="prop-msg-text">“{p.message}”</p>}
+                    <div className="prop-msg-acts">
+                      <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
+                        제안 취소
                       </button>
-                    </td>
-                    {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
-                        있던 공고 목록이 하던 일이다. */}
-                    {/* 제안일도 이 칸 밑에 둔다("제안일을 제안한공고 밑에 넣으면
-                        어떨까? 칸이 좁아서") — 열 하나가 없어진 만큼 이 칸이
-                        넓어져 공고명이 덜 접힌다. */}
-                    {!고른공고 && (
-                      <td className="c-post">
-                        {p.jobPostingId ? (
-                          <button type="button" className="prop-post" title={p.jobTitle || undefined}
-                                  onClick={() => 공고고르기(p.jobPostingId!)}>
-                            {p.jobTitle || "공고 없음"}
-                          </button>
-                        ) : <span className="prop-post none">공고 없음</span>}
-                        <span className="prop-post-date">{날짜(p.createdAt)} 제안</span>
-                      </td>
-                    )}
-                    {/* 직군은 열을 따로 준다. 이름 아래에 붙이면 사람에 따라 줄 수가
-                        달라져 표가 들쭉날쭉했다. 열로 두면 인재 칸은 늘 두 줄이다. */}
-                    {/* 좁은 칸이라 긴 값은 …으로 잘린다. 잘린 것은 마우스를 올리면 그대로 보인다. */}
-                    <td className="c-job" title={조건(p)}><span>{조건(p)}</span></td>
-                    {/* 근무조건은 요일·시간·급여를 각각 한 줄씩("근무조건 3행.
-                        요일, 시간, 급여 1칸씩") — 제일 중요한 칸이라 넓이도 더 준다. */}
-                    <td className="c-cond" title={[p.workConditionDay, p.workConditionTime, p.workConditionSalary]
-                      .filter(Boolean).join(" · ") || undefined}>
-                      {p.workConditionDay || p.workConditionTime || p.workConditionSalary ? (
-                        <>
-                          <span>{p.workConditionDay}</span>
-                          <span>{p.workConditionTime}</span>
-                          <span>{p.workConditionSalary}</span>
-                        </>
-                      ) : <span>—</span>}
-                    </td>
-                    {고른공고 && <td className="c-date">{날짜(p.createdAt)}</td>}
-                    {/* 진행상황: 1행 단계, 2행 누구 차례인지(💬). 채팅하기가 꺼져 있으면
-                        상대가 거절했거나 거둔 제안이라는 뜻이다("채팅하기가 비활성화
-                        되면 상대가 거절한것으로 가늠하면되겠네"). */}
-                    <td className={`c-recent${할?.우리차례 ? " todo" : ""}`}>
-                      <span className="prop-st" style={{ color: 상태색[st] }}>{상태이름[st]}</span>
-                      <span className="prop-upd">{활.글}</span>
-                      {/* 차례 문구는 따로 3행에 둔다 — 2행(💬 날짜)과 한 줄에 같이 두면
-                          칸이 좁아 말줄임에 통째로 잘려 안 보였다("3번쨰줄에 (기업 답변
-                          필요) 이거 누락됬잖아"). 기업이 답할 차례만 포인트 컬러로
-                          강조한다("기업이 해야 할 차례인 문구는 포인트 컬러로 강조해
-                          주세요") — 인재 차례는 강조하지 않는다, 우리가 할 일이 아니라서다. */}
-                      {활.차례 && (
-                        <span className={활.차례 === "기업 답변필요" ? "prop-turn mine" : "prop-turn"}>
-                          ({활.차례})
-                        </span>
-                      )}
-                    </td>
-                    {/* 관리: 채팅하기를 위, 제안취소를 아래로("관리 버튼은 폭이 좁으면
-                        채팅하기를 위, 제안취소를 아래로 세로 배치해 주세요"). */}
-                    <td className={`c-manage${할?.우리차례 ? " todo" : ""}`}>
-                      <div className="prop-actrow">
-                        {/* 채팅은 수락 이후부터다("채팅은 진행중에서만" / "수락전 채팅은
-                            안돼") — 답변대기 줄에는 채팅하기 자체를 두지 않는다. */}
-                        {st !== "답변대기" && (
-                          <button type="button" className="prop-chatbtn" disabled={!대화열림(p) || !채팅가능}
-                            title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
-                            onClick={() => set대화(p)}>
-                            채팅하기
-                          </button>
-                        )}
-                        {/* 거두는 일은 아직 답이 없는 줄에서만. 수락한 뒤에는 드물고, 잘못
-                            누르면 되돌릴 수 없다 — 그때는 대화로 정리한다. */}
-                        {st === "답변대기" && (
-                          <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
-                            제안 취소
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                    </div>
+                  </td>
+                </tr>
+                </Fragment>
+              ))}
               </Fragment>
               ))}
             </tbody>

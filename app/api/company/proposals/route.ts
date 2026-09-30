@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
   if (res) return res;
   try {
     const { rows } = await pool.query(
-      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.canceled_at, p.position_index, p.note,
+      `SELECT p.id, p.created_at, p.read_at, p.interested_at, p.interest_message, p.declined_at, p.canceled_at, p.position_index, p.note, p.message,
               u.id AS user_id, u.name AS user_name, u.avatar_url, u.avatar_public,
               -- 우리 공고에 지원한 사람인가. 무료 기업회원에게 이름이 열리는 단 하나의 경우다.
               ${지원함SQL("p.user_id", "p.company_id")} AS applied_here,
@@ -121,6 +121,7 @@ export async function GET(req: NextRequest) {
           workConditionSalary: 행.map((x) => x.급여).filter(Boolean).join(" / ") || null,
         };
       })(),
+      message: r.message,
       interestMessage: r.interest_message,
       userId: r.user_id,
       userName: (열람가능 || r.applied_here) ? r.user_name : 이름가리기(r.user_name),

@@ -16965,6 +16965,12 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table.received .c-job { width: 18%; max-width: none; }
 .prop-table.received .c-cond { width: 24%; max-width: none; }
 .prop-table.received .c-date { width: 10%; }
+/* 보낸제안 수락대기 탭에서 공고 하나만 골라 보면 "제안한 공고" 칸이
+   없어 넉 칸이 된다 — 그만큼 퍼센트를 다시 나눈다(합 100 유지). */
+.prop-table.received.no-post .apl-td-who { width: 32%; }
+.prop-table.received.no-post .c-job { width: 23%; }
+.prop-table.received.no-post .c-cond { width: 32%; }
+.prop-table.received.no-post .c-date { width: 13%; }
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
    않을까?"). */
