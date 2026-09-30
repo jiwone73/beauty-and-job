@@ -16976,10 +16976,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
    않을까?"). */
+/* 글이 길면 줄이지 않고 그만큼 칸이 늘어난다("텍스트가 여백보다 더
+   길어지면 반응형으로 높이가 늘어나야해") — 자르는 대신 자연스럽게 줄바꿈. */
 .prop-msg-text { margin: 0; }
-/* 보낸제안 표는 한 줄로 자른다 — 여러 줄로 늘어나면 표가 무거워진다
-   ("보낸제안 메시지 있는 칸 1줄만 줄이자"). */
-.prop-msg-text-1line { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .prop-msg-acts { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 /* 거절하기·수락하기는 진행중 카드의 단추와 같은 크기다("받은제안에 있는
    거절하기 수락하기 버튼이 너무 작네 버튼은 진행중 페이지에 있는 버튼으로

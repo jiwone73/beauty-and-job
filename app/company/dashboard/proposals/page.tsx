@@ -773,7 +773,7 @@ export default function CompanyProposalsPage() {
                   <td colSpan={고른공고 ? 4 : 5}>
                     {/* 보낸제안 표는 한 줄만 — 여러 줄로 늘어나면 표가 무거워진다
                         ("보낸제안 메시지 있는 칸 1줄만 줄이자"). */}
-                    {p.message && <p className="prop-msg-text prop-msg-text-1line">“{p.message}”</p>}
+                    {p.message && <p className="prop-msg-text">“{p.message}”</p>}
                     <div className="prop-msg-acts">
                       <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
                         제안 취소
