@@ -563,15 +563,19 @@ const JobDetailView = forwardRef<HTMLDivElement, JobDetailViewProps>(function Jo
         )}
       </main>
 
-      {/* 오른쪽: 지원하기 사이드바 (PC) */}
-      <aside className="job-detail-aside">
-        {/* 카드는 지원 버튼과 스크랩·공유만 든다. 매장명·공고명·모집분야·급여·
-            마감은 바로 왼쪽 본문 머리에 그대로 있다 — 한 화면에서 같은 말을 두 번
-            하면 카드만 길어지고 정작 누를 것이 아래로 밀린다. */}
-        <div className="job-detail-aside-card">
-          {asideAction}
-        </div>
-      </aside>
+      {/* 오른쪽: 지원하기 사이드바 (PC). 미리보기는 공고 내용만 보면 되는
+          자리라 지원·스크랩 영역 자체가 필요 없다 — 비워 두면 빈 칸만
+          남는다("공고에 대한 미리보기면 되는거야. 여백 지워"). */}
+      {!previewMode && (
+        <aside className="job-detail-aside">
+          {/* 카드는 지원 버튼과 스크랩·공유만 든다. 매장명·공고명·모집분야·급여·
+              마감은 바로 왼쪽 본문 머리에 그대로 있다 — 한 화면에서 같은 말을 두 번
+              하면 카드만 길어지고 정작 누를 것이 아래로 밀린다. */}
+          <div className="job-detail-aside-card">
+            {asideAction}
+          </div>
+        </aside>
+      )}
     </div>
   );
 });

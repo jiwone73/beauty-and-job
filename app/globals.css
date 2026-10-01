@@ -2703,7 +2703,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
      들어가지만, 실제 값인 "헤어 디자이너" 가 오면 칸이 좁아 두 줄로 접힌다.
      구직자가 보는 실제 화면도 좁은 폭에서는 한 칸씩이라, 이쪽이 미리보기의 뜻에도 맞다. */
 }
-.jobpost-preview-scope .job-detail-layout { grid-template-columns: minmax(0, 1fr) 300px; padding: 24px 20px 80px; gap: 20px; }
+/* 미리보기는 지원하기 사이드바가 없다(previewMode에서 aside 자체를 안 그림) —
+   그 자리를 300px 비워 두면 빈 칸만 남는다("여백 지워"). */
+.jobpost-preview-scope .job-detail-layout { grid-template-columns: minmax(0, 1fr); padding: 24px 20px 80px; gap: 20px; }
 .jobpost-preview-scope .job-detail-aside { top: 20px; }
 .job-detail-aside-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid var(--color-border); }
 .job-detail-aside-brand { font-size: 13px; color: var(--color-text-mute); margin-bottom: 6px; }
