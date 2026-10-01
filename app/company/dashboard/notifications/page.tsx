@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { 알림칸, 동의칸 } from "@/lib/companyNotifySettings";
+import { 플랜, type PlanId } from "@/lib/companyPlans";
 
 /** 기업 알림설정.
  *
@@ -20,6 +22,7 @@ export default function CompanyNotificationsPage() {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [plan, setPlan] = useState<PlanId | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -33,6 +36,13 @@ export default function CompanyNotificationsPage() {
       })
       .catch((e) => console.error("[알림설정]", e))
       .finally(() => setLoading(false));
+    // "추천 인재 메일"은 프리미엄 전용 기능이라("스탠다드도 오나?" → 아니오,
+    // lib/companyPlans.ts의 인재추천 플래그가 프리미엄에만 true) 그 등급인지
+    // 알아야 토글을 잠글지 정한다.
+    fetch("/api/company/me/plan", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => { if (res.success) setPlan(res.data?.plan ?? null); })
+      .catch(() => {});
   }, []);
 
   const 저장 = async (몸: any, 되돌리기: () => void) => {
@@ -67,17 +77,27 @@ export default function CompanyNotificationsPage() {
   };
 
   /** 스위치 한 칸 — 이름·설명과 스위치를 좌우로. 무엇을 켜는 건지 한 줄씩 적는다
-   *  ("상세하게 다 나열해서 선택을 받는게 좋을거 같아"). */
-  const 칸 = (key: string, title: string, desc: string | undefined, 켜짐: boolean, 누름: () => void) => (
+   *  ("상세하게 다 나열해서 선택을 받는게 좋을거 같아"). 플랜에 없는 기능은
+   *  칸을 지우지 않고 스위치를 그대로 둔 채 눌러지지 않게만 한다
+   *  ("아예 지우지 말고 비활성화 시켜"). disabled 로 막으면 눌러도 아무 반응이
+   *  없어 왜 안 켜지는지 알 길이 없다 — 눌렀을 때 이유를 바로 말해준다
+   *  ("토글하면 안내멘트는 보여줘야지"). */
+  const 칸 = (key: string, title: string, desc: string | undefined, 켜짐: boolean, 누름: () => void, 잠김?: string) => (
     <div key={key} style={{ border: "1px solid #ececf0", borderRadius: 10, padding: "15px 16px",
-      display: "flex", alignItems: "center", gap: 12 }}>
+      display: "flex", alignItems: "center", gap: 12, opacity: 잠김 ? 0.5 : 1 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="set-name" style={{ color: "#333" }}>{title}</div>
         {desc && <div style={{ fontSize: 13, color: "#555", marginTop: 3 }}>{desc}</div>}
+        {잠김 && (
+          <Link href="/company/plans" style={{ fontSize: 13, color: "var(--color-primary)", fontWeight: 600 }}>
+            {잠김} ›
+          </Link>
+        )}
       </div>
-      <button type="button" role="switch" aria-checked={켜짐} aria-label={title} onClick={누름}
+      <button type="button" role="switch" aria-checked={켜짐} aria-label={title}
+        onClick={잠김 ? () => alert(`${잠김} 기능이에요. 상품안내에서 확인해 보세요.`) : 누름}
         style={{ width: 42, height: 24, borderRadius: 12, border: "none", flexShrink: 0,
-          cursor: "pointer", padding: 2, display: "flex",
+          cursor: 잠김 ? "not-allowed" : "pointer", padding: 2, display: "flex",
           justifyContent: 켜짐 ? "flex-end" : "flex-start",
           background: 켜짐 ? "var(--color-primary)" : "#d8d8dd", transition: "background .18s" }}>
         <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#fff",
@@ -85,6 +105,8 @@ export default function CompanyNotificationsPage() {
       </button>
     </div>
   );
+
+  const 인재추천가능 = !!plan && !!플랜[plan]?.인재추천;
 
   const 묶음제목 = { color: "#333", margin: "0 0 4px" } as const;
   const 묶음설명 = { color: "#555", margin: "0 0 12px", lineHeight: 1.6 } as const;
@@ -113,7 +135,8 @@ export default function CompanyNotificationsPage() {
             <section>
               <h2 className="set-name" style={묶음제목}>뷰티워크 소식 받기</h2>
               <div style={두칸}>
-                {동의칸.map((c) => 칸(c.key, c.title, c.desc, !!동의[c.key], () => 동의바꾸기(c.key)))}
+                {동의칸.map((c) => 칸(c.key, c.title, c.desc, !!동의[c.key], () => 동의바꾸기(c.key),
+                  c.key === "TALENT_RECOMMEND" && !인재추천가능 ? "프리미엄 전용" : undefined))}
               </div>
             </section>
 
