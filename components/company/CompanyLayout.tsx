@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
+import { 플랜, 스타트 } from "@/lib/companyPlans";
 import {
   Briefcase, Users, FileText, Settings, UserCog,
   Bell, LogOut, Search, BookmarkCheck, Menu, X, ChevronDown, ExternalLink, Send, Tag,
@@ -54,6 +55,7 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
   // 매장 회원이면 '매장정보', 오피스(기업) 회원이면 '기업정보'로 부른다.
   const infoLabel = (t: string) => (t === "OFFICE" ? "기업정보" : "매장정보"); // 매장·매장+오피스는 매장으로 분류
   const [companyInfo, setCompanyInfo] = useState({ name: "", category: "", logo: "", type: "", cover: "", thumb: "", manager: "" });
+  const [planName, setPlanName] = useState("");
   const [notifs, setNotifs] = useState<any[]>([]);
   const [unread, setUnread] = useState(0);
   // 채팅 알림 — 구직자가 마지막으로 말했는데 매장이 아직 답 안 한 대화 수
@@ -91,6 +93,17 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
         }
       })
       .catch((e) => console.error("[company info]", e));
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    fetch("/api/company/me/plan", { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.success) setPlanName(res.data.plan ? 플랜[res.data.plan as keyof typeof 플랜].name : 스타트.name);
+      })
+      .catch((e) => console.error("[company plan]", e));
   }, []);
 
   const loadNotifs = () => {
@@ -343,7 +356,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
             </button>
             <Link href={base} className="co-m-nametype" style={{ textDecoration: "none", color: "inherit" }}>
               <span className="co-m-name">{companyInfo.name || "기업"}</span>
-              {companyInfo.category && <span className="co-m-type">{companyInfo.category}</span>}
+              {companyInfo.category && (
+                <span className="co-m-type">{companyInfo.category}{planName && ` · ${planName}`}</span>
+              )}
             </Link>
           </div>
           <div className="co-m-actions">
@@ -491,7 +506,9 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                     구분이 안가네"). */}
                 <span className="co-top-metext">
                   <span className="co-top-mename">{companyInfo.name || "내 매장"}</span>
-                  {companyInfo.category && <span className="co-top-type">{companyInfo.category}</span>}
+                  {companyInfo.category && (
+                    <span className="co-top-type">{companyInfo.category}{planName && ` · ${planName}`}</span>
+                  )}
                 </span>
               </button>
               {meMenuOpen && (
