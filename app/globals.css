@@ -16335,6 +16335,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane-apps { background: #fff; border-radius: 0 0 12px 12px;
   margin: 0 -5px; padding: 0 0 22px; display: flex; flex-direction: column; gap: 8px; }
 
+/* 모바일 공고 머리 정리(2026-10-01) — "노출 종료는 빨간색. 밑에 갈색
+   메시지는 삭제": 마감임박(.soon)에서 쓰던 빨강을 그대로 쓴다(새 색 안
+   늘림). PC는 그대로 둔다. */
+@media (max-width: 768px) {
+  .co-pane-term .co-jc-badge.unexposed { color: #c0504d; }
+  .co-pane-exposure-note { display: none; }
+}
+
 /* 공고 조건 한 줄 — 근무지·경력·고용형태·인원. 여러 공고를 가려내는 값이다. */
 .co-jc-cond { margin-top: 5px; font-size: 13px; color: #555;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

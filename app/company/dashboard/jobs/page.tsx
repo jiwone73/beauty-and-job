@@ -428,7 +428,14 @@ function CompanyJobsContent() {
                 // 값이 뜨는 게 아니라 왜 뜨는지부터 헷갈렸다("무관은 무슨 무관이야?").
                 // 근무시간은 이 줄에서 뺀다("근무시간은 빼자") — 상세는 위에서 본다.
                 const isOffice = (job as any).job_type === "OFFICE";
-                const 줄들 = 부문.length > 0
+                // 모바일은 직군·경력만 — "직군은 헤어스텝하고 경력만"(2026-10-01).
+                // PC는 기존 그대로(인원·근무지·고용형태·성별·학력·급여까지).
+                const 줄들 = isMobile
+                  ? (부문.length > 0
+                      ? 부문.map((p: any) => [p.category || p.group, p.career].filter(Boolean).join(" · "))
+                      : [[((job as any).categories || []).join(" · "), 경력글((job as any).experience_level)]
+                          .filter(Boolean).join(" · ")])
+                  : 부문.length > 0
                   ? 부문.map((p: any) => [
                       p.category || p.group,
                       p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : null,
