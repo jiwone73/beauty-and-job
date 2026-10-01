@@ -2286,7 +2286,7 @@ export default function JobPostForm({
       : { companyId, newCompany: null };
     const result = await onSubmit(payload, status, company);
     if (!result.success) {
-      alert(result.error || (editId ? "공고 수정에 실패했습니다." : "공고 등록에 실패했습니다."));
+      alert(result.error || (진행중수정 ? "공고 수정에 실패했습니다." : "공고 등록에 실패했습니다."));
       return false;
     }
     // 관리자 직접등록 임시저장: 목록으로 나가지 않고 이 페이지에 머문다.
@@ -4435,7 +4435,12 @@ export default function JobPostForm({
           버튼이 2개야?"). */}
       <button type="button" className="jobpost-submit-bottom"
         onClick={() => handleSubmit("publish")}>
-        {saved ? (editId ? "✅ 수정완료" : "✅ 등록완료") : (editId ? "공고 저장하기" : "공고 등록하기")}
+        {/* editId만 보면 재등록(?copy=)도 "저장"으로 잘못 읽힌다 — 그건 원래
+            공고가 지금 노출 중이 아니라서 다시 거는 길이니 "등록"이 맞다
+            ("저장은 올려진 공고를 수정하기 눌렀을때... 지금은 올려진 공고가
+            없으니 등록하기가 맞지 않아?", "시나리오에 따라 버튼명을 달리
+            가져가야지"). 지금 ACTIVE 상태인 것을 고치는 중일 때만 "저장". */}
+        {saved ? (진행중수정 ? "✅ 수정완료" : "✅ 등록완료") : (진행중수정 ? "공고 저장하기" : "공고 등록하기")}
       </button>
 
       <RegionSelectModal
@@ -4515,8 +4520,9 @@ export default function JobPostForm({
             </div>
             <div className="jobpost-preview-foot">
               {/* "이대로 등록"은 실제 사이트 어디에도 없는 말이었다("실제 사이트에
-                  이런단어 안써") — 본 폼의 등록 버튼과 같은 말을 그대로 쓴다. */}
-              <button className="company-primary-btn" onClick={() => { setShowPreview(false); handleSubmit("publish"); }}>{editId ? "공고 저장하기" : "공고 등록하기"}</button>
+                  이런단어 안써") — 본 폼의 등록 버튼과 같은 말을 그대로 쓴다.
+                  라벨 분기도 아래 등록 버튼과 같은 기준(진행중수정)을 쓴다. */}
+              <button className="company-primary-btn" onClick={() => { setShowPreview(false); handleSubmit("publish"); }}>{진행중수정 ? "공고 저장하기" : "공고 등록하기"}</button>
             </div>
           </div>
         </div>
