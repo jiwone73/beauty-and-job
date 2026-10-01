@@ -16253,8 +16253,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    하면 어떨까?") — .co-pane 자체는 맨바탕이라(위 주석) 목록의 카드형 줄(.co-li)
    사이에 두면 경계가 없어 붕 떠 보인다. 카드 테두리를 하나 둘러 준다. */
 /* 페이지 여백(co-m-content)은 기본 7px이 맞다 — 카드 자체 안쪽 여백만 5px로
-   ("페이지 여백은 7이 맞고, 카드자체 패딩은 5로 적용해줘"). */
-.co-pane-inline { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 14px 5px 4px; }
+   ("페이지 여백은 7이 맞고, 카드자체 패딩은 5로 적용해줘"). 바깥 테두리는
+   뺀다 — 안의 지원자 카드(ApplicantCard)가 이미 제 테두리를 갖고 있어
+   "카드 밖에 테두리가 또 있어"로 겹쳐 보였다(2026-10-01). */
+.co-pane-inline { padding: 14px 5px 4px; }
 /* "전체적으로 텍스트를 왼쪽으로 좀 더 밀어" — 좌우 안쪽 여백을 14px→10px로 줄여
    더 왼쪽에서 시작하게 한다(오른쪽은 그대로 두어도 되지만 균형을 위해 같이 줄인다). */
 /* 공고카드 글자 크기·색("공고명 15px #333, 나머지 14px #555") — 모바일 펼침에서만. */
@@ -16865,6 +16867,10 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-back:hover { color: var(--color-primary); }
 
 .prop-chips { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: -8px; }
+/* 모바일에선 뺀다 — 데이터가 몇 건 안 돼 필터 칩이 자리만 차지한다
+   ("그렇게 데이터가 많지 않을거 같은데 / 자리만 차지하고" → "모바일은
+   필터 지우자", 2026-10-01). 카드마다 이미 스테퍼로 단계가 보인다. */
+@media (max-width: 768px) { .prop-chips { display: none; } }
 .prop-chipwrap { display: inline-flex; align-items: center; }
 /* 흐름 밖에서 끝난 것(제안취소·거절·공고마감)은 칩 줄 오른쪽 끝에 떼어 둔다. */
 .prop-chips-end { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
@@ -17135,6 +17141,26 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 종료 탭 줄 — 스테퍼·상태·최근대화 자리에 배지·날짜·거절사유가 대신 온다. */
 .prop-card2-end { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .prop-card2-end .prop-reason { flex: 1 1 260px; font-size: 14px; }
+
+/* 진행중 카드 모바일 — 고정폭 칸들을 한 줄로 나란히 두면 넘쳐서 잘린다
+   ("UI 화질이 너무 안좋아서 안보여" 스크린샷). 큰 스테퍼(라벨 4개)와
+   PC용 채팅 버튼 칸은 접고, 이름 옆에 작은 점 스테퍼를, 최근대화 줄
+   옆에 같은 채팅 버튼을 옮겨 그린다 — "프로그래스 바 사이즈 줄여서
+   이름옆에 넣어" / "채팅하기 버튼 크기 있잖아 크기 똑같이 적용해" /
+   "스크롤 압박, 공간활용 잘해야지"(2026-10-01). */
+.prop-step-mini, .prop-card2-chat-mobile { display: none; }
+@media (max-width: 768px) {
+  .prop-card2 { flex-wrap: wrap; row-gap: 10px; }
+  .prop-card2-co { flex: 1 1 100%; }
+  .prop-card2-job, .prop-card2-viewjob, .prop-step, .prop-card2-acts { display: none; }
+  .prop-card2-nameline { display: flex; align-items: center; gap: 10px; }
+  .prop-step-mini { display: grid; width: 70px; height: 9px; flex-shrink: 0; }
+  .prop-step-mini .prop-step-dot { width: 7px; height: 7px; }
+  .prop-step-mini .prop-step-dot.current { width: 9px; height: 9px; }
+  .prop-card2-recent { flex: 1 1 100%; margin-left: 0; }
+  .prop-card2-recent-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .prop-card2-chat-mobile { display: inline-flex; flex-shrink: 0; width: auto; }
+}
 
 .prop-badge { display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 10px;
   border-radius: 999px; background: #f4f4f6; color: #8a8a92; }
@@ -18933,6 +18959,7 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 .tal-card .tal-name.tal-role {
   font-size: 15px !important; font-weight: 700 !important; color: #333 !important;
   line-height: 22px; margin-bottom: 7px; display: block !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 @media (max-width: 768px) {
   .tal-card .tal-name.tal-role { font-size: 14px !important; }

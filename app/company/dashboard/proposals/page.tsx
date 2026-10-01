@@ -606,7 +606,21 @@ export default function CompanyProposalsPage() {
                     : <span>{(p.userName || "?").slice(0, 1)}</span>}
                 </span>
                 <div className="prop-card2-colines">
-                  <span className="prop-card2-name">{p.userName}</span>
+                  <span className="prop-card2-nameline">
+                    <span className="prop-card2-name">{p.userName}</span>
+                    {/* 모바일 전용 — 큰 스테퍼(라벨 4개) 대신 이름 옆에 점만 작게.
+                        "프로그래스 바 사이즈 줄여서 이름옆에 넣어"(2026-10-01). */}
+                    {탭 !== "종료" && (
+                      <span className="prop-step-dots prop-step-mini">
+                        <span className="prop-step-line-bg" />
+                        <span className="prop-step-line-fill"
+                          style={{ width: `${(현재단계(상태(p)) / (단계들.length - 1)) * 75}%` }} />
+                        {단계들.map((label, i) => (
+                          <span key={label} className={`prop-step-dot${i <= 현재단계(상태(p)) ? " on" : ""}${i === 현재단계(상태(p)) ? " current" : ""}`} />
+                        ))}
+                      </span>
+                    )}
+                  </span>
                   <span className="prop-card2-job">{조건(p) || "—"}</span>
                   <button type="button" className="prop-card2-viewjob"
                     onClick={() => p.jobPostingId && 공고고르기(p.jobPostingId)}>
@@ -630,6 +644,20 @@ export default function CompanyProposalsPage() {
               );
             }
             const 단계 = 현재단계(st);
+            // 채팅하기 버튼은 PC(.prop-card2-acts)와 모바일(최근대화 줄 옆)
+            // 두 자리에 그린다 — "채팅하기 버튼 크기 있잖아. 크기 똑같이
+            // 적용해"(2026-10-01): 같은 버튼을 자리만 CSS로 바꿔 끼운다.
+            const 채팅막힘 = !대화열림(p);
+            const 채팅클릭 = () => {
+              if (!채팅가능) {
+                if (confirm("채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요. 상품안내 페이지로 가시겠어요?")) {
+                  router.push("/company/plans");
+                }
+                return;
+              }
+              set대화(p);
+            };
+            const 채팅버튼스타일 = !채팅가능 ? { opacity: 0.5, cursor: "not-allowed" as const } : undefined;
             return (
               <div className="prop-card2" key={p.id}>
                 {사람칸}
@@ -655,15 +683,23 @@ export default function CompanyProposalsPage() {
                     대화가 없는데 대화 미리보기처럼 보이면 안 된다. */}
                 {p.lastMessageBody && (
                   <div className="prop-card2-recent">
-                    <span className="prop-card2-recent-label">
-                      최근 대화
-                      {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
-                          시간하고 누가 보냈는지 적어줘"). */}
-                      {p.lastMessageAt && (
-                        <span className="prop-card2-recent-meta">
-                          ({때(p.lastMessageAt)} ㅣ {p.lastSender === "USER" ? p.userName : "나"})
-                        </span>
-                      )}
+                    <span className="prop-card2-recent-head">
+                      <span className="prop-card2-recent-label">
+                        최근 대화
+                        {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
+                            시간하고 누가 보냈는지 적어줘"). */}
+                        {p.lastMessageAt && (
+                          <span className="prop-card2-recent-meta">
+                            ({때(p.lastMessageAt)} ㅣ {p.lastSender === "USER" ? p.userName : "나"})
+                          </span>
+                        )}
+                      </span>
+                      {/* 모바일 전용 — "스크롤 압박, 공간활용 잘해야지"(2026-10-01)
+                          로 최근대화 줄 옆에 그대로 옮긴다. */}
+                      <button type="button" className="prop-chat-solid prop-card2-chat-mobile"
+                        disabled={채팅막힘} style={채팅버튼스타일} onClick={채팅클릭}>
+                        채팅하기
+                      </button>
                     </span>
                     <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
                       <span>{p.lastMessageBody}</span>
@@ -677,17 +713,8 @@ export default function CompanyProposalsPage() {
                   {/* 플랜 잠금은 disabled 로만 꺼두면 색이 그대로라 눌러도 반응이
                       없는 것처럼 보인다("채팅하기 버튼눌렀는데 채팅창이 안떠") —
                       흐리게 보이게 하고, 눌렀을 때는 안내를 띄운다. */}
-                  <button type="button" className="prop-chat-solid" disabled={!대화열림(p)}
-                    style={!채팅가능 ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
-                    onClick={() => {
-                      if (!채팅가능) {
-                        if (confirm("채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요. 상품안내 페이지로 가시겠어요?")) {
-                          router.push("/company/plans");
-                        }
-                        return;
-                      }
-                      set대화(p);
-                    }}>
+                  <button type="button" className="prop-chat-solid" disabled={채팅막힘}
+                    style={채팅버튼스타일} onClick={채팅클릭}>
                     채팅하기
                   </button>
                 </div>
