@@ -11,14 +11,23 @@ import type { NextRequest } from "next/server";
  *
  * 테스트는 계속해야 하니(10/12까지 안정화 기간) ?access=코드 로 한 번 들어오면
  * 쿠키로 30일간 기억해 그 다음부터는 그냥 들어간다.
+ *
+ * beautywork.co.kr(실제 도메인)만 막는다 — vercel.app 기본 도메인은 내가
+ * 작업 확인할 때 계속 써야 한다("beauty-work.vercel.app 이건 막으면 안되지").
  */
 const BYPASS_COOKIE = "bw_preview";
 const SECRET = process.env.PREVIEW_ACCESS_CODE || "beautywork1012";
+const GATED_HOST = "beautywork.co.kr";
 
 export function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
   if (pathname.startsWith("/api/cron")) {
+    return NextResponse.next();
+  }
+
+  const host = (req.headers.get("host") || "").toLowerCase();
+  if (!host.endsWith(GATED_HOST)) {
     return NextResponse.next();
   }
 
