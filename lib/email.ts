@@ -589,7 +589,99 @@ export async function sendJobRecommendationEmail(
       </div>
     `,
   });
-}export async function sendNewsletterEmail(to: string, subject: string, html: string) {
+}
+
+/** 인재 추천 1단계 — 기업에 바로 알리지 않고 구직자에게 먼저 관심 여부를 묻는다
+ *  ("관심여부만 묻는 예 아니오로 정리하자"). 이메일 링크를 누르는 순간 바로
+ *  응답을 기록하면 메일 프로그램의 링크 사전 스캔(프리페치)에 걸려 누르지도
+ *  않았는데 응답이 남을 수 있다 — 버튼은 실제로 눌러야 기록되는 페이지로만
+ *  안내한다. */
+export async function sendTalentMatchAskEmail(
+  to: string, name: string, companyName: string, jobTitle: string, respondUrl: string
+) {
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return 보내기({
+    from: FROM,
+    to,
+    subject: `[뷰티워크] ${esc(companyName)}에서 관심 있을 만한 공고가 있어요`,
+    html: `
+      <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+          <tr><td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
+              <tr>
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 32px 28px;">
+                  <p style="font-size:19px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">관심 있으세요?</p>
+                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">${esc(name)} 님, ${esc(companyName)}의 「${esc(jobTitle)}」 포지션이 프로필과 잘 맞아요.<br/>관심 표시하시면 그 기업에게만 알려드리고, 이후 연락은 기업이 제안으로 보내드려요.</p>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
+                      <a href="${respondUrl}" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">관심 여부 알려주기</a>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </div>
+    `,
+  });
+}
+
+/** 인재 추천 2단계 — 구직자가 관심을 표시했을 때만 기업에 간다(프리미엄 전용). */
+export async function sendTalentRecommendedEmail(
+  to: string, companyName: string, userName: string, jobTitle: string, jobPostingId: string
+) {
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return 보내기({
+    from: FROM,
+    to,
+    subject: "[뷰티워크] 관심 보인 인재가 있어요",
+    html: `
+      <div style="background:#ffffff;padding:24px 0;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+          <tr><td align="center">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #ececec;">
+              <tr>
+                <td align="center" bgcolor="#f7f7f8" style="padding:24px 32px;border-bottom:1px solid #ececec;">
+                  <img src="${LOGO_URL}" alt="뷰티워크" height="30" style="display:block;border:0;height:30px;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:32px 32px 28px;">
+                  <p style="font-size:19px;font-weight:700;color:#2c2c2a;text-align:center;margin:0 0 8px;">관심 보인 인재가 있어요</p>
+                  <p style="font-size:15px;color:#5f5e5a;text-align:center;line-height:1.7;margin:0 0 24px;">「${esc(jobTitle)}」에 <b>${esc(userName)}</b> 님이 관심을 보였어요.<br/>인재풀에서 확인하고 제안해 보세요.</p>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+                    <tr><td align="center" bgcolor="#582681" style="border-radius:8px;">
+                      <a href="${SITE_URL}/company/dashboard/talent" style="display:inline-block;padding:12px 30px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;">인재풀에서 확인하기</a>
+                    </td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="#f7f7f8" style="padding:18px 32px;">
+                  <p style="font-size:12px;color:#888780;margin:0;">뷰티워크 · <a href="${SITE_URL}" style="color:#888780;text-decoration:none;">${SITE_HOST}</a> &nbsp;·&nbsp; © 2026 뷰티워크</p>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+      </div>
+    `,
+  });
+}
+
+export async function sendNewsletterEmail(to: string, subject: string, html: string) {
   return 보내기({
     from: FROM,
     to,

@@ -45,11 +45,15 @@ export default function NotificationBell({ ownerType }: { ownerType: "user" | "c
     불러오기();
     if (ownerType === "company") {
       if (n.related_type === "application") router.push("/company/dashboard/applicants");
+      // 관심 보인 인재 — 그 사람 프로필로 바로.
+      else if (n.related_type === "user" && n.related_id) router.push(`/company/dashboard/talent/${n.related_id}`);
       return;
     }
     // 제안은 공고로, 지원 관련은 지원현황으로 — 알림을 누른 사람이 기대하는 자리.
     if (n.related_type === "job_posting" && n.related_id) router.push(`/jobs/${n.related_id}`);
     else if (n.related_type === "application") router.push("/profile/applied");
+    // 인재 추천 관심 확인 — 로그인돼 있으니 토큰 없이 그 페이지로.
+    else if (n.related_type === "talent_recommendation" && n.related_id) router.push(`/talent-recommendations/${n.related_id}`);
   };
 
   const 모두읽음 = async () => {

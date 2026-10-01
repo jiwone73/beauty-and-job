@@ -21,7 +21,7 @@ export type 알림열쇠 = (typeof 알림칸)[number]["key"];
  *  문서(TALENT_RECOMMEND)로 분리했다. */
 export const 동의칸 = [
   { key: "MARKETING",        title: "이메일",        desc: "뷰티워크의 이벤트·혜택·공지 소식을 메일로 보내드려요." },
-  { key: "TALENT_RECOMMEND", title: "추천 인재 메일", desc: "등록하신 공고에 맞는 인재를 메일로 추천해드려요." },
+  { key: "TALENT_RECOMMEND", title: "추천 인재 메일", desc: "등록하신 공고에 관심 표시한 인재만 메일로 추천해드려요." },
 ] as const;
 
 export type 동의열쇠 = (typeof 동의칸)[number]["key"];

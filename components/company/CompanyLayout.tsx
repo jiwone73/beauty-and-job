@@ -129,6 +129,8 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
     loadNotifs();
     if (n.related_type === "application") router.push(`${base}/applicants`);
     else if (n.related_type === "proposal") router.push(`${base}/proposals`);
+    // 관심 보인 인재 — 그 사람 프로필로 바로("추천 인재 메일"의 알림 쪽).
+    else if (n.related_type === "user" && n.related_id) router.push(`${base}/talent/${n.related_id}`);
   };
 
   const markAllRead = async () => {
