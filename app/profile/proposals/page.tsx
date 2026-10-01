@@ -382,22 +382,26 @@ export default function ProposalsPage() {
                               </div>
                             </div>
 
-                            <div className="prop-card2-recent">
-                              <span className="prop-card2-recent-label">
-                                최근 대화
-                                {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
-                                    시간하고 누가 보냈는지 적어줘"). */}
-                                {p.last_message_at && (
-                                  <span className="prop-card2-recent-meta">
-                                    ({때(p.last_message_at)} ㅣ {p.last_sender === "USER" ? "나" : (p.brand_name || p.company_name)})
-                                  </span>
-                                )}
-                              </span>
-                              <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
-                                <span>{p.last_message_body || "아직 나눈 대화가 없어요"}</span>
-                                <ChevronRight size={16} />
-                              </button>
-                            </div>
+                            {/* 아직 메시지가 없으면 "최근 대화" 칸 자체를 안 보인다 — 실제
+                                대화가 없는데 대화 미리보기처럼 보이면 안 된다. */}
+                            {p.last_message_body && (
+                              <div className="prop-card2-recent">
+                                <span className="prop-card2-recent-label">
+                                  최근 대화
+                                  {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
+                                      시간하고 누가 보냈는지 적어줘"). */}
+                                  {p.last_message_at && (
+                                    <span className="prop-card2-recent-meta">
+                                      ({때(p.last_message_at)} ㅣ {p.last_sender === "USER" ? "나" : (p.brand_name || p.company_name)})
+                                    </span>
+                                  )}
+                                </span>
+                                <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
+                                  <span>{p.last_message_body}</span>
+                                  <ChevronRight size={16} />
+                                </button>
+                              </div>
+                            )}
 
                             <div className="prop-card2-acts">
                               <button type="button" className="prop-chat-solid" onClick={() => set대화(p)}>

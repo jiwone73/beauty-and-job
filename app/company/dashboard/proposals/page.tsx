@@ -651,22 +651,26 @@ export default function CompanyProposalsPage() {
                     ))}
                   </div>
                 </div>
-                <div className="prop-card2-recent">
-                  <span className="prop-card2-recent-label">
-                    최근 대화
-                    {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
-                        시간하고 누가 보냈는지 적어줘"). */}
-                    {p.lastMessageAt && (
-                      <span className="prop-card2-recent-meta">
-                        ({때(p.lastMessageAt)} ㅣ {p.lastSender === "USER" ? p.userName : "나"})
-                      </span>
-                    )}
-                  </span>
-                  <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
-                    <span>{p.lastMessageBody || "아직 나눈 대화가 없어요"}</span>
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
+                {/* 아직 메시지가 없으면 "최근 대화" 칸 자체를 안 보인다 — 실제
+                    대화가 없는데 대화 미리보기처럼 보이면 안 된다. */}
+                {p.lastMessageBody && (
+                  <div className="prop-card2-recent">
+                    <span className="prop-card2-recent-label">
+                      최근 대화
+                      {/* 언제, 누가 보냈는지도 같이("최근대화 옆에 () 넣어주고
+                          시간하고 누가 보냈는지 적어줘"). */}
+                      {p.lastMessageAt && (
+                        <span className="prop-card2-recent-meta">
+                          ({때(p.lastMessageAt)} ㅣ {p.lastSender === "USER" ? p.userName : "나"})
+                        </span>
+                      )}
+                    </span>
+                    <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
+                      <span>{p.lastMessageBody}</span>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
                 {/* 거두는 일(제안 취소)은 답이 없는 줄에서만 하는 일이라 이미
                     수락한 뒤인 진행중에는 채팅하기만 있다. */}
                 <div className="prop-card2-acts">
