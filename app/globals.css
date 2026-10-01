@@ -16341,6 +16341,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 @media (max-width: 768px) {
   .co-pane-term .co-jc-badge.unexposed { color: #c0504d; }
   .co-pane-exposure-note { display: none; }
+  /* 조건 줄을 뺀 대신 공고명을 누르면 미리보기 모달이 뜬다
+     ("공고제목 누르면 미리보기 모달", 2026-10-01). */
+  .co-pane-title-tap { cursor: pointer; }
 }
 
 /* 공고 조건 한 줄 — 근무지·경력·고용형태·인원. 여러 공고를 가려내는 값이다. */

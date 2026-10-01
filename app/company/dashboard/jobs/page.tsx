@@ -14,6 +14,8 @@ import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/
 import ApplicantCard from "@/components/company/ApplicantCard";
 import ApplicantTableRow from "@/components/company/ApplicantTableRow";
 import ApplicationModal from "@/components/company/ApplicationModal";
+import JobDetailView from "@/components/jobs/JobDetailView";
+import { 공고모양 } from "@/lib/jobShape";
 import type { CompanyJob, JobStatus, CompanyApplication } from "@/lib/types/company";
 import { genderLabel, calcAge } from "@/lib/memberFormat";
 
@@ -128,6 +130,14 @@ function CompanyJobsContent() {
   const [접은공고, set접은공고] = useState<string[]>([]);
   const [지원서, set지원서] = useState<string | null>(null);
   const [공고지원자, set공고지원자] = useState<Record<string, CompanyApplication[]>>({});
+  // 모바일은 조건 줄을 아예 뺐다 — 공고명을 누르면 그 자리에서 전체 내용을
+  // 미리보기 모달로 본다(2026-10-01, "공고제목 누르면 미리보기 모달").
+  const [미리보기, set미리보기] = useState<any>(null);
+  const openPreview = (jobId: string) => {
+    companyJobsApi.preview(jobId)
+      .then((res) => set미리보기(공고모양(res.data)))
+      .catch(() => alert("임시저장 공고는 미리보기를 볼 수 없어요."));
+  };
 
   // 한 번에 받아 공고별로 나눈다 — 카드마다 부르면 공고 수만큼 왕복한다.
   useEffect(() => {
@@ -407,8 +417,13 @@ function CompanyJobsContent() {
                 </span>
               </div>
               {/* 공고명은 길어도 2줄까지만("공고명 2줄 ... 제한", co-pane-title CSS
-                  의 line-clamp). */}
-              <h2 className="co-pane-title">{job.title}</h2>
+                  의 line-clamp). 모바일은 조건 줄을 뺀 대신 공고명을 누르면
+                  미리보기 모달로 전체 내용을 본다. PC는 조건 줄이 그대로 있어
+                  누를 일이 없다. */}
+              <h2 className={`co-pane-title${isMobile ? " co-pane-title-tap" : ""}`}
+                onClick={isMobile ? () => openPreview(job.id) : undefined}>
+                {job.title}
+              </h2>
               {노출종료 && (
                 <p className="co-pane-exposure-note">
                   무료 게재기간이 끝나 지금은 노출되지 않아요. 재등록하면 다시 노출돼요.
@@ -418,7 +433,11 @@ function CompanyJobsContent() {
           </div>
 
           {/* 조건 줄 — 공고 미리보기의 모집부문 표와 같은 차례. 고치고 마감하는
-              길은 위 두 줄(진행중·공고명)로 옮겼다. */}
+              길은 위 두 줄(진행중·공고명)로 옮겼다.
+              모바일은 아예 뺀다 — "공고낸 사람이 보는거니 직군, 경력 다
+              지우자"(2026-10-01): 본인이 낸 공고라 직군·조건을 또 안 보여줘도
+              된다. PC는 그대로 둔다. */}
+          {!isMobile && (
           <div className="co-pane-pos">
             <div style={{ minWidth: 0 }}>
               {(() => {
@@ -428,14 +447,7 @@ function CompanyJobsContent() {
                 // 값이 뜨는 게 아니라 왜 뜨는지부터 헷갈렸다("무관은 무슨 무관이야?").
                 // 근무시간은 이 줄에서 뺀다("근무시간은 빼자") — 상세는 위에서 본다.
                 const isOffice = (job as any).job_type === "OFFICE";
-                // 모바일은 직군·경력만 — "직군은 헤어스텝하고 경력만"(2026-10-01).
-                // PC는 기존 그대로(인원·근무지·고용형태·성별·학력·급여까지).
-                const 줄들 = isMobile
-                  ? (부문.length > 0
-                      ? 부문.map((p: any) => [p.category || p.group, p.career].filter(Boolean).join(" · "))
-                      : [[((job as any).categories || []).join(" · "), 경력글((job as any).experience_level)]
-                          .filter(Boolean).join(" · ")])
-                  : 부문.length > 0
+                const 줄들 = 부문.length > 0
                   ? 부문.map((p: any) => [
                       p.category || p.group,
                       p.headcount ? `${String(p.headcount).replace(/명$/, "")}명` : null,
@@ -458,6 +470,7 @@ function CompanyJobsContent() {
               })()}
             </div>
           </div>
+          )}
         </div>
 
         <div className="co-pane-list">
@@ -688,6 +701,20 @@ function CompanyJobsContent() {
       {지원서 && (
         <ApplicationModal applicationId={지원서} onClose={() => set지원서(null)}
           onStatus={(id, st) => 지원자바꾸기(id, { status: st })} />
+      )}
+
+      {미리보기 && (
+        <div className="jobpost-preview-overlay" onClick={() => set미리보기(null)}>
+          <div className="jobpost-preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="jobpost-preview-head">
+              <span>공고 미리보기</span>
+              <button onClick={() => set미리보기(null)} aria-label="닫기">×</button>
+            </div>
+            <div className="jobpost-preview-scope">
+              <JobDetailView job={미리보기} previewMode />
+            </div>
+          </div>
+        </div>
       )}
     </CompanyLayout>
   );

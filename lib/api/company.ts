@@ -35,6 +35,8 @@ export const companyJobsApi = {
   // 재게시
   resume: (id: string) =>
     api.patch<ApiResponse<CompanyJob>>(`/api/company/jobs/${id}`, { status: "ACTIVE" }),
+  // 미리보기(공고·지원자 관리의 모바일 공고명 탭) — 공개 상세와 같은 모양, 조회수는 안 올림.
+  preview: (id: string) => api.get<ApiResponse<any>>(`/api/company/jobs/${id}/preview`),
 };
 
 // === 지원자 ===
