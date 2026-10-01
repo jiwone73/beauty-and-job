@@ -670,9 +670,15 @@ export default function CompanyProposalsPage() {
                 {/* 거두는 일(제안 취소)은 답이 없는 줄에서만 하는 일이라 이미
                     수락한 뒤인 진행중에는 채팅하기만 있다. */}
                 <div className="prop-card2-acts">
-                  <button type="button" className="prop-chat-solid" disabled={!대화열림(p) || !채팅가능}
-                    title={!채팅가능 ? "채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요." : undefined}
-                    onClick={() => set대화(p)}>
+                  {/* 플랜 잠금은 disabled 로만 꺼두면 색이 그대로라 눌러도 반응이
+                      없는 것처럼 보인다("채팅하기 버튼눌렀는데 채팅창이 안떠") —
+                      흐리게 보이게 하고, 눌렀을 때는 안내를 띄운다. */}
+                  <button type="button" className="prop-chat-solid" disabled={!대화열림(p)}
+                    style={!채팅가능 ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
+                    onClick={() => {
+                      if (!채팅가능) { alert("채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요."); return; }
+                      set대화(p);
+                    }}>
                     채팅하기
                   </button>
                 </div>
