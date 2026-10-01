@@ -676,7 +676,12 @@ export default function CompanyProposalsPage() {
                   <button type="button" className="prop-chat-solid" disabled={!대화열림(p)}
                     style={!채팅가능 ? { opacity: 0.5, cursor: "not-allowed" } : undefined}
                     onClick={() => {
-                      if (!채팅가능) { alert("채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요."); return; }
+                      if (!채팅가능) {
+                        if (confirm("채팅은 스탠다드 이상 유료 상품에서 쓸 수 있어요. 상품안내 페이지로 가시겠어요?")) {
+                          router.push("/company/plans");
+                        }
+                        return;
+                      }
                       set대화(p);
                     }}>
                     채팅하기
