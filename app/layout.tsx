@@ -94,7 +94,7 @@ export default function RootLayout({
               name: "뷰티워크",
               url: "https://beautywork.co.kr",
               logo: "https://beautywork.co.kr/icons/icon-512.png",
-              sameAs: ["https://www.instagram.com/beautywork.kr/"],
+              sameAs: ["https://www.instagram.com/beautywork_kr/", "https://blog.naver.com/beautywork"],
             }),
           }}
         />

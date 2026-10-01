@@ -607,7 +607,7 @@ function Footer() {
                 자기 계정 링크에 브랜드 로고를 쓰는 건 통상적인 용도라
                 저작권 문제가 없지만, 참고로 받은 스톡 이미지(워터마크 있는
                 파일)는 그대로 쓰지 않고 새로 그렸다. */}
-            <a href="https://www.instagram.com/beautywork.kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ display: "flex" }}>
+            <a href="https://www.instagram.com/beautywork_kr/" target="_blank" rel="noreferrer" aria-label="뷰티워크 인스타그램" style={{ display: "flex" }}>
               <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -625,16 +625,14 @@ function Footer() {
                 <circle cx="17" cy="7" r="1" fill="#fff" />
               </svg>
             </a>
-            {/* 네이버 블로그 — 계정 URL이 아직 없어 아이콘만 먼저 둔다.
-                주소가 정해지면 a 태그(href·target·aria-label)로 바꾼다. */}
-            <span aria-hidden style={{ display: "flex" }}>
+            <a href="https://blog.naver.com/beautywork" target="_blank" rel="noreferrer" aria-label="뷰티워크 블로그" style={{ display: "flex" }}>
               <svg width="26" height="26" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <rect x="1" y="2" width="22" height="14" rx="7" fill="#4CD137" />
                 <polygon points="9,16 15,16 12,21" fill="#4CD137" />
                 <text x="12" y="11.5" textAnchor="middle" fontSize="7.5" fontWeight="700"
                   fontFamily="Arial, sans-serif" fill="#fff">blog</text>
               </svg>
-            </span>
+            </a>
           </div>
         </div>
       </div>
