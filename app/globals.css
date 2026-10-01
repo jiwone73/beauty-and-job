@@ -2622,8 +2622,11 @@ input[type="range"].career-slider::-moz-range-thumb {
    공고가 손바닥만 하게 남았다. 그래서 모바일에서는 화면을 꽉 채우고 여백을 걷는다. */
 .jobpost-preview-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.5); display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 40px 20px; }
 .jobpost-preview-modal { background: #fff; border-radius: 12px; width: 100%; max-width: 1120px; display: flex; flex-direction: column; }
-.jobpost-preview-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 20px; border-bottom: 1px solid #eee; font-size: 16px; font-weight: 400; }
+.jobpost-preview-head { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid #eee; font-size: 16px; font-weight: 400; }
+.jobpost-preview-head > span:first-child { flex: 1; min-width: 0; }
 .jobpost-preview-head button { background: none; border: none; font-size: 22px; cursor: pointer; color: #888; line-height: 1; padding: 0 4px; }
+.jobpost-preview-head-tools { display: flex; gap: 8px; flex-shrink: 0; }
+.jobpost-preview-head-tools .admin-secondary-btn { font-size: 13.5px; padding: 6px 12px; }
 .jobpost-preview-foot { display: flex; gap: 8px; padding: 16px 20px; border-top: 1px solid #eee; justify-content: flex-end; }
 /* 모집부문 표. 좁은 화면에서는 칸 사이 여백이 20px 씩 붙어 일곱 열이 화면을 넘어가고,
    가로로 밀어야 급여가 보였다. 여백만 줄여 한눈에 들어오게 한다. */
@@ -2688,6 +2691,8 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .jobpost-preview-modal { border-radius: 0; min-height: 100vh; min-height: 100dvh; max-width: none; }
   .jobpost-preview-head { padding: 12px 14px; font-size: 15px; }
   .jobpost-preview-head-sub { display: none; }
+  .jobpost-preview-head-tools { gap: 6px; }
+  .jobpost-preview-head-tools .admin-secondary-btn { font-size: 12.5px; padding: 5px 8px; white-space: nowrap; }
   .jobpost-preview-foot { padding: 10px 12px; gap: 6px; }
   /* 버튼 셋이 한 줄에 들어가도록 — 글자가 접히면 바닥이 두 줄로 늘어난다. */
   /* 폭을 셋이 나눠 가지면 글자가 왼쪽에 몰린다. 칸 가운데로 모은다. */
@@ -14357,6 +14362,15 @@ button,
 .co-quota.out { color: #e74c3c; }
 .co-quota a { color: var(--color-primary); text-decoration: none; font-weight: 600; }
 .co-quota a:hover { text-decoration: underline; }
+/* 무료 칸이 다 찼을 때는 그냥 지나칠 문구가 아니라 등록을 막는 상황이라
+   팝업으로 띄운다("안내를 할거면 팝업으로 해야지"). */
+.co-quota-popup-overlay { position: fixed; inset: 0; z-index: 1300; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.co-quota-popup { background: #fff; border-radius: 14px; width: 100%; max-width: 420px; padding: 24px; }
+.co-quota-popup p { margin: 0 0 12px; font-size: 14.5px; color: #555; line-height: 1.55; }
+.co-quota-popup p:last-of-type { margin-bottom: 20px; }
+.co-quota-popup a { color: var(--color-primary); text-decoration: none; font-weight: 600; }
+.co-quota-popup a:hover { text-decoration: underline; }
+.co-quota-popup button { width: 100%; border: none; background: var(--color-primary); color: #fff; border-radius: 8px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .co-bill-go { font-size: 14px; color: #555; text-decoration: none; white-space: nowrap; }
 .co-bill-go:hover { color: var(--color-primary); }
 /* 키핑 — 세워 둔 기간과, 지금 세울 수 있다는 안내. 이용권 칸 바로 밑이라야
@@ -17949,7 +17963,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   background: #f2f2f4; display: flex; align-items: center; justify-content: center;
   font-size: 14px; font-weight: 700; color: var(--color-primary); }
 .co-top-ava img { width: 100%; height: 100%; object-fit: cover; }
+.co-top-metext { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
 .co-top-mename { font-size: 14px; color: #555; max-width: 120px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+.co-top-type { font-size: 11px; color: #9a9aa3; margin-top: 1px; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap; }
 .co-top-mewrap { position: relative; }
 .co-top-me { background: none; border: none; padding: 0; cursor: pointer; }
@@ -17961,6 +17978,16 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   padding: 11px 14px; background: none; border: none; font-size: 14px; color: #555;
   cursor: pointer; white-space: nowrap; }
 .co-top-memenu button:hover { background: #f7f7f8; }
+/* 모바일(768px 아래)로 안 떨어지고 데스크톱 레이아웃을 그대로 쓰는 768~1080px
+   구간에서 로고+메뉴+오른쪽 버튼들 폭 합이 화면보다 넓어 옆으로 잘렸다
+   ("좁은 창 잘림 문제"). 그 구간만 여백·글자를 좁혀 한 줄에 들어가게 한다. */
+@media (min-width: 769px) and (max-width: 1080px) {
+  .header-inner { padding: 0 12px; gap: 12px; }
+  .co-top-nav { gap: 10px; margin-left: 4px; }
+  .co-top-nav a { font-size: 14px !important; }
+  .co-top-right { gap: 6px; }
+  .co-top-post { padding: 0 9px; font-size: 13px; }
+}
 /* 왼쪽 사이드가 빠지면서 판이 넓어졌다. 좁게 짜인 화면(공고 관리·인재풀·프로필)이
    그대로 왼쪽에 붙어 오른쪽이 텅 비어 보여, 제목과 본문을 한 칸에 묶어 가운데에 놓는다.
    칸 너비는 본문이 필요한 만큼이되 판을 넘지 않는다(fit-content) — 그래서 넓은 화면은

@@ -20,6 +20,9 @@ function CompanyJobNewForm() {
   const [고르기, set고르기] = useState(!editId && !copyId);
   /** 무료 칸 상태. 유료 기간 안이면 null 이라 아무것도 안 뜬다. */
   const [무료, set무료] = useState<{ 전부: number; 남은: number } | null>(null);
+  // 무료 칸이 다 찬 경우는 그냥 지나칠 문구가 아니라 등록을 막는 상황이라 팝업으로
+  // 알린다("안내를 할거면 팝업으로 해야지").
+  const [무료소진팝업, set무료소진팝업] = useState(false);
 
   useEffect(() => {
     companyMeApi.get()
@@ -32,7 +35,9 @@ function CompanyJobNewForm() {
       .then((r) => r.json())
       .then((r) => {
         if (!r?.success) return;
-        set무료(r.data?.plan ? null : { 전부: r.data?.무료건수 ?? 0, 남은: r.data?.무료남은것 ?? 0 });
+        const 상태 = r.data?.plan ? null : { 전부: r.data?.무료건수 ?? 0, 남은: r.data?.무료남은것 ?? 0 };
+        set무료(상태);
+        if (상태 && 상태.남은 <= 0) set무료소진팝업(true);
       })
       .catch(() => {});
   }, []);
@@ -110,24 +115,53 @@ function CompanyJobNewForm() {
 
   return (
     <CompanyLayout activePage="jobs-new">
-        {고르기 && (
+        {/* 무료 소진 팝업이 뜨는 동안은 뒤로 미룬다 — 두 팝업이 한꺼번에 겹치면
+            어느 쪽도 제대로 안 읽힌다. */}
+        {고르기 && !무료소진팝업 && (
           <StartJobModal
             onClose={() => set고르기(false)}
             onPick={(href) => { set고르기(false); router.push(href); }}
           />
         )}
-        {무료 && (
-          <p className={`co-quota${무료.남은 <= 0 ? " out" : ""}`}>
-            {무료.남은 > 0
-              ? <>무료로 공고 <b>{무료.전부}건</b>을 올리실 수 있어요 · <b>{스타트.게재일}일 노출</b>되고, 다시 올리시면 또 {스타트.게재일}일입니다</>
-              : <>
-                  {/* 여기서 막힌 사람에게 필요한 것은 공고를 더 거는 일이다.
-                      요금제 넉 장을 다시 비교하게 하지 않고 그 일을 하는
-                      상품 하나로 바로 데려간다. */}
-                  이미 공고를 올려 두셨습니다. 내리시면 새로 올리실 수 있어요.{" "}
-                  <Link href="/company/dashboard/plans/light">{플랜.LIGHT.name} 보기 ›</Link>
-                </>}
+        {무료 && 무료.남은 > 0 && (
+          // "올린다·내린다" 대신 등록·마감·노출로 — 다른 데서 쓰는 말과 맞춘다
+          // ("올리고 내리고 이런말 쓰지 말고"). 무료는 기간이 끝나면 재등록해야
+          // 하고, 유료는 그럴 필요가 없다는 차이를 분명히 한다
+          // ("유료상품은 이용기간내에 제한없이 재등록 없이 이용 가능하다라고 해야지").
+          // 말투는 합니다체가 아니라 평소대로 해요체로 — 격식체를 쓰라는 게 아니라
+          // 등록·재등록 같은 업무용어를 쓰라는 뜻이었다("xx하기는 맞는표현이야.
+          // 격식체를 쓰라는게 아니라 업무용어를 쓰라는거야", "너무 부자연스러워").
+          <p className="co-quota">
+            무료(스타트) 상품은 공고 <b>{무료.전부}건</b>을 <b>{스타트.게재일}일</b> 동안 노출할 수 있어요.{" "}
+            {스타트.게재일}일이 지나면 재등록해야 다시 노출되고, 재등록 없이 계속 노출하시려면{" "}
+            <Link href="/company/dashboard/plans/light">유료 상품</Link>을 확인해 보세요.
           </p>
+        )}
+        {무료소진팝업 && 무료 && (
+          <div className="co-quota-popup-overlay" onClick={() => set무료소진팝업(false)}>
+            <div className="co-quota-popup" onClick={(e) => e.stopPropagation()}>
+              {/* 여기서 막힌 사람에게 필요한 것은 공고를 더 거는 일이다. 요금제 넉 장을
+                  다시 비교하게 하지 않고 그 일을 하는 상품 하나로 바로 데려간다.
+                  "문구가 너무 이상해. 공고 노출중이 아니잖아" — 막힌 이유(무료는
+                  게재기간이 있어 다시 등록해야 함)를 정확히 설명한다. 마감·재등록은
+                  시스템이 하는 일이라 "내리시면 돼요"처럼 회원이 손으로 뭘 하라는
+                  말은 넣지 않는다("내리고 자동만료 하는건 회원이 할일이 아니야.
+                  시스템이 할일이지"). 그냥 지나칠 문구가 아니라 등록을 막는
+                  상황이라 팝업으로 띄운다("안내를 할거면 팝업으로 해야지").
+                  말투는 합니다체가 아니라 해요체로 — 격식체가 아니라 업무용어가
+                  핵심이었다("너무 부자연스러워"). */}
+              <p>
+                무료 상품은 게재기간 {스타트.게재일}일이 지나면 자동으로 마감돼요. 이미{" "}
+                {무료.전부}건을 등록해 두셔서 지금은 새로 등록 못 하고, 마감된 뒤 재등록하시면 다시{" "}
+                {스타트.게재일}일 노출됩니다.
+              </p>
+              <p>
+                재등록 없이 계속 이용하시려면{" "}
+                <Link href="/company/dashboard/plans/light">게재기간 무제한인 {플랜.LIGHT.name}</Link>도 확인해 보세요.
+              </p>
+              <button type="button" onClick={() => set무료소진팝업(false)}>확인</button>
+            </div>
+          </div>
         )}
         <JobPostForm
           mode="company"

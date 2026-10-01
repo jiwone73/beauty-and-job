@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef, useCallback, type ChangeE
 import { createPortal } from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
 import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
-import { ChevronLeft, ChevronDown, ChevronRight, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Bookmark, Crop, MapPinPlus, X } from "lucide-react";
+import { ChevronLeft, ChevronDown, ChevronRight, Trash2, Upload, Eye, Save, Briefcase, Building2, Clock, Users, Tag, GraduationCap, Settings, Send, ImagePlus, Wand2, Crop, MapPinPlus, X } from "lucide-react";
 import { shortRegion } from "@/lib/regionShort";
 import JobDetailView from "@/components/jobs/JobDetailView";
 import { 공고모양 } from "@/lib/jobShape";
@@ -4496,29 +4496,27 @@ export default function JobPostForm({
             <div className="jobpost-preview-head">
               {/* 좁은 화면에서는 괄호 안 설명을 감춘다. 두 줄로 접히면 그만큼 정작 봐야 할
                   공고가 밀려난다. 무엇을 보는 화면인지는 "공고 미리보기" 로 이미 통한다. */}
-              <span>공고 미리보기<span className="jobpost-preview-head-sub"> (구직자에게 보이는 실제 화면)</span></span>
+              <span>공고 미리보기</span>
+              {/* 인쇄·다운로드는 문서를 "가져가는" 동작이라 페이지 상단이 자연스럽고,
+                  등록은 이 화면에서 하는 "일"이라 하단에 남긴다
+                  ("보통 인쇄하고 다운로드는 페이지 상단에 있고 공고등록은
+                  페이지 하단에 있는게 일반적이지"). */}
+              <span className="jobpost-preview-head-tools">
+                <button type="button" className="admin-secondary-btn" onClick={handlePrint}>인쇄</button>
+                <button type="button" className="admin-secondary-btn" onClick={handleDownloadPdf}>{isDownloading ? "저장 중..." : "PDF 다운로드"}</button>
+              </span>
               <button onClick={() => setShowPreview(false)} aria-label="닫기">×</button>
             </div>
             <div className="jobpost-preview-scope">
-              <JobDetailView ref={previewRef} job={previewJob} previewMode
-                asideAction={
-                  <>
-                    <button className="job-detail-apply-btn" disabled style={{ opacity: 0.7, cursor: "default" }}>
-                      지원하기
-                    </button>
-                    {/* 구직자 화면에 있는 버튼이라 미리보기에도 있어야 한다. 누를 일은 없으니 꺼 둔다. */}
-                    <button className="job-detail-aside-bookmark" disabled style={{ opacity: 0.7, cursor: "default" }}>
-                      <Bookmark size={16} />
-                      스크랩
-                    </button>
-                  </>
-                }
-              />
+              {/* 지원하기·스크랩은 눌러도 아무 일도 안 나는 죽은 버튼이라 오히려
+                  혼동을 준다("지원하기 스크랩버튼은 안보이게 해줘") — 뺀다.
+                  제목만으로 이미 미리보기라는 게 통해 괄호 설명도 없앴다. */}
+              <JobDetailView ref={previewRef} job={previewJob} previewMode />
             </div>
             <div className="jobpost-preview-foot">
-              <button className="admin-secondary-btn" onClick={handlePrint}>인쇄</button>
-              <button className="admin-secondary-btn" onClick={handleDownloadPdf}>{isDownloading ? "저장 중..." : "PDF 다운로드"}</button>
-              <button className="company-primary-btn" onClick={() => { setShowPreview(false); handleSubmit("publish"); }}>이대로 등록</button>
+              {/* "이대로 등록"은 실제 사이트 어디에도 없는 말이었다("실제 사이트에
+                  이런단어 안써") — 본 폼의 등록 버튼과 같은 말을 그대로 쓴다. */}
+              <button className="company-primary-btn" onClick={() => { setShowPreview(false); handleSubmit("publish"); }}>{editId ? "공고 저장하기" : "공고 등록하기"}</button>
             </div>
           </div>
         </div>

@@ -484,7 +484,13 @@ export default function CompanyLayout({ children, activePage, title, 제목숨�
                 <span className="co-top-ava">
                   {logoImg ? <img src={logoImg} alt={companyInfo.name} /> : <span>{companyInfo.name?.[0] || "·"}</span>}
                 </span>
-                <span className="co-top-mename">{companyInfo.name || "내 매장"}</span>
+                {/* PC 헤더에도 매장/오피스 구분을 — 모바일(co-m-type)엔 있는데
+                    여기만 빠져 있었다("이게 매장인지 오피스인지 페이지에서
+                    구분이 안가네"). */}
+                <span className="co-top-metext">
+                  <span className="co-top-mename">{companyInfo.name || "내 매장"}</span>
+                  {companyInfo.category && <span className="co-top-type">{companyInfo.category}</span>}
+                </span>
               </button>
               {meMenuOpen && (
                 <>
