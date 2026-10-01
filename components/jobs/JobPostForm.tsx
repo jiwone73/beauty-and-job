@@ -257,11 +257,7 @@ export default function JobPostForm({
     setHeaderSlot(document.getElementById("co-m-header-slot"));
   }, [isMobile]);
 
-  // 기업설정에 등록한 커버 이미지 — 신규 공고의 상단 이미지 기본값으로 한 번만 채운다.
-  //   여기서 지우거나 바꿔도 기업정보의 커버는 건드리지 않는다(공고 단위로만 저장).
-  const [coverImages, setCoverImages] = useState<string[]>([]);
   const [companyProfile, setCompanyProfile] = useState<any>(null); // 기업정보 페이지 값(미리보기·공고 하단 기업정보에 사용)
-  const coverSeeded = useRef(false);
   useEffect(() => {
     if (mode !== "company") return;
     const token = localStorage.getItem("access_token");
@@ -271,15 +267,6 @@ export default function JobPostForm({
       .then((res) => {
         if (!res.success || !res.data) return;
         const c = res.data;
-        if (Array.isArray(c.cover_images)) {
-          const urls = c.cover_images.map((x: any) => x?.url).filter(Boolean);
-          setCoverImages(urls);
-          // 수정 모드(editId)는 저장된 공고 값이 들어오므로 기본값을 덮어쓰지 않는다.
-          if (!editId && !coverSeeded.current && urls.length) {
-            coverSeeded.current = true;
-            setBannerImages((prev) => (prev.length ? prev : urls.map((u: string) => ({ url: u, name: "기업 커버" }))));
-          }
-        }
         // 기업정보 페이지 값을 공고 하단 '기업정보'에 그대로 채운다(공고 상세 맨 아래에 표시됨).
         setCompanyProfile(c);
         if (!editId) {
@@ -3366,10 +3353,6 @@ export default function JobPostForm({
                     })} />
                 </div>
               )}
-              {coverImages.length > 0 && bannerImages.length === 0 && (
-                <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
-                  style={{ flexShrink: 0, border: "1px solid #efeff1", background: "#fff", color: "#555", borderRadius: 8, padding: "6px 10px", fontSize: 12.5, cursor: "pointer" }}>{L.section} 사진 불러오기</button>
-              )}
             </div>
             {bannerHint}
           </div>
@@ -3393,10 +3376,6 @@ export default function JobPostForm({
               <button type="button" onClick={() => setBannerGenOpen((v) => !v)} style={bannerBtn(bannerGenOpen)}>
                 {!isMobile && <Wand2 size={16} />}{isMobile ? "샘플" : "샘플 배너"}
               </button>
-              {mode === "company" && coverImages.length > 0 && bannerImages.length === 0 && (
-                <button type="button" onClick={() => setBannerImages(coverImages.map((u) => ({ url: u, name: "기업 커버" })))}
-                  style={{ ...bannerBtn(false), color: "#555" }}>{L.section} 사진 불러오기</button>
-              )}
             </div>
             <div style={{ marginTop: 8, background: "#fff", border: "1px solid #ececef", borderRadius: 12, padding: "16px", boxSizing: "border-box", display: "flex", flexDirection: "column", gap: 16 }}>
 
@@ -3425,8 +3404,9 @@ export default function JobPostForm({
                   ) : (
                     /* 어떤 사진을 올리는 칸인지 먼저 말한다. '이미지'만으로는 로고를 올리거나
                        공고 포스터를 올려 배너가 글자로 뒤덮인다. 넣는 법은 그 아래 작게.
-                       매장정보에 이미 사진이 있으면 그걸 그대로 쓰는 길도 알려 준다 —
-                       비워 두면 배너 없이 나가지, 매장정보 사진으로 대신 채워지지 않는다. */
+                       배너는 공고 단위로만 올린다 — 기업정보의 사진을 끌어다 쓰지 않는다
+                       ("채용공고 폼에 배너이미지를 올리는게 맞을듯 해, 불러오기 기능을
+                       삭제해줘": 그 사진은 애초에 설정 화면에서 입력할 길도 없었다). */
                     <div style={{ minHeight: 76, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, lineHeight: 1.5, textAlign: "center", padding: "0 8px" }}>
                       <div style={{ fontSize: 13.5, color: "#555" }}>
                         {isOffice ? "회사·사무실 홍보 사진" : "매장 내·외관 홍보 사진"}
@@ -3434,11 +3414,6 @@ export default function JobPostForm({
                       <div style={{ fontSize: 12, color: "#555" }}>
                         <b style={{ margin: "0 2px", fontWeight: 600 }}>드래그</b>하거나 <b style={{ margin: "0 2px", fontWeight: 600 }}>Ctrl+V</b>로 붙여넣어 주세요
                       </div>
-                      {mode === "company" && coverImages.length > 0 && (
-                        <div style={{ fontSize: 12, color: "#555" }}>
-                          {L.section}에 올린 사진을 그대로 쓰려면 위 <b style={{ fontWeight: 600 }}>{L.section} 사진 불러오기</b>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>

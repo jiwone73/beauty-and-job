@@ -9,16 +9,19 @@
  *     같은 기록이라 따로 둘 수 없다(끄면 철회 시각이 남아야 증빙이 된다).
  */
 export const 알림칸 = [
-  { key: "new_applicant",       title: "화면 알림" },
-  { key: "new_applicant_email", title: "이메일" },
+  { key: "new_applicant",       title: "화면 알림", desc: "대시보드 상단 알림창에 띄워드려요." },
+  { key: "new_applicant_email", title: "이메일",   desc: "등록하신 이메일로 지원 알림을 보내드려요." },
 ] as const;
 
 export type 알림열쇠 = (typeof 알림칸)[number]["key"];
 
-/** 광고성 정보 수신 동의 — terms.type 과 짝이다. */
+/** 광고성 정보 수신 동의 — terms.type 과 짝이다.
+ *  "추천 인재 메일"은 구직자용 "추천 채용공고" 동의 문서(RECOMMENDATION)를 잘못
+ *  재사용하고 있었다("3번은 구직자 페이지에 있어야 하는 내용아냐?") — 기업 전용
+ *  문서(TALENT_RECOMMEND)로 분리했다. */
 export const 동의칸 = [
-  { key: "MARKETING",      title: "이메일" },
-  { key: "RECOMMENDATION", title: "추천 인재 메일" },
+  { key: "MARKETING",        title: "이메일",        desc: "뷰티워크의 이벤트·혜택·공지 소식을 메일로 보내드려요." },
+  { key: "TALENT_RECOMMEND", title: "추천 인재 메일", desc: "등록하신 공고에 맞는 인재를 메일로 추천해드려요." },
 ] as const;
 
 export type 동의열쇠 = (typeof 동의칸)[number]["key"];
