@@ -15541,6 +15541,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-badge.soon { background: #fbf0f0; color: #c0504d; }
 .co-jc-badge.draft { background: #f4f4f6; color: #8a8a90; }
 .co-jc-badge.closed { background: #f4f4f6; color: #a0a0a6; }
+/* 마감(closed)·진행중(live)과는 다른 셋째 상태 — 회사가 손 댄 적 없는데 게재기간만
+   끝난 것. 손이 가야 하니 soon(마감임박)과 같은 계열이되 빨강과는 구분되는 색. */
+.co-jc-badge.unexposed { background: #fdf3e4; color: #b8720a; }
 /* 제목이 곧 공고를 여는 문이다 — 표에서는 줄 아무 데나 눌러야 열려 눌리는 곳이 안 보였다. */
 /* 공고 이름이 이 카드의 주인공이다 — 밑의 지원자 줄보다 확실히 커야 층이 선다. */
 .co-jc-title { display: block; background: none; border: none; padding: 0; font-family: inherit;
@@ -16297,6 +16300,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 화면 제목(.co-set-title)과 같은 크기 — 이 판의 주인이 무엇인지 한눈에. */
 /* 공고명은 이 판의 주인이다 — 한 줄 소개와 함께 진한 먹색으로 남는다. */
 .co-pane-title { margin: 4px 0 0; font-size: 16px; font-weight: 400; color: #555; line-height: 1.35; }
+/* "노출종료" 뱃지 바로 아래 — 왜 지원이 안 오는지, 뭘 하면 되는지를 짧게. */
+.co-pane-exposure-note { margin: 4px 0 0; font-size: 13px; color: #b8720a; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
 .co-pane-acts { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }

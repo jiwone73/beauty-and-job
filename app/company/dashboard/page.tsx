@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Briefcase, Plus, Inbox, Sparkles } from "lucide-react";
+import { 마감인가, 노출종료인가 } from "@/lib/jobClosed";
 
 interface Stats {
   active_jobs: number;
@@ -277,11 +278,17 @@ export default function CompanyDashboard() {
                       {(() => {
                         // 마감일 칸이 바로 옆에 언제까지인지 말해주니, 여기는 지금 상태만
                         // 짧게 말한다(채용공고 관리 목록과 같은 기준 — "상태가 필요할까?
-                        // 마감일하고 같은데").
-                        const dl = job.deadline ? Math.ceil((new Date(job.deadline).getTime() - Date.now()) / 86400000) : null;
-                        const closed = job.status === "CLOSED" || (dl !== null && dl < 0);
-                        const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지" : closed ? "마감" : "진행중";
-                        const color = job.status === "DRAFT" ? "#555" : job.status === "PAUSED" ? "#f59e0b" : closed ? "#555" : "#10b981";
+                        // 마감일하고 같은데"). 마감 판정은 공용 함수로 — 여기만 날짜 셈이
+                        // 달라 다른 화면과 갈리는 일을 막는다.
+                        const closed = 마감인가(job.status, job.deadline);
+                        // 게재기간만 끝난 것도 "진행중"이 아니다 — 공개 목록엔 안 보이는데
+                        // 상태만 진행중이면 왜 지원이 안 오는지 알 길이 없다.
+                        const 노출종료 = !closed && job.status !== "DRAFT" && job.status !== "PAUSED"
+                          && 노출종료인가(job.status, job.deadline, job.listed_until);
+                        const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지"
+                          : closed ? "마감" : 노출종료 ? "노출종료" : "진행중";
+                        const color = job.status === "DRAFT" ? "#555" : job.status === "PAUSED" ? "#f59e0b"
+                          : closed ? "#555" : 노출종료 ? "#b8720a" : "#10b981";
                         return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
                       })()}
                     </td>

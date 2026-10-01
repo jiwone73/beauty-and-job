@@ -109,6 +109,10 @@ export async function PATCH(
       updates.push(`listed_until = $${idx++}::date`);
       values.push(게재종료일(plan, paidUntil));
       updates.push(`closed_at = NULL`);
+      // 게재기간이 새로 잡히니 "노출 종료" 알림도 다시 보낼 수 있어야 한다.
+      // 안 지우면 다음에 또 끝나도 exposure_notified_at이 예전 값 그대로라
+      // 크론이 "이미 알렸다"고 보고 지나친다.
+      updates.push(`exposure_notified_at = NULL`);
     }
   }
 
