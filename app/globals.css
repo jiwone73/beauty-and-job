@@ -16327,8 +16327,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 지원자 목록 — 머리줄과 카드가 한 판으로 붙는다. */
 /* 선 아래가 위보다 넓어야 지원자 쪽이 새로 시작하는 판으로 읽힌다. */
 .co-pane .apl-bar { background: #fff; border: none; border-radius: 0; margin: 0; padding: 32px 22px 8px; }
+/* 부모(.co-pane-inline)의 5px 패딩은 카드 없는 글자(공고 머리)용 몫이라,
+   이미 제 테두리·패딩을 가진 지원자 카드(.tal-card)에는 또 더해지면 안
+   된다 — 음수 마진으로 그만큼 되돌려 카드 테두리가 페이지 여백 7px에
+   바로 오게 한다("왼쪽 테두리 바깥쪽 여백이 7px이 아닌거 같은데" — 확인,
+   2026-10-01). */
 .co-pane-apps { background: #fff; border-radius: 0 0 12px 12px;
-  padding: 0 0 22px; display: flex; flex-direction: column; gap: 8px; }
+  margin: 0 -5px; padding: 0 0 22px; display: flex; flex-direction: column; gap: 8px; }
 
 /* 공고 조건 한 줄 — 근무지·경력·고용형태·인원. 여러 공고를 가려내는 값이다. */
 .co-jc-cond { margin-top: 5px; font-size: 13px; color: #555;
