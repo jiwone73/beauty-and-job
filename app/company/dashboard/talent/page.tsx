@@ -1113,14 +1113,21 @@ export default function TalentPage() {
                 style={{ flex: 1, height: 44, borderRadius: 9, border: "1px solid #e2e2e6", background: "#fff", color: "#555", fontSize: 14, cursor: "pointer" }}>
                 취소
               </button>
-              <button type="button" onClick={sendPropose}
-                disabled={proposeSending || !proposeJobId || !proposeMessage.trim()
-                  || ((고른공고?.positions?.length || 0) > 1 && proposePos === null)}
-                style={{ flex: 1, height: 44, borderRadius: 9, border: "none", background: "#582681", color: "#fff",
-                  fontSize: 14, fontWeight: 600, cursor: (proposeSending || !proposeJobId || !proposeMessage.trim()) ? "not-allowed" : "pointer",
-                  opacity: (proposeSending || !proposeJobId || !proposeMessage.trim()) ? 0.5 : 1 }}>
-                {proposeSending ? "보내는 중…" : "제안 보내기"}
-              </button>
+              {(() => {
+                // 모집분야를 아직 안 골랐을 때도 꺼진 티가 나야 한다 — 색이 그대로면
+                // 눌러도 반응 없는 버튼처럼 보인다("채팅하기 버튼눌렀는데 채팅창이
+                // 안떠"와 같은 문제).
+                const 막힘 = proposeSending || !proposeJobId || !proposeMessage.trim()
+                  || ((고른공고?.positions?.length || 0) > 1 && proposePos === null);
+                return (
+                  <button type="button" onClick={sendPropose} disabled={막힘}
+                    style={{ flex: 1, height: 44, borderRadius: 9, border: "none", background: "#582681", color: "#fff",
+                      fontSize: 14, fontWeight: 600, cursor: 막힘 ? "not-allowed" : "pointer",
+                      opacity: 막힘 ? 0.5 : 1 }}>
+                    {proposeSending ? "보내는 중…" : "제안 보내기"}
+                  </button>
+                );
+              })()}
             </div>
             </>
             )}
