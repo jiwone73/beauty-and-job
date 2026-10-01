@@ -134,7 +134,7 @@ export default function CompanyBillingPage() {
           <div className="co-bill-keep on">
             <span className="co-bill-keep-l">남은 기간 보관</span>
             <b>{it.남은일}일</b>
-            <span className="co-bill-keep-t">채용이 끝나셨다면 세워 뒀다가 다음 채용 때 쓰실 수 있습니다</span>
+            <span className="co-bill-keep-t">채용이 끝나셨다면 보관했다가 다음 채용 때 쓰실 수 있습니다</span>
             <button type="button" className="co-bill-keep-b" onClick={보관하기} disabled={보관중}>
               {보관중 ? "보관 중…" : "보관하기"}
             </button>
