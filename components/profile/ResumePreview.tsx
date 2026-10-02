@@ -2,7 +2,7 @@
 import { 시험한줄 } from "@/lib/languageTest";
 
 import { forwardRef, useState } from "react";
-import { IdCard, Target, Star, BookOpen, Building2, GraduationCap, Sparkles, Award, Trophy, Globe, Image as ImageIcon, Quote } from "lucide-react";
+import { IdCard, Briefcase, Target, Star, BookOpen, Building2, GraduationCap, Sparkles, Award, Trophy, Globe, Image as ImageIcon, Quote } from "lucide-react";
 import PhotoLightbox from "@/components/profile/PhotoLightbox";
 import { formatPhone, 직군표시 } from "@/lib/memberFormat";
 import type {
@@ -109,6 +109,9 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
   // 칸을 걷고 이리로 모았다 — 가진 것이 아니라 원하는 것이라, 희망 근무지·희망
   // 급여와 같은 묶음이다. 오피스 이력서에서는 같은 값이 두 번 나오기도 했다.
   const 희망직군 = [...(skillAreas || []), ...(officeJobAreas || [])].join(", ");
+  // 지원분야 — 지원서로 볼 때는 지원한 모집분야, 기본 이력서는 희망직군(직군 이름만 — 경력은 적지 않는다,
+  // "희망직군에는 직군명만 있어야지"). 희망직군은 「내 정보」·「희망 근무 조건」 밖에 따로 선 칸이다.
+  const 지원분야값 = 지원분야 ? 직군표시(지원분야) : 직군표시(희망직군);
   return (
     <div ref={ref} className="rp-wrap">
       {intro && (
@@ -121,12 +124,6 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           기업이 보는 서류는 「지원자 정보」다. 지원 창의 수정 화면과는 같은
           이름·같은 차례여야 한다. */}
       <h2 className="rp-section-title" style={{ marginBottom: "12px" }}><IdCard size={16} className="resume-section-icon" />{지원분야 || 기업이봄 ? "지원자 정보" : "내 정보"}</h2>
-      {지원분야 && (
-        <div className="rp-cond" style={{ marginBottom: 14 }}>
-          <span className="rp-cond-k">지원분야</span>
-          <span className="rp-cond-v">{직군표시(지원분야)}</span>
-        </div>
-      )}
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
         <div style={{flex:1, minWidth:0}}>
           <h1 className="rp-name">{name || "이름"}</h1>
@@ -162,16 +159,21 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           (사람인·잡코리아 모두 인적사항 다음에 둔다) 읽는 차례이기도 하다:
           누구인가 → 무엇을 원하는가 → 무엇을 해왔는가 → 하고 싶은 말.
           지원서 수정 화면도 같은 차례로 세워 둔다. */}
-      {(workTypePrefer || 희망직군 || salaryMin || availableFrom) && (
+      {/* 희망직군(지원서는 지원분야)은 「내 정보」 안이 아니라 따로 선 칸이다("희망직군이 내정보 안에 있으면 안되"). */}
+      {지원분야값 && (
+        <div className="rp-section">
+          <h2 className="rp-section-title"><Briefcase size={16} className="resume-section-icon" />{지원분야 ? "지원분야" : "희망직군"}</h2>
+          <p className="rp-text" style={{ margin: 0 }}>{지원분야값}</p>
+        </div>
+      )}
+
+      {(workTypePrefer || salaryMin || availableFrom) && (
         <div className="rp-section">
           <h2 className="rp-section-title"><Target size={16} className="resume-section-icon" />희망 근무 조건</h2>
           <div className="rp-cond">
             {/* 희망 근무지는 이력서 미리보기에 적지 않는다("희망근무지는 지워") — 지역은 근무 조건이 아니다. */}
             {workTypePrefer && (
               <><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>
-            )}
-            {희망직군 && (
-              <><span className="rp-cond-k">희망직군</span><span className="rp-cond-v">{직군표시(희망직군)}</span></>
             )}
             <span className="rp-cond-k">희망 급여</span>
             <span className="rp-cond-v">

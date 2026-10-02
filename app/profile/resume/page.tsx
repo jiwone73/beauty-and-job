@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
-import { shortenRegion } from "@/lib/memberFormat";
+import { shortenRegion, 직군표시 } from "@/lib/memberFormat";
 import { 이력서흠찾기, type 흠 } from "@/lib/resumeCheck";
 import { useUnsavedGuard, UnsavedDialog } from "@/components/UnsavedGuard";
 import CoverLetterTools from "@/components/profile/CoverLetterTools";
@@ -638,16 +638,25 @@ function ResumePageContent() {
             </div>
           </section>
 
+          {/* 희망직군은 「내 정보」 안이 아니라 따로 선 칸이다("희망직군이 내정보 안에 있으면 안되") — 미리보기와 같은 자리·같은 값. */}
+          {(() => {
+            const 직군글 = [...(resumeType === "salon" ? skillAreas : effectiveOfficeAreas)].join(", ");
+            // 희망직군은 프로필에서 정한다 — 기본 이력서에서는 설정할 수 없고 보여만 준다("기본 이력서에 설정 불가").
+            if (!직군글) return null;
+            return (
+              <section id="section-job" className="resume-section">
+                <h2 className="resume-section-title"><Briefcase size={16} className="resume-section-icon" />희망직군</h2>
+                <p className="resume-job-value" style={{ margin: 0, fontSize: "14px", color: "#555" }}>{직군표시(직군글)}</p>
+              </section>
+            );
+          })()}
+
           {/* 희망 근무 조건 — 미리보기와 지원서에는 실려 나가는데 이 화면에만
               없었다. 프로필에서 오는 값이라 여기서 고치지 않고 보여만 준다. */}
           <section id="section-cond" className="resume-section">
             <h2 className="resume-section-title"><Target size={16} className="resume-section-icon" />희망 근무 조건</h2>
             <div className="rp-cond">
-              <span className="rp-cond-k">희망 근무지</span>
-              <span className="rp-cond-v">{희망지역 || regionPrefer || "—"}</span>
               {workTypePrefer && (<><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>)}
-              <span className="rp-cond-k">희망직군</span>
-              <span className="rp-cond-v">{[...(resumeType === "salon" ? skillAreas : effectiveOfficeAreas)].join(", ") || "—"}</span>
               <span className="rp-cond-k">희망 급여</span>
               <span className="rp-cond-v">{희망급여글}</span>
               <span className="rp-cond-k">출근 가능일</span>

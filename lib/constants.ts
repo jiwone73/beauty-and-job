@@ -12,7 +12,6 @@ export const OFFICE_JOB_GROUPS = [
   "IT·데이터",
   "CS·고객경험",
   "법무·컴플라이언스",
-  "기타",
 ] as const;
 // 매장직 시술분야 (매장 공고 필터 = 매장직 프로필 시술분야)
 export const STORE_SKILL_AREAS = [
@@ -27,7 +26,6 @@ export const STORE_SKILL_AREAS = [
   "타투·바디아트",
   "샵매니저",
   "뷰티강사·교육",
-  "기타",
 ] as const;
 
 // 산업 카테고리 (회사 분류용 — 별도 축, 헤어·네일 제거)
