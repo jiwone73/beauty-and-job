@@ -5473,11 +5473,14 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
   .card-grid-5 .jobcard-company,
   .card-grid-5 .jobcard-meta,
   .card-grid-5 .jobcard-deadline { font-size: 13px; }
-  /* 줄 사이를 띄운다 — 프리미엄·스탠다드 채용관 카드 똑같이. 공고명 아래만 더 많이(2→5px). */
+  /* 줄 사이 빈 틈 — 프리미엄·스탠다드 채용관 카드 똑같이. 빈 틈 = 줄 간격 − 글자 크기.
+     공고명 1→2줄 5.5px(14px 글자, 줄 간격 19.5px), 공고명→매장명 10px(공고명 아래 여백 4.5px). */
   .card-grid-5 .jobcard-title,
-  .showcase-sec .card-grid-4 .jobcard-title { margin-bottom: 5px !important; line-height: 19px !important; }
-  /* 줄 사이 빈 틈(줄 간격 − 글자 크기): 공고명 1→2줄 5px(14px 글자, 19px), 매장명→지역 줄 4.8px
-     (13px 글자, 17.8px). 매장명 아래 덧붙인 여백은 없앤다. */
+  .showcase-sec .card-grid-4 .jobcard-title { margin-bottom: 4.5px !important; line-height: 19.5px !important; }
+  /* 카드 전체 높이 — 글 덩어리 위아래 안쪽 여백을 4→7px 로. */
+  .card-grid.card-grid-5 .jobcard-body,
+  .showcase-sec .card-grid-4 .jobcard-body { padding-top: 7px !important; padding-bottom: 7px !important; }
+  /* 매장명→지역 줄 4.8px(13px 글자, 17.8px). 매장명 아래 덧붙인 여백은 없앤다. */
   .card-grid-5 .jobcard-company,
   .showcase-sec .card-grid-4 .jobcard-company { line-height: 17.8px !important; margin-bottom: 0 !important; }
   /* 프리미엄·스탠다드 채용관 제목도 3px 줄인다(22px→19px) — PC는 그대로. */
