@@ -8329,6 +8329,11 @@ div:has(> table.admin-table),
      알지?", 2026-10-02). 위아래는 PC(14px)의 절반. */
   .co-rec-job { padding: 7px 5px; }
   .co-rec-title { font-size: 15px; }
+  /* 3번째 줄 — 경력 13px, 지역 12.5px. 추천 인재와 인재검색 카드 공통(.co-list)
+     ("인재풀에도, 제안스크랩도 3번째 줄 똑같이 적용해줘"). */
+  .co-m .co-list .co-li-career { font-size: 13px; }
+  .co-m .co-list .co-li-reg { font-size: 12.5px; }
+  .co-m .co-list .co-li-meta2 { height: 20px; }
   /* "전체보기 >" 링크 색은 #555 하나("색상 #555 야"). */
   .co-cardw .company-text-link { font-size: 14px; color: #555; }
   .co-cardw .company-card-more { color: #555; }
@@ -17138,7 +17143,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .prop-table.received .apl-td-avatar { width: 56px; height: 70px; }
   .prop-table.received .apl-td-name { margin-bottom: 7px; }
   .prop-table.received .apl-td-wholines > .apl-td-sub:nth-child(2) { margin-bottom: 3px; }
-  .prop-table.received .apl-td-wholines > .apl-td-sub:nth-child(3) { font-size: 13.5px; }
+  .prop-table.received .apl-td-wholines > .apl-td-sub:nth-child(3) { font-size: 12.5px; }
   .prop-table.received .prop-card-job { margin-bottom: 7px; }
   .prop-table.received .prop-card-salary { margin-bottom: 3px; }
   /* 이름 밑 성별·지역 — "오지훈 밑에 성별 지역 폰트크기를 1px 줄여"(2026-10-02). */

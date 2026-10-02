@@ -157,7 +157,7 @@ export default function TalentListCard({
             </div>
             {(career || region) && (
               <div className="co-li-meta2">
-                {career}{career && region ? " · " : ""}
+                {career && <span className="co-li-career">{career}</span>}{career && region ? " · " : ""}
                 {region && <span className="co-li-reg">{region}</span>}
               </div>
             )}
