@@ -228,15 +228,15 @@ export const SEARCH_TAGS: Record<string, string[]> = {
   "브랜드 에듀케이터": ["에듀케이터", "educator", "브랜드교육", "제품교육", "세미나", "트레이너"],
   "교육 콘텐츠 기획": ["교육기획", "커리큘럼", "콘텐츠", "교재", "이러닝"],
   // 헤어 & 바버
-  "헤어디자이너": ["hair", "stylist", "헤어 디자이너", "미용사", "커트", "펌", "컬러", "살롱", "프리랜서", "프랜차이즈미용실", "프랜차이즈", "1인샵", "1인 디자이너샵", "대형살롱"],
+  "헤어디자이너": ["hair", "stylist", "미용사", "커트", "펌", "컬러", "살롱", "프리랜서", "프랜차이즈미용실", "프랜차이즈", "1인샵", "1인 디자이너샵", "대형살롱"],
   "바버(Barber)": ["barber", "바버", "이용사", "페이드컷", "쉐이빙", "면도", "남성"],
   "웨딩 헤어디자이너": ["wedding", "웨딩헤어", "본식", "혼주", "업스타일"],
   // 목록에 적는 이름은 업종을 가리지 않고 "스탭"으로 통일했다. 표준어는
   // "스태프"지만 현장에서 그렇게 부르는 곳이 없어, 구직자가 목록에서 자기
   // 자리를 못 찾았다. 실제 외부 공고도 전부 "헤어스탭" 표기였다.
-  // 다만 키워드에는 옛 표기(스태프·스텝)를 남겨 둔다 — 그렇게 적힌 공고도
-  // 이 직군으로 걸려야 한다. 찾는 말과 보여줄 말은 같을 필요가 없다.
-  "헤어스탭": ["assistant", "헤어스텝", "헤어 스텝", "스탭", "스태프", "스텝", "인턴", "어시", "샴푸", "와인딩", "리셉션", "막내", "수습", "스페어", "스페아", "단기", "주말", "승급", "매장리셉션", "주니어", "시니어"],
+  // 다만 키워드에는 스태프·스텝을 남겨 둔다 — 선택창에서 그렇게 치는 사람도
+  // 이 직군을 찾아야 한다. 찾는 말과 보여줄 말은 같을 필요가 없다.
+  "헤어스탭": ["assistant", "헤어스텝", "헤어스태프", "스탭", "스태프", "스텝", "인턴", "어시", "샴푸", "와인딩", "리셉션", "막내", "수습", "스페어", "스페아", "단기", "주말", "승급", "매장리셉션", "주니어", "시니어"],
   // 공고는 '스페아'로도 적는다(실제 외부 공고 3건 중 2건이 그 표기였다).
 
   // 메이크업
@@ -416,7 +416,9 @@ export function searchJobItems(
   jobType?: JobType,
   limit = 20
 ): JobSearchResult[] {
-  const q = query.trim().toLowerCase();
+  // 띄어쓰기는 가리지 않는다 — 「헤어 디자이너」로 쳐도 「헤어디자이너」가 나와야 한다.
+  const 붙임 = (x: string) => x.toLowerCase().replace(/\s+/g, "");
+  const q = 붙임(query);
   if (!q) return [];
 
   const tracks: JobType[] = jobType ? [jobType] : ["STORE", "OFFICE"];
@@ -428,15 +430,15 @@ export function searchJobItems(
     for (const g of getJobGroups(t)) {
       // 대분류 매칭 (낮은 우선순위)
       const groupHit =
-        g.group.toLowerCase().includes(q) ||
+        붙임(g.group).includes(q) ||
         (chosungMode && toChosung(g.group).includes(query.trim()));
 
       for (const item of g.items) {
         const key = `${t}|${item}`;
         if (seen.has(key)) continue;
 
-        const lower = item.toLowerCase();
-        const tags = (SEARCH_TAGS[item] || []).map((x) => x.toLowerCase());
+        const lower = 붙임(item);
+        const tags = (SEARCH_TAGS[item] || []).map(붙임);
 
         let score = -1;
         let matchedOn: JobSearchResult["matchedOn"] = "item";
