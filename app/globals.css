@@ -8329,17 +8329,6 @@ div:has(> table.admin-table),
      알지?", 2026-10-02). 위아래는 PC(14px)의 절반. */
   .co-rec-job { padding: 7px 5px; }
   .co-rec-title { font-size: 15px; }
-  /* 추천 인재 카드 아바타 높이 76 → 70("높이 70으로 줄여"). 글자 3줄 합이
-     아바타와 딱 맞게 줄높이를 22 → 20px로(20*3 + 줄 사이 7 + 3 = 70). 대시보드
-     추천 카드에서만 — 인재검색·공고지원자 카드는 그대로 둔다. */
-  .co-rec-block .co-li-avatar { height: 70px; }
-  .co-rec-block .co-li-job,
-  .co-rec-block .co-li-name,
-  .co-rec-block .co-li-ageg,
-  .co-rec-block .co-li-meta2 { line-height: 20px !important; }
-  .co-rec-block .co-li-jobrow { margin-bottom: 5px; }
-  /* 제안하기 밑 「받은제안 N건」(12px 흐린 회색)이 70px 안에 들어가게 버튼 사이를 좁힌다. */
-  .co-rec-block .co-li-actcol { gap: 4px; }
   /* "전체보기 >" 링크 색은 #555 하나("색상 #555 야"). */
   .co-cardw .company-text-link { font-size: 14px; color: #555; }
   .co-cardw .company-card-more { color: #555; }
@@ -19430,4 +19419,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .co-m .co-li-meta2 { font-size: 14px !important; }
   /* 나이·성별도 14px("나이, 성별, 경력 지역 14"). 제안하기 버튼은 13px 그대로. */
   .co-m .co-li-ageg { font-size: 14px !important; }
+  /* 대시보드 추천 인재 카드 포맷을 인재검색 카드에도 그대로("지금 이 포맷대로
+     인재검색에도 그대로 적용해줘") — 아바타 70px, 글자 3줄 합이 딱 맞게 줄높이
+     20px(20*3 + 7 + 3 = 70), 제안하기 밑 「받은제안 N건」이 들어가게 버튼 사이 4px. */
+  .co-m .co-list .co-li-avatar { height: 70px; }
+  .co-m .co-list .co-li-job,
+  .co-m .co-list .co-li-name,
+  .co-m .co-list .co-li-ageg,
+  .co-m .co-list .co-li-meta2 { line-height: 20px !important; }
+  .co-m .co-list .co-li-jobrow { margin-bottom: 7px; }
+  .co-m .co-list .co-li-actcol { gap: 4px; }
 }

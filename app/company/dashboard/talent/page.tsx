@@ -818,7 +818,7 @@ export default function TalentPage() {
         <div className="co-list">
           <TalentListStyle />
           {talents.map((t) => (
-            <TalentListCard key={t.id} t={t} base={base}
+            <TalentListCard key={t.id} t={t} base={base} 받은제안표시
               onOpenResume={(x) => router.push(`${base}/talent/${x.id}`)}
               onToggleScrap={toggleScrap} onPropose={openPropose} />
           ))}
