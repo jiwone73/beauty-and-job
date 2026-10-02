@@ -17059,7 +17059,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
     order: -1; padding: 0 0 8px; margin: 0 0 8px; border-bottom: 1px dashed #f0f0f3;
     font-size: 13px; color: #555;
   }
-  .prop-table.received .c-post::before { content: "제안한 공고  "; color: #9a9aa3; }
   .prop-table.received .c-job::before { content: "모집분야  "; color: #9a9aa3; }
   .prop-table.received .c-cond::before { content: "근무조건  "; color: #9a9aa3; }
   .prop-table.received .c-date::before { content: "제안일  "; color: #9a9aa3; }
