@@ -17007,6 +17007,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    낭비야") — 그만큼 줄여 모집분야·근무조건에 더 준다. 기업 25 /
    제안한 공고 23 / 모집분야 18 / 근무조건 24 / 제안일 10. */
 .prop-table.received { width: 100%; }
+/* 모바일 전용 칸(급여·제안취소) — PC 표에서는 숨긴다. */
+.prop-card-aside { display: none; }
 .prop-table.received .apl-td-who { width: 25%; }
 .prop-table.received .c-post { width: 23%; max-width: none; }
 .prop-table.received .c-job { width: 18%; max-width: none; }
@@ -17043,10 +17045,25 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
     border: none; padding: 0; white-space: normal;
   }
   /* 아바타를 카드 테두리 바로 안쪽(5px)까지 민다 — 공고지원자 카드와 같은 여백. */
-  .prop-table.received .apl-td-who { padding: 0 0 8px; }
-  .prop-table.received .apl-td-whobtn { width: 100%; }
+  .prop-table.received .apl-td-who { display: flex; align-items: flex-start; gap: 8px; padding: 0 0 8px; }
+  .prop-table.received .apl-td-whobtn { width: auto; flex: 1; min-width: 0; }
   /* 이름 밑 성별·지역 — "오지훈 밑에 성별 지역 폰트크기를 1px 줄여"(2026-10-02). */
-  .prop-table.received .apl-td-sub { font-size: 13px; }
+  .prop-table.received .apl-td-sub { font-size: 13px; line-height: 20px; }
+  .prop-table.received .apl-td-name { line-height: 20px; }
+  /* 급여는 "만 31세" 줄, 제안 취소는 "마포구" 줄과 같은 높이에 — 이름 줄은
+     비워 둬 아래 두 줄만 오른쪽에 맞춘다("월급은 만 31세 랑 같은줄에.
+     제안취소는 마포구있는 줄에", 2026-10-02). apl-td-wholines와 같은
+     줄높이(20px)를 써야 두 기둥이 줄마다 맞는다. 이력서 열기 버튼 안에
+     버튼을 또 넣을 수 없어 형제 칸으로 따로 둔다. */
+  .prop-table.received .prop-card-aside {
+    display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;
+  }
+  .prop-table.received .prop-card-aside::before { content: ""; display: block; height: 20px; }
+  .prop-table.received .prop-card-salary { font-size: 13px; line-height: 20px; color: #555; white-space: nowrap; }
+  .prop-table.received .prop-card-aside .prop-cancel {
+    height: 20px; box-sizing: border-box; padding: 0 8px; font-size: 12px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
   /* 공고지원자·인재풀과 같은 라벨 없는 값 대신, 열 머리가 사라진 자리라
      무슨 값인지 짧은 라벨을 붙인다. */
   .prop-table.received .c-job,
@@ -17069,6 +17086,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   }
   .prop-table.received .c-cond span:not(:last-child):not(:empty)::after { content: " · "; color: #9a9aa3; }
   .prop-table.received .prop-post { white-space: normal; text-align: left; }
+  /* 제안 취소를 마포구 줄로 올렸으니 메시지 밑 원래 자리의 것은 숨긴다 —
+     ".sent"로만 걸어 구직자 쪽 받은제안(거절하기·수락하기)은 그대로 둔다. */
+  .prop-table.received.sent .prop-msg-row .prop-cancel { display: none; }
 }
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지

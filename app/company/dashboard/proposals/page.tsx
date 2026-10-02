@@ -736,7 +736,7 @@ export default function CompanyProposalsPage() {
               했잖아") — 받은제안(구직자 화면)과 같은 짜임이다: 제안일 열을
               두고, 제안하며 쓴 말과 제안 취소를 줄 밑 메시지 칸으로 내린다
               ("보냈던 메시지도 똑같이 보여줘야지"). */}
-          <table className={`prop-table${고른공고 ? " no-post" : " has-post"} received`}>
+          <table className={`prop-table${고른공고 ? " no-post" : " has-post"} received sent`}>
             <thead>
               <tr>
                 <th className="c-who">인재</th>
@@ -778,6 +778,16 @@ export default function CompanyProposalsPage() {
                         <span className="apl-td-sub">{p.regionPrefer || "—"}</span>
                       </span>
                     </button>
+                    {/* 모바일 전용 — 성별 줄 오른쪽에 급여, 그 밑줄에 제안 취소
+                        ("카드 오른쪽 성별 있는 줄에 급여정보 넣고, 그밑에 줄에
+                        제안 취소버튼", 2026-10-02). 아래 메시지 줄의 제안
+                        취소는 모바일에서 숨긴다(버튼이 두 곳에 보이면 안 됨). */}
+                    <div className="prop-card-aside">
+                      <span className="prop-card-salary">{p.workConditionSalary}</span>
+                      <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
+                        제안 취소
+                      </button>
+                    </div>
                   </td>
                   {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
                       있던 공고 목록이 하던 일이다. */}
