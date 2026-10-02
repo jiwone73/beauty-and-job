@@ -78,7 +78,8 @@ const 인적 = (p: 제안) =>
 // 월 280만원"처럼 조건을 다 이은 줄이라 맨 앞 직군 하나만 자른다
 // ("모집분야에는 헤어디자이너 까지만 써. 그 외 정보는 넣지 말고") — 지역·
 // 경력·근무형태까지는 표가 무거워졌다, 이력서를 열면 다 있다.
-const 조건 = (p: 제안) => (p.positionLine || "").split("|")[0].trim();
+// 「헤어 스텝」은 화면에서 늘 붙여 쓴다(헤어스텝) — 자료의 이름은 띄어 있어도 보이는 글은 붙인다.
+const 조건 = (p: 제안) => (p.positionLine || "").split("|")[0].trim().replace(/헤어\s+스텝/g, "헤어스텝");
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })
