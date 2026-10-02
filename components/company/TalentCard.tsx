@@ -78,7 +78,10 @@ export default function TalentCard({
     careerLabel(t.careerStage, t.careerYears, t.careerCount),
     t.workTypePrefer ? 고용형태[t.workTypePrefer] || null : null,
     // 「협의」는 기간이 아니라 걸러 낼 정보가 못 된다 — 기간을 적은 사람만 붙인다.
-    t.availableFrom && t.availableFrom !== "협의" ? `${t.availableFrom} 출근` : null,
+    // "즉시"는 "즉시 출근"이 아니라 "즉시출근" 한 단어로(공고지원자 카드와 같은 말투).
+    t.availableFrom && t.availableFrom !== "협의"
+      ? (t.availableFrom.startsWith("즉시") ? "즉시출근" : `${t.availableFrom} 출근`)
+      : null,
   ].filter(Boolean) as string[];
 
   return (

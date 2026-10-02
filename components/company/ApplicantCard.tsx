@@ -79,7 +79,12 @@ export default function ApplicantCard({
   const 희망연봉 = (a as any).user_salary_type
     ? formatSalaryWon((a as any).user_salary_min, (a as any).user_salary_type)
     : null;
-  const 출근가능일 = (a as any).user_available_from ? `출근가능 ${(a as any).user_available_from}` : null;
+  // "즉시"는 "출근가능 즉시"로 붙이면 어색하다(데이터에 "즉시 가능"으로 남아
+  // 있는 곳은 "출근가능 즉시 가능"처럼 겹쳐 보였다) — "즉시출근" 한 단어로.
+  const 출근가능일 = (a as any).user_available_from
+    ? ((a as any).user_available_from as string).startsWith("즉시")
+      ? "즉시출근" : `출근가능 ${(a as any).user_available_from}`
+    : null;
   // 인재 카드와 같은 태그 — 무슨 일을 하고 어떻게 일하고 싶은가.
   // 예전엔 "메모" 단추를 눌러야 줄이 열렸는데, 그 단추를 없애고 입력칸을
   // 기본으로 한 줄 더 둔다("오른쪽 끝 메모 아이콘을 삭제하고 한줄 더
