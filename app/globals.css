@@ -4630,16 +4630,9 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
 .co-rec-job { padding: 14px 18px; border-top: 1px solid #f4f4f6; }
 .co-rec-job:first-of-type { border-top: 0; }
 .co-rec-title { margin: 0 0 9px; font-size: 13.5px; color: #8a8a90; }
-.co-rec-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.co-rec-one { display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
-  padding: 10px 13px; border: 1px solid var(--color-border); border-radius: 10px;
-  background: #fff; font-family: inherit; text-align: left; cursor: pointer;
-  transition: border-color .15s, background .15s; }
-.co-rec-one:hover { border-color: #d8d8dc; background: #f7f7f8; }
-.co-rec-one b { font-size: 14.5px; font-weight: 600; color: #555; }
-.co-rec-one span { font-size: 13px; color: #555; }
-/* 왜 떴는지 — 점수를 준 항목 그대로다. 지어낸 설명이 아니다. */
-.co-rec-one em { font-style: normal; font-size: 12.5px; color: #8a8a90; }
+/* 추천 인재는 지금 모바일만 다듬는 중이다 — PC는 따로 할 때까지 감춰 둔다(원래도
+   토큰 이름 오류로 PC에서 안 떴다, 2026-10-02 "피씨는 나중에 따로 할거야"). */
+@media (min-width: 769px) { .co-rec-block { display: none; } }
 
 /* 이슈 올리는 칸 — 칸 이름이 곧 「무엇을 적으면 되는지」다. */
 .tr-f { display: flex; flex-direction: column; gap: 6px; }
@@ -8302,6 +8295,23 @@ div:has(> table.admin-table),
    그대로 두고, 홈 안에서만 .co-cardw로 한 번 더 좁혀 덮어쓴다. */
 @media (max-width: 768px) {
   .co-cardw .company-card-title { font-size: 15px; }
+  /* 열이 셋뿐이라 옆으로 밀어 볼 일이 없다 — 첫 칸 고정(sticky)·회색 머리칸을
+     풀고 표를 카드 폭에 꽉 채운다. 등록일·마감일은 글자 폭만큼만 잡고 남는
+     폭은 전부 공고명이 가져간다("공고명에 필터 걸린거 해제 하고 등록일
+     마감일을 남은여백없게 오른쪽으로 이동시켜주고 확보된 여백은 공고명 쪽
+     내용에 할당", 2026-10-02). */
+  .co-cardw .company-card .company-table { display: table; width: 100%; overflow: visible; }
+  .co-cardw .company-card .company-table th:first-child,
+  .co-cardw .company-card .company-table td:first-child {
+    position: static; box-shadow: none; min-width: 0; max-width: none; width: auto;
+  }
+  .co-cardw .company-card .company-table th:first-child { background: #fafafa; }
+  .co-cardw .company-card .company-table td:first-child { background: transparent; }
+  .co-cardw .company-table.dash-table:not(.applicant-dash-table) th:not(:first-child),
+  .co-cardw .company-table.dash-table:not(.applicant-dash-table) td:not(:first-child) { width: 1%; white-space: nowrap; }
+  /* 공고명 칸은 max-width:0 + 넓은 width로 남는 폭을 전부 먹고, 넘치면 …로 끊는다. */
+  .co-cardw .company-table.dash-table:not(.applicant-dash-table) td:first-child { max-width: 0; width: 100%; }
+  .co-cardw .company-table.dash-table:not(.applicant-dash-table) .td-clamp2 { max-width: 100%; }
   .co-cardw .company-table th { font-size: 14px; }
   .co-cardw .company-table td { font-size: 14px; }
   .co-cardw .co-count-value { font-size: 19px; }
@@ -8310,15 +8320,31 @@ div:has(> table.admin-table),
   .co-cardw .co-counts { grid-template-columns: repeat(3, 1fr); }
   .co-cardw .co-count:nth-child(4n+1) { border-left: 1px solid #f2f2f4; }
   .co-cardw .co-count:nth-child(3n+1) { border-left: none; }
-  .co-cardw .co-count-label { font-size: 13px; white-space: nowrap; }
+  .co-cardw .co-count-label { font-size: 14px; white-space: nowrap; }
 
-  /* 아래 셋은 홈 전용 부품(.co-rec-*, .company-text-link, .company-card-more)이라
+  /* 아래는 홈 전용 부품(.co-rec-*, .company-text-link, .company-card-more)이라
      다른 화면과 겹치지 않는다 — 모바일 전용 글자가 없던 자리라 기본값에서 1px만 올린다. */
-  .co-rec-title { font-size: 14.5px; }
-  .co-rec-one b { font-size: 15.5px; }
-  .co-rec-one span { font-size: 14px; }
-  .co-rec-one em { font-size: 13.5px; }
-  .co-cardw .company-text-link { font-size: 15px; }
+  /* 카드 테두리~안 내용 간격은 5px(모바일 카드 패딩 표준값) — 공고명과 인재
+     칸이 18px 안쪽에서 시작하던 것을 끌어낸다("공고명 왼쪽으로 더 이동. 룰
+     알지?", 2026-10-02). 위아래는 PC(14px)의 절반. */
+  .co-rec-job { padding: 7px 5px; }
+  .co-rec-title { font-size: 15px; }
+  /* 추천 인재 카드 아바타 높이 76 → 70("높이 70으로 줄여"). 글자 3줄 합이
+     아바타와 딱 맞게 줄높이를 22 → 20px로(20*3 + 줄 사이 7 + 3 = 70). 대시보드
+     추천 카드에서만 — 인재검색·공고지원자 카드는 그대로 둔다. */
+  .co-rec-block .co-li-avatar { height: 70px; }
+  .co-rec-block .co-li-job,
+  .co-rec-block .co-li-name,
+  .co-rec-block .co-li-ageg,
+  .co-rec-block .co-li-meta2 { line-height: 20px !important; }
+  .co-rec-block .co-li-jobrow { margin-bottom: 5px; }
+  /* 제안하기 밑 「받은제안 N건」(12px 흐린 회색)이 70px 안에 들어가게 버튼 사이를 좁힌다. */
+  .co-rec-block .co-li-actcol { gap: 4px; }
+  /* "전체보기 >" 링크 색은 #555 하나("색상 #555 야"). */
+  .co-cardw .company-text-link { font-size: 14px; color: #555; }
+  .co-cardw .company-card-more { color: #555; }
+  /* 빈 상태 문구("지원자를 모두 확인했어요")는 인라인 15px이라 !important로 덮는다. */
+  .co-cardw .co-empty-msg { font-size: 14px !important; }
   .company-card-more { font-size: 14px; }
 }
 
@@ -19402,4 +19428,6 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   .co-m .co-li-job { font-size: 15px !important; }
   /* 내용(경력·지역, row3) — 13px이던 걸 14px로. */
   .co-m .co-li-meta2 { font-size: 14px !important; }
+  /* 나이·성별도 14px("나이, 성별, 경력 지역 14"). 제안하기 버튼은 13px 그대로. */
+  .co-m .co-li-ageg { font-size: 14px !important; }
 }

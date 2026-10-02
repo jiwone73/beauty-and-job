@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Briefcase, Plus, Inbox, Sparkles } from "lucide-react";
+import { Briefcase, Plus, Inbox } from "lucide-react";
+import TalentListCard, { TalentListStyle } from "@/components/company/TalentListCard";
+import { companyTalentApi, type TalentItem } from "@/lib/api/company";
 
 interface Stats {
   active_jobs: number;
@@ -108,7 +110,7 @@ export default function CompanyDashboard() {
      기능을 회색으로 깔아 두면 화면만 길어진다. */
   const [추천, set추천] = useState<{ 열림: boolean; jobs: any[] } | null>(null);
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("company_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
     if (!token) return;
     fetch("/api/company/recommendations?limit=5", { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
@@ -116,6 +118,29 @@ export default function CompanyDashboard() {
       .catch(() => {});
   }, []);
   const 추천있는공고 = (추천?.jobs || []).filter((j: any) => (j.사람들 || []).length > 0);
+  // 추천된 사람은 인재검색과 같은 카드로 그린다 — 같은 값이 와야 해서 추천 API 가 아니라
+  // 인재검색 API 에서 id 로 불러 온다("그냥 인재검색 목록을 그냥 똑같이 넣자").
+  const [추천인재, set추천인재] = useState<Record<string, TalentItem>>({});
+  useEffect(() => {
+    const ids = Array.from(new Set(추천있는공고.flatMap((j: any) => (j.사람들 || []).map((t: any) => String(t.id)))));
+    if (ids.length === 0) return;
+    companyTalentApi.list({ ids, limit: 50 })
+      .then((res) => {
+        if (res.success && res.data) set추천인재(Object.fromEntries(res.data.map((t) => [t.id, t])));
+      })
+      .catch(() => {});
+  }, [추천]);  // eslint-disable-line react-hooks/exhaustive-deps
+  const 추천스크랩 = async (item: TalentItem) => {
+    const next = !item.scrapped;
+    const 바꿈 = (on: boolean) => set추천인재((prev) => ({ ...prev, [item.id]: { ...prev[item.id], scrapped: on } }));
+    바꿈(next);
+    try {
+      if (next) await companyTalentApi.scrap(item.id);
+      else await companyTalentApi.unscrap(item.id);
+    } catch {
+      바꿈(!next);
+    }
+  };
 
   const statCards: { label: string; value: number; href: string; 할일?: boolean }[] = [
     { label: "진행중 공고", value: stats?.active_jobs ?? 0, href: "/company/dashboard/jobs" },
@@ -157,7 +182,7 @@ export default function CompanyDashboard() {
           <div className="company-card-head">
             <h2 className="company-card-title">미열람 지원서{안본전체.length > 0 && <span style={{ marginLeft: 8, color: "#582681" }}>{안본전체.length}</span>}</h2>
             {applicants.length > 0 && (
-              <Link href="/company/dashboard/jobs" className="company-card-more">전체보기 →</Link>
+              <Link href="/company/dashboard/jobs" className="company-card-more">전체보기 &gt;</Link>
             )}
           </div>
           {안본지원자.length === 0 ? (
@@ -193,26 +218,22 @@ export default function CompanyDashboard() {
           찾지 않아도 서 있는 자리다. 왜 이 사람이 떴는지를 같이 적는다 —
           까닭 없이 이름만 늘어놓으면 한 번 빗나갔을 때 다음부터 안 본다. */}
       {추천?.열림 && 추천있는공고.length > 0 && (
-        <div style={{ marginTop: 16 }}>
+        <div className="co-rec-block" style={{ marginTop: 16 }}>
           <div className="company-card">
             <div className="company-card-head">
-              <h2 className="company-card-title">
-                <Sparkles size={15} style={{ verticalAlign: -2, marginRight: 5, color: "#582681" }} />
-                우리 공고에 맞는 인재
-              </h2>
-              <Link href="/company/dashboard/talent" className="company-card-more">인재검색 &rarr;</Link>
+              <h2 className="company-card-title">추천 인재</h2>
+              <Link href="/company/dashboard/talent" className="company-card-more">전체보기 &gt;</Link>
             </div>
             {추천있는공고.map((j: any) => (
               <div key={j.id} className="co-rec-job">
                 <p className="co-rec-title">{j.title}</p>
-                <div className="co-rec-list">
-                  {(j.사람들 || []).map((t: any) => (
-                    <button key={t.id} type="button" className="co-rec-one"
-                      onClick={() => router.push(`/company/dashboard/talent/${t.id}`)}>
-                      <b>{t.name || "이름 없음"}</b>
-                      <span>{(t.areas || []).slice(0, 2).join(" · ")}</span>
-                      <em>{(t.reasons || []).join(" · ")}</em>
-                    </button>
+                <div className="co-list">
+                  <TalentListStyle />
+                  {(j.사람들 || []).map((t: any) => 추천인재[t.id] && (
+                    <TalentListCard key={t.id} t={추천인재[t.id]} base="/company/dashboard" 받은제안표시
+                      onOpenResume={(x) => router.push(`/company/dashboard/talent/${x.id}`)}
+                      onToggleScrap={추천스크랩}
+                      onPropose={(x) => router.push(`/company/dashboard/talent?propose=${x.id}`)} />
                   ))}
                 </div>
               </div>
@@ -228,7 +249,7 @@ export default function CompanyDashboard() {
           <div className="company-card-head">
             <h2 className="company-card-title">내 채용공고</h2>
             <Link href="/company/dashboard/jobs" className="company-text-link">
-              전체 보기 →
+              전체 보기 &gt;
             </Link>
           </div>
           {jobs.length === 0 ? (
@@ -275,7 +296,7 @@ function EmptyState({ icon, message, hint, cta }: { icon: React.ReactNode; messa
       <div style={{ display: "inline-flex", padding: 14, borderRadius: "50%", background: "#f7f7f8", color: "#555", marginBottom: 12 }}>
         {icon}
       </div>
-      <p style={{ fontSize: 15, color: "#555", fontWeight: 500, margin: 0 }}>{message}</p>
+      <p className="co-empty-msg" style={{ fontSize: 15, color: "#555", fontWeight: 500, margin: 0 }}>{message}</p>
       {hint && <p style={{ fontSize: 13, marginTop: 6, marginBottom: 0 }}>{hint}</p>}
       {cta}
     </div>

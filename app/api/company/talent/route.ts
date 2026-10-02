@@ -40,6 +40,10 @@ export async function GET(req: NextRequest) {
   // 쿼리에 바로 넣으므로 모양을 엄격히 본다(공고 id 모양이거나 none 이 아니면 버린다).
   const scrapJobRaw = (searchParams.get("scrapJob") || "").trim();
   const scrapJob = scrapJobRaw === "none" || /^[0-9a-f-]{36}$/i.test(scrapJobRaw) ? scrapJobRaw : "";
+  // 정해진 사람들만(대시보드 「추천 인재」가 같은 카드를 그리려고 id 로 불러 간다).
+  // 쿼리에 바로 넣지 않고 uuid 모양만 남겨 배열 인자로 넘긴다.
+  const idsOnly = (searchParams.get("ids") || "").split(",").map((v) => v.trim())
+    .filter((v) => /^[0-9a-f-]{36}$/i.test(v)).slice(0, 50);
   const page        = parseInt(searchParams.get("page") || "1");
   const limit       = parseInt(searchParams.get("limit") || "50");
   const offset      = (page - 1) * limit;
@@ -59,8 +63,11 @@ export async function GET(req: NextRequest) {
   let idx = 2;
 
   // job_type
-  const jobTypeClause = `AND u.job_type = $${idx++}`;
-  params.push(볼유형);
+  // id 로 부를 때는 유형을 따로 거르지 않는다 — 겸업(BOTH) 회원의 추천에는 두 유형이 섞여 온다.
+  const jobTypeClause = idsOnly.length ? "" : `AND u.job_type = $${idx++}`;
+  if (!idsOnly.length) params.push(볼유형);
+  const idsClause = idsOnly.length ? `AND u.id = ANY($${idx++}::uuid[])` : "";
+  if (idsOnly.length) params.push(idsOnly);
 
   // 직군 (다중 IN)
   let jobGroupClause = "";
@@ -322,6 +329,7 @@ export async function GET(req: NextRequest) {
              : scrapJob ? `AND cs.job_posting_id = '${scrapJob}'::uuid` : ""}
         )` : ""}
         ${jobTypeClause}
+        ${idsClause}
         ${jobGroupClause}
         ${searchClause}
         ${regionClause}
