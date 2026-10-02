@@ -6,7 +6,7 @@ import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
 import type { ApplicationStatus } from "@/lib/types/company";
-import { ArrowLeft, Download, Printer } from "lucide-react";
+import { Download, Printer } from "lucide-react";
 import { calcAge as 나이 } from "@/lib/memberFormat";
 
 // 지원서. 모달이 아니라 페이지다 — 이력서와 같은 이유로, 한 사람을 앉아서 읽는
@@ -91,14 +91,14 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
       <div style={{ width: "100%" }}>
         <div className="tres-bar">
           <button type="button" className="tres-back" onClick={() => router.back()}>
-            <ArrowLeft size={15} /> 목록으로
+            &lt; 목록으로
           </button>
           <div className="tres-acts">
-            <button type="button" className="tal-btn" onClick={PDF받기} disabled={내려받는중 || 로딩}>
-              <Download size={14} /> PDF
+            <button type="button" className="tal-btn" onClick={PDF받기} disabled={내려받는중 || 로딩} aria-label="PDF">
+              <Download size={14} /> <span className="tres-lbl">PDF</span>
             </button>
-            <button type="button" className="tal-btn" onClick={인쇄} disabled={로딩}>
-              <Printer size={14} /> 인쇄
+            <button type="button" className="tal-btn" onClick={인쇄} disabled={로딩} aria-label="인쇄">
+              <Printer size={14} /> <span className="tres-lbl">인쇄</span>
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function ApplicationPage({ params }: { params: { id: string } }) 
               ref={previewRef}
               coverLetter={자료.cover_letter}
               subtitle={자료.job_title}
-                지원분야={[자료.position_title, 자료.work_location].filter(Boolean).join(" · ")}
+                지원분야={자료.position_title || ""}
               resume={{
                 name: 이름,
                 birthDisplay: 자료.user_birth_date ? `${new Date(자료.user_birth_date).getFullYear()}년생` : "",

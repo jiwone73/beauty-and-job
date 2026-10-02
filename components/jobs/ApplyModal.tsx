@@ -715,7 +715,7 @@ export default function ApplyModal({
                 <ApplicationDocument
                 제출본
                   coverLetter={coverLetter}
-                  지원분야={[positionTitle, workLocation ? addressRegion(workLocation) : ""].filter(Boolean).join(" · ")}
+                  지원분야={positionTitle || ""}
                   resume={{
                     name,
                     birthDisplay,

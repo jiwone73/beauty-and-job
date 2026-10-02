@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { X, Download, Printer, MessageCircle } from "lucide-react";
+import { X, Download, Printer } from "lucide-react";
 import ApplicationDocument from "@/components/resume/ApplicationDocument";
 import { mapResume } from "@/lib/resumeView";
 import { companyApplicationsApi } from "@/lib/api/company";
@@ -26,6 +25,7 @@ export default function ApplicationModal({
   const [실패, set실패] = useState<string | null>(null);
   const [내려받는중, set내려받는중] = useState(false);
   const [처리중, set처리중] = useState(false);
+  const [확인대상, set확인대상] = useState<"PASSED" | "REJECTED" | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const 불러오기 = useCallback(async () => {
@@ -116,9 +116,24 @@ export default function ApplicationModal({
     // 바깥을 눌러도 닫히지 않는다 — 이력서를 읽다가 스치는 클릭 한 번에 창이
     // 사라지면 처음부터 다시 찾아 열어야 한다. 닫는 길은 오른쪽 위 단추와 Esc.
     <div className="rp-modal-overlay">
-      <div className="rp-modal resume-modal-flat" style={{ maxWidth: 720, maxHeight: "90vh", display: "flex", flexDirection: "column" }}>
-        <div className="rp-modal-header">
-          <h2 style={{ fontSize: 18, color: "#555", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{이름}</h2>
+      <div className="rp-modal resume-modal-flat app-co-modal" style={{ maxWidth: 720, maxHeight: "90vh", display: "flex", flexDirection: "column" }}>
+        <div className="rp-modal-header app-hd">
+          {/* 합격·불합격은 이름 옆 머리줄에 둔다("합격 불합격을 헤더에 넣어줘 이름옆에"). 체크박스로 고르고,
+              누르면 먼저 확인 팝업이 뜬다 — 알림이 나가면 되돌릴 길이 없어서다. */}
+          {/* 제목은 개인회원 이력서 미리보기와 같은 모양(.rp-modal-title: 17px 굵게) — "개인회원 이력서 제목처럼". */}
+          <h2 className="rp-modal-title" style={{ margin: 0, whiteSpace: "nowrap" }}>이력서</h2>
+            {자료 && (
+              <div className="app-hd-checks" style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, marginRight: "auto", marginLeft: 14 }}>
+                {([["PASSED", "합격"], ["REJECTED", "불합격"]] as const).map(([값, 글]) => (
+                    <label key={값} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, color: "#555", cursor: 처리중 ? "default" : "pointer", whiteSpace: "nowrap" }}>
+                      <input type="checkbox" value={값} checked={자료.status === 값} disabled={처리중}
+                        onChange={() => { if (자료.status !== 값) set확인대상(값); }}
+                        style={{ accentColor: "#582681", width: 16, height: 16, margin: 0 }} />
+                      {글}
+                    </label>
+                ))}
+              </div>
+            )}
           <div className="rp-modal-actions">
             <button onClick={PDF받기} disabled={내려받는중 || 로딩} title="PDF 다운로드"
               style={{ display: "inline-flex", padding: 6, border: "none", background: "none", color: "#582681", cursor: "pointer" }}>
@@ -134,34 +149,28 @@ export default function ApplicationModal({
             </button>
           </div>
         </div>
-        {자료 && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderBottom: "1px solid #eee" }}>
-            <span style={{ fontSize: 13, color: "#555", marginRight: "auto" }}>
-              {자료.status === "PASSED" ? "합격 처리했습니다 — 채팅으로 이야기하실 수 있어요"
-                : 자료.status === "REJECTED" ? "불합격 처리했습니다"
-                : "마음을 정하셨으면 눌러 주세요. 지원자에게 알림이 갑니다"}
-            </span>
-            {자료.status === "PASSED" && (
-              <Link href="/company/dashboard/proposals"
-                style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 14, color: "#582681", fontWeight: 600, textDecoration: "none" }}>
-                <MessageCircle size={15} /> 채팅하기
-              </Link>
-            )}
-            <button type="button" onClick={() => 상태바꾸기("REJECTED")} disabled={처리중}
-              style={{
-                padding: "7px 14px", fontSize: 14, borderRadius: 8, cursor: 처리중 ? "default" : "pointer",
-                border: 자료.status === "REJECTED" ? "1px solid #999" : "1px solid #ddd",
-                background: "#fff", color: 자료.status === "REJECTED" ? "#555" : "#8a8a90", fontWeight: 자료.status === "REJECTED" ? 700 : 400,
-              }}>
-              불합격 처리
-            </button>
-            <button type="button" onClick={() => 상태바꾸기("PASSED")} disabled={처리중}
-              style={{
-                padding: "7px 14px", fontSize: 14, borderRadius: 8, cursor: 처리중 ? "default" : "pointer", border: "none", fontWeight: 700,
-                background: 자료.status === "PASSED" ? "#582681" : "#f2edf6", color: 자료.status === "PASSED" ? "#fff" : "#582681",
-              }}>
-              합격 처리
-            </button>
+        {/* 체크하면 먼저 묻는다 — 알림이 나가면 되돌릴 길이 없다("체크를 하면 메시지 팝업을 띄어줘"). */}
+        {확인대상 && (
+          <div onClick={() => set확인대상(null)}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3000, padding: 20 }}>
+            <div onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true"
+              style={{ background: "#fff", borderRadius: 12, padding: "20px 18px 14px", width: "100%", maxWidth: 300, boxShadow: "0 8px 30px rgba(0,0,0,0.18)" }}>
+              <p style={{ margin: 0, fontSize: 15, color: "#555", fontWeight: 700 }}>
+                {확인대상 === "PASSED" ? "합격" : "불합격"} 처리하시겠어요?
+              </p>
+              <p style={{ margin: "6px 0 16px", fontSize: 13, color: "#9a9aa3" }}>지원자에게 알림이 갑니다</p>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <button type="button" onClick={() => set확인대상(null)}
+                  style={{ padding: "7px 14px", fontSize: 14, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", cursor: "pointer" }}>
+                  취소
+                </button>
+                <button type="button" disabled={처리중}
+                  onClick={async () => { const 대상 = 확인대상; set확인대상(null); await 상태바꾸기(대상); }}
+                  style={{ padding: "7px 14px", fontSize: 14, borderRadius: 8, border: "none", background: "#582681", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                  확인
+                </button>
+              </div>
+            </div>
           </div>
         )}
         <div className="rp-modal-body">
@@ -170,12 +179,13 @@ export default function ApplicationModal({
           ) : !자료 ? (
             <div className="admin-empty">{실패 || "지원서를 불러오지 못했어요."}</div>
           ) : (
-            <ApplicationDocument
+            <>
+              <ApplicationDocument
                 제출본
                 ref={previewRef}
                 coverLetter={자료.cover_letter}
                 subtitle={자료.job_title}
-                지원분야={[자료.position_title, 자료.work_location].filter(Boolean).join(" · ")}
+                지원분야={자료.position_title || ""}
                 resume={{
                   name: 이름,
                   birthDisplay: 자료.user_birth_date ? `${new Date(자료.user_birth_date).getFullYear()}년생` : "",
@@ -190,7 +200,8 @@ export default function ApplicationModal({
                   resumeType: 자료.user_job_type === "STORE" ? "salon" : "office",
                   ...mapResume(자료.resume),
                 }}
-            />
+              />
+            </>
           )}
         </div>
       </div>

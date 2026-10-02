@@ -95,3 +95,6 @@ export function shortenRegion(region: string | null | undefined): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** 화면에 보이는 「헤어 스텝」은 늘 붙여 쓴다(헤어스텝) — 자료에 저장된 이름은 띄어 있어도 보이는 글만 바꾼다. */
+export const 직군표시 = (v?: string | null) => (v || "").replace(/헤어\s+스텝/g, "헤어스텝");

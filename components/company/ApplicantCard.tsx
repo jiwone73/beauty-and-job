@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Pencil, MessageCircle } from "lucide-react";
-import { genderLabel, calcAge, calcCareerYears } from "@/lib/memberFormat";
+import { genderLabel, calcAge, calcCareerYears, 직군표시 } from "@/lib/memberFormat";
 import { formatSalaryWon } from "@/lib/salary";
 import { 마감인가 } from "@/lib/jobClosed";
 import type { CompanyApplication } from "@/lib/types/company";
@@ -168,7 +168,7 @@ export default function ApplicantCard({
         <div className="tal-main">
           <button type="button" className="tal-name tal-open tal-role" title="지원서 보기"
             onClick={() => onOpen(a)}>
-            {(a as any).position_title || "—"}
+            {직군표시((a as any).position_title) || "—"}
           </button>
           <div className="tal-who tal-line2">
             <button type="button" className="tal-open" title="지원서 보기" onClick={() => onOpen(a)}>

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import type { TalentItem } from "@/lib/api/company";
+import { 직군표시 } from "@/lib/memberFormat";
 
 // 인재검색 모바일 목록의 카드 한 장 — 인재검색 화면과 대시보드 「추천 인재」가
 // 같은 카드를 쓴다("그냥 인재검색 목록을 그냥 똑같이 넣자", 2026-10-02).
@@ -119,7 +120,7 @@ export default function TalentListCard({
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="co-li-jobrow">
-              <div className="co-li-job">{t.subJob || t.mainJobGroup || "직군 미정"}</div>
+              <div className="co-li-job">{직군표시(t.subJob || t.mainJobGroup) || "직군 미정"}</div>
               <div className="co-li-actcol">
                 <button className="co-li-scrap" title={t.scrapped ? "스크랩됨" : "스크랩"}
                   onClick={(e) => { e.stopPropagation(); onToggleScrap(t); }}>

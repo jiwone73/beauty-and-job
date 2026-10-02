@@ -4,7 +4,7 @@ import { 시험한줄 } from "@/lib/languageTest";
 import { forwardRef, useState } from "react";
 import { IdCard, Target, Star, BookOpen, Building2, GraduationCap, Sparkles, Award, Trophy, Globe, Image as ImageIcon, Quote } from "lucide-react";
 import PhotoLightbox from "@/components/profile/PhotoLightbox";
-import { formatPhone } from "@/lib/memberFormat";
+import { formatPhone, 직군표시 } from "@/lib/memberFormat";
 import type {
   CareerEntry,
   EducationEntry,
@@ -124,7 +124,7 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
       {지원분야 && (
         <div className="rp-cond" style={{ marginBottom: 14 }}>
           <span className="rp-cond-k">지원분야</span>
-          <span className="rp-cond-v">{지원분야}</span>
+          <span className="rp-cond-v">{직군표시(지원분야)}</span>
         </div>
       )}
       <div className="rp-header" style={{display:"flex", alignItems:"flex-start", gap:"20px"}}>
@@ -162,18 +162,16 @@ const ResumePreview = forwardRef<HTMLDivElement, Props>(function ResumePreview(
           (사람인·잡코리아 모두 인적사항 다음에 둔다) 읽는 차례이기도 하다:
           누구인가 → 무엇을 원하는가 → 무엇을 해왔는가 → 하고 싶은 말.
           지원서 수정 화면도 같은 차례로 세워 둔다. */}
-      {(regionPrefer || workTypePrefer || 희망직군 || salaryMin || availableFrom) && (
+      {(workTypePrefer || 희망직군 || salaryMin || availableFrom) && (
         <div className="rp-section">
           <h2 className="rp-section-title"><Target size={16} className="resume-section-icon" />희망 근무 조건</h2>
           <div className="rp-cond">
-            {regionPrefer && (
-              <><span className="rp-cond-k">희망 근무지</span><span className="rp-cond-v">{regionPrefer}</span></>
-            )}
+            {/* 희망 근무지는 이력서 미리보기에 적지 않는다("희망근무지는 지워") — 지역은 근무 조건이 아니다. */}
             {workTypePrefer && (
               <><span className="rp-cond-k">근무형태</span><span className="rp-cond-v">{workTypePrefer}</span></>
             )}
             {희망직군 && (
-              <><span className="rp-cond-k">희망직군</span><span className="rp-cond-v">{희망직군}</span></>
+              <><span className="rp-cond-k">희망직군</span><span className="rp-cond-v">{직군표시(희망직군)}</span></>
             )}
             <span className="rp-cond-k">희망 급여</span>
             <span className="rp-cond-v">

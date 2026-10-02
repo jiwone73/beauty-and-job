@@ -5,7 +5,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import ResumePreview from "@/components/profile/ResumePreview";
 import { mapResume, calcAgeFromBirth } from "@/lib/resumeView";
 import { companyTalentApi } from "@/lib/api/company";
-import { ArrowLeft, Bookmark, BookmarkCheck, Download, Printer } from "lucide-react";
+import { Bookmark, BookmarkCheck, Download, Printer } from "lucide-react";
 
 // 인재 이력서. 모달이 아니라 페이지다.
 //
@@ -93,24 +93,23 @@ export default function TalentResumePage({ params }: { params: { userId: string 
       <div style={{ width: "100%" }}>
         <div className="tres-bar">
           <button type="button" className="tres-back" onClick={() => router.back()}>
-            <ArrowLeft size={15} /> 목록으로
+            &lt; 목록으로
           </button>
           <div className="tres-acts">
-            <button type="button" className="tal-btn" onClick={스크랩토글}>
+            <button type="button" className="tal-btn" onClick={스크랩토글} aria-label={스크랩 ? "스크랩됨" : "스크랩"}>
               {스크랩
-                ? <><BookmarkCheck size={14} style={{ color: "#582681" }} /> 스크랩됨</>
-                : <><Bookmark size={14} /> 스크랩</>}
+                ? <><BookmarkCheck size={14} style={{ color: "#582681" }} /> <span className="tres-lbl">스크랩됨</span></>
+                : <><Bookmark size={14} /> <span className="tres-lbl">스크랩</span></>}
             </button>
-            <button type="button" className="tal-btn" onClick={PDF받기} disabled={내려받는중 || 로딩}>
-              <Download size={14} /> PDF
+            <button type="button" className="tal-btn" onClick={PDF받기} disabled={내려받는중 || 로딩} aria-label="PDF">
+              <Download size={14} /> <span className="tres-lbl">PDF</span>
             </button>
-            <button type="button" className="tal-btn" onClick={인쇄} disabled={로딩}>
-              <Printer size={14} /> 인쇄
+            <button type="button" className="tal-btn" onClick={인쇄} disabled={로딩} aria-label="인쇄">
+              <Printer size={14} /> <span className="tres-lbl">인쇄</span>
             </button>
             {/* 제안 창은 인재 검색이 갖고 있다 — 여기서 한 벌 더 만들지 않고 그리로 보낸다. */}
-            {자료?.proposedAt ? (
-              <span className="tal-sent">제안완료</span>
-            ) : (
+            {/* 이미 제안한 사람은 「제안완료」를 이력서에 적지 않는다("이력서에 표시하지마") — 단추만 뺀다. */}
+            {!자료?.proposedAt && (
               <button type="button" className="tal-btn key"
                 onClick={() => router.push(`${base}/talent?propose=${params.userId}`)}>
                 제안하기
