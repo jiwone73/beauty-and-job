@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
-import { 이용권, 게재종료일, 무료칸 } from '@/lib/companyEntitlement'
+import { 이용권, 게재종료일, 무료칸, 이벤트라이트부여 } from '@/lib/companyEntitlement'
 import { 무료소진안내 } from '@/lib/companyPlans'
 
 // 내 공고 목록
@@ -89,12 +89,14 @@ export async function POST(req: NextRequest) {
   // 임시저장(draft)이면 DRAFT, 그 외에는 ACTIVE로 등록. 화이트리스트 검증(문자열 인젝션 방지).
   const jobStatus = reqStatus === 'DRAFT' || reqStatus === 'draft' ? 'DRAFT' : 'ACTIVE'
 
-  // 무료(스타트)는 **한 번에 한 건**이다. 통틀어 한 번이 아니다 — 무료 공고는
-  // 사흘이면 내려가고 다시 걸 수 있으므로, 총량으로 세면 한 번 쓴 곳이 영영
-  // 못 걸게 된다.
-  //
-  // 임시저장은 세지 않는다 — 목록에 뜨지 않으니 자리를 쓰는 것이 아니다.
-  const { plan, paidUntil } = await 이용권(auth!.sub)
+  // 무료(스타트)는 **동시에 한 건**이다. 임시저장은 세지 않는다 — 목록에
+  // 뜨지 않으니 자리를 쓰는 것이 아니다.
+  let { plan, paidUntil } = await 이용권(auth!.sub)
+  if (!plan && jobStatus === 'ACTIVE') {
+    // 이벤트 기간에 가입하고 첫 공고를 올리는 길이면 여기서 라이트로 바뀐다.
+    const 이벤트혜택 = await 이벤트라이트부여(auth!.sub)
+    if (이벤트혜택) ({ plan, paidUntil } = 이벤트혜택)
+  }
   if (!plan && jobStatus === 'ACTIVE') {
     const { 남은것 } = await 무료칸(auth!.sub)
     if (남은것 <= 0) return err('PLAN_001', 무료소진안내, 403)

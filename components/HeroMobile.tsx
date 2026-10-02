@@ -32,7 +32,10 @@ export default function HeroMobile() {
       const n = r?.data?.[0];
       if (n) setNotice({ href: `/notice/${n.id}`, title: n.short_title || n.title });
     }).catch(() => {});
-    fetch("/api/jobs?limit=5&nosample=1&sort=new").then((r) => r.json()).then((r) => {
+    // 토큰을 실어야 로그인한 구직자에게 스타트(무료) 공고도 같이 보인다(2026-10-01).
+    const 토큰 = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    fetch("/api/jobs?limit=5&nosample=1&sort=new", 토큰 ? { headers: { Authorization: `Bearer ${토큰}` } } : undefined)
+      .then((r) => r.json()).then((r) => {
       const list = (r?.data || []).map((j: any) => ({ href: `/jobs/${j.id}`, title: j.title }));
       setFlashList(list);
     }).catch(() => {});

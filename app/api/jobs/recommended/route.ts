@@ -31,6 +31,8 @@ export async function GET(req: NextRequest) {
     // 쿼리를 다시 써야 하고, 왜 그 점수인지 설명하기도 어렵다.
     const 조건: string[] = ["j.is_sample IS NOT TRUE"];
     const params: any[] = [];
+    // 스타트(무료)는 회원(로그인한 구직자)에게만 노출된다 — /api/jobs와 같은 기준.
+    if (!userId) 조건.push("j.company_plan IS NOT NULL");
     if (jobTypeQ === "STORE" || jobTypeQ === "OFFICE") { 조건.push(`j.job_type = $${params.length + 1}`); params.push(jobTypeQ); }
     if (excludeIds.length) { 조건.push(`NOT (j.id = ANY($${params.length + 1}::uuid[]))`); params.push(excludeIds); }
     // 카드가 그대로 그릴 수 있게 /api/jobs 와 같은 칸을 돌려준다 — 목록마다 모양이

@@ -1,5 +1,6 @@
 import pool from "@/lib/db";
 import { 플랜, 스타트, 플랜인가, type PlanId } from "@/lib/companyPlans";
+import { 이벤트설정읽기 } from "@/lib/eventShowcase";
 
 export type 이용권정보 = {
   /** 유료 기간 안에 있을 때의 등급. 기간이 지났거나 비면 null(= 스타트) */
@@ -34,6 +35,41 @@ export async function 이용권(companyId: string): Promise<이용권정보> {
     paidUntil: r.paid_until ?? null,
     남은일: plan ? Number(r.남은일) : 0,
   };
+}
+
+/**
+ * 이벤트 기간에 가입하고 그 기간 안에 공고를 올리면 라이트 30일을 거저 준다
+ * ("이벤트 기간에 가입하고 공고를 등록하면 라이트 1개월을 드린다" 공지).
+ * 이미 유료(스타트가 아님)면 부를 필요가 없다 — 공고 등록 길목(POST, 재등록
+ * PATCH)에서 `이용권()`이 null을 준 경우에만 부른다.
+ *
+ * 메인 이벤트 채용관(app/api/jobs/showcase/route.ts)과 같은 조건(가입일·오늘이
+ * 다 설정의 from~to 안)을 쓴다 — 한쪽만 기준이 다르면 메인에는 떴는데 검색
+ * 목록 자리는 스타트인 경우가 생긴다.
+ */
+export async function 이벤트라이트부여(
+  companyId: string
+): Promise<{ plan: PlanId; paidUntil: string } | null> {
+  const 설정 = await 이벤트설정읽기();
+  if (!설정) return null;
+  const 오늘 = 오늘날짜();
+  if (오늘 < 설정.from || 오늘 > 설정.to) return null;
+
+  const { rows } = await pool.query(
+    `SELECT to_char(created_at, 'YYYY-MM-DD') AS 가입일 FROM companies WHERE id = $1`,
+    [companyId]
+  );
+  const 가입일 = rows[0]?.가입일;
+  if (!가입일 || 가입일 < 설정.from || 가입일 > 설정.to) return null;
+
+  const d = new Date(Date.now() + 9 * 36e5);
+  d.setUTCDate(d.getUTCDate() + 29); // 30일권 — 오늘을 넣어 세므로 오늘 + 29
+  const paidUntil = d.toISOString().slice(0, 10);
+  await pool.query(`UPDATE companies SET plan = 'LIGHT', paid_until = $2 WHERE id = $1`, [
+    companyId,
+    paidUntil,
+  ]);
+  return { plan: "LIGHT", paidUntil };
 }
 
 /** 세워 둔 기간 — 상품 하나치 */
@@ -82,9 +118,9 @@ export function 보관더하기(함: 보관함, plan: PlanId, days: number, 만�
 /**
  * 무료(스타트)로 지금 몇 건을 걸어 두었고 몇 건을 더 걸 수 있는가.
  *
- * **동시에 몇 건**이지 통틀어 몇 번이 아니다. 무료 공고는 사흘이면 내려가고
- * 다시 걸 수 있으므로, 총량으로 세면 한 번 쓴 곳은 영영 못 걸게 된다.
- * 막는 것이 아니라 한 번에 하나만 걸게 하는 것이 목적이다.
+ * **동시에 몇 건**이지 통틀어 몇 번이 아니다. 게재기간이 무기한이라 한 번
+ * 올린 공고는 마감하기 전까지 안 내려간다 — 총량으로 세면 한 번 쓴 곳은
+ * 영영 못 걸게 된다. 막는 것이 아니라 한 번에 하나만 걸게 하는 것이 목적이다.
  */
 export async function 무료칸(companyId: string): Promise<{ 쓴것: number; 남은것: number }> {
   const { rows } = await pool.query(
@@ -97,20 +133,15 @@ export async function 무료칸(companyId: string): Promise<{ 쓴것: number; �
 export const 오늘날짜 = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
 
 /**
- * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD).
+ * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD). null 이면 무기한.
  *
- * 유료는 이용권이 끝나는 날까지다. 무료는 오늘부터 사흘 — 오늘을 넣어 세므로
- * 사흘권이면 오늘 + 2가 마지막 날이다(유료 30일권이 오늘 + 29인 것과 같다).
- *
- * 사흘이 지나면 내려가지만 **다시 걸면 그날부터 또 사흘**이고 횟수 제한이
- * 없다. 공고를 뺏자는 것이 아니라 손이 가게 하려는 것이다 — 사흘마다 누르는
- * 것이 귀찮으면 라이트를 산다. 목록이 늘 최근 것으로 채워지는 효과는 덤이다.
+ * 유료는 이용권이 끝나는 날까지다. 무료(스타트)는 기간을 두지 않는다 — 헤어인잡처럼
+ * 날짜로 끊는 대신, 노출 범위(회원에게만)로 유료와 가른다("헤어인잡 때문이라도
+ * 무료상품은 게재기간을 두면 안될거 같아. 무기한으로", 2026-10-01). 예전엔 사흘
+ * 주기로 다시 걸게 해 손이 가게 했는데, 그 장치를 없앤 자리다.
  */
 export function 게재종료일(plan: PlanId | null, paidUntil: string | null): string | null {
-  if (plan && paidUntil) return paidUntil;
-  const d = new Date(Date.now() + 9 * 36e5);
-  d.setUTCDate(d.getUTCDate() + 스타트.게재일 - 1);
-  return d.toISOString().slice(0, 10);
+  return plan && paidUntil ? paidUntil : null;
 }
 
 /**

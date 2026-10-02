@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
-import { ok, err } from '@/lib/api'
+import { ok, err, getAuth } from '@/lib/api'
 
 // 브랜드(기업) 공개 상세 — 회사정보 + 채용 중 공고
 export async function GET(
@@ -29,13 +29,16 @@ export async function GET(
     }
     const company = companyRes.rows[0]
 
-    // 해당 회사의 활성 공고 (기존 v_active_jobs 재활용)
+    // 해당 회사의 활성 공고 (기존 v_active_jobs 재활용). 스타트(무료)는
+    // 회원(로그인한 구직자)에게만 노출된다 — /api/jobs와 같은 기준.
+    const auth = getAuth(req)
+    const 회원 = auth?.owner_type === 'user'
     const jobsRes = await pool.query(
       `SELECT id, title, job_type, company_id, company_name, brand_name, logo_url, company_type,
               location, work_type, salary_min, salary_max, salary_type,
               is_featured, deadline, created_at
        FROM v_active_jobs
-       WHERE company_id = $1
+       WHERE company_id = $1 ${회원 ? '' : 'AND company_plan IS NOT NULL'}
        ORDER BY is_featured DESC, created_at DESC`,
       [id]
     )

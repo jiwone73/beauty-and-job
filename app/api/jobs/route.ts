@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
-import { ok } from '@/lib/api'
+import { ok, getAuth } from '@/lib/api'
 import { 플랜, type PlanId } from '@/lib/companyPlans'
 
 // 화면 라벨은 '오피스'다. 예전에 쓰던 '본사'·'기업'도 그대로 받는다 —
@@ -49,6 +49,11 @@ export async function GET(req: NextRequest) {
   const prefix = active ? 'j.' : ''
 
   if (noSample) where.push(`${prefix}is_sample IS NOT TRUE`)
+  // 스타트(무료)는 회원(로그인한 구직자)에게만 노출된다. 비회원·기업회원에게는
+  // 검색 목록에서 아예 빠진다 — 마스킹이 아니라 노출 범위다("채용공고정보를
+  // 마스킹하는건 아닌거 같아... 검색목록에 안뜨게 해야 하지 않나", 2026-10-01).
+  // 상세페이지(/api/jobs/[id])는 직접 링크로 들어온 사람까지 막지 않는다.
+  if (getAuth(req)?.owner_type !== 'user') where.push(`${prefix}company_plan IS NOT NULL`)
 
   if (jobType) {
     where.push(`${prefix}job_type = $${idx++}`)

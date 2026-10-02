@@ -91,7 +91,9 @@ function SearchInner() {
     setTab("all");
     if (!q) { setJobs([]); return; }
     setLoading(true);
-    fetch(`/api/jobs?q=${encodeURIComponent(q)}&limit=100`)
+    // 토큰을 실어야 로그인한 구직자에게 스타트(무료) 공고도 같이 보인다(2026-10-01).
+    const 토큰 = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    fetch(`/api/jobs?q=${encodeURIComponent(q)}&limit=100`, 토큰 ? { headers: { Authorization: `Bearer ${토큰}` } } : undefined)
       .then((r) => r.json())
       .then((res) => {
         if (res.success && Array.isArray(res.data)) setJobs(res.data.map(mapJob));

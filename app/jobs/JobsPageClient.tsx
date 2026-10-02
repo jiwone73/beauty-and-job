@@ -218,7 +218,10 @@ function JobsPageInner() {
     const qs = new URLSearchParams(조건);
     qs.set("limit", String(한번에));
     qs.set("page", String(쪽));
-    fetch(`/api/jobs?${qs.toString()}`)
+    // 토큰을 실어야 로그인한 구직자에게 스타트(무료) 공고도 같이 보인다 —
+    // 안 실으면 회원도 비회원과 같이 걸러진다(2026-10-01, 회원전용 노출).
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    fetch(`/api/jobs?${qs.toString()}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
       .then(r => r.json())
       .then(res => {
         if (res.success && Array.isArray(res.data)) {
