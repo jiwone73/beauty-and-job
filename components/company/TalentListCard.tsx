@@ -85,6 +85,8 @@ export const TalentListStyle = () => (
                빼서 줄 흐름에서 키를 안 차지하게 한다. 안 그러면 이 줄이
                버튼 두 개 높이만큼 부풀어 바로 아랫줄과의 간격이 벌어진다.
                gap도 위 jobrow 간격(7.6px 반올림)에 맞춰 2행 끝과 딱 맞춘다. */
+            /* 지역만 13.5px — 한글만 이어진 지역이 숫자 섞인 줄보다 커 보인다("지역을 13.5로 해봐"). */
+            .co-li-reg { font-size: 13.5px; }
             .co-li-recv { font-size: 11px; color: #9a9aa3; white-space: nowrap; line-height: 14px; position: relative; top: 2px; }
             .co-li-actcol { position: absolute; top: 0; right: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
           `}</style>
@@ -106,7 +108,6 @@ export default function TalentListCard({
   const region = t.regionPrefer ? shortenRegion(t.regionPrefer) : null;
   const ageGender = [t.age ? `${t.age}세` : null, gl].filter(Boolean).join(" · ");
   const career = careerLabel(t.careerYears, t.careerCount);
-  const row3 = [career, region].filter(Boolean).join(" · ");
   return (
     <div className="co-row">
       <div className="co-li" onClick={() => onOpenResume(t)}>
@@ -154,7 +155,12 @@ export default function TalentListCard({
                 {ageGender && <span className="co-li-ageg">{ageGender}</span>}
               </div>
             </div>
-            {row3 && <div className="co-li-meta2">{row3}</div>}
+            {(career || region) && (
+              <div className="co-li-meta2">
+                {career}{career && region ? " · " : ""}
+                {region && <span className="co-li-reg">{region}</span>}
+              </div>
+            )}
           </div>
         </div>
       </div>
