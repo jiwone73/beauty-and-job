@@ -19076,7 +19076,10 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 이름은 카드와 같은 회색 굵게("김가이드 #555 볼드체 맞는지 다시확인해줘"
    — 확인해 보니 #333로 잘못 나가고 있었다, #555로 고친다). 인재 칸 3행
    크기는 데탑 기준 1행 15 · 2행 14 · 3행 14로 통일한 값이다. */
-.apl-td-name { color: #555; font-weight: 700; font-size: 15px; white-space: nowrap; }
+/* .company-layout/.co-m 의 전체 평체화(!important)가 이겨서 볼드가 한 번도
+   안 먹혔다("제안스크랩에 왜 이름은 볼드체가 아니지?", 2026-10-02) —
+   .co-li-name과 같은 식으로 !important를 건다. */
+.apl-td-name { color: #555; font-weight: 700 !important; font-size: 15px; white-space: nowrap; }
 .apl-td-sub { color: #555; font-size: 14px; white-space: nowrap; }
 /* 지원분야는 평체로("헤어디자이너는 평체로 하자"). */
 .apl-td-role { color: #333; font-weight: 400; font-size: 14px; }
