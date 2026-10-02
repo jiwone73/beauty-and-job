@@ -17033,8 +17033,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .prop-table.received thead { display: none; }
   .prop-table.received tbody { display: block; }
   .prop-table.received tbody tr:not(.prop-msg-row) {
-    display: block; background: #fff; border: 1px solid #ececf0; border-radius: 10px;
-    padding: 5px; margin-bottom: 8px;
+    display: flex; flex-direction: column; background: #fff; border: 1px solid #ececf0;
+    border-radius: 10px; padding: 5px; margin-bottom: 8px;
   }
   .prop-table.received tr.prop-msg-row { display: block; margin: -8px 0 8px; }
   .prop-table.received tr.prop-msg-row td { display: block; border: none; padding: 0 5px 8px; }
@@ -17045,17 +17045,30 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   /* 아바타를 카드 테두리 바로 안쪽(5px)까지 민다 — 공고지원자 카드와 같은 여백. */
   .prop-table.received .apl-td-who { padding: 0 0 8px; }
   .prop-table.received .apl-td-whobtn { width: 100%; }
+  /* 이름 밑 성별·지역 — "오지훈 밑에 성별 지역 폰트크기를 1px 줄여"(2026-10-02). */
+  .prop-table.received .apl-td-sub { font-size: 13px; }
   /* 공고지원자·인재풀과 같은 라벨 없는 값 대신, 열 머리가 사라진 자리라
      무슨 값인지 짧은 라벨을 붙인다. */
-  .prop-table.received .c-post, .prop-table.received .c-job,
+  .prop-table.received .c-job,
   .prop-table.received .c-cond, .prop-table.received .c-date {
     padding-top: 6px; margin-top: 6px; border-top: 1px dashed #f0f0f3; font-size: 13px; color: #555;
+  }
+  /* 공고명을 맨 위(인재 사진 위)로 — "공고명을 아바타 위로 올려"(2026-10-02).
+     표 줄을 flex column으로 바꿔 order로만 옮긴다(DOM·PC 순서는 그대로). */
+  .prop-table.received .c-post {
+    order: -1; padding: 0 0 8px; margin: 0 0 8px; border-bottom: 1px dashed #f0f0f3;
+    font-size: 13px; color: #555;
   }
   .prop-table.received .c-post::before { content: "제안한 공고  "; color: #9a9aa3; }
   .prop-table.received .c-job::before { content: "모집분야  "; color: #9a9aa3; }
   .prop-table.received .c-cond::before { content: "근무조건  "; color: #9a9aa3; }
   .prop-table.received .c-date::before { content: "제안일  "; color: #9a9aa3; }
-  .prop-table.received .c-cond span { display: inline; white-space: normal; overflow: visible; text-overflow: clip; }
+  /* 요일·시간·급여 세 칸이 붙어 있으면 "협의월급 216만원 이상"처럼 붙어
+     읽혔다 — 값 사이에 가운뎃점을 둔다. */
+  .prop-table.received .c-cond span {
+    display: inline; white-space: normal; overflow: visible; text-overflow: clip;
+  }
+  .prop-table.received .c-cond span:not(:last-child):not(:empty)::after { content: " · "; color: #9a9aa3; }
   .prop-table.received .prop-post { white-space: normal; text-align: left; }
 }
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이

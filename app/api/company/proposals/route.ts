@@ -115,10 +115,15 @@ export async function GET(req: NextRequest) {
       // ("근무조건 3행. 요일, 시간, 급여 1칸씩").
       ...(() => {
         const 행 = 근무조건3행들(r.job_positions, r.position_index);
+        // 자리를 못 골라 모집분야 전부를 이어붙일 때, 분야마다 조건이 같으면
+        // 그대로 두 번 세 번 반복됐다("월급 216까지만 보여야해" — 분야 셋이
+        // 전부 협의·월216이라 똑같은 값이 세 번 붙어 있었다). 겹치는 값은
+        // 한 번만 남긴다.
+        const 겹침없이 = (xs: string[]) => [...new Set(xs.filter(Boolean))].join(" / ") || null;
         return {
-          workConditionDay: 행.map((x) => x.요일).filter(Boolean).join(" / ") || null,
-          workConditionTime: 행.map((x) => x.시간).filter(Boolean).join(" / ") || null,
-          workConditionSalary: 행.map((x) => x.급여).filter(Boolean).join(" / ") || null,
+          workConditionDay: 겹침없이(행.map((x) => x.요일)),
+          workConditionTime: 겹침없이(행.map((x) => x.시간)),
+          workConditionSalary: 겹침없이(행.map((x) => x.급여)),
         };
       })(),
       message: r.message,

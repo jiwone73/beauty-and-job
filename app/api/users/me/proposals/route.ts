@@ -58,13 +58,16 @@ export async function GET(req: NextRequest) {
     // 모집분야는 공고 상세와 같은 규칙으로 한 줄로 편다(lib/positionLine).
     const 목록 = rows.map((r) => {
       const 조건행들 = 근무조건3행들(r.positions, r.position_index);
+      // 자리를 못 골라 모집분야 전부를 이어붙일 때, 분야마다 조건이 같으면
+      // 겹치는 값이 그대로 반복됐다 — 보낸제안 표와 같은 규칙으로 한 번만 남긴다.
+      const 겹침없이 = (xs: string[]) => [...new Set(xs.filter(Boolean))].join(" / ") || null;
       return {
         ...r,
         positionLines: 제안분야들(r.positions, r.position_index, (r.job_type || "") === "OFFICE"),
         // 근무조건(요일·시간·급여) — 보낸제안 표의 근무조건 칸과 같은 규칙.
-        workConditionDay: 조건행들.map((x) => x.요일).filter(Boolean).join(" / ") || null,
-        workConditionTime: 조건행들.map((x) => x.시간).filter(Boolean).join(" / ") || null,
-        workConditionSalary: 조건행들.map((x) => x.급여).filter(Boolean).join(" / ") || null,
+        workConditionDay: 겹침없이(조건행들.map((x) => x.요일)),
+        workConditionTime: 겹침없이(조건행들.map((x) => x.시간)),
+        workConditionSalary: 겹침없이(조건행들.map((x) => x.급여)),
       };
     });
     return ok({ proposals: 목록, unread });
