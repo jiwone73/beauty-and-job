@@ -55,7 +55,7 @@ export default function EventBand({ 받는쪽 = "company", 요금안내 = false 
       <Link href={갈곳} className="co-evtband">
         <Gift size={16} />
         <span className="co-evtband-t">{것.title}</span>
-        <span className="co-evtband-go">자세히 보기<ChevronRight size={15} /></span>
+        <span className="co-evtband-go"><ChevronRight size={15} /></span>
       </Link>
       {요금안내 && (
         <p className="co-evtband-n">

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Briefcase, Plus, Inbox, Sparkles } from "lucide-react";
-import { 마감인가 } from "@/lib/jobClosed";
 
 interface Stats {
   active_jobs: number;
@@ -35,12 +34,6 @@ interface ApplicantItem {
   applied_at: string;
   viewed_at: string | null;
 }
-
-const EXP_LABEL: Record<string, string> = {
-  NEW: "신입",
-  EXPERIENCED: "경력",
-  ANY: "경력무관",
-};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(".", ".");
@@ -179,14 +172,13 @@ export default function CompanyDashboard() {
               <thead>
                 {/* 이름은 대부분 3자라 그만큼만 잡고, 남는 폭은 지원공고 칸에 준다
                     ("이름칸이 너무 넓어. 보통이름은 3자"). */}
-                <tr><th style={{ width: 52 }}>이름</th><th>지원공고</th><th>경력</th><th>지원일</th></tr>
+                <tr><th style={{ width: 52 }}>이름</th><th>지원공고</th><th>지원일</th></tr>
               </thead>
               <tbody>
                 {안본지원자.map((a) => (
                   <tr key={a.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name">{a.user_name}</td>
                     <td className="company-td-sub">{a.job_title}</td>
-                    <td className="company-td-sub">{a.experience_level ? EXP_LABEL[a.experience_level] || "-" : "-"}</td>
                     <td className="company-td-sub">{formatDate(a.applied_at)}</td>
                   </tr>
                 ))}
@@ -256,7 +248,7 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
@@ -264,20 +256,6 @@ export default function CompanyDashboard() {
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
                     <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
-                    <td>
-                      {(() => {
-                        // 마감 판정은 공용 함수로 — 여기만 날짜 셈이 달라 다른 화면과
-                        // 갈리는 일을 막는다. 노출 여부는 이제 v_active_jobs가 상태·
-                        // 마감일만 보고 그때그때 정하니 여기서 따로 셀 것이 없다
-                        // ("게제기간은 없고 공고 마감일하고 이용기간이 있겠지", 2026-10-02).
-                        const closed = 마감인가(job.status, job.deadline);
-                        const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지"
-                          : closed ? "마감" : "진행중";
-                        const color = job.status === "DRAFT" ? "#555" : job.status === "PAUSED" ? "#f59e0b"
-                          : closed ? "#555" : "#10b981";
-                        return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
-                      })()}
-                    </td>
                   </tr>
                 ))}
               </tbody>
