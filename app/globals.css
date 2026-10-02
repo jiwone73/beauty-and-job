@@ -19317,6 +19317,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
      규칙(.tal-st-r, .tal-when-r { font-size: inherit !important })은 그대로
      두고, 모바일 전용으로 지원일만 새로 못박는다. */
   .apl-card .tal-when-r { font-size: 12px !important; }
+  /* 추천 인재·인재검색 카드와 같은 포맷으로("공고지원도 반영해줘") — 아바타 70px,
+     세 줄 줄높이 20px(직군-이름 7px, 이름-지역 3px: 20*3 + 7 + 3 = 70),
+     나이·성별·상태 14px, 지역 13.5px, 지원일 12px. PC는 그대로. */
+  .apl-card .tal-avatar { height: 70px; }
+  .apl-card .tal-name.tal-role { line-height: 20px; }
+  .apl-card .tal-main > .tal-line2:first-of-type { font-size: 14px !important; line-height: 20px; }
+  .apl-card .tal-main > .tal-line2:last-of-type { line-height: 20px; height: 20px; }
+  .apl-card .tal-main > .tal-line2:last-of-type > span:first-child { font-size: 13.5px !important; }
 }
 /* 인재풀(PC, TalentCard) 사진도 지원자 카드와 같은 크기로("아바타 사진은
    공고지원자 아바타 크기로 통일") — 이번 "원점부터 다시" 작업은 지원자
