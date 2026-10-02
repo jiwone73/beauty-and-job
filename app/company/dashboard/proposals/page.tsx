@@ -236,6 +236,23 @@ export default function CompanyProposalsPage() {
   const [목록, set목록] = useState<제안[]>([]);
   const [로딩, set로딩] = useState(true);
   const [대화, set대화] = useState<제안 | null>(null);
+  // 모바일 수락대기 카드의 메시지 — 2줄 넘으면 말줄임, 누르면 펼친다
+  // ("메시지가 2줄 넘으면 ... 처리해주고... 눌렀을때 전체 메시지가 보이게
+  // 펼침으로 해줘", 2026-10-02).
+  const [펼친메시지, set펼친메시지] = useState<Set<string>>(new Set());
+  const 메시지토글 = (id: string) => set펼친메시지((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  // 모바일 종료 카드의 거절 사유 — 같은 규칙(1줄 넘으면 말줄임, 누르면
+  // 전체 펼침, "1줄 넘으면 ... 처리하고 전체메시지 펼침보고", 2026-10-02).
+  const [펼친사유, set펼친사유] = useState<Set<string>>(new Set());
+  const 사유토글 = (id: string) => set펼친사유((prev) => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
   // 제안 거두기. 되돌릴 수 없으니 한 번 묻는다.
   const [취소할것, set취소할것] = useState<제안 | null>(null);
   const 취소하기 = async () => {
@@ -620,6 +637,12 @@ export default function CompanyProposalsPage() {
                         ))}
                       </span>
                     )}
+                    {/* 점만 있으면 지금 몇 단계인지 안 읽힌다("프로그레스바에
+                        단계 이름이 없어", 2026-10-02) — 현재 단계 이름만
+                        점 옆에 짧게 붙인다(넉 줄 다 적으면 자리가 없다). */}
+                    {탭 !== "종료" && (
+                      <span className="prop-step-mini-label">{단계들[현재단계(상태(p))]}</span>
+                    )}
                   </span>
                   <span className="prop-card2-job">{조건(p) || "—"}</span>
                   <button type="button" className="prop-card2-viewjob"
@@ -631,13 +654,25 @@ export default function CompanyProposalsPage() {
             );
             if (탭 === "종료") {
               return (
-                <div className="prop-card2 ended" key={p.id}>
+                <div className="prop-card2 ended sent" key={p.id}>
                   {사람칸}
+                  {/* 모바일 전용 — 배지·날짜를 사람칸 옆, 공고 보기 글자 하단에
+                      맞춰 오른쪽 정렬로 뺀다("거절함 날자는 아바타 쪽 오른쪽
+                      정렬" / "날자를 공고보기 글자 하단과 맞춰" / "거절함이
+                      날자 위로 올라가야지", 2026-10-02). 데스크탑은 아래
+                      .prop-card2-end 안의 것을 그대로 쓴다. */}
+                  <div className="prop-end-mobile">
+                    <span className={`prop-badge prop-badge-${st}`}>{종료라벨[st]}</span>
+                    <span className="prop-upd">{날짜(종료일(p))}</span>
+                  </div>
                   <div className="prop-card2-end">
                     <span className={`prop-badge prop-badge-${st}`}>{종료라벨[st]}</span>
                     <span className="prop-upd">{날짜(종료일(p))}</span>
                     {st === "거절" && p.declineReason && (
-                      <p className="prop-reason">거절 사유: “{p.declineReason}”</p>
+                      <p className={`prop-reason${펼친사유.has(p.id) ? " open" : ""}`}
+                        onClick={() => 사유토글(p.id)}>
+                        {p.declineReason}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -694,17 +729,20 @@ export default function CompanyProposalsPage() {
                           </span>
                         )}
                       </span>
-                      {/* 모바일 전용 — "스크롤 압박, 공간활용 잘해야지"(2026-10-01)
-                          로 최근대화 줄 옆에 그대로 옮긴다. */}
+                    </span>
+                    {/* 모바일 전용 — 채팅하기를 메시지창과 같은 줄 오른쪽으로
+                        ("채팅하기 버튼은 메시지창과 같은라인에 오른쪽으로
+                        배치해줘", 2026-10-02). 화살표(>)는 지운다("> 삭제해줘"). */}
+                    <span className="prop-card2-preview-row">
+                      <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
+                        <span>{p.lastMessageBody}</span>
+                        <ChevronRight size={16} className="prop-card2-preview-chevron" />
+                      </button>
                       <button type="button" className="prop-chat-solid prop-card2-chat-mobile"
                         disabled={채팅막힘} style={채팅버튼스타일} onClick={채팅클릭}>
                         채팅하기
                       </button>
                     </span>
-                    <button type="button" className="prop-card2-preview" onClick={() => set대화(p)}>
-                      <span>{p.lastMessageBody}</span>
-                      <ChevronRight size={16} />
-                    </button>
                   </div>
                 )}
                 {/* 거두는 일(제안 취소)은 답이 없는 줄에서만 하는 일이라 이미
@@ -778,15 +816,18 @@ export default function CompanyProposalsPage() {
                         <span className="apl-td-sub">{p.regionPrefer || "—"}</span>
                       </span>
                     </button>
-                    {/* 모바일 전용 — 성별 줄 오른쪽에 급여, 그 밑줄에 제안 취소
-                        ("카드 오른쪽 성별 있는 줄에 급여정보 넣고, 그밑에 줄에
-                        제안 취소버튼", 2026-10-02). 아래 메시지 줄의 제안
-                        취소는 모바일에서 숨긴다(버튼이 두 곳에 보이면 안 됨). */}
+                    {/* 모바일 전용 — 이름 줄엔 모집분야, 성별 줄엔 급여, 지역
+                        줄엔 제안일("헤어스탭을 월급 216만원 이상 위에 올려",
+                        "카드 오른쪽 성별 있는 줄에 급여정보 넣고, 그밑에 줄에
+                        제안 취소버튼", 이후 "제안취소 버튼하고 날자하고 위치
+                        바꿔"로 자리가 다시 바뀌었다. "날자 뒤에 보냄이라고
+                        써줘", 2026-10-02). 제안 취소는 메시지 끝으로 옮기고
+                        모집분야(.c-job)·메시지 줄 원래 취소 버튼은 모바일에서
+                        숨긴다(두 곳에 보이면 안 됨). */}
                     <div className="prop-card-aside">
+                      <span className="prop-card-job">{조건(p)}</span>
                       <span className="prop-card-salary">{p.workConditionSalary}</span>
-                      <button type="button" className="prop-cancel" onClick={() => set취소할것(p)}>
-                        제안 취소
-                      </button>
+                      <span className="prop-card-date">{날짜(p.createdAt)} 보냄</span>
                     </div>
                   </td>
                   {/* 어느 공고로 보낸 제안인지. 누르면 그 공고만 본다 — 옆줄에
@@ -818,6 +859,22 @@ export default function CompanyProposalsPage() {
                     ) : <span>—</span>}
                   </td>
                   <td className="c-date">{날짜(p.createdAt)}</td>
+                  {/* 모바일 전용 — 제안 메시지가 카드 박스 안, 원래 제안일 자리
+                      (아바타 밑 구분선)로 들어간다("그 날자 자리에 메시지를
+                      넣으라고. 박스안에 메시지가 들어가야해", 2026-10-02).
+                      제안일 대신 제안 취소를 메시지 끝에 둔다("제안취소
+                      버튼하고 날자하고 위치 바꿔"). */}
+                  <td className="c-msg">
+                    <span
+                      className={`c-msg-text${펼친메시지.has(p.id) ? " open" : ""}`}
+                      onClick={() => p.message && 메시지토글(p.id)}
+                    >
+                      {p.message ? `“${p.message}”` : "—"}
+                    </span>
+                    <button type="button" className="prop-cancel c-msg-cancel" onClick={() => set취소할것(p)}>
+                      제안 취소
+                    </button>
+                  </td>
                 </tr>
                 {/* 제안하며 쓴 말과 제안 취소는 버튼 하나뿐이라 같은 줄 오른쪽에 둔다
                     ("메시지가 버튼위치 시작전에 줄바꿈하라고 했는데"). */}

@@ -17007,8 +17007,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    낭비야") — 그만큼 줄여 모집분야·근무조건에 더 준다. 기업 25 /
    제안한 공고 23 / 모집분야 18 / 근무조건 24 / 제안일 10. */
 .prop-table.received { width: 100%; }
-/* 모바일 전용 칸(급여·제안취소) — PC 표에서는 숨긴다. */
+/* 모바일 전용 칸(급여·제안취소·메시지) — PC 표에서는 숨긴다. */
 .prop-card-aside { display: none; }
+.prop-table.received .c-msg { display: none; }
 .prop-table.received .apl-td-who { width: 25%; }
 .prop-table.received .c-post { width: 23%; max-width: none; }
 .prop-table.received .c-job { width: 18%; max-width: none; }
@@ -17034,19 +17035,34 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .prop-table.received { display: block; min-width: 0; width: 100%; }
   .prop-table.received thead { display: none; }
   .prop-table.received tbody { display: block; }
+  /* 그리드로 줄을 짠다 — "제안일을 헤어스텝 있는 그 줄에 오른쪽 정렬"처럼
+     서로 다른 칸(td)을 한 줄에 같이 놓으려면 flex column(세로로 쌓기)로는
+     안 되고, 영역 이름으로 자리를 지정하는 grid가 필요하다. */
   .prop-table.received tbody tr:not(.prop-msg-row) {
-    display: flex; flex-direction: column; background: #fff; border: 1px solid #ececf0;
+    display: grid; grid-template-columns: 1fr auto;
+    grid-template-areas: "post post" "who who" "msg msg";
+    background: #fff; border: 1px solid #ececf0;
     border-radius: 10px; padding: 5px; margin-bottom: 8px;
   }
-  .prop-table.received tr.prop-msg-row { display: block; margin: -8px 0 8px; }
+  .prop-table.received tr.prop-msg-row { display: block; margin: -4px 0 8px; }
   .prop-table.received tr.prop-msg-row td { display: block; border: none; padding: 0 5px 8px; }
+  /* 메시지는 카드 박스 안(원래 제안일 자리)으로 옮겼다 — 메시지 밑
+     줄(.prop-msg-row)의 글은 모바일에서 숨긴다. ".sent"로만 걸어 구직자
+     쪽 받은제안은 그대로 둔다("박스안에 메시지가 들어가야해", 2026-10-02). */
+  .prop-table.received.sent .prop-msg-row .prop-msg-text { display: none; }
   .prop-table.received td {
     display: block; width: auto !important; max-width: none !important;
     border: none; padding: 0; white-space: normal;
   }
   /* 아바타를 카드 테두리 바로 안쪽(5px)까지 민다 — 공고지원자 카드와 같은 여백. */
-  .prop-table.received .apl-td-who { display: flex; align-items: flex-start; gap: 8px; padding: 0 0 8px; }
+  /* 아바타 밑 구분선까지 간격을 카드 왼쪽 여백(5px)과 같게 — "왼쪽 여백기준으로
+     위 아래 맞춰줘"(2026-10-02). */
+  .prop-table.received .apl-td-who { display: flex; align-items: flex-start; gap: 8px; padding: 0 0 5px; }
   .prop-table.received .apl-td-whobtn { width: auto; flex: 1; min-width: 0; }
+  /* 사진 위아래 여백이 왼쪽(카드 패딩 5px)보다 떠 보였다 — 이름·성별·지역
+     3줄(20px×3=60px)과 같은 높이로 맞춘다("아바타 위 아래 여백 줄여줘
+     좌측하고 같은 넓이로", 2026-10-02). */
+  .prop-table.received .apl-td-avatar { height: 60px; }
   /* 이름 밑 성별·지역 — "오지훈 밑에 성별 지역 폰트크기를 1px 줄여"(2026-10-02). */
   .prop-table.received .apl-td-sub { font-size: 13px; line-height: 20px; }
   .prop-table.received .apl-td-name { line-height: 20px; }
@@ -17058,34 +17074,71 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .prop-table.received .prop-card-aside {
     display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;
   }
-  .prop-table.received .prop-card-aside::before { content: ""; display: block; height: 20px; }
+  .prop-table.received .prop-card-job,
   .prop-table.received .prop-card-salary { font-size: 13px; line-height: 20px; color: #555; white-space: nowrap; }
-  .prop-table.received .prop-card-aside .prop-cancel {
-    height: 20px; box-sizing: border-box; padding: 0 8px; font-size: 12px; line-height: 1;
-    display: inline-flex; align-items: center; justify-content: center;
-  }
+  /* 지역 줄에 들어가는 제안일 — "제안취소 버튼하고 날자하고 위치 바꿔",
+     "날자 뒤에 보냄이라고 써줘"(2026-10-02). */
+  .prop-table.received .prop-card-date { font-size: 12px; line-height: 20px; color: #9a9aa3; white-space: nowrap; }
   /* 공고지원자·인재풀과 같은 라벨 없는 값 대신, 열 머리가 사라진 자리라
-     무슨 값인지 짧은 라벨을 붙인다. */
-  .prop-table.received .c-job,
-  .prop-table.received .c-cond, .prop-table.received .c-date {
-    padding-top: 6px; margin-top: 6px; border-top: 1px dashed #f0f0f3; font-size: 13px; color: #555;
+     무슨 값인지 짧은 라벨을 붙인다. 모집분야(.c-job)·제안일(.c-date)은 값만
+     남기기로 해서("모집분야 지우고... 헤어스텝은 남겨두고", "날짜만") 라벨이
+     없다. */
+  /* 모집분야는 이제 오른쪽 기둥 첫 줄(이름 줄 옆)로 옮겨서 여기선 숨긴다. */
+  .prop-table.received .c-job { display: none; }
+  /* 제안일은 원래 .prop-card-date-mobile로 박스 밖에 뺐었는데, 이제 메시지
+     끝에 붙여 박스 안으로 다시 들어온다("날자는 메시지 끝에 보이게
+     넣어줘") — 그 칸은 더 안 쓴다. */
+  .prop-table.received .c-date { display: none; }
+  /* 메시지가 원래 제안일이 있던 자리(아바타 밑 구분선 + 칸)를 그대로 이어받는다
+     — 카드 박스 하나 안에 들어가야 한다("박스안에 메시지가 들어가야해"). */
+  /* 메시지는 줄바꿈되고, 마지막 줄 옆 빈자리에 제안 취소가 들어간다 — PC
+     원래 자리(.prop-msg-line)와 같은 짜임("메시지가 버튼위치 시작전에
+     줄바꿈하라고 했는데"가 PC 기준이었는데 모바일도 같게, "메시지
+     줄바꿈해줘. 그 자리에 제안취소 버튼 들어가게", 2026-10-02). */
+  .prop-table.received .c-msg {
+    display: flex; align-items: center; gap: 8px; grid-area: msg;
+    padding-top: 5px; margin-top: 0; border-top: 1px dashed #f0f0f3;
+    font-size: 13px; color: #555; line-height: 1.5;
   }
-  /* 공고명을 맨 위(인재 사진 위)로 — "공고명을 아바타 위로 올려"(2026-10-02).
-     표 줄을 flex column으로 바꿔 order로만 옮긴다(DOM·PC 순서는 그대로). */
+  /* 2줄 넘으면 말줄임, 누르면 펼친다("메시지가 2줄 넘으면 ... 처리해주고
+     ... 눌렀을때 전체 메시지가 보이게 펼침으로 해줘", 2026-10-02). */
+  /* 첨부 캡처 배경은 보라가 아니라 사이트 전역에서 이미 쓰는 중립 회색
+     (#f7f7f8 — .prop-dec-msg/.pth-fixed/.prop-card2-preview 등과 같은 값,
+     실측 rgb(246,246,247))이었다 — 새 색을 만들지 않고 그 값을 그대로
+     쓴다("메시지는 첨부처럼 색상을 넣어줘" → "색상이 틀리잖아" →
+     "항상 통일감을 생각하세요", 2026-10-02). 글자색도 #555 하나
+     ([[text-color-555]]). */
+  .prop-table.received .c-msg-text {
+    flex: 1; min-width: 0; cursor: pointer;
+    background: #f7f7f8; color: #555; padding: 6px 10px; border-radius: 10px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .prop-table.received .c-msg-text.open { -webkit-line-clamp: unset; overflow: visible; }
+  .prop-table.received .c-msg-cancel {
+    flex-shrink: 0; width: fit-content; padding: 4px 10px; font-size: 12px;
+  }
+  /* "근무조건 협의 · 월급 216만원 이상" 줄 지움 — 급여는 이미 이름 줄 옆에
+     보인다("근무조건 그 행을 지워", 2026-10-02). */
+  .prop-table.received .c-cond { display: none; }
+  /* 공고명을 맨 위(인재 사진 위)로 — "공고명을 아바타 위로 올려"(2026-10-02). */
   .prop-table.received .c-post {
-    order: -1; padding: 0 0 8px; margin: 0 0 8px; border-bottom: 1px dashed #f0f0f3;
+    grid-area: post; padding: 0 0 8px; margin: 0 0 8px; border-bottom: 1px dashed #f0f0f3;
     font-size: 13px; color: #555;
   }
-  .prop-table.received .c-job::before { content: "모집분야  "; color: #9a9aa3; }
+  .prop-table.received .apl-td-who { grid-area: who; }
   .prop-table.received .c-cond::before { content: "근무조건  "; color: #9a9aa3; }
-  .prop-table.received .c-date::before { content: "제안일  "; color: #9a9aa3; }
   /* 요일·시간·급여 세 칸이 붙어 있으면 "협의월급 216만원 이상"처럼 붙어
      읽혔다 — 값 사이에 가운뎃점을 둔다. */
   .prop-table.received .c-cond span {
     display: inline; white-space: normal; overflow: visible; text-overflow: clip;
   }
   .prop-table.received .c-cond span:not(:last-child):not(:empty)::after { content: " · "; color: #9a9aa3; }
-  .prop-table.received .prop-post { white-space: normal; text-align: left; }
+  /* 공고명 2줄 넘으면 말줄임 — "채용공고명은 2줄 넘으면 ...게 처리해줘"
+     (2026-10-02), 공고·지원자 관리의 .co-pane-title과 같은 기준(2줄). */
+  .prop-table.received .prop-post {
+    white-space: normal; text-align: left;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
   /* 제안 취소를 마포구 줄로 올렸으니 메시지 밑 원래 자리의 것은 숨긴다 —
      ".sent"로만 걸어 구직자 쪽 받은제안(거절하기·수락하기)은 그대로 둔다. */
   .prop-table.received.sent .prop-msg-row .prop-cancel { display: none; }
@@ -17148,7 +17201,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 이름·부제는 인재풀·지원자 표의 이름 칸과 같은 값이다(.apl-td-name/.apl-td-sub) —
    글자색은 어디서나 #555 하나, 굵기·크기로만 단계를 가른다("글자색은 #555
    하나. 옅은 회색을 새로 만들지 않는다"). */
-.prop-card2-name { font-size: 15px; font-weight: 700; color: #555;
+/* .co-m/.company-layout 전체 평체화(!important)가 이겨서 볼드가 한 번도
+   안 먹혔다 — .apl-td-name 때와 같은 문제("이름 볼드체잖아", 2026-10-02). */
+.prop-card2-name { font-size: 15px; font-weight: 700 !important; color: #555;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 13px로 적혀 있었지만 위 주석(.apl-td-sub와 같은 값)은 14px이다 — 실제로는
    안 맞았다("공고지원 인재카드에 있는 폰트 크기, 색상확인하고" 2026-10-02). */
@@ -17229,19 +17284,114 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    이름옆에 넣어" / "채팅하기 버튼 크기 있잖아 크기 똑같이 적용해" /
    "스크롤 압박, 공간활용 잘해야지"(2026-10-01). */
 .prop-step-mini, .prop-card2-chat-mobile { display: none; }
+/* 모바일 종료 카드 전용 — 사람칸 옆 오른쪽 정렬 날짜. 데스크탑에서는
+   아래 .prop-card2-end 안의 .prop-upd를 그대로 쓴다. 미디어쿼리보다 먼저
+   와야 그 안의 display 재정의가 이긴다(순서가 같으면 나중 선언이 이김). */
+.prop-end-mobile { display: none; }
 @media (max-width: 768px) {
-  .prop-card2 { flex-wrap: wrap; row-gap: 10px; }
-  .prop-card2-co { flex: 1 1 100%; }
-  .prop-card2-job, .prop-card2-viewjob, .prop-step, .prop-card2-acts { display: none; }
+  /* 탭(수락대기·진행중·종료)의 PC용 왼쪽 패딩(16px)이 그대로 남아 아래
+     카드들(페이지 여백 7px 기준)보다 더 안쪽에서 시작했다 — 페이지 다른
+     요소와 같은 왼쪽 선에 맞춘다("수락대기 진행중 종료 탭 좌측 정렬",
+     2026-10-02). 받은제안(구직자 화면)에는 손대지 않는다. */
+  .co-m .prop-tabs { padding-left: 0; }
+  /* 상하 14px·좌우 12px(PC 값)를 그대로 써서 아바타가 왼쪽보다 위쪽으로
+     더 떠 보였다 — 모바일 카드 패딩 표준값(5px)으로 사방 통일
+     ("아바타와 테두리간 여백 통일해", 2026-10-02). */
+  /* 사람칸(.prop-card2-co)이 이름·직군·공고보기 3줄로 길어지면서 PC 기준
+     align-items:center 때문에 스테퍼가 그 블록 가운데로 내려가 보였다 —
+     캡처처럼 이름 줄과 같은 높이로 위로 올린다("위로 올려야지", 2026-10-02). */
+  .prop-card2 { flex-wrap: wrap; row-gap: 10px; padding: 5px; align-items: flex-start; gap: 4px; }
+  /* 아바타-이름 간격도 PC 값(12px) 그대로였다 — 수락대기 카드(.apl-td-who,
+     8px)와 통일, 더 붙여 달라고 해서 6px로("아바타하고 이름사이에 간격도
+     통일해줘. 더 붙여야해", 2026-10-02). */
+  /* flex-basis가 auto면 안의 글자(직군 등) 내용 폭만큼 먼저 자리를 요구해
+     스테퍼가 한 줄에 못 들어가고 밑으로 떨어졌다 — basis를 0으로 둬 남는
+     폭만 가져가게 한다("프로그레스바 위치가 왜저래... 위로 올려야지",
+     2026-10-02). */
+  .prop-card2-co { flex: 1 1 0; min-width: 0; gap: 6px; }
+  .prop-card2-acts { display: none; }
+  /* 직군·공고 보기 링크를 이름 밑에 보여준다("직군이랑 공고보기 링크
+     추가해줘", 2026-10-02). */
+  /* 직군·공고보기 폰트 통일(13px → 12.5px로 맞춤, 2026-10-02). */
+  .prop-card2-job { display: block; font-size: 12.5px; }
+  .prop-card2-viewjob { display: inline-flex; font-size: 12.5px; margin-top: 2px; }
   .prop-card2-nameline { display: flex; align-items: center; gap: 10px; }
   /* 이름도 지원자 카드 모바일과 같은 한 단계 작은 크기로(15→14px). */
   .prop-card2-name { font-size: 14px; }
-  .prop-step-mini { display: grid; width: 70px; height: 9px; flex-shrink: 0; }
-  .prop-step-mini .prop-step-dot { width: 7px; height: 7px; }
-  .prop-step-mini .prop-step-dot.current { width: 9px; height: 9px; }
-  .prop-card2-recent { flex: 1 1 100%; margin-left: 0; }
+  /* 점만 있던 미니 스테퍼는 접고, 라벨 넷(수락·채팅중·면접예정·종료)이
+     다 보이는 원래 스테퍼를 이름 옆 대신 사람칸 오른쪽에 그대로 쓴다
+     ("이렇게해줘. 면접예정은 해당 위치 밑에 표시해줘" — 캡처로 확인,
+     2026-10-02). PC 폭(235px)은 안 들어가 글자·점을 줄인다. */
+  .prop-step-mini, .prop-step-mini-label { display: none; }
+  /* "프로그래스바 화면이 너무 작아" — 글자·폭을 더 키웠다가(2026-10-02),
+     직군명 칸을 더 넓히려고("직군 글자 최대한 넣을수 있게 확보해줘")
+     다시 줄인다 — 왼쪽 사람칸(.prop-card2-co)이 flex:1 1 0이라 여기서
+     줄인 만큼 그대로 직군 칸으로 간다. */
+  .prop-step { display: flex; flex-direction: column; flex: 0 0 132px; width: 132px; margin-top: 16px; }
+  /* 점을 양 끝까지 붙였다가("오른쪽으로 더 붙여") 라벨과 어긋나
+     ("수락은 너무 오른쪽, 종료는 너무 왼쪽") 다시 맞춰 봤는데, 정작
+     원하던 모양은 캡처로 보여준 대로 넷이 칸 가운데 고르게 떨어진
+     원래 모양이었다("요렇게 하라고") — 점·라벨·이음선 전부 PC와 같은
+     기본 배치(4등분 칸, 가운데 정렬)로 되돌리고 크기만 모바일에 맞게
+     줄인다. */
+  /* 칸이 줄어든 만큼 왼쪽(수락)이 박스 가장자리에 바짝 붙어 보여 안쪽으로
+     살짝 들인다 — 오른쪽(종료)은 반대로 박스 끝(=카드 오른쪽 끝)까지
+     바짝 붙인다("오른쪽으로 바짝 붙여", 2026-10-02). */
+  .prop-step-dots { height: 10px; padding-left: 6px; }
+  .prop-step-dot { width: 8px; height: 8px; }
+  .prop-step-dot.current { width: 10px; height: 10px; }
+  /* "종료"는 이 탭(진행중)에서 항상 아직 안 지난 칸이라 선(.prop-step-line-fill)이
+     거기까지 찰 일이 없다 — 점·글씨만 칸 끝(=카드 테두리 쪽)에 바짝
+     붙인다("종료랑 테두리앙 여백 최대한 줄여", 2026-10-02). */
+  .prop-step-dot:last-child { justify-self: end; }
+  .prop-step-line-bg { right: 3%; }
+  /* 1fr은 내용이 길면(면접예정) 칸이 그만큼 더 늘어나 옆 칸(수락)과
+     붙어 보였다 — minmax(0,1fr)로 네 칸을 진짜 균등하게 고정한다. */
+  .prop-step-labels { margin-top: 4px; padding-left: 6px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* 칸 폭을 줄인 만큼 글자도 다시 줄인다("글자 줄이고", 2026-10-02). */
+  .prop-step-labels span { font-size: 9.5px; }
+  .prop-step-labels em { font-size: 8.5px; margin-top: 0; }
+  .prop-step-labels span:last-child { align-items: flex-end; }
+  /* 모바일은 기본이 "PC의 절반"이다 — 더 줄이라는 말을 또 안 들어도 되게
+     앞으로 새 모바일 칸은 처음부터 이 기준으로 잡는다([[mobile-padding-halve-default]],
+     2026-10-02 재확인: "패딩값 줄이라는 얘긴 안했으면 좋겠어. 기본이
+     줄이는거야 모바일은"). */
+  .prop-card2-recent { flex: 1 1 100%; margin: 4px 0 0; }
   .prop-card2-recent-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .prop-card2-chat-mobile { display: inline-flex; flex-shrink: 0; width: auto; }
+  /* 최근대화 라벨·시각 — PC(14px/12.5px)의 절반 쪽으로. */
+  .prop-card2-recent-label { font-size: 12px; margin-bottom: 3px; }
+  .prop-card2-recent-meta { font-size: 11px; }
+  /* 채팅창(.prop-card2-preview)을 메시지와 같은 줄 오른쪽에 — "채팅하기
+     버튼은 메시지창과 같은라인에 오른쪽으로 배치해줘". */
+  .prop-card2-preview-row { display: flex; align-items: center; gap: 6px; }
+  .prop-card2-preview { flex: 1; min-width: 0; padding: 5px 6px; }
+  .prop-card2-preview span { font-size: 12.5px; }
+  .prop-card2-preview-chevron { display: none; }
+  .prop-card2-chat-mobile { display: inline-flex; flex-shrink: 0; width: auto; padding: 4px 10px; font-size: 13px; }
+
+  /* 종료 카드(보낸제안 전용, .sent) — 배지·날짜를 사람칸 옆 오른쪽, "공고
+     보기" 글자 밑변에 맞춘다("거절함 날자는 아바타 쪽 오른쪽 정렬" /
+     "날자를 공고보기 글자 하단과 맞춰" / "거절함이 날자 위로 올라가야지",
+     2026-10-02) — 배지가 위, 날짜가 아래라 날짜(맨 아래)가 밑변과 맞는다.
+     사람칸·배지·날짜가 한 줄, 사유는 그 아래 한 줄 — co가 flex:1 1 0이라
+     남는 폭을 전부 가져가 오른쪽 끝에 붙는다(.prop-step과 같은 원리). */
+  .prop-card2.ended.sent { align-items: flex-end; }
+  .prop-end-mobile { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .prop-end-mobile .prop-upd { font-size: 12px; margin: 0; }
+  .sent .prop-card2-end { flex: 1 1 100%; margin-top: 4px; }
+  .sent .prop-card2-end > .prop-badge,
+  .sent .prop-card2-end > .prop-upd { display: none; }
+  /* 거절 사유 — 첨부 캡처와 같은 중립 회색(#f7f7f8, 수락대기 .c-msg-text와
+     같은 값)으로 — 박스 자체가 위 블록과 구분돼 보여 구분선은 더 안
+     쓴다("메시지는 첨부처럼 색상을 넣어줘" → "색상이 틀리잖아" →
+     "항상 통일감을 생각하세요", 2026-10-02). 1줄 넘으면 말줄임, 누르면
+     펼친다("1줄 넘으면 ... 처리하고 전체메시지 펼침보고"). */
+  .sent .prop-reason {
+    margin: 0; padding: 6px 10px; background: #f7f7f8; color: #555; border-radius: 10px;
+    font-size: 13px; line-height: 1.5; cursor: pointer;
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .sent .prop-reason.open { -webkit-line-clamp: unset; overflow: visible; }
 }
 
 .prop-badge { display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 10px;
