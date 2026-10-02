@@ -5452,7 +5452,7 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
        grid-auto-columns 는 첫 칸 너비가 잘못 잡히는 크롬 버그가 있었다. */
     grid-template-columns: repeat(5, 46vw) !important;
     overflow-x: auto !important;
-    gap: 7px !important;
+    gap: 8px !important;
     padding-bottom: 12px !important;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -5467,13 +5467,19 @@ tr:last-child > .jd-pos-td { border-bottom: none; }
     width: 100% !important;
     scroll-snap-align: start;
   }
-  /* 카드 글자도 한 단계씩 낮춘다(기존값 -1px) — 좁은 2열 칸에서 제목·매장이름이
-     덜 접히게. .jobcard-* 전체가 아니라 이 채용관 카드에만 건다 — 다른 카드
-     묶음(프리미엄 채용관 등)까지 같이 줄면 그쪽은 요청하지 않은 변경이 된다. */
-  .card-grid-5 .jobcard-title { font-size: 13px; }
+  /* 카드 글자는 프리미엄 채용관 카드와 같게(제목 14px, 나머지 13px) — 스탠다드만
+     한 단계 작아 답답해 보였다. 모바일에서만 건다. */
+  .card-grid-5 .jobcard-title { font-size: 14px; }
   .card-grid-5 .jobcard-company,
   .card-grid-5 .jobcard-meta,
-  .card-grid-5 .jobcard-deadline { font-size: 12px; }
+  .card-grid-5 .jobcard-deadline { font-size: 13px; }
+  /* 줄 사이를 띄운다 — 프리미엄·스탠다드 채용관 카드 똑같이. 공고명 아래만 더 많이(2→5px). */
+  .card-grid-5 .jobcard-title,
+  .showcase-sec .card-grid-4 .jobcard-title { margin-bottom: 5px !important; line-height: 19px !important; }
+  /* 줄 사이 빈 틈(줄 간격 − 글자 크기): 공고명 1→2줄 5px(14px 글자, 19px), 매장명→지역 줄 4.8px
+     (13px 글자, 17.8px). 매장명 아래 덧붙인 여백은 없앤다. */
+  .card-grid-5 .jobcard-company,
+  .showcase-sec .card-grid-4 .jobcard-company { line-height: 17.8px !important; margin-bottom: 0 !important; }
   /* 프리미엄·스탠다드 채용관 제목도 3px 줄인다(22px→19px) — PC는 그대로. */
   .showcase-title { font-size: 17px; }
   /* 채용관 옆 스크롤 위치 막대 — 지금 옆으로 민 만큼 채워진다. */
@@ -9653,14 +9659,14 @@ div:has(> table.admin-table),
   max-width: 172px;
 }
 .hero-m-banner-title {
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 800;
   color: #582681;
   white-space: nowrap;
   line-height: 1.3;
 }
 .hero-m-banner-desc div {
-  font-size: 16.5px;
+  font-size: 17.5px;
   font-weight: 800;
   color: #555;
   white-space: nowrap;
@@ -9674,17 +9680,17 @@ div:has(> table.admin-table),
   margin-top: 6px;
 }
 .hero-m-banner-period span:nth-child(1) {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #555;
 }
 .hero-m-banner-period span:nth-child(2) {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #555;
 }
 .hero-m-banner-note {
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 400;
   color: #7a7a80;
   margin-top: 3px;
@@ -10086,7 +10092,7 @@ div:has(> table.admin-table),
 }
 .hero-m-ticker-tag {
   flex-shrink: 0;
-  font-size: 11.5px; font-weight: 700; color: #582681;
+  font-size: 11.5px; font-weight: 700; color: #555;
 }
 .hero-m-ticker-tag.info { color: #555; }
 .hero-m-ticker-text {
@@ -10100,7 +10106,7 @@ div:has(> table.admin-table),
 .hero-m-ticker-card {
   min-width: 0;
   display: flex; align-items: center; gap: 6px;
-  height: 32px; box-sizing: border-box; padding: 0 6px;
+  height: 35px; box-sizing: border-box; padding: 0 6px;
   text-decoration: none; color: inherit;
 }
 /* 라벨·구분선·글자가 서로 다른 상자(하나는 그냥 span, 하나는 위치를 잡아
@@ -10135,7 +10141,7 @@ div:has(> table.admin-table),
 .hero-m-ai-card {
   flex: 1;
   min-width: 0;
-  height: 32px;
+  height: 35px;
   box-sizing: border-box;
   padding: 0 6px;
   display: flex;
@@ -13424,7 +13430,7 @@ button,
 /* 메인 카드(가로 스크롤): 카드 사이 여백과 본문 위·아래 여백을 조인다.
    이미지는 크게, 글자는 붙여서 — 한 화면에 더 많이 보이게. */
 @media (max-width: 768px) {
-  .card-grid-4, .card-grid-3 { gap: 7px !important; padding-bottom: 8px !important; }
+  .card-grid-4, .card-grid-3 { gap: 8px !important; padding-bottom: 8px !important; }
   .card-grid .jobcard-body { padding: 4px 7px 4px !important; }
   .card-grid .jobcard-title { margin-bottom: 2px; }
   .card-grid .jobcard-company { margin-bottom: 2px; }

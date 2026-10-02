@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   // 샘플 공고는 화면을 채우려고 만든 가짜다 — 메인처럼 몇 건만 보여주는 자리에서는 뺀다.
   const noSample = searchParams.get('nosample') === '1' 
   // 메인은 자리가 여럿이라 같은 공고가 두 번 뜨기 쉽다. 위 자리에 이미 뜬 것을
-  // 빼고 고른다 — /api/jobs/recommended 가 쓰던 규칙과 같은 이름을 쓴다.
+  // 빼고 고른다.
   const exclude = (searchParams.get('exclude') || '').split(',').map((x) => x.trim()).filter(Boolean).slice(0, 40)
   // 목록 화면의 상세 필터. 예전에는 100건을 받아 브라우저에서 걸렀는데, 진행 중
   // 공고가 189건이 되면서 89건은 애초에 걸러지지도 않았다(네일 10건 중 1건만 보임).

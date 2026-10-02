@@ -21,15 +21,12 @@ import {
   Search,
   Building2,
   Bookmark,
-  Sparkles,
   ChevronDown } from "lucide-react";
 import ResumeCta from "@/components/ResumeCta";
-import JobCard from "@/components/JobCard";
 import JobShowcase from "@/components/main/JobShowcase";
 import { 오픈일글 } from "@/lib/launchPlan";
 import { 스토리공개 } from "@/lib/storiesGate";
 import { formatDeadline, expLevelLabel } from "@/lib/jobFormat";
-import { mapJob } from "@/lib/jobCard";
 /* ============================================
    공통 유틸
    ============================================ */
@@ -41,23 +38,19 @@ export default function HomePageClient() {
   // 채용관에 뜬 공고. null 이면 아직 안 불러온 상태다. 프리미엄이 먼저 정해지고
   // 스탠다드가 그것을 빼고 고른다.
   const [프리미엄Ids, set프리미엄Ids] = useState<string[] | null>(null);
-  const [스탠다드Ids, set스탠다드Ids] = useState<string[] | null>(null);
-  const 채용관Ids = 프리미엄Ids === null || 스탠다드Ids === null
-    ? null : [...프리미엄Ids, ...스탠다드Ids];
   return (
     <main className="main-page">
       <Header />
       <MobileDetector />
       {/* 유료로 산 자리. 프리미엄이 위, 스탠다드가 아래이고 5초마다 안이 바뀐다.
-          아래 추천 자리는 여기 뜬 공고를 빼고 고른다 — 메인에 같은 공고가 두 번
-          뜨면 자리를 산 쪽도 안 산 쪽도 손해다. */}
+          스탠다드는 프리미엄에 뜬 공고를 빼고 고른다 — 같은 공고가 두 번 뜨면
+          자리를 산 쪽도 안 산 쪽도 손해다. */}
       {/* 오픈이벤트 채용관 — 판 자리가 아니라 오픈 기념으로 잠깐 세우는 줄이다.
           이벤트가 끝나면 app_settings.event_showcase 만 지우면 줄째 사라진다.
           맨 위인 까닭은 「메인페이지 상단 노출」이 이벤트로 약속한 것이어서다. */}
       <JobShowcase tier="EVENT" />
       <JobShowcase tier="PREMIUM" title="프리미엄 채용관" onLoaded={set프리미엄Ids} />
-      <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={프리미엄Ids} onLoaded={set스탠다드Ids} />
-      <SectionPick excludeIds={채용관Ids} />
+      <JobShowcase tier="STANDARD" title="스탠다드 채용관" excludeIds={프리미엄Ids} />
       {/* <SectionJobGroups /> 공고 충분히 쌓이면 노출 */}
       {/* 현장이야기는 이번 오픈에서 비공개(lib/storiesGate.js) — 공개로
           정해지면 그 스위치만 켜면 이 줄도 같이 살아난다. */}
@@ -335,84 +328,6 @@ function Hero() {
     </section>
   );
 }
-
-/* ============================================
-   섹션 1: 뷰티워크 추천 공고<span style={{ display: "inline-block", marginLeft: 8, padding: "3px 10px", borderRadius: "var(--chip-radius)", fontSize: 12, fontWeight: 600, color: "#582681", background: "#f7f7f8", verticalAlign: "middle" }}>📊 직군 맞춤 선별</span>
-   ============================================ */
-function SectionPick({ excludeIds }: { excludeIds: string[] | null }) {
-  // 사이트 어디서나 매장/오피스 두 갈래만 쓴다. '전체'를 한 곳에만 남기면
-  // 같은 토글이 화면마다 다르게 생긴 셈이 된다.
-  const [tab, setTab] = useState<"매장" | "오피스">("매장");
-  const [jobs, setJobs] = useState<any[]>([]);
-  // 이력서를 근거로 점수를 매길 수 있었는지. 근거가 없으면 '추천'이라 부르지 않는다 —
-  // 최신순을 추천이라 내놓으면 한 번 보고 다시 안 본다.
-  const [맞춤, set맞춤] = useState(false);
-  useEffect(() => {
-    // 위쪽 '지금 적극 채용 중'과 겹치는 공고를 걸러내려면 그쪽 id 를 먼저
-    // 받아야 한다. 아직이면(null) 잠깐 기다린다.
-    if (excludeIds === null) return;
-    const jt = tab === "매장" ? "&job_type=STORE" : tab === "오피스" ? "&job_type=OFFICE" : "";
-    const exclude = excludeIds.length ? `&exclude=${excludeIds.join(",")}` : "";
-    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-    fetch(`/api/jobs/recommended?limit=4${jt}${exclude}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
-      .then((r) => r.json())
-      .then((res) => {
-        const d = res?.data;
-        if (res.success && Array.isArray(d?.items)) { setJobs(d.items); set맞춤(!!d.personalized); }
-        else { setJobs([]); set맞춤(false); }
-      })
-      .catch(console.error);
-  }, [tab, excludeIds]);
-  const mappedJobs = jobs.map(mapJob);
-  // 이력서를 근거로 고른 것이 아니면 이 자리를 아예 접는다. 최신순을 메인에
-  // 또 늘어놓으면 채용관에서 산 자리가 그만큼 묽어진다.
-  const seeAll = tab === "매장" ? "/jobs?type=매장" : tab === "오피스" ? "/jobs?type=오피스" : "/jobs";
-  if (!맞춤) return null;
-  return (
-    <section className="section section-divider">
-      <div className="container">
-        <div className="section-inner-divider" style={{ marginBottom: "48px" }} />
-        <div className="section-head">
-          <div>
-            <h2 className="section-title">
-              <Sparkles size={24} className="title-icon" />
-              뷰티워크 추천 공고
-            </h2>
-            <p className="section-sub">내 직군·지역·경력과 스크랩한 곳을 함께 보고 골랐어요</p>
-          </div>
-          <Link href={seeAll} className="see-all">전체보기</Link>
-        </div>
-
-        <div style={{ marginBottom: 24 }}>
-          <div className="hero-type-toggle">
-            {(["매장", "오피스"] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                className={`hero-type-btn ${tab === t ? "active" : ""}`}
-                onClick={() => setTab(t)}
-              >
-                {t === "매장" || t === "오피스" ? `${t} 직군` : t}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {mappedJobs.length === 0 ? (
-          <p className="empty-state">등록된 공고가 없습니다.</p>
-        ) : (
-          <div className="card-grid card-grid-4">
-            {mappedJobs.map((job: any) => (
-              <JobCard key={job.id} data={job} variant="grid" />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-
 
 /* ============================================
    섹션: 추천 뷰티 서비스
