@@ -40,7 +40,7 @@ interface Props {
   resumeType: "office" | "salon";
   officeJobAreas: string[];
   skillAreas: string[];
-  /** 지원서로 쓸 때만 온다 — 「헤어 디자이너 · 신입 · 서울 강동구」. */
+  /** 지원서로 쓸 때만 온다 — 「헤어디자이너 · 신입 · 서울 강동구」. */
   지원분야?: string;
   /** 지원서에는 가려 둔 재직 매장도 그대로 나간다 — 내가 스스로 문을 연 자리다. */
   재직매장그대로?: boolean;

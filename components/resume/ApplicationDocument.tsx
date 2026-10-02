@@ -8,7 +8,7 @@ import { Quote } from "lucide-react";
 type Props = {
   coverLetter?: string | null;
   subtitle?: string;      // 예: "beautyLab · 네일보조"
-  /** 어느 자리에 냈는가 — 「헤어 디자이너 · 신입 · 서울 강동구」. */
+  /** 어느 자리에 냈는가 — 「헤어디자이너 · 신입 · 서울 강동구」. */
   지원분야?: string;
   /** 실제로 낸(낼) 지원서인가. 그때는 가려 둔 재직 매장도 그대로 나간다 —
    *  내가 스스로 문을 연 자리다. 이력서 미리보기는 남이 보는 모습이라 가린다. */

@@ -224,9 +224,9 @@ export default function SkillModal({ isOpen, onClose, inline}: Props) {
   const recommended = (() => {
     const merged = new Set<string>();
     if (isStoreTrack) {
-      // 저장된 값은 '헤어 디자이너', '네일리스트' 같은 직군 이름인데 사전 열쇠는
+      // 저장된 값은 '헤어디자이너', '네일리스트' 같은 직군 이름인데 사전 열쇠는
       // '헤어', '네일' 처럼 짧다. 열쇠가 이름 안에 들어 있으면 그 분야로 본다.
-      // 그래서 '헤어 디자이너'는 커트·펌·염색을, '샵 매니저·실장'은 어느 열쇠도
+      // 그래서 '헤어디자이너'는 커트·펌·염색을, '샵 매니저·실장'은 어느 열쇠도
       // 걸리지 않아 매장운영을 받는다 — 실장에게는 그쪽이 맞다.
       const 열쇠 = Object.keys(STORE_RECOMMENDATIONS).filter((k) => k !== "매장운영");
       const 걸린 = new Set<string>();

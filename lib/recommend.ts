@@ -85,7 +85,7 @@ export function 점수매기기(u: 구직자, j: 공고): 결과 {
     score += 40;
     reasons.push("내 직군");
   } else if (cats.length && u.areas.length) {
-    // 같은 그룹이면 옮겨갈 만한 자리다(헤어 디자이너 ↔ 헤어스탭).
+    // 같은 그룹이면 옮겨갈 만한 자리다(헤어디자이너 ↔ 헤어스탭).
     const 내그룹 = new Set(u.areas.map((a) => getGroupOfItem(u.jobType, a)).filter(Boolean));
     if (cats.some((c) => 내그룹.has(getGroupOfItem(u.jobType, c)))) {
       score += 20;
@@ -198,7 +198,7 @@ export function 인재점수매기기(j: 공고, t: 인재): 결과 {
 
   // ── 직군 ──────────────────────────────────────────
   // 여기가 0 이면 추천하지 않는다(아래 인재고르기). 구직자 쪽은 지역만 맞아도
-  // 「가까운 데 이런 자리가 있다」가 되지만, 기업 쪽은 다르다 — 헤어 디자이너를
+  // 「가까운 데 이런 자리가 있다」가 되지만, 기업 쪽은 다르다 — 헤어디자이너를
   // 뽑는 자리에 직군을 안 적은 사람을 올려 두면 「왜 이 사람이?」가 된다.
   const 정확 = cats.some((c) => t.areas.includes(c));
   let 직군점수 = 0;

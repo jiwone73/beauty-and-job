@@ -8,6 +8,7 @@ import ScrappedTalentList from "@/components/company/ScrappedTalentList";
 import { companyTalentApi, companyJobsApi, type TalentItem } from "@/lib/api/company";
 import { 마감인가 } from "@/lib/jobClosed";
 import { 모집분야한줄 } from "@/lib/positionLine";
+import { 직군표시 } from "@/lib/memberFormat";
 import { ChevronDown, Send, ChevronRight } from "lucide-react";
 
 // 보낸 제안 — 공고를 고르고, 그 공고로 보낸 사람들을 표로 본다.
@@ -76,12 +77,12 @@ const 인적 = (p: 제안) =>
 // 이 칸은 인재의 희망직군이 아니라 모집분야다 — 이건 기업이 사람에게 보낸
 // 제안이라, "어떤 직군으로 제안했나"가 맞는 값이다("이건 제안이기 때문에
 // 모집분야가 되는게 맞지 않냐" — 공고가 이미 있는 이상 구직자 정보가 아니라
-// 회사가 고른 자리). positionLine은 "헤어 디자이너 | 정규직 | 여성 | 경력 |
+// 회사가 고른 자리). positionLine은 "헤어디자이너 | 정규직 | 여성 | 경력 |
 // 월 280만원"처럼 조건을 다 이은 줄이라 맨 앞 직군 하나만 자른다
 // ("모집분야에는 헤어디자이너 까지만 써. 그 외 정보는 넣지 말고") — 지역·
 // 경력·근무형태까지는 표가 무거워졌다, 이력서를 열면 다 있다.
-// 「헤어 스텝」은 화면에서 늘 붙여 쓴다(헤어스텝) — 자료의 이름은 띄어 있어도 보이는 글은 붙인다.
-const 조건 = (p: 제안) => (p.positionLine || "").split("|")[0].trim().replace(/헤어\s+스텝/g, "헤어스텝");
+// 직군 이름은 정식 표기(헤어디자이너·헤어스탭)로 — 옛 표기로 저장된 값이 섞여도 직군표시()가 바로잡는다.
+const 조건 = (p: 제안) => 직군표시((p.positionLine || "").split("|")[0].trim());
 
 const 날짜 = (s: string) =>
   new Date(s).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })

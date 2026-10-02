@@ -96,5 +96,8 @@ export function shortenRegion(region: string | null | undefined): string {
     .trim();
 }
 
-/** 화면에 보이는 「헤어 스텝」은 늘 붙여 쓴다(헤어스텝) — 자료에 저장된 이름은 띄어 있어도 보이는 글만 바꾼다. */
-export const 직군표시 = (v?: string | null) => (v || "").replace(/헤어\s+스텝/g, "헤어스텝");
+/** 직군 이름의 정식 표기는 「헤어디자이너」「헤어스탭」(붙여 쓰기, 스탭)이다 — 옛 표기(띄어쓰기·스텝)로 저장된 값이 섞여 들어와도
+ *  화면에는 정식 표기로 보이게 하는 안전망. */
+export const 직군표시 = (v?: string | null) => (v || "")
+  .replace(/헤어\s+디자이너/g, "헤어디자이너")
+  .replace(/헤어\s*스[텝탭]/g, "헤어스탭");

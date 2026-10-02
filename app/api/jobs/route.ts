@@ -86,9 +86,14 @@ export async function GET(req: NextRequest) {
   }
   if (q) {
     const kw = `%${q}%`
-    where.push(`(${prefix}title ILIKE $${idx} OR ${prefix}brand_name ILIKE $${idx + 1} OR ${prefix}company_name ILIKE $${idx + 2})`)
-    params.push(kw, kw, kw)
-    idx += 3
+    // 직군(categories)도 찾는다 — 「헤어스텝」을 쳤는데 제목에 그 말이 없으면 아무것도 안 나왔다. 띄어쓰기는 가리지
+    // 않는다(「헤어 디자이너」로 쳐도 「헤어디자이너」가 걸리도록 양쪽의 공백을 걷고 비교).
+    // 옛 표기(헤어스텝·헤어 스태프)로 쳐도 정식 이름(헤어스탭)이 걸리게 직군 쪽 검색어만 정식 표기로 바꾼다.
+    const kwNoSpace = `%${q.replace(/헤어\s*스[텝태]프?/g, '헤어스탭').replace(/\s+/g, '')}%`
+    where.push(`(${prefix}title ILIKE $${idx} OR ${prefix}brand_name ILIKE $${idx + 1} OR ${prefix}company_name ILIKE $${idx + 2}
+      OR replace(array_to_string(${prefix}categories, ' '), ' ', '') ILIKE $${idx + 3})`)
+    params.push(kw, kw, kw, kwNoSpace)
+    idx += 4
   }
   // 매장/본사. company_type 이 비어 있는 대행 공고는 job_type 으로 갈음한다.
   if (companyType === 'STORE' || companyType === 'OFFICE') {
