@@ -154,13 +154,6 @@ export async function PATCH(req: NextRequest) {
     // 영수증에 적을 시작일. 연장이면 오늘이 아니라 옛 기간이 끝난 다음 날이다.
     const 시작 = 적용.rows[0]?.시작;
 
-    // 걸려 있는 공고의 게재 기간도 같이 민다.
-    await client.query(
-      `UPDATE job_postings SET listed_until = $2::date, updated_at = now()
-        WHERE company_id = $1 AND status = 'ACTIVE'`,
-      [o.company_id, 새끝]
-    );
-
     await client.query(
       `UPDATE company_orders
           SET status = 'PAID', confirmed_at = now(), updated_at = now(),

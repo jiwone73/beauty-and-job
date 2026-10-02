@@ -26,10 +26,6 @@
     {
       "path": "/api/cron/cleanup-expired-chats",
       "schedule": "0 18 * * 0"
-    },
-    {
-      "path": "/api/cron/exposure-ended",
-      "schedule": "0 0 * * *"
     }
   ]
 }

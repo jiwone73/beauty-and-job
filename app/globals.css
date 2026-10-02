@@ -15541,9 +15541,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-jc-badge.soon { background: #fbf0f0; color: #c0504d; }
 .co-jc-badge.draft { background: #f4f4f6; color: #8a8a90; }
 .co-jc-badge.closed { background: #f4f4f6; color: #a0a0a6; }
-/* 마감(closed)·진행중(live)과는 다른 셋째 상태 — 회사가 손 댄 적 없는데 게재기간만
-   끝난 것. 손이 가야 하니 soon(마감임박)과 같은 계열이되 빨강과는 구분되는 색. */
-.co-jc-badge.unexposed { background: #fdf3e4; color: #b8720a; }
 /* 제목이 곧 공고를 여는 문이다 — 표에서는 줄 아무 데나 눌러야 열려 눌리는 곳이 안 보였다. */
 /* 공고 이름이 이 카드의 주인공이다 — 밑의 지원자 줄보다 확실히 커야 층이 선다. */
 .co-jc-title { display: block; background: none; border: none; padding: 0; font-family: inherit;
@@ -16302,8 +16299,6 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 /* 화면 제목(.co-set-title)과 같은 크기 — 이 판의 주인이 무엇인지 한눈에. */
 /* 공고명은 이 판의 주인이다 — 한 줄 소개와 함께 진한 먹색으로 남는다. */
 .co-pane-title { margin: 4px 0 0; font-size: 16px; font-weight: 400; color: #555; line-height: 1.35; }
-/* "노출종료" 뱃지 바로 아래 — 왜 지원이 안 오는지, 뭘 하면 되는지를 짧게. */
-.co-pane-exposure-note { margin: 4px 0 0; font-size: 13px; color: #b8720a; }
 .co-pane-head .co-pane-view { margin-left: auto; align-self: flex-end; }
 /* 고치고 마감하는 길 — 상자 없이 글자로. */
 .co-pane-acts { margin-left: auto; flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; }
@@ -16335,12 +16330,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .co-pane-apps { background: #fff; border-radius: 0 0 12px 12px;
   margin: 0 -5px; padding: 0 0 22px; display: flex; flex-direction: column; gap: 8px; }
 
-/* 모바일 공고 머리 정리(2026-10-01) — "노출 종료는 빨간색. 밑에 갈색
-   메시지는 삭제": 마감임박(.soon)에서 쓰던 빨강을 그대로 쓴다(새 색 안
-   늘림). PC는 그대로 둔다. */
 @media (max-width: 768px) {
-  .co-pane-term .co-jc-badge.unexposed { color: #c0504d; }
-  .co-pane-exposure-note { display: none; }
   /* 조건 줄을 뺀 대신 공고명을 누르면 미리보기 모달이 뜬다
      ("공고제목 누르면 미리보기 모달", 2026-10-01). */
   .co-pane-title-tap { cursor: pointer; }
@@ -17028,6 +17018,46 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
 .prop-table.received.no-post .c-job { width: 23%; }
 .prop-table.received.no-post .c-cond { width: 32%; }
 .prop-table.received.no-post .c-date { width: 13%; }
+
+/* 모바일 — 가로 표(min-width:740px)를 그대로 욱여넣으면 넘쳐서 가로스크롤이
+   생기고, 좁은 칸에 낀 긴 공고명이 두 줄로 접혀 서로 다른 두 건처럼 보였다
+   ("제안한 공고가 왜 2개야?" — 실은 공고 하나가 줄바꿈된 것, 2026-10-02).
+   진행중 탭처럼 줄마다 카드로 쌓는다. 바깥 테두리(.prop-tablewrap)는 줄마다
+   생긴 카드 테두리와 겹치니 뺀다("카드 밖에 테두리가 또 있어"와 같은 문제).
+   .received 표가 있을 때만 — 구직자 쪽 받은제안(.prop-tablewrap)은 안 건드린다. */
+@media (max-width: 768px) {
+  .prop-tablewrap:has(.prop-table.received) {
+    border: none; box-shadow: none; background: none; overflow-x: visible; border-radius: 0;
+  }
+  .prop-table.received { display: block; min-width: 0; width: 100%; }
+  .prop-table.received thead { display: none; }
+  .prop-table.received tbody { display: block; }
+  .prop-table.received tbody tr:not(.prop-msg-row) {
+    display: block; background: #fff; border: 1px solid #ececf0; border-radius: 10px;
+    padding: 5px; margin-bottom: 8px;
+  }
+  .prop-table.received tr.prop-msg-row { display: block; margin: -8px 0 8px; }
+  .prop-table.received tr.prop-msg-row td { display: block; border: none; padding: 0 5px 8px; }
+  .prop-table.received td {
+    display: block; width: auto !important; max-width: none !important;
+    border: none; padding: 0; white-space: normal;
+  }
+  /* 아바타를 카드 테두리 바로 안쪽(5px)까지 민다 — 공고지원자 카드와 같은 여백. */
+  .prop-table.received .apl-td-who { padding: 0 0 8px; }
+  .prop-table.received .apl-td-whobtn { width: 100%; }
+  /* 공고지원자·인재풀과 같은 라벨 없는 값 대신, 열 머리가 사라진 자리라
+     무슨 값인지 짧은 라벨을 붙인다. */
+  .prop-table.received .c-post, .prop-table.received .c-job,
+  .prop-table.received .c-cond, .prop-table.received .c-date {
+    padding-top: 6px; margin-top: 6px; border-top: 1px dashed #f0f0f3; font-size: 13px; color: #555;
+  }
+  .prop-table.received .c-post::before { content: "제안한 공고  "; color: #9a9aa3; }
+  .prop-table.received .c-job::before { content: "모집분야  "; color: #9a9aa3; }
+  .prop-table.received .c-cond::before { content: "근무조건  "; color: #9a9aa3; }
+  .prop-table.received .c-date::before { content: "제안일  "; color: #9a9aa3; }
+  .prop-table.received .c-cond span { display: inline; white-space: normal; overflow: visible; text-overflow: clip; }
+  .prop-table.received .prop-post { white-space: normal; text-align: left; }
+}
 /* 기업이 쓴 말 박스 하단 오른쪽에 액션 버튼을 둔다("수락 거절은 기업이
    보낸 메시지 박스 하단 오른쪽에 거절하기 수락하기 버튼을 넣으면 되지
    않을까?"). */

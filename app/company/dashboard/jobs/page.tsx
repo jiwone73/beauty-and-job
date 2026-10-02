@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { 마감인가, 노출종료인가 } from "@/lib/jobClosed";
+import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
   Users, Edit, X, Trash2, ChevronDown, ChevronRight, ChevronLeft, Plus
@@ -357,15 +357,10 @@ function CompanyJobsContent() {
     const closed = isJobClosed(job);
     const draft = job.status === "DRAFT";
     const dl = daysLeft(job.deadline);
-    // 무료 게재기간(listed_until)이 지나면 회사가 내리지도, 마감일이 지나지도
-    // 않았는데 공개 목록에선 빠진다 — "진행중"으로만 보이면 왜 지원이 안 오는지
-    // 알 길이 없다("게재기간때문에 공고가 내려갔다는건 어떻게 알려줄거야?").
-    const 노출종료 = !closed && !draft && 노출종료인가(job.status, job.deadline, job.listed_until);
-    const 임박 = !closed && !draft && !노출종료 && dl !== null && dl <= 7;
+    const 임박 = !closed && !draft && dl !== null && dl <= 7;
     const 상태 =
       draft ? { 글: "임시저장", 결: "draft" }
       : closed ? { 글: "마감", 결: "closed" }
-      : 노출종료 ? { 글: "노출종료", 결: "unexposed" }
       : 임박 ? { 글: dl === 0 ? "오늘 마감" : `D-${dl}`, 결: "soon" }
       : { 글: "진행중", 결: "live" };
     const 수 = job.application_count ?? 0;
@@ -424,11 +419,6 @@ function CompanyJobsContent() {
                 onClick={isMobile ? () => openPreview(job.id) : undefined}>
                 {job.title}
               </h2>
-              {노출종료 && (
-                <p className="co-pane-exposure-note">
-                  무료 게재기간이 끝나 지금은 노출되지 않아요. 재등록하면 다시 노출돼요.
-                </p>
-              )}
             </div>
           </div>
 

@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
-import { 이용권, 게재종료일, 무료칸, 이벤트라이트부여 } from '@/lib/companyEntitlement'
+import { 이용권, 무료칸, 이벤트라이트부여 } from '@/lib/companyEntitlement'
 import { 무료소진안내 } from '@/lib/companyPlans'
 
 // 내 공고 목록
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
            -- 우리 공고를 담아 둔 사람. 지원까지는 안 왔어도 보고 있다는 뜻이라
            -- 매장이 알 값이다(잡코리아의 「관심인재」가 이 자리다).
            (SELECT COUNT(*)::int FROM bookmarks b WHERE b.job_posting_id = job_postings.id) AS bookmark_count,
-           deadline, listed_until, is_featured, created_at, closed_at
+           deadline, is_featured, created_at, closed_at
     FROM job_postings
     WHERE ${whereClause}
     ORDER BY created_at DESC
@@ -91,19 +91,16 @@ export async function POST(req: NextRequest) {
 
   // 무료(스타트)는 **동시에 한 건**이다. 임시저장은 세지 않는다 — 목록에
   // 뜨지 않으니 자리를 쓰는 것이 아니다.
-  let { plan, paidUntil } = await 이용권(auth!.sub)
+  let { plan } = await 이용권(auth!.sub)
   if (!plan && jobStatus === 'ACTIVE') {
     // 이벤트 기간에 가입하고 첫 공고를 올리는 길이면 여기서 라이트로 바뀐다.
     const 이벤트혜택 = await 이벤트라이트부여(auth!.sub)
-    if (이벤트혜택) ({ plan, paidUntil } = 이벤트혜택)
+    if (이벤트혜택) plan = 이벤트혜택.plan
   }
   if (!plan && jobStatus === 'ACTIVE') {
     const { 남은것 } = await 무료칸(auth!.sub)
     if (남은것 <= 0) return err('PLAN_001', 무료소진안내, 403)
   }
-
-  // 게재 종료일. 임시저장은 목록에 뜨지 않으니 비워 둔다(펼 때 정해진다).
-  const listedUntil = jobStatus !== 'ACTIVE' ? null : 게재종료일(plan, paidUntil)
 
   const result = await pool.query(
     `INSERT INTO job_postings (
@@ -115,9 +112,9 @@ export async function POST(req: NextRequest) {
        work_days, work_time, work_time_slots, responsibilities, headcount, work_period, contact_methods, education, gender_preference, positions, cover_images,
        external_contact_name, external_contact_phone, external_contact_email, external_contact_kakao,
        contact_name_hidden, contact_phone_hidden, contact_email_hidden, contact_kakao_hidden,
-       apply_method, external_apply_url, salary_text, source_url, work_locations, headcount_text, listed_until, status
+       apply_method, external_apply_url, salary_text, source_url, work_locations, headcount_text, status
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, '${jobStatus}'
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, '${jobStatus}'
      ) RETURNING id, title, status, created_at`,
     [
       auth!.sub, title, job_type, job_category_id || null, description || null,
@@ -158,7 +155,6 @@ export async function POST(req: NextRequest) {
       (source_url || '').trim() || null,
       Array.isArray(work_locations) && work_locations.length ? JSON.stringify(work_locations) : null,
       (headcount_text || '').trim() || null,
-      listedUntil
     ]
   )
   return ok(result.rows[0], 201)

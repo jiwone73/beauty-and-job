@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Briefcase, Plus, Inbox, Sparkles } from "lucide-react";
-import { 마감인가, 노출종료인가 } from "@/lib/jobClosed";
+import { 마감인가 } from "@/lib/jobClosed";
 
 interface Stats {
   active_jobs: number;
@@ -24,7 +24,6 @@ interface JobItem {
   application_count: number;
   unviewed_count: number;
   deadline: string | null;
-  listed_until: string | null;
   created_at: string;
 }
 
@@ -46,9 +45,6 @@ const EXP_LABEL: Record<string, string> = {
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\. /g, ".").replace(".", ".");
 }
-// 게재기한이 오늘이면 빨간색 — 오늘 안에 손 안 대면 그대로 내려간다.
-const 오늘인가 = (iso: string) => new Date(iso).toDateString() === new Date().toDateString();
-
 export default function CompanyDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
@@ -260,35 +256,25 @@ export default function CompanyDashboard() {
             <div style={{ overflowX: "auto" }}>
             <table className="company-table dash-table" style={{ width: "100%" }}>
               <thead>
-                <tr><th>공고명</th><th>등록일</th><th>게재기한</th><th>상태</th></tr>
+                <tr><th>공고명</th><th>등록일</th><th>마감일</th><th>상태</th></tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
                   <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
-                    {/* 지원 마감일(job.deadline)은 상시채용이 대부분이라 이 표에선 정보가
-                        거의 없다("마감일은 크게 의미가 없어 보여. 대부분 상시고") — 회사가
-                        실제로 대응해야 하는 값인 게재기한(listed_until, 플랜에 따라 자동으로
-                        내려가는 날짜)으로 바꾼다. 지원 마감일 자체는 공고 상세에 그대로 있다. */}
-                    <td className="company-td-sub" style={job.listed_until && 오늘인가(job.listed_until) ? { color: "#c0504d" } : undefined}>
-                      {job.listed_until ? formatDate(job.listed_until) : "-"}
-                    </td>
+                    <td className="company-td-sub">{job.deadline ? formatDate(job.deadline) : "상시"}</td>
                     <td>
                       {(() => {
-                        // 마감일 칸이 바로 옆에 언제까지인지 말해주니, 여기는 지금 상태만
-                        // 짧게 말한다(채용공고 관리 목록과 같은 기준 — "상태가 필요할까?
-                        // 마감일하고 같은데"). 마감 판정은 공용 함수로 — 여기만 날짜 셈이
-                        // 달라 다른 화면과 갈리는 일을 막는다.
+                        // 마감 판정은 공용 함수로 — 여기만 날짜 셈이 달라 다른 화면과
+                        // 갈리는 일을 막는다. 노출 여부는 이제 v_active_jobs가 상태·
+                        // 마감일만 보고 그때그때 정하니 여기서 따로 셀 것이 없다
+                        // ("게제기간은 없고 공고 마감일하고 이용기간이 있겠지", 2026-10-02).
                         const closed = 마감인가(job.status, job.deadline);
-                        // 게재기간만 끝난 것도 "진행중"이 아니다 — 공개 목록엔 안 보이는데
-                        // 상태만 진행중이면 왜 지원이 안 오는지 알 길이 없다.
-                        const 노출종료 = !closed && job.status !== "DRAFT" && job.status !== "PAUSED"
-                          && 노출종료인가(job.status, job.deadline, job.listed_until);
                         const label = job.status === "DRAFT" ? "임시저장" : job.status === "PAUSED" ? "일시중지"
-                          : closed ? "마감" : 노출종료 ? "노출종료" : "진행중";
+                          : closed ? "마감" : "진행중";
                         const color = job.status === "DRAFT" ? "#555" : job.status === "PAUSED" ? "#f59e0b"
-                          : closed ? "#555" : 노출종료 ? "#b8720a" : "#10b981";
+                          : closed ? "#555" : "#10b981";
                         return <span style={{ color, whiteSpace: "nowrap" }}>{label}</span>;
                       })()}
                     </td>

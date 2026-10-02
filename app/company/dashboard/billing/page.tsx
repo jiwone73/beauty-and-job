@@ -11,7 +11,7 @@ import { 플랜, 스타트, 원, 보관표기, type PlanId } from "@/lib/company
 
 type 이용권 = {
   plan: PlanId | null; paidUntil: string | null; 남은일: number;
-  진행중: number; 노출: number; 게재종료: string | null;
+  진행중: number; 노출: number;
   /** 무료로 올릴 수 있는 공고 건수와, 그 중 쓴 것·남은 것 */
   무료건수: number;
   무료쓴것: number;

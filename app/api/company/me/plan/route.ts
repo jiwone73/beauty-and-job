@@ -22,11 +22,9 @@ export async function GET(req: NextRequest) {
     const { 쓴것: 무료쓴것, 남은것: 무료남은것 } = await 무료칸(auth!.sub);
     const { rows } = await pool.query(
       `SELECT COUNT(*)::int AS 진행중,
-              COALESCE(SUM(main_impressions), 0)::bigint AS 노출,
-              to_char(MIN(listed_until), 'YYYY-MM-DD') AS 먼저끝나는게재일
+              COALESCE(SUM(main_impressions), 0)::bigint AS 노출
          FROM job_postings
-        WHERE company_id = $1 AND status = 'ACTIVE'
-          AND (listed_until IS NULL OR listed_until >= CURRENT_DATE)`,
+        WHERE company_id = $1 AND status = 'ACTIVE'`,
       [auth!.sub]
     );
     const r = rows[0];
@@ -34,7 +32,6 @@ export async function GET(req: NextRequest) {
       plan, paidUntil, 남은일, 무료건수: 스타트.무료건수, 무료쓴것, 무료남은것,
       진행중: r.진행중,
       노출: Number(r.노출),
-      게재종료: r.먼저끝나는게재일,
       // 화면은 이름까지 받아야 「라이트 20일」을 그릴 수 있다.
       보관: Object.entries(세운것).map(([plan, v]) => ({
         plan, name: 플랜[plan as keyof typeof 플랜].name, days: v.days, until: v.until,

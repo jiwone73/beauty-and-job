@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 게재종료일, 무료칸, 이벤트라이트부여 } from "@/lib/companyEntitlement";
+import { 이용권, 무료칸, 이벤트라이트부여 } from "@/lib/companyEntitlement";
 import { 무료소진안내 } from "@/lib/companyPlans";
 
 // 공고 단건 조회
@@ -84,13 +84,11 @@ export async function PATCH(
 
   // 다시 거는 것은 새로 거는 것과 같다.
   //
-  // 임시저장을 펴거나 마감한 공고를 다시 여는 길이 여기밖에 없는데, 여태 상태만
-  // 바뀌고 게재 기간은 건드리지 않았다. 그래서 임시저장으로 넣었다가 펴면
-  // listed_until 이 빈 채로 남아 **영영 내려가지 않는 공고**가 됐고, 무료 다섯 건
-  // 한도도 그 길로는 세지 않았다. 반대로 옛날에 마감해 둔 공고를 다시 열면 지난
-  // 게재일이 그대로라 ACTIVE 인데 목록에 안 보였다.
-  //
-  // 등록(POST)과 같은 함수를 쓴다 — 한쪽만 고치면 그쪽이 다시 뒷문이 된다.
+  // 임시저장을 펴거나 마감한 공고를 다시 여는 길이 여기밖에 없다 — 무료 한 건
+  // 한도는 등록(POST)과 같은 함수로 여기서도 똑같이 센다. 노출 여부 자체는
+  // v_active_jobs가 status·deadline만 보고 그때그때 정하니, 여기서 따로
+  // 날짜를 잡아 둘 것이 없다("게제기간은 없고 공고 마감일하고 이용기간이
+  // 있겠지", 2026-10-02).
   if (body.status === "ACTIVE") {
     const 지금 = await pool.query(
       `SELECT status::text AS status FROM job_postings WHERE id = $1 AND company_id = $2`,
@@ -98,25 +96,19 @@ export async function PATCH(
     );
     if (지금.rowCount === 0) return err("JOB_001", "공고를 찾을 수 없거나 권한이 없습니다.", 404);
     if (지금.rows[0].status !== "ACTIVE") {
-      let { plan, paidUntil } = await 이용권(auth!.sub);
+      let { plan } = await 이용권(auth!.sub);
       // 임시저장을 펴거나 마감했던 공고를 다시 거는 자리다. 이벤트 기간에
       // 가입한 곳이 여기서 처음 거는 거면 라이트로 바뀐다(등록 POST와 같은 길).
       if (!plan) {
         const 이벤트혜택 = await 이벤트라이트부여(auth!.sub);
-        if (이벤트혜택) ({ plan, paidUntil } = 이벤트혜택);
+        if (이벤트혜택) plan = 이벤트혜택.plan;
       }
       // 무료는 한 번에 한 건이라, 다른 공고가 이미 걸려 있으면 막는다.
       if (!plan) {
         const { 남은것 } = await 무료칸(auth!.sub);
         if (남은것 <= 0) return err("PLAN_001", 무료소진안내, 403);
       }
-      updates.push(`listed_until = $${idx++}::date`);
-      values.push(게재종료일(plan, paidUntil));
       updates.push(`closed_at = NULL`);
-      // 게재기간이 새로 잡히니 "노출 종료" 알림도 다시 보낼 수 있어야 한다.
-      // 안 지우면 다음에 또 끝나도 exposure_notified_at이 예전 값 그대로라
-      // 크론이 "이미 알렸다"고 보고 지나친다.
-      updates.push(`exposure_notified_at = NULL`);
     }
   }
 

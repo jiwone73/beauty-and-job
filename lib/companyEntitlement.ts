@@ -133,18 +133,6 @@ export async function 무료칸(companyId: string): Promise<{ 쓴것: number; �
 export const 오늘날짜 = () => new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
 
 /**
- * 이 공고를 지금 걸면 언제까지 목록에 남는가(YYYY-MM-DD). null 이면 무기한.
- *
- * 유료는 이용권이 끝나는 날까지다. 무료(스타트)는 기간을 두지 않는다 — 헤어인잡처럼
- * 날짜로 끊는 대신, 노출 범위(회원에게만)로 유료와 가른다("헤어인잡 때문이라도
- * 무료상품은 게재기간을 두면 안될거 같아. 무기한으로", 2026-10-01). 예전엔 사흘
- * 주기로 다시 걸게 해 손이 가게 했는데, 그 장치를 없앤 자리다.
- */
-export function 게재종료일(plan: PlanId | null, paidUntil: string | null): string | null {
-  return plan && paidUntil ? paidUntil : null;
-}
-
-/**
  * 이 기업이 인재의 개인정보(이름·연락처·사진·자기소개서·재직 매장)를 볼 수 있고
  * 제안을 보낼 수 있는가.
  *

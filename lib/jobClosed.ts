@@ -21,28 +21,3 @@ export function 마감인가(status?: string | null, deadline?: string | Date | 
   마감날.setHours(0, 0, 0, 0);
   return 마감날 < 오늘;
 }
-
-/**
- * 마감은 안 됐는데(회사가 내리지도, 마감일이 지나지도 않았는데) 게재기간
- * (listed_until)이 지나 지금 공개 목록엔 안 보이는 상태인가.
- *
- * 무료(스타트)는 게재기간이 끝나면 v_active_jobs에서 빠져 노출이 멈추지만,
- * job_postings.status는 그대로 ACTIVE라 공고·지원자 관리 화면에는 계속
- * "진행중"으로만 보였다("게재기간때문에 공고가 내려갔다는건 어떻게
- * 알려줄거야?"). 마감(closed)과는 다른, 셋째 상태로 구분한다.
- */
-export function 노출종료인가(
-  status?: string | null,
-  deadline?: string | Date | null,
-  listedUntil?: string | Date | null
-): boolean {
-  if (마감인가(status, deadline)) return false;
-  if (status !== "ACTIVE" || !listedUntil) return false;
-  const d = new Date(listedUntil);
-  if (isNaN(d.getTime())) return false;
-  const 오늘 = new Date();
-  오늘.setHours(0, 0, 0, 0);
-  const 종료날 = new Date(d);
-  종료날.setHours(0, 0, 0, 0);
-  return 종료날 < 오늘;
-}
