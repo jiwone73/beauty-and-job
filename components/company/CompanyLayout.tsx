@@ -25,6 +25,9 @@ const PAGE_TITLES: Record<string, string> = {
   // 이 화면의 주인인지 헷갈렸다. 공고·지원자도 제목에 「관리」를 붙여 같은
   // 층을 만든다.
   proposals: "공고별 보낸 제안",
+  // PAGE_TITLES에 없어 기본값("대시보드")으로 빠지고 있었다("상품소개 제목
+  // 대시보드가 아니라 상품소개로 바꾸고", 2026-10-02).
+  plans: "상품소개",
   settings: "기업 정보",
   account: "계정 설정",
   password: "비밀번호 변경",

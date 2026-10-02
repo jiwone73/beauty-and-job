@@ -8302,8 +8302,8 @@ div:has(> table.admin-table),
    그대로 두고, 홈 안에서만 .co-cardw로 한 번 더 좁혀 덮어쓴다. */
 @media (max-width: 768px) {
   .co-cardw .company-card-title { font-size: 15px; }
-  .co-cardw .company-table th { font-size: 13.5px; }
-  .co-cardw .company-table td { font-size: 13.5px; }
+  .co-cardw .company-table th { font-size: 14px; }
+  .co-cardw .company-table td { font-size: 14px; }
   .co-cardw .co-count-value { font-size: 19px; }
   /* 7장을 3열로 — 글자를 키우니 4열에서는 "미열람 지원서"·"미답변 제안"이
      한 줄에 못 들어가 줄바꿈됐다. 줄바꿈 대신 3열(3+3+1)로 넓혀 한 줄을 지킨다. */
@@ -14163,14 +14163,21 @@ button,
   .co-plans .cs-plans:not(.ad2) .cs-plan { padding: 9px 7px 7px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-nm { font-size: 15.5px; margin-bottom: 6px; padding-bottom: 6px; gap: 5px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-ln { font-size: 13px; margin-bottom: 6px; }
+  /* 가격 숫자는 유지(.cs-plan-pr 19px 그대로) — "가격숫자는 유지". "30일
+     기준"/"공고 1건"(.cs-plan-du)과 혜택 글(.cs-plan-feat li)은 12/14px로.
+     ("상품 카드 내용 폰트 14, 공고1건·30일 기준 12", 2026-10-02). */
   .co-plans .cs-plans:not(.ad2) .cs-plan-pr { font-size: 19px; margin-bottom: 10px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-pr i { font-size: 12px; }
-  .co-plans .cs-plans:not(.ad2) .cs-plan-du { font-size: 11px; }
+  .co-plans .cs-plans:not(.ad2) .cs-plan-du { font-size: 12px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-btn { height: 38px; font-size: 13px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-feat { padding-top: 9px; gap: 6px; }
-  /* 불렛을 더 작게, 글과 사이도 더 좁혀 — 카드가 좁아진 만큼 글 쓸 자리를 늘린다. */
-  .co-plans .cs-plans:not(.ad2) .cs-plan-feat li { font-size: 12.5px; line-height: 1.4; padding-left: 7px; }
+  /* 불렛은 작게 유지, 글자만 14px로("상품 카드 내용 폰트 14"). */
+  .co-plans .cs-plans:not(.ad2) .cs-plan-feat li { font-size: 14px; line-height: 1.4; padding-left: 7px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-feat li::before { width: 3px; height: 3px; left: 0; top: 6px; }
+  /* "오픈준비중" 딱지 — 카드가 좁아진 만큼 모서리 여백도 절반으로("오픈준비중은
+     오른쪽 정렬", 2026-10-02 — 절대위치라 이미 오른쪽이지만 14px 여백이 좁은
+     카드에서 과하게 안쪽으로 들어와 보였다). */
+  .co-plans .cs-plans:not(.ad2) .cs-plan-soon { top: 7px; right: 7px; font-size: 11px; }
 
   /* 띠배너 좌우 여백 — 데스크톱(17px)의 절반 관례로. */
   .co-evtband { padding: 8px 9px; }
@@ -14205,7 +14212,7 @@ button,
 .cs-plan-flag { font-size: 12.5px; color: var(--cs); margin: 0 0 12px; height: 16px; letter-spacing: -.2px; }
 /* 이름 아래 선 하나. 이름과 설명이 붙어 있으면 어디까지가 상품 이름인지
    한 번에 안 들어온다. */
-.cs-plan-nm { font-size: 19px; font-weight: 700; color: #2b2b2e; margin: 0 0 11px; letter-spacing: -.3px;
+.cs-plan-nm { font-size: 19px; font-weight: 700 !important; color: #2b2b2e; margin: 0 0 11px; letter-spacing: -.3px;
   display: flex; align-items: center; gap: 7px;
   padding-bottom: 11px; border-bottom: 1px solid var(--card-line); }
 .cs-plan-nm svg { flex: none; color: var(--cs); }
@@ -14215,7 +14222,7 @@ button,
 .cs-plan-ln { font-size: 14.5px; color: #555; margin: 0 0 11px; line-height: 1.55; word-break: keep-all; min-height: 68px; }
 /* 기간은 값의 단서라 값 옆에 붙인다. 아래로 내리면 한 줄이 더 생기고, 값과
    기간을 따로 읽게 된다. 바닥선을 맞춰야 숫자와 글자가 한 덩어리로 보인다. */
-.cs-plan-pr { font-size: 25px; color: #2b2b2e; margin: 0 0 20px; letter-spacing: -1px; line-height: 1.1;
+.cs-plan-pr { font-size: 25px; font-weight: 700 !important; color: #2b2b2e; margin: 0 0 20px; letter-spacing: -1px; line-height: 1.1;
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 0; }
 .cs-plan-pr i { font-size: 15px; font-style: normal; letter-spacing: -.2px; }
 /* 「~」는 값의 일부라 숫자와 같은 크기로 둔다 — 작게 쓰면 단위(원)에 붙은
@@ -17116,7 +17123,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   /* 카드 전체 글자를 1px씩 키운다("카드 전체적으로 페이지 내용에 대해
      폰트를 현재상태에서 1px씩만 키우자", 2026-10-02). */
   .prop-table.received .apl-td-sub { font-size: 14px; line-height: 20px; }
-  .prop-table.received .apl-td-name { font-size: 16px; line-height: 20px; }
+  .prop-table.received .apl-td-name { font-size: 14px; line-height: 20px; }
   /* 급여는 "만 31세" 줄, 제안 취소는 "마포구" 줄과 같은 높이에 — 이름 줄은
      비워 둬 아래 두 줄만 오른쪽에 맞춘다("월급은 만 31세 랑 같은줄에.
      제안취소는 마포구있는 줄에", 2026-10-02). apl-td-wholines와 같은
@@ -17129,7 +17136,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .prop-table.received .prop-card-salary { font-size: 14px; line-height: 20px; color: #555; white-space: nowrap; }
   /* 지역 줄에 들어가는 제안일 — "제안취소 버튼하고 날자하고 위치 바꿔",
      "날자 뒤에 보냄이라고 써줘"(2026-10-02). */
-  .prop-table.received .prop-card-date { font-size: 13px; line-height: 20px; color: #9a9aa3; white-space: nowrap; }
+  .prop-table.received .prop-card-date { font-size: 12px; line-height: 20px; color: #9a9aa3; white-space: nowrap; }
   /* 공고지원자·인재풀과 같은 라벨 없는 값 대신, 열 머리가 사라진 자리라
      무슨 값인지 짧은 라벨을 붙인다. 모집분야(.c-job)·제안일(.c-date)은 값만
      남기기로 해서("모집분야 지우고... 헤어스텝은 남겨두고", "날짜만") 라벨이
@@ -17366,12 +17373,14 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   /* 직군·공고보기 폰트 통일(13px → 12.5px로 맞춤, 2026-10-02). */
   /* 카드 전체 글자를 1px씩 키운다("카드 전체적으로 페이지 내용에 대해
      폰트를 현재상태에서 1px씩만 키우자", 2026-10-02). */
-  .prop-card2-job { display: block; font-size: 13.5px; }
+  .prop-card2-job { display: block; font-size: 14px; }
   .prop-card2-viewjob { display: inline-flex; font-size: 13.5px; margin-top: 2px; }
   .prop-card2-nameline { display: flex; align-items: center; gap: 10px; }
-  /* 이름도 지원자 카드 모바일과 같은 한 단계 작은 크기로(15→14px), 이후
-     전체 1px 인상으로 15px. */
-  .prop-card2-name { font-size: 15px; }
+  /* 공고·지원자/인재풀/제안·스크랩 카드 공통 규격 — 맨윗줄 15, 이름(볼드) 14,
+     내용(평체) 14, 날짜 12로 통일("공고지원/인재풀/제안스크랩... 이름(볼드,
+     14), 내용(평체 14)", 2026-10-02). 프로그레스바·단계명은 이 규격에서
+     빼고 그대로 둔다("프로그레스 바, 단계명은 유지"). */
+  .prop-card2-name { font-size: 14px; }
   /* 점만 있던 미니 스테퍼는 접고, 라벨 넷(수락·채팅중·면접예정·종료)이
      다 보이는 원래 스테퍼를 이름 옆 대신 사람칸 오른쪽에 그대로 쓴다
      ("이렇게해줘. 면접예정은 해당 위치 밑에 표시해줘" — 캡처로 확인,
@@ -17434,7 +17443,7 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
      남는 폭을 전부 가져가 오른쪽 끝에 붙는다(.prop-step과 같은 원리). */
   .prop-card2.ended.sent { align-items: flex-end; }
   .prop-end-mobile { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-  .prop-end-mobile .prop-upd { font-size: 13px; margin: 0; }
+  .prop-end-mobile .prop-upd { font-size: 12px; margin: 0; }
   .sent .prop-card2-end { flex: 1 1 100%; margin-top: 4px; }
   .sent .prop-card2-end > .prop-badge,
   .sent .prop-card2-end > .prop-upd { display: none; }
@@ -19251,7 +19260,11 @@ select option { background-color: #fff; color: var(--color-text-strong); }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 @media (max-width: 768px) {
-  .tal-card .tal-name.tal-role { font-size: 14px !important; }
+  /* 공고지원/인재풀/제안스크랩 카드 공통 규격 — 맨윗줄 15로 통일
+     ("공고지원/인재풀/제안스크랩 카드 맨윗줄15, 이름(볼드, 14), 내용
+     (평체 14) 날자 12", 2026-10-02). 기존 14px(PC보다 1px 작게)를 접고
+     PC와 같은 15px로 올린다. */
+  .tal-card .tal-name.tal-role { font-size: 15px !important; }
 }
 /* 2행: 이름(나이·성별)+최종합격 — 이름은 PC 15px/모바일 14px 굵게 #555,
    나머지(나이·성별·최종합격)는 PC 14px/모바일 13px 평체 #555. 줄높이
@@ -19281,7 +19294,14 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    적용" — 메모는 이미 이 값이라 태그 줄을 맞춘다). */
 .apl-card .tal-tags { font-size: 14px !important; color: #555 !important; }
 @media (max-width: 768px) {
-  .apl-card .tal-tags { font-size: 13px !important; }
+  /* 공고지원/인재풀/제안스크랩 공통 규격의 "내용(평체 14)" — 경력·희망연봉·
+     출근가능일 줄도 13→14로("맨윗줄15, 이름(볼드,14), 내용(평체 14) 날자
+     12", 2026-10-02). */
+  .apl-card .tal-tags { font-size: 14px !important; }
+  /* "날자 12" — 지원일만 지역 줄(13px)에서 분리해 12px로. 공유 베이스
+     규칙(.tal-st-r, .tal-when-r { font-size: inherit !important })은 그대로
+     두고, 모바일 전용으로 지원일만 새로 못박는다. */
+  .apl-card .tal-when-r { font-size: 12px !important; }
 }
 /* 인재풀(PC, TalentCard) 사진도 지원자 카드와 같은 크기로("아바타 사진은
    공고지원자 아바타 크기로 통일") — 이번 "원점부터 다시" 작업은 지원자
@@ -19368,3 +19388,18 @@ select option { background-color: #fff; color: var(--color-text-strong); }
 /* 인재풀 표의 "제안하기" 버튼만 13px로 남아 있었다("다 14로 통일해야해"). */
 .apl-td-acts .tal-btn { padding: 4px 9px; font-size: 14px; }
 .apl-td-scrap { background: none; border: none; padding: 2px; cursor: pointer; display: inline-flex; }
+
+/* 인재풀 검색 모바일 카드(.co-li, app/company/dashboard/talent/page.tsx의
+   인라인 <style>) — 공고지원/인재풀/제안스크랩 공통 규격을 맞춘다("공고지원
+   /인재풀/제안스크랩 카드 맨윗줄15, 이름(볼드, 14), 내용 (평체 14) 날자 12",
+   2026-10-02). 이름(.co-li-name)은 이미 14·볼드라 손대지 않는다. 날짜는
+   이 카드엔 없어(등록일 등 표시 안 함) 건너뛴다. 원본이 인라인 <style>
+   (클래스 1개, !important)이라 문서 순서상 나중에 그려지는 쪽이 이겨
+   globals.css가 질 수 있다 — 조상 클래스(.co-m)를 더해 특정성으로
+   확실히 이긴다. */
+@media (max-width: 768px) {
+  /* 맨윗줄(직군) — 13~14px이던 걸 15px로. */
+  .co-m .co-li-job { font-size: 15px !important; }
+  /* 내용(경력·지역, row3) — 13px이던 걸 14px로. */
+  .co-m .co-li-meta2 { font-size: 14px !important; }
+}
