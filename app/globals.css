@@ -17088,7 +17088,9 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    하나. 옅은 회색을 새로 만들지 않는다"). */
 .prop-card2-name { font-size: 15px; font-weight: 700; color: #555;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prop-card2-job { font-size: 13px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 13px로 적혀 있었지만 위 주석(.apl-td-sub와 같은 값)은 14px이다 — 실제로는
+   안 맞았다("공고지원 인재카드에 있는 폰트 크기, 색상확인하고" 2026-10-02). */
+.prop-card2-job { font-size: 14px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* 공고 보기 링크는 공고·지원자 판의 같은 링크(.co-pane-view)와 같은 값이다. */
 .prop-card2-viewjob { padding: 0; border: none; background: none;
   display: inline-flex; align-items: center; gap: 2px; font-size: 13px; color: #555; cursor: pointer; }
@@ -17170,6 +17172,8 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
   .prop-card2-co { flex: 1 1 100%; }
   .prop-card2-job, .prop-card2-viewjob, .prop-step, .prop-card2-acts { display: none; }
   .prop-card2-nameline { display: flex; align-items: center; gap: 10px; }
+  /* 이름도 지원자 카드 모바일과 같은 한 단계 작은 크기로(15→14px). */
+  .prop-card2-name { font-size: 14px; }
   .prop-step-mini { display: grid; width: 70px; height: 9px; flex-shrink: 0; }
   .prop-step-mini .prop-step-dot { width: 7px; height: 7px; }
   .prop-step-mini .prop-step-dot.current { width: 9px; height: 9px; }

@@ -860,11 +860,14 @@ export default function TalentPage() {
                클래스 2개라 여기 한 개짜리보다 세거서 이겼다 — 셀렉터를
                ".co-list .co-li-name"으로 두 개로 맞춰 이 화면에서만 이긴다. */
             .co-list .co-li-name { font-size: 14px !important; font-weight: 700 !important; color: #555 !important; flex-shrink: 0; line-height: 22px !important; }
-            /* 나머지(나이·성별·경력·지역)도 지원자 카드와 같은 14px로. */
-            .co-li-ageg { font-size: 14px !important; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
+            /* 나머지(나이·성별·경력·지역)도 지원자 카드와 같은 13px로 — 지원자
+               카드 모바일은 이름·직군만 14px, 나머지는 13px이다("공고지원
+               인재카드에 있는 폰트 크기, 색상확인하고, 인재풀, 제안스크랩
+               에도 똑같이 적용해줘", 2026-10-02). */
+            .co-li-ageg { font-size: 13px !important; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
             /* 3줄 합이 아바타 76px과 위아래 딱 맞게 — 공고지원자 카드와 정확히
                같은 값(줄높이 22px, 1·2행 사이 7px, 2·3행 사이 3px: 22*3+7+3=76). */
-            .co-li-meta2 { font-size: 14px !important; color: #555; margin-top: 3px; line-height: 22px; }
+            .co-li-meta2 { font-size: 13px !important; color: #555; margin-top: 3px; line-height: 22px; }
             .co-li-jobrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 7px; position: relative; }
             /* 맨 윗줄은 굵게 통일("맨윗줄은 PC는 15px 굵게(#333), 모바일은
                14px 굵게(#333)로 통일해줘"). 오른쪽에 떠 있는 스크랩·제안하기
