@@ -62,6 +62,8 @@ type 제안 = {
   age: number | null;
   subJob: string | null;
   regionPrefer: string | null;
+  careerYears?: number | null;
+  careerCount?: number;
 };
 
 // 이름만으로는 열 명 중 누구였는지 떠오르지 않는다. 인재검색 카드가 쓰는 값을
@@ -814,7 +816,11 @@ export default function CompanyProposalsPage() {
                       <span className="apl-td-wholines">
                         <span className="apl-td-name">{p.userName}</span>
                         <span className="apl-td-sub">{인적(p) || "—"}</span>
-                        <span className="apl-td-sub">{p.regionPrefer || "—"}</span>
+                        <span className="apl-td-sub">
+                          {/* 모바일 전용 — 지역 앞 경력(「경력 5년 · 서울 마포구」). PC는 그대로 지역만. */}
+                          <span className="apl-td-career">{!p.careerCount || !p.careerYears ? "신입" : `경력 ${p.careerYears}년`} · </span>
+                          {p.regionPrefer || "—"}
+                        </span>
                       </span>
                     </button>
                     {/* 모바일 전용 — 이름 줄엔 모집분야, 성별 줄엔 급여, 지역

@@ -44,6 +44,12 @@ export async function GET(req: NextRequest) {
               CASE WHEN u.birth_date IS NULL THEN NULL
                    ELSE EXTRACT(YEAR FROM AGE(u.birth_date))::int END AS age,
               up.sub_job, up.main_job_group, up.skill_areas, up.office_job_areas,
+              -- 카드 3번째 줄 「경력 N년 · 지역」 — 인재검색 카드와 같은 셈법(첫 경력 시작 연도부터).
+              (SELECT CASE WHEN MIN(start_date) ~ '^[0-9]{4}'
+                           THEN GREATEST(EXTRACT(YEAR FROM NOW())::int - LEFT(MIN(start_date),4)::int, 0)
+                           ELSE NULL END
+                 FROM user_careers WHERE user_id = u.id) AS career_years,
+              (SELECT COUNT(*)::int FROM user_careers WHERE user_id = u.id) AS career_count,
               -- 희망지역. 표에서 사람을 가릴 때 직군만큼이나 먼저 보는 값이다.
               u.region_sido, u.region_sigungu, up.region_prefer,
               jp.title AS job_title,
@@ -138,6 +144,8 @@ export async function GET(req: NextRequest) {
       // sub_job 이 비어 있어도 매장·오피스 어느 쪽으로든 고른 소분류가 있으면
       // 그걸 쓰고, 대분류(main_job_group)는 정말 아무것도 없을 때만 쓴다.
       subJob: r.sub_job || r.skill_areas?.[0] || r.office_job_areas?.[0] || r.main_job_group || null,
+      careerYears: r.career_years ?? null,
+      careerCount: r.career_count ?? 0,
       regionPrefer: 짧은지역([r.region_sido, r.region_sigungu].filter(Boolean).join(" ")) || 짧은지역(r.region_prefer) || null,
       jobTitle: r.job_title,
       lastSender: r.last_sender,
