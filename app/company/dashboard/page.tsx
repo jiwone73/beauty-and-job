@@ -93,7 +93,10 @@ export default function CompanyDashboard() {
   // 각각 '지금 몇 자리 뽑고 있나'와 '오늘 손쓰지 않으면 내려간다'로 행동이 붙는다.
   // 다섯 줄까지만 보인다 — 더 있으면 '전체보기'로 간다.
   const 안본전체 = applicants.filter((a) => !a.viewed_at);
-  const 안본지원자 = 안본전체.slice(0, 5);
+  // 최신순 최대 5개(모바일은 CSS 로 3개까지 — .co-cardw 의 dash-table) — "최대 최신순으로 5개까지만 보여줘" / "모바일은 3개".
+  // 목록 순서가 어떻든 지원일이 늦은 것부터 보이게 여기서 직접 정렬한다.
+  const 안본지원자 = [...안본전체].sort((a, b) => new Date(b.applied_at).getTime() - new Date(a.applied_at).getTime()).slice(0, 5);
+  const 최근공고 = [...jobs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
 
   // 셀렉미 「활동정보」의 모양(한 판 안에 칸, 라벨이 위 숫자가 아래, 아이콘도 색도
   // 없음)은 가져오되 내용은 다르다. 거기는 마이페이지 요약이라 누적을 보여주지만
@@ -272,7 +275,7 @@ export default function CompanyDashboard() {
                 <tr><th>공고명</th><th>등록일</th><th>마감일</th></tr>
               </thead>
               <tbody>
-                {jobs.map((job) => (
+                {최근공고.map((job) => (
                   <tr key={job.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name"><span className="td-clamp2">{job.title}</span></td>
                     <td className="company-td-sub">{formatDate(job.created_at)}</td>
