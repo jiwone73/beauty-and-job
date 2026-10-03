@@ -55,6 +55,8 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
 
   const [팔림, set팔림] = useState(false);
   const [안엶, set안엶] = useState(false);
+  // 이벤트 무료 체험 중인가 — 켜져 있을 때만 유의사항에 한 줄을 더한다. 유료화로 스위치를 끄면 사라진다.
+  const [체험, set체험] = useState<{ plan: string; months: number; to: string } | null>(null);
   /** 고른 기간. 값도 신청 단추도 이걸 따라간다 — 고르는 자리 없이 값만
    *  적어 두면 「그래서 얼마를 내고 며칠을 쓰나」를 신청 화면에서 다시 정하게 된다. */
   const [일수, set일수] = useState<기간>(30);
@@ -62,6 +64,7 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
     fetch("/api/plans").then((r) => r.json()).then((r) => {
       set팔림(!!r?.data?.sales);
       set안엶(Array.isArray(r?.data?.open) && !r.data.open.includes(id));
+      set체험(r?.data?.trial ?? null);
     }).catch(() => {});
   }, [id]);
 
@@ -238,6 +241,12 @@ export default function PlanDetail({ id, 이름보임 = true }: { id: PlanId; �
       <section className="pi-sec">
         <h3 className="pi-st">유의사항</h3>
         <ul className="pi-warn">
+          {체험 && (
+            <li>
+              이벤트 기간({체험.to.slice(5, 7).replace(/^0/, "")}월 {체험.to.slice(8).replace(/^0/, "")}일까지)에 가입하신 기업회원은 승인일부터 {체험.months}개월 동안
+              {" "}{플랜[체험.plan as PlanId]?.name ?? 플랜.PREMIUM.name} 기능을 무료로 쓰실 수 있습니다. 체험이 끝나도 자동 결제는 없습니다.
+            </li>
+          )}
           <li>무통장입금으로 접수하며, 입금 확인일부터 기산합니다.</li>
           <li>자동 결제·자동 연장은 없습니다. 종료 3일 전 알림을 보내드립니다.</li>
           {메인자리 && (

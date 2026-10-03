@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
-import { FAQ찾기, 갈래들, type 묶음 } from "@/lib/faq";
+import { FAQ찾기, 갈래들, type 묶음, type 질문 } from "@/lib/faq";
+import { 이벤트질문, type 체험정보 } from "@/lib/faqEvent";
 
 /**
  * 자주 묻는 질문 판 — 갈래로 묶고, 찾을 수 있게 한다.
@@ -46,8 +47,20 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
   };
   const [고른갈래, set고른갈래] = useState("전체");
 
-  const 걸린것 = FAQ찾기(묶, 말);
-  const 갈래목록 = 갈래들(묶)
+  // 이벤트 무료 체험 중에만 「이벤트」 갈래를 맨 앞에 붙인다 — 유료화로 스위치를 끄면 이 갈래째 없어진다.
+  const [체험, set체험] = useState<체험정보 | null>(null);
+  useEffect(() => {
+    if (묶 !== "기업") return;
+    fetch("/api/plans").then((r) => r.json()).then((r) => set체험(r?.data?.trial ?? null)).catch(() => {});
+  }, [묶]);
+  const 이벤트 = 묶 === "기업" && 체험 ? 이벤트질문(체험) : [];
+  const 말소 = 말.trim().toLowerCase();
+  const 걸린것: 질문[] = [
+    ...이벤트.filter((f) => !말소 || (f.q + (Array.isArray(f.a) ? f.a.join(" ") : f.a)).toLowerCase().includes(말소)),
+    ...FAQ찾기(묶, 말),
+  ];
+  const 모든갈래 = [...(이벤트.length ? ["이벤트"] : []), ...갈래들(묶)];
+  const 갈래목록 = 모든갈래
     .filter((g) => 고른갈래 === "전체" || g === 고른갈래)
     .filter((g) => 걸린것.some((f) => f.갈래 === g));
 
@@ -56,7 +69,7 @@ export default function FaqBoard({ 처음 = "개인", 접기 = true }: {
       {/* 갈래 탭 — 이름을 다 펼쳐 두어 훑어만 봐도 어디에 내 질문이
           있을지 짐작이 간다. */}
       <nav className="faq-tabs" aria-label="갈래">
-        {["전체", ...갈래들(묶)].map((g, i) => (
+        {["전체", ...모든갈래].map((g, i) => (
           <Fragment key={g}>
             {i > 0 && <span className="faq-tabs-sep">|</span>}
             <button type="button"
