@@ -29,8 +29,8 @@ const 기업오피스: 구간[] = [
 
 const 번호 = (n: number) => String(n).padStart(2, "0");
 const 아이디 = (접두: string, n: number) => `btwk2026+${접두}${번호(n)}`;
-
-const 칸: React.CSSProperties = { padding: "9px 14px", whiteSpace: "nowrap", textAlign: "left" };
+// 표에는 번호만 적는다 — 앞(btwk2026+)과 뒤(@gmail.com)는 모두 같아서 적으면 칸만 길어진다.
+const 짧게 = (접두: string, n: number) => `${접두}${번호(n)}`;
 
 const 줄들: 줄타입[] = [
   ...기업매장.map((g) => ({ 구분: "기업회원 · 매장", 접두: "st", ...g })),
@@ -77,44 +77,39 @@ export default function TestAccountTable() {
   };
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 12, overflowX: "auto", marginBottom: 24 }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 640 }}>
-        <thead>
-          <tr style={{ background: "#fafafa", color: "#555" }}>
-            <th style={칸}>구분</th>
-            <th style={칸}>ID (이메일 앞부분, 뒤는 @gmail.com)</th>
-            <th style={칸}>상품</th>
-            <th style={칸}>들어가기</th>
-          </tr>
-        </thead>
-        <tbody>
-          {줄들.map((r, i) => {
-            const key = `${r.접두}-${r.처음}`;
-            const n = 고른번호[key] ?? r.처음;
-            return (
-              <tr key={i} style={{ borderTop: "1px solid #f2f2f2" }}>
-                <td style={{ ...칸, color: "#555" }}>{r.구분}</td>
-                <td style={칸}>{아이디(r.접두, r.처음)} ~ {아이디(r.접두, r.끝)}</td>
-                <td style={{ ...칸, color: r.상품 === "—" ? "#555" : "#582681" }}>{r.상품}</td>
-                <td style={칸}>
-                  <input
-                    type="number" min={r.처음} max={r.끝} value={n}
-                    onChange={(e) => set고른번호((p) => ({ ...p, [key]: Math.min(r.끝, Math.max(r.처음, Number(e.target.value) || r.처음)) }))}
-                    aria-label={`${r.구분} ${r.상품} 번호`}
-                    style={{ width: 56, padding: "4px 6px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13, marginRight: 8 }}
-                  />
-                  <button
-                    type="button" disabled={하는중 === key} onClick={() => 들어가기(r, key, n)}
-                    style={{ fontSize: 12, padding: "5px 10px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
-                  >
-                    {하는중 === key ? "여는 중…" : "이 계정으로 들어가기"}
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    // 표가 아니라 줄 목록이다 — 관리자 화면은 왼쪽 메뉴가 폭을 많이 먹는 좁은 창에서도 보는데,
+    // 표로 두면 오른쪽 「들어가기」 버튼이 가로 스크롤 밖으로 밀려 안 보였다. 칸이 모자라면 줄이 접힌다.
+    <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 12, marginBottom: 24 }}>
+      <p style={{ margin: 0, padding: "10px 14px", fontSize: 12, color: "#555", borderBottom: "1px solid #f2f2f2" }}>
+        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「들어가기」를 누르면 새 탭에서 그 계정으로 로그인됩니다.
+      </p>
+      {줄들.map((r, i) => {
+        const key = `${r.접두}-${r.처음}`;
+        const n = 고른번호[key] ?? r.처음;
+        return (
+          <div key={i} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", padding: "10px 14px", borderTop: i ? "1px solid #f2f2f2" : "none", fontSize: 13 }}>
+            <div style={{ flex: "1 1 170px", minWidth: 0 }}>
+              <span style={{ color: "#555" }}>{r.구분}</span>
+              {r.상품 !== "—" && <span style={{ color: "#582681", marginLeft: 8 }}>{r.상품}</span>}
+            </div>
+            <div style={{ flex: "0 0 auto", color: "#555", whiteSpace: "nowrap" }}>{짧게(r.접두, r.처음)} ~ {짧게(r.접두, r.끝)}</div>
+            <div style={{ flex: "0 0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+              <input
+                type="number" min={r.처음} max={r.끝} value={n}
+                onChange={(e) => set고른번호((p) => ({ ...p, [key]: Math.min(r.끝, Math.max(r.처음, Number(e.target.value) || r.처음)) }))}
+                aria-label={`${r.구분} ${r.상품} 번호`}
+                style={{ width: 52, padding: "4px 6px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13 }}
+              />
+              <button
+                type="button" disabled={하는중 === key} onClick={() => 들어가기(r, key, n)}
+                style={{ fontSize: 12, padding: "5px 12px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
+              >
+                {하는중 === key ? "여는 중…" : "들어가기"}
+              </button>
+            </div>
+          </div>
+        );
+      })}
       {오류 && <p style={{ margin: 0, padding: "8px 14px", fontSize: 12, color: "#e74c3c" }}>{오류}</p>}
     </div>
   );
