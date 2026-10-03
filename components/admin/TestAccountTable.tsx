@@ -12,10 +12,10 @@ import { useSignupStore } from "@/lib/store/signupStore";
 // 번호 구간은 상품 네 단계로 균등분할한 것이고, 나머지는 스타트 쪽에 더했다.
 // DB(companies.plan)에도 이 구간대로 들어가 있다. 구간을 바꾸면 DB 와 같이 바꿔야 한다.
 //
-// 맨 위 「비회원으로 보기」는 메인 사이트의 로그인만 지우고(알바 로그인은 그대로) 채용공고 목록을
+// 맨 위 「비회원으로 접속하기」는 메인 사이트의 로그인만 지우고(알바 로그인은 그대로) 채용공고 목록을
 // 새 탭에 연다. 비회원은 상품과 상관없는 방문객이라 줄은 하나다.
 //
-// 「들어가기」는 알바 로그인을 유지한 채 새 탭에서 그 테스트 계정으로 메인 사이트에 로그인한다
+// 「접속하기」는 알바 로그인을 유지한 채 새 탭에서 그 테스트 계정으로 메인 사이트에 로그인한다
 // (서버: /api/admin/alba/test-login — 테스트 계정에만 열린다). 근무 시간은 알바 로그인 기준이라
 // 메인 사이트에서 테스트하는 동안에도 계속 쌓인다.
 type 구간 = { 상품: string; 처음: number; 끝: number };
@@ -52,7 +52,7 @@ export default function TestAccountTable() {
   const [하는중, set하는중] = useState<string | null>(null);
   const [오류, set오류] = useState("");
 
-  const 들어가기 = async (r: 줄타입, key: string, n: number) => {
+  const 접속하기 = async (r: 줄타입, key: string, n: number) => {
     set오류("");
     set하는중(key);
     // 클릭 직후에 탭을 먼저 연다 — 응답을 기다린 뒤에 열면 팝업 차단에 걸린다.
@@ -101,10 +101,10 @@ export default function TestAccountTable() {
 
   return (
     // 표가 아니라 줄 목록이다 — 관리자 화면은 왼쪽 메뉴가 폭을 많이 먹는 좁은 창에서도 보는데,
-    // 표로 두면 오른쪽 「들어가기」 버튼이 가로 스크롤 밖으로 밀려 안 보였다. 칸이 모자라면 줄이 접힌다.
+    // 표로 두면 오른쪽 「접속하기」 버튼이 가로 스크롤 밖으로 밀려 안 보였다. 칸이 모자라면 줄이 접힌다.
     <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 12, marginBottom: 24 }}>
       <p style={{ margin: 0, padding: "10px 14px", fontSize: 12, color: "#555", borderBottom: "1px solid #f2f2f2" }}>
-        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「들어가기」를 누르면 새 탭에서 그 계정으로 로그인됩니다. 맨 위 「비회원으로 보기」는 로그인을 풀고 채용공고 목록을 새 탭에서 엽니다.
+        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「접속하기」를 누르면 새 탭에서 그 계정으로 로그인됩니다. 맨 위 「비회원으로 접속하기」는 로그인을 풀고 채용공고 목록을 새 탭에서 엽니다.
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", padding: "10px 14px", fontSize: 13 }}>
         <div style={{ flex: "1 1 170px", minWidth: 0 }}>
@@ -115,7 +115,7 @@ export default function TestAccountTable() {
           type="button" onClick={비회원으로}
           style={{ fontSize: 12, padding: "5px 12px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
         >
-          비회원으로 보기
+          비회원으로 접속하기
         </button>
       </div>
       {줄들.map((r, i) => {
@@ -136,10 +136,10 @@ export default function TestAccountTable() {
                 style={{ width: 52, padding: "4px 6px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13 }}
               />
               <button
-                type="button" disabled={하는중 === key} onClick={() => 들어가기(r, key, n)}
+                type="button" disabled={하는중 === key} onClick={() => 접속하기(r, key, n)}
                 style={{ fontSize: 12, padding: "5px 12px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
               >
-                {하는중 === key ? "여는 중…" : "들어가기"}
+                {하는중 === key ? "여는 중…" : "접속하기"}
               </button>
             </div>
           </div>

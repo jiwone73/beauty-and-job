@@ -94,7 +94,7 @@ export default function TestReportsPage() {
     set올리는중(true);
     try {
       // 어느 계정으로 봤는지는 고르게 하지 않는다 — 이 브라우저에 로그인돼 있는 메인 사이트 계정을
-      // 서버가 토큰으로 읽어 적는다(알바 현황의 「이 계정으로 들어가기」로 들어간 테스트 계정).
+      // 서버가 토큰으로 읽어 적는다(알바 현황의 「접속하기」로 들어간 테스트 계정).
       const 값 = { ...폼, env: 환경(), member_token: localStorage.getItem("access_token") || "" };
       let 몸통: BodyInit; const 머리: Record<string, string> = { Authorization: `Bearer ${token()}` };
       if (사진들.length) {
