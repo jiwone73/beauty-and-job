@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { supabaseAdmin } from '@/lib/supabase'
+import { 이벤트체험부여 } from '@/lib/companyEntitlement'
 const LICENSE_BUCKET = "business-licenses";
 // 기업회원 목록 조회 (공고수 + 최근 공고 + 사업자등록증 서명URL 포함)
 export async function GET(req: NextRequest) {
@@ -79,6 +80,8 @@ export async function PATCH(req: NextRequest) {
     if (!['PENDING', 'ACTIVE', 'SUSPENDED', 'REJECTED'].includes(status))
       return err('BAD_REQUEST', '잘못된 status', 400)
     await client.query(`UPDATE companies SET status = $1::company_status, updated_at = now() WHERE id = $2`, [status, id])
+    // 이벤트 무료 체험은 승인되는 날부터 센다(이벤트 기간에 가입한 기업만 — 대상이 아니면 아무 일도 없다).
+    if (status === 'ACTIVE') await 이벤트체험부여(id).catch((e) => console.error('[event trial grant]', e))
     return ok({ success: true })
   } finally {
     client.release()

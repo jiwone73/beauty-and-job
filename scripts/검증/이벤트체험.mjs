@@ -24,7 +24,7 @@ const 개월 = (날짜, n) => { const [y, m, d] = 날짜.split('-').map(Number);
 const [원래설정] = await q(`SELECT value FROM app_settings WHERE key='event_showcase'`)
 const 원래값 = 원래설정.value
 const 설정쓰기 = (o) => q(`UPDATE app_settings SET value=$1 WHERE key='event_showcase'`, [JSON.stringify(o)])
-const 기본설정 = { ...JSON.parse(원래값), from: 날(-1), to: 날(30), until: 날(130), months: 3, plan: 'PREMIUM' }
+const 기본설정 = { ...JSON.parse(원래값), from: 날(-10), to: 날(30), until: 날(130), months: 3, plan: 'PREMIUM' }
 const [사람] = await q(`SELECT id, name, phone FROM users WHERE email='btwk2026+us02@gmail.com'`)
 
 const 만든 = {}
@@ -70,6 +70,24 @@ try {
   const [늦행] = await q(`SELECT plan FROM companies WHERE id=$1`, [늦.id])
   본다('가입 기간이 지난 뒤 가입한 기업은 체험이 없다(스타트)', 늦행.plan === null, JSON.stringify(늦행))
   await 설정쓰기(기본설정)
+
+  console.log('\n1-2. 체험은 승인일부터 센다')
+  const 관리자 = jwt.sign({ sub: '00000000-0000-0000-0000-000000000000', owner_type: 'admin', role: 'admin' }, env.JWT_SECRET, { expiresIn: '1h' })
+  // 5일 전에 가입했지만 아직 승인 대기(PENDING)인 기업 — 가입일은 이벤트 가입 기간 안이다.
+  const [대기] = await q(`INSERT INTO companies (company_name, company_type, status, is_member, created_at)
+     VALUES ($1,'STORE','PENDING',true, now() - interval '5 days') RETURNING id`, [`${표시} 승인대기`])
+  만든['승인대기'] = { id: 대기.id, 토큰: 토큰(대기.id, 'company') }
+  const 대기후 = await q(`SELECT plan FROM companies WHERE id=$1`, [대기.id])
+  본다('승인 대기 중에는 체험이 시작되지 않는다', 대기후[0].plan === null)
+  const 승인 = await 부른다('/api/admin/companies', { method: 'PATCH', token: 관리자, body: { id: 대기.id, status: 'ACTIVE' } })
+  본다('운영자가 승인한다', 승인.status === 200, `status=${승인.status} ${승인.msg}`)
+  const [승인행] = await q(`SELECT plan, plan_source, paid_until FROM companies WHERE id=$1`, [대기.id])
+  본다('승인하는 날 프리미엄이 시작된다', 승인행.plan === 'PREMIUM' && 승인행.plan_source === 'EVENT', JSON.stringify(승인행))
+  본다('종료일이 가입일(5일 전)이 아니라 승인일 + 3개월 − 1일이다', 승인행.paid_until === 개월(날(0), 3), `${승인행.paid_until} / ${개월(날(0), 3)}`)
+  const 정지 = await 부른다('/api/admin/companies', { method: 'PATCH', token: 관리자, body: { id: 대기.id, status: 'SUSPENDED' } })
+  const 다시 = await 부른다('/api/admin/companies', { method: 'PATCH', token: 관리자, body: { id: 대기.id, status: 'ACTIVE' } })
+  const [다시행] = await q(`SELECT paid_until FROM companies WHERE id=$1`, [대기.id])
+  본다('정지 후 다시 승인해도 기간이 다시 시작되지 않는다(한 번만)', 정지.status === 200 && 다시.status === 200 && 다시행.paid_until === 승인행.paid_until)
 
   console.log('\n2. 등급 × 기능 — 인재 열람 (스탠다드부터)')
   const 열람 = async (c) => {

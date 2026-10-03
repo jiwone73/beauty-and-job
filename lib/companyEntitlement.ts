@@ -48,13 +48,13 @@ export function 개월더하기(날짜: string, 개월: number): string {
 }
 
 /**
- * 이벤트 무료 체험 — 이벤트 기간에 가입한 기업에게 설정한 등급(프리미엄)을 가입일로부터
+ * 이벤트 무료 체험 — 이벤트 기간에 가입한 기업에게 설정한 등급(프리미엄)을 **승인일**부터
  * 설정한 개월 수만큼 준다. 등급은 새로 만든 값이 아니라 **진짜 이용권**(plan·paid_until)이다 —
  * 그래서 끝나는 날 일반 이용권 만료와 똑같은 길로 스타트가 된다. 이 길이 곧 유료화 전환의 길이다.
  * 이용권의 출처는 plan_source('EVENT')에 남겨 구매한 것과 가른다.
  *
- * 가입할 때 부르고(app/api/auth/company/signup), 가입 처리에서 놓친 경우를 위해 공고를 올리는
- * 길목(POST, 재등록 PATCH)에서도 부른다. 이미 유효한 이용권이 있으면 건드리지 않는다.
+ * 승인되는 곳(자동 승인이면 가입 처리 app/api/auth/company/signup, 운영자 승인이면 app/api/admin/companies
+ * PATCH)에서 부르고, 놓친 경우를 위해 공고를 올리는 길목(POST, 재등록 PATCH)에서도 부른다. 이미 유효한 이용권이 있으면 건드리지 않는다.
  * 설정에 months 가 없으면 아무것도 하지 않는다 — 스위치를 끄는 것은 months 를 빼는 것이다.
  *
  * 메인 이벤트 채용관(app/api/jobs/showcase/route.ts)과 같은 조건(가입일·오늘이 다 설정의
@@ -69,20 +69,22 @@ export async function 이벤트체험부여(
   // 설정에 months 가 없으면 체험이 꺼진 것이다(유료화 스위치). 옛 방식(라이트 30일)은 없앴다.
   if (!설정?.months || 설정.months <= 0) return null;
   const 오늘 = 옵션.오늘 ?? 오늘날짜();
-  if (오늘 < 설정.from || 오늘 > 설정.to) return null;
 
   const { rows } = await pool.query(
-    `SELECT to_char(created_at AT TIME ZONE 'Asia/Seoul', 'YYYY-MM-DD') AS 가입일, plan_source FROM companies WHERE id = $1`,
+    `SELECT to_char(created_at AT TIME ZONE 'Asia/Seoul', 'YYYY-MM-DD') AS 가입일, plan_source, status::text AS status FROM companies WHERE id = $1`,
     [companyId]
   );
   const 가입일 = rows[0]?.가입일;
+  // 대상은 이벤트 가입 기간(from~to)에 가입한 기업이다. 승인이 가입 기간이 지난 뒤에 나도 가입일이 기간 안이면 받는다.
   if (!가입일 || 가입일 < 설정.from || 가입일 > 설정.to) return null;
+  // 승인(상태 ACTIVE)이 되어야 시작한다 — 체험 기간은 **승인일**부터 센다(승인 대기 중에는 아직 쓸 수 없으니 기간이 흐르면 안 된다).
+  if (rows[0]?.status !== "ACTIVE") return null;
   // 구매한 이용권은 건드리지 않는다. 이벤트로 받은 것이 이미 있으면 다시 주지 않는다.
   if (rows[0]?.plan_source === "PURCHASE" || rows[0]?.plan_source === "EVENT") return null;
   if ((await 이용권(companyId)).plan) return null;
 
   const plan: PlanId = 설정.plan && 플랜인가(설정.plan) ? 설정.plan : "LIGHT";
-  const paidUntil = 개월더하기(가입일, 설정.months);
+  const paidUntil = 개월더하기(오늘, 설정.months); // 오늘 = 승인일(승인되는 날 또는 승인된 기업이 처음 쓰는 날)
   await pool.query(
     `UPDATE companies SET plan = $2, paid_until = $3, plan_source = 'EVENT' WHERE id = $1`,
     [companyId, plan, paidUntil]

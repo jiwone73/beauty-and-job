@@ -5,7 +5,7 @@ import pool from "@/lib/db";
  *
  *   {"from":"2026-10-12","to":"2026-12-30","until":"2027-03-30","title":"오픈이벤트 채용관","months":3,"plan":"PREMIUM"}
  *
- * from~to 는 가입 기간, months 는 가입일로부터 무료 체험 개월 수, plan 은 체험 등급이다.
+ * from~to 는 가입 기간, months 는 승인일로부터 무료 체험 개월 수, plan 은 체험 등급이다.
  * until 은 마지막 가입자의 체험이 끝나는 날(to + months) — 이 날이 지나면 설정이 없는 것과 같다.
  * from~to 사이에 가입하고 그 사이에 공고를 올린 곳이 대상이고, until 까지
  * 그 줄을 세운다. 설정이 없거나 until 이 지났으면 줄 자체가 안 생긴다 —
@@ -13,7 +13,7 @@ import pool from "@/lib/db";
  */
 export type 이벤트설정 = {
   from: string; to: string; until: string; title?: string;
-  /** 이벤트 무료 체험 — 가입일로부터 몇 개월. 없으면 옛 방식(라이트 30일, 첫 공고 때). */
+  /** 이벤트 무료 체험 — 가입 승인일로부터 몇 개월. 없으면 꺼짐(유료화). */
   months?: number;
   /** 체험으로 주는 등급. 없으면 라이트. */
   plan?: "LIGHT" | "STANDARD" | "PREMIUM";
