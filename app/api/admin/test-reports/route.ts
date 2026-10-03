@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 몸통읽기, 첨부저장 } from "@/lib/inquiryFiles";
+import { verifyAccessToken } from "@/lib/jwt";
+import { 플랜 } from "@/lib/companyPlans";
 
 const 영역들 = ["연동 시나리오", "동시성·부하", "데이터 정합성", "외부 서비스", "결제·유료", "화면·모바일"];
 const 무게들 = ["막힘", "정해야 함", "알림"];
@@ -46,6 +48,34 @@ export async function GET(req: NextRequest) {
 
 const 누구들 = ["비로그인", "개인회원", "기업회원", "관리자"];
 
+// 이슈를 올린 브라우저에 로그인돼 있던 메인 사이트 계정을 토큰으로 읽어 적는다.
+// 고르게 하면 틀리게 고른다 — 알바 현황의 「이 계정으로 들어가기」로 들어간 테스트 계정은 서버가
+// 정확히 안다. 토큰이 없거나 읽을 수 없으면 비로그인이다.
+// 실제 가입자의 이메일은 리포트에 남기지 않는다. 테스트 계정(btwk2026+…)만 이메일을 적는다.
+const 테스트계정 = /^btwk2026\+[a-z]+\d{2,3}@gmail\.com$/;
+async function 누구로봤나(memberToken: unknown): Promise<string> {
+  const t = String(memberToken || "").trim();
+  if (!t) return "비로그인";
+  try {
+    const p = verifyAccessToken(t);
+    if (p.owner_type === "company") {
+      const r = await pool.query(`SELECT email, plan FROM companies WHERE id = $1`, [p.sub]);
+      if (!r.rows[0]) return "비로그인";
+      const 상품 = r.rows[0].plan && 플랜[r.rows[0].plan as keyof typeof 플랜] ? 플랜[r.rows[0].plan as keyof typeof 플랜].name : "스타트";
+      return `${테스트계정.test(r.rows[0].email) ? r.rows[0].email.split("@")[0] + " · " : ""}기업회원 · ${상품}`;
+    }
+    if (p.owner_type === "user") {
+      const r = await pool.query(`SELECT email, job_type FROM users WHERE id = $1`, [p.sub]);
+      if (!r.rows[0]) return "비로그인";
+      const 직 = r.rows[0].job_type === "STORE" ? "매장" : r.rows[0].job_type === "OFFICE" ? "오피스" : "";
+      return `${테스트계정.test(r.rows[0].email) ? r.rows[0].email.split("@")[0] + " · " : ""}개인회원${직 ? " · " + 직 : ""}`;
+    }
+  } catch {
+    /* 만료·위조 토큰은 비로그인으로 본다 */
+  }
+  return "비로그인";
+}
+
 // 리포트 올리기. 클로드가 시험하다 어긋난 것과, 사람이 돌아보다 찾은 것이
 // 같은 자리에 쌓인다 — 두 화면으로 갈리면 무엇부터 고칠지가 흩어진다.
 export async function POST(req: NextRequest) {
@@ -53,13 +83,19 @@ export async function POST(req: NextRequest) {
   if (authErr) return authErr;
   const { 값: b, 파일들 } = await 몸통읽기(req).catch(() => ({ 값: {} as any, 파일들: [] as File[] }));
   const title = String(b.title || "").trim();
-  const area = String(b.area || "").trim();
+  // 사람이 올릴 때는 갈래를 고르게 하지 않는다 — 비어 있으면 「화면·모바일」로 적는다(사람이 찾는 것은
+  // 대부분 화면에서 본 문제다). 클로드가 올리는 경로는 갈래를 그대로 받는다.
+  const area = String(b.area || "").trim() || (b.reported_by === "claude" ? "" : "화면·모바일");
   if (!title) return err("VALIDATION_001", "제목이 없습니다.", 400);
   if (!영역들.includes(area)) return err("VALIDATION_001", "영역이 올바르지 않습니다.", 400);
   const severity = 무게들.includes(b.severity) ? b.severity : "정해야 함";
   const options = Array.isArray(b.options) ? b.options.slice(0, 6) : [];
   // 누가 올렸는지는 스스로 적게 두지 않는다. 로그인한 계정으로 판단한다.
   const 올린이 = b.reported_by === "claude" ? "claude" : (auth!.sub === "alba" ? "alba" : "admin");
+  // 사람이 올릴 때는 로그인한 계정을 서버가 적는다. 클로드가 올릴 때는 시험에 쓴 역할을 그대로 받는다.
+  const 누구로 = 올린이 === "claude"
+    ? (누구들.includes(b.as_who) ? b.as_who : null)
+    : await 누구로봤나(b.member_token);
   const r = await pool.query(
     `INSERT INTO test_reports
        (case_id, area, title, severity, steps, expected, actual, options, decided_by, ref_url, status,
@@ -76,7 +112,7 @@ export async function POST(req: NextRequest) {
       // 고칠 길이 하나뿐이라 이미 고쳤으면 done 으로 올린다.
       상태들.includes(b.status) ? b.status : "open",
       올린이,
-      누구들.includes(b.as_who) ? b.as_who : null,
+      누구로,
       String(b.env || "").trim().slice(0, 200) || null,
     ]
   );

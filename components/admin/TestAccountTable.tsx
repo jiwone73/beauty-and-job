@@ -1,8 +1,18 @@
+"use client";
+import { useState } from "react";
+import { useAuthStore } from "@/lib/store/authStore";
+import { setLoginPersistence } from "@/lib/auth/session";
+
 // 알바가 테스트할 때 쓰는 계정. 이메일 번호로 어느 상품인지 알 수 있다.
 //
 // 번호 구간은 상품 네 단계로 균등분할한 것이고, 나머지는 스타트 쪽에 더했다.
 // DB(companies.plan)에도 이 구간대로 들어가 있다. 구간을 바꾸면 DB 와 같이 바꿔야 한다.
+//
+// 「들어가기」는 알바 로그인을 유지한 채 새 탭에서 그 테스트 계정으로 메인 사이트에 로그인한다
+// (서버: /api/admin/alba/test-login — 테스트 계정에만 열린다). 근무 시간은 알바 로그인 기준이라
+// 메인 사이트에서 테스트하는 동안에도 계속 쌓인다.
 type 구간 = { 상품: string; 처음: number; 끝: number };
+type 줄타입 = { 구분: string; 접두: string; 처음: number; 끝: number; 상품: string };
 
 const 기업매장: 구간[] = [
   { 상품: "스타트", 처음: 1, 끝: 25 },
@@ -22,33 +32,90 @@ const 아이디 = (접두: string, n: number) => `btwk2026+${접두}${번호(n)}
 
 const 칸: React.CSSProperties = { padding: "9px 14px", whiteSpace: "nowrap", textAlign: "left" };
 
+const 줄들: 줄타입[] = [
+  ...기업매장.map((g) => ({ 구분: "기업회원 · 매장", 접두: "st", ...g })),
+  ...기업오피스.map((g) => ({ 구분: "기업회원 · 오피스", 접두: "of", ...g })),
+  { 구분: "개인회원 · 매장", 접두: "us", 처음: 1, 끝: 100, 상품: "—" },
+  { 구분: "개인회원 · 오피스", 접두: "uo", 처음: 1, 끝: 50, 상품: "—" },
+];
+
 export default function TestAccountTable() {
-  const 줄: { 구분: string; 범위: string; 상품: string }[] = [
-    ...기업매장.map((g) => ({ 구분: "기업회원 · 매장", 범위: `${아이디("st", g.처음)} ~ ${아이디("st", g.끝)}`, 상품: g.상품 })),
-    ...기업오피스.map((g) => ({ 구분: "기업회원 · 오피스", 범위: `${아이디("of", g.처음)} ~ ${아이디("of", g.끝)}`, 상품: g.상품 })),
-    { 구분: "개인회원 · 매장", 범위: `${아이디("us", 1)} ~ ${아이디("us", 100)}`, 상품: "—" },
-    { 구분: "개인회원 · 오피스", 범위: `${아이디("uo", 1)} ~ ${아이디("uo", 50)}`, 상품: "—" },
-  ];
+  const login = useAuthStore((s) => s.login);
+  const [고른번호, set고른번호] = useState<Record<string, number>>({});
+  const [하는중, set하는중] = useState<string | null>(null);
+  const [오류, set오류] = useState("");
+
+  const 들어가기 = async (r: 줄타입, key: string, n: number) => {
+    set오류("");
+    set하는중(key);
+    // 클릭 직후에 탭을 먼저 연다 — 응답을 기다린 뒤에 열면 팝업 차단에 걸린다.
+    const 새탭 = window.open("", "_blank");
+    try {
+      const res = await fetch("/api/admin/alba/test-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("admin_token") || ""}` },
+        body: JSON.stringify({ email: `${아이디(r.접두, n)}@gmail.com` }),
+      });
+      const d = await res.json();
+      if (!d.success) { 새탭?.close(); set오류(d.error?.message || "들어가지 못했어요."); return; }
+      localStorage.setItem("access_token", d.data.access_token);
+      setLoginPersistence(true);
+      if (d.data.kind === "company") {
+        login({ ownerType: "company", userName: d.data.company.company_name, userPhone: d.data.company.phone || "" });
+      } else {
+        const u = d.data.user;
+        login({ ownerType: "user", userName: u.name, userPhone: u.phone, userJobType: u.job_type || "", userJobAreas: u.office_job_areas || [] });
+      }
+      const 주소 = d.data.kind === "company" ? "/company/dashboard" : "/profile";
+      if (새탭) 새탭.location.href = 주소; else window.location.href = 주소;
+    } catch {
+      새탭?.close();
+      set오류("네트워크 오류가 났어요.");
+    } finally {
+      set하는중(null);
+    }
+  };
+
   return (
     <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 12, overflowX: "auto", marginBottom: 24 }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 520 }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 640 }}>
         <thead>
           <tr style={{ background: "#fafafa", color: "#555" }}>
             <th style={칸}>구분</th>
             <th style={칸}>ID (이메일 앞부분, 뒤는 @gmail.com)</th>
             <th style={칸}>상품</th>
+            <th style={칸}>들어가기</th>
           </tr>
         </thead>
         <tbody>
-          {줄.map((r, i) => (
-            <tr key={i} style={{ borderTop: "1px solid #f2f2f2" }}>
-              <td style={{ ...칸, color: "#555" }}>{r.구분}</td>
-              <td style={칸}>{r.범위}</td>
-              <td style={{ ...칸, color: r.상품 === "—" ? "#555" : "#582681" }}>{r.상품}</td>
-            </tr>
-          ))}
+          {줄들.map((r, i) => {
+            const key = `${r.접두}-${r.처음}`;
+            const n = 고른번호[key] ?? r.처음;
+            return (
+              <tr key={i} style={{ borderTop: "1px solid #f2f2f2" }}>
+                <td style={{ ...칸, color: "#555" }}>{r.구분}</td>
+                <td style={칸}>{아이디(r.접두, r.처음)} ~ {아이디(r.접두, r.끝)}</td>
+                <td style={{ ...칸, color: r.상품 === "—" ? "#555" : "#582681" }}>{r.상품}</td>
+                <td style={칸}>
+                  <input
+                    type="number" min={r.처음} max={r.끝} value={n}
+                    onChange={(e) => set고른번호((p) => ({ ...p, [key]: Math.min(r.끝, Math.max(r.처음, Number(e.target.value) || r.처음)) }))}
+                    aria-label={`${r.구분} ${r.상품} 번호`}
+                    style={{ width: 56, padding: "4px 6px", border: "1px solid #ddd", borderRadius: 6, fontSize: 13, marginRight: 8 }}
+                  />
+                  <button
+                    type="button" disabled={하는중 === key} onClick={() => 들어가기(r, key, n)}
+                    style={{ fontSize: 12, padding: "5px 10px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
+                  >
+                    {하는중 === key ? "여는 중…" : "이 계정으로 들어가기"}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      {오류 && <p style={{ margin: 0, padding: "8px 14px", fontSize: 12, color: "#e74c3c" }}>{오류}</p>}
     </div>
   );
 }

@@ -48,7 +48,7 @@ export default function TestReportsPage() {
 
   /* 사람이 찾은 것을 올리는 칸. 클로드가 고치려면 「어디서 · 누구로 · 무엇을 했나 ·
      이래야 한다 · 이렇게 됐다」 다섯이 있어야 한다. 그 다섯이 곧 이 폼이다. */
-  const 빈폼 = { title: "", ref_url: "", as_who: "비로그인", steps: "", expected: "", actual: "",
+  const 빈폼 = { title: "", ref_url: "", steps: "", expected: "", actual: "",
                  severity: "정해야 함", area: "화면·모바일" };
   const [폼, set폼] = useState({ ...빈폼 });
   const [사진들, set사진들] = useState<File[]>([]);
@@ -80,7 +80,6 @@ export default function TestReportsPage() {
       ...빈폼,
       title: c.제목,
       ref_url: c.어디,
-      as_who: c.누구로,
       steps: c.차례.map((t, i) => `${i + 1}. ${t}`).join("\n"),
       expected: c.이래야,
       area: c.갈래 === "폰에서" ? "화면·모바일" : "연동 시나리오",
@@ -94,7 +93,9 @@ export default function TestReportsPage() {
     if (!폼.actual.trim()) { alert("실제로 어떻게 됐는지 적어주세요."); return; }
     set올리는중(true);
     try {
-      const 값 = { ...폼, env: 환경() };
+      // 어느 계정으로 봤는지는 고르게 하지 않는다 — 이 브라우저에 로그인돼 있는 메인 사이트 계정을
+      // 서버가 토큰으로 읽어 적는다(알바 현황의 「이 계정으로 들어가기」로 들어간 테스트 계정).
+      const 값 = { ...폼, env: 환경(), member_token: localStorage.getItem("access_token") || "" };
       let 몸통: BodyInit; const 머리: Record<string, string> = { Authorization: `Bearer ${token()}` };
       if (사진들.length) {
         const fd = new FormData();
@@ -312,19 +313,11 @@ export default function TestReportsPage() {
                 placeholder="예) 기업회원으로 공고 등록하면 마감일이 하루 전으로 저장됨" />
             </label>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <label className="tr-f">
-                <span>어느 화면</span>
-                <input value={폼.ref_url} onChange={(e) => set폼({ ...폼, ref_url: e.target.value })}
-                  placeholder="그 화면 주소를 붙여넣기" />
-              </label>
-              <label className="tr-f">
-                <span>어떤 계정으로</span>
-                <select value={폼.as_who} onChange={(e) => set폼({ ...폼, as_who: e.target.value })}>
-                  {["비로그인", "개인회원", "기업회원", "관리자"].map((v) => <option key={v}>{v}</option>)}
-                </select>
-              </label>
-            </div>
+            <label className="tr-f">
+              <span>어느 화면</span>
+              <input value={폼.ref_url} onChange={(e) => set폼({ ...폼, ref_url: e.target.value })}
+                placeholder="그 화면 주소를 붙여넣기" />
+            </label>
 
             <label className="tr-f">
               <span>무엇을 했나</span>
@@ -355,17 +348,11 @@ export default function TestReportsPage() {
                   <option value="알림">알림 — 쓰는 데는 지장 없음</option>
                 </select>
               </label>
-              <label className="tr-f">
-                <span>어느 갈래</span>
-                <select value={폼.area} onChange={(e) => set폼({ ...폼, area: e.target.value })}>
-                  {AREAS.map((v) => <option key={v}>{v}</option>)}
-                </select>
-              </label>
             </div>
 
             <label className="tr-f">
               <span>화면 사진</span>
-              <AttachFiles 파일들={사진들} 바뀜={set사진들} />
+              <AttachFiles 파일들={사진들} 바뀜={set사진들} 끌어놓기 />
             </label>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
