@@ -9,8 +9,8 @@ import {
   LayoutDashboard, Users, Briefcase, BookOpen, Megaphone, Mail, Bell,
   LogOut, Menu, X, ChevronDown, ChevronRight, MessageSquare, Building2, Download, Clock, Bug, Rocket, Wallet } from "lucide-react";
 const NAV_ITEMS = [
-  // 오픈까지 남은 일이 제일 먼저 보여야 한다.
-  { id: "launch", label: "상용화 일정", icon: Rocket, href: "/admin/launch" },
+  // 상용화 계획이 제일 먼저 보여야 한다.
+  { id: "launch", label: "상용화 계획", icon: Rocket, href: "/admin/launch" },
   {
     id: "dashboard", label: "대시보드", icon: LayoutDashboard, href: "/admin",
     children: [
@@ -58,7 +58,7 @@ const NAV_ITEMS = [
 
 /** 화면 제목. 사이드에서 켜질 메뉴(activeMenu)로 찾는다. */
 const PAGE_SUBTITLES: Record<string, string> = {
-  "launch": "상용화 일정",
+  "launch": "상용화 계획",
   "orders": "이용권 주문",
   "dashboard": "대시보드",
   "dashboard-users": "개인회원 현황",
