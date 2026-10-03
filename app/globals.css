@@ -8322,6 +8322,20 @@ div:has(> table.admin-table),
   /* 공고명 칸은 max-width:0 + 넓은 width로 남는 폭을 전부 먹고, 넘치면 …로 끊는다. */
   .co-cardw .company-table.dash-table:not(.applicant-dash-table) td:first-child { max-width: 0; width: 100%; }
   .co-cardw .company-table.dash-table:not(.applicant-dash-table) .td-clamp2 { max-width: 100%; }
+  /* 대시보드 홈 두 표(미열람 지원서·내 채용공고) — 옆으로 밀지 않는다("오른쪽으로 스크롤 안할거야"). 이름·날짜 칸은 글자
+     폭만큼만(줄바꿈 없이) 잡고, 남는 폭은 공고 칸이 가져가 두 줄까지 줄바꿈하고 넘치면 …로 끊는다. 이름 칸이 지원공고에
+     눌려 한 글자씩 세로로 꺾이던 것도 같이 풀린다. */
+  .co-cardw .company-table.dash-table .td-clamp2 {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    white-space: normal; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+  .co-cardw .company-card .applicant-dash-table th:first-child,
+  .co-cardw .company-card .applicant-dash-table td.company-td-name { width: 1%; max-width: none; white-space: nowrap !important; overflow: visible; text-overflow: clip; }
+  .co-cardw .company-card .applicant-dash-table th:last-child,
+  .co-cardw .company-card .applicant-dash-table td:last-child { width: 1%; white-space: nowrap; }
+  .co-cardw .company-card .applicant-dash-table th:nth-child(2),
+  .co-cardw .company-card .applicant-dash-table td:nth-child(2) { width: 100%; max-width: 0; }
   .co-cardw .company-table th { font-size: 14px; }
   .co-cardw .company-table td { font-size: 14px; }
   .co-cardw .co-count-value { font-size: 19px; }
@@ -18421,11 +18435,30 @@ select option { background-color: #fff; color: var(--color-text-strong); }
    오른쪽으로 밀려, 갈래를 옮길 때마다 제목 자리가 달랐다. 그만큼 왼쪽으로 옮긴다.
    옮긴 상자가 사이드 윗부분에 걸치므로 누름은 통과시킨다. */
 .co-set-title { font-size: var(--page-title); font-weight: 700; color: var(--color-text-strong); margin: 0 0 12px; text-align: center; }
-/* 공고·지원자 관리 제목 양옆 화살표 — 공고를 하나씩 넘겨 본다(co-pane-nav). */
-.co-pane-nav { display: inline-flex; align-items: center; justify-content: center;
-  width: 26px; height: 26px; padding: 0; border: none; background: none; color: #8a8a90;
-  cursor: pointer; border-radius: 50%; flex-shrink: 0; }
-.co-pane-nav:hover { background: #f7f7f8; color: var(--color-primary); }
+/* 공고·지원자 관리 제목 오른쪽 끝의 공고 고르기 아이콘(co-pane-pick) + 고르는 모달(co-pick-*). 모바일·PC 공통.
+   모바일 표준: 글자는 모달 좌우 끝에서 13px 쯤(모달 바깥 8 + 안쪽). */
+.co-pane-pick { position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0;
+  border: none; background: none; color: #555; border-radius: 8px; cursor: pointer; }
+.co-pick-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.38); z-index: 3000;
+  display: flex; align-items: center; justify-content: center; padding: 8px; }
+.co-pick-modal { background: #fff; border-radius: 14px; width: 100%; max-height: 78vh; display: flex; flex-direction: column; overflow: hidden; }
+@media (min-width: 769px) { .co-pick-overlay { padding: 24px; } .co-pick-modal { max-width: 520px; } .co-pick-row:hover { background: #f7f7f8; } }
+.co-pick-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 13px 10px;
+  font-size: 15px; color: #555; font-weight: 700 !important; }
+.co-pick-head em { font-style: normal; font-size: 12px; color: #9a9aa3; font-weight: 400 !important; margin-left: 4px; }
+.co-pick-head button { display: inline-flex; border: none; background: none; color: #555; padding: 2px; cursor: pointer; }
+.co-pick-list { overflow-y: auto; }
+.co-pick-row { display: flex; gap: 8px; align-items: flex-start; width: 100%; text-align: left; border: none;
+  border-top: 1px solid #ececef; background: #fff; padding: 11px 13px; cursor: pointer; }
+.co-pick-check { width: 16px; flex-shrink: 0; margin-top: 1px; color: #582681; display: inline-flex; }
+.co-pick-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.co-pick-title { font-size: 14px; line-height: 1.35; color: #555; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; }
+.co-pick-meta { font-size: 12px; color: #582681; display: flex; align-items: center; gap: 6px; }
+.co-pick-row.closed .co-pick-title, .co-pick-row.closed .co-pick-meta { color: #9a9aa3; }
+.co-pick-new { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 5px;
+  border-radius: 999px; background: #e74c3c; color: #fff; font-size: 11px; font-weight: 400 !important; line-height: 1; }
 /* 대분류는 오른쪽 화면 제목(.co-set-title)과 같은 크기·굵기·색으로 — 둘 다
    지금 어디에 있는지를 말하는 줄이라 한쪽만 작으면 곁다리로 보인다.
    선 대신 여백으로 아래 목록과 뗀다. */

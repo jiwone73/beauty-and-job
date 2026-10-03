@@ -203,7 +203,7 @@ export default function CompanyDashboard() {
                 {안본지원자.map((a) => (
                   <tr key={a.id} onClick={() => router.push("/company/dashboard/jobs")} style={{ cursor: "pointer" }}>
                     <td className="company-td-name">{a.user_name}</td>
-                    <td className="company-td-sub">{a.job_title}</td>
+                    <td className="company-td-sub"><span className="td-clamp2">{a.job_title}</span></td>
                     <td className="company-td-sub">{formatDate(a.applied_at)}</td>
                   </tr>
                 ))}

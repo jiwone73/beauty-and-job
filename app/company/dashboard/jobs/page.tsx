@@ -8,7 +8,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { 마감인가 } from "@/lib/jobClosed";
 import FilterDropdown from "@/components/company/FilterDropdown";
 import {
-  Users, Edit, X, Trash2, ChevronDown, ChevronRight, ChevronLeft, Plus
+  Users, Edit, X, Trash2, ChevronDown, Plus, List, Check
 } from "lucide-react";
 import { companyJobsApi, companyApplicationsApi, companyTalentApi } from "@/lib/api/company";
 import ApplicantCard from "@/components/company/ApplicantCard";
@@ -76,6 +76,7 @@ function CompanyJobsContent() {
   const [checked, setChecked] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
+  const [공고고르기, set공고고르기] = useState(false);
   const [companyType, setCompanyType] = useState<string | null>(null);
   // "신규 등록" 버튼을 헤더로 옮긴다("신규등록버튼을 지우고 새공고 작성 버튼을
   // 헤더에 넣어줘") — PC 머리줄의 "새 공고 작성"과 같은 자리(co-m-header-slot)에
@@ -215,20 +216,23 @@ function CompanyJobsContent() {
     }
   };
 
+  // 모바일은 상태 고르개가 없어서 진행중만 걸러 두면 마감 공고는 아예 못 본다 — 공고 고르기 모달에서
+  // 마감도 고를 수 있어야 하니("마감 · 지원자 5명"), 모바일은 전체를 대상으로 한다. PC 는 상태 탭 그대로.
+  const 상태 = isMobile ? "전체" : statusFilter;
   const filtered = jobs.filter(j => {
     const matchGroup = jobGroupFilter === "전체" ||
       (jobGroupFilter === "오피스" && j.job_type === "OFFICE") ||
       (jobGroupFilter === "매장" && j.job_type === "STORE");
     const dl = daysLeft(j.deadline);
     const matchStatus =
-      statusFilter === "전체" ? true :
-      statusFilter === "진행중" ? !isJobClosed(j) :
-      statusFilter === "마감임박" ? (!isJobClosed(j) && dl !== null && dl <= 2) :
-      statusFilter === "마감" ? isJobClosed(j) :
-      statusFilter === "지원자" ? (j.application_count ?? 0) > 0 :
-      statusFilter === "미열람" ? (j.unviewed_count ?? 0) > 0 :
-      statusFilter === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
-      statusFilter === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
+      상태 === "전체" ? true :
+      상태 === "진행중" ? !isJobClosed(j) :
+      상태 === "마감임박" ? (!isJobClosed(j) && dl !== null && dl <= 2) :
+      상태 === "마감" ? isJobClosed(j) :
+      상태 === "지원자" ? (j.application_count ?? 0) > 0 :
+      상태 === "미열람" ? (j.unviewed_count ?? 0) > 0 :
+      상태 === "<D-7" ? (!isJobClosed(j) && dl !== null && dl <= 7) :
+      상태 === ">D-7" ? (!isJobClosed(j) && (dl === null || dl > 7)) :
       STATUS_LABEL[j.status] === statusFilter;
     return matchGroup && matchStatus;
   }).sort((a, b) => {
@@ -242,7 +246,8 @@ function CompanyJobsContent() {
   // 필요가 없었다.
   useEffect(() => {
     if (filtered.length === 0) return;
-    if (!고른공고 || !filtered.some((j) => j.id === 고른공고)) set고른공고(filtered[0].id);
+    // 모바일은 마감도 목록에 들어오므로 처음 고르는 것은 진행중 중 맨 위(없으면 맨 위)다.
+    if (!고른공고 || !filtered.some((j) => j.id === 고른공고)) set고른공고((filtered.find((j) => !isJobClosed(j)) || filtered[0]).id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtered.map((j) => j.id).join(","), 고른공고]);
   const 지금공고 = filtered.find((j) => j.id === 고른공고) || null;
@@ -549,32 +554,23 @@ function CompanyJobsContent() {
     </div>
   );
 
-  // 모바일은 공고를 한 번에 하나만 보여주니 고를 목록이 없다 — 화면 제목
-  // "공고·지원자 관리"와 같은 줄 양 끝에 화살표를 두어 넘긴다("제목과 같은
-  // 행에 양옆으로 화살표를 넣으면 될거 같아" / "화살표는 왼쪽 오른쪽 끝으로
-  // 이동해줘"). 지금 작업은 모바일만이라 PC 제목은 그대로 둔다("피씨는
-  // 건드리면 안되") — PC는 왼쪽 목록에서 직접 고른다.
-  const jobsPaneTitle = (isMobile && filtered.length > 1 && 지금공고) ? (
-    <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-      <button type="button" className="co-pane-nav" aria-label="이전 공고"
-        onClick={() => {
-          const idx = filtered.findIndex((j) => j.id === 지금공고!.id);
-          if (idx === -1) return;
-          set고른공고(filtered[(idx - 1 + filtered.length) % filtered.length].id);
-        }}>
-        <ChevronLeft size={20} />
-      </button>
+  // 모바일은 공고를 한 번에 하나만 보여주니 고를 목록이 따로 필요하다(PC도 같은 아이콘·모달을 쓴다 —
+  // "이건 데스크탑도 동일하게 적용해줘". PC 왼쪽 목록은 그대로 둔다) — 화면 제목 "공고·지원자 관리"의
+  // 오른쪽 끝에 목록 아이콘을 두고, 누르면 모달로 공고를 고른다. 예전에는 제목 양옆 화살표(< >)로 한 장씩
+  // 넘겼는데, 공고가 여러 개면 원하는 곳까지 여러 번 눌러야 했다("< > 는 지우고 아이콘을 오른쪽 끝으로
+  // 이동해줘. 눌렀을 때 모달로 띄어주고"). 공고가 하나뿐이면 고를 것이 없어 아이콘도 없다. PC 제목은
+  // 그대로 둔다("피씨는 건드리면 안되")던 때의 말은 이번에 PC 도 같게 하라는 말로 바뀌었다.
+  const jobsPaneTitle = (filtered.length > 1 && 지금공고) ? (
+    <span style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
       공고·지원자 관리
-      <button type="button" className="co-pane-nav" aria-label="다음 공고"
-        onClick={() => {
-          const idx = filtered.findIndex((j) => j.id === 지금공고!.id);
-          if (idx === -1) return;
-          set고른공고(filtered[(idx + 1) % filtered.length].id);
-        }}>
-        <ChevronRight size={20} />
+      <button type="button" className="co-pane-pick" aria-label="공고 선택" onClick={() => set공고고르기(true)}>
+        <List size={18} />
       </button>
     </span>
   ) : undefined;
+
+  // 고르는 모달의 순서 — 진행중이 위, 마감은 아래로 모은다(각각 최신이 위).
+  const 고를공고들 = [...filtered.filter((j) => !isJobClosed(j)), ...filtered.filter((j) => isJobClosed(j))];
 
   return (
     <CompanyLayout activePage="jobs" side={사이드} title={jobsPaneTitle}>
@@ -645,6 +641,38 @@ function CompanyJobsContent() {
           </section>
       )}
       </div>
+
+      {/* 공고 고르기 모달(모바일·PC 공통) — 공고명은 두 줄까지, 넘치면 …. 새 지원자(미열람)는 숫자만 붙인다. */}
+      {공고고르기 && (
+        <div className="co-pick-overlay" onClick={() => set공고고르기(false)}>
+          <div className="co-pick-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <div className="co-pick-head">
+              <span>공고 선택 <em>{고를공고들.length}개</em></span>
+              <button type="button" aria-label="닫기" onClick={() => set공고고르기(false)}><X size={18} /></button>
+            </div>
+            <div className="co-pick-list">
+              {고를공고들.map((j) => {
+                const 마감 = isJobClosed(j);
+                const 지금 = 지금공고?.id === j.id;
+                const 새 = j.unviewed_count ?? 0;
+                return (
+                  <button key={j.id} type="button" className={`co-pick-row${마감 ? " closed" : ""}`}
+                    onClick={() => { set고른공고(j.id); set공고고르기(false); }}>
+                    <span className="co-pick-check">{지금 && <Check size={16} />}</span>
+                    <span className="co-pick-body">
+                      <span className="co-pick-title">{j.title}</span>
+                      <span className="co-pick-meta">
+                        {마감 ? "마감" : "진행중"} · 지원자 {j.application_count ?? 0}명
+                        {새 > 0 && <b className="co-pick-new">{새}</b>}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 상세 모달 */}
       {selected && (
