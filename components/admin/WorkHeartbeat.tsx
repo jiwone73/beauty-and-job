@@ -1,9 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Clock, PauseCircle } from "lucide-react";
 import { ALBA_IDLE_GAP_MIN } from "@/lib/alba";
 
-// 근무 시간 자동 측정기 + 실시간 타이머. /admin 아래 모든 화면에서 함께 돈다.
+// 근무 시간 자동 측정기 + 실시간 타이머. 루트 레이아웃에 걸려 사이트 전체에서 돈다.
+//  · /admin 아래: 타이머 배지를 보여 준다.
+//  · 그 밖의 화면(알바가 사이트를 직접 써 보며 테스트하는 일): 배지 없이 조용히 센다.
+//    알바 일이 공고 입력에서 사이트 테스트·가이드 영상 시청으로 넓어졌다. 같은 브라우저에
+//    알바 관리자 토큰(admin_token)이 있으면, 일반 화면에서 하는 테스트도 근무로 센다.
+//    알바 토큰이 없는 방문자는 여기서 아무것도 보내지 않는다.
+//  · 영상이 재생되는 동안은 조작이 없어도 일하는 것으로 본다(가이드 영상 시청).
 //
 // 로그인·로그아웃으로 재지 않는 이유는 서버 쪽 heartbeat 주석에 적어 뒀다.
 // 여기서는 '관리자 창이 화면에 떠 있고, 최근에 손을 댔을 때'만 서버를 두드린다.
@@ -34,6 +41,8 @@ function hm(min: number) {
 }
 
 export default function WorkHeartbeat() {
+  const pathname = usePathname();
+  const onAdmin = (pathname || "").startsWith("/admin");
   const lastActive = useRef(Date.now());
   const [on, setOn] = useState(false);
   const [startedAt, setStartedAt] = useState<number | null>(null);
@@ -46,6 +55,10 @@ export default function WorkHeartbeat() {
     const touch = () => { lastActive.current = Date.now(); };
     const events: (keyof DocumentEventMap)[] = ["pointerdown", "keydown", "scroll", "visibilitychange"];
     events.forEach((e) => document.addEventListener(e, touch, { passive: true }));
+    // 영상은 재생 중에 클릭도 스크롤도 없다. 미디어 이벤트는 버블링하지 않아 캡처로 듣는다.
+    // timeupdate 는 재생되는 동안만 계속 온다 — 멈추면 평소대로 2분 뒤 '멈춤'이 된다.
+    const mediaEvents = ["play", "playing", "timeupdate"];
+    mediaEvents.forEach((e) => document.addEventListener(e, touch, true));
 
     // 토큰은 주기마다 다시 읽는다. 이 레이아웃은 로그인 화면에서도 살아 있어서,
     // 처음 한 번만 읽으면 로그인 직후에 측정이 시작되지 않는다.
@@ -80,10 +93,11 @@ export default function WorkHeartbeat() {
       clearInterval(pingTimer);
       clearInterval(tick);
       events.forEach((e) => document.removeEventListener(e, touch));
+      mediaEvents.forEach((e) => document.removeEventListener(e, touch, true));
     };
   }, []);
 
-  if (!on) return null;
+  if (!on || !onAdmin) return null;
 
   const sessionMin = startedAt ? Math.floor((now - startedAt) / 60000) : 0;
   const sessionSec = startedAt ? Math.floor(((now - startedAt) % 60000) / 1000) : 0;

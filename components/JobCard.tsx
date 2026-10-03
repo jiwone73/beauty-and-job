@@ -4,6 +4,7 @@ import { Bookmark } from "lucide-react";
 import { useBookmarkStore } from "@/lib/store/bookmarkStore";
 import { shortRegion } from "@/lib/regionShort";
 import { BannerImg } from "@/components/BannerImg";
+import { 직군표시 } from "@/lib/memberFormat";
 
 const PURPLE = "#582681";
 
@@ -38,7 +39,7 @@ export type JobCardData = {
  * 한 줄 낮아져 줄이 어긋난다.
  */
 function 둘째줄(data: JobCardData): string {
-  const c = (data.categories || []).filter(Boolean);
+  const c = (data.categories || []).filter(Boolean).map(직군표시);
   if (!c.length) return data.company;
   // 칸이 한 줄뿐이라 다 늘어놓으면 뒤가 잘려 몇 개인지도 모르게 된다.
   return c.length > 2 ? `${c[0]} · ${c[1]} 외 ${c.length - 2}` : c.join(" · ");

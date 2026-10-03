@@ -1,13 +1,5 @@
-import WorkHeartbeat from "@/components/admin/WorkHeartbeat";
-
-// /admin 아래 모든 화면을 덮는다.
-// 측정기를 AdminLayout 안에 두면 그걸 쓰지 않는 화면(외부 지원 인박스 등)이 빠진다.
-// 관리자 페이지에서 하는 일은 전부 근무로 세야 하므로 여기로 올린다.
+// /admin 아래 화면은 루트 레이아웃의 WorkHeartbeat(근무 시간 측정기)가 덮는다.
+// 알바가 사이트 전체를 테스트하는 시간도 세야 해서, 측정기를 /admin 밖(루트)으로 올렸다.
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      {children}
-      <WorkHeartbeat />
-    </>
-  );
+  return <>{children}</>;
 }

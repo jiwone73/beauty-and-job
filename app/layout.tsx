@@ -4,6 +4,7 @@ import BottomTabBar from "@/components/BottomTabBar";
 import AuthInterceptor from "@/components/AuthInterceptor";
 import RoleGuard from "@/components/RoleGuard";
 import VisitBeacon from "@/components/VisitBeacon";
+import WorkHeartbeat from "@/components/admin/WorkHeartbeat";
 import { 검색공개 } from "@/lib/robotsGate";
 
 export const metadata: Metadata = {
@@ -117,6 +118,8 @@ export default function RootLayout({
         <AuthInterceptor />
         <RoleGuard />
         <VisitBeacon />
+        {/* 알바 근무 시간 측정 — 알바 관리자 토큰이 있는 브라우저에서만 움직인다. */}
+        <WorkHeartbeat />
         {children}
         <BottomTabBar />
       </body>

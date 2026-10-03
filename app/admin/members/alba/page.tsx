@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminLayout from "@/components/admin/AdminLayout";
+import GuideVideos from "@/components/admin/GuideVideos";
+import TestAccountTable from "@/components/admin/TestAccountTable";
 import { ALBA_IDLE_GAP_MIN, formatMinutes } from "@/lib/alba";
 import { ExternalLink, Plus, Trash2, RefreshCw } from "lucide-react";
 
@@ -175,6 +177,14 @@ export default function AlbaPage() {
           </p>
         </div>
       </div>
+
+      {/* 테스트 계정 — ID 번호로 상품을 알 수 있다. 알바 일이 공고 입력에서 사이트 테스트로 넓어졌다. */}
+      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#555" }}>테스트 계정</h3>
+      <TestAccountTable />
+
+      {/* 가이드 영상 — 이 페이지 안에서 보고, 보는 시간도 근무로 센다. */}
+      <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#555" }}>가이드 영상</h3>
+      <GuideVideos />
 
       {/* 주차별 */}
       <h3 style={{ fontSize: 15, margin: "0 0 10px", color: "#555" }}>주차별 진행</h3>
