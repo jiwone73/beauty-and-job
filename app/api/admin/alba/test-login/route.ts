@@ -34,8 +34,6 @@ export async function POST(req: NextRequest) {
     );
     if (r.rowCount === 0) return err("NOT_FOUND", "계정을 찾을 수 없어요.", 404);
     const c = r.rows[0];
-    // 비회원 시험용 — 토큰 없이 회사 이름만 돌려준다(그 이름으로 검색 목록에서 찾아 보게).
-    if (body?.이름만) return ok({ kind: "company", company_name: c.company_name });
     // 기업 로그인과 같은 문턱 — 막힌 계정은 들어갈 수 없다.
     if (c.status === "PENDING" || c.status === "SUSPENDED" || c.status === "REJECTED") {
       return err("CO_001", "로그인할 수 없는 상태의 계정이에요.", 403);
