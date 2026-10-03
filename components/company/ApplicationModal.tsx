@@ -180,6 +180,9 @@ export default function ApplicationModal({
             <div className="admin-empty">{실패 || "지원서를 불러오지 못했어요."}</div>
           ) : (
             <>
+              {/* 모바일에서는 머리줄에 합격·불합격만 두고, 「이력서」는 본문 맨 위 가운데 제목으로 옮긴다
+                  ("이력서가 가운데 정렬 되야 하고"). PC 는 머리줄 제목을 그대로 쓰므로 여기는 숨긴다. */}
+              <h2 className="app-doc-title">이력서</h2>
               <ApplicationDocument
                 제출본
                 ref={previewRef}

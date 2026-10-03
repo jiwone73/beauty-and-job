@@ -37,7 +37,7 @@ const ApplicationDocument = forwardRef<HTMLDivElement, Props>(function Applicati
           <div style={{ background: "#fff" }}>
             {/* 칸 이름은 이 문서의 다른 칸들과 같은 규칙을 쓴다 — 여기만 제
                 스타일을 들고 있어 아이콘도 굵기도 어긋나 있었다. */}
-            <h2 className="rp-section-title" style={{ margin: "0 0 12px" }}>
+            <h2 className="rp-section-title app-cover-title" style={{ margin: "0 0 12px" }}>
               <Quote size={16} className="resume-section-icon" />자기소개서
             </h2>
             {subtitle && (
