@@ -2,11 +2,19 @@
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
 import { setLoginPersistence } from "@/lib/auth/session";
+import { useBookmarkStore } from "@/lib/store/bookmarkStore";
+import { useApplicationStore } from "@/lib/store/applicationStore";
+import { useProfileStore } from "@/lib/store/profileStore";
+import { useSignupStore } from "@/lib/store/signupStore";
 
 // 알바가 테스트할 때 쓰는 계정. 이메일 번호로 어느 상품인지 알 수 있다.
 //
 // 번호 구간은 상품 네 단계로 균등분할한 것이고, 나머지는 스타트 쪽에 더했다.
 // DB(companies.plan)에도 이 구간대로 들어가 있다. 구간을 바꾸면 DB 와 같이 바꿔야 한다.
+//
+// 「비회원으로 보기」는 메인 사이트의 로그인만 지우고(알바 로그인은 그대로) 그 회사 이름으로 검색한
+// 공고 목록을 새 탭에 연다. 상품마다 비회원에게 보이는 범위가 달라(스타트는 목록에서 빠짐) 게이트가
+// 있는 화면에서 확인해야 한다.
 //
 // 「들어가기」는 알바 로그인을 유지한 채 새 탭에서 그 테스트 계정으로 메인 사이트에 로그인한다
 // (서버: /api/admin/alba/test-login — 테스트 계정에만 열린다). 근무 시간은 알바 로그인 기준이라
@@ -76,18 +84,49 @@ export default function TestAccountTable() {
     }
   };
 
+  // 비회원으로 그 계정의 공고가 어떻게 보이는지 본다 — 상품마다 비회원에게 보이는 범위가 달라서다
+  // (스타트는 검색 목록에서 빠지고, 라이트부터 뜬다). 메인 사이트 로그인만 지우고 알바 로그인
+  // (admin_token)은 건드리지 않아 근무 시간이 계속 쌓인다. 새 탭은 그 회사 이름으로 검색한 목록이다.
+  const 비회원으로 = async (r: 줄타입, key: string, n: number) => {
+    set오류("");
+    set하는중(`${key}-guest`);
+    const 새탭 = window.open("", "_blank");
+    try {
+      const res = await fetch("/api/admin/alba/test-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("admin_token") || ""}` },
+        body: JSON.stringify({ email: `${아이디(r.접두, n)}@gmail.com`, 이름만: true }),
+      });
+      const d = await res.json();
+      if (!d.success) { 새탭?.close(); set오류(d.error?.message || "열지 못했어요."); return; }
+      localStorage.removeItem("access_token");
+      useSignupStore.getState().reset();
+      useProfileStore.getState().reset();
+      useBookmarkStore.getState().reset();
+      useApplicationStore.getState().reset();
+      useAuthStore.getState().logout();
+      const 주소 = `/jobs?q=${encodeURIComponent(d.data.company_name)}`;
+      if (새탭) 새탭.location.href = 주소; else window.location.href = 주소;
+    } catch {
+      새탭?.close();
+      set오류("네트워크 오류가 났어요.");
+    } finally {
+      set하는중(null);
+    }
+  };
+
   return (
     // 표가 아니라 줄 목록이다 — 관리자 화면은 왼쪽 메뉴가 폭을 많이 먹는 좁은 창에서도 보는데,
     // 표로 두면 오른쪽 「들어가기」 버튼이 가로 스크롤 밖으로 밀려 안 보였다. 칸이 모자라면 줄이 접힌다.
     <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 12, marginBottom: 24 }}>
       <p style={{ margin: 0, padding: "10px 14px", fontSize: 12, color: "#555", borderBottom: "1px solid #f2f2f2" }}>
-        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「들어가기」를 누르면 새 탭에서 그 계정으로 로그인됩니다.
+        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「들어가기」를 누르면 새 탭에서 그 계정으로 로그인됩니다. 기업 줄의 「비회원으로 보기」는 로그인을 풀고 그 회사를 비회원 눈으로 검색한 목록을 새 탭에서 엽니다.
       </p>
       {줄들.map((r, i) => {
         const key = `${r.접두}-${r.처음}`;
         const n = 고른번호[key] ?? r.처음;
         return (
-          <div key={i} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", padding: "10px 14px", borderTop: i ? "1px solid #f2f2f2" : "none", fontSize: 13 }}>
+          <div key={i} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", padding: "10px 14px", borderTop: "1px solid #f2f2f2", fontSize: 13 }}>
             <div style={{ flex: "1 1 170px", minWidth: 0 }}>
               <span style={{ color: "#555" }}>{r.구분}</span>
               {r.상품 !== "—" && <span style={{ color: "#582681", marginLeft: 8 }}>{r.상품}</span>}
@@ -106,6 +145,14 @@ export default function TestAccountTable() {
               >
                 {하는중 === key ? "여는 중…" : "들어가기"}
               </button>
+              {(r.접두 === "st" || r.접두 === "of") && (
+                <button
+                  type="button" disabled={하는중 === `${key}-guest`} onClick={() => 비회원으로(r, key, n)}
+                  style={{ fontSize: 12, padding: "5px 12px", borderRadius: 6, border: "1px solid #ddd", background: "#fff", color: "#555", cursor: "pointer" }}
+                >
+                  {하는중 === `${key}-guest` ? "여는 중…" : "비회원으로 보기"}
+                </button>
+              )}
             </div>
           </div>
         );
