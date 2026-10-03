@@ -94,11 +94,11 @@ export default function HeroMobile() {
           <strong className="hero-m-banner-title">뷰티워크 10월 오픈 기념 이벤트</strong>
           <div className="hero-m-banner-desc">
             <div>무료 5,000원 커피쿠폰</div>
-            <div>무료 선착순 상단노출</div>
+            <div>기업회원 3개월 무료 체험</div>
           </div>
           <div className="hero-m-banner-period">
             <span>이벤트 기간</span>
-            <span>2026.10.12(월) ~ 11.30(월)</span>
+            <span>2026.10.12(월) ~ 12.30(수)</span>
             <span className="hero-m-banner-note">소진 시 조기 종료될 수 있습니다</span>
           </div>
         </div>
