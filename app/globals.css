@@ -14220,8 +14220,8 @@ button,
   .cs-plan { padding: 9px 8px 8px; }
   /* 기업 대시보드 상품안내(.co-plans)만 — 기본 글씨를 14px로 맞춘다.
      .ad2(배너광고)는 이미 자기 글자 크기(15px)를 따로 가지고 있어 영향 없다. */
-  .co-plans .co-evtband-n { font-size: 14px; }
-  .co-plans .cs-plan-feat li { font-size: 14px; }
+  .co-plans .co-evtband-n { font-size: 13px; }  /* 설명 글은 13px("설명은 폰트크기 13으로") */
+  .co-plans .cs-plan-feat li { font-size: 13px; }
   /* 상품안내(.co-plans)만 2열로 — 넉 장이 한 줄씩 길게 내려가던 것을 절반 폭
      두 장씩으로. .ad2(배너광고 두 장)는 이미 1열이 맞는 자리라 건드리지 않는다. */
   .co-plans .cs-plans:not(.ad2) {
@@ -14237,10 +14237,10 @@ button,
   .co-plans .cs-plans:not(.ad2) .cs-plan-pr { font-size: 19px; margin-bottom: 10px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-pr i { font-size: 12px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-du { font-size: 12px; }
-  .co-plans .cs-plans:not(.ad2) .cs-plan-btn { height: 38px; font-size: 13px; }
+  .co-plans .cs-plans:not(.ad2) .cs-plan-btn { height: 32px; font-size: 13px; }  /* 위아래 여백을 줄인다(38→32px, 위아래 각 3px) */
   .co-plans .cs-plans:not(.ad2) .cs-plan-feat { padding-top: 9px; gap: 6px; }
   /* 불렛은 작게 유지, 글자만 14px로("상품 카드 내용 폰트 14"). */
-  .co-plans .cs-plans:not(.ad2) .cs-plan-feat li { font-size: 14px; line-height: 1.4; padding-left: 7px; }
+  .co-plans .cs-plans:not(.ad2) .cs-plan-feat li { font-size: 13px; line-height: 1.4; padding-left: 7px; }
   .co-plans .cs-plans:not(.ad2) .cs-plan-feat li::before { width: 3px; height: 3px; left: 0; top: 6px; }
   /* "오픈준비중" 딱지 — 카드가 좁아진 만큼 모서리 여백도 절반으로("오픈준비중은
      오른쪽 정렬", 2026-10-02 — 절대위치라 이미 오른쪽이지만 14px 여백이 좁은
@@ -14260,7 +14260,7 @@ button,
    테두리는 두께가 아니라 색으로만 굵어진다 — 2px 로 주면 그 카드만 안쪽이 1px
    좁아져 줄이 옆 카드와 어긋난다. */
 /* 아직 안 여는 상품. 카드를 지우지 않는다 — 곧 열린다는 예고가 곧 대기 수요다. */
-.cs-plan.soon { opacity: .72; }
+.cs-plan.soon { opacity: 1; }  /* 오픈 준비중 카드도 글씨를 흐리게 하지 않는다("스탠다드, 프리미엄 상품 글씨가 흐린데 원래대로"). 준비중임은 우상단 표시와 버튼으로만 알린다. */
 /* 딱지가 아니라 글자다. 알약을 씌우면 「고를 수 있는 것」처럼 보이는데
    이것은 아직 못 사는 상품이라는 알림이다. */
 .cs-plan-soon { position: absolute; top: 14px; right: 14px;
@@ -14293,6 +14293,8 @@ button,
 .cs-plan-pr { font-size: 25px; font-weight: 700 !important; color: #2b2b2e; margin: 0 0 20px; letter-spacing: -1px; line-height: 1.1;
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 0; }
 .cs-plan-pr i { font-size: 15px; font-style: normal; letter-spacing: -.2px; }
+/* 상품 카드의 「무료」와 가격 숫자는 보라색("상품소개 페이지에 무료, 가격은 보라색으로"). 「공고 1건」·「30일 기준」 같은 곁글(.cs-plan-du)은 그 칸의 색을 그대로 둔다. 배너광고 카드(.ad2)는 건드리지 않는다. */
+.cs-plans:not(.ad2) .cs-plan-pr { color: #582681; font-weight: 400 !important; }  /* 평체("평체로") — 굵게 두었던 값을 보통 굵기로 */
 /* 「~」는 값의 일부라 숫자와 같은 크기로 둔다 — 작게 쓰면 단위(원)에 붙은
    꼬리처럼 보여 「얼마부터」라는 뜻이 약해진다. */
 .cs-plan-pr em { font-style: normal; letter-spacing: -1px; }
@@ -16196,6 +16198,13 @@ textarea::placeholder { color: #b4b4b9; opacity: 1; }
    사이드가 없는 화면(지원자)도 같은 폭으로 세워야 카드 크기가 화면마다 달라지지
    않는다. 사이드가 있는 화면은 .co-set-main 이 이미 이 폭이다. */
 .co-cardw { width: 814px; max-width: 100%; }
+/* 대시보드 홈 카드 제목(미열람 지원서·내 채용공고·추천 인재)은 굵게("대시보드 페이지 제목들은 볼드체로 해줘"). 기업 화면은 전역 평체화(.co-m * 400 !important)에 눌려 !important 로 이긴다. */
+.co-cardw .company-card-title { font-weight: 700 !important; }
+/* 기업 화면 페이지 제목은 모두 굵게("페이지 제목도" → "다른 페이지들도 페이지 제목 볼드체로"). 제목 칸(.co-m-title 모바일 ·
+   .co-top-title / .co-set-title PC)은 모든 기업 화면이 같이 쓴다. 전역 평체화(.co-m * 400 !important)에 눌려 !important. */
+.co-m-title,
+.co-top-title,
+.co-set-title { font-weight: 700 !important; }
 /* PC 대시보드 홈: 미열람 지원서(왼쪽)와 내 채용공고(오른쪽)를 2열로 놓는다("2열로 배치해줘 PC만"). 숫자 카드 줄은 두 열을
    가로질러 위에 둔다. 모바일은 위아래로 쌓는 그대로. */
 @media (min-width: 769px) {
