@@ -158,7 +158,7 @@ export default function ApplicationModal({
               <p style={{ margin: 0, fontSize: 15, color: "#555", fontWeight: 700 }}>
                 {확인대상 === "PASSED" ? "합격" : "불합격"} 처리하시겠어요?
               </p>
-              <p style={{ margin: "6px 0 16px", fontSize: 13, color: "#9a9aa3" }}>지원자에게 알림이 갑니다</p>
+              <p style={{ margin: "6px 0 16px", fontSize: 13, color: "#555" }}>지원자에게 알림이 갑니다</p>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
                 <button type="button" onClick={() => set확인대상(null)}
                   style={{ padding: "7px 14px", fontSize: 14, borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#555", cursor: "pointer" }}>
