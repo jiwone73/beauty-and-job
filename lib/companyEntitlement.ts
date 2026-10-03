@@ -37,40 +37,61 @@ export async function 이용권(companyId: string): Promise<이용권정보> {
   };
 }
 
+/** YYYY-MM-DD 에 개월 수를 더하고 하루를 뺀다(가입한 날을 넣어 세므로 3개월 = 석 달 뒤 전날). */
+export function 개월더하기(날짜: string, 개월: number): string {
+  const [y, m, d] = 날짜.split("-").map(Number);
+  const t = new Date(Date.UTC(y, m - 1 + 개월, d));
+  // 31일에 가입해 한 달 뒤가 없는 날이면 JS 가 다음 달로 넘긴다 — 그달 말일로 되돌린다.
+  if (t.getUTCDate() !== d) t.setUTCDate(0);
+  t.setUTCDate(t.getUTCDate() - 1);
+  return t.toISOString().slice(0, 10);
+}
+
 /**
- * 이벤트 기간에 가입하고 그 기간 안에 공고를 올리면 라이트 30일을 거저 준다
- * ("이벤트 기간에 가입하고 공고를 등록하면 라이트 1개월을 드린다" 공지).
- * 이미 유료(스타트가 아님)면 부를 필요가 없다 — 공고 등록 길목(POST, 재등록
- * PATCH)에서 `이용권()`이 null을 준 경우에만 부른다.
+ * 이벤트 무료 체험 — 이벤트 기간에 가입한 기업에게 설정한 등급(프리미엄)을 가입일로부터
+ * 설정한 개월 수만큼 준다. 등급은 새로 만든 값이 아니라 **진짜 이용권**(plan·paid_until)이다 —
+ * 그래서 끝나는 날 일반 이용권 만료와 똑같은 길로 스타트가 된다. 이 길이 곧 유료화 전환의 길이다.
+ * 이용권의 출처는 plan_source('EVENT')에 남겨 구매한 것과 가른다.
  *
- * 메인 이벤트 채용관(app/api/jobs/showcase/route.ts)과 같은 조건(가입일·오늘이
- * 다 설정의 from~to 안)을 쓴다 — 한쪽만 기준이 다르면 메인에는 떴는데 검색
- * 목록 자리는 스타트인 경우가 생긴다.
+ * 가입할 때 부르고(app/api/auth/company/signup), 가입 처리에서 놓친 경우를 위해 공고를 올리는
+ * 길목(POST, 재등록 PATCH)에서도 부른다. 이미 유효한 이용권이 있으면 건드리지 않는다.
+ * 설정에 months 가 없으면 아무것도 하지 않는다 — 스위치를 끄는 것은 months 를 빼는 것이다.
+ *
+ * 메인 이벤트 채용관(app/api/jobs/showcase/route.ts)과 같은 조건(가입일·오늘이 다 설정의
+ * from~to 안)을 쓴다 — 한쪽만 기준이 다르면 메인에는 떴는데 검색 목록 자리는 스타트인 경우가 생긴다.
  */
-export async function 이벤트라이트부여(
-  companyId: string
+export async function 이벤트체험부여(
+  companyId: string,
+  /** 점검용 — 오늘을 바꿔 끼운다(가입 기간 안팎을 시험할 때). 평소에는 쓰지 않는다. */
+  옵션: { 오늘?: string } = {}
 ): Promise<{ plan: PlanId; paidUntil: string } | null> {
   const 설정 = await 이벤트설정읽기();
-  if (!설정) return null;
-  const 오늘 = 오늘날짜();
+  // 설정에 months 가 없으면 체험이 꺼진 것이다(유료화 스위치). 옛 방식(라이트 30일)은 없앴다.
+  if (!설정?.months || 설정.months <= 0) return null;
+  const 오늘 = 옵션.오늘 ?? 오늘날짜();
   if (오늘 < 설정.from || 오늘 > 설정.to) return null;
 
   const { rows } = await pool.query(
-    `SELECT to_char(created_at, 'YYYY-MM-DD') AS 가입일 FROM companies WHERE id = $1`,
+    `SELECT to_char(created_at AT TIME ZONE 'Asia/Seoul', 'YYYY-MM-DD') AS 가입일, plan_source FROM companies WHERE id = $1`,
     [companyId]
   );
   const 가입일 = rows[0]?.가입일;
   if (!가입일 || 가입일 < 설정.from || 가입일 > 설정.to) return null;
+  // 구매한 이용권은 건드리지 않는다. 이벤트로 받은 것이 이미 있으면 다시 주지 않는다.
+  if (rows[0]?.plan_source === "PURCHASE" || rows[0]?.plan_source === "EVENT") return null;
+  if ((await 이용권(companyId)).plan) return null;
 
-  const d = new Date(Date.now() + 9 * 36e5);
-  d.setUTCDate(d.getUTCDate() + 29); // 30일권 — 오늘을 넣어 세므로 오늘 + 29
-  const paidUntil = d.toISOString().slice(0, 10);
-  await pool.query(`UPDATE companies SET plan = 'LIGHT', paid_until = $2 WHERE id = $1`, [
-    companyId,
-    paidUntil,
-  ]);
-  return { plan: "LIGHT", paidUntil };
+  const plan: PlanId = 설정.plan && 플랜인가(설정.plan) ? 설정.plan : "LIGHT";
+  const paidUntil = 개월더하기(가입일, 설정.months);
+  await pool.query(
+    `UPDATE companies SET plan = $2, paid_until = $3, plan_source = 'EVENT' WHERE id = $1`,
+    [companyId, plan, paidUntil]
+  );
+  return { plan, paidUntil };
 }
+
+/** 옛 이름 — 호출하는 곳이 많아 남겨 둔다. */
+export const 이벤트라이트부여 = 이벤트체험부여;
 
 /** 세워 둔 기간 — 상품 하나치 */
 export type 보관칸 = { days: number; until: string };

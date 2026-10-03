@@ -4,6 +4,7 @@ import { 이력서쓰기 } from "@/lib/resumeWrite";
 import pool from "@/lib/db";
 import { 경력묶음 } from "@/lib/data/jobGroups";
 import { ok, err, requireAuth } from "@/lib/api";
+import { 기록 } from "@/lib/activity";
 
 // ============================================
 // GET: 사용자 프로필 전체 조회
@@ -92,6 +93,7 @@ export async function PUT(req: NextRequest) {
     // 쓰되 COMMIT 대신 ROLLBACK 한다 — 두 길이 갈리지 않게 하려는 것이다.
     await 이력서쓰기(client, userId, body);
     await client.query("COMMIT");
+    기록({ type: "user", id: userId }, "RESUME_EDIT");
     const tCommit = Date.now();
     return ok({ saved: true, timing: { connect: tConnect - t0, begin: tBegin - tConnect, work: tCommit - tBegin, total: tCommit - t0 } });
   } catch (e: any) {

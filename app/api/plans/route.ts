@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import pool from "@/lib/db";
 import { ok } from "@/lib/api";
+import { 이벤트체험중 } from "@/lib/eventShowcase";
 
 /**
  * 지금 이용권을 팔 수 있는가.
@@ -20,9 +21,12 @@ export async function GET() {
     // 쌓이기 전에는 팔 물건이 없다 — 돈을 받고 열었는데 볼 사람이 없으면 그게
     // 첫 환불이다. 이력서가 모이는 동안 「오픈 준비중」으로 세워 둔다.
     const 열림 = (v.plans_open ?? "LIGHT").split(",").map((x) => x.trim()).filter(Boolean);
-    return ok({ sales: v.plan_sales === "on", bank: v.plan_bank || "", open: 열림 });
+    // 이벤트 무료 체험이 켜져 있는가(설정에 months 가 있고 기한이 안 지났을 때). 유료화로 스위치를 끄면 null.
+    const 이벤트 = await 이벤트체험중();
+    const 체험 = 이벤트 ? { plan: 이벤트.plan ?? "LIGHT", months: 이벤트.months!, to: 이벤트.to } : null;
+    return ok({ sales: v.plan_sales === "on", bank: v.plan_bank || "", open: 열림, trial: 체험 });
   } catch {
     // 스위치를 못 읽으면 닫힌 것으로 본다 — 팔 수 없는 상태로 여는 쪽이 안전하다.
-    return ok({ sales: false, bank: "", open: [] });
+    return ok({ sales: false, bank: "", open: [], trial: null });
   }
 }

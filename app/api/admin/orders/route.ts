@@ -139,6 +139,7 @@ export async function PATCH(req: NextRequest) {
     const 적용 = await client.query(
       `UPDATE companies
           SET plan = $2,
+              plan_source = 'PURCHASE',
               paid_until = CASE WHEN $5::boolean
                 THEN CURRENT_DATE - 1 + ($3 || ' days')::interval
                 ELSE GREATEST(COALESCE(paid_until, CURRENT_DATE - 1), CURRENT_DATE - 1) + ($3 || ' days')::interval

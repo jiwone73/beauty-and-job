@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 인재열람가능, 이름가리기, 재직가리기, 회사에지원함 } from "@/lib/companyEntitlement";
+import { 기록 } from "@/lib/activity";
 
 // 기업 인재검색: userId로 지원자 풀 이력서 조회 (ResumePreview용)
 export async function GET(
@@ -14,6 +15,7 @@ export async function GET(
   if (authErr) return authErr;
 
   const userId = params.userId;
+  기록({ type: "company", id: auth!.sub }, "RESUME_VIEW", userId);
 
   const userRes = await pool.query(
     `SELECT id, name, email, phone, gender, birth_date, job_type,

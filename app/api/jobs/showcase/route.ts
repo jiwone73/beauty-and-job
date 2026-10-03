@@ -3,7 +3,8 @@ import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err } from "@/lib/api";
 import { 메인칸, 칸수 } from "@/lib/companyPlans";
-import { 이벤트설정읽기 } from "@/lib/eventShowcase";
+import { 이벤트설정읽기, 이벤트체험중 } from "@/lib/eventShowcase";
+import { 이벤트메인줄 } from "@/lib/exposureOrder";
 import jwt from "jsonwebtoken";
 
 /**
@@ -57,7 +58,13 @@ export async function GET(req: NextRequest) {
                   title: 설정.title || "오픈이벤트 채용관" });
     }
 
-    const 산곳 = await pool.query(      `SELECT id, title, job_type, company_id, company_name, brand_name, logo_url,
+    // 이벤트 무료 체험 기간(설정에 months 가 있을 때)에는 모두가 이벤트로 받은 프리미엄이라, 산 자리가
+    // 아니라 줄서기로 채운다 — 공고를 먼저 올린 순으로 프리미엄관 8곳·스탠다드관 25곳, 관 안은 최근 로그인 순.
+    // 유료화로 스위치를 끄면(설정이 없어지면) 아래 원래 방식(산 자리·노출 횟수 순)으로 돌아간다.
+    const 체험 = tier === "PREMIUM" || tier === "STANDARD" ? await 이벤트체험중() : null;
+    const 산곳 = (체험 && (tier === "PREMIUM" || tier === "STANDARD"))
+      ? await 이벤트메인줄(tier).then((rows) => ({ rows, rowCount: rows.length }))
+      : await pool.query(      `SELECT id, title, job_type, company_id, company_name, brand_name, logo_url,
               cover_images, signboard_url, company_type, location, work_type,
               employment_type, experience_level, deadline, created_at, categories
          FROM v_active_jobs

@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
+import { 기록 } from '@/lib/activity'
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json()
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 마지막 로그인 시간 업데이트 (비동기)
+  기록({ type: 'user', id: user.id }, 'LOGIN_DAY')
   pool.query(`UPDATE users SET last_login_at = NOW() WHERE id = $1`, [user.id])
     .catch(e => console.error('[update last_login_at]', e))
 

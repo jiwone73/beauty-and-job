@@ -5,6 +5,7 @@ import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
 import { 인재열람가능, 이름가리기, 재직가리기, 지원함SQL } from "@/lib/companyEntitlement";
 import { 마감인가 } from "@/lib/jobClosed";
+import { 기록 } from "@/lib/activity";
 
 /** 카드의 「제안완료」/「제안하기」를 가른다. 보낸제안 표의 상태 우선순위(거절 >
  *  취소 > 면접예정/수락/채팅중 > 공고마감 > 답변대기)와 같은 규칙이되, 카드는
@@ -21,6 +22,7 @@ function 최근제안상태(r: any): "active" | "rejected" | "reopenable" | null
 export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
+  기록({ type: "company", id: auth!.sub }, "TALENT_SEARCH");
 
   const { searchParams } = new URL(req.url);
   const jobType     = searchParams.get("jobType") || "OFFICE";   // OFFICE | STORE

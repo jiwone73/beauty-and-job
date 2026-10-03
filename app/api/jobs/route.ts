@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, getAuth } from '@/lib/api'
 import { 플랜, type PlanId } from '@/lib/companyPlans'
+import { 노출등급SQL, 같은등급안SQL } from '@/lib/exposureOrder'
 
 // 화면 라벨은 '오피스'다. 예전에 쓰던 '본사'·'기업'도 그대로 받는다 —
 // 밖에 나간 링크와 북마크가 조용히 안 걸리면 안 된다.
@@ -153,34 +154,9 @@ export async function GET(req: NextRequest) {
 
   // 샘플은 가짜라 진짜 공고 뒤에 세운다.
   const activeOrderBy = `j.is_sample NULLS FIRST, j.created_at DESC`
-  // 유료로 산 자리. 프리미엄이 최상단, 스탠다드가 그 아래, 나머지는 그 밑이다.
-  // 예전에 여기 있던 is_featured 는 아무 데서도 켜 주지 않는 죽은 칸이었다.
-  const 노출등급 = (a = '') =>
-    `CASE ${a}company_plan ` +
-    (Object.keys(플랜) as PlanId[]).map((p) => `WHEN '${p}' THEN ${플랜[p].노출순위} `).join('') +
-    `ELSE 0 END DESC`
-  /**
-   * 같은 구간(상품) 안에서 줄 세우는 법 — **기업이 마지막으로 들어온 날**이다.
-   *
-   * 헤어인잡이 쓰는 방식이다. 이용안내에 「채용정보 게시판의 노출순서는 접속일
-   * 순서입니다. 로그인을 하지 않을 경우 구인광고가 후순위로 밀려서 노출이
-   * 되지 않습니다」라고 대놓고 적어 두었고, 유료 상품마다 「접속일 오늘 날짜로
-   * 업데이트」를 혜택으로 판다.
-   *
-   * 이 규칙이 하는 일은 **살아 있는 공고를 위로 올리는 것**이다. 채용이 끝났는데
-   * 안 내린 공고는 사장님이 안 들어오니 저절로 가라앉는다. 목록을 손으로
-   * 치우지 않아도 최근 것으로 채워진다.
-   *
-   * 로그인한 적 없는 곳(우리가 모아 온 공고)은 접속일이 없어 등록일로 갈음한다.
-   * 그러지 않으면 그것들이 전부 맨 뒤에 무더기로 몰린다.
-   *
-   * 마감일이 빠른 공고를 먼저 세우던 규칙을 이걸로 갈았다. 마감이 급한 자리를
-   * 앞에 두는 것도 말이 되지만, 그러면 **공고를 걸어 두고 아무것도 안 하는 곳이
-   * 계속 위에 선다.** 자리를 파는 이상 움직이는 쪽이 위에 서야 한다.
-   */
-  const 같은구간 = (a = '') =>
-    `COALESCE((SELECT c_.last_login_at FROM companies c_ WHERE c_.id = ${a}company_id), ${a}created_at) DESC NULLS LAST, ` +
-    `md5(${a}id::text || CURRENT_DATE::text)`
+  // 유료로 산 자리·같은 등급 안의 순서는 lib/exposureOrder.ts 한 곳에서 정한다(규칙을 바꿀 때 한 번에 반영되게).
+  const 노출등급 = 노출등급SQL
+  const 같은구간 = 같은등급안SQL
 
   const listQuery = active ? `
     SELECT j.id, j.title, j.job_type, j.company_id, j.company_name, j.brand_name, j.logo_url, j.cover_images, j.signboard_url, j.company_type,

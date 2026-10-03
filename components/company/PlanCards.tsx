@@ -50,9 +50,12 @@ export default function PlanCards({ 안쪽 = false }: {
   // 지금 팔 수 있는 상품. 인재 열람을 파는 상품은 이력서가 쌓이기 전에는 팔
   // 물건이 없어 「오픈 준비중」으로 세워 둔다. 켜는 것은 운영 스위치 하나다.
   const [열린것, set열린것] = useState<string[] | null>(null);
+  // 이벤트 무료 체험 중인가 — 켜져 있으면 유료 카드에 「오픈 준비중」 대신 「이벤트 무료 체험」을 단다.
+  // 끄면(유료화) 이 값이 없어져 원래 표시로 돌아간다.
+  const [체험, set체험] = useState<{ plan: string; months: number; to: string } | null>(null);
   useEffect(() => {
     fetch("/api/plans").then((r) => r.json())
-      .then((r) => set열린것(Array.isArray(r?.data?.open) ? r.data.open : []))
+      .then((r) => { set열린것(Array.isArray(r?.data?.open) ? r.data.open : []); set체험(r?.data?.trial ?? null); })
       .catch(() => set열린것([]));
   }, []);
   return (
@@ -61,7 +64,7 @@ export default function PlanCards({ 안쪽 = false }: {
         <div className="cs-plan">
           <p className="cs-plan-nm">{스타트.name}</p>
           <p className="cs-plan-ln">{스타트.한줄}</p>
-          <p className="cs-plan-pr">무료<span className="cs-plan-du free">공고 {스타트.무료건수}건</span></p>
+          <p className="cs-plan-pr">무료</p>
           {/* 대시보드 안인지가 아니라 로그인했는지로 정한다. 밖에서도 이미
               가입한 사장님이면 가입 화면이 아니라 공고 등록으로 가야 한다. */}
           <Link href={갈곳} className="cs-plan-btn free">
@@ -75,7 +78,7 @@ export default function PlanCards({ 안쪽 = false }: {
             const 안엶 = 열린것 !== null && !열린것.includes(p);
             return (
             <div key={p} className={`cs-plan${안엶 ? " soon" : ""}`}>
-              {안엶 && <span className="cs-plan-soon">{준비중}</span>}
+              {체험 ? <span className="cs-plan-soon">이벤트 무료 체험</span> : 안엶 && <span className="cs-plan-soon">{준비중}</span>}
               <p className="cs-plan-nm">
                 {(() => { const I = 아이콘[p]; return <I size={17} strokeWidth={2.2} />; })()}
                 {것.name}

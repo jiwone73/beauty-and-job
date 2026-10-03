@@ -9,6 +9,7 @@ import { sendCompanyWelcomeEmail } from '@/lib/email'
 import { verifyBusinessNumber } from '@/lib/business/verify'
 import { passwordError } from '@/lib/password'
 import { 가입채널조회 } from '@/lib/channel'
+import { 이벤트체험부여 } from '@/lib/companyEntitlement'
 
 // ── 기업 가입 승인 게이트 (드롭인) ───────────────────────────
 // 4단계에서 이 함수 안에 본인인증 + 진위확인을 넣어 통과 시 'ACTIVE' 반환하면 자동승인 전환.
@@ -190,6 +191,10 @@ export async function POST(req: NextRequest) {
     }
 
     await client.query('COMMIT')
+
+    // 이벤트 기간에 가입했으면 무료 체험 등급을 이 자리에서 넣는다(승인 대기 중이어도 넣어 둔다 —
+    // 승인 전에는 로그인이 막혀 있어 쓸 수 없고, 승인되는 날부터 가입일 기준 기간이 이미 흐른다).
+    await 이벤트체험부여(company.id).catch((e) => console.error('[event trial grant]', e))
 
     // 가입 신청 접수 안내 메일 (실패해도 가입은 성공 처리) — 서버리스에서 전송이 잘리지 않게 await
     await sendCompanyWelcomeEmail(company.email, company.company_name).catch((e) => console.error('[company welcome email]', e))

@@ -5,6 +5,7 @@ import pool from '@/lib/db'
 import { ok, err, requireAuth } from '@/lib/api'
 import { 이용권, 무료칸, 이벤트라이트부여 } from '@/lib/companyEntitlement'
 import { 무료소진안내 } from '@/lib/companyPlans'
+import { 기록 } from '@/lib/activity'
 
 // 내 공고 목록
 export async function GET(req: NextRequest) {
@@ -157,5 +158,7 @@ export async function POST(req: NextRequest) {
       (headcount_text || '').trim() || null,
     ]
   )
+  // 임시저장은 활동으로 세지 않는다 — 공고를 실제로 거는 것만 남긴다(임시저장을 펴서 거는 것은 재등록으로 남는다).
+  if (jobStatus === 'ACTIVE') 기록({ type: 'company', id: auth!.sub }, 'JOB_CREATE', result.rows[0].id)
   return ok(result.rows[0], 201)
 }

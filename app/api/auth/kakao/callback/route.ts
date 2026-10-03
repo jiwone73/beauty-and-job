@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { 가입표만들기 } from "@/lib/socialSignup";
 import { signAccessToken } from "@/lib/jwt";
+import { 기록 } from "@/lib/activity";
 
 const KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 const KAKAO_USER_URL = "https://kapi.kakao.com/v2/user/me";
@@ -147,6 +148,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 여기까지 온 것은 이미 있는 회원뿐이다(신규는 가입표를 들고 돌아갔다).
+    기록({ type: "user", id: user.id }, "LOGIN_DAY");
     pool
       .query(`UPDATE users SET last_login_at = NOW() WHERE id = $1`, [user.id])
       .catch((e) => console.error("[update last_login_at]", e));

@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 import pool from '@/lib/db'
 import { ok, err, getAuth } from '@/lib/api'
 import { 공고읽기 } from '@/lib/jobDetail'
+import { 공고읽힘기록 } from '@/lib/activity'
 
 export async function GET(
   req: NextRequest,
@@ -24,6 +25,7 @@ export async function GET(
     'UPDATE job_postings SET view_count = view_count + 1 WHERE id = $1',
     [id]
   ).catch(e => console.error('[view_count update]', e))
+  공고읽힘기록(id)
 
   // 로그인 유저의 경우: 북마크 / 지원 여부 추가 조회
   if (auth?.owner_type === 'user') {

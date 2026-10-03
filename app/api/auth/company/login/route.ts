@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import pool from '@/lib/db'
 import { ok, err } from '@/lib/api'
 import { signAccessToken } from '@/lib/jwt'
+import { 기록 } from '@/lib/activity'
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json()
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
 
   // 마지막으로 들어온 때를 남긴다 — 관리자 목록에서 아직 쓰는 매장인지 가린다.
   // 응답을 막지 않도록 기다리지 않는다(실패해도 로그인은 되어야 한다).
+  기록({ type: 'company', id: company.id }, 'LOGIN_DAY')
   pool.query(`UPDATE companies SET last_login_at = NOW() WHERE id = $1`, [company.id])
     .catch((e) => console.error('[company login] 최종 로그인 기록 실패', e))
 
