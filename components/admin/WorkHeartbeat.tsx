@@ -10,7 +10,8 @@ import { ALBA_IDLE_GAP_MIN } from "@/lib/alba";
 //    알바 일이 공고 입력에서 사이트 테스트·가이드 영상 시청으로 넓어졌다. 같은 브라우저에
 //    알바 관리자 토큰(admin_token)이 있으면, 일반 화면에서 하는 테스트도 근무로 센다.
 //    알바 토큰이 없는 방문자는 여기서 아무것도 보내지 않는다.
-//  · 영상이 재생되는 동안은 조작이 없어도 일하는 것으로 본다(가이드 영상 시청).
+//  · 영상을 보는 동안(재생 중·탭이 보임·창에 포커스·영상이 화면 안)은 조작이 없어도 일하는 것으로 본다.
+//    뒤에서 돌기만 하는 영상은 세지 않는다.
 //
 // 로그인·로그아웃으로 재지 않는 이유는 서버 쪽 heartbeat 주석에 적어 뒀다.
 // 여기서는 '관리자 창이 화면에 떠 있고, 최근에 손을 댔을 때'만 서버를 두드린다.
@@ -56,9 +57,20 @@ export default function WorkHeartbeat() {
     const events: (keyof DocumentEventMap)[] = ["pointerdown", "keydown", "scroll", "visibilitychange"];
     events.forEach((e) => document.addEventListener(e, touch, { passive: true }));
     // 영상은 재생 중에 클릭도 스크롤도 없다. 미디어 이벤트는 버블링하지 않아 캡처로 듣는다.
-    // timeupdate 는 재생되는 동안만 계속 온다 — 멈추면 평소대로 2분 뒤 '멈춤'이 된다.
+    // 다만 '보고 있는 영상'만 센다 — 영상이 뒤에서(다른 탭·가려진 창·화면 밖) 돌기만 하는 것은
+    // 시청이 아니다. 아래 조건을 모두 채울 때만 조작으로 친다:
+    //   재생 중 · 탭이 보이는 중 · 창에 포커스 · 영상이 화면 안에 걸쳐 있음.
+    // timeupdate 는 재생되는 동안만 계속 온다 — 하나라도 어긋나면 평소대로 2분 뒤 '멈춤'이 된다.
+    const watching = (e: Event) => {
+      const el = e.target as HTMLMediaElement | null;
+      if (!el || typeof el.paused !== "boolean" || el.paused || el.ended) return;
+      if (document.hidden || !document.hasFocus()) return;
+      const r = el.getBoundingClientRect();
+      const inView = r.bottom > 0 && r.right > 0 && r.top < window.innerHeight && r.left < window.innerWidth;
+      if (inView) lastActive.current = Date.now();
+    };
     const mediaEvents = ["play", "playing", "timeupdate"];
-    mediaEvents.forEach((e) => document.addEventListener(e, touch, true));
+    mediaEvents.forEach((e) => document.addEventListener(e, watching, true));
 
     // 토큰은 주기마다 다시 읽는다. 이 레이아웃은 로그인 화면에서도 살아 있어서,
     // 처음 한 번만 읽으면 로그인 직후에 측정이 시작되지 않는다.
@@ -93,7 +105,7 @@ export default function WorkHeartbeat() {
       clearInterval(pingTimer);
       clearInterval(tick);
       events.forEach((e) => document.removeEventListener(e, touch));
-      mediaEvents.forEach((e) => document.removeEventListener(e, touch, true));
+      mediaEvents.forEach((e) => document.removeEventListener(e, watching, true));
     };
   }, []);
 
