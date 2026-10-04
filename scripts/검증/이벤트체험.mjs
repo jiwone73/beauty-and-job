@@ -89,6 +89,14 @@ try {
   const [다시행] = await q(`SELECT paid_until FROM companies WHERE id=$1`, [대기.id])
   본다('정지 후 다시 승인해도 기간이 다시 시작되지 않는다(한 번만)', 정지.status === 200 && 다시.status === 200 && 다시행.paid_until === 승인행.paid_until)
 
+  // 승인은 됐는데(ACTIVE) 체험이 아직 안 붙은 대상 기업 — 공고 등록 화면이 이용권을 읽을 때 붙어야 한다.
+  // 안 붙으면 화면이 「무료 한 건 소진」 팝업을 먼저 띄운다.
+  const [미부여] = await q(`INSERT INTO companies (company_name, company_type, status, is_member, created_at)
+     VALUES ($1,'STORE','ACTIVE',true, now() - interval '3 days') RETURNING id`, [`${표시} 승인됐는데체험없음`])
+  만든['체험없음'] = { id: 미부여.id, 토큰: 토큰(미부여.id, 'company') }
+  const 읽음 = await 부른다('/api/company/me/plan', { token: 만든['체험없음'].토큰 })
+  본다('이용권을 읽을 때 대상 기업에 체험이 붙는다(무료 소진 팝업 대신)', 읽음.status === 200 && 읽음.data?.plan === 'PREMIUM', JSON.stringify(읽음.data?.plan))
+
   console.log('\n2. 등급 × 기능 — 인재 열람 (스탠다드부터)')
   const 열람 = async (c) => {
     const r = await 부른다(`/api/company/talent/${사람.id}/resume`, { token: c.토큰 })

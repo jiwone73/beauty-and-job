@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest } from "next/server";
 import pool from "@/lib/db";
 import { ok, err, requireAuth } from "@/lib/api";
-import { 이용권, 보관, 무료칸 } from "@/lib/companyEntitlement";
+import { 이용권, 보관, 무료칸, 이벤트체험부여 } from "@/lib/companyEntitlement";
 import { 플랜, 스타트 } from "@/lib/companyPlans";
 
 /**
@@ -15,6 +15,9 @@ export async function GET(req: NextRequest) {
   const { auth, res: authErr } = requireAuth(req, "company");
   if (authErr) return authErr;
   try {
+    // 이벤트 대상인데 체험이 아직 안 붙은 기업이면 여기서 붙인다 — 등록 화면이 이 값으로 「무료 한 건 소진」
+    // 팝업을 띄우므로, 대상 기업이 체험 대신 그 팝업을 먼저 보지 않게 한다. 대상이 아니면 아무 일도 안 한다.
+    await 이벤트체험부여(auth!.sub).catch((e) => console.error("[event trial grant]", e));
     const { plan, paidUntil, 남은일 } = await 이용권(auth!.sub);
     const 세운것 = await 보관(auth!.sub);
     // 무료로 몇 건이 남았는가. 유료 기간 안이면 볼 일이 없지만 같이 보낸다 —
