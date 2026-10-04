@@ -52,7 +52,12 @@ export default function TestAccountTable() {
   const [하는중, set하는중] = useState<string | null>(null);
   const [오류, set오류] = useState("");
 
-  const 접속하기 = async (r: 줄타입, key: string, n: number) => {
+  const 접속하기 = (r: 줄타입, key: string, n: number) => 접속({ email: `${아이디(r.접두, n)}@gmail.com` }, key);
+
+  // 이벤트 대상 기업 — 번호 없이, 가장 오래 로그인하지 않은 이벤트 기업으로 들어간다(서버가 고른다).
+  const 이벤트접속 = () => 접속({ 이벤트: true }, "event");
+
+  const 접속 = async (요청: Record<string, unknown>, key: string) => {
     set오류("");
     set하는중(key);
     // 클릭 직후에 탭을 먼저 연다 — 응답을 기다린 뒤에 열면 팝업 차단에 걸린다.
@@ -61,7 +66,7 @@ export default function TestAccountTable() {
       const res = await fetch("/api/admin/alba/test-login", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("admin_token") || ""}` },
-        body: JSON.stringify({ email: `${아이디(r.접두, n)}@gmail.com` }),
+        body: JSON.stringify(요청),
       });
       const d = await res.json();
       if (!d.success) { 새탭?.close(); set오류(d.error?.message || "들어가지 못했어요."); return; }
@@ -104,7 +109,7 @@ export default function TestAccountTable() {
     // 표로 두면 오른쪽 「접속하기」 버튼이 가로 스크롤 밖으로 밀려 안 보였다. 칸이 모자라면 줄이 접힌다.
     <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 12, marginBottom: 24 }}>
       <p style={{ margin: 0, padding: "10px 14px", fontSize: 12, color: "#555", borderBottom: "1px solid #f2f2f2" }}>
-        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「접속하기」를 누르면 새 탭에서 그 계정으로 로그인됩니다. 맨 위 「비회원으로 접속하기」는 로그인을 풀고 채용공고 목록을 새 탭에서 엽니다.
+        ID는 btwk2026+●●@gmail.com 의 ●● 자리입니다. 번호를 고르고 「접속하기」를 누르면 새 탭에서 그 계정으로 로그인됩니다. 「이벤트 대상 기업」의 접속하기는 번호 없이 이벤트 체험 중인 기업으로 돌아가며 로그인됩니다. 「비회원으로 접속하기」는 로그인을 풀고 채용공고 목록을 새 탭에서 엽니다.
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", padding: "10px 14px", fontSize: 13 }}>
         <div style={{ flex: "1 1 170px", minWidth: 0 }}>
@@ -116,6 +121,18 @@ export default function TestAccountTable() {
           style={{ fontSize: 12, padding: "5px 12px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
         >
           비회원으로 접속하기
+        </button>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", padding: "10px 14px", borderTop: "1px solid #f2f2f2", fontSize: 13 }}>
+        <div style={{ flex: "1 1 170px", minWidth: 0 }}>
+          <span style={{ color: "#555" }}>이벤트 대상 기업</span>
+          <span style={{ color: "#555", marginLeft: 8 }}>누를 때마다 다른 기업으로</span>
+        </div>
+        <button
+          type="button" disabled={하는중 === "event"} onClick={이벤트접속}
+          style={{ fontSize: 12, padding: "5px 12px", borderRadius: 6, border: "1px solid #582681", background: "#fff", color: "#582681", cursor: "pointer" }}
+        >
+          {하는중 === "event" ? "여는 중…" : "접속하기"}
         </button>
       </div>
       {줄들.map((r, i) => {
