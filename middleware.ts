@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { 시험환경 } from "@/lib/appEnv";
 
 /**
  * 오픈(2026-10-12) 전 사이트 전체를 막는다.
@@ -21,6 +22,25 @@ const GATED_HOST = "beautywork.co.kr";
 
 export function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
+
+  // 시험(staging) 사이트 — 실제 사람에게 닿거나 요금이 나가는 길은 막는다.
+  //  · 예약 작업(크론): Vercel 이 시험 프로젝트에서도 부르므로 아무 일도 하지 않고 돌려보낸다.
+  //  · 카카오·네이버 로그인: 시험 사이트 주소가 등록돼 있지 않고, 진짜 계정이 시험 DB 에 생기면 안 된다.
+  //  · 검색엔진: 늘 막는다(robots.txt 와 별개로 응답 머리글에도 적는다).
+  if (시험환경) {
+    if (pathname.startsWith("/api/cron")) {
+      return NextResponse.json({ success: true, skipped: "staging" });
+    }
+    if (pathname.startsWith("/api/auth/kakao") || pathname.startsWith("/api/auth/naver")) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/login";
+      url.search = pathname.startsWith("/api/auth/kakao") ? "?kakao_error=staging" : "?naver_error=staging";
+      return NextResponse.redirect(url);
+    }
+    const res = NextResponse.next();
+    res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return res;
+  }
 
   if (pathname.startsWith("/api/cron")) {
     return NextResponse.next();

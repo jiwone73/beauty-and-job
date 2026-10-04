@@ -6,6 +6,8 @@ import RoleGuard from "@/components/RoleGuard";
 import VisitBeacon from "@/components/VisitBeacon";
 import WorkHeartbeat from "@/components/admin/WorkHeartbeat";
 import { 검색공개 } from "@/lib/robotsGate";
+import { 시험환경 } from "@/lib/appEnv";
+import StagingBanner from "@/components/StagingBanner";
 
 export const metadata: Metadata = {
   // 상대경로로 준 OG 이미지 등을 절대주소로 바꾸는 기준. 오픈 전에도 미리
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://beautywork.co.kr"),
   // lib/robotsGate.js 하나로 이 값과 robots.ts·next.config.js 를 같이 묶는다.
   robots: 검색공개 ? { index: true, follow: true } : { index: false, follow: false },
-  title: "뷰티워크 | 뷰티업계 구인구직·채용정보",
+  title: `${시험환경 ? "[시험] " : ""}뷰티워크 | 뷰티업계 구인구직·채용정보`,
   description:
     "살롱·샵 현장부터 브랜드 오피스까지, 뷰티업계 일자리를 한곳에서. 헤어·네일·피부·메이크업·화장품 브랜드 채용정보를 확인하세요.",
   keywords: ["뷰티 채용", "화장품 채용", "뷰티 커리어", "BeautyWork"],
@@ -115,6 +117,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans">
+        <StagingBanner />
         <AuthInterceptor />
         <RoleGuard />
         <VisitBeacon />

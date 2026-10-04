@@ -1,7 +1,9 @@
 import { Resend } from "resend";
 import pool from "@/lib/db";
+import { 시험환경 } from "@/lib/appEnv";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// 시험 사이트에는 키를 넣지 않는다. 키가 없어도 모듈이 터지지 않게 자리표를 둔다.
+const resend = new Resend(process.env.RESEND_API_KEY || "re_staging_placeholder");
 
 // 모든 메일은 여기로 나간다.
 //
@@ -11,6 +13,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // 실패는 표(email_failures)에 남기고, 부르는 쪽의 동작은 그대로 둔다.
 type 보낼것 = Parameters<typeof resend.emails.send>[0];
 async function 보내기(msg: 보낼것) {
+  // 시험 사이트에서는 실제로 보내지 않는다 — 테스트 계정 주소라도 밖으로 나가면 안 된다.
+  if (시험환경) {
+    console.log("[email:시험환경] 보내지 않음 →", (msg as any).to, "|", (msg as any).subject);
+    return { data: { id: "staging-skipped" }, error: null } as any;
+  }
   try {
     const res = await resend.emails.send(msg);
     if (res?.error) 실패남기기(msg, res.error.message || JSON.stringify(res.error));

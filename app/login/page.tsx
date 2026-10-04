@@ -21,6 +21,7 @@ function LoginStartContent() {
     if (code === "cancelled") return `${who} 로그인을 취소했어요. 다른 방법으로도 시작할 수 있어요.`;
     if (code === "inactive") return "정지된 계정이에요. 고객센터로 문의해 주세요.";
     if (code === "not_configured") return `${who} 로그인은 준비 중이에요.`;
+    if (code === "staging") return "시험 사이트에서는 카카오·네이버 로그인을 쓸 수 없어요. 이메일로 시작해 주세요.";
     return `${who} 로그인에 실패했어요. 잠시 후 다시 시도해 주세요.`;
   })();
 
