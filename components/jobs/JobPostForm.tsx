@@ -1240,7 +1240,10 @@ export default function JobPostForm({
       setSalaryType(loadedSalaryType);
       setForm({
         title: j.title || "", career, education: j.education || "", type,
-        deadline: j.deadline ? String(j.deadline).slice(0, 10) : "",
+        // 마감일이 이미 지난 공고를 다시 걸 때는 옛 날짜를 비운다 — 그대로 두면 등록돼도 마감일 때문에
+        // 곧바로 마감으로 보인다. 비우면 등록 때 「마감일을 선택하거나 상시채용」을 묻는다.
+        deadline: j.deadline && (mode !== "company" || String(j.deadline).slice(0, 10) >= new Date().toISOString().slice(0, 10))
+          ? String(j.deadline).slice(0, 10) : "",
         salary,
         description: 상세합치기(j.responsibilities, j.description, j.requirements, j.preferred_qualifications),
         requirements: "", preferred: "", responsibilities: "",

@@ -409,8 +409,11 @@ function CompanyJobsContent() {
                     <button type="button" className="co-pane-btn" onClick={() => handleClose(job.id)}>마감</button>
                   )}
                   {!draft && (
+                    // 마감한 공고의 재등록은 복사가 아니라 그 공고를 다시 거는 것이다. 복사하면 마감 목록에
+                    // 옛 공고가 그대로 남고 진행 중에 같은 제목이 하나 더 생겨, 마감한 공고가 두 곳에 뜨는
+                    // 것처럼 보인다(알바 이슈 2026-10-03). 진행 중인 공고의 재등록은 내용을 베낀 새 공고다.
                     <button type="button" className="co-pane-btn"
-                      onClick={() => router.push(`/company/dashboard/jobs/new?copy=${job.id}`)}>
+                      onClick={() => router.push(`/company/dashboard/jobs/new?${closed ? "id" : "copy"}=${job.id}`)}>
                       재등록
                     </button>
                   )}
